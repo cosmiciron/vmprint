@@ -1,0 +1,287 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "heading-1",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 33,
+        "lines": [
+          [
+            {
+              "text": "Deterministic Layout Notes",
+              "width": 221.7,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "paragraph",
+        "x": 72,
+        "y": 105,
+        "w": 468,
+        "h": 17.82,
+        "lines": [
+          [
+            {
+              "text": "This academic fixture checks theorem-mode blocks, citation references, and structured lists memo[1].",
+              "width": 445.176,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "heading-2",
+        "x": 72,
+        "y": 122.82,
+        "w": 468,
+        "h": 28.05,
+        "lines": [
+          [
+            {
+              "text": "Core Claims",
+              "width": 81.311,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item-ordered-0",
+        "x": 72,
+        "y": 150.87,
+        "w": 468,
+        "h": 17.82,
+        "lines": [
+          [
+            {
+              "text": "1.  Pagination should stay deterministic across repeated runs.",
+              "width": 267.246,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item-ordered-0",
+        "x": 72,
+        "y": 169.59,
+        "w": 468,
+        "h": 17.82,
+        "lines": [
+          [
+            {
+              "text": "2.  Citation references should render as print-safe markers.",
+              "width": 257.634,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item-ordered-0",
+        "x": 72,
+        "y": 188.31,
+        "w": 468,
+        "h": 17.82,
+        "lines": [
+          [
+            {
+              "text": "3.  Theorem blocks should keep their academic style profile.",
+              "width": 261.3924,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "code-block",
+        "x": 72,
+        "y": 214.13,
+        "w": 468,
+        "h": 63.516,
+        "lines": [
+          [
+            {
+              "text": "Theorem (Stability Window).",
+              "width": 128.4228,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ],
+          [
+            {
+              "text": "If the compositor receives identical syntax trees and identical style maps,",
+              "width": 319.95,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ],
+          [
+            {
+              "text": "the resulting pagination stream remains stable across runs.",
+              "width": 260.3988,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "definition-term",
+        "x": 72,
+        "y": 285.646,
+        "w": 468,
+        "h": 17.82,
+        "lines": [
+          [
+            {
+              "text": "Signal lock",
+              "width": 52.1532,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "definition-desc",
+        "x": 72,
+        "y": 304.666,
+        "w": 468,
+        "h": 17.82,
+        "lines": [
+          [
+            {
+              "text": "A repeatable line-break signature across reruns.",
+              "width": 210.5676,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "blockquote",
+        "x": 72,
+        "y": 330.486,
+        "w": 468,
+        "h": 16.96,
+        "lines": [
+          [
+            {
+              "text": "A layout engine is trustworthy when drift is visible, reviewable, and intentional.",
+              "width": 343.1538,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "blockquote-attribution",
+        "x": 72,
+        "y": 356.446,
+        "w": 468,
+        "h": 16.32,
+        "lines": [
+          [
+            {
+              "text": "Editorial Systems Group",
+              "width": 99.0012,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "thematic-break",
+        "x": 72,
+        "y": 379.766,
+        "w": 468,
+        "h": 0,
+        "lines": []
+      },
+      {
+        "type": "references-heading",
+        "x": 72,
+        "y": 395.766,
+        "w": 468,
+        "h": 22.44,
+        "lines": [
+          [
+            {
+              "text": "References",
+              "width": 60.0032,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "references-item",
+        "x": 72,
+        "y": 424.006,
+        "w": 468,
+        "h": 16.12,
+        "lines": [
+          [
+            {
+              "text": "1. Layout Memo. https://example.com/research/memo",
+              "width": 234.2184,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 72,
+        "y": 760,
+        "w": 468,
+        "h": 9,
+        "lines": [
+          [
+            {
+              "text": "1",
+              "width": 3.258,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

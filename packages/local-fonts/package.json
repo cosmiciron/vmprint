@@ -1,0 +1,34 @@
+{
+    "name": "@vmprint/local-fonts",
+    "version": "0.1.0",
+    "description": "Local filesystem FontManager for vmprint. Bundles common open-source fonts (Noto, Arimo, Tinos, Cousine, Carlito, Caladea, Courier Prime).",
+    "author": "cosmiciron",
+    "license": "Apache-2.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "tsx": "./src/index.ts",
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "assets"
+    ],
+    "scripts": {
+        "build": "npm run clean && tsc",
+        "dev": "tsc --watch --preserveWatchOutput",
+        "clean": "rimraf dist",
+        "lint": "eslint src/"
+    },
+    "dependencies": {
+        "@vmprint/contracts": "workspace:*",
+        "@vmprint/engine": "workspace:*"
+    },
+    "devDependencies": {},
+    "publishConfig": {
+        "access": "public"
+    }
+}

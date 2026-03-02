@@ -1,0 +1,1227 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "title",
+        "x": 72,
+        "y": 252,
+        "w": 468,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "THE LAST PATCH",
+              "width": 100.734375,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "title-meta",
+        "x": 72,
+        "y": 277.476563,
+        "w": 468,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "written by: Mira Quell",
+              "width": 158.296875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "title-meta",
+        "x": 72,
+        "y": 290.953125,
+        "w": 468,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "draft date: 2026-02-20",
+              "width": 158.296875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "title-contact",
+        "x": 72,
+        "y": 560.429688,
+        "w": 468,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "email: mira.quell@example.com[1]",
+              "width": 230.25,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "title-contact",
+        "x": 72,
+        "y": 573.90625,
+        "w": 468,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "phone: +1 (310) 555-0137",
+              "width": 172.6875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "title-contact",
+        "x": 72,
+        "y": 587.382813,
+        "w": 468,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "address: 4128 Helios Ave, Apt 5B, Los Angeles, CA 90027",
+              "width": 395.742188,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "scene-heading",
+        "x": 108,
+        "y": 84,
+        "w": 432,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "INT. SUBTERRANEAN SERVER CATHEDRAL - PRE-DAWN",
+              "width": 323.789063,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "action",
+        "x": 108,
+        "y": 109.476563,
+        "w": 432,
+        "h": 67.382813,
+        "lines": [
+          [
+            {
+              "text": "A vault-sized chamber of humming machines glows in bands of ",
+              "width": 431.71875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "cobalt and amber.",
+              "width": 122.320313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "Rows of cooling towers breathe like sleeping animals.",
+              "width": 381.351563,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "Battery backup lights pulse in strict rhythm with the city ",
+              "width": 424.523438,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "load forecast.",
+              "width": 100.734375,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "character",
+        "x": 266.4,
+        "y": 188.859375,
+        "w": 165.6,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "DR. MIRA QUELL",
+              "width": 100.734375,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "parenthetical",
+        "x": 223.2,
+        "y": 202.335938,
+        "w": 172.8,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "(adjusting her headset)",
+              "width": 165.492188,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "dialogue",
+        "x": 180,
+        "y": 215.8125,
+        "w": 252,
+        "h": 485.15625,
+        "lines": [
+          [
+            {
+              "text": "Archive cluster delta is replaying ",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "logs from six months ago. Every ",
+              "width": 230.25,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "minute, the timestamp jumps forward",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "and then snaps backward. Look at ",
+              "width": 237.445313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "node thirty-one. It writes a clean ",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "state to mirror, then resurrects a ",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "deleted route table.",
+              "width": 143.90625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "We prune it, it returns.",
+              "width": 172.6875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "We quarantine it, it routes around ",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "quarantine.",
+              "width": 79.148438,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "We checksum it, the checksum agrees",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "with the wrong version.",
+              "width": 165.492188,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "We compare against cold storage, ",
+              "width": 237.445313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "and cold storage now believes the ",
+              "width": 244.640625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "same lie.",
+              "width": 64.757813,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "The map service is already drifting",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": ". Dispatch will think the bridges ",
+              "width": 244.640625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "are open when they are lifting for ",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "freight.",
+              "width": 57.5625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Ambulances will route into ",
+              "width": 194.273438,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "maintenance tunnels.",
+              "width": 143.90625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "Freight will stack on side streets.",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "Passenger trains will deadlock on ",
+              "width": 244.640625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "opposite platforms.",
+              "width": 136.710938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "If this rolls into morning traffic,",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "the city will grid itself into ",
+              "width": 223.054688,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "concrete.",
+              "width": 64.757813,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "I need deterministic recovery, not ",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "optimism. Give me a narrow rollback",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "window and a staging slot that does",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "not touch live dispatch. Then get ",
+              "width": 244.640625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "me legal approval to bypass the ",
+              "width": 230.25,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "more",
+        "x": 180,
+        "y": 700.96875,
+        "w": 252,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "(MORE)",
+              "width": 43.171875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "character",
+        "x": 266.4,
+        "y": 84,
+        "w": 165.6,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "DR. MIRA QUELL (CONT'D)",
+              "width": 165.492188,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "parenthetical",
+        "x": 223.2,
+        "y": 97.476563,
+        "w": 172.8,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "(adjusting her headset)",
+              "width": 165.492188,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "dialogue",
+        "x": 180,
+        "y": 110.953125,
+        "w": 252,
+        "h": 107.8125,
+        "lines": [
+          [
+            {
+              "text": "normal release freeze.",
+              "width": 158.296875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "I know what time it is. I know what",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "signatures are required. I also ",
+              "width": 230.25,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "know exactly what happens if we ",
+              "width": 230.25,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "wait for the memo chain. We have ",
+              "width": 237.445313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "one chance to cut a clean branch ",
+              "width": 237.445313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "and land it before sunrise.",
+              "width": 194.273438,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "character",
+        "x": 266.4,
+        "y": 230.765625,
+        "w": 165.6,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "RHO",
+              "width": 21.585938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "parenthetical",
+        "x": 223.2,
+        "y": 244.242188,
+        "w": 172.8,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "(from the mezzanine)",
+              "width": 143.90625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "dialogue",
+        "x": 180,
+        "y": 257.71875,
+        "w": 252,
+        "h": 40.429688,
+        "lines": [
+          [
+            {
+              "text": "Staging slot is available. Legal is",
+              "width": 251.835938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "asleep. Sunrise is still ",
+              "width": 179.882813,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "indifferent.",
+              "width": 86.34375,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "action",
+        "x": 108,
+        "y": 310.148438,
+        "w": 432,
+        "h": 26.953125,
+        "lines": [
+          [
+            {
+              "text": "A bank of monitors flickers and reveals a map of the city ",
+              "width": 417.328125,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "overlaid with thermal veins.",
+              "width": 201.46875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "transition",
+        "x": 108,
+        "y": 349.101563,
+        "w": 432,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "CUT TO:",
+              "width": 50.367188,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "scene-heading",
+        "x": 108,
+        "y": 374.578125,
+        "w": 432,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "EXT. CITY ROOFTOPS - BLUE HOUR",
+              "width": 215.859375,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "action",
+        "x": 108,
+        "y": 400.054688,
+        "w": 432,
+        "h": 53.90625,
+        "lines": [
+          [
+            {
+              "text": "Antenna forests sway in dry wind as cargo drones thread ",
+              "width": 402.9375,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "through narrow lanes.",
+              "width": 151.101563,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "Sirens Doppler below, too far to locate, too close to ignore",
+              "width": 431.71875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": ".",
+              "width": 7.195313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "character-dual-left",
+        "x": 162,
+        "y": 465.960938,
+        "w": 150,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "MIRA",
+              "width": 28.78125,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "dialogue-dual-left",
+        "x": 108,
+        "y": 479.4375,
+        "w": 204,
+        "h": 40.429688,
+        "lines": [
+          [
+            {
+              "text": "If the patch is late, ",
+              "width": 158.296875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "transit collapses by first ",
+              "width": 194.273438,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "light.",
+              "width": 43.171875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "character-dual-right",
+        "x": 390,
+        "y": 525.867188,
+        "w": 150,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "RHO",
+              "width": 21.585938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "parenthetical-dual-right",
+        "x": 372,
+        "y": 539.34375,
+        "w": 162,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "(calm)",
+              "width": 43.171875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "dialogue-dual-right",
+        "x": 336,
+        "y": 552.820313,
+        "w": 204,
+        "h": 26.953125,
+        "lines": [
+          [
+            {
+              "text": "Then we publish before first",
+              "width": 201.46875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "light.",
+              "width": 43.171875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "action",
+        "x": 108,
+        "y": 585.773438,
+        "w": 432,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "Mira opens a terminal and types without looking down.",
+              "width": 381.351563,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "insert",
+        "x": 108,
+        "y": 611.25,
+        "w": 432,
+        "h": 26.953125,
+        "lines": [
+          [
+            {
+              "text": "deploy --cluster atlas --strategy phased --allow-legendary-",
+              "width": 424.523438,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "side-effects",
+              "width": 86.34375,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "transition",
+        "x": 108,
+        "y": 650.203125,
+        "w": 432,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "SMASH CUT TO:",
+              "width": 93.539063,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 108,
+        "y": 36,
+        "w": 432,
+        "h": 12,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 14.390625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "scene-heading",
+        "x": 108,
+        "y": 84,
+        "w": 432,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "INT. SERVER CATHEDRAL - MOMENTS LATER",
+              "width": 266.226563,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "action",
+        "x": 108,
+        "y": 109.476563,
+        "w": 432,
+        "h": 26.953125,
+        "lines": [
+          [
+            {
+              "text": "Green status lights spread across the chamber like a field ",
+              "width": 424.523438,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "of lanterns.",
+              "width": 86.34375,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "character",
+        "x": 266.4,
+        "y": 148.429688,
+        "w": 165.6,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "MIRA",
+              "width": 28.78125,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "dialogue",
+        "x": 180,
+        "y": 161.90625,
+        "w": 252,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "It held.",
+              "width": 57.5625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "character",
+        "x": 266.4,
+        "y": 187.382813,
+        "w": 165.6,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "RHO",
+              "width": 21.585938,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "dialogue",
+        "x": 180,
+        "y": 200.859375,
+        "w": 252,
+        "h": 13.476563,
+        "lines": [
+          [
+            {
+              "text": "For tonight.",
+              "width": 86.34375,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 108,
+        "y": 36,
+        "w": 432,
+        "h": 12,
+        "lines": [
+          [
+            {
+              "text": "3.",
+              "width": 14.390625,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

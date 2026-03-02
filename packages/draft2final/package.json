@@ -1,0 +1,38 @@
+{
+  "name": "@draft2final/cli",
+  "version": "0.1.0",
+  "description": "Markdown to bit-perfect PDF compiler powered by the VMPrint deterministic typesetting engine.",
+  "author": "cosmiciron",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "draft2final": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc && copyfiles -u 1 \"src/formats/**/*.yaml\" dist",
+    "dev": "tsx watch --conditions tsx src/cli.ts",
+    "dev:run": "tsx --conditions tsx src/cli.ts",
+    "clean": "rimraf dist",
+    "test:boundaries": "tsx tests/boundary-guards.ts",
+    "test:update-layout-snapshots": "npm run test:boundaries && tsx tests/run-tests.ts --update-layout-snapshots",
+    "test": "npm run test:boundaries && tsx tests/run-tests.ts",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@vmprint/context-pdf": "workspace:*",
+    "@vmprint/engine": "workspace:*",
+    "@vmprint/local-fonts": "workspace:*",
+    "commander": "^14.0.3",
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,175 @@
+list:
+    textIndentPerLevel: 15
+    markerGap: 5
+    itemSpacingAfter: 3.6
+    tightItemSpacingAfter: 1.2
+    continuationIndentLevels: 0
+    unorderedMarkers:
+        - "\u2014"
+        - "\u2014"
+        - "\u2014"
+    orderedMarkers:
+        - upper-roman
+        - decimal
+        - lower-alpha
+    taskMarkers:
+        checked: '[done]'
+        unchecked: '[ ]'
+
+links:
+    mode: citation
+    dedupe: true
+    citationStyle: bracket
+
+references:
+    enabled: true
+    heading: Notes
+    numberingStyle: lower-roman
+    includeLinkTitle: true
+
+blockquote:
+    attribution:
+        enabled: true
+        markerPattern: '^[-\u2014\u2013]{1,2}\s+'
+
+title:
+    subheading:
+        enabled: false
+        markerPattern: '^::\s+'
+        requireMarker: true
+        stripMarker: true
+        applyToFirstH1Only: true
+        keepWithNext: true
+
+images:
+    blockStyle:
+        width: 286
+        marginTop: 14
+        marginBottom: 5
+        borderWidth: 0
+        borderRadius: 0
+        paddingTop: 0
+        paddingBottom: 0
+        paddingLeft: 0
+        paddingRight: 0
+    frame:
+        mode: 'off'
+        markerPattern: '\b(frame|framed)\b'
+        style: {}
+
+captions:
+    pattern: '^(Plate|Figure|Fig\.|Source)\s+([0-9]+|[IVXLC]+)\b'
+    blockquoteUnderImageAsFigureCaption: false
+    style:
+        textAlign: left
+        hyphenation: 'off'
+        fontStyle: italic
+        fontSize: 9.8
+        lineHeight: 1.3
+        color: '#47443f'
+        marginTop: 3
+        marginBottom: 9
+
+tables:
+    zebra: false
+    headerColor: '#f3f4f6'
+
+codeBlocks:
+    defaultMode: extract
+    languageModes:
+        verse: verse
+        poetry: verse
+        poem: verse
+        extract: extract
+        archive: extract
+        epigraph: epigraph
+        letter: letter
+        marginalia: marginalia
+    modes:
+        verse:
+            style:
+                fontFamily: Caladea
+                fontStyle: italic
+                fontSize: 11.6
+                lineHeight: 1.58
+                textAlign: left
+                color: '#252422'
+                backgroundColor: '#ffffff'
+                borderWidth: 0
+                borderLeftWidth: 0
+                borderLeftColor: '#96928a'
+                paddingTop: 6
+                paddingBottom: 6
+                paddingLeft: 18
+                paddingRight: 8
+                marginTop: 9
+                marginBottom: 10
+        extract:
+            style:
+                fontFamily: Caladea
+                fontStyle: italic
+                fontSize: 11.2
+                lineHeight: 1.5
+                textAlign: left
+                color: '#2a2a2a'
+                backgroundColor: '#ffffff'
+                borderWidth: 0
+                borderLeftWidth: 0
+                borderLeftColor: '#8d8a84'
+                paddingTop: 6
+                paddingBottom: 6
+                paddingLeft: 14
+                paddingRight: 8
+                marginTop: 8
+                marginBottom: 10
+        epigraph:
+            style:
+                fontFamily: Caladea
+                fontStyle: italic
+                fontSize: 11
+                lineHeight: 1.5
+                textAlign: center
+                color: '#2f2c28'
+                backgroundColor: '#ffffff'
+                borderWidth: 0
+                paddingTop: 5
+                paddingBottom: 5
+                paddingLeft: 20
+                paddingRight: 20
+                marginTop: 10
+                marginBottom: 10
+        letter:
+            style:
+                fontFamily: Caladea
+                fontStyle: normal
+                fontSize: 11.2
+                lineHeight: 1.5
+                textAlign: left
+                color: '#252525'
+                backgroundColor: '#ffffff'
+                borderWidth: 0
+                borderColor: '#cfcbc2'
+                paddingTop: 7
+                paddingBottom: 7
+                paddingLeft: 10
+                paddingRight: 10
+                marginTop: 8
+                marginBottom: 10
+        marginalia:
+            style:
+                fontFamily: Caladea
+                fontStyle: italic
+                fontSize: 10.6
+                lineHeight: 1.45
+                textAlign: left
+                color: '#3a3732'
+                backgroundColor: '#ffffff'
+                borderWidth: 0
+                borderLeftWidth: 0
+                borderLeftColor: '#b1a795'
+                paddingTop: 5
+                paddingBottom: 5
+                paddingLeft: 10
+                paddingRight: 6
+                marginTop: 7
+                marginBottom: 8

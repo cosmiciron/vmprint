@@ -1,0 +1,97 @@
+list:
+    textIndentPerLevel: 16.5
+    markerGap: 6
+    itemSpacingAfter: 3.8
+    tightItemSpacingAfter: 1.0
+    continuationIndentLevels: 1
+    unorderedMarkers:
+        - "\u2022"
+        - "\u25E6"
+        - "\u25AA"
+    orderedMarkers:
+        - decimal
+        - lower-alpha
+        - lower-roman
+    taskMarkers:
+        checked: "\u2611"
+        unchecked: "\u2610"
+
+links:
+    mode: citation
+    dedupe: true
+    citationStyle: bracket
+
+references:
+    enabled: true
+    heading: References
+    numberingStyle: decimal
+    includeLinkTitle: true
+
+blockquote:
+    attribution:
+        enabled: true
+        markerPattern: '^[-\u2014\u2013]{1,2}\s+'
+
+title:
+    subheading:
+        enabled: false
+        markerPattern: '^::\s+'
+        requireMarker: true
+        stripMarker: true
+        applyToFirstH1Only: true
+        keepWithNext: true
+
+images:
+    frame:
+        mode: 'off'
+        markerPattern: '\b(frame|framed)\b'
+        style:
+            borderWidth: 0.8
+            borderColor: '#d4dce6'
+            borderRadius: 2
+            paddingTop: 8
+            paddingRight: 8
+            paddingBottom: 8
+            paddingLeft: 8
+
+captions:
+    pattern: '^(Figure|Fig\.|Plate|Table|Source)\s+([0-9]+|[IVXLC]+)\b'
+    blockquoteUnderImageAsFigureCaption: false
+    style:
+        textAlign: left
+        hyphenation: 'off'
+
+codeBlocks:
+    defaultMode: listing
+    languageModes:
+        ts: listing
+        js: listing
+        json: listing
+        yaml: listing
+        yml: listing
+        bash: listing
+        sh: listing
+        shell: listing
+        text: listing
+    modes:
+        listing:
+            style:
+                fontFamily: Cousine
+                fontSize: 9.8
+                lineHeight: 1.34
+                color: '#1f2937'
+                backgroundColor: '#f4f7fb'
+                borderWidth: 0.8
+                borderColor: '#cdd7e3'
+                borderRadius: 4
+                paddingTop: 7
+                paddingBottom: 7
+                paddingLeft: 10
+                paddingRight: 10
+                marginTop: 8
+                marginBottom: 10
+
+tables:
+    zebra: true
+    zebraColor: '#f7f9fc'
+    headerColor: '#eef3f8'

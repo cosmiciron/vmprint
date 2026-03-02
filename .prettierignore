@@ -1,0 +1,9 @@
+dist/
+node_modules/
+.turbo/
+pnpm-lock.yaml
+*.pdf
+*.ttf
+*.png
+*.json
+assets/

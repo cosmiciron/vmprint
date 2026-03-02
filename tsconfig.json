@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/contracts" },
+    { "path": "packages/engine" },
+    { "path": "packages/context-pdf" },
+    { "path": "packages/local-fonts" },
+    { "path": "packages/cli" },
+    { "path": "packages/draft2final" }
+  ]
+}

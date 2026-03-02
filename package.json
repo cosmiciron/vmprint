@@ -1,6 +1,7 @@
 {
   "name": "vmprint",
   "version": "0.1.0",
+  "private": true,
   "description": "Deterministic typesetting engine for the programmable web. Pure-JS, zero-browser document composition with bit-perfect PDF output.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
@@ -12,22 +13,42 @@
     "url": "https://github.com/cosmiciron/vmprint/issues"
   },
   "homepage": "https://github.com/cosmiciron/vmprint#readme",
-  "workspaces": [
-    "contracts",
-    "engine",
-    "cli",
-    "contexts/pdf",
-    "font-managers/local",
-    "draft2final"
-  ],
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "clean": "npm run clean --workspaces --if-present",
-    "build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=contexts/pdf && npm run build --workspace=font-managers/local && npm run build --workspace=cli && npm run build --workspace=draft2final",
-    "test:boundary-imports": "npm --prefix draft2final run test:boundaries",
-    "test:packaged-integration": "node scripts/test-packaged-vmprint-integration.mjs"
+    "build": "turbo build",
+    "clean": "turbo clean",
+    "dev": "turbo dev",
+    "dev:cli": "pnpm --filter @vmprint/cli run dev",
+    "dev:d2f": "pnpm --filter @draft2final/cli run dev",
+    "cli": "tsx --conditions tsx packages/cli/src/index.ts",
+    "d2f": "tsx --conditions tsx packages/draft2final/src/cli.ts",
+    "test": "turbo test",
+    "test:engine": "pnpm --filter @vmprint/engine run test",
+    "test:modules": "pnpm --filter @vmprint/engine run test:modules",
+    "test:flat": "pnpm --filter @vmprint/engine run test:flat",
+    "test:regression": "pnpm --filter @vmprint/engine run test:engine",
+    "test:perf": "pnpm --filter @vmprint/engine run test:perf",
+    "test:d2f": "pnpm --filter @draft2final/cli run test",
+    "test:update-snapshots": "turbo test:update-layout-snapshots",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint -- --fix",
+    "typecheck": "turbo typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo build && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.8",
     "@types/node": "^25.3.2",
-    "tsx": "^4.21.0"
+    "eslint": "^10.0.2",
+    "prettier": "^3.8.1",
+    "rimraf": "^6.1.3",
+    "tsx": "^4.21.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^4.0.18"
   }
 }

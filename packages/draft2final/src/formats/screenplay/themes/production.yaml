@@ -1,0 +1,214 @@
+layout:
+    pageSize: LETTER
+    margins:
+        top: 72
+        right: 72
+        bottom: 72
+        left: 108
+    fontFamily: Courier Prime
+    fontSize: 12
+    lineHeight: 1
+    showPageNumbers: true
+    pageNumberFormat: '{n}.'
+    pageNumberPosition: top
+    pageNumberAlignment: right
+    pageNumberOffset: 36
+    pageNumberStartPage: 2
+    pageNumberFontSize: 12
+    pageNumberColor: '#111111'
+    pageNumberFont: Courier Prime
+
+styles:
+    text:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+    title:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        textAlign: center
+        marginLeft: -36
+        width: 468
+        marginTop: 180
+        marginBottom: 12
+        pageBreakBefore: true
+        keepWithNext: true
+    title-meta:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        textAlign: center
+        marginLeft: -36
+        width: 468
+        marginTop: 0
+        marginBottom: 0
+    title-contact:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        textAlign: left
+        marginLeft: -36
+        width: 468
+        marginTop: 0
+        marginBottom: 0
+    scene-heading:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginTop: 12
+        marginBottom: 12
+        keepWithNext: true
+    action:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        allowLineSplit: true
+        orphans: 2
+        widows: 2
+        marginTop: 0
+        marginBottom: 12
+    character:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginLeft: 158.4
+        width: 165.6
+        marginTop: 12
+        marginBottom: 0
+        keepWithNext: true
+    parenthetical:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginLeft: 115.2
+        width: 172.8
+        marginTop: 0
+        marginBottom: 0
+        keepWithNext: true
+    dialogue:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginLeft: 72
+        width: 252
+        allowLineSplit: true
+        orphans: 2
+        widows: 2
+        marginTop: 0
+        marginBottom: 12
+    character-dual-left:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginLeft: 54
+        width: 150
+        marginTop: 12
+        marginBottom: 0
+        keepWithNext: true
+    parenthetical-dual-left:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginLeft: 36
+        width: 162
+        marginTop: 0
+        marginBottom: 0
+        keepWithNext: true
+    dialogue-dual-left:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginLeft: 0
+        width: 204
+        allowLineSplit: true
+        orphans: 2
+        widows: 2
+        marginTop: 0
+        marginBottom: 6
+    character-dual-right:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginLeft: 282
+        width: 150
+        marginTop: 12
+        marginBottom: 0
+        keepWithNext: true
+    parenthetical-dual-right:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginLeft: 264
+        width: 162
+        marginTop: 0
+        marginBottom: 0
+        keepWithNext: true
+    dialogue-dual-right:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginLeft: 228
+        width: 204
+        allowLineSplit: true
+        orphans: 2
+        widows: 2
+        marginTop: 0
+        marginBottom: 6
+    transition:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        textAlign: right
+        marginTop: 12
+        marginBottom: 12
+    intertitle:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        textAlign: center
+        marginTop: 10
+        marginBottom: 10
+    insert:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        marginTop: 12
+        marginBottom: 12
+    more:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        textAlign: right
+        marginLeft: 72
+        width: 252
+        marginTop: 0
+        marginBottom: 0
+    beat:
+        fontFamily: Courier Prime
+        fontSize: 12
+        lineHeight: 1
+        color: '#111111'
+        borderTopWidth: 0.7
+        borderTopColor: '#111111'
+        marginTop: 12
+        marginBottom: 12

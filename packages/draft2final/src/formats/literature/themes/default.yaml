@@ -1,0 +1,122 @@
+layout:
+    fontFamily: Caladea
+    fontSize: 10.6
+    lineHeight: 1.52
+    pageSize:
+        width: 396
+        height: 612
+    margins:
+        top: 64
+        right: 54
+        bottom: 62
+        left: 54
+    hyphenation: soft
+    justifyEngine: advanced
+    justifyStrategy: auto
+    showPageNumbers: true
+    pageNumberFormat: '{n}'
+    pageNumberPosition: bottom
+    pageNumberAlignment: center
+    pageNumberOffset: 22
+    pageNumberStartPage: 1
+    pageNumberFontSize: 9
+    pageNumberColor: '#666666'
+    pageNumberFont: Caladea
+
+styles:
+    paragraph:
+        textAlign: left
+        marginBottom: 8.6
+        hyphenation: 'off'
+        justifyEngine: legacy
+    heading-1:
+        fontSize: 20.8
+        marginTop: 18
+        marginBottom: 9
+        hyphenation: 'off'
+        textAlign: left
+    heading-2:
+        fontSize: 16.2
+        marginTop: 14
+        marginBottom: 7
+        hyphenation: 'off'
+        textAlign: left
+    heading-3:
+        fontSize: 13.9
+        marginTop: 14
+        marginBottom: 6
+        hyphenation: 'off'
+        textAlign: left
+    inline-code:
+        fontFamily: Caladea
+        fontStyle: italic
+        fontSize: 11
+        backgroundColor: '#ffffff'
+    blockquote:
+        textAlign: left
+        fontStyle: italic
+        fontSize: 10.4
+        lineHeight: 1.45
+        color: '#2b2a28'
+        paddingLeft: 18
+        paddingRight: 8
+        borderLeftWidth: 0
+        marginTop: 8
+        marginBottom: 9
+    blockquote-attribution:
+        textAlign: right
+        fontStyle: normal
+        fontSize: 9.8
+        color: '#47443f'
+        marginTop: 2
+        marginBottom: 7
+    references-heading:
+        hyphenation: 'off'
+        textAlign: left
+        fontSize: 12.4
+        marginTop: 12
+        marginBottom: 5
+    references-item:
+        textAlign: left
+        hyphenation: 'off'
+        lineHeight: 1.3
+        fontSize: 9.8
+        marginBottom: 3
+        paddingLeft: 12
+        textIndent: -12
+    list-item-ordered-0:
+        textAlign: left
+        hyphenation: 'off'
+        justifyEngine: legacy
+        marginBottom: 3.6
+    list-item-ordered-1:
+        textAlign: left
+        hyphenation: 'off'
+        justifyEngine: legacy
+        marginBottom: 3.2
+    list-item-unordered-0:
+        textAlign: left
+        hyphenation: 'off'
+        justifyEngine: legacy
+        marginBottom: 3.6
+    list-item-unordered-1:
+        textAlign: left
+        hyphenation: 'off'
+        justifyEngine: legacy
+        marginBottom: 3.2
+    definition-term:
+        fontStyle: italic
+        fontWeight: 700
+        marginTop: 5.5
+        marginBottom: 1.2
+    definition-desc:
+        paddingLeft: 14
+        marginTop: 0
+        marginBottom: 5.4
+    table-cell:
+        paddingTop: 4
+        paddingBottom: 4
+        paddingLeft: 5
+        paddingRight: 5
+        borderWidth: 0.6
+        borderColor: '#111111'

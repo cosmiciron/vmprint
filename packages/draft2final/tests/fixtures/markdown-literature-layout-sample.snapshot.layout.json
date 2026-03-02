@@ -1,0 +1,296 @@
+[
+  {
+    "index": 0,
+    "width": 396,
+    "height": 612,
+    "boxes": [
+      {
+        "type": "heading-1",
+        "x": 54,
+        "y": 82,
+        "w": 288,
+        "h": 34.736,
+        "lines": [
+          [
+            {
+              "text": "Field Journal of the Orchard",
+              "width": 236.3296,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "paragraph",
+        "x": 54,
+        "y": 125.736,
+        "w": 288,
+        "h": 35.404,
+        "lines": [
+          [
+            {
+              "text": "By first light, the rows looked orderly again, but the notes still ",
+              "width": 267.8514,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ],
+          [
+            {
+              "text": "carried echoes[1].",
+              "width": 75.6628,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item-ordered-0",
+        "x": 54,
+        "y": 169.74,
+        "w": 288,
+        "h": 17.702,
+        "lines": [
+          [
+            {
+              "text": "I.  First pass through the east terrace.",
+              "width": 159.7632,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item-ordered-0",
+        "x": 54,
+        "y": 188.642,
+        "w": 288,
+        "h": 17.702,
+        "lines": [
+          [
+            {
+              "text": "II.  Inventory of split crates and labels.",
+              "width": 165.0632,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item-unordered-0",
+        "x": 54,
+        "y": 207.544,
+        "w": 288,
+        "h": 17.702,
+        "lines": [
+          [
+            {
+              "text": "[done]  Mark trees with surviving tags.",
+              "width": 167.7556,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item-unordered-0",
+        "x": 54,
+        "y": 226.446,
+        "w": 288,
+        "h": 17.702,
+        "lines": [
+          [
+            {
+              "text": "[ ]  Reconcile the ledger after dusk.",
+              "width": 149.5342,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "code-block",
+        "x": 54,
+        "y": 253.148,
+        "w": 288,
+        "h": 72.204,
+        "lines": [
+          [
+            {
+              "text": "The gate remembers",
+              "width": 96.3728,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ],
+          [
+            {
+              "text": "the shape of yesterday's wind",
+              "width": 138.7244,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ],
+          [
+            {
+              "text": "before we write it down.",
+              "width": 113.9468,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "code-block",
+        "x": 54,
+        "y": 335.352,
+        "w": 288,
+        "h": 67.44,
+        "lines": [
+          [
+            {
+              "text": "Archive entry:",
+              "width": 64.8368,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ],
+          [
+            {
+              "text": "The root index shifted in silence,",
+              "width": 148.2768,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ],
+          [
+            {
+              "text": "then returned before noon.",
+              "width": 123.1104,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "blockquote",
+        "x": 54,
+        "y": 412.792,
+        "w": 288,
+        "h": 16.64,
+        "lines": [
+          [
+            {
+              "text": "Keep what can be measured.",
+              "width": 120.3176,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "blockquote",
+        "x": 54,
+        "y": 438.432,
+        "w": 288,
+        "h": 16.64,
+        "lines": [
+          [
+            {
+              "text": "Let the margins carry what cannot.",
+              "width": 148.5848,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "thematic-break",
+        "x": 54,
+        "y": 464.072,
+        "w": 288,
+        "h": 0,
+        "lines": []
+      },
+      {
+        "type": "references-heading",
+        "x": 54,
+        "y": 476.072,
+        "w": 288,
+        "h": 20.708,
+        "lines": [
+          [
+            {
+              "text": "Notes",
+              "width": 28.7928,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "references-item",
+        "x": 54,
+        "y": 501.78,
+        "w": 288,
+        "h": 14.21,
+        "lines": [
+          [
+            {
+              "text": "i. https://example.com/orchard-notes",
+              "width": 152.9682,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 54,
+        "y": 590,
+        "w": 288,
+        "h": 9,
+        "lines": [
+          [
+            {
+              "text": "1",
+              "width": 3.258,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

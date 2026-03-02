@@ -1,0 +1,29 @@
+{
+    "name": "@vmprint/contracts",
+    "version": "0.1.0",
+    "description": "Core interfaces for VMPrint engines, contexts, and font managers.",
+    "author": "cosmiciron",
+    "license": "Apache-2.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "tsx": "./src/index.ts",
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch --preserveWatchOutput",
+        "clean": "rimraf dist",
+        "lint": "eslint src/"
+    },
+    "devDependencies": {},
+    "publishConfig": {
+        "access": "public"
+    }
+}

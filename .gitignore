@@ -9,6 +9,12 @@ yarn-debug.log*
 lerna-debug.log*
 *.log
 
+# pnpm
+package-lock.json
+
+# Turborepo
+.turbo/
+
 # Personal/Editor settings
 .claude/
 .vscode/
