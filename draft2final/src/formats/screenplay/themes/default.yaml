@@ -61,7 +61,7 @@ styles:
     fontSize: 12
     lineHeight: 1
     color: "#111111"
-    marginTop: 12
+    marginTop: 0
     marginBottom: 12
     keepWithNext: true
   action:
@@ -81,7 +81,7 @@ styles:
     color: "#111111"
     marginLeft: 158.4
     width: 165.6
-    marginTop: 12
+    marginTop: 0
     marginBottom: 0
     keepWithNext: true
   parenthetical:
@@ -113,7 +113,7 @@ styles:
     color: "#111111"
     marginLeft: 54
     width: 150
-    marginTop: 12
+    marginTop: 0
     marginBottom: 0
     keepWithNext: true
   parenthetical-dual-left:
@@ -137,7 +137,7 @@ styles:
     orphans: 2
     widows: 2
     marginTop: 0
-    marginBottom: 6
+    marginBottom: 12
   character-dual-right:
     fontFamily: Courier Prime
     fontSize: 12
@@ -145,7 +145,7 @@ styles:
     color: "#111111"
     marginLeft: 282
     width: 150
-    marginTop: 12
+    marginTop: 0
     marginBottom: 0
     keepWithNext: true
   parenthetical-dual-right:
@@ -169,14 +169,14 @@ styles:
     orphans: 2
     widows: 2
     marginTop: 0
-    marginBottom: 6
+    marginBottom: 12
   transition:
     fontFamily: Courier Prime
     fontSize: 12
     lineHeight: 1
     color: "#111111"
     textAlign: right
-    marginTop: 12
+    marginTop: 0
     marginBottom: 12
   intertitle:
     fontFamily: Courier Prime
@@ -184,14 +184,14 @@ styles:
     lineHeight: 1
     color: "#111111"
     textAlign: center
-    marginTop: 10
+    marginTop: 0
     marginBottom: 10
   insert:
     fontFamily: Courier Prime
     fontSize: 12
     lineHeight: 1
     color: "#111111"
-    marginTop: 12
+    marginTop: 0
     marginBottom: 12
   more:
     fontFamily: Courier Prime
@@ -210,5 +210,5 @@ styles:
     color: "#111111"
     borderTopWidth: 0.7
     borderTopColor: "#111111"
-    marginTop: 12
+    marginTop: 0
     marginBottom: 12

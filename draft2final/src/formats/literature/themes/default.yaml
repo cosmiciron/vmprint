@@ -31,19 +31,19 @@ styles:
     justifyEngine: legacy
   heading-1:
     fontSize: 20.8
-    marginTop: 18
+    marginTop: 9.4
     marginBottom: 9
     hyphenation: "off"
     textAlign: left
   heading-2:
     fontSize: 16.2
-    marginTop: 14
+    marginTop: 5.4
     marginBottom: 7
     hyphenation: "off"
     textAlign: left
   heading-3:
     fontSize: 13.9
-    marginTop: 14
+    marginTop: 5.4
     marginBottom: 6
     hyphenation: "off"
     textAlign: left
@@ -61,7 +61,7 @@ styles:
     paddingLeft: 18
     paddingRight: 8
     borderLeftWidth: 0
-    marginTop: 8
+    marginTop: 0
     marginBottom: 9
   blockquote-attribution:
     textAlign: right
@@ -74,7 +74,7 @@ styles:
     hyphenation: "off"
     textAlign: left
     fontSize: 12.4
-    marginTop: 12
+    marginTop: 3.4
     marginBottom: 5
   references-item:
     textAlign: left
@@ -107,7 +107,8 @@ styles:
   definition-term:
     fontStyle: italic
     fontWeight: 700
-    marginTop: 5.5
+    keepWithNext: true
+    marginTop: 0
     marginBottom: 1.2
   definition-desc:
     paddingLeft: 14

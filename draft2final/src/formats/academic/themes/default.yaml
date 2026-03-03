@@ -47,7 +47,7 @@ styles:
     fontWeight: 700
     hyphenation: "off"
     textAlign: left
-    marginTop: 26
+    marginTop: 18
     marginBottom: 8
 
   # H3 = subsection headings — bold italic per Chicago/APA convention.
@@ -58,14 +58,14 @@ styles:
     fontStyle: italic
     hyphenation: "off"
     textAlign: left
-    marginTop: 18
+    marginTop: 10
     marginBottom: 5
 
   # ── Structural elements ────────────────────────────────────────────────────
   thematic-break:
     borderTopWidth: 0.6
     borderTopColor: "#4a4a4a"
-    marginTop: 14
+    marginTop: 6
     marginBottom: 14
 
   citation-marker:
@@ -84,7 +84,7 @@ styles:
     paddingBottom: 5
     paddingLeft: 7
     paddingRight: 7
-    marginTop: 7
+    marginTop: 0
     marginBottom: 8
   inline-code:
     fontFamily: Cousine
@@ -99,7 +99,7 @@ styles:
     paddingLeft: 18
     paddingRight: 18
     borderLeftWidth: 0
-    marginTop: 8
+    marginTop: 0
     marginBottom: 9
   blockquote-attribution:
     textAlign: right
@@ -114,7 +114,7 @@ styles:
     fontSize: 14
     fontWeight: 700
     lineHeight: 1.25
-    marginTop: 26
+    marginTop: 18
     marginBottom: 8
   references-item:
     textAlign: left
@@ -126,7 +126,8 @@ styles:
     marginBottom: 4
   definition-term:
     fontWeight: 700
-    marginTop: 8
+    keepWithNext: true
+    marginTop: 0
     marginBottom: 1.5
   definition-desc:
     paddingLeft: 14

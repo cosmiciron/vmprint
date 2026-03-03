@@ -67,5 +67,5 @@ These features represent the pinnacle of digital typesetting but are currently d
 
 ## 5. Explicit Non-Goals
 To keep VMPrint fast and predictable, we intentionally diverge from some standard web layout behaviors:
-* **CSS Margin Collapsing:** VMPrint prefers deterministic, additive block margins for predictable DTP-style layout. Full CSS margin-collapse semantics are not a primary goal.
+* **CSS Margin Collapsing:** VMPrint uses DTP-style additive block margins — `gap(A→B) = A.marginBottom + B.marginTop`. Both values are always honored independently. This matches InDesign and TeX conventions and gives format authors transparent control over spacing on each side of an element. CSS-style collapse (where adjacent margins merge to the larger value) is not implemented and is not a goal.
 * **DOM Emulation:** We are a layout VM, not a headless browser. We do not support HTML/CSS input directly.

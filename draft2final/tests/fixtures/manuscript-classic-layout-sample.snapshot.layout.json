@@ -104,7 +104,7 @@
       {
         "type": "chapter-heading",
         "x": 72,
-        "y": 96,
+        "y": 288,
         "w": 468,
         "h": 25.476563,
         "lines": [
@@ -122,7 +122,7 @@
       {
         "type": "paragraph-first",
         "x": 72,
-        "y": 145.476563,
+        "y": 337.476563,
         "w": 468,
         "h": 25.476563,
         "lines": [
@@ -145,16 +145,16 @@
         ]
       },
       {
-        "type": "literary-quote",
-        "x": 120,
-        "y": 182.953125,
-        "w": 372,
+        "type": "blockquote",
+        "x": 108,
+        "y": 374.953125,
+        "w": 432,
         "h": 25.476563,
         "lines": [
           [
             {
-              "text": "The page remembers each hand that held it.",
-              "width": 302.203125,
+              "text": "[quote] The page remembers each hand that held it.",
+              "width": 359.765625,
               "ascent": 781.25,
               "descent": 341.796875,
               "fontFamily": "Courier Prime"

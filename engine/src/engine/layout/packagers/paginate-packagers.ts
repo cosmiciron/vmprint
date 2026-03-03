@@ -15,7 +15,7 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
 
     const pageLimit = contextBase.pageHeight - margins.bottom;
     const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
-        Math.max(prevAfter, marginTop);
+        prevAfter + marginTop;
 
     const pushNewPage = () => {
         if (currentPageBoxes.length > 0) {

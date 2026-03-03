@@ -111,7 +111,7 @@ function testBlockquotePreservesInlineStyling(): void {
   const serialized = JSON.stringify(quotes);
   assert.ok(serialized.includes('"fontWeight":700'), 'expected bold style in blockquote');
   assert.equal(ir.styles['inline-code']?.fontFamily, 'Cousine');
-  assert.ok(serialized.includes('[1]'), 'expected citation marker in blockquote');
+  assert.ok(serialized.includes('"baselineShift":3') && serialized.includes('"content":"1"'), 'expected superscript citation marker in blockquote');
 }
 
 function testReferenceStyleLinksCompileToCitationsAndReferences(): void {
@@ -125,8 +125,8 @@ function testReferenceStyleLinksCompileToCitationsAndReferences(): void {
   const ir = compileToVmprint(markdown, inputPath).ir;
   const serialized = JSON.stringify(ir.elements);
 
-  assert.ok(serialized.includes('[1]'), 'expected first citation marker');
-  assert.ok(serialized.includes('[2]'), 'expected second citation marker');
+  assert.ok(serialized.includes('"content":"1"'), 'expected first superscript citation marker');
+  assert.ok(serialized.includes('"content":"2"'), 'expected second superscript citation marker');
   assert.ok(serialized.includes('"references-heading"'), 'expected references heading');
   assert.ok(serialized.includes('1. OpenAI. '), 'expected first references prefix');
   assert.ok(serialized.includes('"linkTarget":"https://openai.com"'), 'expected clickable first reference URL');

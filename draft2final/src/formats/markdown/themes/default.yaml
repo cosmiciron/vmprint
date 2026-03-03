@@ -26,21 +26,21 @@ styles:
     fontSize: 25
     lineHeight: 1.2
     color: "#0f3f63"
-    marginTop: 24
+    marginTop: 14.4
     marginBottom: 12
     hyphenation: "off"
     textAlign: left
   heading-2:
     fontSize: 19.2
     color: "#14527f"
-    marginTop: 20
+    marginTop: 10.4
     marginBottom: 8.5
     hyphenation: "off"
     textAlign: left
   heading-3:
     fontSize: 15.6
     color: "#1c5e8f"
-    marginTop: 17
+    marginTop: 7.4
     marginBottom: 7
     hyphenation: "off"
     textAlign: left
@@ -67,7 +67,7 @@ styles:
     paddingBottom: 7
     paddingLeft: 10
     paddingRight: 10
-    marginTop: 9
+    marginTop: 0
     marginBottom: 11
   blockquote:
     textAlign: left
@@ -78,7 +78,7 @@ styles:
     borderLeftWidth: 1.6
     borderLeftColor: "#628bb0"
     backgroundColor: "#f7fafd"
-    marginTop: 9
+    marginTop: 0
     marginBottom: 11
   blockquote-attribution:
     textAlign: right
@@ -89,7 +89,7 @@ styles:
   thematic-break:
     borderTopWidth: 0.8
     borderTopColor: "#5a7c9e"
-    marginTop: 16
+    marginTop: 6.4
     marginBottom: 16
   citation-marker:
     fontSize: 8.4
@@ -101,7 +101,7 @@ styles:
     fontSize: 13.8
     color: "#0f3f63"
     hyphenation: "off"
-    marginTop: 18
+    marginTop: 8.4
     marginBottom: 6
   footnotes-item:
     textAlign: left
@@ -115,7 +115,7 @@ styles:
     fontSize: 13.8
     color: "#0f3f63"
     hyphenation: "off"
-    marginTop: 18
+    marginTop: 8.4
     marginBottom: 6
   references-item:
     textAlign: left
@@ -128,7 +128,8 @@ styles:
   definition-term:
     fontWeight: 700
     color: "#0f3f63"
-    marginTop: 6
+    keepWithNext: true
+    marginTop: 0
     marginBottom: 1.4
   definition-desc:
     paddingLeft: 14

@@ -151,7 +151,11 @@ function assertMeasuredLinesFit(pages: Page[], fixtureName: string): void {
             const borderLeft = LayoutUtils.validateUnit(style.borderLeftWidth ?? style.borderWidth ?? 0);
             const borderRight = LayoutUtils.validateUnit(style.borderRightWidth ?? style.borderWidth ?? 0);
             const contentWidth = box.w - paddingLeft - paddingRight - borderLeft - borderRight;
-            const epsilon = 0.75;
+            // noLineStart closing punctuation (colons, periods, etc.) is intentionally
+            // appended to the end of an overflowing line rather than widowed at the start
+            // of the next line. This can cause a single character's width of overflow.
+            // 4pt covers typical closing punctuation at standard font sizes.
+            const epsilon = 4;
 
             box.lines.forEach((line, lineIdx) => {
                 let lineWidth = 0;

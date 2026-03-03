@@ -1,4 +1,5 @@
 ﻿import type { DocumentInput, Element } from '@vmprint/engine';
+import { Draft2FinalError } from '../../errors';
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
@@ -47,11 +48,41 @@ function deriveShortTitle(elements: Element[]): string {
   return raw.length <= 30 ? raw : `${raw.slice(0, 27)}...`;
 }
 
+const UNSUPPORTED_FOOTNOTE_MODES = ['end-of-page'];
+
 export function validateManuscriptCompliance(
   ir: DocumentInput,
   config: Record<string, unknown>
 ): void {
   const manuscript = asRecord(config.manuscript);
+
+  if (asBool(manuscript.strict, false)) {
+    const footnotesCfg = asRecord(manuscript.footnotes);
+    const footnoteMode = asString(footnotesCfg.mode, '');
+    if (footnoteMode && UNSUPPORTED_FOOTNOTE_MODES.includes(footnoteMode)) {
+      throw new Draft2FinalError(
+        'format',
+        'manuscript',
+        `Manuscript strict mode: footnote mode "${footnoteMode}" is not supported. Supported modes: endnotes.`,
+        2
+      );
+    }
+
+    const coverPageCfg = asRecord(manuscript.coverPage);
+    const requireFields = Array.isArray(coverPageCfg.requireFields) ? coverPageCfg.requireFields as string[] : [];
+    if (requireFields.length > 0) {
+      const coverFields = collectCoverFields(ir.elements || []);
+      const missing = requireFields.filter((f) => !coverFields[f]);
+      if (missing.length > 0) {
+        throw new Draft2FinalError(
+          'format',
+          'manuscript',
+          `Missing required manuscript cover fields: ${missing.join(', ')}`,
+          2
+        );
+      }
+    }
+  }
   const coverFields = collectCoverFields(ir.elements || []);
 
   const runningHeader = asRecord(manuscript.runningHeader);

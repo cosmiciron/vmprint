@@ -57,7 +57,7 @@
       {
         "type": "heading-2",
         "x": 72,
-        "y": 159.82,
+        "y": 151.82,
         "w": 468,
         "h": 19.6,
         "lines": [
@@ -75,7 +75,7 @@
       {
         "type": "list-item-ordered-0",
         "x": 72,
-        "y": 187.42,
+        "y": 179.42,
         "w": 468,
         "h": 17.82,
         "lines": [
@@ -93,7 +93,7 @@
       {
         "type": "list-item-ordered-0",
         "x": 72,
-        "y": 205.24,
+        "y": 197.24,
         "w": 468,
         "h": 17.82,
         "lines": [
@@ -111,7 +111,7 @@
       {
         "type": "list-item-ordered-0",
         "x": 72,
-        "y": 223.06,
+        "y": 215.06,
         "w": 468,
         "h": 17.82,
         "lines": [
@@ -129,7 +129,7 @@
       {
         "type": "code-block",
         "x": 72,
-        "y": 248.88,
+        "y": 232.88,
         "w": 468,
         "h": 63.516,
         "lines": [
@@ -165,7 +165,7 @@
       {
         "type": "definition-term",
         "x": 72,
-        "y": 320.396,
+        "y": 304.396,
         "w": 468,
         "h": 17.82,
         "lines": [
@@ -183,7 +183,7 @@
       {
         "type": "definition-desc",
         "x": 72,
-        "y": 339.716,
+        "y": 323.716,
         "w": 468,
         "h": 17.82,
         "lines": [
@@ -201,7 +201,7 @@
       {
         "type": "blockquote",
         "x": 72,
-        "y": 365.536,
+        "y": 348.536,
         "w": 468,
         "h": 16.96,
         "lines": [
@@ -219,14 +219,14 @@
       {
         "type": "blockquote",
         "x": 72,
-        "y": 391.496,
+        "y": 374.496,
         "w": 468,
         "h": 16.96,
         "lines": [
           [
             {
-              "text": "-- Editorial Systems Group",
-              "width": 112.1904,
+              "text": "— Editorial Systems Group",
+              "width": 115.8156,
               "ascent": 900,
               "descent": 250,
               "fontFamily": "Caladea"
@@ -237,7 +237,7 @@
       {
         "type": "thematic-break",
         "x": 72,
-        "y": 422.456,
+        "y": 400.456,
         "w": 468,
         "h": 0.6,
         "lines": []
@@ -245,7 +245,7 @@
       {
         "type": "references-heading",
         "x": 72,
-        "y": 449.056,
+        "y": 419.056,
         "w": 468,
         "h": 19.6,
         "lines": [
@@ -263,7 +263,7 @@
       {
         "type": "references-item",
         "x": 72,
-        "y": 476.656,
+        "y": 446.656,
         "w": 468,
         "h": 16.328,
         "lines": [

@@ -27,7 +27,7 @@ styles:
     fontSize: 27
     lineHeight: 1.2
     color: "#101622"
-    marginTop: 38
+    marginTop: 26.2
     marginBottom: 22
     hyphenation: "off"
     textAlign: center
@@ -47,7 +47,7 @@ styles:
     fontSize: 12
     fontWeight: 700
     color: "#2f3d52"
-    marginTop: 30
+    marginTop: 18.2
     marginBottom: 12
     hyphenation: "off"
     textAlign: left
@@ -56,7 +56,7 @@ styles:
     fontSize: 10.8
     fontWeight: 700
     color: "#506079"
-    marginTop: 20
+    marginTop: 8.2
     marginBottom: 8
     hyphenation: "off"
     textAlign: left
@@ -94,7 +94,7 @@ styles:
     paddingBottom: 8
     paddingLeft: 11
     paddingRight: 11
-    marginTop: 10
+    marginTop: 0
     marginBottom: 14
   blockquote:
     textAlign: left
@@ -108,7 +108,7 @@ styles:
     paddingRight: 18
     borderLeftWidth: 0
     backgroundColor: "#ffffff"
-    marginTop: 14
+    marginTop: 2.2
     marginBottom: 16
   blockquote-attribution:
     textAlign: right
@@ -124,12 +124,13 @@ styles:
     borderTopWidth: 0.45
     borderTopColor: "#aeb9ca"
     opacity: 0.9
-    marginTop: 28
+    marginTop: 16.2
     marginBottom: 24
   definition-term:
     fontWeight: 700
     color: "#2f3d52"
-    marginTop: 8
+    keepWithNext: true
+    marginTop: 0
     marginBottom: 2
   definition-desc:
     paddingLeft: 14
