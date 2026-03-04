@@ -46,6 +46,8 @@
 import { Box, BoxImagePayload, Element, ElementStyle, RichLine, StoryFloatAlign, StoryLayoutDirective, StoryWrapMode } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { LayoutUtils } from '../layout-utils';
+import { buildPackagerForElement } from './create-packagers';
+import { FlowBoxPackager } from './flow-box-packager';
 import { LayoutBox, PackagerContext, PackagerUnit } from './packager-types';
 import { OccupiedRect, SpatialMap } from './spatial-map';
 
@@ -101,6 +103,31 @@ type FullPourResult = {
     allBoxes: Box[];
 };
 
+type StoryColumnRegion = {
+    index: number;
+    x: number;
+    w: number;
+    h: number;
+};
+
+type MultiColumnContinuation = {
+    continuationElement: Element | null;
+    nextChildIndex: number;
+    carryOvers: CarryOverObstacle[];
+    consumedStoryHeight: number;
+};
+
+type MultiColumnPourResult = {
+    registeredObstacles: OccupiedRect[];
+    occupiedHeight: number;
+    totalHeight: number;
+    allBoxes: Box[];
+    hasOverflow: boolean;
+    continuation: MultiColumnContinuation | null;
+};
+
+type StoryPourResult = FullPourResult | MultiColumnPourResult;
+
 // ---------------------------------------------------------------------------
 // FrozenStoryPackager – holds pre-split partA boxes
 // ---------------------------------------------------------------------------
@@ -146,8 +173,9 @@ export class StoryPackager implements PackagerUnit {
      */
     private readonly storyYOffset: number;
 
-    private lastResult: FullPourResult | null = null;
+    private lastResult: StoryPourResult | null = null;
     private lastAvailableWidth: number = -1;
+    private lastAvailableHeight: number = -1;
 
     readonly pageBreakBefore: boolean = false;
     readonly keepWithNext: boolean = false;
@@ -168,13 +196,22 @@ export class StoryPackager implements PackagerUnit {
 
     // -- PackagerUnit ---------------------------------------------------------
 
-    emitBoxes(availableWidth: number, _availableHeight: number, context: PackagerContext): LayoutBox[] {
-        if (this.lastAvailableWidth === availableWidth && this.lastResult) {
+    emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] {
+        if (
+            this.lastAvailableWidth === availableWidth &&
+            this.lastAvailableHeight === availableHeight &&
+            this.lastResult
+        ) {
             return cloneBoxes(this.lastResult.allBoxes);
         }
-        const result = this.pourAll(availableWidth, context.margins);
+        const columnConfig = this.getStoryColumnConfig();
+        const result =
+            columnConfig.columns > 1
+                ? this.pourColumns(availableWidth, availableHeight, context.margins, columnConfig.columns, columnConfig.gutter, columnConfig.balance)
+                : this.pourAll(availableWidth, context.margins);
         this.lastResult = result;
         this.lastAvailableWidth = availableWidth;
+        this.lastAvailableHeight = availableHeight;
         return cloneBoxes(result.allBoxes);
     }
 
@@ -194,8 +231,16 @@ export class StoryPackager implements PackagerUnit {
             ? this.lastAvailableWidth
             : (context.pageWidth - context.margins.left - context.margins.right);
 
-        const result = this.lastResult ?? this.pourAll(availableWidth, context.margins);
-        return this.splitResult(result, availableHeight, availableWidth, context.margins);
+        const columnConfig = this.getStoryColumnConfig();
+        const result = this.lastResult ?? (
+            columnConfig.columns > 1
+                ? this.pourColumns(availableWidth, availableHeight, context.margins, columnConfig.columns, columnConfig.gutter, columnConfig.balance)
+                : this.pourAll(availableWidth, context.margins)
+        );
+        if (columnConfig.columns > 1) {
+            return this.splitColumns(result as MultiColumnPourResult);
+        }
+        return this.splitResult(result as FullPourResult, availableHeight, availableWidth, context.margins);
     }
 
     // -- Core pour ------------------------------------------------------------
@@ -379,7 +424,8 @@ export class StoryPackager implements PackagerUnit {
         availableWidth: number,
         margins: { left: number },
         storyMap: SpatialMap,
-        cursorY: number
+        cursorY: number,
+        xOffset: number = 0
     ): PlacedTextElement | null {
         // Shape gives us style, meta, and margin values.
         const flowBox = (this.processor as any).shapeElement(
@@ -511,7 +557,7 @@ export class StoryPackager implements PackagerUnit {
 
         const box: Box = {
             type: element.type,
-            x: margins.left,
+            x: margins.left + xOffset,
             y: elementStartY,
             w: availableWidth + insetH,
             h: contentH,
@@ -548,6 +594,461 @@ export class StoryPackager implements PackagerUnit {
     }
 
     // -- Split ---------------------------------------------------------------
+
+    private getStoryColumnConfig(): { columns: number; gutter: number; balance: boolean } {
+        const rawColumns = (this.storyElement as any).columns ?? this.storyElement.properties?.columns;
+        const rawGutter = (this.storyElement as any).gutter ?? this.storyElement.properties?.gutter;
+        const rawBalance = (this.storyElement as any).balance ?? this.storyElement.properties?.balance;
+        const columns = Math.max(1, Math.floor(Number(rawColumns ?? 1) || 1));
+        const gutter = Math.max(0, Number(rawGutter ?? 0) || 0);
+        const balance = rawBalance === true || rawBalance === 'true' || rawBalance === 1;
+        return { columns, gutter, balance };
+    }
+
+    private buildColumnRegions(
+        availableWidth: number,
+        availableHeight: number,
+        columns: number,
+        gutter: number
+    ): StoryColumnRegion[] {
+        const n = Math.max(1, Math.floor(columns));
+        const h = Math.max(0, Number(availableHeight) || 0);
+        if (n <= 1 || availableWidth <= 0) {
+            return [{ index: 0, x: 0, w: Math.max(0, availableWidth), h }];
+        }
+
+        const maxGutter = n > 1 ? (availableWidth / (n - 1)) : 0;
+        const normalizedGutter = Math.min(Math.max(0, gutter), maxGutter);
+        const totalGutter = normalizedGutter * (n - 1);
+        const baseW = Math.max(1, (availableWidth - totalGutter) / n);
+        const regions: StoryColumnRegion[] = [];
+        let x = 0;
+        for (let idx = 0; idx < n; idx++) {
+            const remaining = Math.max(1, availableWidth - x - normalizedGutter * Math.max(0, n - idx - 1));
+            const w = idx === n - 1 ? remaining : Math.max(1, baseW);
+            regions.push({ index: idx, x, w, h });
+            x += w + normalizedGutter;
+        }
+        return regions;
+    }
+
+    private projectObstacleToRegion(rect: OccupiedRect, region: StoryColumnRegion): OccupiedRect | null {
+        const left = Math.max(region.x, rect.x);
+        const right = Math.min(region.x + region.w, rect.x + rect.w);
+        if (right <= left) return null;
+        return {
+            x: left - region.x,
+            y: rect.y,
+            w: right - left,
+            h: rect.h,
+            wrap: rect.wrap,
+            gap: rect.gap,
+            gapTop: rect.gapTop,
+            gapBottom: rect.gapBottom
+        };
+    }
+
+    private createRegionMap(region: StoryColumnRegion, obstacles: OccupiedRect[]): SpatialMap {
+        const map = new SpatialMap();
+        for (const obs of obstacles) {
+            const projected = this.projectObstacleToRegion(obs, region);
+            if (!projected) continue;
+            map.register(projected);
+        }
+        return map;
+    }
+
+    private pourColumns(
+        availableWidth: number,
+        availableHeight: number,
+        margins: { left: number; right: number; top: number; bottom: number },
+        columns: number,
+        gutter: number,
+        balance: boolean = false
+    ): MultiColumnPourResult {
+        if (!Number.isFinite(availableHeight) || availableHeight <= 0) {
+            const single = this.pourAll(availableWidth, margins);
+            return {
+                registeredObstacles: single.registeredObstacles,
+                occupiedHeight: single.totalHeight,
+                totalHeight: single.totalHeight,
+                allBoxes: single.allBoxes,
+                hasOverflow: false,
+                continuation: null
+            };
+        }
+
+        // --- Column balancing ------------------------------------------------
+        // When balance is true, pre-measure the total content height at column
+        // width, then cap each column at ceil(totalH / numColumns).  This
+        // distributes content evenly (CSS `column-fill: balance` semantics)
+        // instead of packing everything into the first column.
+        let effectiveHeight = availableHeight;
+        if (balance) {
+            const tempRegions = this.buildColumnRegions(availableWidth, 1, columns, gutter);
+            if (tempRegions.length > 1) {
+                const colW = tempRegions[0].w;
+                const probe = this.pourAll(colW, { left: 0, right: 0, top: 0, bottom: 0 });
+                if (probe.totalHeight > 0) {
+                    // Add a 5 % buffer so margin / orphan rounding does not
+                    // cause the last column to silently overflow by one line.
+                    const target = Math.ceil((probe.totalHeight / columns) * 1.05);
+                    effectiveHeight = Math.max(1, Math.min(availableHeight, target));
+                }
+            }
+        }
+
+        let regions = this.buildColumnRegions(availableWidth, effectiveHeight, columns, gutter);
+        if (regions.length <= 1) {
+            const single = this.pourAll(availableWidth, margins);
+            return {
+                registeredObstacles: single.registeredObstacles,
+                occupiedHeight: single.totalHeight,
+                totalHeight: single.totalHeight,
+                allBoxes: single.allBoxes,
+                hasOverflow: false,
+                continuation: null
+            };
+        }
+
+        const children = this.storyElement.children ?? [];
+        const registeredObstacles: OccupiedRect[] = [];
+        const allObstacles: OccupiedRect[] = [];
+        const allBoxes: Box[] = [];
+        const imageMetricsCache = new Map<number, { img: BoxImagePayload; w: number; h: number } | null>();
+        const maxRegionWidth = Math.max(...regions.map((r) => r.w));
+
+        const resolveImageMetrics = (child: Element, index: number): { img: BoxImagePayload; w: number; h: number } | null => {
+            if (!child.properties?.image) return null;
+            if (imageMetricsCache.has(index)) return imageMetricsCache.get(index)!;
+            const imgData = this.resolveImage(child);
+            if (!imgData) {
+                imageMetricsCache.set(index, null);
+                return null;
+            }
+            const { w, h } = this.measureImageBox(child, imgData, maxRegionWidth);
+            const cached = { img: imgData, w, h };
+            imageMetricsCache.set(index, cached);
+            return cached;
+        };
+
+        for (const co of this.initialObstacles) {
+            const rect: OccupiedRect = {
+                x: co.x,
+                y: 0,
+                w: co.w,
+                h: co.remainingH,
+                wrap: co.wrap,
+                gap: co.gap,
+                gapTop: co.gapTop,
+                gapBottom: co.gapBottom
+            };
+            allObstacles.push(rect);
+            registeredObstacles.push(rect);
+        }
+
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            const layout = child.properties?.layout as StoryLayoutDirective | undefined;
+            if (layout?.mode !== 'story-absolute') continue;
+            if (!child.properties?.image) continue;
+            if (layout.wrap === 'none') continue;
+
+            const metrics = resolveImageMetrics(child, i);
+            if (!metrics) continue;
+            const { w: imgW, h: imgH } = metrics;
+            const localY = Math.max(0, Number(layout.y ?? 0)) - this.storyYOffset;
+            if (localY + imgH < 0 || localY > availableHeight) continue;
+
+            const rect: OccupiedRect = {
+                x: Math.max(0, Number(layout.x ?? 0)),
+                y: Math.max(0, localY),
+                w: imgW,
+                h: imgH,
+                wrap: layout.wrap ?? 'around',
+                gap: Math.max(0, Number(layout.gap ?? 0))
+            };
+            allObstacles.push(rect);
+            registeredObstacles.push(rect);
+        }
+
+        let regionIndex = 0;
+        let cursorY = 0;
+        let hasOverflow = false;
+        let continuationElement: Element | null = null;
+        let nextChildIndex = children.length;
+
+        const goNextRegion = (): boolean => {
+            if (regionIndex + 1 >= regions.length) return false;
+            regionIndex += 1;
+            cursorY = 0;
+            return true;
+        };
+
+        outer: for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            const layout = child.properties?.layout as StoryLayoutDirective | undefined;
+
+            if (layout?.mode === 'story-absolute') {
+                const metrics = resolveImageMetrics(child, i);
+                if (!metrics) continue;
+                const { img: imgData, w: imgW, h: imgH } = metrics;
+                const localY = Math.max(0, Number(layout.y ?? 0)) - this.storyYOffset;
+                if (localY + imgH < 0 || localY > availableHeight) continue;
+                const box = this.buildImageBox(
+                    child,
+                    margins.left + Math.max(0, Number(layout.x ?? 0)),
+                    Math.max(0, localY),
+                    imgW,
+                    imgH,
+                    imgData,
+                    i
+                );
+                allBoxes.push(box);
+                continue;
+            }
+
+            if (layout?.mode === 'float' && child.properties?.image) {
+                const metrics = resolveImageMetrics(child, i);
+                if (!metrics) continue;
+                const { img: imgData, w: imgW, h: imgH } = metrics;
+
+                while (true) {
+                    const region = regions[regionIndex];
+                    const regionMap = this.createRegionMap(region, allObstacles);
+                    const anchorY = regionMap.topBottomClearY(cursorY);
+                    if (anchorY > region.h + 0.1) {
+                        if (goNextRegion()) continue;
+                        hasOverflow = true;
+                        nextChildIndex = i;
+                        break outer;
+                    }
+
+                    const align: StoryFloatAlign = layout.align ?? 'left';
+                    const localX = resolveFloatX(align, Math.min(imgW, region.w), region.w);
+                    const x = region.x + localX;
+                    const wrap: StoryWrapMode = layout.wrap ?? 'around';
+                    const gap = Math.max(0, Number(layout.gap ?? 0));
+                    if (wrap !== 'none') {
+                        const rect: OccupiedRect = { x, y: anchorY, w: Math.min(imgW, region.w), h: imgH, wrap, gap };
+                        allObstacles.push(rect);
+                        registeredObstacles.push(rect);
+                    }
+
+                    const box = this.buildImageBox(child, margins.left + x, anchorY, Math.min(imgW, region.w), imgH, imgData, i);
+                    allBoxes.push(box);
+                    cursorY = anchorY;
+                    break;
+                }
+                continue;
+            }
+
+            if (child.properties?.image && !layout?.mode) {
+                const metrics = resolveImageMetrics(child, i);
+                if (!metrics) continue;
+                const { img: imgData, w: imgW, h: imgH } = metrics;
+                while (true) {
+                    const region = regions[regionIndex];
+                    const regionMap = this.createRegionMap(region, allObstacles);
+                    const top = regionMap.topBottomClearY(cursorY);
+                    const flowBox = (this.processor as any).shapeElement(
+                        child, { path: [this.storyIndex, i] }
+                    );
+                    const marginTop = Math.max(0, flowBox.marginTop);
+                    const marginBottom = Math.max(0, flowBox.marginBottom);
+                    const y = top + marginTop;
+                    if (y + imgH + marginBottom <= region.h + 0.1) {
+                        const box = this.buildImageBox(child, margins.left + region.x, y, Math.min(imgW, region.w), imgH, imgData, i);
+                        allBoxes.push(box);
+                        cursorY = y + imgH + marginBottom;
+                        break;
+                    }
+                    if (goNextRegion()) continue;
+                    hasOverflow = true;
+                    nextChildIndex = i;
+                    break outer;
+                }
+                continue;
+            }
+
+            // ----------------------------------------------------------
+            // Resolve child to a PackagerUnit via the shared factory.
+            //
+            // FlowBoxPackager (plain text/box) keeps the SpatialMap-aware
+            // pourTextChild path so obstacle wrapping still works.
+            //
+            // Any other packager (DropCap, Table, nested Story, …) uses the
+            // generic column-adjusted emitBoxes path — no special-casing per
+            // element type required.
+            // ----------------------------------------------------------
+            const pkg = buildPackagerForElement(child, i, this.processor);
+
+            if (!(pkg instanceof FlowBoxPackager)) {
+                opaqueLoop: while (true) {
+                    const region = regions[regionIndex];
+                    const colContext: PackagerContext = {
+                        processor: this.processor,
+                        pageIndex: 0,
+                        cursorY,
+                        margins: { ...margins, left: margins.left + region.x },
+                        pageWidth: margins.left + availableWidth + margins.right,
+                        pageHeight: availableHeight
+                    };
+                    const boxes = (pkg.emitBoxes(region.w, region.h - cursorY, colContext) || []) as Box[];
+                    for (const b of boxes) b.y = (b.y || 0) + cursorY;
+                    const cursorAfter = cursorY + pkg.getRequiredHeight();
+                    if (cursorAfter <= region.h + 0.1) {
+                        for (const b of boxes) allBoxes.push(b);
+                        cursorY = cursorAfter;
+                        break opaqueLoop;
+                    }
+                    if (goNextRegion()) continue opaqueLoop;
+                    hasOverflow = true;
+                    nextChildIndex = i;
+                    break outer;
+                }
+                continue;
+            }
+
+            let workingElement: Element | null = child;
+            while (workingElement) {
+                const region = regions[regionIndex];
+                const regionMap = this.createRegionMap(region, allObstacles);
+                const placed = this.pourTextChild(
+                    workingElement,
+                    i,
+                    region.w,
+                    { left: margins.left },
+                    regionMap,
+                    cursorY,
+                    region.x
+                );
+
+                if (!placed) break;
+                if (placed.cursorAfter <= region.h + 0.1) {
+                    allBoxes.push(placed.box);
+                    cursorY = placed.cursorAfter;
+                    break;
+                }
+
+                let k = -1;
+                for (let j = 0; j < placed.lines.length; j++) {
+                    const yOff = placed.lineYOffsets.length > j ? placed.lineYOffsets[j] : j * placed.uniformLH;
+                    const lineAbsBottom = placed.topY + yOff + placed.uniformLH;
+                    if (lineAbsBottom <= region.h + 0.1) k = j;
+                }
+
+                if (k >= 0) {
+                    const partialYOff = placed.lineYOffsets.length > k ? placed.lineYOffsets[k] : k * placed.uniformLH;
+                    const partialContentH = partialYOff + placed.uniformLH + placed.insetV;
+                    allBoxes.push({
+                        ...placed.box,
+                        h: partialContentH,
+                        lines: placed.lines.slice(0, k + 1),
+                        properties: {
+                            ...(placed.box.properties || {}),
+                            _lineYOffsets: placed.lineYOffsets.slice(0, k + 1),
+                            _lineOffsets: placed.lineOffsets.slice(0, k + 1),
+                            _lineWidths: placed.lineWidths.slice(0, k + 1),
+                            _isLastLine: false
+                        }
+                    });
+                    workingElement = this.sliceSourceElement(workingElement, placed.lines, k + 1);
+                    if (goNextRegion()) continue;
+                    hasOverflow = true;
+                    continuationElement = workingElement;
+                    nextChildIndex = i + 1;
+                    break outer;
+                }
+
+                if (goNextRegion()) continue;
+                hasOverflow = true;
+                continuationElement = workingElement;
+                nextChildIndex = i;
+                break outer;
+            }
+        }
+
+        let occupiedHeight = 0;
+        for (const box of allBoxes) {
+            occupiedHeight = Math.max(occupiedHeight, Number(box.y || 0) + Number(box.h || 0));
+        }
+        for (const obs of registeredObstacles) {
+            occupiedHeight = Math.max(occupiedHeight, obs.y + obs.h + (obs.gapBottom ?? obs.gap));
+        }
+        occupiedHeight = Math.min(Math.max(0, occupiedHeight), availableHeight);
+
+        const carryOvers: CarryOverObstacle[] = [];
+        if (hasOverflow) {
+            for (const obs of registeredObstacles) {
+                const bottom = obs.y + obs.h;
+                if (bottom > availableHeight && obs.y < availableHeight) {
+                    carryOvers.push({
+                        x: obs.x,
+                        w: obs.w,
+                        remainingH: Math.max(0, bottom - availableHeight),
+                        wrap: obs.wrap,
+                        gap: obs.gap,
+                        gapTop: 0,
+                        gapBottom: obs.gap
+                    });
+                }
+            }
+        }
+
+        const continuation: MultiColumnContinuation | null = hasOverflow
+            ? {
+                continuationElement,
+                nextChildIndex,
+                carryOvers,
+                consumedStoryHeight: regions.length * availableHeight
+            }
+            : null;
+
+        return {
+            registeredObstacles,
+            occupiedHeight,
+            totalHeight: hasOverflow ? (availableHeight + 1) : occupiedHeight,
+            allBoxes,
+            hasOverflow,
+            continuation
+        };
+    }
+
+    private splitColumns(result: MultiColumnPourResult): [PackagerUnit | null, PackagerUnit | null] {
+        if (!result.hasOverflow || !result.continuation) {
+            return [new FrozenStoryPackager(result.allBoxes, result.occupiedHeight), null];
+        }
+        if (result.allBoxes.length === 0) {
+            return [null, this];
+        }
+
+        const children = this.storyElement.children ?? [];
+        const partA = new FrozenStoryPackager(result.allBoxes, result.occupiedHeight);
+        const partBChildren: Element[] = [];
+        if (result.continuation.continuationElement) {
+            partBChildren.push(result.continuation.continuationElement);
+        }
+        for (let i = result.continuation.nextChildIndex; i < children.length; i++) {
+            partBChildren.push(children[i]);
+        }
+        if (partBChildren.length === 0 && result.continuation.carryOvers.length === 0) {
+            return [partA, null];
+        }
+
+        const partBElement: Element = {
+            ...this.storyElement,
+            children: partBChildren
+        };
+        const partB = new StoryPackager(
+            partBElement,
+            this.processor,
+            this.storyIndex,
+            result.continuation.carryOvers,
+            this.storyYOffset + result.continuation.consumedStoryHeight
+        );
+        return [partA, partB];
+    }
 
     private splitResult(
         result: FullPourResult,

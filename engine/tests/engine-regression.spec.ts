@@ -221,6 +221,59 @@ function assertStoryPackagerShowcaseSignals(pages: any[], fixtureName: string): 
     }
 }
 
+function assertStoryMultiColumnSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '15-story-multi-column.json') return;
+    assert.ok(pages.length >= 3, `${fixtureName}: expected at least three pages for 2-col intro + 3-col continuation`);
+
+    const byPrefix = (prefix: string) =>
+        pages.flatMap((page: any, pageIndex: number) =>
+            (page.boxes || [])
+                .filter((box: any) => String(box.meta?.sourceId || '').includes(prefix))
+                .map((box: any) => ({ box, pageIndex }))
+        );
+
+    const mc2 = byPrefix('mc2-').filter((entry: any) => Array.isArray(entry.box.lines) && entry.box.lines.length > 0);
+    const mc3 = byPrefix('mc3-').filter((entry: any) => Array.isArray(entry.box.lines) && entry.box.lines.length > 0);
+    assert.ok(mc2.length > 0, `${fixtureName}: expected text boxes from two-column story`);
+    assert.ok(mc3.length > 0, `${fixtureName}: expected text boxes from three-column continuation story`);
+
+    const page0Mc2 = mc2.filter((entry: any) => entry.pageIndex === 0).map((entry: any) => entry.box);
+    assert.ok(page0Mc2.length > 0, `${fixtureName}: expected two-column story text on page 1`);
+    const mc2X = Array.from(new Set(page0Mc2.map((box: any) => Number(box.x || 0).toFixed(2))));
+    assert.ok(mc2X.length >= 2, `${fixtureName}: expected at least two distinct X anchors for two-column page`);
+
+    const firstMc3Page = Math.min(...mc3.map((entry: any) => entry.pageIndex));
+    assert.ok(firstMc3Page >= 1, `${fixtureName}: expected three-column story to start on page 2+`);
+    const firstMc3Boxes = mc3.filter((entry: any) => entry.pageIndex === firstMc3Page).map((entry: any) => entry.box);
+    const mc3X = Array.from(new Set(firstMc3Boxes.map((box: any) => Number(box.x || 0).toFixed(2))));
+    assert.ok(mc3X.length >= 3, `${fixtureName}: expected at least three distinct X anchors on first three-column page`);
+
+    const mc3Pages = new Set(mc3.map((entry: any) => entry.pageIndex));
+    assert.ok(mc3Pages.size >= 1, `${fixtureName}: expected three-column continuation content to render on continuation pages`);
+
+    const imageObstacleCount = byPrefix('mc3-obstacle-').length + byPrefix('mc2-obstacle-').length;
+    assert.ok(imageObstacleCount >= 3, `${fixtureName}: expected multiple obstacle boxes in column stories`);
+
+    const wrappedVariance = mc3.some((entry: any) => {
+        const widths = entry.box.properties?._lineWidths;
+        if (!Array.isArray(widths) || widths.length < 2) return false;
+        const nums = widths.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n));
+        if (nums.length < 2) return false;
+        return (Math.max(...nums) - Math.min(...nums)) > 6;
+    });
+    assert.equal(wrappedVariance, true, `${fixtureName}: expected visible line-width variance from obstacle wrapping`);
+
+    const textCorpus = pages
+        .flatMap((page: any) => page.boxes || [])
+        .flatMap((box: any) => box.lines || [])
+        .flatMap((line: any[]) => line.map((seg: any) => String(seg.text || '')))
+        .join(' ');
+    const hasSpanish = /equipo editorial/i.test(textCorpus);
+    const hasFrench = /rubrique de service/i.test(textCorpus);
+    assert.equal(hasSpanish, true, `${fixtureName}: expected Spanish-language content in layout output`);
+    assert.equal(hasFrench, true, `${fixtureName}: expected French-language content in layout output`);
+}
+
 function assertDropCapPaginationSignals(pages: any[], fixtureName: string): void {
     if (fixtureName !== '08-dropcap-pagination.json') return;
 
@@ -505,6 +558,15 @@ async function run() {
                 'multi-page story with image floats, story-absolute, and non-uniform line widths',
                 () => {
                     assertStoryPackagerShowcaseSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '15-story-multi-column.json') {
+            check(
+                `${fixture.name} multi-column story signals`,
+                'story emits at least two column anchors on page 1 and continues across pages',
+                () => {
+                    assertStoryMultiColumnSignals(pagesA, fixture.name);
                 }
             );
         }

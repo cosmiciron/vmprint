@@ -36,5 +36,8 @@ for (const { src, dest, label } of destinations) {
     }
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.cpSync(src, dest, { recursive: true });
+    // Write a CJS marker so Node treats these bundled files as CommonJS even
+    // when the CLI package itself declares "type": "module".
+    fs.writeFileSync(path.join(dest, 'package.json'), JSON.stringify({ type: 'commonjs' }, null, 2));
     console.log(`[bundle-implementations] Copied ${label} → dist/bundled`);
 }

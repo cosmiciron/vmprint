@@ -16,13 +16,17 @@ If you generate PDFs with headless browsers or HTML-to-PDF tools, you've accepte
 
 ## Features at a Glance
 
-- Deterministic layout engine with a versioned instruction schema
-- Zero browser or Node.js dependencies — runs anywhere
-- Multilingual text shaping: Latin, CJK, RTL scripts
-- Pluggable font and rendering backends
-- Layout output is JSON — snapshot it, diff it, inspect it
-- Identical PDF output across machines and runtimes
-- 88 KiB core, renders complex documents in milliseconds
+- **Deterministic Layout Engine**: Generates bit-for-bit identical layout across operating systems and runtimes. No more layout drift.
+- **Zero Environment Dependencies**: The 88 KiB core engine requires no headless browser, DOM, or Node.js built-ins. Runs seamlessly in browsers, Node.js, and edge environments like Cloudflare Workers and AWS Lambda.
+- **True Glyph-Based Measurement**: Reads intrinsic OpenType advance widths and kerning pairs from font files. Layout relies on absolute typographic math, not browser approximations.
+- **Fast Performance**: Renders complex, multi-page layouts in milliseconds. Global caches for glyph metrics and text segmentation ensure high throughput for batch pipelines.
+- **Multi-Column & Mixed Layouts**: Native support for DTP-style multi-column story regions. Seamlessly mix single-column headers, three-column articles, and pull-quotes on the same page. Floating obstacles naturally shape text across multiple column boundaries.
+- **Advanced Pagination & Features**: Floating elements, drop caps, widow/orphan control, and cross-page continuation markers.
+- **Complex Table Support**: First-class handling for tables that span multiple pages, including smart row splitting, `colspan`, `rowspan`, and automatically repeated headers.
+- **Publishing-Grade Typography**: Grapheme-accurate line breaking using `Intl.Segmenter`, language-aware hyphenation, and mixed-script text runs with perfect baseline alignment.
+- **JSON-Based Layout Pipeline**: Layout output is a serializable object tree. Pre-compile layouts into JSON to rapidly distribute identical layouts that render instantly at runtime, snapshot them for CI regression testing, or inspect exact sub-point glyph measurements.
+- **Pluggable Architecture**: Swappable font managers and rendering backends (PDF provided). Easily extensible to SVG, Canvas, or custom contexts.
+- **Markdown-to-PDF (`draft2final`)**: Includes a declarative Markdown compiler to instantly output formatted PDFs (Screenplay, Academic, Novel, etc.) without writing a single line of layout code.
 
 ---
 
@@ -139,13 +143,14 @@ await renderer.render(pages, context);
 
 ## What It Can Do
 
-**Pagination**
+**Pagination & Layout**
+- Desktop Publishing (DTP) style multi-column story regions with adjustable gutters
+- Seamless mixed-layout pages (e.g., full-width headers flowing directly into 3-column articles)
 - `keepWithNext`, `pageBreakBefore`, orphan and widow controls
 - Tables that span pages: `colspan`, `rowspan`, row splitting, repeated header rows
-- Drop caps
-- Story zones with float-aware text wrapping
+- Drop caps and continuation markers when content splits across pages
+- Story zones with text wrapping around complex floating obstacles (even spanning across columns)
 - Inline images and rich objects on text baselines
-- Continuation markers when content splits across pages
 
 **Typography and Multilingual**
 

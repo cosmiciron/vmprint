@@ -43,7 +43,7 @@ const LAYOUT_KEYS = new Set([
 ]);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
-const ELEMENT_KEYS = new Set(['type', 'content', 'children', 'properties']);
+const ELEMENT_KEYS = new Set(['type', 'content', 'children', 'columns', 'gutter', 'balance', 'properties']);
 const ELEMENT_PROPERTIES_KEYS = new Set([
     'style',
     'image',
@@ -501,6 +501,20 @@ function validateElementNode(node: unknown, path: string, documentPath: string):
     if (element.content !== undefined && typeof element.content !== 'string') {
         contractError(documentPath, `${path}.content`, 'expected a string.');
     }
+    if (element.columns !== undefined) {
+        assertFiniteNumberAt(element.columns, `${path}.columns`, documentPath);
+    }
+    if (element.gutter !== undefined) {
+        assertFiniteNumberAt(element.gutter, `${path}.gutter`, documentPath);
+    }
+    if (String(element.type).trim() === 'story') {
+        if (element.columns !== undefined && Number(element.columns) < 1) {
+            contractError(documentPath, `${path}.columns`, 'must be >= 1 for story elements.');
+        }
+        if (element.gutter !== undefined && Number(element.gutter) < 0) {
+            contractError(documentPath, `${path}.gutter`, 'must be >= 0 for story elements.');
+        }
+    }
 
     if (element.children !== undefined) {
         if (!Array.isArray(element.children)) {
@@ -586,6 +600,15 @@ function normalizeElementNode(element: Element): Element {
         type,
         content: typeof element?.content === 'string' ? element.content : ''
     };
+    if (element.columns !== undefined && Number.isFinite(Number(element.columns))) {
+        normalized.columns = Number(element.columns);
+    }
+    if (element.gutter !== undefined && Number.isFinite(Number(element.gutter))) {
+        normalized.gutter = Number(element.gutter);
+    }
+    if (element.balance !== undefined) {
+        normalized.balance = Boolean(element.balance);
+    }
 
     if (normalizedChildren && normalizedChildren.length > 0) {
         normalized.children = normalizedChildren;

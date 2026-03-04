@@ -62,6 +62,17 @@ export interface Element {
     type: ElementType;
     content: string;
     children?: Element[];
+    /** Story-level multi-column count (only meaningful for `type: "story"`). */
+    columns?: number;
+    /** Story-level inter-column gap in points (only for `type: "story"`). */
+    gutter?: number;
+    /**
+     * When `true`, column height is set to `ceil(totalContentHeight / columns)`
+     * so content distributes evenly across all columns instead of packing into
+     * the first column (CSS `column-fill: balance` semantics).
+     * Only meaningful for `type: "story"` with `columns > 1`.
+     */
+    balance?: boolean;
     properties?: ElementProperties;
 }
 
