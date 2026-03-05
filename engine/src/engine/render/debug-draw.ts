@@ -31,7 +31,8 @@ const getDebugStyle = (type: string): DebugStyle => {
 export const drawDebugBoxOverlay = (
     context: Context,
     box: Box,
-    labelFontId: string
+    labelFontId: string,
+    labelFontAscent: number
 ): void => {
     const debugStyle = getDebugStyle(box.type);
 
@@ -52,7 +53,7 @@ export const drawDebugBoxOverlay = (
     const labelX = Math.max(2, box.x + box.w + 2);
     context.font(labelFontId).fontSize(labelFontSize);
     context.opacity(0.85).fillColor(debugStyle.labelColor);
-    context.text(label, labelX, labelY + 1);
+    context.text(label, labelX, labelY + 1, { ascent: labelFontAscent });
     context.restore();
 };
 
@@ -74,7 +75,8 @@ export const drawDebugPageMargins = (
     pageWidth: number,
     pageHeight: number,
     margins: { top: number; right: number; bottom: number; left: number },
-    labelFontId: string
+    labelFontId: string,
+    labelFontAscent: number
 ): void => {
     const stroke = '#94a3b8';
     const label = '#334155';
@@ -96,11 +98,11 @@ export const drawDebugPageMargins = (
 
     context.font(labelFontId).fontSize(6.5);
     context.opacity(0.7).fillColor(label);
-    context.text(`margin top: ${top.toFixed(1)}`, left + 2, Math.max(2, top - 10));
-    context.text(`margin left: ${left.toFixed(1)}`, 2, top + 2);
+    context.text(`margin top: ${top.toFixed(1)}`, left + 2, Math.max(2, top - 10), { ascent: labelFontAscent });
+    context.text(`margin left: ${left.toFixed(1)}`, 2, top + 2, { ascent: labelFontAscent });
     const rightLabelX = Math.min(Math.max(2, right + 2), Math.max(2, pageWidth - 70));
-    context.text(`margin right: ${margins.right.toFixed(1)}`, rightLabelX, top + 2);
-    context.text(`margin bottom: ${margins.bottom.toFixed(1)}`, left + 2, Math.max(2, bottom + 2));
+    context.text(`margin right: ${margins.right.toFixed(1)}`, rightLabelX, top + 2, { ascent: labelFontAscent });
+    context.text(`margin bottom: ${margins.bottom.toFixed(1)}`, left + 2, Math.max(2, bottom + 2), { ascent: labelFontAscent });
 
     context.restore();
 };

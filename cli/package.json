@@ -19,6 +19,8 @@
     },
     "dependencies": {
         "@vmprint/context-pdf": "file:../contexts/pdf",
+        "@vmprint/context-pdf-lite": "file:../contexts/pdf-lite",
+        "@vmprint/context-pdf-lite": "file:../contexts/pdf-lite",
         "@vmprint/engine": "file:../engine",
         "@vmprint/local-fonts": "file:../font-managers/local",
         "commander": "^14.0.3"

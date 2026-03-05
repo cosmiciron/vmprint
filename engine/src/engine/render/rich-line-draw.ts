@@ -17,8 +17,9 @@ type DrawRichLineSegmentsOptions = {
     baseStyle: string;
     containerColor?: string;
     getFontId: (family: string, weight: number | string | undefined, style: string | undefined) => string;
+    getFontAscent: (family: string, weight: number | string | undefined, style: string | undefined) => number;
     drawInlineImageSegment: (seg: RendererLineSegment, drawX: number, drawY: number, fallbackFontSize: number) => void;
-    drawInlineBoxSegment: (seg: RendererLineSegment, drawX: number, drawY: number, fallbackFontSize: number) => void;
+    drawInlineBoxSegment: (seg: RendererLineSegment, drawX: number, drawY: number, fallbackFontSize: number, fontAscent: number) => void;
 };
 
 export const drawRichLineSegments = (
@@ -131,7 +132,8 @@ export const drawRichLineSegments = (
             if (seg.inlineObject.kind === 'image') {
                 options.drawInlineImageSegment(seg, drawX, finalY, Number(size) || options.fontSize);
             } else {
-                options.drawInlineBoxSegment(seg, drawX, finalY, Number(size) || options.fontSize);
+                const fontAscent = options.getFontAscent(fam, wt, st);
+                options.drawInlineBoxSegment(seg, drawX, finalY, Number(size) || options.fontSize, fontAscent);
             }
         } else if (!seg.linkTarget && seg.glyphs && seg.glyphs.length > 0) {
             seg.glyphs.forEach((glyph) => {

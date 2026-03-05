@@ -122,7 +122,8 @@ export const drawInlineBoxSegment = (
     seg: RendererLineSegment,
     drawX: number,
     drawY: number,
-    fallbackFontSize: number
+    fallbackFontSize: number,
+    fontAscent: number
 ): void => {
     const inline = seg?.inlineObject;
     if (!inline || inline.kind !== 'box') return;
@@ -152,7 +153,8 @@ export const drawInlineBoxSegment = (
     context.text(text, contentX + borderWidth + paddingLeft, drawY + borderWidth + paddingTop, {
         lineBreak: false,
         width: Math.max(0, boxWidth - borderWidth * 2 - paddingLeft - paddingRight),
-        characterSpacing: 0
+        characterSpacing: 0,
+        ascent: fontAscent
     });
     context.restore();
 };

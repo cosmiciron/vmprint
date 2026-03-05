@@ -70,7 +70,10 @@ export interface ContextTextOptions {
     lineBreak?: boolean;
     characterSpacing?: number;
     height?: number; // Sometimes used for bounds
-    ascent?: number; // Normalized font ascent (0-1000) for baseline alignment
+    /** Normalized font ascent (0–1000 units). Required — the engine must always supply this so
+     * every context backend can accurately position text regardless of its own text-anchor
+     * convention. */
+    ascent: number;
     link?: string;
 }
 

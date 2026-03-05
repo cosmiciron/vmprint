@@ -1,18 +1,21 @@
 # VMPrint
-:: Deterministic typesetting for the programmable web.
+:: A deterministic, zero-DOM typesetting engine/VM in pure TypeScript.
 
-## A pure-JS, zero-dependency typesetting engine that yields bit-perfect PDF output across any runtime—from Cloudflare Workers to the browser. Stop using Headless Chrome to print text.
+**VMPrint is not another HTML-to-PDF wrapper.** Instead, it is the crucial missing primitive you might need if you want to build one on your own -- from scratch.
 
-If you generate PDFs with headless browsers or HTML-to-PDF tools, you've accepted a compromise: heavy dependencies, memory leaks, and "approximate" layout that shifts across environments. VMPrint offers a stable, high-performance alternative. It composes documents from a versioned JSON instruction stream and guarantees identical layout given identical input, down to the sub-point position of every glyph.
+If you want to build a custom edge-rendering pipeline, a better document generator, or an entirely new word processor without resorting to contenteditable hacks, hidden iframes, or sloppy DOM overlays -- VMPrint provides the low-level mathematical infrastructure to make it happen.
 
-*Open-source documentation deserves better than the "crude" look of standard Markdown-to-PDF exports. [Read the beautifully typeset PDF version of this README](documents/readme-assets/readme.pdf) — generated from this source file using `draft2final` and the `opensource` flavor (a gift to help the community move past boring documents, and a gentle nod to a director's benevolent insistence on aesthetic standards).*
+It is an 88 KiB, zero-dependency layout Virtual Machine that completely bypasses the browser's HTML/CSS box model. Using interval-arithmetic and a custom morphable-box architecture, it calculates complex print layouts natively. It handles multi-column text wrapping, cross-gutter floats, strict baseline grids, and multilingual line-breaking directly from a semantic JSON AST, outputting a flat array of absolute X/Y coordinates.
+
+Because it operates purely on math and carries zero DOM dependencies, it runs identically everywhere: Cloudflare Workers, Lambda, Bun, Deno, or directly in the browser. It provides the missing primitives for true programmatic document layout.
+
+To see what this engine can build, view the beautifully typeset PDF version of this [README](documents/readme-assets/readme.pdf). It was compiled directly from this Markdown source file using `draft2final`, a fully-featured manuscript and screenplay compiler built entirely on top of the VMPrint API.
 
 ---
 
-
 ![VMPrint manifesto](documents/readme-assets/manifesto-1.png)
 
-> **Publication-grade layout rendered directly by the VMPrint engine.** The above image -- including all annotations, measurement guides, legends, and script direction markers -- are rendered entirely by VMPrint. The source documents are available in the repository under /documents/readme/.
+> The above image -- including annotations, measurement guides, legends, and script direction markers -- are all rendered entirely within VMPrint. The source documents can be found in the repository under /documents/readme-assets/.
 
 ## Features at a Glance
 
@@ -32,7 +35,7 @@ If you generate PDFs with headless browsers or HTML-to-PDF tools, you've accepte
 
 ![VMPrint manifesto](documents/readme-assets/manifesto-2.png)
 
-> **One engine. Every script. Baselines, shaping, and directionality remain stable across mixed-language content.** The above image -- including all annotations, measurement guides, legends, and script direction markers -- are rendered entirely by VMPrint. The source documents are available in the repository under /documents/readme/.
+> **Baselines, shaping, and directionality remain stable across mixed-language content.** The above image -- including annotations, measurement guides, legends, and script direction markers -- are all rendered within VMPrint. The source documents can be found in the repository under /documents/readme-assets/.
 
 
 ## Background

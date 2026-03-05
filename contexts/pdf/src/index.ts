@@ -177,16 +177,11 @@ export class PdfContext implements Context {
     }
 
     text(str: string, x: number, y: number, options?: ContextTextOptions): this {
-        let opts: ContextTextOptions | undefined = options;
-        const ascent = Number(options?.ascent);
-        if (Number.isFinite(ascent)) {
-            const docAny = this.doc as any;
-            const fontSize = Number(docAny?._fontSize) || 12;
-            const baselinePx = (ascent / 1000) * fontSize;
-            opts = { ...(options || {}), baseline: -baselinePx } as any;
-        }
-
-        this.doc.text(str, x, y, opts as any);
+        const docAny = this.doc as any;
+        const fontSize = Number(docAny?._fontSize) || 12;
+        const baselinePx = ((options?.ascent ?? 0) / 1000) * fontSize;
+        const opts = { ...(options || {}), baseline: -baselinePx } as any;
+        this.doc.text(str, x, y, opts);
         return this;
     }
 

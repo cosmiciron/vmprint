@@ -18,6 +18,7 @@ import {
 } from './render/box-paint';
 import { registerRendererFonts } from './render/font-registration';
 import { RendererImageBytesCache } from './render/image-bytes-cache';
+import { getCachedFont } from '../font-management/font-cache-loader';
 import { drawRichLines } from './render/rich-lines';
 import { buildParagraphMetrics, createLineFrameAccessors } from './render/rich-line-layout';
 
@@ -83,17 +84,21 @@ export class Renderer {
             drawOrder.forEach(({ box }) => this.drawBox(context, box));
 
             if (this.debug) {
+                const debugLabelFontId = this.getFontId(this.config.layout.fontFamily, 400, 'normal');
+                const debugLabelFontAscent = this.getFontAscent(this.config.layout.fontFamily, 400, 'normal');
                 drawDebugPageMargins(
                     context,
                     page.width,
                     page.height,
                     this.config.layout.margins,
-                    this.getFontId(this.config.layout.fontFamily, 400, 'normal')
+                    debugLabelFontId,
+                    debugLabelFontAscent
                 );
                 drawOrder.forEach(({ box }) => drawDebugBoxOverlay(
                     context,
                     box,
-                    this.getFontId(this.config.layout.fontFamily, 400, 'normal')
+                    debugLabelFontId,
+                    debugLabelFontAscent
                 ));
             }
 
@@ -115,6 +120,20 @@ export class Renderer {
 
     private getFontId(family: string, weight: number | string | undefined, style: string | undefined): string {
         return LayoutUtils.getFontId(family, weight, style, this.runtime.fontRegistry, this.runtime.fontManager);
+    }
+
+    private getFontAscent(family: string, weight: number | string | undefined, style: string | undefined): number {
+        try {
+            const match = LayoutUtils.resolveFontMatch(family, weight, style, this.runtime.fontRegistry, this.runtime.fontManager);
+            const font = getCachedFont(match.config.src, this.runtime) as any;
+            if (!font) return 750;
+            const upm = Number(font.unitsPerEm);
+            const rawAscent = Number(font.ascent);
+            if (!Number.isFinite(upm) || upm <= 0 || !Number.isFinite(rawAscent)) return 750;
+            return (rawAscent / upm) * 1000;
+        } catch {
+            return 750;
+        }
     }
 
     protected drawBox(context: Context, box: Box) {
@@ -153,6 +172,7 @@ export class Renderer {
                     layout: this.config.layout,
                     debug: this.debug,
                     getFontId: (family, weight, style) => this.getFontId(family, weight, style),
+                    getFontAscent: (family, weight, style) => this.getFontAscent(family, weight, style),
                     getImageBytes: (base64Data) => this.imageBytesCache.get(base64Data)
                 },
                 (box.properties || {}) as RendererBoxProperties
@@ -176,6 +196,7 @@ export class Renderer {
                     layout: this.config.layout,
                     debug: this.debug,
                     getFontId: (family, weight, style) => this.getFontId(family, weight, style),
+                    getFontAscent: (family, weight, style) => this.getFontAscent(family, weight, style),
                     getImageBytes: (base64Data) => this.imageBytesCache.get(base64Data)
                 },
                 (box.properties || {}) as RendererBoxProperties
@@ -301,8 +322,16 @@ export class Renderer {
     }
 
     private wrapOverlayContext(context: Context): OverlayContext {
+        // Track the active font family so we can inject the correct ascent on
+        // text() calls.  Overlay scripts are authored in JS and never pass
+        // ascent in ContextTextOptions; the wrapper fills it in here, keeping
+        // the overlay authoring API simple while ensuring every context backend
+        // (including jsPDF, which anchors at the baseline) positions text
+        // correctly.
+        let activeFontFamily = this.config.layout.fontFamily;
         const overlayContext: OverlayContext = {
             font: (family, size) => {
+                activeFontFamily = family;
                 context.font(family, size);
                 return overlayContext;
             },
@@ -375,7 +404,8 @@ export class Renderer {
                 return overlayContext;
             },
             text: (str, x, y, options) => {
-                context.text(str, x, y, options);
+                const ascent = options?.ascent ?? this.getFontAscent(activeFontFamily, undefined, undefined);
+                context.text(str, x, y, { ...options, ascent });
                 return overlayContext;
             },
             save: () => {

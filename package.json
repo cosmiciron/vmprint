@@ -17,6 +17,7 @@
     "engine",
     "cli",
     "contexts/pdf",
+    "contexts/pdf-lite",
     "font-managers/local",
     "font-managers/standard",
     "draft2final"

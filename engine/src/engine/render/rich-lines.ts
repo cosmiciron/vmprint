@@ -19,6 +19,7 @@ type DrawRichLinesRuntime = {
     layout: LayoutConfig['layout'];
     debug: boolean;
     getFontId: (family: string, weight: number | string | undefined, style: string | undefined) => string;
+    getFontAscent: (family: string, weight: number | string | undefined, style: string | undefined) => number;
     getImageBytes: (base64Data: string) => Uint8Array;
 };
 
@@ -100,7 +101,8 @@ export const drawRichLines = (
                 .text(line, lineX, lineTopY + vOffset, {
                     width: lineWidthLimit,
                     lineBreak: false,
-                    characterSpacing: letterSpacing
+                    characterSpacing: letterSpacing,
+                    ascent: runtime.getFontAscent(baseFontFamily, baseWeight, baseStyle)
                 });
         } else {
             const rawItems: RendererLineItem[] = line.map((seg, idx) => ({ seg, extra: justifyExtraAfter[idx] || 0 }));
@@ -121,6 +123,7 @@ export const drawRichLines = (
                 baseStyle,
                 containerColor: containerStyle.color,
                 getFontId: (family, weight, style) => runtime.getFontId(family, weight, style),
+                getFontAscent: (family, weight, style) => runtime.getFontAscent(family, weight, style),
                 drawInlineImageSegment: (seg, drawX, drawY, fallbackFontSize) => {
                     drawInlineImageSegment(
                         context,
@@ -131,8 +134,8 @@ export const drawRichLines = (
                         (base64Data) => runtime.getImageBytes(base64Data)
                     );
                 },
-                drawInlineBoxSegment: (seg, drawX, drawY, fallbackFontSize) => {
-                    drawInlineBoxSegment(context, seg, drawX, drawY, fallbackFontSize);
+                drawInlineBoxSegment: (seg, drawX, drawY, fallbackFontSize, fontAscent) => {
+                    drawInlineBoxSegment(context, seg, drawX, drawY, fallbackFontSize, fontAscent);
                 }
             });
         }
