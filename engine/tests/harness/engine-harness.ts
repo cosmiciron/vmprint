@@ -50,6 +50,11 @@ export async function loadLocalFontManager(): Promise<any> {
     return await loadImplementation(undefined, builtinFontManager);
 }
 
+export async function loadStandardFontManager(): Promise<any> {
+    const builtinFontManager = resolveBuiltin('font-managers/standard.js', '@vmprint/standard-fonts');
+    return await loadImplementation(undefined, builtinFontManager);
+}
+
 type TextTraceCall = { str: string; x: number; y: number };
 type ImageTraceCall = { x: number; y: number; width: number; height: number };
 

@@ -1,5 +1,12 @@
 import PDFDocument from 'pdfkit';
-import { Context, ContextFactoryOptions, ContextImageOptions, ContextTextOptions, VmprintOutputStream } from '@vmprint/contracts';
+import {
+    Context,
+    ContextFactoryOptions,
+    ContextFontRegistrationOptions,
+    ContextImageOptions,
+    ContextTextOptions,
+    VmprintOutputStream
+} from '@vmprint/contracts';
 import { Buffer } from 'buffer';
 type PdfDocumentInitOptions = NonNullable<ConstructorParameters<typeof PDFDocument>[0]>;
 
@@ -7,6 +14,7 @@ type PdfValues = string | number | boolean | symbol | object | undefined | null;
 
 export class PdfContext implements Context {
     private doc: InstanceType<typeof PDFDocument>;
+    private readonly standardFontAliasById = new Map<string, string>();
 
     constructor(options: ContextFactoryOptions) {
         this.doc = new PDFDocument({
@@ -36,7 +44,13 @@ export class PdfContext implements Context {
         this.doc.end();
     }
 
-    async registerFont(id: string, buffer: Uint8Array): Promise<void> {
+    async registerFont(id: string, buffer: Uint8Array, options?: ContextFontRegistrationOptions): Promise<void> {
+        if (options?.standardFontPostScriptName) {
+            this.standardFontAliasById.set(id, options.standardFontPostScriptName);
+            return;
+        }
+        this.standardFontAliasById.delete(id);
+
         try {
             this.doc.registerFont(id, Buffer.from(buffer));
         } catch (e: unknown) {
@@ -45,7 +59,7 @@ export class PdfContext implements Context {
     }
 
     font(family: string, size?: number): this {
-        this.doc.font(family);
+        this.doc.font(this.standardFontAliasById.get(family) || family);
         if (size !== undefined) {
             this.doc.fontSize(size);
         }

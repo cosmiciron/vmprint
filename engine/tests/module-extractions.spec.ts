@@ -19,8 +19,10 @@ import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toL
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { solveTrackSizing } from '../src/engine/layout/track-sizing';
 import { createEngineRuntime } from '../src/engine/runtime';
+import { loadFont } from '../src/font-management/font-cache-loader';
 import { loadLocalFontManager } from './harness/engine-harness';
 import { getFontsByFamily, registerFont, resolveFontFamilyAlias } from '../src/font-management/ops';
+import { createStandardFontSentinelBuffer, getStandardFontMetadata } from '../src/font-management/sentinel';
 
 let LocalFontManager: any;
 
@@ -922,6 +924,33 @@ function testEngineCoreDomainAgnosticBoundary(): void {
     );
 }
 
+async function testStandardFontSentinelProxy(): Promise<void> {
+    logStep('CHECK: standard font sentinel AFM proxy path');
+    logStep('EXPECT: sentinel buffer loads as a standard-font proxy with non-zero layout advances');
+
+    const sentinelFontManager = {
+        getFontRegistrySnapshot: () => [],
+        resolveFamilyAlias: (family: string) => family,
+        getAllFonts: (registry: any[]) => registry,
+        getEnabledFallbackFonts: () => [],
+        getFontsByFamily: () => [],
+        getFallbackFamilies: () => [],
+        registerFont: () => { },
+        loadFontBuffer: async () => createStandardFontSentinelBuffer(0x00)
+    };
+
+    const runtime = createEngineRuntime({ fontManager: sentinelFontManager as any });
+    const loaded: any = await loadFont('standard://helvetica', runtime);
+    const metadata = getStandardFontMetadata(loaded);
+    assert.equal(metadata?.postscriptName, 'Helvetica');
+
+    const run = loaded.layout('Hello');
+    const totalAdvance = (run.positions || []).reduce((sum: number, pos: any) => sum + Number(pos?.xAdvance || 0), 0);
+    assert.ok(totalAdvance > 0, `expected positive advance width, got ${totalAdvance}`);
+
+    logStep('PASS: standard font sentinel AFM proxy path');
+}
+
 async function run() {
     LocalFontManager = await loadLocalFontManager();
     logStep('Scenario: extracted text layout modules preserve core behavior');
@@ -942,6 +971,7 @@ async function run() {
     testEmbeddedImageCacheCollisionSafety();
     testLocalFontManagerOverride();
     testEngineCoreDomainAgnosticBoundary();
+    await testStandardFontSentinelProxy();
     logStep('OK');
 }
 

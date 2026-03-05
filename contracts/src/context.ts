@@ -19,7 +19,7 @@ export interface Context {
     pipe(stream: VmprintOutputStream): void;
 
     // Font Management
-    registerFont(id: string, buffer: Uint8Array): Promise<void>;
+    registerFont(id: string, buffer: Uint8Array, options?: ContextFontRegistrationOptions): Promise<void>;
     font(family: string, size?: number): this;
     fontSize(size: number): this;
 
@@ -58,6 +58,10 @@ export interface Context {
 
     // Access to underlying width/height (needed for page numbering/layout helper)
     getSize(): { width: number; height: number };
+}
+
+export interface ContextFontRegistrationOptions {
+    standardFontPostScriptName?: string;
 }
 
 export interface ContextTextOptions {

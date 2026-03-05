@@ -27,7 +27,7 @@ interface Context {
   pipe(stream: VmprintOutputStream): void;
 
   // Font registration and selection
-  registerFont(id: string, buffer: Uint8Array): Promise<void>;
+  registerFont(id: string, buffer: Uint8Array, options?: { standardFontPostScriptName?: string }): Promise<void>;
   font(family: string, size?: number): this;
   fontSize(size: number): this;
 
@@ -101,7 +101,7 @@ class MyContext implements Context {
   // No-op: this context manages its own output internally
   pipe(_stream: VmprintOutputStream): void {}
 
-  async registerFont(id: string, buffer: Uint8Array): Promise<void> {
+  async registerFont(id: string, buffer: Uint8Array, options?: { standardFontPostScriptName?: string }): Promise<void> {
     /* load the font into your rendering surface */
   }
 

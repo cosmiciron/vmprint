@@ -73,8 +73,15 @@ function resolveBuiltin(bundledRelPath: string, packageName: string): string {
     return require.resolve(packageName);
 }
 
+function resolveModulePath(modulePath: string): string {
+    // Package names (scoped @scope/pkg or bare pkg-name with no path separators)
+    const isPackageName = modulePath.startsWith('@') || (!modulePath.startsWith('.') && !path.isAbsolute(modulePath));
+    if (isPackageName) return require.resolve(modulePath);
+    return path.resolve(modulePath);
+}
+
 async function loadImplementation<T>(modulePath: string | undefined, builtinPath: string): Promise<T> {
-    const resolvedPath = modulePath ? path.resolve(modulePath) : builtinPath;
+    const resolvedPath = modulePath ? resolveModulePath(modulePath) : builtinPath;
     const mod = await import(pathToFileURL(resolvedPath).href);
     // When importing a TS-compiled CJS module via dynamic import(), Node wraps
     // module.exports as mod.default, so mod.default.default holds the actual export.

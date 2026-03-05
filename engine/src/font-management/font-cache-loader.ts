@@ -1,5 +1,10 @@
 import * as fontkit from 'fontkit';
 import { EngineRuntime } from '../engine/runtime';
+import { createAfmFontProxy } from './afm-proxy';
+import {
+    attachStandardFontMetadata,
+    parseStandardFontSentinelBuffer
+} from './sentinel';
 
 type LoadedFont = any;
 
@@ -38,7 +43,10 @@ export const loadFont = async (url: string, runtime: EngineRuntime) => {
             }
 
             bufferCache[url] = arrayBuffer;
-            const font: LoadedFont = fontkit.create(new Uint8Array(arrayBuffer));
+            const standardFontMetadata = parseStandardFontSentinelBuffer(arrayBuffer);
+            const font: LoadedFont = standardFontMetadata
+                ? attachStandardFontMetadata(createAfmFontProxy(standardFontMetadata), standardFontMetadata)
+                : fontkit.create(new Uint8Array(arrayBuffer));
             fontCache[url] = font;
             return font;
         } catch (e: unknown) {
@@ -65,7 +73,10 @@ export const registerFontBuffer = (url: string, buffer: ArrayBuffer, runtime: En
     const loadingPromises = scopedRuntime.loadingPromises;
 
     bufferCache[url] = buffer;
-    const font: any = fontkit.create(new Uint8Array(buffer));
+    const standardFontMetadata = parseStandardFontSentinelBuffer(buffer);
+    const font: any = standardFontMetadata
+        ? attachStandardFontMetadata(createAfmFontProxy(standardFontMetadata), standardFontMetadata)
+        : fontkit.create(new Uint8Array(buffer));
     fontCache[url] = font;
     loadingPromises[url] = Promise.resolve(font);
 };

@@ -1,6 +1,7 @@
 import { Context } from '@vmprint/contracts';
-import { getCachedBuffer, loadFont } from '../../font-management/font-cache-loader';
+import { getCachedBuffer, getCachedFont, loadFont } from '../../font-management/font-cache-loader';
 import { getAllFonts } from '../../font-management/ops';
+import { getStandardFontMetadata } from '../../font-management/sentinel';
 import { EngineRuntime } from '../runtime';
 import { LayoutUtils } from '../layout/layout-utils';
 
@@ -36,7 +37,13 @@ export const registerRendererFonts = async ({
             const uniqueId = getFontId(fontConfig.family, registrationWeight, fontConfig.style);
             if (registeredIds.has(uniqueId)) continue;
             try {
-                await context.registerFont(uniqueId, new Uint8Array(buffer));
+                const loadedFont = getCachedFont(fontConfig.src, runtime);
+                const standardMetadata = getStandardFontMetadata(loadedFont);
+                await context.registerFont(
+                    uniqueId,
+                    new Uint8Array(buffer),
+                    standardMetadata ? { standardFontPostScriptName: standardMetadata.postscriptName } : undefined
+                );
                 registeredIds.add(uniqueId);
             } catch (e) {
                 console.error(`Failed to register font ${uniqueId}`, e);

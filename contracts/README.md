@@ -66,7 +66,7 @@ interface Context {
   addPage(): void;
   end(): void;
   pipe(stream: VmprintOutputStream): void;  // no-op if output streaming is not supported
-  registerFont(id: string, buffer: Uint8Array): Promise<void>;
+  registerFont(id: string, buffer: Uint8Array, options?: { standardFontPostScriptName?: string }): Promise<void>;
   font(family: string, size?: number): this;
   fontSize(size: number): this;
   save(): void;

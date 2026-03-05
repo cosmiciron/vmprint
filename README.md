@@ -141,6 +141,16 @@ const renderer = new Renderer(config, false, runtime);
 await renderer.render(pages, context);
 ```
 
+To produce a PDF with no embedded fonts — using only the 14 standard PDF fonts that every viewer guarantees — swap in `StandardFontManager`:
+
+```ts
+import { StandardFontManager } from '@vmprint/standard-fonts';
+
+const runtime = createEngineRuntime({ fontManager: new StandardFontManager() });
+```
+
+The rest of the pipeline is identical. The engine detects the sentinel buffers that `StandardFontManager` returns and bypasses fontkit in favor of built-in AFM metrics. The PDF output carries font name references only — no binary font data. See [`font-managers/`](font-managers/README.md) for details.
+
 ## What It Can Do
 
 **Pagination & Layout**
@@ -220,6 +230,7 @@ This is a monorepo:
 | `@vmprint/engine` | Deterministic typesetting core |
 | `@vmprint/context-pdf` | PDF output context |
 | `@vmprint/local-fonts` | Filesystem font loading |
+| `@vmprint/standard-fonts` | Sentinel-based standard font manager (no font assets) |
 | `@vmprint/cli` | `vmprint` JSON → bit-perfect PDF CLI |
 | `@draft2final/cli` | Markdown → bit-perfect PDF compiler |
 

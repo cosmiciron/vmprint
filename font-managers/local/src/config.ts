@@ -26,6 +26,9 @@ export const LOCAL_FONT_ALIASES: Record<string, string> = {
     'sans serif': 'Noto Sans',
     'serif': 'Tinos',
     'monospace': 'Cousine',
+    'symbol': 'Noto Sans Symbols 2',
+    'zapfdingbats': 'Noto Sans Symbols 2',
+    'zapf dingbats': 'Noto Sans Symbols 2',
 
     // Common CJK naming variants mapped to bundled Noto families
     'microsoft yahei': 'Noto Sans SC',

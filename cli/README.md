@@ -102,6 +102,12 @@ export default {
 
 The CLI uses `PdfContext` for PDF output and `LocalFontManager` for font loading. The font manager can be replaced via `--font-manager` without rebuilding or forking anything.
 
+To produce a PDF that uses only the 14 standard PDF fonts with no embedded font data, pass `StandardFontManager` directly:
+
+```bash
+vmprint --input document.json --output out.pdf --font-manager @vmprint/standard-fonts
+```
+
 Custom font manager classes must be the default export of their module and implement the `FontManager` interface from `@vmprint/contracts`. See [`font-managers/`](../font-managers/README.md) for the interface contract and implementation guide.
 
 ---

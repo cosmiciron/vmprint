@@ -47,6 +47,7 @@ Most of the interface is registry management — bookkeeping that any implementa
 | Package | Description |
 |---|---|
 | [`@vmprint/local-fonts`](local/) | Filesystem font manager with a bundled multilingual font set. The reference implementation. |
+| [`@vmprint/standard-fonts`](standard/) | Zero-asset font manager that emits standard-font sentinels (no embedded font binaries). |
 
 ## Writing a Custom Font Manager
 
@@ -108,6 +109,53 @@ class MyFontManager implements FontManager {
 ```
 
 For a complete, tested reference, see `local/`.
+
+---
+
+## `@vmprint/standard-fonts` — Zero-Asset Standard Fonts
+
+`StandardFontManager` maps all requested font families to one of the 14 standard PDF fonts and returns a 5-byte sentinel buffer instead of real font data. The engine detects the sentinel and uses built-in AFM metric tables rather than fontkit — so text measurement, line breaking, and pagination all work correctly, with no font files anywhere in the pipeline.
+
+The resulting PDF carries only PostScript font name references (e.g. `/Helvetica-Bold`). Every conforming PDF viewer is required to supply rendering for these fonts, so no font data is embedded.
+
+### When to use it
+
+- **Font-free PDFs** — output that relies solely on the PDF-14 standard fonts, with no embedded binary font data
+- **Bundle-size-sensitive environments** — a static HTML renderer, a CLI bundled as a single file, or an edge function where font assets would dominate the payload
+- **Test and validation pipelines** — scenarios that need correct layout metrics but don't need visual font fidelity
+
+### Alias mapping
+
+`StandardFontManager` maps common family names to the nearest standard font:
+
+| Alias | Resolves to |
+|---|---|
+| Times, Times New Roman, serif | Times |
+| Arial, Helvetica, sans-serif | Helvetica |
+| Courier, Courier New, monospace | Courier |
+| Symbol | Symbol |
+| ZapfDingbats, Zapf Dingbats | ZapfDingbats |
+
+Weight and style variants (bold, italic) are resolved to the correct PostScript variant within each family.
+
+### Usage
+
+```ts
+import { StandardFontManager } from '@vmprint/standard-fonts';
+import { createEngineRuntime } from '@vmprint/engine';
+
+const runtime = createEngineRuntime({ fontManager: new StandardFontManager() });
+```
+
+No configuration required. `StandardFontManager` carries no font assets and accepts no constructor options.
+
+### Limitations
+
+- **Latin scripts only.** The PDF-14 fonts cover Windows-1252 (Latin-1 + Western European supplement). Characters outside this range fall back to the font's default advance width and render as missing glyphs.
+- **No kerning.** AFM metric tables do not include kern pairs. Text layout is correct but unkerned.
+- **No CJK or multilingual fallback.** For multilingual documents, use `LocalFontManager`.
+
+See [`documents/STANDARD-FONTS.md`](../documents/STANDARD-FONTS.md) for the full architectural specification.
 
 ---
 
