@@ -4,6 +4,8 @@ import { pathToFileURL } from 'node:url';
 import { parse as parseYaml } from 'yaml';
 import { LayoutEngine, Renderer, resolveDocumentPaths, toLayoutConfig, createEngineRuntime, LayoutUtils } from '@vmprint/engine';
 import type { DocumentInput } from '@vmprint/engine';
+import { VmprintOutputStream } from '@vmprint/contracts';
+import PdfContext from '@vmprint/context-pdf';
 import { parseMarkdownAst } from './markdown';
 import { normalizeToSemantic, SemanticDocument } from './semantic';
 import { getFormatModule } from './formats';
@@ -16,6 +18,29 @@ type OverlayProvider = {
   overlay?: (page: unknown, context: unknown) => void;
 };
 // ─── Implementation loading ─────────────────────────────────────────────────────
+
+class NodeWriteStreamAdapter implements VmprintOutputStream {
+  private stream: fs.WriteStream;
+  constructor(outputPath: string) {
+    this.stream = fs.createWriteStream(outputPath);
+  }
+  write(chunk: Uint8Array | string): void {
+    this.stream.write(chunk);
+  }
+  end(): void {
+    this.stream.end();
+  }
+  waitForFinish(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (this.stream.writableFinished) {
+        resolve();
+        return;
+      }
+      this.stream.once('finish', resolve);
+      this.stream.once('error', reject);
+    });
+  }
+}
 
 function resolveBuiltin(bundledRelPath: string, packageName: string): string {
   const bundledPath = path.join(__dirname, 'bundled', bundledRelPath);
@@ -148,9 +173,7 @@ async function renderVmprintPdf(
 
   try {
     const builtinFontManager = resolveBuiltin('font-managers/local/index.js', '@vmprint/local-fonts');
-    const builtinContext = resolveBuiltin('contexts/pdf/index.js', '@vmprint/context-pdf');
     const FontManagerClass = await loadImplementation<new (...args: any[]) => any>(builtinFontManager);
-    const ContextClass = await loadImplementation<new (...args: any[]) => any>(builtinContext);
 
     const documentIR = resolveDocumentPaths(ir, inputPath);
     const runtime = createEngineRuntime({ fontManager: new FontManagerClass() });
@@ -163,19 +186,18 @@ async function renderVmprintPdf(
       : undefined;
 
     const { width, height } = LayoutUtils.getPageDimensions(config);
-    const outputStream = fs.createWriteStream(resolvedOutput);
-    const context = new ContextClass(outputStream, {
+    const context = new PdfContext({
       size: [width, height],
       margins: { top: 0, left: 0, right: 0, bottom: 0 },
       autoFirstPage: false,
       bufferPages: false
     });
+    const outputStream = new NodeWriteStreamAdapter(resolvedOutput);
+    context.pipe(outputStream);
 
     const renderer = new Renderer(config, debug, runtime, overlay as any);
     await renderer.render(pages, context);
-    if (typeof (context as any).waitForFinish === 'function') {
-      await (context as any).waitForFinish();
-    }
+    await outputStream.waitForFinish();
   } catch (error: unknown) {
     if (error instanceof Draft2FinalError) throw error;
     const message = error instanceof Error ? error.message : String(error);

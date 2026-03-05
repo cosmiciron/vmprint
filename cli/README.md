@@ -16,14 +16,13 @@ Change engine code. Re-run. Inspect the PDF. The `--conditions tsx` dev mode loa
 
 ## Experiment bench
 
-The `--context` and `--font-manager` flags accept any JS module that exports a default class implementing the relevant interface. Testing a new rendering context or font manager against real documents requires exactly one flag — no integration scaffolding, no test harness:
+The `--font-manager` flag accepts any JS module that exports a default class implementing the `FontManager` interface. Testing a new font manager against real documents requires exactly one flag — no integration scaffolding, no test harness:
 
 ```bash
-vmprint --input document.json --output out.pdf --context ./my-context.js
 vmprint --input document.json --output out.pdf --font-manager ./my-font-manager.js
 ```
 
-The module is loaded with `import()` at runtime. You can develop and iterate on a context or font manager entirely through the CLI before integrating it anywhere else.
+The module is loaded with `import()` at runtime. You can develop and iterate on a font manager entirely through the CLI before integrating it anywhere else.
 
 ## Reference design
 
@@ -101,9 +100,9 @@ export default {
 
 ## What Ships Bundled
 
-The CLI ships with `PdfContext` and `LocalFontManager` as defaults. Both can be replaced via `--context` and `--font-manager` without rebuilding or forking anything.
+The CLI uses `PdfContext` for PDF output and `LocalFontManager` for font loading. The font manager can be replaced via `--font-manager` without rebuilding or forking anything.
 
-Custom context and font manager classes must be the default export of their module and implement the interfaces from `@vmprint/contracts`. See [`contexts/`](../contexts/README.md) and [`font-managers/`](../font-managers/README.md) for the interface contracts and implementation guides.
+Custom font manager classes must be the default export of their module and implement the `FontManager` interface from `@vmprint/contracts`. See [`font-managers/`](../font-managers/README.md) for the interface contract and implementation guide.
 
 ---
 

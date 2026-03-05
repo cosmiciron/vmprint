@@ -20,6 +20,12 @@ interface Context {
   addPage(): void;
   end(): void;
 
+  // Output streaming
+  // Called by the host (e.g. CLI) before rendering begins. The context writes
+  // rendered output into the stream as pages are produced. Implement as a no-op
+  // if the context manages its own output internally.
+  pipe(stream: VmprintOutputStream): void;
+
   // Font registration and selection
   registerFont(id: string, buffer: Uint8Array): Promise<void>;
   font(family: string, size?: number): this;
@@ -92,6 +98,9 @@ class MyContext implements Context {
   addPage(): void { /* start a new page */ }
   end(): void { /* finalize output */ }
 
+  // No-op: this context manages its own output internally
+  pipe(_stream: VmprintOutputStream): void {}
+
   async registerFont(id: string, buffer: Uint8Array): Promise<void> {
     /* load the font into your rendering surface */
   }
@@ -138,17 +147,14 @@ class MyContext implements Context {
 
 ### Output stream
 
-`PdfContext` accepts any writable stream — Node.js `fs.createWriteStream`, a `blob-stream` instance for browser use, or any stream-compatible object. It can also be constructed without a stream and piped later:
+`PdfContext` is constructed with `ContextFactoryOptions` only. Output is delivered by calling `pipe()` with a `VmprintOutputStream` before rendering begins. The context bridges PDFKit's internal streaming into the abstract stream interface — the caller owns the stream and waits on it after rendering is complete:
 
 ```ts
-// Node.js — write directly to a file
-const output = fs.createWriteStream('output.pdf');
-const context = new PdfContext(output, { size: 'LETTER', margins: ..., autoFirstPage: false, bufferPages: false });
-
-// Pipe after construction
-const context = new PdfContext({ size: 'A4', margins: ..., autoFirstPage: false, bufferPages: false });
-context.pipe(someWritableStream);
+const context = new PdfContext({ size: 'LETTER', margins: ..., autoFirstPage: false, bufferPages: false });
+context.pipe(myOutputStream); // call before renderer.render()
 ```
+
+The `VmprintOutputStream` interface is defined in `@vmprint/contracts`. Callers are responsible for implementing it against their specific I/O mechanism (Node.js file stream, in-memory buffer, browser response, etc.).
 
 ### Font registration
 

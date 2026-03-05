@@ -1,7 +1,22 @@
+/**
+ * A minimal, portable output stream that a Context can write rendered output into.
+ * Implementations are provided by the caller (e.g. the CLI), keeping I/O concerns
+ * out of the context itself. A context that does not support streaming may implement
+ * pipe() as a no-op.
+ */
+export interface VmprintOutputStream {
+    write(chunk: Uint8Array | string): void;
+    end(): void;
+    waitForFinish(): Promise<void>;
+}
+
 export interface Context {
     // Document Lifecycle
     addPage(): void;
     end(): void;
+
+    // Output - just return no-op if streaming is not supported by this context.
+    pipe(stream: VmprintOutputStream): void;
 
     // Font Management
     registerFont(id: string, buffer: Uint8Array): Promise<void>;

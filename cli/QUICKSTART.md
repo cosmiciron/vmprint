@@ -46,26 +46,13 @@ vmprint --input document.json --output out.pdf --emit-layout --omit-glyphs
 vmprint --input document.json --output out.pdf --emit-layout --quantize
 ```
 
-## Custom context and font manager
+## Custom font manager
 
 ```bash
-vmprint --input document.json --output out.pdf --context ./my-context.js
 vmprint --input document.json --output out.pdf --font-manager ./my-font-manager.js
 ```
 
-The module must export the class as the default export and implement the interface from `@vmprint/contracts`:
-
-```js
-// my-context.js
-import { MyBackend } from 'my-backend';
-
-export default class MyContext {
-  addPage() { /* ... */ }
-  end() { /* ... */ }
-  async registerFont(id, buffer) { /* ... */ }
-  // implement the full Context interface from @vmprint/contracts
-}
-```
+The module must export the class as the default export and implement the `FontManager` interface from `@vmprint/contracts`. See [`font-managers/`](../font-managers/README.md) for the interface contract and implementation guide.
 
 ## Overlay
 
@@ -93,7 +80,6 @@ vmprint --input document.json --output out.pdf --profile-layout
 |---|---|
 | `-i, --input <path>` | Input document JSON |
 | `-o, --output <path>` | Output PDF path |
-| `--context <path>` | JS module exporting a custom `Context` class |
 | `--font-manager <path>` | JS module exporting a custom `FontManager` class |
 | `--dump-ir [path]` | Write canonical document IR JSON (default: `<output>.ir.json`) |
 | `--emit-layout [path]` | Write annotated layout stream JSON (default: `<output>.layout.json`) |

@@ -1,57 +1,31 @@
 import PDFDocument from 'pdfkit';
-import { Context, ContextFactoryOptions, ContextImageOptions, ContextTextOptions } from '@vmprint/contracts';
+import { Context, ContextFactoryOptions, ContextImageOptions, ContextTextOptions, VmprintOutputStream } from '@vmprint/contracts';
 import { Buffer } from 'buffer';
 type PdfDocumentInitOptions = NonNullable<ConstructorParameters<typeof PDFDocument>[0]>;
 
 type PdfValues = string | number | boolean | symbol | object | undefined | null;
 
-// Minimal interface compatible with both Node.js streams and browser implementations like blob-stream
-export interface PdfWritableStream {
-    write(chunk: any, encoding?: string, callback?: (error?: Error | null) => void): boolean;
-    write(chunk: any, cb?: (error?: Error | null) => void): boolean;
-    end(cb?: () => void): this;
-    end(chunk: any, cb?: () => void): this;
-    end(chunk: any, encoding?: string, cb?: () => void): this;
-    on(event: string | symbol, listener: (...args: any[]) => void): this;
-    once(event: string | symbol, listener: (...args: any[]) => void): this;
-    removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
-    [key: string]: any; // Allow other properties for flexibility
-}
-
 export class PdfContext implements Context {
     private doc: InstanceType<typeof PDFDocument>;
-    private outputStream: PdfWritableStream | null = null;
 
-    constructor(outputStreamOrOptions: PdfWritableStream | ContextFactoryOptions, options?: ContextFactoryOptions) {
-        let actualOptions: ContextFactoryOptions;
-        let outputStream: PdfWritableStream | null = null;
-
-        if (outputStreamOrOptions && typeof (outputStreamOrOptions as PdfWritableStream).write === 'function') {
-            outputStream = outputStreamOrOptions as PdfWritableStream;
-            actualOptions = options!;
-            this.outputStream = outputStream;
-        } else {
-            actualOptions = outputStreamOrOptions as ContextFactoryOptions;
-        }
-
+    constructor(options: ContextFactoryOptions) {
         this.doc = new PDFDocument({
-            autoFirstPage: actualOptions.autoFirstPage,
-            bufferPages: actualOptions.bufferPages,
-            size: actualOptions.size as PdfDocumentInitOptions['size'],
-            margins: actualOptions.margins
+            autoFirstPage: options.autoFirstPage,
+            bufferPages: options.bufferPages,
+            size: options.size as PdfDocumentInitOptions['size'],
+            margins: options.margins
         });
-
-        if (outputStream) {
-            this.doc.pipe(outputStream as NodeJS.WritableStream);
-        }
     }
 
     addPage(): void {
         this.doc.addPage();
     }
 
-    pipe(stream: PdfWritableStream): void {
-        this.doc.pipe(stream as NodeJS.WritableStream);
+    pipe(stream: VmprintOutputStream): void {
+        // Bridge PDFKit's readable stream events to the abstract VmprintOutputStream.
+        // PDFKit emits 'data' chunks as pages are rendered and 'end' when complete.
+        (this.doc as any).on('data', (chunk: Uint8Array) => stream.write(chunk));
+        (this.doc as any).on('end', () => stream.end());
     }
 
     private isEnded: boolean = false;
@@ -216,31 +190,6 @@ export class PdfContext implements Context {
         return { width, height };
     }
 
-    waitForFinish(): Promise<void> {
-        const documentDone = new Promise<void>((resolve, reject) => {
-            this.doc.once('end', resolve);
-            this.doc.once('error', reject);
-        });
-
-        const stream = this.outputStream as any;
-        if (!stream) {
-            return documentDone;
-        }
-
-        const streamDone = new Promise<void>((resolve, reject) => {
-            const finishNow = stream?.writableFinished === true;
-            if (finishNow) {
-                resolve();
-                return;
-            }
-
-            const done = () => resolve();
-            stream.once('finish', done);
-            stream.once('error', reject);
-        });
-
-        return Promise.all([documentDone, streamDone]).then(() => undefined);
-    }
 }
 
 export default PdfContext;

@@ -45,6 +45,18 @@ interface FontManager {
 
 See [`font-managers/`](../font-managers/README.md) for the reference implementation and a guide to writing custom font managers.
 
+### `VmprintOutputStream`
+
+A portable output stream interface. Callers (e.g. the CLI) implement this against their specific I/O mechanism — a file write stream, an in-memory buffer, a web response — and pass it to a context via `pipe()`. This keeps Node.js and platform I/O concerns out of both the context contract and any context implementation.
+
+```ts
+interface VmprintOutputStream {
+  write(chunk: Uint8Array | string): void;
+  end(): void;
+  waitForFinish(): Promise<void>;
+}
+```
+
 ### `Context`
 
 The rendering surface contract. Implement this to paint vmprint's layout output to any target: PDF, SVG, canvas, a DOM surface, a test spy.
@@ -53,6 +65,7 @@ The rendering surface contract. Implement this to paint vmprint's layout output 
 interface Context {
   addPage(): void;
   end(): void;
+  pipe(stream: VmprintOutputStream): void;  // no-op if output streaming is not supported
   registerFont(id: string, buffer: Uint8Array): Promise<void>;
   font(family: string, size?: number): this;
   fontSize(size: number): this;
@@ -78,6 +91,8 @@ interface Context {
   getSize(): { width: number; height: number };
 }
 ```
+
+`pipe()` is required on the interface but may be a no-op. Contexts that manage their own output (e.g. accumulate bytes in memory and expose them through their own API) simply implement it as `pipe(_stream) {}`. Contexts that support streaming — like `PdfContext` — write rendered output into the stream as pages are produced. The caller owns the stream and calls `waitForFinish()` on it after rendering is complete.
 
 See [`contexts/`](../contexts/README.md) for the reference implementation and a guide to writing custom contexts.
 

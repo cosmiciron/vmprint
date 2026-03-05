@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
 import { pathToFileURL } from 'url';
-import { OverlayProvider } from '@vmprint/contracts';
+import { OverlayProvider, VmprintOutputStream } from '@vmprint/contracts';
 import { LayoutEngine } from '@vmprint/engine';
 import { Renderer } from '@vmprint/engine';
 import { LayoutUtils } from '@vmprint/engine';
@@ -10,11 +10,11 @@ import { resolveDocumentPaths, serializeDocumentIR, toLayoutConfig } from '@vmpr
 import { createEngineRuntime } from '@vmprint/engine';
 import { AnnotatedLayoutStream, DocumentIR, LayoutConfig, Page } from '@vmprint/engine';
 import { performance } from 'perf_hooks';
+import PdfContext from '@vmprint/context-pdf';
 
 type CliOptions = {
     input?: string;
     output?: string;
-    context?: string;
     fontManager?: string;
     dumpIr?: boolean | string;
     emitLayout?: boolean | string;
@@ -25,6 +25,33 @@ type CliOptions = {
     overlay?: string;
     profileLayout?: boolean;
 };
+
+/**
+ * Adapts a Node.js fs.WriteStream to the VmprintOutputStream contract.
+ * Keeps Node.js I/O concerns inside the CLI, away from the context abstraction.
+ */
+class NodeWriteStreamAdapter implements VmprintOutputStream {
+    private stream: fs.WriteStream;
+    constructor(outputPath: string) {
+        this.stream = fs.createWriteStream(outputPath);
+    }
+    write(chunk: Uint8Array | string): void {
+        this.stream.write(chunk);
+    }
+    end(): void {
+        this.stream.end();
+    }
+    waitForFinish(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (this.stream.writableFinished) {
+                resolve();
+                return;
+            }
+            this.stream.once('finish', resolve);
+            this.stream.once('error', reject);
+        });
+    }
+}
 
 const OVERLAY_EXTENSIONS = ['.mjs', '.js', '.cjs', '.ts'] as const;
 
@@ -96,7 +123,6 @@ async function run() {
         .version(cliVersion)
         .option('-i, --input <path>', 'Input document JSON file')
         .option('-o, --output <path>', 'Output file (.pdf)')
-        .option('--context <path>', 'Path to a JS module exporting a Context class (default: bundled PdfContext)')
         .option('--font-manager <path>', 'Path to a JS module exporting a FontManager class (default: bundled LocalFontManager)')
         .option('--dump-ir [path]', 'Write canonical document IR JSON (default: <output>.ir.json)')
         .option('--emit-layout [path]', 'Output annotated layout stream JSON (default: <output>.layout.json)')
@@ -115,10 +141,7 @@ async function run() {
     }
 
     const builtinFontManager = resolveBuiltin('font-managers/local/index.js', '@vmprint/local-fonts');
-    const builtinContext = resolveBuiltin('contexts/pdf/index.js', '@vmprint/context-pdf');
-
     const FontManagerClass = await loadImplementation<new (...args: any[]) => any>(options.fontManager, builtinFontManager);
-    const ContextClass = await loadImplementation<new (...args: any[]) => any>(options.context, builtinContext);
 
     const runtime = createEngineRuntime({ fontManager: new FontManagerClass() });
 
@@ -218,17 +241,16 @@ async function run() {
     const { width, height } = LayoutUtils.getPageDimensions(config);
     const renderer = new Renderer(config, !!options.debug, runtime, overlay);
 
-    const outputStream = fs.createWriteStream(outputPath);
-    const context = new ContextClass(outputStream, {
+    const context = new PdfContext({
         size: [width, height],
         margins: { top: 0, left: 0, right: 0, bottom: 0 },
         autoFirstPage: false,
         bufferPages: false
     });
+    const outputStream = new NodeWriteStreamAdapter(outputPath);
+    context.pipe(outputStream);
     await renderer.render(pages, context);
-    if (typeof context.waitForFinish === 'function') {
-        await context.waitForFinish();
-    }
+    await outputStream.waitForFinish();
     if (options.dumpIr !== undefined && document) {
         const irPath = options.dumpIr === true
             ? outputPath.replace(/\.pdf$/i, '.ir.json')
