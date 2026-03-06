@@ -1,0 +1,603 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 540,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 84,
+        "w": 468,
+        "h": 25.509375,
+        "lines": [
+          [
+            {
+              "text": "Drop Caps",
+              "width": 91.010742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 117.509375,
+        "w": 468,
+        "h": 68.025,
+        "lines": [
+          [
+            {
+              "text": "An enlarged initial letter — the drop cap — has marked the opening of chapters and ",
+              "width": 447.603516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "stanzas since illuminated manuscripts. The letter descends into the column, ",
+              "width": 404.865234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "commanding two to five lines of body text, while the remaining characters of the first ",
+              "width": 448.212891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "word wrap around it.",
+              "width": 108.720703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 195.534375,
+        "w": 468,
+        "h": 68.025,
+        "lines": [
+          [
+            {
+              "text": "Preamble paragraph to push the first drop cap closer to the bottom of this short page. ",
+              "width": 455.589844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Preamble paragraph to push the first drop cap closer to the bottom of this short page. ",
+              "width": 455.589844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Preamble paragraph to push the first drop cap closer to the bottom of this short page. ",
+              "width": 455.589844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Preamble paragraph to push the first drop cap closer to the bottom of this short page.",
+              "width": 452.255859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 273.559375,
+        "w": 468,
+        "h": 68.025,
+        "lines": [
+          [
+            {
+              "text": "Another preamble paragraph so the drop cap paragraph must split across pages. ",
+              "width": 432.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Another preamble paragraph so the drop cap paragraph must split across pages. ",
+              "width": 432.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Another preamble paragraph so the drop cap paragraph must split across pages. ",
+              "width": 432.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Another preamble paragraph so the drop cap paragraph must split across pages.",
+              "width": 429.585938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "dropcap",
+        "x": 72,
+        "y": 351.584375,
+        "w": 468,
+        "h": 68.025,
+        "lines": [
+          [
+            {
+              "text": "P",
+              "width": 60.064005,
+              "ascent": 654.785156,
+              "descent": 0,
+              "fontFamily": "Times New Roman"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 138.064005,
+        "y": 351.584375,
+        "w": 401.935995,
+        "h": 68.025,
+        "lines": [
+          [
+            {
+              "text": "rinting from movable type eliminated the scribe but could not immediately ",
+              "width": 390.855469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "replace the illuminator — early printed books left spaces for hand-drawn ",
+              "width": 385.529297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "initial capitals, a transitional practice that persisted for decades before ",
+              "width": 373.535156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "decorative woodcut initials took their place. The drop cap survived this ",
+              "width": 375.527344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 419.609375,
+        "w": 468,
+        "h": 34.0125,
+        "lines": [
+          [
+            {
+              "text": "transition intact, carrying the manuscript tradition forward into the age of mechanical ",
+              "width": 448.224609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "reproduction. Printing from movable type eliminated the scribe but could not ",
+              "width": 404.882813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 612,
+    "height": 540,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 85.03125,
+        "lines": [
+          [
+            {
+              "text": "immediately replace the illuminator — early printed books left spaces for hand-drawn ",
+              "width": 452.882813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "initial capitals, a transitional practice that persisted for decades before decorative ",
+              "width": 432.234375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "woodcut initials took their place. The drop cap survived this transition intact, carrying the",
+              "width": 466.898438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "manuscript tradition forward into the age of mechanical reproduction. Printing from ",
+              "width": 439.552734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "movable type eliminated the scribe but could not immediately replace the illuminator.",
+              "width": 448.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "dropcap",
+        "x": 72,
+        "y": 167.03125,
+        "w": 468,
+        "h": 51.01875,
+        "lines": [
+          [
+            {
+              "text": "A seco",
+              "width": 197.295297,
+              "ascent": 660.15625,
+              "descent": 9.765625,
+              "fontFamily": "Times New Roman"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 274.295297,
+        "y": 167.03125,
+        "w": 265.704703,
+        "h": 51.01875,
+        "lines": [
+          [
+            {
+              "text": "nd drop cap paragraph that must move as a ",
+              "width": 236.138672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "whole unit when it cannot fit at the foot of the ",
+              "width": 240.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "page. This paragraph is long enough to require at",
+              "width": 262.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 218.05,
+        "w": 468,
+        "h": 34.0125,
+        "lines": [
+          [
+            {
+              "text": "least two lines after the initial, so the drop cap and its body text must relocate together ",
+              "width": 459.585938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "to the next page rather than splitting.",
+              "width": 194.794922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 274.0625,
+        "w": 468,
+        "h": 25.509375,
+        "lines": [
+          [
+            {
+              "text": "Drop Cap Inside a Table Cell",
+              "width": 241.716797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 72,
+        "y": 307.571875,
+        "w": 284.217448,
+        "h": 30.20625,
+        "lines": [
+          [
+            {
+              "text": "Drop Cap Column",
+              "width": 101.994141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 364.217448,
+        "y": 307.571875,
+        "w": 175.782552,
+        "h": 30.20625,
+        "lines": [
+          [
+            {
+              "text": "Plain Column",
+              "width": 76.669922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 72,
+        "y": 343.778125,
+        "w": 284.217448,
+        "h": 115.2375,
+        "lines": []
+      },
+      {
+        "type": "dropcap",
+        "x": 78.6,
+        "y": 349.778125,
+        "w": 271.017448,
+        "h": 51.01875,
+        "lines": [
+          [
+            {
+              "text": "O",
+              "width": 55.659733,
+              "ascent": 662.109375,
+              "descent": 9.765625,
+              "fontFamily": "Times New Roman"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 140.259733,
+        "y": 349.778125,
+        "w": 209.357715,
+        "h": 51.01875,
+        "lines": [
+          [
+            {
+              "text": "rnamental initials inside tabular layouts",
+              "width": 206.109375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "first appeared in reference books ",
+              "width": 178.769531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "where each entry opened with a large ",
+              "width": 203.460938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 78.6,
+        "y": 400.796875,
+        "w": 271.017448,
+        "h": 51.01875,
+        "lines": [
+          [
+            {
+              "text": "letter to aid quick scanning. The drop cap must ",
+              "width": 252.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "stay within the cell's content boundary and align ",
+              "width": 257.115234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "with surrounding body text.",
+              "width": 143.414063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 364.217448,
+        "y": 343.778125,
+        "w": 175.782552,
+        "h": 115.2375,
+        "lines": [
+          [
+            {
+              "text": "For comparison: plain cell ",
+              "width": 140.056641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "rendering with ",
+              "width": 78.708984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "bold",
+              "width": 25.324219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " and ",
+              "width": 26.689453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "coloured",
+              "width": 46.03125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " inline runs.",
+              "width": 61.365234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

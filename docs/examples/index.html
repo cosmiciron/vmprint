@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VMPrint Static Examples</title>
+  <style>
+    :root {
+      --bg: #f5f2ea;
+      --ink: #1f2937;
+      --muted: #4b5563;
+      --line: #d4d4d4;
+      --card: rgba(255, 255, 255, 0.9);
+      --accent: #0f4c5c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(15, 76, 92, 0.11), transparent 40%),
+        var(--bg);
+    }
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2.2rem 1rem;
+    }
+    h1 {
+      margin: 0 0 0.4rem;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-family: "Iowan Old Style", "Palatino Linotype", serif;
+    }
+    p {
+      margin: 0 0 1.2rem;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      gap: 0.9rem;
+    }
+    .card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+    }
+    .card h2 {
+      margin: 0 0 0.3rem;
+      font-size: 1.05rem;
+      color: var(--accent);
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .coming-soon {
+      opacity: 0.78;
+      border-style: dashed;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>VMPrint Examples</h1>
+    <p>Standalone static demos for embeddable VMPrint workflows.</p>
+    <section class="grid">
+      <a class="card" href="./ast-to-pdf/index.html">
+        <h2>AST JSON to PDF</h2>
+        <p>Browser-only pipeline using Standard Font Manager, Engine, and PDF Lite Context.</p>
+      </a>
+      <article class="card coming-soon">
+        <h2>Markdown to AST (planned)</h2>
+        <p>Reserved for a future static converter example.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

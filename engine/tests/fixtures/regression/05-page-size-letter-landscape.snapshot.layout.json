@@ -1,0 +1,232 @@
+[
+  {
+    "index": 0,
+    "width": 792,
+    "height": 612,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 54,
+        "y": 54,
+        "w": 684,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Landscape Layout — LETTER",
+              "width": 312.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 54,
+        "y": 100.078125,
+        "w": 684,
+        "h": 49.21875,
+        "lines": [
+          [
+            {
+              "text": "Rotating a LETTER page to landscape swaps its 612 × 792 point dimensions to 792 × 612. The wider measure means each line ",
+              "width": 682.40625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "of body text can carry roughly thirty percent more characters before wrapping — useful for tables, timelines, and side-by-side ",
+              "width": 664.980469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "comparisons.",
+              "width": 71.361328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 54,
+        "y": 169.296875,
+        "w": 684,
+        "h": 21.875,
+        "lines": [
+          [
+            {
+              "text": "Measure in Landscape",
+              "width": 171.617188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 54,
+        "y": 199.171875,
+        "w": 684,
+        "h": 49.21875,
+        "lines": [
+          [
+            {
+              "text": "At these margins the usable column width is 684 pt — nearly ten inches. This paragraph would wrap considerably earlier on a ",
+              "width": 669.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "portrait page. The wider measure also changes optimal font size and line spacing; display work often calls for a slightly larger ",
+              "width": 665.671875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "face to maintain reading rhythm across the longer line.",
+              "width": 288.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 54,
+        "y": 268.390625,
+        "w": 684,
+        "h": 21.875,
+        "lines": [
+          [
+            {
+              "text": "Page Numbers",
+              "width": 112.039063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 54,
+        "y": 572,
+        "w": 684,
+        "h": 10,
+        "lines": [
+          [
+            {
+              "text": "Landscape 1",
+              "width": 57.270508,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 792,
+    "height": 612,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 54,
+        "y": 54,
+        "w": 684,
+        "h": 32.8125,
+        "lines": [
+          [
+            {
+              "text": "Page numbers are enabled with the format \"Landscape {n}\" and positioned at the bottom of each page. They appear below this ",
+              "width": 676.96875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "text and below the continued content on page two.",
+              "width": 267.527344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 54,
+        "y": 96.8125,
+        "w": 684,
+        "h": 32.8125,
+        "lines": [
+          [
+            {
+              "text": "Page two in landscape. The dimensions, margins, and page-number position should be identical to page one — confirming that ",
+              "width": 677.742188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "orientation is applied uniformly across all pages in the run.",
+              "width": 308.835938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 54,
+        "y": 572,
+        "w": 684,
+        "h": 10,
+        "lines": [
+          [
+            {
+              "text": "Landscape 2",
+              "width": 57.270508,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

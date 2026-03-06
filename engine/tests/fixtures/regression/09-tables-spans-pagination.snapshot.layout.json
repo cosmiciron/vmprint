@@ -1,0 +1,3496 @@
+[
+  {
+    "index": 0,
+    "width": 380,
+    "height": 220,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 20,
+        "y": 20,
+        "w": 340,
+        "h": 25.34375,
+        "lines": [
+          [
+            {
+              "text": "Regression fixture: mixed colSpan + rowSpan table with repeated headers ",
+              "width": 331.577148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "and forced pagination to validate deterministic table splitting behavior.",
+              "width": 308.520508,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 53.34375,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 53.34375,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task",
+              "width": 19.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 53.34375,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "State",
+              "width": 22.007813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 53.34375,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Note",
+              "width": 19.999512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 74.948437,
+        "w": 56,
+        "h": 42.209375,
+        "lines": [
+          [
+            {
+              "text": "SEQ-001",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 74.948437,
+        "w": 204.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Intake + triage.",
+              "width": 59.787598,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 74.948437,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Owner synced.",
+              "width": 60.024902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 96.553125,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Phase B checks.",
+              "width": 67.03418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 96.553125,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 96.553125,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Await signoff.",
+              "width": 53.200195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 118.157812,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-002",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 118.157812,
+        "w": 204.333333,
+        "h": 53.614062,
+        "lines": [
+          [
+            {
+              "text": "Risk + fallback",
+              "width": 58.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 118.157812,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Escalation lane.",
+              "width": 63.540527,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 139.7625,
+        "w": 56,
+        "h": 32.009375,
+        "lines": [
+          [
+            {
+              "text": "SEQ-003",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 139.7625,
+        "w": 73.666667,
+        "h": 32.009375,
+        "lines": [
+          [
+            {
+              "text": "Pulse ",
+              "width": 25.013672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continues.",
+              "width": 41.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 172.771875,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-004",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 172.771875,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 4 validation.",
+              "width": 69.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 172.771875,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 172.771875,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 4.",
+              "width": 26.512207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 380,
+    "height": 220,
+    "boxes": [
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 20,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 20,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task",
+              "width": 19.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 20,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "State",
+              "width": 22.007813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 20,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Note",
+              "width": 19.999512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 41.604687,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-005",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 41.604687,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 5 validation.",
+              "width": 69.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 41.604687,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Done",
+              "width": 21.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 41.604687,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 5.",
+              "width": 26.512207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 63.209375,
+        "w": 56,
+        "h": 42.209375,
+        "lines": [
+          [
+            {
+              "text": "SEQ-006",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 63.209375,
+        "w": 204.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Milestone 6 sync.",
+              "width": 69.530273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 63.209375,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Track 6.",
+              "width": 32.172363,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 84.814062,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Follow-up 6.",
+              "width": 49.020996,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 84.814062,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Review",
+              "width": 39.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 84.814062,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Batch 6.",
+              "width": 33.020508,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 106.41875,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-008",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 106.41875,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 8 validation.",
+              "width": 69.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 106.41875,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 106.41875,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 8.",
+              "width": 26.512207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 128.023438,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-009",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 128.023438,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 9 validation.",
+              "width": 69.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 128.023438,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Blocked",
+              "width": 32.018555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 128.023438,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 9.",
+              "width": 26.512207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 149.628125,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-010",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 149.628125,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 10 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 149.628125,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 149.628125,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 10.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 171.232812,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-011",
+              "width": 36.351563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 171.232812,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 11 validation.",
+              "width": 73.375488,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 171.232812,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Done",
+              "width": 21.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 171.232812,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 11.",
+              "width": 30.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 380,
+    "height": 220,
+    "boxes": [
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 20,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 20,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task",
+              "width": 19.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 20,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "State",
+              "width": 22.007813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 20,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Note",
+              "width": 19.999512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 41.604687,
+        "w": 56,
+        "h": 42.209375,
+        "lines": [
+          [
+            {
+              "text": "SEQ-012",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 41.604687,
+        "w": 204.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Milestone 12 sync.",
+              "width": 74.535645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 41.604687,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Track 12.",
+              "width": 37.177734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 63.209375,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Follow-up 12.",
+              "width": 54.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 63.209375,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Review",
+              "width": 39.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 63.209375,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Batch 12.",
+              "width": 38.025879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 84.814062,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-014",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 84.814062,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 14 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 84.814062,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 84.814062,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 14.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 106.41875,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-015",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 106.41875,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 15 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 106.41875,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Blocked",
+              "width": 32.018555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 106.41875,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 15.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 128.023438,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-016",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 128.023438,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 16 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 128.023438,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 128.023438,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 16.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 149.628125,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-017",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 149.628125,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 17 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 149.628125,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Done",
+              "width": 21.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 149.628125,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 17.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 380,
+    "height": 220,
+    "boxes": [
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 20,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 20,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task",
+              "width": 19.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 20,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "State",
+              "width": 22.007813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 20,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Note",
+              "width": 19.999512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 41.604687,
+        "w": 56,
+        "h": 42.209375,
+        "lines": [
+          [
+            {
+              "text": "SEQ-018",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 41.604687,
+        "w": 204.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Milestone 18 sync.",
+              "width": 74.535645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 41.604687,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Track 18.",
+              "width": 37.177734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 63.209375,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Follow-up 18.",
+              "width": 54.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 63.209375,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Review",
+              "width": 39.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 63.209375,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Batch 18.",
+              "width": 38.025879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 84.814062,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-020",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 84.814062,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 20 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 84.814062,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 84.814062,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 20.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 106.41875,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-021",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 106.41875,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 21 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 106.41875,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Blocked",
+              "width": 32.018555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 106.41875,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 21.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 128.023438,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-022",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 128.023438,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 22 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 128.023438,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 128.023438,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 22.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 149.628125,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-023",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 149.628125,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 23 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 149.628125,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Done",
+              "width": 21.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 149.628125,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 23.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 380,
+    "height": 220,
+    "boxes": [
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 20,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 20,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task",
+              "width": 19.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 20,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "State",
+              "width": 22.007813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 20,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Note",
+              "width": 19.999512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 41.604687,
+        "w": 56,
+        "h": 42.209375,
+        "lines": [
+          [
+            {
+              "text": "SEQ-024",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 41.604687,
+        "w": 204.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Milestone 24 sync.",
+              "width": 74.535645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 41.604687,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Track 24.",
+              "width": 37.177734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 63.209375,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Follow-up 24.",
+              "width": 54.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 63.209375,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Review",
+              "width": 39.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 63.209375,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Batch 24.",
+              "width": 38.025879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 84.814062,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-026",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 84.814062,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 26 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 84.814062,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 84.814062,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 26.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 106.41875,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-027",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 106.41875,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 27 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 106.41875,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Blocked",
+              "width": 32.018555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 106.41875,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 27.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 128.023438,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-028",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 128.023438,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 28 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 128.023438,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 128.023438,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 28.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 149.628125,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-029",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 149.628125,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 29 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 149.628125,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Done",
+              "width": 21.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 149.628125,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 29.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "width": 380,
+    "height": 220,
+    "boxes": [
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 20,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 20,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task",
+              "width": 19.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 20,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "State",
+              "width": 22.007813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 20,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Note",
+              "width": 19.999512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 41.604687,
+        "w": 56,
+        "h": 42.209375,
+        "lines": [
+          [
+            {
+              "text": "SEQ-030",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 41.604687,
+        "w": 204.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Milestone 30 sync.",
+              "width": 74.535645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 41.604687,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Track 30.",
+              "width": 37.177734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 63.209375,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Follow-up 30.",
+              "width": 54.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 63.209375,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Review",
+              "width": 39.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 63.209375,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Batch 30.",
+              "width": 38.025879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 84.814062,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-032",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 84.814062,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 32 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 84.814062,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 84.814062,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 32.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 106.41875,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-033",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 106.41875,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 33 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 106.41875,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Blocked",
+              "width": 32.018555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 106.41875,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 33.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 128.023438,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-034",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 128.023438,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 34 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 128.023438,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 128.023438,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 34.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 149.628125,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-035",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 149.628125,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 35 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 149.628125,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Done",
+              "width": 21.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 149.628125,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 35.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "width": 380,
+    "height": 220,
+    "boxes": [
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 20,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 20,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task",
+              "width": 19.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 20,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "State",
+              "width": 22.007813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 20,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Note",
+              "width": 19.999512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 41.604687,
+        "w": 56,
+        "h": 42.209375,
+        "lines": [
+          [
+            {
+              "text": "SEQ-036",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 41.604687,
+        "w": 204.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Milestone 36 sync.",
+              "width": 74.535645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 41.604687,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Track 36.",
+              "width": 37.177734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 63.209375,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Follow-up 36.",
+              "width": 54.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 63.209375,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Review",
+              "width": 39.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 63.209375,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Batch 36.",
+              "width": 38.025879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 84.814062,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-038",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 84.814062,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 38 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 84.814062,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 84.814062,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 38.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 106.41875,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-039",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 106.41875,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 39 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 106.41875,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Blocked",
+              "width": 32.018555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 106.41875,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 39.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 128.023438,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-040",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 128.023438,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 40 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 128.023438,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Progress",
+              "width": 46.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 128.023438,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 40.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 149.628125,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "SEQ-041",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 149.628125,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task 41 validation.",
+              "width": 74.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 149.628125,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Done",
+              "width": 21.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 149.628125,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Ops 41.",
+              "width": 31.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 7,
+    "width": 380,
+    "height": 220,
+    "boxes": [
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 20,
+        "w": 56,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 20,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Task",
+              "width": 19.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 20,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "State",
+              "width": 22.007813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 20,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Note",
+              "width": 19.999512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 20,
+        "y": 41.604687,
+        "w": 56,
+        "h": 42.209375,
+        "lines": [
+          [
+            {
+              "text": "SEQ-042",
+              "width": 37.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 41.604687,
+        "w": 204.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Milestone 42 sync.",
+              "width": 74.535645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 41.604687,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Track 42.",
+              "width": 37.177734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 79,
+        "y": 63.209375,
+        "w": 119.333333,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Follow-up 42.",
+              "width": 54.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 201.333333,
+        "y": 63.209375,
+        "w": 82,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "In Review",
+              "width": 39.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 286.333333,
+        "y": 63.209375,
+        "w": 73.666667,
+        "h": 20.604687,
+        "lines": [
+          [
+            {
+              "text": "Batch 42.",
+              "width": 38.025879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

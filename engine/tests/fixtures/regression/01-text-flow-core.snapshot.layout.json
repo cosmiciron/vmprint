@@ -1,0 +1,474 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 31.6125,
+        "lines": [
+          [
+            {
+              "text": "The Typographer's Proof",
+              "width": 282.621094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 121.6125,
+        "w": 468,
+        "h": 63.225,
+        "lines": [
+          [
+            {
+              "text": "Good typography is invisible. Readers should never notice the grid, the rhythm, or the ",
+              "width": 456.914063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "measure — they should only feel the ease with which meaning reaches them. This ",
+              "width": 440.894531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "document exercises the fundamentals of that craft: paragraph flow, inline styling, ",
+              "width": 430.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "alignment, borders, and clean pagination.",
+              "width": 220.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 208.8375,
+        "w": 468,
+        "h": 23.709375,
+        "lines": [
+          [
+            {
+              "text": "Inline Markup",
+              "width": 116.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 242.546875,
+        "w": 468,
+        "h": 31.6125,
+        "lines": [
+          [
+            {
+              "text": "A sentence may carry ",
+              "width": 119.378906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "weight",
+              "width": 37.998047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " through emphasis, ",
+              "width": 105.392578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "colour",
+              "width": 32.683594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " through contrast, and rhythm ",
+              "width": 160.083984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "through repetition — all within a single flowing line.",
+              "width": 268.816406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 298.159375,
+        "w": 468,
+        "h": 23.709375,
+        "lines": [
+          [
+            {
+              "text": "Line Wrapping & Measure",
+              "width": 220.702148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 331.86875,
+        "w": 468,
+        "h": 79.03125,
+        "lines": [
+          [
+            {
+              "text": "The measure — the width of a text column — is among the oldest constraints in type ",
+              "width": 451.552734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "setting. Twelve to fifteen words per line is a longstanding ideal: narrow enough that the ",
+              "width": 462.28125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "eye returns to the left margin without effort, wide enough that each line carries a full ",
+              "width": 445.359375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "thought. This paragraph is held at the standard LETTER margin to demonstrate stable ",
+              "width": 460.253906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "wrap positions and consistent baseline spacing.",
+              "width": 253.488281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 434.9,
+        "w": 468,
+        "h": 23.709375,
+        "lines": [
+          [
+            {
+              "text": "Alignment",
+              "width": 87.996094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 468.609375,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "Left-aligned — the default for most running text.",
+              "width": 253.476563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 496.415625,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "Centred — used for titles, captions, and display lines.",
+              "width": 282.814453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 524.221875,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "Right-aligned — folios, credits, and pulled-out data.",
+              "width": 272.15625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 564.028125,
+        "w": 468,
+        "h": 23.709375,
+        "lines": [
+          [
+            {
+              "text": "Borders & Insets",
+              "width": 144.043945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "blockquote",
+        "x": 72,
+        "y": 607.7375,
+        "w": 468,
+        "h": 77.225,
+        "lines": [
+          [
+            {
+              "text": "The border-left treatment derives from manuscript annotation practice: marginalia ",
+              "width": 434.197266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "drawn with a vertical rule to distinguish commentary from the main text. All four ",
+              "width": 421.5,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "borders are active here, padding is asymmetric, and the rule widths differ — a ",
+              "width": 415.3125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "deliberate test of boundary geometry.",
+              "width": 198.785156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 84,
+        "w": 468,
+        "h": 23.709375,
+        "lines": [
+          [
+            {
+              "text": "Multi-Page Flow",
+              "width": 136.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 117.709375,
+        "w": 468,
+        "h": 47.41875,
+        "lines": [
+          [
+            {
+              "text": "Long-form documents span many pages. The content that follows begins on a fresh ",
+              "width": 446.923828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "page to confirm that break-before behaviour is handled cleanly — margins reset, ",
+              "width": 430.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "baselines re-anchor, and flow continues as if the first page never ended.",
+              "width": 382.898438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 31.6125,
+        "lines": [
+          [
+            {
+              "text": "Page two. Paragraph flow, alignment, and line-height remain identical to page one. ",
+              "width": 442.277344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "There are no special cases here — pagination is transparent to the typographic engine.",
+              "width": 462.949219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 115.6125,
+        "w": 468,
+        "h": 31.6125,
+        "lines": [
+          [
+            {
+              "text": "A closing line confirms that content after the break renders in the correct position and ",
+              "width": 454.242188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "with no residual state from the previous page.",
+              "width": 242.132813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

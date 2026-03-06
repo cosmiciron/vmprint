@@ -1,0 +1,468 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Inline Baseline Alignment Showcase",
+              "width": 381.433594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 116.078125,
+        "w": 468,
+        "h": 32.8125,
+        "lines": [
+          [
+            {
+              "text": "Visual + regression fixture for publication-grade inline object alignment. It exercises ",
+              "width": 443.677734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "verticalAlign variants and inline margin spacing.",
+              "width": 252.796875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 158.890625,
+        "w": 468,
+        "h": 66.685937,
+        "lines": [
+          [
+            {
+              "text": "Variant 1 (baseline): Begin ",
+              "width": 143.859375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 20,
+              "ascent": 1333.333333,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " status marker ",
+              "width": 79.353516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 84,
+              "ascent": 2166.666667,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " and inline box ",
+              "width": 80.724609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 32.814453,
+              "ascent": 1400,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " ",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should align with text rhythm in this sentence.",
+              "width": 241.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 237.576562,
+        "w": 468,
+        "h": 61.6,
+        "lines": [
+          [
+            {
+              "text": "Variant 2 (middle): Begin ",
+              "width": 134.507813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 20,
+              "ascent": 966.666667,
+              "descent": 366.666667,
+              "fontFamily": ""
+            },
+            {
+              "text": " status marker ",
+              "width": 79.353516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 84,
+              "ascent": 1383.333333,
+              "descent": 783.333333,
+              "fontFamily": ""
+            },
+            {
+              "text": " and inline box ",
+              "width": 80.724609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 32.814453,
+              "ascent": 1000,
+              "descent": 400,
+              "fontFamily": ""
+            },
+            {
+              "text": " ",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should align with text rhythm in this sentence.",
+              "width": 241.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 311.176562,
+        "w": 468,
+        "h": 64.126562,
+        "lines": [
+          [
+            {
+              "text": "Variant 3 (text-top): Begin ",
+              "width": 139.177734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 20,
+              "ascent": 800,
+              "descent": 533.333333,
+              "fontFamily": ""
+            },
+            {
+              "text": " status marker ",
+              "width": 79.353516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 84,
+              "ascent": 800,
+              "descent": 1366.666667,
+              "fontFamily": ""
+            },
+            {
+              "text": " and inline box ",
+              "width": 80.724609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 32.814453,
+              "ascent": 800,
+              "descent": 600,
+              "fontFamily": ""
+            },
+            {
+              "text": " ",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should align with text rhythm in this sentence.",
+              "width": 241.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 387.303125,
+        "w": 468,
+        "h": 61.885937,
+        "lines": [
+          [
+            {
+              "text": "Variant 4 (text-bottom): Begin ",
+              "width": 159.181641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 20,
+              "ascent": 1133.333333,
+              "descent": 200,
+              "fontFamily": ""
+            },
+            {
+              "text": " status marker ",
+              "width": 79.353516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 84,
+              "ascent": 1966.666667,
+              "descent": 200,
+              "fontFamily": ""
+            },
+            {
+              "text": " and inline box ",
+              "width": 80.724609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 32.814453,
+              "ascent": 1200,
+              "descent": 200,
+              "fontFamily": ""
+            },
+            {
+              "text": " ",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should align with text rhythm in this sentence.",
+              "width": 241.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 461.189062,
+        "w": 468,
+        "h": 61.885937,
+        "lines": [
+          [
+            {
+              "text": "Variant 5 (bottom): Begin ",
+              "width": 135.84375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 20,
+              "ascent": 1133.333333,
+              "descent": 200,
+              "fontFamily": ""
+            },
+            {
+              "text": " status marker ",
+              "width": 79.353516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 84,
+              "ascent": 1966.666667,
+              "descent": 200,
+              "fontFamily": ""
+            },
+            {
+              "text": " and inline box ",
+              "width": 80.724609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 32.814453,
+              "ascent": 1200,
+              "descent": 200,
+              "fontFamily": ""
+            },
+            {
+              "text": " ",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should align with text rhythm in this sentence.",
+              "width": 241.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 535.075,
+        "w": 468,
+        "h": 66.8,
+        "lines": [
+          [
+            {
+              "text": "Neutral A: ",
+              "width": 56.689453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 18.5,
+              "ascent": 966.666667,
+              "descent": 366.666667,
+              "fontFamily": ""
+            },
+            {
+              "text": " default icon, ",
+              "width": 71.378906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 84,
+              "ascent": 1966.666667,
+              "descent": 200,
+              "fontFamily": ""
+            },
+            {
+              "text": " default badge, and ",
+              "width": 106.089844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "￼",
+              "width": 31.453125,
+              "ascent": 1200,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " custom margin ",
+              "width": 85.359375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "glue.",
+              "width": 26.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

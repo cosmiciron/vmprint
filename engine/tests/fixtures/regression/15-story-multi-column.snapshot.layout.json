@@ -1,0 +1,3275 @@
+[
+  {
+    "index": 0,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 50,
+        "y": 60,
+        "w": 500,
+        "h": 54.61875,
+        "lines": [
+          [
+            {
+              "text": "The Future of Layout",
+              "width": 357.978516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "lead",
+        "x": 50,
+        "y": 124.61875,
+        "w": 500,
+        "h": 45.28125,
+        "lines": [
+          [
+            {
+              "text": "Our new layout engine brings professional-grade, multi-column ",
+              "width": 426.268555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "typesetting directly into the automated document pipeline.",
+              "width": 388.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "dropcap",
+        "x": 50,
+        "y": 189.9,
+        "w": 500,
+        "h": 45.515625,
+        "lines": [
+          [
+            {
+              "text": "T",
+              "width": 42.765092,
+              "ascent": 654.785156,
+              "descent": 0,
+              "fontFamily": "Times New Roman"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 98.765092,
+        "y": 189.9,
+        "w": 191.234908,
+        "h": 45.515625,
+        "lines": [
+          [
+            {
+              "text": "he magazine's equipo editorial verifies ",
+              "width": 172.006836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "every proof before publication, ensuring ",
+              "width": 178.442383,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "typographic fidelity is maintained across all",
+              "width": 189.536133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 235.415625,
+        "w": 500,
+        "h": 30.34375,
+        "lines": [
+          [
+            {
+              "text": "scripts, locales, and output formats throughout the ",
+              "width": 224.570313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "production cycle.",
+              "width": 75.039063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 275.759375,
+        "w": 240,
+        "h": 57.171875,
+        "lines": [
+          [
+            {
+              "text": "Each rubrique de service is composited in its native ",
+              "width": 230.112305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "locale, letting the engine demonstrate its multilingual ",
+              "width": 234.580078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "shaping, kerning, and bidirectional text capabilities ",
+              "width": 225.693359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "across diverse glyph sets.",
+              "width": 115.048828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 342.93125,
+        "w": 240,
+        "h": 99.171875,
+        "lines": [
+          [
+            {
+              "text": "This is the start of our two-column layout. When you ",
+              "width": 232.875977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "work with advanced automated layouts, handling multi",
+              "width": 239.580078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "-column text that effortlessly snaps around floating ",
+              "width": 225.493164,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "obstacles is crucial for that high-end magazine feel. ",
+              "width": 230.12207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "We need the layout to show line-width variance from ",
+              "width": 234.379883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "obstacle wrapping, so we push the text carefully ",
+              "width": 215.117188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "around it.",
+              "width": 41.694336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "box",
+        "x": 50,
+        "y": 452.103125,
+        "w": 140,
+        "h": 130,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 452.103125,
+        "w": 240,
+        "h": 242.2496,
+        "lines": [
+          [
+            {
+              "text": "It allows us to ",
+              "width": 63.359375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "place elements ",
+              "width": 70.039063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "visually without ",
+              "width": 70.029297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "breaking the ",
+              "width": 57.817383,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "narrative flow. We ",
+              "width": 82.62207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "can even mix ",
+              "width": 61.694336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "languages ",
+              "width": 48.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "naturally: ",
+              "width": 43.354492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "これ",
+              "width": 18.4,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "는",
+              "width": 8.464,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans KR"
+            },
+            {
+              "text": "テ",
+              "width": 9.2,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            }
+          ],
+          [
+            {
+              "text": "ストです",
+              "width": 36.8,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": ". El veloz ",
+              "width": 43.349609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "murciélago comía ",
+              "width": 81.699219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "feliz cardillo y kiwi.",
+              "width": 82.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "And the text wraps flawlessly around our floating ",
+              "width": 217.338867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "obstacle. This text should wrap right next to the ",
+              "width": 211.777344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "obstacle, forcing line width variance in the two-column",
+              "width": 239.008789,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "format! Yes, the obstacle forces the text to wrap tightly,",
+              "width": 242.529297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": " reducing the line width and satisfying the variance ",
+              "width": 226.245117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "check.",
+              "width": 28.901367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 704.352725,
+        "w": 240,
+        "h": 42,
+        "lines": [
+          [
+            {
+              "text": "We need A LOT of text to force three pages. Let's just",
+              "width": 237.963867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "repeat a long block of text. To push the text down and ",
+              "width": 239.599609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fill the page securely so we spill naturally over or hit ",
+              "width": 230.664063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 310,
+        "y": 189.9,
+        "w": 240,
+        "h": 141.171875,
+        "lines": [
+          [
+            {
+              "text": "page bounds, let's include an abundant amount of text",
+              "width": 239.863281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "to test the capabilities of the pagination system in a ",
+              "width": 229.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "multicolumn scenario. We want to ensure that it ",
+              "width": 212.69043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "correctly handles columns spanning up to the bottom ",
+              "width": 236.801758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "margin and continuing seamlessly on the right column.",
+              "width": 241.240234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": " It needs to look refined, elegant, and purposeful — ",
+              "width": 229.594727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "exactly as it would in a modern digital magazine, ",
+              "width": 217.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "newspaper, or academic journal where multi-column ",
+              "width": 233.994141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "layouts are the standard. The text wraps flawlessly ",
+              "width": 226.772461,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "around obstacles. We continue generating text.",
+              "width": 208.837891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 310,
+        "y": 341.071875,
+        "w": 240,
+        "h": 211.171875,
+        "lines": [
+          [
+            {
+              "text": "Lorem ipsum dolor sit amet, consectetur adipiscing ",
+              "width": 227.880859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "elit. Phasellus imperdiet nulla et dictum interdum. Nisi ",
+              "width": 239.545898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lorem egestas odio, vitae scelerisque enim ligula ",
+              "width": 217.890625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "venenatis dolor. Pellentesque nisl felis, ultricies id ",
+              "width": 222.338867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "condimentum ac, euismod ut elit. Phasellus nibh ",
+              "width": 216.782227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lorem, ultrices ac magna quis, facilisis pellentesque ",
+              "width": 230.107422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "felis. Proin ac ante dignissim dolor euismod sodales ",
+              "width": 232.338867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "at eget augue. Donec iaculis molestie arcu at dictum ",
+              "width": 234.570313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "risus sodales sit amet. Sed auctor neque eu tellus ",
+              "width": 223.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "rhoncus, ut eleifend elit tempus semper. Donec ",
+              "width": 211.777344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lobortis augue interdum magna sodales dignissim. ",
+              "width": 225.12207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Nullam posuere dui in nibh blandit, et venenatis diam ",
+              "width": 237.363281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tristique cursus. Cras commodo cursus magna, vel ",
+              "width": 227.304688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "scelerisque nisl consectetur et. In non nulla sit amet ",
+              "width": 231.787109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "leo accumsan vestibulum ut tortor.",
+              "width": 152.290039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 310,
+        "y": 562.24375,
+        "w": 240,
+        "h": 182,
+        "lines": [
+          [
+            {
+              "text": "Aliquam erat volutpat. Nam dui mi, tincidunt quis, ",
+              "width": 219.545898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "accumsan porttitor, facilisis luctus, metus. Phasellus ",
+              "width": 233.422852,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ultrices nulla quis nibh. Quisque a lectus. Donec ",
+              "width": 215.673828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "consectetuer ligula vulputate sem tristique cursus. ",
+              "width": 223.999023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Nam nulla quam, gravida non, commodo a, sodales ",
+              "width": 231.235352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sit amet, nisi. Nullam in massa. Donec ut purus. Sed ",
+              "width": 234.541016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "in libero ut nibh placerat accumsan euismod. Proin ",
+              "width": 226.787109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pede metus, vulputate nec, fermentum fringilla, ",
+              "width": 210.664063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "vehicula vitae, justo. Fusce consectetur lorem at ",
+              "width": 216.210938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ipsum semper sagittis. Vivamus faucibus elit ut ",
+              "width": 209.902344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tempus aliquet. Orci metus faucibus eros, vel blandit ",
+              "width": 234.555664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mi est vitae orci accumsan laoreet. Phasellus a ",
+              "width": 211.206055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sapien sodales neque vehicula placerat sit amet vel ",
+              "width": 231.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 50,
+        "y": 760,
+        "w": 500,
+        "h": 10,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 50,
+        "y": 50,
+        "w": 240,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "sem commodo.",
+              "width": 68.354492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 75.171875,
+        "w": 240,
+        "h": 225.171875,
+        "lines": [
+          [
+            {
+              "text": "Aenean accumsan libero vitae urna tempus volutpat. ",
+              "width": 235.693359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Sed vestibulum augue in felis tincidunt aliquam. Morbi",
+              "width": 238.461914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "suscipit feugiat purus. Maecenas nec odio et ante ",
+              "width": 222.358398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tincidunt tempus bibendum. Donec vitae sapien ut ",
+              "width": 224.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "libero venenatis faucibus ornare. Nullam libero velit, ",
+              "width": 231.782227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aliquet nec, scelerisque at, semper ut, quam. Ut ",
+              "width": 214.550781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fringilla. Suspendisse potenti. Nunc feugiat mi a tellus ",
+              "width": 239.575195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "consequat imperdiet. Vestibulum sapien. Proin quam. ",
+              "width": 239.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Etiam ultrices. Suspendisse in justo eu magna luctus ",
+              "width": 236.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "suscipit at blandit. Sed lectus. Integer euismod lacus ",
+              "width": 235.126953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "luctus magna. Quisque cursus, metus vitae pharetra ",
+              "width": 234.003906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "auctor, sem massa mattis sem, at interdum magna ",
+              "width": 227.304688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "augue eget diam. Vestibulum ante ipsum primis in ",
+              "width": 223.452148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "faucibus orci luctus et ultrices posuere cubilia curae; ",
+              "width": 234.003906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "praesent blandit laoreet nibh fusce facilisis pharetra ",
+              "width": 230.688477,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "risus egestas.",
+              "width": 61.694336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 310.34375,
+        "w": 240,
+        "h": 211.171875,
+        "lines": [
+          [
+            {
+              "text": "Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
+              "width": 238.447266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Duis sagittis ipsum. Praesent mauris. Fusce nec tellus",
+              "width": 239.536133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sed augue semper porta. Mauris massa. Vestibulum ",
+              "width": 233.447266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lacinia arcu eget nulla. Class aptent taciti sociosqu ad",
+              "width": 237.358398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "litora torquent per conubia nostra, per inceptos ",
+              "width": 209.570313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "hymenaeos. Curabitur sodales ligula in libero. Sed ",
+              "width": 225.683594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dignissim lacinia nunc. Curabitur tortor. Pellentesque ",
+              "width": 236.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nibh. Aenean quam. In scelerisque sem at dolor. ",
+              "width": 217.348633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Maecenas mattis sed convallis tristique sem. Proin ut ",
+              "width": 237.875977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ligula vel nunc egestas porttitor. Morbi lectus risus, ",
+              "width": 226.767578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "iaculis vel, suscipit quis, luctus non, massa. Fusce ac ",
+              "width": 238.432617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "turpis quis ligula lacinia aliquet non velit. Mauris ",
+              "width": 213.442383,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ipsum. Nulla metus metus, ullamcorper vel, tincidunt ",
+              "width": 233.979492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sed, euismod in, nibh. Quisque volutpat condimentum",
+              "width": 237.915039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "velit ornare.",
+              "width": 52.246094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 50,
+        "y": 760,
+        "w": 500,
+        "h": 10,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 50,
+        "y": 66,
+        "w": 500,
+        "h": 30.34375,
+        "lines": [
+          [
+            {
+              "text": "A Densely Packed Three-Column Analysis",
+              "width": 401.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 104.34375,
+        "w": 156.666667,
+        "h": 99.171875,
+        "lines": [
+          [
+            {
+              "text": "Three columns are challenging ",
+              "width": 139.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "because the line length becomes ",
+              "width": 148.989258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "very narrow, making hyphenation ",
+              "width": 150.078125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "and justification engines work ",
+              "width": 133.408203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aggressively. We are testing how ",
+              "width": 149.331055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "well text shapes around tight ",
+              "width": 129.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "obstacles.",
+              "width": 45.024414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "box",
+        "x": 88.333333,
+        "y": 213.515625,
+        "w": 80,
+        "h": 80,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 213.515625,
+        "w": 156.666667,
+        "h": 197.171875,
+        "lines": [
+          [
+            {
+              "text": "In a ",
+              "width": 19.458008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "three-",
+              "width": 26.123047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "colum",
+              "width": 26.674805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "n ",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "setup, ",
+              "width": 30.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "every ",
+              "width": 27.231445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pixel ",
+              "width": 23.344727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "counts.",
+              "width": 32.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": " ",
+              "width": 2.77832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Center",
+              "width": 30.014648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "-",
+              "width": 3.330078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aligne",
+              "width": 26.689453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "d ",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "floats ",
+              "width": 26.679688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "carve out chunks of an already ",
+              "width": 138.969727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "narrow span. We simulate a ",
+              "width": 126.538086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "stylized text box here representing ",
+              "width": 155.083008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "an author picture, small graphic, or",
+              "width": 153.964844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "callout. This text must wrap around",
+              "width": 155.068359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the center float, forcing lines to ",
+              "width": 138.964844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "split left and right of the obstacle!",
+              "width": 146.196289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 420.6875,
+        "w": 156.666667,
+        "h": 322,
+        "lines": [
+          [
+            {
+              "text": "Lorem ipsum dolor sit amet, ",
+              "width": 126.157227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "consectetur adipiscing elit. Nulla ",
+              "width": 145.629883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "facilisi. Duis aliquet egestas purus ",
+              "width": 153.408203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "in blandit. Curabitur vulputate, ",
+              "width": 135.634766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ligula lacinia scelerisque tempor, ",
+              "width": 147.294922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lacus lacus ornare ante, ac ",
+              "width": 122.290039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "egestas est urna sed arcu. Integer ",
+              "width": 154.536133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "urna. Vivamus molestie dui. ",
+              "width": 125.429688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Quisque volutpat mattis eros. ",
+              "width": 132.285156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Nullam malesuada erat ut turpis. ",
+              "width": 146.733398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Suspendisse urna nibh, viverra ",
+              "width": 140.078125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "non, semper suscipit, posuere a, ",
+              "width": 147.299805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pede. Donec dapibus. Fusce ",
+              "width": 130.083008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "facilisis pharetra risus. Sed vitae ",
+              "width": 146.171875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dui nec diam ultrices bibendum. ",
+              "width": 143.408203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Vivamus in mi. Sed commodo ",
+              "width": 134.868164,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "posuere pede. Mauris ut est. Ut ",
+              "width": 142.294922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "quis purus. Sed ac odio. Sed ",
+              "width": 130.639648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "vehicula hendrerit sem. Duis non ",
+              "width": 148.408203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "odio. Morbi ut dui. Sed accumsan ",
+              "width": 151.191406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "risus eget odio. In hac habitasse ",
+              "width": 146.201172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "platea dictumst. Pellentesque non ",
+              "width": 152.875977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "elit. Fusce sed justo eu urna porta ",
+              "width": 153.417969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 221.666667,
+        "y": 104.34375,
+        "w": 156.666667,
+        "h": 644,
+        "lines": [
+          [
+            {
+              "text": "tincidunt. Mauris felis odio, ",
+              "width": 120.610352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sollicitudin sed, volutpat a, ornare ",
+              "width": 151.196289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ac, arcu. Nullam tristique diam non",
+              "width": 153.955078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "turpis. Cras placerat accumsan ",
+              "width": 140.610352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nulla. Nullam rutrum. Nam ",
+              "width": 118.920898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "vestibulum accumsan nisl. ",
+              "width": 119.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Pellentesque dapibus suscipit ",
+              "width": 134.53125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ligula. Donec posuere augue in ",
+              "width": 140.654297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "quam. Etiam vel tortor sodales ",
+              "width": 137.836914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tellus ultricies commodo. ",
+              "width": 112.260742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Suspendisse potenti. Aenean in ",
+              "width": 143.4375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sem ac leo mollis blandit. Donec ",
+              "width": 146.176758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "neque quam, dignissim in, mollis ",
+              "width": 147.290039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nec, sagittis eu, wisi. Phasellus ",
+              "width": 140.620117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lacus. Etiam laoreet quam sed ",
+              "width": 137.290039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "arcu. Phasellus at dui in ligula ",
+              "width": 135.078125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mollis ultricies. Integer placerat ",
+              "width": 140.053711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tristique nisl. Praesent augue. ",
+              "width": 134.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Fusce commodo. Vestibulum ",
+              "width": 131.166992,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "convallis, lorem a tempus semper, ",
+              "width": 154.501953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dui dui euismod elit, vitae placerat ",
+              "width": 153.417969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "urna tortor vitae lacus. Nullam ",
+              "width": 135.610352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aliquet odio quis turpis. Integer in ",
+              "width": 149.536133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "vulputate mi. Integer tincidunt ante ",
+              "width": 155.649414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "vel ipsum. Praesent dapibus, ",
+              "width": 131.181641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "neque id cursus faucibus, tortor ",
+              "width": 142.299805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "neque egestas augue, eu vulputate",
+              "width": 156.240234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "magna eros eu erat. Aliquam erat ",
+              "width": 151.191406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "volutpat. Nam dui ligula, fringilla a, ",
+              "width": 155.078125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "euismod sodales, sollicitudin vel, ",
+              "width": 147.851563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "wisi. Morbi auctor lorem non justo. ",
+              "width": 154.501953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Nam lacus libero, pretium at, ",
+              "width": 130.048828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lobortis vitae, ornare et, elit. Duis ",
+              "width": 148.398438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tellus diam, ornare consectetuer ",
+              "width": 145.073242,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "est ac, pulvinar condimentum leo. ",
+              "width": 151.743164,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Proin ullamcorper aliquet lectus. ",
+              "width": 145.068359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Sed nisi. Nulla quis sem at nibh ",
+              "width": 142.294922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "elementum imperdiet. Duis sagittis ",
+              "width": 155.615234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ipsum. Praesent mauris. Fusce ",
+              "width": 140.605469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nec tellus sed augue semper porta.",
+              "width": 156.206055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Mauris massa. Vestibulum lacinia ",
+              "width": 150.615234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "arcu eget nulla. Class aptent taciti ",
+              "width": 152.861328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sociosqu ad litora torquent per ",
+              "width": 137.304688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "conubia nostra, per inceptos ",
+              "width": 128.413086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "hymenaeos. Curabitur sodales ",
+              "width": 138.408203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ligula in libero. Sed dignissim ",
+              "width": 131.733398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 393.333333,
+        "y": 104.34375,
+        "w": 156.666667,
+        "h": 295.171875,
+        "lines": [
+          [
+            {
+              "text": "lacinia nunc. Curabitur tortor. ",
+              "width": 131.171875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Pellentesque nibh. Aenean quam. ",
+              "width": 152.890625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "In scelerisque sem at dolor. ",
+              "width": 125.058594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Maecenas mattis. Sed convallis ",
+              "width": 142.841797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tristique sem. Proin ut ligula vel ",
+              "width": 141.171875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nunc egestas porttitor. Morbi lectus",
+              "width": 155.629883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "risus, iaculis vel, suscipit quis, ",
+              "width": 135.600586,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "luctus non, massa. Fusce ac turpis",
+              "width": 153.955078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "quis ligula lacinia aliquet. Mauris ",
+              "width": 146.186523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ipsum. Nulla metus metus, ",
+              "width": 120.595703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ullamcorper vel, tincidunt sed, ",
+              "width": 135.063477,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "euismod in, nibh. Quisque volutpat ",
+              "width": 156.206055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "condimentum velit ornare. Aliquam",
+              "width": 153.959961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "erat volutpat. Nam dui mi, tincidunt",
+              "width": 153.959961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "quis, accumsan porttitor, facilisis ",
+              "width": 146.71875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "luctus, metus. Phasellus ultrices ",
+              "width": 145.058594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nulla quis nibh. Quisque a lectus. ",
+              "width": 149.536133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Donec consectetuer ligula ",
+              "width": 117.84668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "vulputate sem tristique cursus. ",
+              "width": 137.836914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Nam nulla quam, gravida non, ",
+              "width": 136.186523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "commodo a, sodales sit amet, nisi.",
+              "width": 153.398438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "box",
+        "x": 490,
+        "y": 409.515625,
+        "w": 60,
+        "h": 90,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 393.333333,
+        "y": 409.515625,
+        "w": 156.666667,
+        "h": 336,
+        "lines": [
+          [
+            {
+              "text": "Nam id est id ",
+              "width": 61.132813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "massa dapibus ",
+              "width": 70.039063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "blandit. Nam ",
+              "width": 58.916016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "interdum justo eget",
+              "width": 85.048828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nisi. Praesent ",
+              "width": 63.364258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dapibus, neque id ",
+              "width": 81.733398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "cursus faucibus, ",
+              "width": 75.03418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tortor neque ",
+              "width": 56.704102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "egestas augue, eu vulputate ",
+              "width": 128.432617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "magna eros eu erat. Class aptent ",
+              "width": 150.639648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "taciti sociosqu ad litora torquent ",
+              "width": 143.413086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "per conubia nostra, per inceptos ",
+              "width": 145.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "hymenaeos. Nulla facilisi. In dui ",
+              "width": 142.84668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "magna, posuere eget, vestibulum ",
+              "width": 150.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "et, tempor auctor, justo. In ac felis ",
+              "width": 152.84668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "quis tortor malesuada pretium. ",
+              "width": 137.841797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Pellentesque auctor neque. Nulla ",
+              "width": 150.102539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "consequat massa quis enim. ",
+              "width": 129.511719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Donec pede justo, fringilla vel, ",
+              "width": 136.186523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aliquet nec, vulputate eget, arcu. In",
+              "width": 155.65918,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enim justo, rhoncus ut, imperdiet a,",
+              "width": 155.629883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "venenatis vitae, justo. Nullam ",
+              "width": 132.841797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dictum felis eu pede mollis pretium.",
+              "width": 156.176758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Integer tincidunt. Cras dapibus. ",
+              "width": 141.191406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 50,
+        "y": 760,
+        "w": 500,
+        "h": 10,
+        "lines": [
+          [
+            {
+              "text": "3.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 50,
+        "y": 50,
+        "w": 156.666667,
+        "h": 617.171875,
+        "lines": [
+          [
+            {
+              "text": "Vivamus elementum semper nisi. ",
+              "width": 149.873047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Aenean vulputate eleifend tellus. ",
+              "width": 147.329102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Aenean leo ligula, porttitor eu, ",
+              "width": 135.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "consequat vitae, eleifend ac, enim.",
+              "width": 153.984375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Aliquam lorem ante, dapibus in, ",
+              "width": 142.856445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "viverra quis, feugiat a, tellus. ",
+              "width": 129.506836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Phasellus viverra nulla ut metus ",
+              "width": 143.955078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "varius laoreet. Quisque rutrum. ",
+              "width": 140.058594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Aenean imperdiet. Etiam ultricies ",
+              "width": 148.955078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nisi vel augue. Curabitur ",
+              "width": 110.615234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ullamcorper ultricies nisi. Nam eget",
+              "width": 155.610352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dui. Etiam rhoncus. Maecenas ",
+              "width": 137.290039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tempus, tellus eget condimentum ",
+              "width": 149.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "rhoncus, sem quam semper libero,",
+              "width": 153.955078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sit amet adipiscing sem neque sed ",
+              "width": 156.196289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ipsum. Nam quam nunc, blandit vel,",
+              "width": 158.964844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": " luctus pulvinar, hendrerit id, lorem.",
+              "width": 155.625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Maecenas nec odio et ante ",
+              "width": 122.861328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tincidunt tempus. Donec vitae ",
+              "width": 133.959961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sapien ut libero venenatis faucibus.",
+              "width": 156.210938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Nullam quis ante. Etiam sit amet ",
+              "width": 146.166992,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "orci eget eros faucibus tincidunt. ",
+              "width": 146.191406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Duis leo. Sed fringilla mauris sit ",
+              "width": 142.275391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "amet nibh. Donec sodales sagittis ",
+              "width": 152.304688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "magna. Sed consequat, leo eget ",
+              "width": 146.772461,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "bibendum sodales, augue velit ",
+              "width": 137.871094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "cursus nunc, quis gravida magna ",
+              "width": 149.526367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mi a libero. Fusce vulputate ",
+              "width": 125.058594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "eleifend sapien. Vestibulum purus ",
+              "width": 152.319336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "quam, scelerisque ut, mollis sed, ",
+              "width": 147.841797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nonummy id, metus. Nullam ",
+              "width": 126.708984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "accumsan lorem in dui. Cras ",
+              "width": 129.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ultricies mi eu turpis hendrerit ",
+              "width": 133.383789,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fringilla. Vestibulum ante ipsum ",
+              "width": 140.625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "primis in faucibus orci luctus et ",
+              "width": 138.94043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ultrices posuere cubilia curae; In ",
+              "width": 146.186523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ac dui quis mi consectetuer lacinia.",
+              "width": 155.078125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Nam pretium turpis et arcu. Duis ",
+              "width": 146.157227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "arcu tortor, suscipit eget, imperdiet ",
+              "width": 156.176758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nec, imperdiet iaculis, ipsum. Sed ",
+              "width": 151.733398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aliquam ultrices mauris. Integer ",
+              "width": 141.723633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ante arcu, accumsan a, ",
+              "width": 106.723633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "consectetuer eget, posuere ut, ",
+              "width": 137.866211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mauris.",
+              "width": 32.783203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 50,
+        "y": 683.171875,
+        "w": 500,
+        "h": 30.34375,
+        "lines": [
+          [
+            {
+              "text": "Edge Case: Multi-column Lists",
+              "width": 291.142578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 721.515625,
+        "w": 500,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "We can use columns for more than large pages of texts. Consider an index, or a list of items packed efficiently:",
+              "width": 488.764648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 50,
+        "y": 760,
+        "w": 500,
+        "h": 10,
+        "lines": [
+          [
+            {
+              "text": "4.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 50,
+        "y": 50,
+        "w": 96,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "1. Apples",
+              "width": 41.694336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 75.171875,
+        "w": 96,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "2. Bananas",
+              "width": 50.595703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 151,
+        "y": 50,
+        "w": 96,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "3. Cherries",
+              "width": 48.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 151,
+        "y": 75.171875,
+        "w": 96,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "4. Dates",
+              "width": 37.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 252,
+        "y": 50,
+        "w": 96,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "5. Elderberry",
+              "width": 57.246094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 252,
+        "y": 75.171875,
+        "w": 96,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "6. Figs",
+              "width": 30.009766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 353,
+        "y": 50,
+        "w": 96,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "7. Grapes",
+              "width": 43.911133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 353,
+        "y": 75.171875,
+        "w": 96,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "8. Honeydew",
+              "width": 58.369141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 454,
+        "y": 50,
+        "w": 96,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "9. Iceberg",
+              "width": 44.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 454,
+        "y": 75.171875,
+        "w": 96,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "10. Jackfruit",
+              "width": 53.911133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 50,
+        "y": 760,
+        "w": 500,
+        "h": 10,
+        "lines": [
+          [
+            {
+              "text": "5.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

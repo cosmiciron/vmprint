@@ -1,0 +1,378 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Standard Font Fixture (PDF-14)",
+              "width": 295.566406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 111.34375,
+        "w": 468,
+        "h": 32.8125,
+        "lines": [
+          [
+            {
+              "text": "This fixture is designed to exercise all 14 standard PDF fonts through ",
+              "width": 370.189453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ],
+          [
+            {
+              "text": "StandardFontManager using strict family + weight + style resolution.",
+              "width": 360.84375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "specimenLabel",
+        "x": 72,
+        "y": 152.15625,
+        "w": 468,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Helvetica family",
+              "width": 70.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 169.828125,
+        "w": 468,
+        "h": 16.40625,
+        "lines": [
+          [
+            {
+              "text": "Helvetica Regular: The quick brown fox jumps over 1234567890.",
+              "width": 344.191406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 194.234375,
+        "w": 468,
+        "h": 16.40625,
+        "lines": [
+          [
+            {
+              "text": "Helvetica Bold: The quick brown fox jumps over 1234567890.",
+              "width": 347.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 218.640625,
+        "w": 468,
+        "h": 16.40625,
+        "lines": [
+          [
+            {
+              "text": "Helvetica Oblique: The quick brown fox jumps over 1234567890.",
+              "width": 343.529297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 243.046875,
+        "w": 468,
+        "h": 16.40625,
+        "lines": [
+          [
+            {
+              "text": "Helvetica BoldOblique: The quick brown fox jumps over 1234567890.",
+              "width": 392.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "specimenLabel",
+        "x": 72,
+        "y": 267.453125,
+        "w": 468,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Times family",
+              "width": 55.742188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 285.125,
+        "w": 468,
+        "h": 16.289063,
+        "lines": [
+          [
+            {
+              "text": "Times Roman: Sphinx of black quartz, judge my vow.",
+              "width": 260.203125,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": "Times"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 309.414063,
+        "w": 468,
+        "h": 16.289063,
+        "lines": [
+          [
+            {
+              "text": "Times Bold: Sphinx of black quartz, judge my vow.",
+              "width": 262.482422,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": "Times"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 333.703125,
+        "w": 468,
+        "h": 16.289063,
+        "lines": [
+          [
+            {
+              "text": "Times Italic: Sphinx of black quartz, judge my vow.",
+              "width": 250.189453,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": "Times"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 357.992188,
+        "w": 468,
+        "h": 16.289063,
+        "lines": [
+          [
+            {
+              "text": "Times BoldItalic: Sphinx of black quartz, judge my vow.",
+              "width": 289.142578,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": "Times"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "specimenLabel",
+        "x": 72,
+        "y": 382.28125,
+        "w": 468,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Courier family",
+              "width": 61.679688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 399.953125,
+        "w": 468,
+        "h": 16.59375,
+        "lines": [
+          [
+            {
+              "text": "Courier Regular: Pack my box with five dozen liquor jugs.",
+              "width": 410.466797,
+              "ascent": 832.519531,
+              "descent": 300.292969,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 424.546875,
+        "w": 468,
+        "h": 16.59375,
+        "lines": [
+          [
+            {
+              "text": "Courier Bold: Pack my box with five dozen liquor jugs.",
+              "width": 388.863281,
+              "ascent": 832.519531,
+              "descent": 300.292969,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 449.140625,
+        "w": 468,
+        "h": 16.59375,
+        "lines": [
+          [
+            {
+              "text": "Courier Oblique: Pack my box with five dozen liquor jugs.",
+              "width": 410.466797,
+              "ascent": 832.519531,
+              "descent": 300.292969,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 473.734375,
+        "w": 468,
+        "h": 16.59375,
+        "lines": [
+          [
+            {
+              "text": "Courier BoldOblique: Pack my box with five dozen liquor jugs.",
+              "width": 439.271484,
+              "ascent": 832.519531,
+              "descent": 300.292969,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "specimenLabel",
+        "x": 72,
+        "y": 498.328125,
+        "w": 468,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Symbol + ZapfDingbats",
+              "width": 104.21875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Helvetica"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 516,
+        "w": 468,
+        "h": 23.388,
+        "lines": [
+          [
+            {
+              "text": "Symbol: ABC abc 123 +-*/[](){}<>",
+              "width": 206.316,
+              "ascent": 1069,
+              "descent": 630,
+              "fontFamily": "Symbol"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 547.388,
+        "w": 468,
+        "h": 23.388,
+        "lines": [
+          [
+            {
+              "text": "ZapfDingbats: !\"#$%&'()*+,-./0123456789:;<=>?@",
+              "width": 349.26,
+              "ascent": 1069,
+              "descent": 630,
+              "fontFamily": "ZapfDingbats"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

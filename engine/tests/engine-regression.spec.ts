@@ -16,7 +16,6 @@ import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toL
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
 
-const GOD_FIXTURE_NAME = '00-all-capabilities.json';
 const UPDATE_LAYOUT_SNAPSHOTS =
     process.argv.includes('--update-layout-snapshots') || process.env.VMPRINT_UPDATE_LAYOUT_SNAPSHOTS === '1';
 
@@ -332,9 +331,7 @@ function resolveSnapshotPath(fixturePath: string): string {
     return fixturePath.slice(0, fixturePath.length - ext.length) + '.snapshot.layout.json';
 }
 
-function assertGodSnapshot(fixtureName: string, fixturePath: string, pages: any[]): void {
-    if (fixtureName !== GOD_FIXTURE_NAME) return;
-
+function assertSnapshot(fixtureName: string, fixturePath: string, pages: any[]): void {
     const snapshotPath = resolveSnapshotPath(fixturePath);
     const actual = snapshotPages(pages);
 
@@ -418,11 +415,9 @@ async function run() {
         );
         check(
             `${fixture.name} layout snapshot`,
-            fixture.name === GOD_FIXTURE_NAME
-                ? 'matches stored snapshot for god fixture'
-                : 'skipped for non-god fixtures',
+            'matches stored snapshot',
             () => {
-                assertGodSnapshot(fixture.name, fixturePath, pagesA);
+                assertSnapshot(fixture.name, fixturePath, pagesA);
             }
         );
         if (fixture.name.startsWith('05-page-size-') || fixture.name.startsWith('06-page-size-')) {

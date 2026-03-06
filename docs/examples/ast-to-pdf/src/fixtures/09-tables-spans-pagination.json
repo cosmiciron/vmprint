@@ -1,0 +1,1056 @@
+{
+    "documentVersion":  "1.0",
+    "layout":  {
+                   "pageSize":  {
+                                    "width":  380,
+                                    "height":  220
+                                },
+                   "margins":  {
+                                   "top":  20,
+                                   "right":  20,
+                                   "bottom":  20,
+                                   "left":  20
+                               },
+                   "fontFamily":  "Arimo",
+                   "fontSize":  10,
+                   "lineHeight":  1.15,
+                   "showPageNumbers":  false
+               },
+    "fonts":  {
+                  "regular":  "Arimo"
+              },
+    "styles":  {
+                   "table":  {
+                                 "marginTop":  0,
+                                 "marginBottom":  8,
+                                 "padding":  0,
+                                 "borderWidth":  0
+                             },
+                   "table-cell":  {
+                                      "fontSize":  9,
+                                      "lineHeight":  1.15,
+                                      "paddingTop":  4,
+                                      "paddingBottom":  4,
+                                      "paddingLeft":  5,
+                                      "paddingRight":  5,
+                                      "borderWidth":  0.6,
+                                      "borderColor":  "#111111"
+                                  },
+                   "p":  {
+                             "marginBottom":  8
+                         }
+               },
+    "elements":  [
+                     {
+                         "type":  "p",
+                         "content":  "Regression fixture: mixed colSpan + rowSpan table with repeated headers and forced pagination to validate deterministic table splitting behavior."
+                     },
+                     {
+                         "type":  "table",
+                         "content":  "",
+                         "properties":  {
+                                            "table":  {
+                                                          "headerRows":  1,
+                                                          "repeatHeader":  true,
+                                                          "columnGap":  3,
+                                                          "rowGap":  1,
+                                                          "headerCellStyle":  {
+                                                                                   "fontWeight":  700,
+                                                                                   "backgroundColor":  "#f3f4f6"
+                                                                               },
+                                                          "columns":  [
+                                                                          {
+                                                                              "mode":  "fixed",
+                                                                              "value":  56
+                                                                          },
+                                                                          {
+                                                                              "mode":  "flex",
+                                                                              "fr":  2,
+                                                                              "min":  88
+                                                                          },
+                                                                          {
+                                                                              "mode":  "fixed",
+                                                                              "value":  82
+                                                                          },
+                                                                          {
+                                                                              "mode":  "flex",
+                                                                              "fr":  1,
+                                                                              "min":  58
+                                                                          }
+                                                                      ]
+                                                      }
+                                        },
+                         "children":  [
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "properties":  {
+                                                                 "semanticRole":  "header"
+                                                             },
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "ID"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "State"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Note"
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-001",
+                                                                   "properties":  {
+                                                                                      "rowSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Intake + triage.",
+                                                                   "properties":  {
+                                                                                      "colSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Owner synced."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Phase B checks."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Await signoff."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-002"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Risk + fallback",
+                                                                   "properties":  {
+                                                                                      "colSpan":  2,
+                                                                                      "rowSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Escalation lane."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-003"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Pulse continues."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-004"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 4 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 4."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-005"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 5 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Done"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 5."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-006",
+                                                                   "properties":  {
+                                                                                      "rowSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Milestone 6 sync.",
+                                                                   "properties":  {
+                                                                                      "colSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Track 6."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Follow-up 6."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Review"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Batch 6."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-008"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 8 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 8."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-009"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 9 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Blocked"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 9."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-010"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 10 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 10."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-011"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 11 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Done"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 11."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-012",
+                                                                   "properties":  {
+                                                                                      "rowSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Milestone 12 sync.",
+                                                                   "properties":  {
+                                                                                      "colSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Track 12."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Follow-up 12."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Review"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Batch 12."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-014"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 14 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 14."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-015"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 15 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Blocked"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 15."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-016"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 16 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 16."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-017"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 17 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Done"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 17."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-018",
+                                                                   "properties":  {
+                                                                                      "rowSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Milestone 18 sync.",
+                                                                   "properties":  {
+                                                                                      "colSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Track 18."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Follow-up 18."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Review"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Batch 18."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-020"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 20 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 20."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-021"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 21 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Blocked"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 21."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-022"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 22 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 22."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-023"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 23 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Done"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 23."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-024",
+                                                                   "properties":  {
+                                                                                      "rowSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Milestone 24 sync.",
+                                                                   "properties":  {
+                                                                                      "colSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Track 24."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Follow-up 24."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Review"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Batch 24."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-026"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 26 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 26."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-027"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 27 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Blocked"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 27."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-028"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 28 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 28."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-029"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 29 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Done"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 29."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-030",
+                                                                   "properties":  {
+                                                                                      "rowSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Milestone 30 sync.",
+                                                                   "properties":  {
+                                                                                      "colSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Track 30."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Follow-up 30."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Review"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Batch 30."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-032"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 32 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 32."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-033"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 33 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Blocked"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 33."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-034"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 34 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 34."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-035"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 35 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Done"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 35."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-036",
+                                                                   "properties":  {
+                                                                                      "rowSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Milestone 36 sync.",
+                                                                   "properties":  {
+                                                                                      "colSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Track 36."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Follow-up 36."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Review"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Batch 36."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-038"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 38 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 38."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-039"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 39 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Blocked"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 39."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-040"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 40 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Progress"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 40."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-041"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Task 41 validation."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Done"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Ops 41."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "SEQ-042",
+                                                                   "properties":  {
+                                                                                      "rowSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Milestone 42 sync.",
+                                                                   "properties":  {
+                                                                                      "colSpan":  2
+                                                                                  }
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Track 42."
+                                                               }
+                                                           ]
+                                          },
+                                          {
+                                              "type":  "table-row",
+                                              "content":  "",
+                                              "children":  [
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Follow-up 42."
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "In Review"
+                                                               },
+                                                               {
+                                                                   "type":  "table-cell",
+                                                                   "content":  "Batch 42."
+                                                               }
+                                                           ]
+                                          }
+                                      ]
+                     }
+                 ]
+}

@@ -5,7 +5,7 @@
 
 If you want to build a custom edge-rendering pipeline, a better document generator, or an entirely new word processor without resorting to contenteditable hacks, hidden iframes, or sloppy DOM overlays -- VMPrint provides the low-level mathematical infrastructure to make it happen.
 
-It is an 88 KiB, zero-dependency layout Virtual Machine that completely bypasses the browser's HTML/CSS box model. Using interval-arithmetic and a custom morphable-box architecture, it calculates complex print layouts natively. It handles multi-column text wrapping, cross-gutter floats, strict baseline grids, and multilingual line-breaking directly from a semantic JSON AST, outputting a flat array of absolute X/Y coordinates.
+It is a compact, zero-dependency layout Virtual Machine that completely bypasses the browser's HTML/CSS box model. Using interval-arithmetic and a custom morphable-box architecture, it calculates complex print layouts natively. It handles multi-column text wrapping, cross-gutter floats, strict baseline grids, and multilingual line-breaking directly from a semantic JSON AST, outputting a flat array of absolute X/Y coordinates.
 
 Because it operates purely on math and carries zero DOM dependencies, it runs identically everywhere: Cloudflare Workers, Lambda, Bun, Deno, or directly in the browser. It provides the missing primitives for true programmatic document layout.
 
@@ -20,7 +20,7 @@ To see what this engine can build, view the beautifully typeset PDF version of t
 ## Features at a Glance
 
 - **Deterministic Layout Engine**: Generates bit-for-bit identical layout across operating systems and runtimes. No more layout drift.
-- **Zero Environment Dependencies**: The 88 KiB core engine requires no headless browser, DOM, or Node.js built-ins. Runs seamlessly in browsers, Node.js, and edge environments like Cloudflare Workers and AWS Lambda.
+- **Zero Environment Dependencies**: The core engine requires no headless browser, DOM, or Node.js built-ins. Runs seamlessly in browsers, Node.js, and edge environments like Cloudflare Workers and AWS Lambda.
 - **True Glyph-Based Measurement**: Reads intrinsic OpenType advance widths and kerning pairs from font files. Layout relies on absolute typographic math, not browser approximations.
 - **Fast Performance**: Renders complex, multi-page layouts in milliseconds. Global caches for glyph metrics and text segmentation ensure high throughput for batch pipelines.
 - **Multi-Column & Mixed Layouts**: Native support for DTP-style multi-column story regions. Seamlessly mix single-column headers, three-column articles, and pull-quotes on the same page. Floating obstacles naturally shape text across multiple column boundaries.
@@ -232,7 +232,26 @@ Or profile a specific document with the CLI's `--profile-layout` flag, which run
 [vmprint] warm  fontMs: 0.21  | layoutMs: 68.44  | total: 68.65  (avg ×2)
 ```
 
-**Footprint:** The core engine is **88 KiB** packed. The full dependency tree, including `fontkit` for OpenType parsing, is **~2 MiB** packed and **~8.7 MiB** unpacked — versus Chromium's **~170 MB**. The largest single dependency is `fontkit` (~1.1 MiB packed), which is the cost of reading real glyph metrics rather than approximating them from computed styles. Among headless PDF tools, that's not bloat — it's the price of correctness.
+**Footprint:** The core engine package is measured by npm tarball size (`npm pack --dry-run --json` in `engine/`). At the time of writing this README, `@vmprint/engine` packs to **136,449 bytes (~133 KiB)**. This is distinct from browser bundle size, which depends on bundler target/format and whether code is minified/compressed.
+
+**Static standard-font bundle snapshot (2026-03-06):**
+
+| Artifact | Raw | Gzip | Brotli |
+|---|---:|---:|---:|
+| `docs/examples/ast-to-pdf` runtime (`index.html` + `styles.css` + `assets/*.js`) | 727,383 B (~710 KiB) | 227,878 B (~223 KiB) | 186,547 B (~182 KiB) |
+| Same runtime + built-in fixtures (`fixtures/*.js`) | 3,441,750 B (~3.28 MiB) | 2,242,504 B (~2.14 MiB) | 2,182,080 B (~2.08 MiB) |
+
+The large jump is from `fixtures/14-flow-images-multipage.js`, which embeds a large base64 image payload and is not required for the core runtime path.
+
+**NPM packed sizes (2026-03-06, `npm pack --dry-run --json`):**
+
+| Package | Tarball size | Unpacked size |
+|---|---:|---:|
+| `@vmprint/engine` | 136,449 B | 713,077 B |
+| `@vmprint/context-pdf-lite` | 5,101 B | 20,001 B |
+| `@vmprint/standard-fonts` | 3,553 B | 11,232 B |
+
+The full dependency tree, including `fontkit` for OpenType parsing, is **~2 MiB** packed and **~8.7 MiB** unpacked — versus Chromium's **~170 MB**. The largest single dependency is `fontkit` (~1.1 MiB packed), which is the cost of reading real glyph metrics rather than approximating them from computed styles. Among headless PDF tools, that's not bloat — it's the price of correctness.
 
 Because the pipeline is synchronous and the footprint is minimal, VMPrint can run directly in edge environments (Cloudflare Workers, Vercel Edge, AWS Lambda) where other solutions often exceed memory or cold-start limits. It is fast enough to serve PDFs synchronously in response to user requests, without background job queues.
 
@@ -249,6 +268,29 @@ This is a monorepo:
 | `@vmprint/standard-fonts` | Sentinel-based standard font manager (no font assets) |
 | `@vmprint/cli` | `vmprint` JSON → bit-perfect PDF CLI |
 | `@draft2final/cli` | Markdown → bit-perfect PDF compiler |
+
+## Standalone Browser Bundle (Standard Fonts)
+
+VMPrint also supports a fully static, self-contained browser pipeline:
+
+- `StandardFontManager + Engine + PdfLiteContext`
+- No Node.js runtime required at usage time
+- No server required (`file://` works)
+- Programmatic/batch-friendly in browser or embedded webview contexts
+
+This is demonstrated in [`docs/examples/ast-to-pdf/`](docs/examples/ast-to-pdf/README.md), where AST JSON is rendered directly to downloadable PDF with plain static assets.
+
+**Deployable runtime footprint (2026-03-06):**
+
+| Bundle | Raw | Gzip | Brotli |
+|---|---:|---:|---:|
+| `index.html` + `styles.css` + `assets/*.js` | 727,383 B (~710 KiB) | 227,878 B (~223 KiB) | 186,547 B (~182 KiB) |
+
+This mode uses PDF standard fonts (PDF-14), but the capability is still full VMPrint layout + pagination, not a toy export path. You get the same deterministic engine primitives (flow composition, pagination rules, multi-column behavior, table pagination, inline objects) in a tiny static bundle that runs with no backend.
+
+For many product surfaces, this opens a practical alternative to heavyweight client PDF stacks or hand-authored jsPDF logic: fully client-side PDF generation with predictable output and a small transfer/runtime footprint. It is especially useful for offline-first apps, embedded webviews, hybrid mobile apps, kiosk software, and constrained environments where shipping a browser server/runtime is not realistic.
+
+Tradeoff: you are constrained to PDF-14 coverage. If you need custom fonts, wide Unicode script support, or advanced shaping beyond standard-font coverage, switch to a font-binary workflow (`LocalFontManager`/custom font manager + fontkit path).
 
 ## Contributing
 
@@ -275,7 +317,7 @@ Version `0.1.0`. The core layout pipeline is working and covered by regression f
 
 This is pre-1.0 software. The API may change.
 
-[Architecture](documents/ARCHITECTURE.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Roadmap](documents/ROADMAP.md)
+[Architecture](documents/ARCHITECTURE.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html) · [Roadmap](documents/ROADMAP.md)
 
 ## License
 

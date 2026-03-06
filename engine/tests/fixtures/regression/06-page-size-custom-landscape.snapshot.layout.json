@@ -1,0 +1,126 @@
+[
+  {
+    "index": 0,
+    "width": 620,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 36,
+        "y": 40,
+        "w": 548,
+        "h": 25.509375,
+        "lines": [
+          [
+            {
+              "text": "Custom Page Size — Landscape",
+              "width": 278.077148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 36,
+        "y": 77.509375,
+        "w": 548,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "This page was defined as 420 × 620 pt in portrait and then rotated — yielding resolved dimensions of 620 × 420 ",
+              "width": 546.686035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pt. Custom page sizes are common in print-on-demand workflows: receipts, shelf-edge labels, trade-paperback ",
+              "width": 542.92627,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "interiors, and booklet signatures each require a specific point dimension rather than a named standard.",
+              "width": 500.183105,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 36,
+        "y": 141.276563,
+        "w": 548,
+        "h": 49.178125,
+        "lines": [
+          [
+            {
+              "text": "Expected resolved page: 620 pt wide × 420 pt tall. Margins are 36 pt left/right and 40 pt top/bottom, giving a ",
+              "width": 525.577637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "content area of 548 × 340 pt.",
+              "width": 140.969727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 36,
+        "y": 200.454688,
+        "w": 548,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "Line wrapping reflects the wider column. Compare this paragraph's break positions against the same text set on ",
+              "width": 546.277832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "a standard portrait A5 page — nearly every line breaks later here because the resolved width is broader than ",
+              "width": 531.969238,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "either A5 dimension.",
+              "width": 100.27832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

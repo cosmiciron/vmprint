@@ -1,0 +1,2275 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Fragment Pagination — BoxV1 Flow",
+              "width": 309.032227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 62.609375,
+        "w": 364,
+        "h": 60.15625,
+        "lines": [
+          [
+            {
+              "text": "A shallow page forces fragments. Five scenarios demonstrate how the ",
+              "width": 345.447266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "engine breaks long content across page boundaries without glue metadata",
+              "width": 363.24707,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "— using only normal BoxV1 flow and the inherent geometry of a 420 × 300",
+              "width": 363.526367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pt page.",
+              "width": 39.756836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "§1 — Mid-Page Split",
+              "width": 133.799805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 28,
+        "y": 67.140625,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Expected: the long body paragraph below splits mid-page; its continuation opens on the ",
+              "width": 351.228516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "next page.",
+              "width": 42.033691,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 97.75,
+        "w": 230,
+        "h": 45.117188,
+        "lines": [
+          [
+            {
+              "text": "Section preamble A: positioned at a narrow ",
+              "width": 229.818359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "width to consume vertical space before the ",
+              "width": 228.615234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "target paragraph.",
+              "width": 90.465332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 150.867188,
+        "w": 210,
+        "h": 60.15625,
+        "lines": [
+          [
+            {
+              "text": "Section preamble B: a wider run of text ",
+              "width": 207.206055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "at reduced column width to fill ",
+              "width": 161.949219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remaining space and trigger the split at ",
+              "width": 208.436035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the correct position.",
+              "width": 105.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 230,
+        "h": 210.546875,
+        "lines": [
+          [
+            {
+              "text": "The migration of scripts from stone to reed to ",
+              "width": 221.928223,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "papyrus to vellum to paper to screen is the ",
+              "width": 210.332031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story of typography itself. Each substrate ",
+              "width": 201.765137,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "imposed constraints on letterform design that ",
+              "width": 222.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "its successor inherited: the serif began as a ",
+              "width": 214.612793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "chisel termination, survived as pen habit, and ",
+              "width": 223.179688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "persists in digital font metrics as a unit of ",
+              "width": 201.14209,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "optical rhythm. The migration of scripts from ",
+              "width": 217.013672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "stone to reed to papyrus to vellum to paper to ",
+              "width": 224.409668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "screen is the story of typography itself. Each ",
+              "width": 218.882813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "substrate imposed constraints on letterform ",
+              "width": 213.984375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "design that its successor inherited: the serif ",
+              "width": 213.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "began as a chisel termination, survived as pen ",
+              "width": 229.297363,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "habit, and persists in digital font metrics as a ",
+              "width": 219.495117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 35,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 230,
+        "h": 120.3125,
+        "lines": [
+          [
+            {
+              "text": "unit of optical rhythm. The migration of scripts ",
+              "width": 224.979004,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "from stone to reed to papyrus to vellum to ",
+              "width": 206.045898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paper to screen is the story of typography itself.",
+              "width": 231.118164,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": " Each substrate imposed constraints on ",
+              "width": 195.658203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "letterform design that its successor inherited: ",
+              "width": 221.321289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the serif began as a chisel termination, ",
+              "width": 191.382813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "survived as pen habit, and persists in digital ",
+              "width": 215.842773,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "font metrics as a unit of optical rhythm.",
+              "width": 188.299805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "§2 — Keep-With-Next Chain",
+              "width": 184.228516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 28,
+        "y": 67.140625,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Expected: the lead lines are kept with the first fragment of the long paragraph; the ",
+              "width": 327.194824,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation flows onto the next page.",
+              "width": 151.105957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 97.75,
+        "w": 220,
+        "h": 45.117188,
+        "lines": [
+          [
+            {
+              "text": "Section preamble A: reduced column ",
+              "width": 197.430664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "width to consume vertical space before ",
+              "width": 209.059082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the keep-with-next chain.",
+              "width": 131.40918,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 150.867188,
+        "w": 210,
+        "h": 60.15625,
+        "lines": [
+          [
+            {
+              "text": "Section preamble B: another narrow ",
+              "width": 192.537598,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "preamble paragraph to close the ",
+              "width": 172.992188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remaining space before the chain ",
+              "width": 177.885254,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "begins.",
+              "width": 38.505371,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 15.039063,
+        "lines": [
+          [
+            {
+              "text": "Keep-chain lead A — must stay with what follows.",
+              "width": 260.986816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 51.039063,
+        "w": 364,
+        "h": 15.039063,
+        "lines": [
+          [
+            {
+              "text": "Keep-chain lead B — still part of the chain.",
+              "width": 223.09375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 74.078125,
+        "w": 230,
+        "h": 165.429688,
+        "lines": [
+          [
+            {
+              "text": "Gutenberg's invention democratised ",
+              "width": 178.814453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "knowledge but also standardised it: every copy",
+              "width": 228.078125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "of a text became identical, and the hand-",
+              "width": 198.741211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "correction culture of manuscript scriptoria ",
+              "width": 204.1875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "collapsed overnight. The pace of ",
+              "width": 162.045898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "standardisation was violent — grammars ",
+              "width": 201.749023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "converged, spelling froze, and dialect forms ",
+              "width": 215.225098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "were demoted to error. Gutenberg's invention ",
+              "width": 224.055176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "democratised knowledge but also standardised",
+              "width": 229.308105,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "it: every copy of a text became identical, and ",
+              "width": 220.118164,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the hand-correction culture of manuscript ",
+              "width": 202.989746,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 245.507813,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 230,
+        "h": 180.46875,
+        "lines": [
+          [
+            {
+              "text": "scriptoria collapsed overnight. The pace of ",
+              "width": 209.725098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "standardisation was violent — grammars ",
+              "width": 201.749023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "converged, spelling froze, and dialect forms ",
+              "width": 215.225098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "were demoted to error. Gutenberg's invention ",
+              "width": 224.055176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "democratised knowledge but also standardised",
+              "width": 229.308105,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "it: every copy of a text became identical, and ",
+              "width": 220.118164,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the hand-correction culture of manuscript ",
+              "width": 202.989746,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "scriptoria collapsed overnight. The pace of ",
+              "width": 209.725098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "standardisation was violent — grammars ",
+              "width": 201.749023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "converged, spelling froze, and dialect forms ",
+              "width": 215.225098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "were demoted to error. Gutenberg's invention ",
+              "width": 224.055176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "democratised knowledge but also standardised",
+              "width": 229.308105,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 63.304688,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 7,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 230,
+        "h": 45.117188,
+        "lines": [
+          [
+            {
+              "text": "it: every copy of a text became identical, and ",
+              "width": 220.118164,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the hand-correction culture of manuscript ",
+              "width": 202.989746,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "scriptoria collapsed overnight.",
+              "width": 145.519043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 110.421875,
+        "w": 364,
+        "h": 15.039063,
+        "lines": [
+          [
+            {
+              "text": "Flow resumes normally after the keep-with-next chain fragment.",
+              "width": 309.960449,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 8,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "§3 — Blockquote Padding Split",
+              "width": 206.910156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 28,
+        "y": 67.140625,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Expected: the blockquote splits cleanly — padding and borders appear only on the ",
+              "width": 330.714844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "appropriate fragment, without double-stacking.",
+              "width": 185.106445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 97.75,
+        "w": 210,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Section preamble: narrow column to ",
+              "width": 193.751465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "consume space before the blockquote.",
+              "width": 203.54834,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 9,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "blockquote",
+        "x": 28,
+        "y": 34,
+        "w": 250,
+        "h": 202.507813,
+        "lines": [
+          [
+            {
+              "text": "The alphabet is not a natural object but an ",
+              "width": 208.532715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "agreement — a compressed treaty between ",
+              "width": 217.056641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "speakers, scribes, and readers that took ",
+              "width": 198.714355,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "millennia to negotiate and can be broken by a ",
+              "width": 225.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "single generation of neglect. Its stability is ",
+              "width": 206.056641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "social, not physical, and its reproducibility by ",
+              "width": 219.495117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mechanical means was the condition of ",
+              "width": 195.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "modernity. The alphabet is not a natural object ",
+              "width": 229.302734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "but an agreement — a compressed treaty ",
+              "width": 206.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "between speakers, scribes, and readers that ",
+              "width": 219.51123,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "took millennia to negotiate and can be broken ",
+              "width": 225.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "by a single generation of neglect. Its stability is ",
+              "width": 229.904297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "social, not physical, and its reproducibility by ",
+              "width": 219.495117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 40,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 10,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 11,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "blockquote",
+        "x": 28,
+        "y": 28,
+        "w": 250,
+        "h": 210.546875,
+        "lines": [
+          [
+            {
+              "text": "mechanical means was the condition of ",
+              "width": 195.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "modernity. The alphabet is not a natural object ",
+              "width": 229.302734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "but an agreement — a compressed treaty ",
+              "width": 206.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "between speakers, scribes, and readers that ",
+              "width": 219.51123,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "took millennia to negotiate and can be broken ",
+              "width": 225.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "by a single generation of neglect. Its stability is ",
+              "width": 229.904297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "social, not physical, and its reproducibility by ",
+              "width": 219.495117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mechanical means was the condition of ",
+              "width": 195.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "modernity. The alphabet is not a natural object ",
+              "width": 229.302734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "but an agreement — a compressed treaty ",
+              "width": 206.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "between speakers, scribes, and readers that ",
+              "width": 219.51123,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "took millennia to negotiate and can be broken ",
+              "width": 225.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "by a single generation of neglect. Its stability is ",
+              "width": 229.904297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "social, not physical, and its reproducibility by ",
+              "width": 219.495117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 35,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 12,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "blockquote",
+        "x": 28,
+        "y": 57.304688,
+        "w": 250,
+        "h": 37.078125,
+        "lines": [
+          [
+            {
+              "text": "mechanical means was the condition of ",
+              "width": 195.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "modernity.",
+              "width": 51.353027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 13,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "§4 — Orphan & Widow Control",
+              "width": 203.649414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 28,
+        "y": 67.140625,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Expected: the split respects a stricter orphan/widow setting of 3, shifting the break point to ",
+              "width": 359.692383,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keep a legitimate minimum on each page side.",
+              "width": 185.603027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 97.75,
+        "w": 210,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Section preamble: narrow column to ",
+              "width": 193.751465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "create vertical pressure.",
+              "width": 126.580566,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 14,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 230,
+        "h": 210.546875,
+        "lines": [
+          [
+            {
+              "text": "Typographers describe an orphan as the ",
+              "width": 200.572754,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "opening line of a paragraph stranded alone at ",
+              "width": 225.05957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the foot of a page, and a widow as the closing ",
+              "width": 226.262695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "line left alone at the top. Both are considered ",
+              "width": 221.369629,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "defects in classical book composition. A ",
+              "width": 196.87207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "minimum of three lines on each side is the ",
+              "width": 208.489746,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "stricter editorial standard. Typographers ",
+              "width": 196.87207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "describe an orphan as the opening line of a ",
+              "width": 214.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paragraph stranded alone at the foot of a page,",
+              "width": 229.952637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "and a widow as the closing line left alone at the",
+              "width": 229.925781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "top. Both are considered defects in classical ",
+              "width": 217.674316,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "book composition. A minimum of three lines on",
+              "width": 228.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "each side is the stricter editorial standard. ",
+              "width": 206.045898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Typographers describe an orphan as the ",
+              "width": 200.572754,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 35,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 15,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 230,
+        "h": 150.390625,
+        "lines": [
+          [
+            {
+              "text": "opening line of a paragraph stranded alone at ",
+              "width": 225.05957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the foot of a page, and a widow as the closing ",
+              "width": 226.262695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "line left alone at the top. Both are considered ",
+              "width": 221.369629,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "defects in classical book composition. A ",
+              "width": 196.87207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "minimum of three lines on each side is the ",
+              "width": 208.489746,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "stricter editorial standard. Typographers ",
+              "width": 196.87207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "describe an orphan as the opening line of a ",
+              "width": 214.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paragraph stranded alone at the foot of a page,",
+              "width": 229.952637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "and a widow as the closing line left alone at the",
+              "width": 229.925781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "top.",
+              "width": 18.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 16,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "§5 — Non-Splittable Paragraph",
+              "width": 205.37207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 28,
+        "y": 67.140625,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Expected: the allowLineSplit=false paragraph moves to the next page as an intact unit ",
+              "width": 344.469727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "rather than fragmenting.",
+              "width": 96.055664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 97.75,
+        "w": 220,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Pressure block A — narrow column ",
+              "width": 188.885254,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "consumes vertical space.",
+              "width": 133.294434,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 135.828125,
+        "w": 210,
+        "h": 45.117188,
+        "lines": [
+          [
+            {
+              "text": "Pressure block B — additional narrow ",
+              "width": 201.716797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paragraph to reduce remaining page ",
+              "width": 193.767578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "height.",
+              "width": 36.050781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 188.945313,
+        "w": 200,
+        "h": 60.15625,
+        "lines": [
+          [
+            {
+              "text": "Pressure block C — tight column with",
+              "width": 198.026855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "longer content to consume more ",
+              "width": 174.18457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "vertical space before the indivisible ",
+              "width": 188.906738,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "block.",
+              "width": 31.786133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 17,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 180,
+        "h": 45.117188,
+        "lines": [
+          [
+            {
+              "text": "Pressure block D — extra narrow ",
+              "width": 176.069824,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler paragraph consuming ",
+              "width": 144.858398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "additional page height.",
+              "width": 119.780762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 81.117188,
+        "w": 200,
+        "h": 45.117188,
+        "lines": [
+          [
+            {
+              "text": "Pressure block E — spacer with large ",
+              "width": 199.305176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "bottom margin to push the indivisible ",
+              "width": 199.224609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paragraph over the edge.",
+              "width": 131.425293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 18,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 180,
+        "h": 45.117188,
+        "lines": [
+          [
+            {
+              "text": "Pressure block F — final narrow ",
+              "width": 171.160645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler to remove the last available ",
+              "width": 173.013672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "space.",
+              "width": 34.246094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 19,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p_nosplit",
+        "x": 28,
+        "y": 28,
+        "w": 230,
+        "h": 180.46875,
+        "lines": [
+          [
+            {
+              "text": "This paragraph cannot be split. It will move ",
+              "width": 211.545898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "intact to the next page when it no longer fits in ",
+              "width": 226.864258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the remaining space. Splitting it across a page ",
+              "width": 228.072754,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "boundary is not permitted regardless of how ",
+              "width": 217.062012,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "much space is available above. This paragraph",
+              "width": 229.909668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "cannot be split. It will move intact to the next ",
+              "width": 218.275879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "page when it no longer fits in the remaining ",
+              "width": 212.797363,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "space. Splitting it across a page boundary is ",
+              "width": 218.291992,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "not permitted regardless of how much space is",
+              "width": 227.444336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "available above. This paragraph cannot be ",
+              "width": 210.976563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "split. It will move intact to the next page when it",
+              "width": 229.28125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "no longer fits in the remaining space.",
+              "width": 179.770508,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 216.46875,
+        "w": 364,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Flow continues normally after the indivisible block has been placed on its ",
+              "width": 357.081055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "own page.",
+              "width": 50.762207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

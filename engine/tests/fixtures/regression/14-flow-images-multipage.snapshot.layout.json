@@ -1,0 +1,790 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 65.625,
+        "lines": [
+          [
+            {
+              "text": "Comic Flow Image Demo: Multi-Page ",
+              "width": 426.714844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Regression",
+              "width": 130.710938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 155.625,
+        "w": 468,
+        "h": 49.21875,
+        "lines": [
+          [
+            {
+              "text": "This regression fixture validates flow-image behavior in normal document flow (Top-and-",
+              "width": 467.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Bottom style): images should move with text and paginate deterministically across ",
+              "width": 437.53125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "multiple pages.",
+              "width": 80.712891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 224.84375,
+        "w": 468,
+        "h": 23.242188,
+        "lines": [
+          [
+            {
+              "text": "Panel 1: The Setup - What Could Possibly Go Wrong?",
+              "width": 433.201172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 72,
+        "y": 256.085938,
+        "w": 430,
+        "h": 234.562805,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 502.648743,
+        "w": 468,
+        "h": 49.21875,
+        "lines": [
+          [
+            {
+              "text": "The brilliant, if slightly misguided, Professor Proton prepares to test his latest invention. ",
+              "width": 464.888672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "What is he hoping to achieve? Even he is not entirely sure. He checks his notes, circles ",
+              "width": 466.904297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "three contradictory hypotheses, and confidently declares all of them correct at once.",
+              "width": 444.908203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 563.867493,
+        "w": 468,
+        "h": 49.21875,
+        "lines": [
+          [
+            {
+              "text": "Witnesses report that he adjusted every dial to \"maximum curiosity\" and then muttered ",
+              "width": 462.064453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "something about scientific destiny. The lab lights flicker, coffee vibrates ominously, and ",
+              "width": 464.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "a nearby whiteboard acquires several equations that nobody remembers writing.",
+              "width": 426.234375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 80,
+        "w": 468,
+        "h": 46.484375,
+        "lines": [
+          [
+            {
+              "text": "Panel 2: The Action - A Nerd-Splosion of Epic ",
+              "width": 372.140625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Proportions!",
+              "width": 101.991699,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 72,
+        "y": 134.484375,
+        "w": 430,
+        "h": 234.562805,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 381.04718,
+        "w": 468,
+        "h": 49.21875,
+        "lines": [
+          [
+            {
+              "text": "With a confident press of the button, the Hyper-Nerd-inator springs to life, unleashing a ",
+              "width": 463.582031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "chaotic but oddly charming explosion of all things nerdy. Graph paper erupts from vents.",
+              "width": 467.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Action figures achieve temporary orbit. A dramatic choir appears to sing in binary.",
+              "width": 432.205078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 442.26593,
+        "w": 468,
+        "h": 49.21875,
+        "lines": [
+          [
+            {
+              "text": "In the middle of the turbulence, Professor Proton remains calm and records ",
+              "width": 402.867188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observations with impressive precision: \"loud noises, unusual sparkle density, and ",
+              "width": 438.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "approximately twelve percent more dramatic cape physics than predicted.\"",
+              "width": 395.115234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 80,
+        "w": 468,
+        "h": 23.242188,
+        "lines": [
+          [
+            {
+              "text": "Panel 3: The Aftermath - Super-Nerd... Assemble?",
+              "width": 402.421875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 72,
+        "y": 111.242188,
+        "w": 430,
+        "h": 234.562805,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 357.804993,
+        "w": 468,
+        "h": 65.625,
+        "lines": [
+          [
+            {
+              "text": "The smoke clears to reveal the professor's unexpected transformation. He may not be ",
+              "width": 459.181641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the hero the world needs, but he is the hero it deserves. Armed with encyclopedic trivia, ",
+              "width": 467.578125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "unstoppable enthusiasm, and suspiciously aerodynamic glasses, he vows to use his ",
+              "width": 449.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "powers responsibly.",
+              "width": 106.048828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 639.84375,
+        "lines": [
+          [
+            {
+              "text": "Post-incident report for pagination stress testing: Flow images remain in sequence with ",
+              "width": 464.226563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 462.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 466.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 462.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 466.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 462.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 466.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 462.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 466.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 462.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 466.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 462.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 466.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 462.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 466.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 462.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 466.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 82.03125,
+        "lines": [
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 462.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. ",
+              "width": 398.917969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

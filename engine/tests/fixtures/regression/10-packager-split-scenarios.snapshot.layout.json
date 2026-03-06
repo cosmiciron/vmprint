@@ -1,0 +1,2268 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Packager Split Scenarios",
+              "width": 215.103516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 62.609375,
+        "w": 364,
+        "h": 60.15625,
+        "lines": [
+          [
+            {
+              "text": "The Packager is the layer between semantic elements and the page. It ",
+              "width": 346.69873,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "decides when a unit must split, where the split falls, and what state carries ",
+              "width": 363.177246,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "forward. Three scenarios exercise the main split strategies on a short 420 ",
+              "width": 360.728027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "× 360 pt page.",
+              "width": 70.645996,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 130.765625,
+        "w": 364,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "A short lead paragraph fills some vertical space so the first scenario's split ",
+              "width": 362.817383,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "happens mid-page rather than at the very top.",
+              "width": 223.195801,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "§1 — Keep-With-Next Forces a Split",
+              "width": 237.145508,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 28,
+        "y": 67.140625,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Expected: the lead line and the first fragment of the long paragraph appear together ",
+              "width": 360.553711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "on the same page; the continuation opens on the next page.",
+              "width": 257.022949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 97.75,
+        "w": 300,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Setup: narrow column absorbs vertical space so the ",
+              "width": 276.299805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keep-with-next split falls mid-page.",
+              "width": 182.751465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 135.828125,
+        "w": 364,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Lead line: this sentence is kept with the paragraph below it — the ",
+              "width": 344.727539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Packager must not strand it alone at the foot of a page.",
+              "width": 287.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 173.90625,
+        "w": 364,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Bridge: still part of the keep-with-next chain, holding the lead to the ",
+              "width": 355.68457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "long paragraph.",
+              "width": 83.117676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 211.984375,
+        "w": 260,
+        "h": 90.234375,
+        "lines": [
+          [
+            {
+              "text": "Before movable type each book was a unique ",
+              "width": 225.64502,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "artefact, produced by a copyist who introduced small ",
+              "width": 259.246582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "variations with every stroke. After Gutenberg, every ",
+              "width": 253.107422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "copy of a work became identical to every other copy. ",
+              "width": 259.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "The implications for knowledge transmission, for ",
+              "width": 237.821289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "authority, and for error were profound. Before ",
+              "width": 223.786621,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 308.21875,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 260,
+        "h": 225.585938,
+        "lines": [
+          [
+            {
+              "text": "movable type each book was a unique artefact, ",
+              "width": 232.976563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "produced by a copyist who introduced small ",
+              "width": 216.449707,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "variations with every stroke. After Gutenberg, every ",
+              "width": 253.107422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "copy of a work became identical to every other copy. ",
+              "width": 259.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "The implications for knowledge transmission, for ",
+              "width": 237.821289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "authority, and for error were profound. Before ",
+              "width": 223.786621,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "movable type each book was a unique artefact, ",
+              "width": 232.976563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "produced by a copyist who introduced small ",
+              "width": 216.449707,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "variations with every stroke. After Gutenberg, every ",
+              "width": 253.107422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "copy of a work became identical to every other copy. ",
+              "width": 259.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "The implications for knowledge transmission, for ",
+              "width": 237.821289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "authority, and for error were profound. Before ",
+              "width": 223.786621,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "movable type each book was a unique artefact. After ",
+              "width": 259.262695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gutenberg, every copy became identical. Before ",
+              "width": 238.46582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "movable type each book was a unique artefact.",
+              "width": 229.92041,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 290.890625,
+        "w": 364,
+        "h": 15.039063,
+        "lines": [
+          [
+            {
+              "text": "Flow resumes normally after the keep-with-next chain.",
+              "width": 263.495117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "§2 — Table Splits Mid-Page",
+              "width": 181.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 28,
+        "y": 67.140625,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Expected: the table begins below the setup text, then splits across pages with a ",
+              "width": 343.577637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "repeated header on the continuation.",
+              "width": 158.018555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 97.75,
+        "w": 260,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Setup: narrow column forces extra wrapping so ",
+              "width": 252.436035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the table begins mid-page.",
+              "width": 138.740723,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 135.828125,
+        "w": 364,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Scenario lead: limited vertical space remains above — the table must",
+              "width": 361.302734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "split even though it does not start at the page top.",
+              "width": 260.95459,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 173.90625,
+        "w": 364,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Continuation note: the header row should repeat on every page ",
+              "width": 334.318359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "carrying table content.",
+              "width": 117.970703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 215.984375,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 215.984375,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Milestone",
+              "width": 38.518066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 215.984375,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Status",
+              "width": 25.514648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 237.039063,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-01",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 237.039063,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Typographic baseline grid",
+              "width": 102.563965,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 237.039063,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Done",
+              "width": 21.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 258.09375,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-02",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 258.09375,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Variable font axis resolution",
+              "width": 109.894043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 258.09375,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Done",
+              "width": 21.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 279.148438,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-03",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 279.148438,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Advanced justification engine",
+              "width": 116.578125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 279.148438,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Active",
+              "width": 24.508301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 221.984375,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 57.304688,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 57.304688,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Milestone",
+              "width": 38.518066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 57.304688,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Status",
+              "width": 25.514648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 78.359375,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-04",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 78.359375,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Table column sizing",
+              "width": 78.539063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 78.359375,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Active",
+              "width": 24.508301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 99.414063,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-05",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 99.414063,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Header row repetition",
+              "width": 86.044922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 99.414063,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 120.46875,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-06",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 120.46875,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Story float layout",
+              "width": 67.03418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 120.46875,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 141.523438,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-07",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 141.523438,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "RTL paragraph shaping",
+              "width": 94.398926,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 141.523438,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 162.578125,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-08",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 162.578125,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Inline object baseline",
+              "width": 84.058594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 162.578125,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 183.632813,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-09",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 183.632813,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Drop cap continuation",
+              "width": 87.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 183.632813,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 204.6875,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-10",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 204.6875,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Soft-hyphen priority",
+              "width": 78.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 204.6875,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 225.742188,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-11",
+              "width": 19.836914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 225.742188,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Grapheme cluster safety",
+              "width": 98.041992,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 225.742188,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 246.796875,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-12",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 246.796875,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Overlay architecture",
+              "width": 80.529785,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 246.796875,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 267.851563,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-13",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 267.851563,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Orientation + page size",
+              "width": 92.808105,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 267.851563,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 63.304688,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 57.304688,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 57.304688,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Milestone",
+              "width": 38.518066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 57.304688,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Status",
+              "width": 25.514648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 78.359375,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-14",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 78.359375,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "span pagination",
+              "width": 63.553711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 78.359375,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 99.414063,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-15",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 99.414063,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "CLI integration",
+              "width": 58.535156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 99.414063,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 120.46875,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-16",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 120.46875,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "PDF context pass",
+              "width": 71.028809,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 120.46875,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 141.523438,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-17",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 141.523438,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Visual regression sign-off",
+              "width": 100.722656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 141.523438,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 28,
+        "y": 162.578125,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "M-18",
+              "width": 20.504883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 102,
+        "y": 162.578125,
+        "w": 216,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Public release",
+              "width": 56.53125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 322,
+        "y": 162.578125,
+        "w": 70,
+        "h": 19.054688,
+        "lines": [
+          [
+            {
+              "text": "Queued",
+              "width": 32.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "§3 — Page-Top Overflow Split",
+              "width": 198.105469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 28,
+        "y": 67.140625,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Expected: the long paragraph begins at the top of a fresh page, overflows even that ",
+              "width": 359.560547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "empty page, and is split with a marker at the page top.",
+              "width": 231.552246,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 7,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Scenario lead: the next paragraph is forced to a new page and will ",
+              "width": 348.41748,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overflow even an empty page.",
+              "width": 156.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 68.078125,
+        "w": 364,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Continuation note: the paragraph below must split at the page top — ",
+              "width": 361.780762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "there is no preceding content to position it mid-page.",
+              "width": 278.066895,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 8,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 260,
+        "h": 270.703125,
+        "lines": [
+          [
+            {
+              "text": "The Roman codex replaced the scroll as the ",
+              "width": 218.28125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dominant book form around the first century CE. ",
+              "width": 237.225098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Unlike the scroll, whose text ran in a single ",
+              "width": 210.933594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuous column, the codex gathered leaves into ",
+              "width": 250.717285,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordered quires — a structure well suited to the page-",
+              "width": 256.19043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "break concept that layout engines still model today. ",
+              "width": 252.538086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "The Roman codex replaced the scroll as the ",
+              "width": 218.28125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dominant book form around the first century CE. ",
+              "width": 237.225098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Unlike the scroll, whose text ran in a single ",
+              "width": 210.933594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuous column, the codex gathered leaves into ",
+              "width": 250.717285,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordered quires — a structure well suited to the page-",
+              "width": 256.19043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "break concept that layout engines still model today. ",
+              "width": 252.538086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "The Roman codex replaced the scroll as the ",
+              "width": 218.28125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dominant book form around the first century CE. ",
+              "width": 237.225098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Unlike the scroll, whose text ran in a single ",
+              "width": 210.933594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuous column, the codex gathered leaves into ",
+              "width": 250.717285,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordered quires — a structure well suited to the page-",
+              "width": 256.19043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "break concept that layout engines still model today. ",
+              "width": 252.538086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 35,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 9,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 260,
+        "h": 120.3125,
+        "lines": [
+          [
+            {
+              "text": "The Roman codex replaced the scroll as the ",
+              "width": 218.28125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dominant book form around the first century CE. ",
+              "width": 237.225098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Unlike the scroll, whose text ran in a single ",
+              "width": 210.933594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuous column, the codex gathered leaves into ",
+              "width": 250.717285,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordered quires — a structure well suited to the page-",
+              "width": 256.19043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "break concept that layout engines still model today. ",
+              "width": 252.538086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "The Roman codex replaced the scroll as the ",
+              "width": 218.28125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dominant book form around the first century CE.",
+              "width": 234.168945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,197 @@
+{
+  "documentVersion": "1.0",
+  "layout": {
+    "pageSize": {
+      "width": 612,
+      "height": 540
+    },
+    "margins": {
+      "top": 72,
+      "right": 72,
+      "bottom": 72,
+      "left": 72
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.3,
+    "showPageNumbers": false
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "p": {
+      "marginBottom": 10,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "h2": {
+      "fontSize": 18,
+      "fontWeight": "bold",
+      "marginTop": 12,
+      "marginBottom": 8,
+      "keepWithNext": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h2",
+      "content": "Drop Caps"
+    },
+    {
+      "type": "p",
+      "content": "An enlarged initial letter — the drop cap — has marked the opening of chapters and stanzas since illuminated manuscripts. The letter descends into the column, commanding two to five lines of body text, while the remaining characters of the first word wrap around it."
+    },
+    {
+      "type": "p",
+      "content": "Preamble paragraph to push the first drop cap closer to the bottom of this short page. Preamble paragraph to push the first drop cap closer to the bottom of this short page. Preamble paragraph to push the first drop cap closer to the bottom of this short page. Preamble paragraph to push the first drop cap closer to the bottom of this short page."
+    },
+    {
+      "type": "p",
+      "content": "Another preamble paragraph so the drop cap paragraph must split across pages. Another preamble paragraph so the drop cap paragraph must split across pages. Another preamble paragraph so the drop cap paragraph must split across pages. Another preamble paragraph so the drop cap paragraph must split across pages."
+    },
+    {
+      "type": "p",
+      "content": "Printing from movable type eliminated the scribe but could not immediately replace the illuminator — early printed books left spaces for hand-drawn initial capitals, a transitional practice that persisted for decades before decorative woodcut initials took their place. The drop cap survived this transition intact, carrying the manuscript tradition forward into the age of mechanical reproduction. Printing from movable type eliminated the scribe but could not immediately replace the illuminator — early printed books left spaces for hand-drawn initial capitals, a transitional practice that persisted for decades before decorative woodcut initials took their place. The drop cap survived this transition intact, carrying the manuscript tradition forward into the age of mechanical reproduction. Printing from movable type eliminated the scribe but could not immediately replace the illuminator.",
+      "properties": {
+        "sourceId": "dropcap-basic",
+        "dropCap": {
+          "enabled": true,
+          "lines": 4,
+          "gap": 6,
+          "characterStyle": {
+            "fontFamily": "Times New Roman",
+            "fontWeight": 700,
+            "color": "#0f3f63"
+          }
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "A second drop cap paragraph that must move as a whole unit when it cannot fit at the foot of the page. This paragraph is long enough to require at least two lines after the initial, so the drop cap and its body text must relocate together to the next page rather than splitting.",
+      "properties": {
+        "sourceId": "dropcap-move-whole",
+        "style": {
+          "overflowPolicy": "move-whole"
+        },
+        "dropCap": {
+          "enabled": true,
+          "lines": 3,
+          "gap": 5,
+          "characters": 6,
+          "characterStyle": {
+            "fontFamily": "Times New Roman",
+            "fontWeight": 700
+          }
+        }
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Drop Cap Inside a Table Cell"
+    },
+    {
+      "type": "table",
+      "content": "",
+      "properties": {
+        "table": {
+          "headerRows": 1,
+          "repeatHeader": false,
+          "columnGap": 8,
+          "rowGap": 6,
+          "columns": [
+            { "mode": "flex", "fr": 2 },
+            { "mode": "flex", "fr": 1 }
+          ],
+          "cellStyle": {
+            "padding": 6,
+            "borderWidth": 0.6,
+            "borderColor": "#999999"
+          },
+          "headerCellStyle": {
+            "fontWeight": 700,
+            "backgroundColor": "#f2f4f7"
+          }
+        }
+      },
+      "children": [
+        {
+          "type": "table-row",
+          "properties": {
+            "semanticRole": "header"
+          },
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "Drop Cap Column"
+            },
+            {
+              "type": "table-cell",
+              "content": "Plain Column"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "Ornamental initials inside tabular layouts first appeared in reference books where each entry opened with a large letter to aid quick scanning. The drop cap must stay within the cell's content boundary and align with surrounding body text.",
+              "properties": {
+                "sourceId": "dropcap-table-cell",
+                "dropCap": {
+                  "enabled": true,
+                  "lines": 3,
+                  "gap": 6,
+                  "characterStyle": {
+                    "fontFamily": "Times New Roman",
+                    "fontWeight": 700,
+                    "color": "#0f3f63"
+                  }
+                }
+              }
+            },
+            {
+              "type": "table-cell",
+              "content": "",
+              "children": [
+                {
+                  "type": "text",
+                  "content": "For comparison: plain cell rendering with "
+                },
+                {
+                  "type": "text",
+                  "content": "bold",
+                  "properties": {
+                    "style": {
+                      "fontWeight": "bold"
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "content": " and "
+                },
+                {
+                  "type": "text",
+                  "content": "coloured",
+                  "properties": {
+                    "style": {
+                      "color": "#0b57d0"
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "content": " inline runs."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

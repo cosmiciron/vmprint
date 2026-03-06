@@ -1,0 +1,253 @@
+:root {
+  --bg: #f3efe5;
+  --ink: #1f2933;
+  --ink-soft: #51606f;
+  --panel: rgba(255, 255, 255, 0.9);
+  --line: #c9d3dc;
+  --accent: #124e66;
+  --accent-strong: #0b3a4c;
+  --ok: #1f6d45;
+  --error: #9f1239;
+  --rendering: #8a5300;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Avenir Next", "Segoe UI", "Trebuchet MS", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(18, 78, 102, 0.1) 0%, transparent 45%),
+    radial-gradient(circle at 100% 0%, rgba(173, 107, 77, 0.12) 0%, transparent 32%),
+    var(--bg);
+}
+
+.shell {
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 2rem 1rem 2.4rem;
+}
+
+.hero {
+  margin-bottom: 1.2rem;
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+h1 {
+  margin: 0.3rem 0 0.4rem;
+  font-family: "Iowan Old Style", "Palatino Linotype", serif;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  line-height: 1.1;
+}
+
+.lede {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 0.6rem;
+  color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.9rem;
+  backdrop-filter: blur(2px);
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+  align-items: stretch;
+}
+
+.fixture-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.fixture-picker select {
+  min-width: 260px;
+  max-width: 340px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.48rem 0.82rem;
+  background: #fff;
+  color: var(--ink);
+  font: 500 1rem/1.2 "Avenir Next", "Segoe UI", "Trebuchet MS", sans-serif;
+  height: 100%;
+}
+
+.fixture-picker select:focus-visible {
+  outline: 2px solid rgba(18, 78, 102, 0.33);
+  outline-offset: 1px;
+}
+
+.fixture-picker[data-loading="true"]::after {
+  content: "Loading...";
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.fixture-picker select:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.48rem 0.88rem;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+}
+
+button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+button.primary:hover,
+button.primary:focus-visible {
+  background: var(--accent-strong);
+}
+
+button:hover,
+button:focus-visible {
+  border-color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+#upload-json {
+  display: none;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 0.42rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+textarea {
+  width: 100%;
+  height: min(60vh, 560px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.84rem;
+  resize: vertical;
+  font: 500 0.9rem/1.5 "Cascadia Code", "Consolas", monospace;
+  background: #f9fafb;
+  color: #111827;
+}
+
+textarea:focus-visible {
+  outline: 2px solid rgba(18, 78, 102, 0.33);
+  outline-offset: 1px;
+}
+
+.status-row {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 0.8rem;
+}
+
+.metrics-row {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+
+.metrics-row p {
+  margin: 0;
+}
+
+#status,
+#page-count {
+  margin: 0;
+}
+
+#status[data-state="idle"] {
+  color: var(--ink-soft);
+}
+
+#status[data-state="rendering"] {
+  color: var(--rendering);
+}
+
+#status[data-state="success"] {
+  color: var(--ok);
+}
+
+#status[data-state="error"] {
+  color: var(--error);
+}
+
+#download-link {
+  margin-left: auto;
+  text-decoration: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 0.48rem 0.88rem;
+}
+
+#download-link[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+#download-link:hover,
+#download-link:focus-visible {
+  color: #fff;
+  background: var(--accent);
+}
+
+code {
+  font-family: "Cascadia Code", "Consolas", monospace;
+}
+
+@media (max-width: 760px) {
+  .shell {
+    padding: 1.2rem 0.7rem 1.5rem;
+  }
+
+  textarea {
+    height: 52vh;
+  }
+
+  #download-link {
+    margin-left: 0;
+  }
+}

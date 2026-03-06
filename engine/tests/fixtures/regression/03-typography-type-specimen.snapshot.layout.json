@@ -1,0 +1,1725 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "A Type Specimen",
+              "width": 181.757813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 116.078125,
+        "w": 468,
+        "h": 49.21875,
+        "lines": [
+          [
+            {
+              "text": "Typography begins with selection. Before spacing, before measure, before any question",
+              "width": 466.283203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "of hierarchy, a designer must choose which faces will carry the words — this document ",
+              "width": 464.865234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "shows what is available and how each face behaves at text, display, and code sizes.",
+              "width": 448.265625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 185.296875,
+        "w": 468,
+        "h": 21.875,
+        "lines": [
+          [
+            {
+              "text": "Installed Typefaces",
+              "width": 146.429688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 215.171875,
+        "w": 468,
+        "h": 32.8125,
+        "lines": [
+          [
+            {
+              "text": "Each line below is set in the named face at 11 pt. The sample string exercises numerals,",
+              "width": 468.679688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": " punctuation, and the full latin alphabet run.",
+              "width": 229.5,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 257.984375,
+        "w": 468,
+        "h": 15.039063,
+        "lines": [
+          [
+            {
+              "text": "Arimo: The quick brown fox jumps over 1234567890.",
+              "width": 257.415039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 279.023438,
+        "w": 468,
+        "h": 17.732,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans: The quick brown fox jumps over 1234567890.",
+              "width": 292.017,
+              "ascent": 1069,
+              "descent": 293,
+              "fontFamily": "Noto Sans"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 302.755437,
+        "w": 468,
+        "h": 16.177734,
+        "lines": [
+          [
+            {
+              "text": "Carlito: The quick brown fox jumps over 1234567890.",
+              "width": 238.084473,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 324.933172,
+        "w": 468,
+        "h": 15.4,
+        "lines": [
+          [
+            {
+              "text": "Caladea: The quick brown fox jumps over 1234567890.",
+              "width": 240.416,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": "Caladea"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 346.333172,
+        "w": 468,
+        "h": 14.931641,
+        "lines": [
+          [
+            {
+              "text": "Tinos: The quick brown fox jumps over 1234567890.",
+              "width": 235.474121,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": "Tinos"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 367.264812,
+        "w": 468,
+        "h": 15.210938,
+        "lines": [
+          [
+            {
+              "text": "Cousine: The quick brown fox jumps over 1234567890.",
+              "width": 336.654785,
+              "ascent": 832.519531,
+              "descent": 300.292969,
+              "fontFamily": "Cousine"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 388.47575,
+        "w": 468,
+        "h": 15.103516,
+        "lines": [
+          [
+            {
+              "text": "Courier Prime: The quick brown fox jumps over 1234567890.",
+              "width": 375.955078,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 409.579266,
+        "w": 468,
+        "h": 18.678,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans SC: ",
+              "width": 73.623,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "中文预览",
+              "width": 40.48,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " ",
+              "width": 2.464,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "字体样式示例",
+              "width": 60.72,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " 1234567890",
+              "width": 63.514,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 434.257266,
+        "w": 468,
+        "h": 18.678,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans JP: ",
+              "width": 72.897,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "日本語プレビュー",
+              "width": 80.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": " ",
+              "width": 2.464,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "フォントサンプル",
+              "width": 80.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": " 1234567890",
+              "width": 63.514,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 458.935266,
+        "w": 468,
+        "h": 18.678,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans KR: ",
+              "width": 74.14,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans KR"
+            },
+            {
+              "text": "한국어",
+              "width": 27.9312,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans KR"
+            },
+            {
+              "text": " ",
+              "width": 2.464,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans KR"
+            },
+            {
+              "text": "미리보기",
+              "width": 37.2416,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans KR"
+            },
+            {
+              "text": " ",
+              "width": 2.464,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans KR"
+            },
+            {
+              "text": "글꼴",
+              "width": 18.6208,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans KR"
+            },
+            {
+              "text": " ",
+              "width": 2.464,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans KR"
+            },
+            {
+              "text": "샘플",
+              "width": 18.6208,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans KR"
+            },
+            {
+              "text": " 1234567890",
+              "width": 63.514,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans KR"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 483.613266,
+        "w": 468,
+        "h": 19.371,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans Thai: ",
+              "width": 83.369,
+              "ascent": 1061,
+              "descent": 450,
+              "fontFamily": "Noto Sans Thai"
+            },
+            {
+              "text": "ตัวอย่างฟอนต์ภาษาไทย",
+              "width": 98.27136,
+              "ascent": 1061,
+              "descent": 450,
+              "fontFamily": "Noto Sans Thai"
+            },
+            {
+              "text": " 1234567890",
+              "width": 65.78,
+              "ascent": 1061,
+              "descent": 450,
+              "fontFamily": "Noto Sans Thai"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 508.984266,
+        "w": 468,
+        "h": 25.982,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans Arabic: ",
+              "width": 93.852,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "معاينة",
+              "width": 25.75925,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "الخط",
+              "width": 20.5447,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "العربي",
+              "width": 24.9755,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " 1234567890",
+              "width": 65.78,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 540.966266,
+        "w": 468,
+        "h": 17.094,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans Devanagari: ",
+              "width": 120.791,
+              "ascent": 896,
+              "descent": 408,
+              "fontFamily": "Noto Sans Devanagari"
+            },
+            {
+              "text": "देवनागरी",
+              "width": 32.7294,
+              "ascent": 896,
+              "descent": 408,
+              "fontFamily": "Noto Sans Devanagari"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 896,
+              "descent": 408,
+              "fontFamily": "Noto Sans Devanagari"
+            },
+            {
+              "text": "फ़ॉन्ट",
+              "width": 19.3116,
+              "ascent": 896,
+              "descent": 408,
+              "fontFamily": "Noto Sans Devanagari"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 896,
+              "descent": 408,
+              "fontFamily": "Noto Sans Devanagari"
+            },
+            {
+              "text": "पूर्वावलोकन",
+              "width": 43.87955,
+              "ascent": 896,
+              "descent": 408,
+              "fontFamily": "Noto Sans Devanagari"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 896,
+              "descent": 408,
+              "fontFamily": "Noto Sans Devanagari"
+            },
+            {
+              "text": "१२३४५६७८९०",
+              "width": 54.34,
+              "ascent": 896,
+              "descent": 408,
+              "fontFamily": "Noto Sans Devanagari"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "fontPreview",
+        "x": 72,
+        "y": 564.060266,
+        "w": 468,
+        "h": 22.44,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans Symbols 2: ",
+              "width": 119.889,
+              "ascent": 1069,
+              "descent": 630,
+              "fontFamily": "Noto Sans Symbols 2"
+            },
+            {
+              "text": "→",
+              "width": 11,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 1069,
+              "descent": 630,
+              "fontFamily": "Noto Sans Symbols 2"
+            },
+            {
+              "text": "←",
+              "width": 11,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 1069,
+              "descent": 630,
+              "fontFamily": "Noto Sans Symbols 2"
+            },
+            {
+              "text": "↑",
+              "width": 11,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 1069,
+              "descent": 630,
+              "fontFamily": "Noto Sans Symbols 2"
+            },
+            {
+              "text": "↓",
+              "width": 11,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " ✓ ✗ ★ ☆ ☑ ⚠ ",
+              "width": 77.594,
+              "ascent": 1069,
+              "descent": 630,
+              "fontFamily": "Noto Sans Symbols 2"
+            },
+            {
+              "text": "∑",
+              "width": 11,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 1069,
+              "descent": 630,
+              "fontFamily": "Noto Sans Symbols 2"
+            },
+            {
+              "text": "∞",
+              "width": 11,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 1069,
+              "descent": 630,
+              "fontFamily": "Noto Sans Symbols 2"
+            },
+            {
+              "text": "≤",
+              "width": 11,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " ",
+              "width": 2.86,
+              "ascent": 1069,
+              "descent": 630,
+              "fontFamily": "Noto Sans Symbols 2"
+            },
+            {
+              "text": "≥",
+              "width": 11,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 602.500266,
+        "w": 468,
+        "h": 21.875,
+        "lines": [
+          [
+            {
+              "text": "Weight Matching - Arimo Static Family",
+              "width": 291.289063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 632.375266,
+        "w": 468,
+        "h": 32.8125,
+        "lines": [
+          [
+            {
+              "text": "Arimo now ships as static instances. Requested weights resolve to the nearest available",
+              "width": 467.578125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "static match while preserving style.",
+              "width": 185.402344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 675.187766,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "100 -> nearest static 400 (normal)",
+              "width": 180.421875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 694.994016,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "300 -> nearest static 400 (normal)",
+              "width": 180.421875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "400 -> static 400 (normal)",
+              "width": 137.0625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 91.80625,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "500 -> nearest static 700 (normal)",
+              "width": 180.421875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 111.6125,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "600 -> nearest static 700 (normal)",
+              "width": 189.755859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 131.41875,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "700 -> static 700 (normal)",
+              "width": 143.730469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 151.225,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "900 -> nearest static 700 (normal)",
+              "width": 189.755859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 171.03125,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "300 italic -> nearest static 400 (italic)",
+              "width": 195.087891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 190.8375,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "500 italic -> nearest static 700 (italic)",
+              "width": 195.087891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 210.64375,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "700 italic -> static 700 (italic)",
+              "width": 161.748047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 230.45,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "900 italic -> nearest static 700 (italic)",
+              "width": 207.773438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 250.25625,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "keyword: normal",
+              "width": 88.03125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 270.0625,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "keyword: bold",
+              "width": 81.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 289.86875,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "keyword: lighter",
+              "width": 84.035156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 309.675,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "keyword: bolder",
+              "width": 92.683594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLine",
+        "x": 72,
+        "y": 329.48125,
+        "w": 468,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "string numeric \"650\" → stepped to 700",
+              "width": 220.775391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 349.2875,
+        "w": 468,
+        "h": 16.40625,
+        "lines": [
+          [
+            {
+              "text": "Inline normal sweep: ",
+              "width": 113.390625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[100] ",
+              "width": 30.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[300] ",
+              "width": 30.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[400] ",
+              "width": 30.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[500] ",
+              "width": 30.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[600] ",
+              "width": 31.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[700] ",
+              "width": 31.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[900]",
+              "width": 28.013672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 375.69375,
+        "w": 468,
+        "h": 16.40625,
+        "lines": [
+          [
+            {
+              "text": "Inline italic sweep: ",
+              "width": 100.716797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[100] ",
+              "width": 30.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[300] ",
+              "width": 30.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[500] ",
+              "width": 30.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[700] ",
+              "width": 31.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "[900]",
+              "width": 28.013672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 412.1,
+        "w": 468,
+        "h": 21.875,
+        "lines": [
+          [
+            {
+              "text": "Scripts & Mixed-Family Composition",
+              "width": 278.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 441.975,
+        "w": 468,
+        "h": 49.21875,
+        "lines": [
+          [
+            {
+              "text": "Type systems that serve international audiences must switch families mid-paragraph ",
+              "width": 450.867188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "without disrupting baseline rhythm or line height. The examples below show style-level ",
+              "width": 461.566406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "family overrides and inline family runs in a single composition.",
+              "width": 328.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 501.19375,
+        "w": 468,
+        "h": 42.177734,
+        "lines": [
+          [
+            {
+              "text": "Base Arimo 12pt, then ",
+              "width": 122.068359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "Courier Prime 11pt",
+              "width": 118.722656,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": ", then ",
+              "width": 33.357422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "Arimo Bold 15pt",
+              "width": 115.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": ", then ",
+              "width": 33.357422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "Arimo ",
+              "width": 34.669922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Italic 12pt",
+              "width": 51.363281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": ".",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "mono",
+        "x": 72,
+        "y": 553.371484,
+        "w": 468,
+        "h": 38.460938,
+        "lines": [
+          [
+            {
+              "text": "const total = subtotal + tax - discount; // style-level monospace family ",
+              "width": 437.714844,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ],
+          [
+            {
+              "text": "override",
+              "width": 47.96875,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "cjk",
+        "x": 72,
+        "y": 601.832422,
+        "w": 468,
+        "h": 45.448,
+        "lines": [
+          [
+            {
+              "text": "日本語サンプル",
+              "width": 83.72,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": ": ",
+              "width": 6.526,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "フォントファミリーを要素単位で切り替えても、改行と計測が安定す",
+              "width": 370.76,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            }
+          ],
+          [
+            {
+              "text": "ることを確認します。",
+              "width": 119.6,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "arabic",
+        "x": 72,
+        "y": 657.280422,
+        "w": 468,
+        "h": 32.006,
+        "lines": [
+          [
+            {
+              "text": "مثال",
+              "width": 23.2674,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "عربي",
+              "width": 23.1439,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": ": ",
+              "width": 6.864,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "هذا",
+              "width": 16.5984,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "السطر",
+              "width": 30.3069,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "يختبر",
+              "width": 25.2928,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "استخدام",
+              "width": 40.5821,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "عائلة",
+              "width": 22.83515,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "خط",
+              "width": 17.537,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "مختلفة",
+              "width": 34.7776,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "مع",
+              "width": 13.0416,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "حجم",
+              "width": 22.0818,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "مختلف",
+              "width": 36.22255,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "داخل",
+              "width": 25.1199,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "نفس",
+              "width": 25.10755,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "المستند",
+              "width": 39.1989,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": ".",
+              "width": 3.484,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 29.1707,
+        "lines": [
+          [
+            {
+              "text": "Mixed-script inline: ",
+              "width": 102.697266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "日本語",
+              "width": 35.88,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": " + ",
+              "width": 13.675781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "العربية",
+              "width": 31.03555,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " + ",
+              "width": 13.675781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "Courier",
+              "width": 46.169922,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": " in one unbroken paragraph.",
+              "width": 150.779297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 121.1707,
+        "w": 468,
+        "h": 21.875,
+        "lines": [
+          [
+            {
+              "text": "Cross-Family Weight Matching — Noto Sans",
+              "width": 337.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 151.0457,
+        "w": 468,
+        "h": 16.40625,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans is a static-instance family. Weight resolution uses nearest-match selection.",
+              "width": 454.652344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLineNoto",
+        "x": 72,
+        "y": 177.45195,
+        "w": 468,
+        "h": 18.744,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans requested 200 -> nearest static match",
+              "width": 272.832,
+              "ascent": 1069,
+              "descent": 293,
+              "fontFamily": "Noto Sans"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLineNoto",
+        "x": 72,
+        "y": 200.19595,
+        "w": 468,
+        "h": 19.836,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans requested 500 ",
+              "width": 144.804,
+              "ascent": 1069,
+              "descent": 293,
+              "fontFamily": "Noto Sans"
+            },
+            {
+              "text": "→",
+              "width": 12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " nearest static match boundary",
+              "width": 175.08,
+              "ascent": 1069,
+              "descent": 293,
+              "fontFamily": "Noto Sans"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "weightLineNoto",
+        "x": 72,
+        "y": 224.03195,
+        "w": 468,
+        "h": 18.744,
+        "lines": [
+          [
+            {
+              "text": "Noto Sans requested 800 -> nearest static match",
+              "width": 288.708,
+              "ascent": 1069,
+              "descent": 293,
+              "fontFamily": "Noto Sans"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,1043 @@
+[
+  {
+    "index": 0,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 34.0125,
+        "lines": [
+          [
+            {
+              "text": "Rivers of Text",
+              "width": 156.9375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "lead",
+        "x": 44,
+        "y": 80.0125,
+        "w": 380,
+        "h": 76.29375,
+        "lines": [
+          [
+            {
+              "text": "A showcase of StoryPackager layout modes: floating images, ",
+              "width": 356.236816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story-absolute anchoring, wrap variants, and multi-page ",
+              "width": 323.724121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pagination. Each section demonstrates one specific feature of the",
+              "width": 376.51123,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "engine.",
+              "width": 42.649902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 326,
+        "y": 172.30625,
+        "w": 90,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 192.30625,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Story-Absolute Positioning",
+              "width": 154.664063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 214.3125,
+        "w": 380,
+        "h": 101.389063,
+        "lines": [
+          [
+            {
+              "text": "Story-absolute images are pinned at fixed story-local ",
+              "width": 259.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "coordinates, independent of the text flow. The burgundy",
+              "width": 271.51416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "rectangle at upper right was declared as the very first ",
+              "width": 261.685059,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "child of this story element and was registered in the ",
+              "width": 253.128906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "SpatialMap during Pass 1 — before a single word of ",
+              "width": 256.808105,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text was placed. All text from the story’s origin ",
+              "width": 252.908691,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "automatically pours around it into the remaining column width to its left.",
+              "width": 345.452637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 323.701563,
+        "w": 380,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "When the story spans multiple pages, any absolute image that straddles the ",
+              "width": 372.37793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "page break is moved entirely to the next page. Publication-quality layout ",
+              "width": 353.434082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "demands clean image boundaries: no clipping, no partial rendering mid-image.",
+              "width": 382.169434,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 395.890625,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Float Right · Wrap Around",
+              "width": 149.091797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 324,
+        "y": 417.896875,
+        "w": 100,
+        "h": 150,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 417.896875,
+        "w": 380,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "The right-aligned float anchors at the text cursor the ",
+              "width": 254.971191,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "moment its element is encountered in the child list. ",
+              "width": 249.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Subsequent lines pour into the remaining column to its ",
+              "width": 267.824219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "left — the classic magazine treatment, water parting ",
+              "width": 256.168945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "around a stone. The lineLayoutResolver is called once ",
+              "width": 267.82959,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "per line, querying the SpatialMap for available ",
+              "width": 226.246582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "horizontal intervals at that line’s Y coordinate in story ",
+              "width": 259.654785,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "space.",
+              "width": 32.40918,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 541.585938,
+        "w": 380,
+        "h": 57.2,
+        "lines": [
+          [
+            {
+              "text": "Once the cursor clears the foot of the float, the full ",
+              "width": 246.409668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "column width is restored. The transition is seamless: ",
+              "width": 257.989746,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the same text box holds lines of varying widths, driven by per-line data stored ",
+              "width": 378.474121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "in the _lineWidths array. No element boundary coincides with the float ",
+              "width": 343.01416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 44,
+        "y": 608,
+        "w": 380,
+        "h": 10,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "boundary, and no special-casing is needed in the renderer. The resolver ",
+              "width": 354.046387,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "tracks state in a local closure and relies on wrapRichSegments calling it with ",
+              "width": 374.171875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "strictly ascending line indices.",
+              "width": 144.901367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 112.189063,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Float Left · Wrap Around",
+              "width": 140.431641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 44,
+        "y": 134.195313,
+        "w": 80,
+        "h": 80,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 134.195313,
+        "w": 380,
+        "h": 101.389063,
+        "lines": [
+          [
+            {
+              "text": "An amber square occupies the left margin here, with body ",
+              "width": 284.318848,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "text filling the wider right column. PageMaker pioneered this",
+              "width": 291.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "runaround layout in 1985, bringing professional typesetting ",
+              "width": 288.637207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "to the Macintosh. The SpatialMap knows only rectangles ",
+              "width": 278.201172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "and their wrap modes; the rest is interval arithmetic — ",
+              "width": 265.938965,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "subtract the obstacle’s X range from the available column ",
+              "width": 282.283203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "width and assign the remainder to each line.",
+              "width": 215.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 263.584375,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Top-Bottom Clear",
+              "width": 100.435547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 59,
+        "y": 285.590625,
+        "w": 350,
+        "h": 88,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 379.590625,
+        "w": 380,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The slate-gray banner above demonstrates top-bottom wrap: no text runs ",
+              "width": 359.524902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "alongside it; the full column clears above and below. The cursor advances ",
+              "width": 363.204102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "past the image bottom before any text is placed. Wide pull quotes, full-width ",
+              "width": 371.142578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "dividers, and chapter ornaments are the natural candidates for this mode.",
+              "width": 357.091797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 466.079688,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Float Center · Wrap Around",
+              "width": 156.445313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 204,
+        "y": 488.085938,
+        "w": 60,
+        "h": 60,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 488.085938,
+        "w": 380,
+        "h": 101.389063,
+        "lines": [
+          [
+            {
+              "text": "A centered float carves two ",
+              "width": 135.73291,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "equal intervals from each line it",
+              "width": 151.631348,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "occupies. The resolver fills the ",
+              "width": 151.008301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "left interval first, then ",
+              "width": 104.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "immediately continues into the ",
+              "width": 151.024414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "right interval at the same ",
+              "width": 123.50293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "baseline — a single unbroken ",
+              "width": 147.984375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "token stream flowing around ",
+              "width": 141.243652,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "both flanks of the obstacle ",
+              "width": 130.861328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "simultaneously. The text ",
+              "width": 121.666016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "narrows on each side for the lines that coincide with the ornament, then ",
+              "width": 350.367188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "springs back to full measure once the float is cleared.",
+              "width": 259.246582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 44,
+        "y": 608,
+        "w": 380,
+        "h": 10,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "After the float bottom is cleared the full measure is restored, and the layout ",
+              "width": 366.249512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "engine behaves identically to a flat, obstacle-free column for all remaining ",
+              "width": 360.754883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lines in the paragraph.",
+              "width": 108.850586,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 112.189063,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Overlay · Wrap None",
+              "width": 117.814453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 264,
+        "y": 134.195313,
+        "w": 160,
+        "h": 80,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 134.195313,
+        "w": 380,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Setting wrap to none makes the image purely decorative — it registers no ",
+              "width": 360.73877,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "obstacle in the SpatialMap, so not a single character of text is reflowed. Body ",
+              "width": 377.872559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "copy renders at full column width and the image overlaps it visually. Boxes ",
+              "width": 365.01416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "are painted in document order, so depth is controlled by child order in the ",
+              "width": 358.934082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story.",
+              "width": 26.893066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 214.984375,
+        "w": 380,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "Pagination in the StoryPackager follows a split-and-resume pattern. When ",
+              "width": 363.187988,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "available page height is exhausted mid-story, the packager emits a ",
+              "width": 328.351074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "FrozenStoryPackager for the current-page content and creates a new ",
+              "width": 341.187988,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "StoryPackager for the continuation. Any floats that straddle the break become",
+              "width": 377.883301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "carry-over obstacles, registered at Y 0 on the next page so text continues to ",
+              "width": 370.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "wrap around their remaining height correctly. Story-absolute images past the ",
+              "width": 375.412598,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "break are re-included in the continuation children and re-anchored at their ",
+              "width": 361.388672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story coordinates adjusted by the split offset.",
+              "width": 216.863281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 338.673437,
+        "w": 380,
+        "h": 101.389063,
+        "lines": [
+          [
+            {
+              "text": "The architecture keeps all story-local coordinates intact across the split. A ",
+              "width": 361.32959,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "float anchored on page one whose bottom extends onto page two simply ",
+              "width": 356.511719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "reappears at the top of page two with its remaining height, and text wraps ",
+              "width": 360.15332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "around that carry-over obstacle just as it did on the first page. No special ",
+              "width": 355.851074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "cases, no re-layout of previously rendered content — the SpatialMap and the ",
+              "width": 377.276367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "stateful resolver handle it transparently, treating the carry-over as just another",
+              "width": 377.856445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "registered obstacle at Y 0.",
+              "width": 126.94043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "page_number",
+        "x": 44,
+        "y": 608,
+        "w": 380,
+        "h": 10,
+        "lines": [
+          [
+            {
+              "text": "3.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]
