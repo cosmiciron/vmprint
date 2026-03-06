@@ -10,6 +10,10 @@ const examples = [
     {
         name: 'ast-to-pdf',
         root: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf')
+    },
+    {
+        name: 'mkd-to-ast',
+        root: path.join(repoRoot, 'docs', 'examples', 'mkd-to-ast')
     }
 ];
 
@@ -95,10 +99,56 @@ async function buildAstToPdfExample(exampleRoot) {
     }
 }
 
+async function buildMkdToAstExample(exampleRoot) {
+    const transmutterRoot = path.join(repoRoot, 'transmuters', 'mkd-mkd');
+    const srcDir = path.join(exampleRoot, 'src');
+    const assetsDir = path.join(exampleRoot, 'assets');
+    fs.mkdirSync(assetsDir, { recursive: true });
+
+    const transmutterAliases = {
+        '@vmprint/transmuter-mkd': path.join(transmutterRoot, 'src', 'index.ts')
+    };
+
+    const builds = [
+        {
+            entryPoints: [path.join(srcDir, 'entries', 'vmprint-transmuter.ts')],
+            outfile: path.join(assetsDir, 'vmprint-transmuter.js'),
+            globalName: 'VMPrintTransmuter'
+        },
+        {
+            entryPoints: [path.join(srcDir, 'pipeline.ts')],
+            outfile: path.join(assetsDir, 'pipeline.js'),
+            globalName: 'MkdToAstPipeline'
+        },
+        {
+            entryPoints: [path.join(srcDir, 'ui.ts')],
+            outfile: path.join(assetsDir, 'ui.js')
+        }
+    ];
+
+    for (const config of builds) {
+        await esbuild.build({
+            bundle: true,
+            entryPoints: config.entryPoints,
+            outfile: config.outfile,
+            format: 'iife',
+            globalName: config.globalName,
+            platform: 'browser',
+            target: ['es2020'],
+            minify: true,
+            legalComments: 'none',
+            logLevel: 'info',
+            alias: transmutterAliases
+        });
+    }
+}
+
 async function main() {
     for (const example of examples) {
         if (example.name === 'ast-to-pdf') {
             await buildAstToPdfExample(example.root);
+        } else if (example.name === 'mkd-to-ast') {
+            await buildMkdToAstExample(example.root);
         }
     }
     console.log('[docs:build] Built docs examples.');
