@@ -75,6 +75,23 @@ npm run dev --prefix draft2final -- build input.md --ast
 npm run dev --prefix draft2final -- build --help
 ```
 
+### Browser Examples (No Build Required)
+
+For a browser-based workflow without Node.js overhead, see the static examples:
+
+- Open [docs/examples/ast-to-pdf/index.html](docs/examples/ast-to-pdf/index.html) to render JSON documents to PDF entirely client-side.
+- Open [docs/examples/mkd-to-ast/index.html](docs/examples/mkd-to-ast/index.html) to transmute Markdown to VMPrint's JSON AST in the browser.
+
+### Standalone Transmuter (Markdown → AST)
+
+The `@vmprint/transmuter-mkd` package can run anywhere (browser, Node.js, edge workers) to convert Markdown into VMPrint's `DocumentInput` without layout or rendering:
+
+```bash
+npm install @vmprint/transmuter-mkd
+```
+
+See [transmuters/mkd-mkd/README.md](transmuters/mkd-mkd/README.md) for full API documentation.
+
 ---
 
 ## Run from a build
@@ -138,6 +155,10 @@ npm run test:update-layout-snapshots --prefix draft2final
 | `contracts/` | `@vmprint/contracts` | Shared TypeScript interfaces |
 | `engine/` | `@vmprint/engine` | Deterministic typesetting core |
 | `contexts/pdf/` | `@vmprint/context-pdf` | PDF rendering context |
+| `contexts/pdf-lite/` | `@vmprint/context-pdf-lite` | Lightweight jsPDF PDF context |
 | `font-managers/local/` | `@vmprint/local-fonts` | Local filesystem font manager |
+| `font-managers/standard/` | `@vmprint/standard-fonts` | Sentinel-based standard font manager |
 | `cli/` | `@vmprint/cli` | `vmprint` CLI — JSON → bit-perfect PDF |
 | `draft2final/` | `@draft2final/cli` | `draft2final` CLI — Markdown → bit-perfect PDF |
+| `transmuters/` | Multi-format transmuters | Source-to-DocumentInput converters |
+| `transmuters/mkd-mkd/` | `@vmprint/transmuter-mkd` | Markdown → DocumentInput |

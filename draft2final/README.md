@@ -75,7 +75,12 @@ Available themes/formats:
 | `academic` | Citation markers, references section, definition lists, formal typography |
 | `literature` | Book manuscript conventions |
 | `manuscript` | Standard industry manuscript output (cover page, running headers, chapter pages, endnotes) |
+| `novel` | Typeset novel format for publishing-grade output |
 | `opensource` | Publication-grade open-source documentation style with title subheading (`:: ...`), print-like framed figures, and blockquote-under-image captions |
+
+Headers and footers are configured at the theme/document level.
+See [Header and Footer Architecture](../documents/HEADER-FOOTER.md) for full details.
+The `manuscript` format uses headers for chapter titles and running page numbers.
 
 `opensource` title deck convention:
 

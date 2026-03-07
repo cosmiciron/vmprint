@@ -78,7 +78,7 @@ vmprint --input document.json --output out.pdf --overlay ./watermark.js
 
 The overlay system lets you draw before and after page content without touching the document. If `--overlay` is omitted, the CLI looks for a sidecar file automatically: if the input is `document.json`, it checks for `document.overlay.mjs`, `.js`, `.cjs`, or `.ts` alongside the input and loads it silently if found.
 
-The overlay module exports an object with a `backdrop()` method, an `overlay()` method, or both. Both receive the page geometry and the full box tree from the layout pass.
+The overlay module exports an object with a `backdrop()` method, an `overlay()` method, or both. Both receive the page geometry and the full box tree from the layout pass. **Note (0.1.2+)**: Pages now include header and footer region boxes alongside standard page content if defined in the document.
 
 ```js
 // document.overlay.mjs — loaded automatically alongside document.json
@@ -100,7 +100,9 @@ export default {
 
 ## What Ships Bundled
 
-The CLI uses `PdfContext` for PDF output and `LocalFontManager` for font loading. The font manager can be replaced via `--font-manager` without rebuilding or forking anything.
+The CLI uses `PdfContext` for PDF output and `LocalFontManager` for font loading. The font manager can be replaced via `--font-manager` without rebuilding or forking anything. 
+
+If you need a different output format or constrained-environment context (e.g. `PdfLiteContext`, SVG, Canvas), see [contexts/](../contexts/README.md) to learn how to integrate custom renderers programmatically.
 
 To produce a PDF that uses only the 14 standard PDF fonts with no embedded font data, pass `StandardFontManager` directly:
 

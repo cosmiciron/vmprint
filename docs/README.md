@@ -6,11 +6,13 @@ Documentation and static examples live under this directory.
 
 - Examples landing page (live): <https://cosmiciron.github.io/vmprint/examples/index.html>
 - AST JSON -> PDF demo (live): <https://cosmiciron.github.io/vmprint/examples/ast-to-pdf/index.html>
+- Markdown -> AST demo (live): <https://cosmiciron.github.io/vmprint/examples/mkd-to-ast/index.html>
 
 ## Source Files (Repository)
 
 - Examples landing page source: [`examples/index.html`](examples/index.html)
 - AST JSON -> PDF source: [`examples/ast-to-pdf/index.html`](examples/ast-to-pdf/index.html)
+- Markdown -> AST source: [`examples/mkd-to-ast/index.html`](examples/mkd-to-ast/index.html)
 
 ## What These Examples Mean
 

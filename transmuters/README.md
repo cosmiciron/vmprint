@@ -30,7 +30,9 @@ So `mkd-mkd` is the Markdown → `DocumentInput` transmuter. The second `mkd` he
 
 ## Relationship to draft2final
 
-[draft2final](../draft2final/) is a higher-level authoring pipeline that internally uses transmuters as one step in a larger compilation process (frontmatter resolution, format-specific semantic rules, multi-pass config). Transmuters used standalone are the lower-level primitive: source in, `DocumentInput` out, nothing else.
+[`draft2final`](../draft2final/) is a comprehensive, CLI-driven authoring pipeline. It bundles format-specific semantic rules (like screenplay or manuscript conventions), loads layout defaults and formatting themes, handles I/O, and ultimately drives the engine to produce a PDF.
+
+In contrast, transmuters are the thin, lower-level primitives: `source text` in, `DocumentInput` AST out. When used standalone in browsers or edge environments, they decouple the source format transformation from any layout or rendering execution.
 
 ## Adding a new transmuter
 

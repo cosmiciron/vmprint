@@ -78,6 +78,10 @@ author: Jane Smith
 Body text...
 ```
 
+### Headers and Footers
+
+You can specify headers and footers globally at the theme/document level using the frontmatter or predefined styles. See [Header and Footer Architecture](../documents/HEADER-FOOTER.md) for detailed guidelines on regions, selectors, and content blocks.
+
 See `README.md` for format semantics and `../documents/ARCHITECTURE.md` for system architecture.
 
 For manuscript-specific writing workflows, see [MANUSCRIPT.md](MANUSCRIPT.md).

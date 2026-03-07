@@ -65,11 +65,14 @@ interface Context {
 
 This is a deliberately minimal 2D drawing API. No layout logic. No text measurement. No line wrapping. The engine has already done all of that — the context's only job is to execute drawing commands against an output medium. Any implementation that satisfies this interface plugs in immediately.
 
+**Note on Header/Footer Regions (0.1.2+)**: The `Page[]` output now includes header and footer boxes positioned within page margins. Context implementations render these exactly like page-flow content; no special handling required.
+
 ## Packages
 
 | Package | Description |
 |---|---|
 | [`@vmprint/context-pdf`](pdf/) | PDF output via PDFKit. The production context. |
+| [`@vmprint/context-pdf-lite`](pdf-lite/) | Lightweight jsPDF-based PDF context for browser/edge environments. Limited to standard fonts (PDF-14), minimal bundled footprint. |
 
 ## Writing a Custom Context
 

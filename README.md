@@ -25,10 +25,12 @@ To see what this engine can build, view the beautifully typeset PDF version of t
 - **Fast Performance**: Renders complex, multi-page layouts in milliseconds. Global caches for glyph metrics and text segmentation ensure high throughput for batch pipelines.
 - **Multi-Column & Mixed Layouts**: Native support for DTP-style multi-column story regions. Seamlessly mix single-column headers, three-column articles, and pull-quotes on the same page. Floating obstacles naturally shape text across multiple column boundaries.
 - **Advanced Pagination & Features**: Floating elements, drop caps, widow/orphan control, and cross-page continuation markers.
+- **Header and Footer Regions**: Top-level `header` / `footer` document regions with page-selector support (`default`, `firstPage`, `odd`, `even`). Per-page suppression via element `pageOverrides`. Region content automatically clipped to margin bounds. See [Header and Footer Architecture](documents/HEADER-FOOTER.md) for full specification.
 - **Complex Table Support**: First-class handling for tables that span multiple pages, including smart row splitting, `colspan`, `rowspan`, and automatically repeated headers.
 - **Publishing-Grade Typography**: Grapheme-accurate line breaking using `Intl.Segmenter`, language-aware hyphenation, and mixed-script text runs with perfect baseline alignment.
 - **JSON-Based Layout Pipeline**: Layout output is a serializable object tree. Pre-compile layouts into JSON to rapidly distribute identical layouts that render instantly at runtime, snapshot them for CI regression testing, or inspect exact sub-point glyph measurements.
 - **Pluggable Architecture**: Swappable font managers and rendering backends (PDF provided). Easily extensible to SVG, Canvas, or custom contexts.
+- **Markdown Transmutation**: Standalone transmuter (`@vmprint/transmuter-mkd`) converts Markdown to VMPrint's `DocumentInput` AST — usable in browser, Node.js, or edge environments without touching the layout engine. Decouples source format from layout pipeline.
 - **Markdown-to-PDF (`draft2final`)**: Includes a declarative Markdown compiler to instantly output formatted PDFs (Screenplay, Academic, Novel, etc.) without writing a single line of layout code.
 
 ---
@@ -266,6 +268,8 @@ This is a monorepo:
 | `@vmprint/context-pdf` | PDF output context |
 | `@vmprint/local-fonts` | Filesystem font loading |
 | `@vmprint/standard-fonts` | Sentinel-based standard font manager (no font assets) |
+| `@vmprint/context-pdf-lite` | Lightweight jsPDF-based PDF context |
+| `@vmprint/transmuter-mkd` | Markdown → DocumentInput transmuter |
 | `@vmprint/cli` | `vmprint` JSON → bit-perfect PDF CLI |
 | `@draft2final/cli` | Markdown → bit-perfect PDF compiler |
 
@@ -278,7 +282,9 @@ VMPrint also supports a fully static, self-contained browser pipeline:
 - No server required (`file://` works)
 - Programmatic/batch-friendly in browser or embedded webview contexts
 
-This is demonstrated in [`docs/examples/ast-to-pdf/`](docs/examples/ast-to-pdf/README.md), where AST JSON is rendered directly to downloadable PDF with plain static assets.
+This is demonstrated in [`docs/examples/ast-to-pdf/`](docs/examples/ast-to-pdf/README.md), where AST JSON is rendered directly to downloadable PDF with plain static assets. 
+
+Additionally, the standalone Markdown Transmuter can similarly run in the browser without node dependencies, as demonstrated in [`docs/examples/mkd-to-ast/`](docs/examples/mkd-to-ast/README.md).
 
 **Deployable runtime footprint (2026-03-06):**
 
@@ -317,7 +323,7 @@ Version `0.1.0`. The core layout pipeline is working and covered by regression f
 
 This is pre-1.0 software. The API may change.
 
-[Architecture](documents/ARCHITECTURE.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html) · [Roadmap](documents/ROADMAP.md)
+[Architecture](documents/ARCHITECTURE.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html)
 
 ## License
 
