@@ -1,0 +1,151 @@
+layout:
+  fontFamily: Carlito
+  fontSize: 11.4
+  lineHeight: 1.7
+  pageSize: A4
+  margins:
+    top: 86
+    right: 74
+    bottom: 88
+    left: 74
+  hyphenation: soft
+  justifyEngine: advanced
+  justifyStrategy: auto
+
+header:
+  default:
+    elements:
+      - type: paragraph
+        content: "draft2final Tutorial"
+        properties:
+          style:
+            textAlign: center
+            fontFamily: Carlito
+            fontSize: 8.6
+            color: "#7f8b9c"
+            letterSpacing: 0.9
+            marginTop: -20
+            marginBottom: 7
+
+footer:
+  default:
+    elements:
+      - type: paragraph
+        content: "Page {pageNumber}"
+        properties:
+          style:
+            textAlign: center
+            fontFamily: Carlito
+            fontSize: 8.7
+            color: "#8a93a1"
+            marginTop: 26
+
+styles:
+  heading-1:
+    fontFamily: Caladea
+    fontSize: 27
+    lineHeight: 1.18
+    color: "#1c2430"
+    textAlign: center
+    hyphenation: "off"
+    marginTop: 18
+    marginBottom: 22
+    letterSpacing: 0.2
+    keepWithNext: true
+  heading-2:
+    fontFamily: Carlito
+    fontSize: 13.6
+    fontWeight: 700
+    color: "#1f3f68"
+    hyphenation: "off"
+    borderBottomWidth: 0.7
+    borderBottomColor: "#cad5e5"
+    paddingBottom: 2
+    marginTop: 20
+    marginBottom: 10.5
+    keepWithNext: true
+  heading-3:
+    fontFamily: Carlito
+    fontSize: 11.6
+    fontWeight: 700
+    color: "#2f547f"
+    hyphenation: "off"
+    marginTop: 9
+    marginBottom: 7.5
+    keepWithNext: true
+  paragraph:
+    textAlign: left
+    hyphenation: soft
+    lineHeight: 1.74
+    marginBottom: 11.8
+  blockquote:
+    textAlign: left
+    hyphenation: "off"
+    fontFamily: Caladea
+    fontStyle: italic
+    fontSize: 12.2
+    lineHeight: 1.58
+    color: "#2a3240"
+    backgroundColor: "#f6f8fc"
+    borderLeftWidth: 2.2
+    borderLeftColor: "#9eacc4"
+    paddingLeft: 15
+    paddingRight: 11
+    paddingTop: 7
+    paddingBottom: 7
+    marginTop: 4.5
+    marginBottom: 15
+  blockquote-attribution:
+    textAlign: right
+    fontFamily: Carlito
+    fontSize: 9.6
+    color: "#677488"
+    marginTop: 2
+    marginBottom: 8
+  inline-code:
+    fontFamily: Cousine
+    fontSize: 9.7
+    color: "#173657"
+    backgroundColor: "#eef3f8"
+    borderRadius: 2
+  code-block:
+    fontFamily: Cousine
+    fontSize: 9.9
+    lineHeight: 1.39
+    allowLineSplit: true
+    overflowPolicy: clip
+    color: "#172133"
+    backgroundColor: "#f2f6fb"
+    borderWidth: 1
+    borderColor: "#c7d2e3"
+    borderRadius: 5
+    paddingTop: 10
+    paddingBottom: 10
+    paddingLeft: 12
+    paddingRight: 12
+    marginTop: 2
+    marginBottom: 15
+  table-cell:
+    fontFamily: Carlito
+    paddingTop: 5.5
+    paddingBottom: 5.5
+    paddingLeft: 6
+    paddingRight: 6
+    borderWidth: 0.6
+    borderColor: "#c6d0df"
+  thematic-break:
+    width: 154
+    borderTopWidth: 0.8
+    borderTopColor: "#9eabc0"
+    marginTop: 17
+    marginBottom: 21
+  footnotes-heading:
+    fontFamily: Carlito
+    fontWeight: 700
+  footnotes-item:
+    fontFamily: Carlito
+  references-heading:
+    fontFamily: Carlito
+    fontWeight: 700
+  references-item:
+    fontFamily: Carlito

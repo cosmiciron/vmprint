@@ -1,4 +1,4 @@
-# Testing
+﻿# Testing
 
 VMPrint's test suite is built around one conviction: layout must be deterministic. Same document, same fonts, same configuration — identical output, down to the sub-point position of every glyph, every time. Everything else in the test design follows from that.
 
@@ -111,63 +111,25 @@ Several fixtures trigger additional checks beyond the universal invariants. Thes
 
 ## draft2final Tests
 
-The draft2final test suite lives in `draft2final/tests/`. It covers format compilation, IR structure, layout snapshot coverage, and end-to-end CLI invocation.
+`draft2final` is intentionally thin orchestration. Heavy regression coverage belongs in transmuters (semantic/source behavior) and engine (layout/render determinism).
 
-```
-npm run test --prefix draft2final                        # all tests
-npm run test:update-layout-snapshots --prefix draft2final
-npm run test:boundary-imports                            # from monorepo root
-```
+For the orchestrator itself, keep only smoke-level checks:
 
-### Boundary Guards
+- CLI argument parsing and failure modes.
+- Frontmatter transmuter auto-detection (`using`, `transmuter`, `format`).
+- Output mode routing by extension (`--out *.pdf` vs `--out *.json`).
+- Config/theme resolution behavior, including theme-name shortcuts.
+- End-to-end invocation that proves non-empty outputs are produced.
 
-`tests/boundary-guards.ts` (also callable as `npm run test:boundary-imports` from the root) verifies that draft2final does not import from engine internals it should not depend on. This enforces the package boundary and catches accidental coupling before it becomes load-bearing.
-
-### Format Compilation Tests
-
-`tests/run-tests.ts` contains approximately 30 unit tests covering the full compilation pipeline from Markdown to `DocumentInput`. Tests are plain Node.js `assert` calls, no testing framework. They run in a single sequential async function.
-
-The tests cover:
-
-**Semantic mapping** — Verifies that remark's AST is correctly normalized to the `SemanticDocument` shape: headings, paragraphs, lists, blockquotes, code blocks, horizontal rules, and tables are all present.
-
-**Format compilation** — Verifies that `compileMarkdownToVmprint` produces a correctly shaped `DocumentInput` for both the markdown and screenplay formats, including all required style roles.
-
-**Inline styling** — Verifies that bold, italic, and code inline markup survives through blockquotes and screenplay dialogue without style resets or loss.
-
-**Theme selection and geometry** — Verifies that different themes produce different layout configurations. Verifies WGA-standard screenplay geometry numerically: character name margins, dialogue margins, parenthetical margins, page number format and offset.
-
-**Continuation metadata** — Verifies that the `paginationContinuation` block on dialogue elements carries `(MORE)` and `CONT'D` markers, and that parentheticals present on the opening cue also appear in the continuation's `markersBeforeContinuation`.
-
-**Dual dialogue** — Verifies that consecutive blockquotes with the `^` flag produce `character-dual-left`, `dialogue-dual-left`, and their right-column counterparts.
-
-**Production theme** — Verifies scene number prefixes/suffixes and locked-page revision labels in the page number format via the `production` theme for the screenplay format.
-
-**Image handling** — Local file images are embedded as base64 in the IR. Data URI images pass through. Remote HTTP/HTTPS URLs throw a typed `Draft2FinalError` with `stage: 'format'`. Missing local files throw with a clear path error.
-
-**CLI integration** — Three tests shell out to `tsx src/cli.ts` directly using `execFileSync`, write to a temp directory, and verify the output PDF is non-empty. This is the only end-to-end test in the suite: it confirms that the full pipeline — Markdown → compile → layout → render → PDF — produces a non-zero-byte file.
-
-**Golden continuation signature** — One test runs the screenplay sample through the full layout engine (not just compilation) and asserts that `(MORE)` appears on the expected split page, followed by `CHARACTER NAME (CONT'D)` and the original parenthetical on the next page in the correct vertical order.
-
-### Layout Snapshots
-
-`tests/layout-snapshots.ts` runs every registered format+theme combination through the full pipeline — compile, resolve, paginate — and compares the resulting `Page[]` snapshot against a stored file.
-
-The snapshot shape is the same as the engine's: box type, position rounded to 6 decimal places, line text, and segment metrics.
-
-An important safety check runs first: the suite verifies that every supported format+theme pair has a test case. Adding a new theme to a format without adding a snapshot case is a test failure.
-
-Each snapshot case also verifies determinism independently: `paginate()` is called twice and the results are compared before touching the snapshot file.
-
-Snapshots are stored as `.snapshot.layout.json` files alongside their fixture Markdown files in `tests/fixtures/`.
-
-**To update snapshots** after an intentional layout change:
+The orchestrator implementation lives at `draft2final/`.
 
 ```bash
-npm run test:update-layout-snapshots --prefix draft2final
-# or:
-DRAFT2FINAL_UPDATE_LAYOUT_SNAPSHOTS=1 npm run test --prefix draft2final
+npm run build --workspace=draft2final
+npm run dev --prefix draft2final -- ../samples/draft2final/source/markdown/markdown-sample.md --using mkd-mkd --out ../.tmp/smoke.pdf
+npm run dev --prefix draft2final -- ../samples/draft2final/source/markdown/markdown-sample.md --using mkd-mkd --out ../.tmp/smoke.json
 ```
+
+Avoid duplicating transmuter-level regression tests in this layer.
 
 ---
 
@@ -183,3 +145,5 @@ Update snapshots when you have made an intentional change to layout behavior —
 6. Commit the updated snapshot file alongside the code change.
 
 Never update snapshots without first visually verifying the output. The snapshot is not a correctness oracle — it is a stability oracle. It tells you whether something changed; it does not tell you whether the change is right.
+
+

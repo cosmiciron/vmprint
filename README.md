@@ -1,4 +1,4 @@
-# VMPrint
+﻿# VMPrint
 :: A deterministic, zero-DOM typesetting engine/VM in pure TypeScript.
 
 **VMPrint is not another HTML-to-PDF wrapper.** Instead, it is the crucial missing primitive you might need if you want to build one on your own -- from scratch.
@@ -30,8 +30,8 @@ To see what this engine can build, view the beautifully typeset PDF version of t
 - **Publishing-Grade Typography**: Grapheme-accurate line breaking using `Intl.Segmenter`, language-aware hyphenation, and mixed-script text runs with perfect baseline alignment.
 - **JSON-Based Layout Pipeline**: Layout output is a serializable object tree. Pre-compile layouts into JSON to rapidly distribute identical layouts that render instantly at runtime, snapshot them for CI regression testing, or inspect exact sub-point glyph measurements.
 - **Pluggable Architecture**: Swappable font managers and rendering backends (PDF provided). Easily extensible to SVG, Canvas, or custom contexts.
-- **Markdown Transmutation**: Standalone transmuter (`@vmprint/transmuter-mkd-mkd`) converts Markdown to VMPrint's `DocumentInput` AST — usable in browser, Node.js, or edge environments without touching the layout engine. Decouples source format from layout pipeline.
-- **Markdown-to-PDF (`draft2final`)**: Includes a declarative Markdown compiler to instantly output formatted PDFs (Screenplay, Academic, Novel, etc.) without writing a single line of layout code.
+- **Markdown Transmutation**: Standalone transmuters (`@vmprint/transmuter-mkd-mkd`, `@vmprint/transmuter-mkd-academic`, `@vmprint/transmuter-mkd-literature`, `@vmprint/transmuter-mkd-manuscript`, `@vmprint/transmuter-mkd-screenplay`) convert Markdown to VMPrint's `DocumentInput` AST — usable in browser, Node.js, or edge environments without touching the layout engine. Decouples source format from layout pipeline.
+- **Source-to-PDF/AST (`draft2final`)**: Thin transmuter-first orchestration that auto-selects transmuters (via CLI/frontmatter), loads config/theme defaults, and outputs either PDF or AST JSON.
 
 ---
 
@@ -52,7 +52,7 @@ VMPrint is an attempt to recover some of what was lost.
 
 VMPrint works in two stages, and keeping them separate is the whole point.
 
-**Stage 1 — Layout.** You give it a document: structured JSON, or Markdown via `draft2final`. It measures glyphs, wraps lines, handles hyphenation, paginates tables, controls orphans and widows, places floats. It produces a `Page[]` stream — an array of pages, each containing a flat list of absolutely-positioned boxes.
+**Stage 1 — Layout.** You give it a document: structured JSON, or source text via `draft2final` (through transmuters producing `DocumentInput`). It measures glyphs, wraps lines, handles hyphenation, paginates tables, controls orphans and widows, places floats. It produces a `Page[]` stream — an array of pages, each containing a flat list of absolutely-positioned boxes.
 
 **Stage 2 — Rendering.** A renderer walks those boxes and paints them to a context. Today that context is a PDF. Tomorrow it could be canvas, SVG, or a test spy.
 
@@ -113,10 +113,10 @@ Render a JSON document to PDF:
 npm run dev --prefix cli -- --input engine/tests/fixtures/regression/00-all-capabilities.json --output out.pdf
 ```
 
-Markdown to PDF (screenplay format):
+Source-to-PDF (screenplay transmuter):
 
 ```bash
-npm run dev --prefix draft2final -- build draft2final/tests/fixtures/screenplay-sample.md -o screenplay.pdf --format screenplay
+npm run dev --prefix draft2final -- samples/draft2final/source/screenplay/screenplay-sample.md --using mkd-screenplay --out screenplay.pdf
 ```
 
 ## Full API Example
@@ -268,8 +268,12 @@ This is a monorepo:
 | `@vmprint/standard-fonts` | Sentinel-based standard font manager (no font assets) |
 | `@vmprint/context-pdf-lite` | Lightweight jsPDF-based PDF context |
 | `@vmprint/transmuter-mkd-mkd` | Markdown → DocumentInput transmuter |
+| `@vmprint/transmuter-mkd-academic` | Markdown → DocumentInput transmuter (academic defaults) |
+| `@vmprint/transmuter-mkd-literature` | Markdown → DocumentInput transmuter (literature defaults) |
+| `@vmprint/transmuter-mkd-manuscript` | Markdown → DocumentInput transmuter (manuscript defaults) |
+| `@vmprint/transmuter-mkd-screenplay` | Markdown → DocumentInput transmuter (screenplay defaults) |
 | `@vmprint/cli` | `vmprint` JSON → bit-perfect PDF CLI |
-| `@draft2final/cli` | Markdown → bit-perfect PDF compiler |
+| `@draft2final/cli` | Transmuter-first source → bit-perfect PDF or AST CLI |
 
 ## Standalone Browser Bundle (Standard Fonts)
 
@@ -304,14 +308,14 @@ The monorepo is layered so that getting involved at any depth is straightforward
 
 **Contexts and Font Managers** (`contexts/`, `font-managers/`): Concrete implementations of well-defined interfaces. A new context for canvas or SVG output. A font manager that loads from a CDN or a bundled asset. The contracts are clear, the surface area is contained, and a working implementation is immediately useful to anyone on that platform.
 
-**Draft2Final format flavors**: New document formats are purely declarative — a flavor module specifies fonts, margins, heading styles, and how Markdown constructs map to VMPrint elements. No pagination code. No layout code. If you know what a correctly formatted academic paper, legal brief, or technical report should look like, you can write a flavor.
+**Transmuters** (`transmuters/`): Source semantics live here. Each transmuter maps source text to `DocumentInput` with minimal runtime coupling, so behavior is testable and portable across browser, Node.js, and edge runtimes.
 
-**Draft2Final format scripts**: A single TypeScript file that maps a normalized Markdown AST to `DocumentInput`. The system hands you a structured, source-annotated document; you decide what it becomes. Screenplay, novel, contract, invoice — each is its own file.
+**Draft2Final orchestration**: The CLI is intentionally thin. It resolves transmuter selection (including frontmatter), loads default config/theme files, then emits either PDF (`--out *.pdf`) or AST JSON (`--out *.json`).
 
 ```bash
 npm run test --prefix engine
 npm run test:update-layout-snapshots --prefix engine
-npm run test --prefix draft2final
+npm run build --workspace=draft2final
 npm run test:packaged-integration
 ```
 
@@ -326,3 +330,5 @@ This is pre-1.0 software. The API may change.
 ## License
 
 Apache 2.0. See [LICENSE](LICENSE).
+
+

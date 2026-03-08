@@ -4,7 +4,7 @@ import { normalizeToSemantic } from './semantic';
 import { MarkdownFormatHandler } from './format';
 import { FormatContextImpl } from './context';
 import { parseTheme, deepMerge, buildLayout } from './theme';
-import { makeImageResolver } from './inline';
+import { makeImageResolver, inlinePlainText, collapseTextSoftBreaks } from './inline';
 import type { DocumentInput, ResolvedImage } from './types';
 
 export type { DocumentInput, Element, ElementStyle, DocumentLayout, ResolvedImage } from './types';
@@ -14,6 +14,10 @@ export { KEEP_WITH_NEXT_PATTERN, parseMarkdownAst } from './parse';
 export type { SourceRange, SemanticNodeKind, SemanticNode, SemanticDocument } from './semantic';
 export { normalizeToSemantic } from './semantic';
 export { formatNumber, toAlpha, toRoman } from './numbering';
+export type { FormatContext, TableEmitOptions } from './context';
+export { FormatContextImpl } from './context';
+export { parseTheme, deepMerge, buildLayout } from './theme';
+export { makeImageResolver, inlinePlainText, collapseTextSoftBreaks } from './inline';
 
 export const DEFAULT_MARKDOWN_CONFIG_YAML = `\
 list:
@@ -58,6 +62,7 @@ tables:
 export type TransmuteMarkdownOptions = {
   theme?: string;
   config?: string | Record<string, unknown>;
+  baseConfig?: string | Record<string, unknown>;
   resolveImage?: (src: string) => ResolvedImage | null;
 };
 
@@ -78,13 +83,25 @@ export function extractFrontmatter(markdown: string): { frontmatter: Record<stri
 
 export function resolveMarkdownConfig(
   frontmatter: Record<string, unknown>,
-  userConfig?: string | Record<string, unknown>
+  userConfig?: string | Record<string, unknown>,
+  baseConfig?: string | Record<string, unknown>
 ): Record<string, unknown> {
   let config: Record<string, unknown> = {};
-  try {
-    const parsed = parseYaml(DEFAULT_MARKDOWN_CONFIG_YAML) as Record<string, unknown>;
-    if (parsed && typeof parsed === 'object') config = parsed;
-  } catch {
+  const defaultSource = baseConfig ?? DEFAULT_MARKDOWN_CONFIG_YAML;
+  const parsedDefaults = typeof defaultSource === 'string'
+    ? (() => {
+        try {
+          const parsed = parseYaml(defaultSource);
+          return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+            ? parsed as Record<string, unknown>
+            : {};
+        } catch {
+          return {};
+        }
+      })()
+    : defaultSource;
+  if (parsedDefaults && typeof parsedDefaults === 'object') {
+    config = parsedDefaults;
   }
 
   const fmConfig = { ...frontmatter };
@@ -116,7 +133,7 @@ export function transmuteMarkdown(markdown: string, options?: TransmuteMarkdownO
   const ast = parseMarkdownAst(body);
   const semantic = normalizeToSemantic(ast);
   const theme = parseTheme(options?.theme || '{}');
-  const config = resolveMarkdownConfig(frontmatter, options?.config);
+  const config = resolveMarkdownConfig(frontmatter, options?.config, options?.baseConfig);
 
   config.__footnotes = semantic.footnotes || {};
 
@@ -136,7 +153,7 @@ export function transmuteMarkdown(markdown: string, options?: TransmuteMarkdownO
     layout: built.layout,
     styles: theme.styles,
     elements: ctx.getElements(),
-    ...(built.header ? { header: built.header } : {}),
-    ...(built.footer ? { footer: built.footer } : {})
+    ...(theme.header ? { header: theme.header } : (built.header ? { header: built.header } : {})),
+    ...(theme.footer ? { footer: theme.footer } : (built.footer ? { footer: built.footer } : {}))
   };
 }

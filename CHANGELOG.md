@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.2.0] - 2026-03-08
+
+### Added
+
+#### Tutorial Experience for `draft2final`
+- Added a new follow-along user tutorial at `draft2final/TUTORIAL.md` covering technical manual, screenplay, manuscript, and format remix workflows
+- Added a dedicated `tutorial` theme for `mkd-mkd` at `draft2final/themes/mkd-mkd/tutorial.yaml` with guidebook-oriented typography and spacing
+- Added tutorial sample outputs under `samples/tutorial/` including generated PDF/AST artifacts
+
+### Changed
+
+#### Markdown and Transmuter Architecture
+- Extracted shared Markdown compilation logic into the new `@vmprint/markdown-core` workspace
+- Refactored `@vmprint/transmuter-mkd-mkd` into a thinner wrapper around shared markdown-core functionality
+- Standardized transmuter contracts by moving shared types into `@vmprint/contracts`
+- Updated docs example assets and configuration flow to keep theme YAML ownership explicit
+
+#### `draft2final` Tutorial and CLI Guidance
+- Updated tutorial command style for end users to prefer `draft2final ...` examples over dev-only invocation patterns
+- Added document-level tutorial frontmatter config for typography/drop-cap behavior without changing global defaults
+
+#### Markdown Core Formatting
+- Added opening-paragraph drop-cap support in markdown-core via document config (`dropCap.openingParagraph`)
+
+### Fixed
+
+#### Standard Font Encoding Consistency
+- Fixed a rendering/measurement mismatch so standard-font text measurement and PDF output now use the same encoding path
+
+### Documentation
+
+- Removed deprecated `showPageNumbers` usage from AST-to-PDF docs fixtures
+- Refreshed docs to align with the markdown-core extraction and updated transmuter structure
+
 ## [0.1.3] - 2026-03-07
 
 ### Added

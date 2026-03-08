@@ -4,6 +4,8 @@ import type { ElementStyle, DocumentLayout, PageRegionContent, PageRegionDefinit
 export type ThemeDefinition = {
   styles: Record<string, ElementStyle>;
   layout?: Partial<DocumentLayout>;
+  header?: PageRegionDefinition;
+  footer?: PageRegionDefinition;
 };
 
 /** Parse a theme YAML string into a ThemeDefinition. */
@@ -20,7 +22,9 @@ export function parseTheme(yaml: string): ThemeDefinition {
   const raw = parsed as Record<string, unknown>;
   return {
     styles: (raw.styles as Record<string, ElementStyle>) || {},
-    layout: raw.layout as Partial<DocumentLayout> | undefined
+    layout: raw.layout as Partial<DocumentLayout> | undefined,
+    header: raw.header as PageRegionDefinition | undefined,
+    footer: raw.footer as PageRegionDefinition | undefined
   };
 }
 

@@ -8,7 +8,8 @@ Input is standard Markdown. Output is a pure object in the VMPrint engine's AST 
 
 - Zero file access. No `fs`, no Node-specific loading.
 - No engine dependency. Types remain structurally compatible with `@vmprint/engine`.
-- Caller-supplied themes. Pass any draft2final-compatible theme YAML string.
+- Built-in markdown default theme (draft2final-compatible).
+- Caller-supplied theme overrides. Pass any draft2final-compatible theme YAML string.
 - Configurable behavior via YAML string.
 - Images via data URIs or a caller-supplied resolver callback.
 
@@ -29,8 +30,12 @@ const markdown = `
 A paragraph with a [link](https://example.com).
 `;
 
-const doc = transmute(markdown, { theme: myThemeYamlString });
+const doc = transmute(markdown); // uses built-in markdown default theme
 console.log(JSON.stringify(doc, null, 2));
+
+const docWithCustomTheme = transmute(markdown, {
+  theme: myThemeYamlString
+});
 
 const docWithImages = transmute(markdown, {
   theme: myThemeYamlString,
@@ -43,7 +48,7 @@ const docWithImages = transmute(markdown, {
 
 ## Frontmatter
 
-Frontmatter is parsed and merged into behavioral config. Theme selection is not resolved inside the transmuter; the caller passes the theme YAML explicitly.
+Frontmatter is parsed and merged into behavioral config. Theme defaults to the built-in markdown theme unless overridden by `options.theme`.
 
 ```markdown
 ---

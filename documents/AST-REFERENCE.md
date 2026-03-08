@@ -505,9 +505,9 @@ interface PageRegionContent {
 
 ---
 
-## 17. Format-Emitted Type Names (`draft2final`)
+## 17. Transmuter-Emitted Type Names (`draft2final`)
 
-When using `draft2final`, format modules emit elements with these `type` strings into `DocumentInput.elements`. These are the keys you target in your `styles` table when theming a format.
+When using `draft2final`, transmuters emit elements with these `type` strings into `DocumentInput.elements`. These are the keys you target in your `styles` table when theming a transmuter output.
 
 ### Markdown / Academic / Literature / Novel
 
@@ -667,6 +667,6 @@ When using `draft2final`, format modules emit elements with these `type` strings
 | Header/footer details | [documents/HEADER-FOOTER.md](HEADER-FOOTER.md) |
 | Overlay system | [documents/OVERLAY.md](OVERLAY.md) |
 | Standard fonts | [documents/STANDARD-FONTS.md](STANDARD-FONTS.md) |
-| SemanticNode layer | [draft2final/src/semantic.ts](../draft2final/src/semantic.ts) |
-| Format type names | [draft2final/src/formats/](../draft2final/src/formats/) |
+| Markdown compilation core | [markdown-core/src/index.ts](../markdown-core/src/index.ts) |
+| Transmuter implementations | [transmuters/](../transmuters/) |
 | Regression fixtures | [engine/tests/fixtures/](../engine/tests/fixtures/) |

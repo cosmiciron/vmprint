@@ -27,12 +27,16 @@ So `mkd-mkd` is the Markdown → `DocumentInput` transmuter. The second `mkd` he
 | Directory | Package | Source |
 |---|---|---|
 | `mkd-mkd/` | `@vmprint/transmuter-mkd-mkd` | Markdown → `DocumentInput` |
+| `mkd-academic/` | `@vmprint/transmuter-mkd-academic` | Markdown → `DocumentInput` (academic defaults) |
+| `mkd-literature/` | `@vmprint/transmuter-mkd-literature` | Markdown → `DocumentInput` (literature defaults) |
+| `mkd-manuscript/` | `@vmprint/transmuter-mkd-manuscript` | Markdown → `DocumentInput` (manuscript defaults) |
+| `mkd-screenplay/` | `@vmprint/transmuter-mkd-screenplay` | Markdown → `DocumentInput` (screenplay defaults) |
 
 ## Relationship to draft2final
 
-[`draft2final`](../draft2final/) is a comprehensive, CLI-driven authoring pipeline. It bundles format-specific semantic rules (like screenplay or manuscript conventions), loads layout defaults and formatting themes, handles I/O, and ultimately drives the engine to produce a PDF.
+`draft2final` is now a thin, transmuter-first orchestrator. It selects a transmuter, loads user-editable config defaults, resolves optional themes, and then renders either PDF or AST JSON output.
 
-In contrast, transmuters are the thin, lower-level primitives: `source text` in, `DocumentInput` AST out. When used standalone in browsers or edge environments, they decouple the source format transformation from any layout or rendering execution.
+Transmuters remain the lower-level primitives: `source text` in, `DocumentInput` AST out. They are where source-format semantics and default conventions live. This keeps heavy regression coverage at the transmuter level while the CLI stays lightweight.
 
 ## Adding a new transmuter
 

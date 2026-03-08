@@ -227,6 +227,7 @@ const PROCESSORS: Record<string, BlockProcessor> = {
 export class MarkdownFormatHandler {
   private readonly buffer: SemanticNode[] = [];
   private state: HandlerState = { previousNode: null, depth: 0, buffer: [], bufferIndex: 0 };
+  private openingDropCapApplied = false;
 
   handleBlock(node: SemanticNode): void {
     this.buffer.push(node);
@@ -258,8 +259,15 @@ export class MarkdownFormatHandler {
           continue;
         }
         if (rule.action.role) {
+          const mergedProperties: Record<string, unknown> = { ...(rule.action.properties || {}) };
+          if (rule.action.role === 'paragraph') {
+            const openingDropCap = this.getOpeningDropCapProperties(node, ctx);
+            if (openingDropCap) Object.assign(mergedProperties, openingDropCap);
+          }
           ctx.emit(rule.action.role, node.children || [], {
-            sourceRange: node.sourceRange, sourceSyntax: node.sourceSyntax, ...(rule.action.properties || {})
+            sourceRange: node.sourceRange,
+            sourceSyntax: node.sourceSyntax,
+            ...mergedProperties
           });
           return true;
         }
@@ -271,6 +279,34 @@ export class MarkdownFormatHandler {
   private processSingle(node: SemanticNode, ctx: FormatContext): void {
     this.dispatch(node, ctx);
     this.state.previousNode = node;
+  }
+
+  private getOpeningDropCapProperties(node: SemanticNode, ctx: FormatContext): Record<string, unknown> | undefined {
+    if (this.openingDropCapApplied) return undefined;
+    if (this.state.depth !== 0 || node.kind !== 'p') return undefined;
+
+    const cfgRoot = ((ctx.config.dropCap as Record<string, unknown> | undefined)
+      || (ctx.config.dropcap as Record<string, unknown> | undefined)
+      || {}) as Record<string, unknown>;
+    const opening = (cfgRoot.openingParagraph as Record<string, unknown> | undefined)
+      || (cfgRoot.opening as Record<string, unknown> | undefined);
+    if (!opening) return undefined;
+    if (opening.enabled === false) return undefined;
+
+    const spec: Record<string, unknown> = { enabled: true };
+    if (Number.isFinite(Number(opening.lines))) spec.lines = Number(opening.lines);
+    if (Number.isFinite(Number(opening.characters))) spec.characters = Number(opening.characters);
+    if (Number.isFinite(Number(opening.gap))) spec.gap = Number(opening.gap);
+    if (
+      opening.characterStyle
+      && typeof opening.characterStyle === 'object'
+      && !Array.isArray(opening.characterStyle)
+    ) {
+      spec.characterStyle = opening.characterStyle;
+    }
+
+    this.openingDropCapApplied = true;
+    return { dropCap: spec };
   }
 
   private matches(node: SemanticNode, match: MatchCondition): boolean {

@@ -1,6 +1,0 @@
-# Screenplay format defaults
-# Industry-standard screenplays do not use hyperlinks or citation markers.
-# All link markup is rendered as plain text (the display text only, no URL
-# annotation and no [n] reference marker).
-links:
-  mode: strip

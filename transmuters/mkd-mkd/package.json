@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/transmuter-mkd-mkd",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Markdown → VMPrint DocumentInput transmuter. Zero file access, fully embeddable.",
   "author": "cosmiciron",
   "license": "Apache-2.0",

@@ -1,4 +1,4 @@
-# VMPrint Architecture Overview
+﻿# VMPrint Architecture Overview
 
 This document is aimed at developers who want to contribute to, extend, or embed VMPrint. It covers how the system is structured, why key decisions were made, and what distinguishes it from more conventional layout approaches.
 
@@ -48,21 +48,9 @@ VMPrintStack/
 │
 ├── contexts/pdf/       PDF rendering context (wraps PDFKit)
 ├── font-managers/local/  Font discovery from the local filesystem
-├── draft2final/        Markdown → VMPrint IR → PDF pipeline
-│   └── src/
-│       ├── markdown.ts       Markdown → mdast (remark)
-│       ├── semantic.ts       mdast → SemanticDocument
-│       ├── formats/
-│       │   ├── index.ts      Static registry (getFormatModule, listFormats)
-│       │   ├── types.ts      FormatModule, FormatHandler, FormatContext type definitions
-│       │   ├── compiler/     Shared format infrastructure (theme-loader, format-context, …)
-│       │   ├── markdown/     Built-in format: prose Markdown
-│       │   ├── academic/     Built-in format: academic papers
-│       │   ├── literature/   Built-in format: book manuscripts
-│       │   ├── manuscript/   Built-in format: standard industry manuscript (cover, running headers, endnotes)
-│       │   └── screenplay/   Built-in format: WGA-compliant screenplays
-│       └── build.ts          Top-level compile+render orchestration
-└── cli/                CLI wrapper over draft2final
+├── transmuters/        Source -> DocumentInput transmuters (mkd-mkd, mkd-academic, mkd-literature, mkd-manuscript, mkd-screenplay)
+├── draft2final/       Thin transmuter-first draft2final orchestration
+└── cli/                vmprint JSON -> PDF CLI
 ```
 
 ---
@@ -79,13 +67,14 @@ Markdown / JSON  →  DocumentInput  →   Page[] of Box[]  →  PDF / other
 
 ### Stage 1 — Source to IR
 
-`draft2final` is an optional front-end that accepts Markdown and turns it into VMPrint's own IR (`DocumentInput`). It runs in two sub-steps:
+`draft2final` is an optional, thin front-end that delegates source semantics to transmuters and then routes output to PDF or AST JSON.
 
-1. **Markdown → SemanticDocument** via remark. This is a one-to-one structural mapping: headings, paragraphs, lists, tables, images. No formatting decisions happen here.
+1. **Source text -> `DocumentInput`** via a selected transmuter (for example `mkd-mkd`, `mkd-screenplay`, or `mkd-manuscript`).
+2. **`DocumentInput` -> Output** via orchestration choices (`--out *.pdf` for render, `--out *.json` for AST emission).
 
-2. **SemanticDocument → DocumentInput** via a format module (e.g. `markdown`, `screenplay`). Format modules own the style decisions—font choices, heading sizes, margins, list indentation. They emit `Element` trees with typed `properties` and can inject continuation markers, page-break hints, etc.
+Frontmatter can select the transmuter (`using`, `transmuter`, or `format`). Config and theme files are loaded by the orchestrator, while semantic logic and regression-heavy behavior stay in transmuter packages.
 
-You do not have to use this layer at all. VMPrint accepts `DocumentInput` JSON directly, which is how the CLI and the engine regression tests work.
+You do not have to use this layer at all. VMPrint accepts `DocumentInput` JSON directly, which is also how engine regression tests are driven.
 
 ### Stage 2 — Layout (the engine core)
 
@@ -394,38 +383,25 @@ The `layout-flow-splitting.ts` module generates these as synthetic `FlowBox` obj
 
 ---
 
-## 13. draft2final: The Markdown Compiler
+## 13. draft2final: Transmuter-First Orchestrator
 
-`draft2final` is the highest-level layer and is entirely optional. Its responsibility is:
+`draft2final` is now the highest-level optional layer with a deliberately small surface area.
 
 ```
-Markdown string
-    ↓  markdown.ts (remark)
-mdast (remark AST)
-    ↓  semantic.ts
-SemanticDocument (typed, source-annotated AST)
-    ↓  formats/<name>/index.ts
+Source text
+    ↓  transmuter (selected by CLI/frontmatter)
 DocumentInput (vmprint IR)
-    ↓  build.ts
-PDF file
+    ↓  draft2final orchestration
+PDF file or AST JSON
 ```
 
-Each step is a pure function. The format modules (`markdown`, `academic`, `literature`, `manuscript`, and `screenplay`) are the only place that knows about document conventions—what font to use for a `h1`, how wide a blockquote indent should be, whether a scene heading gets `keepWithNext: true`. Derived formats such as `academic`, `literature`, and `manuscript` extend the same `MarkdownFormat` base handler and are registered as independent named `FormatModule` instances.
+Responsibilities are split clearly:
 
-Each format has a `config.defaults.yaml` for behavioral options. Themes supply style and layout values via `themes/<name>.yaml`. Per-theme behavioral overrides can be placed in a `themes/<name>.config.yaml` sidecar, which is merged after format defaults but before document frontmatter. This allows a theme to enable features (e.g. the `opensource` theme enabling the `::` title subheading) without requiring frontmatter in every source file.
+- **Transmuters** own source semantics, default conventions, and most behavioral regression coverage.
+- **draft2final orchestration** owns file loading, frontmatter-driven transmuter selection, config/theme resolution, and output routing.
+- **Engine + Context** own deterministic layout and rendering.
 
-### Format System
-
-Format modules are **statically compiled in**. The five built-in formats ship as subdirectories of `src/formats/` and are registered directly in `src/formats/index.ts`. Adding a new format means adding a directory, implementing `FormatModule`, and adding one line to the registry.
-
-The key internal types live in `src/formats/types.ts` and `src/formats/compiler/`:
-
-- `FormatModule` — the format entry point (`name`, `pluginDir`, `listThemes`, `createHandler`)
-- `FormatHandler` — processes `SemanticNode`s and emits to `FormatContext`
-- `FormatContext` — the emit API: `emit`, `emitImage`, `emitTable`, `emitRaw`, `processInline`, etc.
-- `SemanticNode` — the normalized Markdown AST node type (defined in `src/semantic.ts`)
-
-The `SemanticDocument` type normalizes away remark idiosyncrasies (e.g. it resolves link references before handing them to format modules). Format modules never see raw remark nodes.
+This implementation lives under `draft2final/` and serves as the canonical draft2final CLI.
 
 ---
 
@@ -442,3 +418,5 @@ The `SemanticDocument` type normalizes away remark idiosyncrasies (e.g. it resol
 | Source traceability | Every `Box` carries `BoxMeta` with `sourceId`, `engineKey`, `fragmentIndex` |
 | Inline richness | `RichLine[]` / `TextSegment[]` carry per-run font, style, and glyph data |
 | Overlay/debug extensibility | `OverlayProvider` hook; overlays get same flat box representation as renderer |
+
+

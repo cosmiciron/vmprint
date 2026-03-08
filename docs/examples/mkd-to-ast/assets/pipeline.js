@@ -1,151 +1,4 @@
-var MkdToAstPipeline=(()=>{var f=Object.defineProperty;var u=Object.getOwnPropertyDescriptor;var y=Object.getOwnPropertyNames;var b=Object.prototype.hasOwnProperty;var S=(e,t)=>{for(var n in t)f(e,n,{get:t[n],enumerable:!0})},T=(e,t,n,i)=>{if(t&&typeof t=="object"||typeof t=="function")for(let o of y(t))!b.call(e,o)&&o!==n&&f(e,o,{get:()=>t[o],enumerable:!(i=u(t,o))||i.enumerable});return e};var B=e=>T(f({},"__esModule",{value:!0}),e);var A={};S(A,{SAMPLE_MARKDOWN:()=>p,THEME_NAMES:()=>l,pipeline:()=>z,runTransmute:()=>h});var g=`layout:\r
-  fontFamily: Caladea\r
-  fontSize: 11.3\r
-  lineHeight: 1.52\r
-  pageSize: LETTER\r
-  margins:\r
-    top: 76\r
-    right: 80\r
-    bottom: 76\r
-    left: 80\r
-  hyphenation: soft\r
-  justifyEngine: advanced\r
-  justifyStrategy: auto\r
-\r
-footer:\r
-  default:\r
-    elements:\r
-      - type: paragraph\r
-        content: "{pageNumber}"\r
-        properties:\r
-          style:\r
-            textAlign: center\r
-            fontSize: 9\r
-            color: "#6b7280"\r
-            fontFamily: Caladea\r
-            marginTop: 35\r
-\r
-styles:\r
-  heading-1:\r
-    fontSize: 25\r
-    lineHeight: 1.2\r
-    color: "#0f3f63"\r
-    marginTop: 14.4\r
-    marginBottom: 12\r
-    hyphenation: "off"\r
-    textAlign: left\r
-  heading-2:\r
-    fontSize: 19.2\r
-    color: "#14527f"\r
-    marginTop: 10.4\r
-    marginBottom: 8.5\r
-    hyphenation: "off"\r
-    textAlign: left\r
-  heading-3:\r
-    fontSize: 15.6\r
-    color: "#1c5e8f"\r
-    marginTop: 7.4\r
-    marginBottom: 7\r
-    hyphenation: "off"\r
-    textAlign: left\r
-  paragraph:\r
-    textAlign: left\r
-    hyphenation: soft\r
-    marginBottom: 9.6\r
-  inline-code:\r
-    fontFamily: Cousine\r
-    fontSize: 9.9\r
-    color: "#18334b"\r
-    backgroundColor: "#ecf2f9"\r
-    borderRadius: 2\r
-  code-block:\r
-    fontFamily: Cousine\r
-    fontSize: 9.8\r
-    lineHeight: 1.34\r
-    color: "#1f2937"\r
-    backgroundColor: "#f4f7fb"\r
-    borderWidth: 0.8\r
-    borderColor: "#cdd7e3"\r
-    borderRadius: 4\r
-    paddingTop: 7\r
-    paddingBottom: 7\r
-    paddingLeft: 10\r
-    paddingRight: 10\r
-    marginTop: 0\r
-    marginBottom: 11\r
-  blockquote:\r
-    textAlign: left\r
-    hyphenation: soft\r
-    color: "#1f3448"\r
-    paddingLeft: 15\r
-    paddingRight: 8\r
-    borderLeftWidth: 1.6\r
-    borderLeftColor: "#628bb0"\r
-    backgroundColor: "#f7fafd"\r
-    marginTop: 0\r
-    marginBottom: 11\r
-  blockquote-attribution:\r
-    textAlign: right\r
-    fontStyle: normal\r
-    color: "#4b5563"\r
-    marginTop: 2\r
-    marginBottom: 8\r
-  thematic-break:\r
-    borderTopWidth: 0.8\r
-    borderTopColor: "#5a7c9e"\r
-    marginTop: 6.4\r
-    marginBottom: 16\r
-  citation-marker:\r
-    fontSize: 8.4\r
-    color: "#334e68"\r
-  footnote-marker:\r
-    fontSize: 8.4\r
-    baselineShift: 3\r
-  footnotes-heading:\r
-    fontSize: 13.8\r
-    color: "#0f3f63"\r
-    hyphenation: "off"\r
-    marginTop: 8.4\r
-    marginBottom: 6\r
-  footnotes-item:\r
-    textAlign: left\r
-    hyphenation: "off"\r
-    fontSize: 10.3\r
-    lineHeight: 1.38\r
-    paddingLeft: 12\r
-    textIndent: -12\r
-    marginBottom: 3.4\r
-  references-heading:\r
-    fontSize: 13.8\r
-    color: "#0f3f63"\r
-    hyphenation: "off"\r
-    marginTop: 8.4\r
-    marginBottom: 6\r
-  references-item:\r
-    textAlign: left\r
-    hyphenation: "off"\r
-    fontSize: 10.3\r
-    lineHeight: 1.38\r
-    paddingLeft: 12\r
-    textIndent: -12\r
-    marginBottom: 3.4\r
-  definition-term:\r
-    fontWeight: 700\r
-    color: "#0f3f63"\r
-    keepWithNext: true\r
-    marginTop: 0\r
-    marginBottom: 1.4\r
-  definition-desc:\r
-    paddingLeft: 14\r
-    marginBottom: 6\r
-  table-cell:\r
-    paddingTop: 4\r
-    paddingBottom: 4\r
-    paddingLeft: 5\r
-    paddingRight: 5\r
-    borderWidth: 0.6\r
-    borderColor: "#111111"\r
-`;var d=`layout:\r
+var MkdToAstPipeline=(()=>{var l=Object.defineProperty;var s=Object.getOwnPropertyDescriptor;var u=Object.getOwnPropertyNames;var y=Object.prototype.hasOwnProperty;var b=(e,t)=>{for(var n in t)l(e,n,{get:t[n],enumerable:!0})},S=(e,t,n,i)=>{if(t&&typeof t=="object"||typeof t=="function")for(let o of u(t))!y.call(e,o)&&o!==n&&l(e,o,{get:()=>t[o],enumerable:!(i=s(t,o))||i.enumerable});return e};var T=e=>S(l({},"__esModule",{value:!0}),e);var A={};b(A,{SAMPLE_MARKDOWN:()=>m,THEME_NAMES:()=>g,pipeline:()=>B,runTransmute:()=>p});var f=`layout:\r
   fontFamily: Caladea\r
   fontSize: 11.8\r
   lineHeight: 1.5\r
@@ -303,7 +156,7 @@ styles:\r
     paddingRight: 6\r
     borderWidth: 0.45\r
     borderColor: "#b0a08a"\r
-`;var m=`layout:\r
+`;var d=`layout:\r
   fontFamily: Carlito\r
   fontSize: 11.1\r
   lineHeight: 1.68\r
@@ -439,7 +292,7 @@ styles:\r
     paddingRight: 6\r
     borderWidth: 0.6\r
     borderColor: "#bfc9d8"\r
-`;var a={default:g,opensource:m,novel:d},l=Object.keys(a);var p=`# Getting Started with VMPrint
+`;var C=void 0,a={default:C,opensource:d,novel:f},g=Object.keys(a);var m=`# Getting Started with VMPrint
 
 VMPrint is a **deterministic** document layout engine. You write Markdown, and it produces
 a bit-perfect document \u2014 identical on every run.
@@ -473,4 +326,4 @@ Blockquotes and attributions are first-class:
 Links become citation markers in the AST.[^1]
 
 [^1]: Footnotes are collected and emitted as a numbered list at document end.
-`;function h(e,t){let n=window.VMPrintTransmuter,i=a[t]??a.default,o=performance.now(),r=n.transmute(e,{theme:i}),c=performance.now()-o,s=Array.isArray(r.elements)?r.elements.length:0;return{json:JSON.stringify(r,null,2),elementCount:s,ms:c}}var z={SAMPLE_MARKDOWN:p,THEME_NAMES:l,runTransmute:h};return B(A);})();
+`;function p(e,t){let n=window.VMPrintTransmuter,i=a[t]??a.default,o=performance.now(),r=n.transmute(e,{theme:i}),h=performance.now()-o,c=Array.isArray(r.elements)?r.elements.length:0;return{json:JSON.stringify(r,null,2),elementCount:c,ms:h}}var B={SAMPLE_MARKDOWN:m,THEME_NAMES:g,runTransmute:p};return T(A);})();
