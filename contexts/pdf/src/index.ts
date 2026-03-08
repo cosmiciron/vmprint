@@ -8,6 +8,10 @@ import {
     VmprintOutputStream
 } from '@vmprint/contracts';
 import { Buffer } from 'buffer';
+import {
+    encodeStandardFontText,
+    getStandardFontMetadataByPostscriptName
+} from '@vmprint/engine';
 type PdfDocumentInitOptions = NonNullable<ConstructorParameters<typeof PDFDocument>[0]>;
 
 type PdfValues = string | number | boolean | symbol | object | undefined | null;
@@ -177,12 +181,75 @@ export class PdfContext implements Context {
     }
 
     text(str: string, x: number, y: number, options?: ContextTextOptions): this {
+        if (this.tryShowStandardFontText(str, x, y, options)) {
+            return this;
+        }
         const docAny = this.doc as any;
         const fontSize = Number(docAny?._fontSize) || 12;
         const baselinePx = ((options?.ascent ?? 0) / 1000) * fontSize;
         const opts = { ...(options || {}), baseline: -baselinePx } as any;
         this.doc.text(str, x, y, opts);
         return this;
+    }
+
+    private tryShowStandardFontText(str: string, x: number, y: number, options?: ContextTextOptions): boolean {
+        if (!str) return false;
+        if (options?.lineBreak !== false) return false;
+
+        const docAny = this.doc as any;
+        const pdfFont = docAny?._font as any;
+        const postscriptName = String(pdfFont?.name || '');
+        const metadata = getStandardFontMetadataByPostscriptName(postscriptName);
+        if (!metadata || !pdfFont?.id || typeof pdfFont.ref !== 'function') {
+            return false;
+        }
+
+        const fontSize = Number(docAny?._fontSize) || 12;
+        const letterSpacing = Number(options?.characterSpacing || 0);
+        const encoded = encodeStandardFontText(metadata, str);
+        if (encoded.glyphs.length === 0) return true;
+
+        const baselinePx = ((options?.ascent ?? 0) / 1000) * fontSize;
+        const H = docAny.page.height as number;
+        const yTm = H - y - baselinePx;
+        const num = (n: number) => Math.round(n * 100) / 100;
+        const tjParts: string[] = [];
+
+        for (let i = 0; i < encoded.glyphs.length; i++) {
+            const glyph = encoded.glyphs[i];
+            tjParts.push(`<${glyph.encodedByte.toString(16).padStart(2, '0')}>`);
+            if (i < encoded.glyphs.length - 1) {
+                const measuredAdvance = glyph.advanceWidth + letterSpacing;
+                const diff = (glyph.nominalWidth - measuredAdvance) * (1000 / fontSize);
+                if (Math.abs(diff) > 0.5) {
+                    tjParts.push(`${num(diff)}`);
+                }
+            }
+        }
+
+        if (docAny.page?.fonts) {
+            docAny.page.fonts[pdfFont.id] = pdfFont.ref();
+        }
+
+        docAny.save();
+        docAny.transform(1, 0, 0, -1, 0, H);
+        docAny.addContent('BT');
+        docAny.addContent(`/${pdfFont.id} ${num(fontSize)} Tf`);
+        docAny.addContent('0 Tr');
+        docAny.addContent(`1 0 0 1 ${num(x)} ${num(yTm)} Tm`);
+        docAny.addContent(`[${tjParts.join(' ')}] TJ`);
+        docAny.addContent('ET');
+        docAny.restore();
+
+        if (options?.link) {
+            const width = encoded.totalAdvance * (fontSize / 1000) + (letterSpacing * encoded.glyphs.length);
+            if (width > 0) {
+                const height = fontSize;
+                this.doc.link(x, y, width, height, options.link);
+            }
+        }
+
+        return true;
     }
 
     showShapedGlyphs(

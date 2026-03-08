@@ -10,6 +10,7 @@ import {
     ContextPageSize,
 } from '@vmprint/contracts';
 import { Buffer } from 'buffer';
+import { encodeStandardFontText, getStandardFontMetadataByPostscriptName } from '@vmprint/engine';
 
 // ---------------------------------------------------------------------------
 // Standard-font PostScript name → jsPDF {family, fontStyle}
@@ -159,6 +160,7 @@ export class PdfLiteContext implements Context {
 
     /** Maps engine font-id → jsPDF {family, fontStyle}. */
     private readonly fontInfoById = new Map<string, JsPdfFontInfo>();
+    private readonly standardPostscriptNameById = new Map<string, string>();
 
     private pagesAdded = 0;
     private outputStream: VmprintOutputStream | null = null;
@@ -221,8 +223,10 @@ export class PdfLiteContext implements Context {
             const jsPdfFont = POSTSCRIPT_TO_JSPDF[options.standardFontPostScriptName]
                 ?? { family: 'helvetica', fontStyle: 'normal' };
             this.fontInfoById.set(id, jsPdfFont);
+            this.standardPostscriptNameById.set(id, options.standardFontPostScriptName);
             return;
         }
+        this.standardPostscriptNameById.delete(id);
 
         // Custom font: base64-encode and register with jsPDF's virtual file-system.
         // Identity-H encoding is required to activate jsPDF's built-in subsetter:
@@ -237,6 +241,21 @@ export class PdfLiteContext implements Context {
         } catch (e: unknown) {
             throw new Error(`[PdfLiteContext] Failed to register font "${id}": ${String(e)}`);
         }
+    }
+
+    private sanitizeStandardFontText(str: string): string {
+        const currentFont = this.doc.getFont();
+        const postscriptName = [...this.standardPostscriptNameById.values()].find((value) => {
+            const info = POSTSCRIPT_TO_JSPDF[value];
+            return info?.family === currentFont.fontName && info?.fontStyle === currentFont.fontStyle;
+        });
+
+        if (!postscriptName) return str;
+        const metadata = getStandardFontMetadataByPostscriptName(postscriptName);
+        if (!metadata) return str;
+
+        const encoded = encodeStandardFontText(metadata, str);
+        return encoded.glyphs.map((glyph) => String.fromCharCode(glyph.encodedByte)).join('');
     }
 
     font(family: string, size?: number): this {
@@ -439,6 +458,8 @@ export class PdfLiteContext implements Context {
     // -------------------------------------------------------------------------
 
     text(str: string, x: number, y: number, options?: ContextTextOptions): this {
+        const effectiveText = this.sanitizeStandardFontText(str);
+
         // Apply character spacing if provided.
         const charSpacing = options?.characterSpacing;
         if (charSpacing !== undefined) {
@@ -457,7 +478,7 @@ export class PdfLiteContext implements Context {
         // Shift y down by (ascent/1000 * fontSize) to align the baseline.
         const jsPdfY = y + ((options?.ascent ?? 0) / 1000) * this.doc.getFontSize();
 
-        this.doc.text(str, x, jsPdfY, textOpts as any);
+        this.doc.text(effectiveText, x, jsPdfY, textOpts as any);
 
         if (charSpacing !== undefined) {
             (this.doc as any).setCharSpace?.(0);

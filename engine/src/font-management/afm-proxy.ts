@@ -1,4 +1,5 @@
 import { getStandardAfmMetrics } from './afm-tables';
+import { encodeStandardFontText } from './standard-font-encoding';
 import type { StandardFontMetadata } from './sentinel';
 
 type ProxyBBox = {
@@ -35,8 +36,6 @@ class AfmFontProxy {
     public readonly postscriptName: string;
     public readonly familyName: string;
     private readonly defaultWidth: number;
-    private readonly widthsByCode: Readonly<Record<number, number>>;
-    private readonly bboxByCode: Readonly<Record<number, [number, number, number, number]>>;
 
     constructor(metadata: StandardFontMetadata) {
         const metrics = getStandardAfmMetrics(metadata.postscriptName);
@@ -45,51 +44,42 @@ class AfmFontProxy {
         this.ascent = metrics.ascent;
         this.descent = metrics.descent;
         this.defaultWidth = metrics.defaultWidth;
-        this.widthsByCode = metrics.widthsByCode;
-        this.bboxByCode = metrics.bboxByCode;
-    }
-
-    private bboxForCodePoint(codePoint: number): ProxyBBox {
-        const b = this.bboxByCode[codePoint];
-        if (!b) return EMPTY_BBOX;
-        return { minX: b[0], minY: b[1], maxX: b[2], maxY: b[3] };
     }
 
     glyphForCodePoint(codePoint: number): ProxyGlyph {
-        if (!Number.isInteger(codePoint) || codePoint < 0) {
+        const run = encodeStandardFontText(this.postscriptName, Number.isInteger(codePoint) && codePoint >= 0
+            ? String.fromCodePoint(codePoint)
+            : '');
+        const glyph = run.glyphs[0];
+        if (!glyph) {
             return { id: 0, codePoints: [codePoint], advanceWidth: this.defaultWidth, bbox: EMPTY_BBOX };
         }
-
-        const width = this.widthsByCode[codePoint];
-        if (!Number.isFinite(width)) {
-            return { id: 0, codePoints: [codePoint], advanceWidth: this.defaultWidth, bbox: EMPTY_BBOX };
-        }
-
+        const bbox = glyph.bbox;
         return {
-            id: codePoint + 1,
-            codePoints: [codePoint],
-            advanceWidth: width,
-            bbox: this.bboxForCodePoint(codePoint)
+            id: glyph.id,
+            codePoints: glyph.codePoints,
+            advanceWidth: glyph.advanceWidth,
+            bbox: bbox ? { minX: bbox[0], minY: bbox[1], maxX: bbox[2], maxY: bbox[3] } : EMPTY_BBOX
         };
     }
 
     layout(text: string): ProxyLayout {
-        const glyphs: ProxyGlyph[] = [];
-        const positions: ProxyPosition[] = [];
-
-        for (const character of text || '') {
-            const codePoint = character.codePointAt(0);
-            if (codePoint === undefined) continue;
-            const glyph = this.glyphForCodePoint(codePoint);
-            glyphs.push(glyph);
-            positions.push({
-                xAdvance: glyph.advanceWidth,
-                xOffset: 0,
-                yOffset: 0
-            });
-        }
-
-        return { glyphs, positions };
+        const run = encodeStandardFontText(this.postscriptName, text);
+        return {
+            glyphs: run.glyphs.map((glyph) => ({
+                id: glyph.id,
+                codePoints: [...glyph.codePoints],
+                advanceWidth: glyph.advanceWidth,
+                bbox: glyph.bbox
+                    ? { minX: glyph.bbox[0], minY: glyph.bbox[1], maxX: glyph.bbox[2], maxY: glyph.bbox[3] }
+                    : EMPTY_BBOX
+            })),
+            positions: run.positions.map((pos) => ({
+                xAdvance: pos.xAdvance,
+                xOffset: pos.xOffset,
+                yOffset: pos.yOffset
+            }))
+        };
     }
 }
 

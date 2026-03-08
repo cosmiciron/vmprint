@@ -7,6 +7,7 @@ import { Renderer } from '../src/engine/renderer';
 import { toLayoutConfig, resolveDocumentPaths } from '../src/engine/document';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { createEngineRuntime } from '../src/engine/runtime';
+import { encodeStandardFontText } from '../src/font-management/standard-font-encoding';
 import { getStandardFontMetadata, parseStandardFontSentinelBuffer } from '../src/font-management/sentinel';
 import {
     assertFlatPipelineInvariants,
@@ -78,6 +79,35 @@ async function run() {
     const engine = new LayoutEngine(config, runtime);
 
     await engine.waitForFonts();
+
+    check(
+        'standard-font encoder collapses unsupported Unicode to one fallback glyph per code point',
+        'astral Unicode produces one default-width glyph instead of two UTF-16 surrogate glyphs',
+        () => {
+            const run = encodeStandardFontText('Helvetica', '🙂A');
+            assert.equal(run.glyphs.length, 2, 'expected one glyph per Unicode code point');
+            assert.equal(run.glyphs[0].supported, false, 'emoji should be unsupported in Helvetica');
+            assert.equal(run.glyphs[0].advanceWidth, 278, 'unsupported glyph should use Helvetica default width');
+            assert.equal(run.glyphs[0].encodedByte, 0x20, 'unsupported glyph should emit a stable-width fallback byte');
+            assert.equal(run.glyphs[0].nominalWidth, 278, 'unsupported glyph should keep nominal width aligned with measurement');
+            assert.equal(run.glyphs[1].supported, true, 'ASCII glyph should remain supported');
+            assert.equal(run.glyphs[1].encodedByte, 0x41, 'ASCII A should remain WinAnsi byte 0x41');
+        }
+    );
+
+    check(
+        'standard-font encoder preserves WinAnsi extension characters',
+        'characters like em dash and euro map to single-byte WinAnsi codes used by PDF standard fonts',
+        () => {
+            const run = encodeStandardFontText('Helvetica', '—€');
+            assert.deepEqual(
+                run.glyphs.map((glyph) => glyph.encodedByte),
+                [0x97, 0x80],
+                'unexpected WinAnsi bytes for em dash / euro'
+            );
+            assert.ok(run.glyphs.every((glyph) => glyph.supported), 'expected WinAnsi extension glyphs to stay supported');
+        }
+    );
 
     check(
         'all 14 standard fonts are loaded via sentinel buffers',
