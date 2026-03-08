@@ -4,6 +4,7 @@ import {
     ContextFactoryOptions,
     ContextFontRegistrationOptions,
     ContextImageOptions,
+    ContextShapedGlyph,
     ContextTextOptions,
     VmprintOutputStream,
     ContextPageSize,
@@ -98,6 +99,22 @@ function mimeToImageFormat(mimeType?: string): string {
     if (m.includes('bmp'))  return 'BMP';
     if (m.includes('webp')) return 'WEBP';
     return 'JPEG';
+}
+
+function shapedGlyphsToText(glyphs: ContextShapedGlyph[]): string {
+    const chars: string[] = [];
+    for (const glyph of glyphs) {
+        for (const cp of glyph.codePoints ?? []) {
+            if (Number.isFinite(cp) && cp > 0) {
+                chars.push(String.fromCodePoint(cp));
+            }
+        }
+    }
+    return chars.join('');
+}
+
+function hasArabicScript(text: string): boolean {
+    return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(text);
 }
 
 // ---------------------------------------------------------------------------
@@ -445,6 +462,56 @@ export class PdfLiteContext implements Context {
         if (charSpacing !== undefined) {
             (this.doc as any).setCharSpace?.(0);
         }
+        return this;
+    }
+
+    showShapedGlyphs(
+        fontId: string,
+        fontSize: number,
+        color: string,
+        x: number,
+        y: number,
+        ascent: number,
+        glyphs: ContextShapedGlyph[]
+    ): this {
+        if (!glyphs || glyphs.length === 0) return this;
+
+        // jsPDF cannot emit pre-shaped fontkit glyph IDs directly. Rebuild a Unicode
+        // string from code points, then use jsPDF's Arabic/RTL processing as fallback.
+        const reconstructedText = shapedGlyphsToText(glyphs);
+        if (!reconstructedText) return this;
+
+        this.font(fontId, fontSize);
+        this.fillColor(color);
+
+        const docAny = this.doc as any;
+        const arabic = hasArabicScript(reconstructedText);
+        const previousR2L = typeof docAny.getR2L === 'function' ? docAny.getR2L() : undefined;
+
+        let text = reconstructedText;
+        const textOpts: Record<string, unknown> = {};
+        if (arabic) {
+            textOpts['isInputRtl'] = true;
+            textOpts['isOutputRtl'] = true;
+            textOpts['isSymmetricSwapping'] = true;
+            if (typeof docAny.processArabic === 'function') {
+                text = docAny.processArabic(text);
+            }
+        }
+
+        const jsPdfY = y + (ascent / 1000) * fontSize;
+
+        try {
+            if (arabic && typeof docAny.setR2L === 'function') {
+                docAny.setR2L(true);
+            }
+            this.doc.text(text, x, jsPdfY, textOpts as any);
+        } finally {
+            if (typeof previousR2L === 'boolean' && typeof docAny.setR2L === 'function') {
+                docAny.setR2L(previousR2L);
+            }
+        }
+
         return this;
     }
 
