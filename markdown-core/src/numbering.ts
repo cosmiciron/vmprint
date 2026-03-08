@@ -1,4 +1,4 @@
-function toAlpha(value: number, upper: boolean): string {
+export function toAlpha(value: number, upper: boolean): string {
   let n = Math.max(1, Math.floor(value));
   let out = '';
   while (n > 0) {
@@ -9,7 +9,7 @@ function toAlpha(value: number, upper: boolean): string {
   return upper ? out.toUpperCase() : out;
 }
 
-function toRoman(value: number, upper: boolean): string {
+export function toRoman(value: number, upper: boolean): string {
   let n = Math.max(1, Math.floor(value));
   const nums: Array<[number, string]> = [
     [1000, 'm'], [900, 'cm'], [500, 'd'], [400, 'cd'],

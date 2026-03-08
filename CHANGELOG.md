@@ -62,7 +62,7 @@ A lightweight PDF rendering context powered by jsPDF for embeddable and browser-
 - `docs/README.md` and example landing pages expanded to cover the static demos
 
 #### Markdown Transmuter
-- New `@vmprint/transmuter-mkd` package for converting Markdown into VMPrint `DocumentInput`
+- New `@vmprint/transmuter-mkd-mkd` package for converting Markdown into VMPrint `DocumentInput`
 - Theme-aware transmutation with bundled default, novel, and opensource themes
 - New transmuter documentation under `transmuters/README.md` and `transmuters/mkd-mkd/README.md`
 
@@ -92,7 +92,7 @@ A lightweight PDF rendering context powered by jsPDF for embeddable and browser-
 
 ### Fixed
 
-- `@vmprint/transmuter-mkd` build breakage in the bundled `novel` theme source
+- `@vmprint/transmuter-mkd-mkd` build breakage in the bundled `novel` theme source
 - Packaged integration flow after a clean root build by ensuring pdf-lite artifacts are generated
 - Header/footer regression fixtures and assertions so they validate the intended margin-bounded region model
 

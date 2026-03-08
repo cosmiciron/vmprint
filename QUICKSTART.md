@@ -84,10 +84,10 @@ For a browser-based workflow without Node.js overhead, see the static examples:
 
 ### Standalone Transmuter (Markdown → AST)
 
-The `@vmprint/transmuter-mkd` package can run anywhere (browser, Node.js, edge workers) to convert Markdown into VMPrint's `DocumentInput` without layout or rendering:
+The `@vmprint/transmuter-mkd-mkd` package can run anywhere (browser, Node.js, edge workers) to convert Markdown into VMPrint's `DocumentInput` without layout or rendering:
 
 ```bash
-npm install @vmprint/transmuter-mkd
+npm install @vmprint/transmuter-mkd-mkd
 ```
 
 See [transmuters/mkd-mkd/README.md](transmuters/mkd-mkd/README.md) for full API documentation.
@@ -161,4 +161,4 @@ npm run test:update-layout-snapshots --prefix draft2final
 | `cli/` | `@vmprint/cli` | `vmprint` CLI — JSON → bit-perfect PDF |
 | `draft2final/` | `@draft2final/cli` | `draft2final` CLI — Markdown → bit-perfect PDF |
 | `transmuters/` | Multi-format transmuters | Source-to-DocumentInput converters |
-| `transmuters/mkd-mkd/` | `@vmprint/transmuter-mkd` | Markdown → DocumentInput |
+| `transmuters/mkd-mkd/` | `@vmprint/transmuter-mkd-mkd` | Markdown → DocumentInput |

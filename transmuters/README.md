@@ -26,7 +26,7 @@ So `mkd-mkd` is the Markdown → `DocumentInput` transmuter. The second `mkd` he
 
 | Directory | Package | Source |
 |---|---|---|
-| `mkd-mkd/` | `@vmprint/transmuter-mkd` | Markdown → `DocumentInput` |
+| `mkd-mkd/` | `@vmprint/transmuter-mkd-mkd` | Markdown → `DocumentInput` |
 
 ## Relationship to draft2final
 
@@ -36,10 +36,14 @@ In contrast, transmuters are the thin, lower-level primitives: `source text` in,
 
 ## Adding a new transmuter
 
-A transmuter is any module that exports a function with the signature:
+Shared transmuter contract types live in [`contracts`](../contracts/).
+
+A transmuter should satisfy the shared `Transmuter<Input, Output, Options>` contract and may also export a convenience function:
 
 ```typescript
-transmute(source: SourceType, options?: TransmuteOptions): DocumentInput
+interface Transmuter<Input, Output, Options> {
+  transmute(source: Input, options?: Options): Output;
+}
 ```
 
 It should have no runtime dependency on `@vmprint/engine` and no file-system access. Themes and config are passed as strings or plain objects by the caller.

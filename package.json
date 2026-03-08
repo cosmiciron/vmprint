@@ -15,16 +15,18 @@
   "workspaces": [
     "contracts",
     "engine",
+    "markdown-core",
     "cli",
     "contexts/pdf",
     "contexts/pdf-lite",
     "font-managers/local",
     "font-managers/standard",
-    "draft2final"
+    "draft2final",
+    "transmuters/mkd-mkd"
   ],
   "scripts": {
     "clean": "npm run clean --workspaces --if-present",
-    "build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=contexts/pdf && npm run build --workspace=contexts/pdf-lite && npm run build --workspace=font-managers/local && npm run build --workspace=font-managers/standard && npm run build --workspace=cli && npm run build --workspace=draft2final",
+    "build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=markdown-core && npm run build --workspace=contexts/pdf && npm run build --workspace=contexts/pdf-lite && npm run build --workspace=font-managers/local && npm run build --workspace=font-managers/standard && npm run build --workspace=cli && npm run build --workspace=draft2final && npm run build --workspace=@vmprint/transmuter-mkd-mkd",
     "docs:build": "node scripts/build-docs-examples.mjs",
     "test:boundary-imports": "npm --prefix draft2final run test:boundaries",
     "test:packaged-integration": "node scripts/test-packaged-vmprint-integration.mjs"

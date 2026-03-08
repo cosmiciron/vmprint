@@ -30,7 +30,7 @@ To see what this engine can build, view the beautifully typeset PDF version of t
 - **Publishing-Grade Typography**: Grapheme-accurate line breaking using `Intl.Segmenter`, language-aware hyphenation, and mixed-script text runs with perfect baseline alignment.
 - **JSON-Based Layout Pipeline**: Layout output is a serializable object tree. Pre-compile layouts into JSON to rapidly distribute identical layouts that render instantly at runtime, snapshot them for CI regression testing, or inspect exact sub-point glyph measurements.
 - **Pluggable Architecture**: Swappable font managers and rendering backends (PDF provided). Easily extensible to SVG, Canvas, or custom contexts.
-- **Markdown Transmutation**: Standalone transmuter (`@vmprint/transmuter-mkd`) converts Markdown to VMPrint's `DocumentInput` AST — usable in browser, Node.js, or edge environments without touching the layout engine. Decouples source format from layout pipeline.
+- **Markdown Transmutation**: Standalone transmuter (`@vmprint/transmuter-mkd-mkd`) converts Markdown to VMPrint's `DocumentInput` AST — usable in browser, Node.js, or edge environments without touching the layout engine. Decouples source format from layout pipeline.
 - **Markdown-to-PDF (`draft2final`)**: Includes a declarative Markdown compiler to instantly output formatted PDFs (Screenplay, Academic, Novel, etc.) without writing a single line of layout code.
 
 ---
@@ -267,7 +267,7 @@ This is a monorepo:
 | `@vmprint/local-fonts` | Filesystem font loading |
 | `@vmprint/standard-fonts` | Sentinel-based standard font manager (no font assets) |
 | `@vmprint/context-pdf-lite` | Lightweight jsPDF-based PDF context |
-| `@vmprint/transmuter-mkd` | Markdown → DocumentInput transmuter |
+| `@vmprint/transmuter-mkd-mkd` | Markdown → DocumentInput transmuter |
 | `@vmprint/cli` | `vmprint` JSON → bit-perfect PDF CLI |
 | `@draft2final/cli` | Markdown → bit-perfect PDF compiler |
 

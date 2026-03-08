@@ -1,8 +1,9 @@
+import { THEMES, THEME_NAMES } from './themes';
+
 declare global {
     interface Window {
         VMPrintTransmuter: {
             transmute(markdown: string, options?: { theme?: string }): Record<string, unknown>;
-            themes: Record<string, string>;
         };
         MkdToAstPipeline: typeof pipeline;
     }
@@ -45,7 +46,7 @@ Links become citation markers in the AST.[^1]
 [^1]: Footnotes are collected and emitted as a numbered list at document end.
 `;
 
-export const THEME_NAMES = ['default', 'opensource', 'novel'];
+export { THEME_NAMES };
 
 export type TransmuteResult = {
     json: string;
@@ -55,7 +56,7 @@ export type TransmuteResult = {
 
 export function runTransmute(markdown: string, themeName: string): TransmuteResult {
     const api = window.VMPrintTransmuter;
-    const themeYaml = api.themes[themeName] ?? api.themes['default'];
+    const themeYaml = THEMES[themeName] ?? THEMES['default'];
     const t0 = performance.now();
     const result = api.transmute(markdown, { theme: themeYaml });
     const ms = performance.now() - t0;

@@ -134,7 +134,7 @@ function mapInline(node: MdNode, defs: DefinitionMap): SemanticNode[] {
     case 'break':
       return [{ kind: 'text', value: '\n', ...toSource(node, 'break') }];
     default:
-      return [];
+      throw new Error(`Unsupported inline node: ${node.type}`);
   }
 }
 
@@ -227,7 +227,7 @@ function mapBlock(node: MdNode, defs: DefinitionMap): SemanticNode[] {
     case 'footnoteDefinition':
       return [];
     default:
-      return [];
+      throw new Error(`Unsupported block node: ${node.type}`);
   }
 }
 
@@ -250,6 +250,9 @@ function mapBlocks(nodes: MdNode[], defs: DefinitionMap): SemanticNode[] {
 }
 
 export function normalizeToSemantic(ast: MdNode): SemanticDocument {
+  if (ast.type !== 'root') {
+    throw new Error(`Expected root AST node, received: ${ast.type}`);
+  }
   const defs = collectDefinitions(ast.children || []);
   const footnotes = collectFootnotes(ast.children || [], defs);
   return {

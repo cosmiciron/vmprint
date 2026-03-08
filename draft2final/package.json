@@ -19,6 +19,7 @@
     "test": "npm run test:boundaries && tsx tests/run-tests.ts"
   },
   "dependencies": {
+    "@vmprint/markdown-core": "file:../markdown-core",
     "@vmprint/context-pdf": "file:../contexts/pdf",
     "@vmprint/engine": "file:../engine",
     "@vmprint/local-fonts": "file:../font-managers/local",

@@ -1,27 +1,27 @@
-# @vmprint/transmuter-mkd
+# @vmprint/transmuter-mkd-mkd
 
-Markdown → VMPrint `DocumentInput` transmuter.
+Markdown to VMPrint `DocumentInput` transmuter.
 
 Input is standard Markdown. Output is a pure object in the VMPrint engine's AST format (`DocumentInput`), ready to be serialized as JSON or fed directly into the layout engine.
 
 ## Features
 
-- **Zero file access** — no `fs`, no Node.js I/O. Fully embeddable in any runtime (browser, edge, worker).
-- **No engine dependency** — does not import from `@vmprint/engine`. Types are declared locally and structurally compatible.
-- **Themeable** — accepts any draft2final-compatible theme as a YAML string. Three themes are bundled.
-- **Configurable** — behavioral config (links, footnotes, tables, typography) via YAML string or object.
-- **Images** — data URIs resolved inline. Arbitrary sources supported via a user-supplied resolver callback.
+- Zero file access. No `fs`, no Node-specific loading.
+- No engine dependency. Types remain structurally compatible with `@vmprint/engine`.
+- Caller-supplied themes. Pass any draft2final-compatible theme YAML string.
+- Configurable behavior via YAML string.
+- Images via data URIs or a caller-supplied resolver callback.
 
 ## Installation
 
 ```bash
-npm install @vmprint/transmuter-mkd
+npm install @vmprint/transmuter-mkd-mkd
 ```
 
 ## Usage
 
 ```typescript
-import { transmute, themes } from '@vmprint/transmuter-mkd';
+import { transmute } from '@vmprint/transmuter-mkd-mkd';
 
 const markdown = `
 # Hello World
@@ -29,20 +29,13 @@ const markdown = `
 A paragraph with a [link](https://example.com).
 `;
 
-// Basic — uses the bundled 'default' theme
-const doc = transmute(markdown);
+const doc = transmute(markdown, { theme: myThemeYamlString });
 console.log(JSON.stringify(doc, null, 2));
 
-// With a specific bundled theme
-const doc2 = transmute(markdown, { theme: themes.novel });
-
-// With an external theme YAML string (e.g. loaded from a database or bundle)
-const doc3 = transmute(markdown, { theme: myThemeYamlString });
-
-// With a custom image resolver (e.g. for a bundler or fetch-based env)
-const doc4 = transmute(markdown, {
+const docWithImages = transmute(markdown, {
+  theme: myThemeYamlString,
   resolveImage: (src) => {
-    const buf = myFetchSync(src); // your implementation
+    const buf = myFetchSync(src);
     return buf ? { data: btoa(String.fromCharCode(...buf)), mimeType: 'image/png' } : null;
   }
 });
@@ -50,11 +43,10 @@ const doc4 = transmute(markdown, {
 
 ## Frontmatter
 
-Frontmatter is parsed and applied automatically. The `theme` key selects a bundled theme by name:
+Frontmatter is parsed and merged into behavioral config. Theme selection is not resolved inside the transmuter; the caller passes the theme YAML explicitly.
 
 ```markdown
 ---
-theme: novel
 links:
   mode: inline
 ---
@@ -64,22 +56,7 @@ links:
 
 ## Themes
 
-All bundled themes are interchangeable with draft2final themes at the YAML level.
-
-| Key | Description |
-|---|---|
-| `default` | General markdown, Caladea/Cousine, LETTER |
-| `opensource` | Open-source docs style, Carlito/Caladea, A4 |
-| `novel` | Trade novel proportions (6×9"), Caladea, auto-hyphenation |
-
-Pass any theme by importing `themes`:
-
-```typescript
-import { themes } from '@vmprint/transmuter-mkd';
-// themes.default, themes.opensource, themes.novel
-```
-
-Or supply your own theme YAML string (same format as draft2final `themes/*.yaml`):
+Supply any theme YAML string using the same format as draft2final `themes/*.yaml`:
 
 ```yaml
 layout:
@@ -99,15 +76,19 @@ styles:
 
 ## Config
 
-Behavioral config follows the same schema as draft2final's `config.defaults.yaml`. Pass as a YAML string or plain object:
+Behavioral config follows the same schema as draft2final's markdown defaults. Pass it as a YAML string:
 
 ```typescript
 transmute(md, {
-  config: {
-    links: { mode: 'inline' },
-    typography: { smartQuotes: false },
-    tables: { zebra: false }
-  }
+  theme: myThemeYamlString,
+  config: `
+links:
+  mode: inline
+typography:
+  smartQuotes: false
+tables:
+  zebra: false
+`
 });
 ```
 
@@ -122,21 +103,7 @@ The returned `DocumentInput` is a plain JSON-serializable object:
   styles: { 'heading-1': { ... }, 'paragraph': { ... }, ... },
   elements: [
     { type: 'heading-1', content: '', children: [{ type: 'text', content: 'Hello' }] },
-    { type: 'paragraph', content: '', children: [...] },
-    ...
+    { type: 'paragraph', content: '', children: [...] }
   ]
 }
-```
-
-Feed it directly into `@vmprint/engine`:
-
-```typescript
-import { transmute } from '@vmprint/transmuter-mkd';
-import { LayoutEngine, createEngineRuntime } from '@vmprint/engine';
-
-const doc = transmute(markdown);
-const runtime = createEngineRuntime({ fontManager });
-const engine = new LayoutEngine(toLayoutConfig(doc), runtime);
-await engine.waitForFonts();
-const pages = engine.paginate(doc.elements);
 ```

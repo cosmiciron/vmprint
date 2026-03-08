@@ -20,6 +20,7 @@ const examples = [
 const aliases = {
     '@vmprint/contracts': path.join(repoRoot, 'contracts', 'src', 'index.ts'),
     '@vmprint/engine': path.join(repoRoot, 'engine', 'src', 'index.ts'),
+    '@vmprint/markdown-core': path.join(repoRoot, 'markdown-core', 'src', 'index.ts'),
     '@vmprint/standard-fonts': path.join(repoRoot, 'font-managers', 'standard', 'src', 'index.ts'),
     '@vmprint/context-pdf-lite': path.join(repoRoot, 'contexts', 'pdf-lite', 'src', 'index.ts'),
     fontkit: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'fontkit.ts'),
@@ -94,7 +95,8 @@ async function buildAstToPdfExample(exampleRoot) {
             minify: true,
             legalComments: 'none',
             logLevel: 'info',
-            alias: aliases
+            alias: aliases,
+            loader: { '.yaml': 'text' }
         });
     }
 }
@@ -106,7 +108,7 @@ async function buildMkdToAstExample(exampleRoot) {
     fs.mkdirSync(assetsDir, { recursive: true });
 
     const transmutterAliases = {
-        '@vmprint/transmuter-mkd': path.join(transmutterRoot, 'src', 'index.ts')
+        '@vmprint/transmuter-mkd-mkd': path.join(transmutterRoot, 'src', 'index.ts')
     };
 
     const builds = [
@@ -138,7 +140,8 @@ async function buildMkdToAstExample(exampleRoot) {
             minify: true,
             legalComments: 'none',
             logLevel: 'info',
-            alias: transmutterAliases
+            alias: { ...aliases, ...transmutterAliases },
+            loader: { '.yaml': 'text' }
         });
     }
 }

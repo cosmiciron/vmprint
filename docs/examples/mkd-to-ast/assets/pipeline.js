@@ -1,4 +1,445 @@
-var MkdToAstPipeline=(()=>{var s=Object.defineProperty;var m=Object.getOwnPropertyDescriptor;var p=Object.getOwnPropertyNames;var g=Object.prototype.hasOwnProperty;var h=(t,e)=>{for(var n in e)s(t,n,{get:e[n],enumerable:!0})},y=(t,e,n,o)=>{if(e&&typeof e=="object"||typeof e=="function")for(let r of p(e))!g.call(t,r)&&r!==n&&s(t,r,{get:()=>e[r],enumerable:!(o=m(e,r))||o.enumerable});return t};var f=t=>y(s({},"__esModule",{value:!0}),t);var M={};h(M,{SAMPLE_MARKDOWN:()=>i,THEME_NAMES:()=>u,pipeline:()=>w,runTransmute:()=>l});var i=`# Getting Started with VMPrint
+var MkdToAstPipeline=(()=>{var f=Object.defineProperty;var u=Object.getOwnPropertyDescriptor;var y=Object.getOwnPropertyNames;var b=Object.prototype.hasOwnProperty;var S=(e,t)=>{for(var n in t)f(e,n,{get:t[n],enumerable:!0})},T=(e,t,n,i)=>{if(t&&typeof t=="object"||typeof t=="function")for(let o of y(t))!b.call(e,o)&&o!==n&&f(e,o,{get:()=>t[o],enumerable:!(i=u(t,o))||i.enumerable});return e};var B=e=>T(f({},"__esModule",{value:!0}),e);var A={};S(A,{SAMPLE_MARKDOWN:()=>p,THEME_NAMES:()=>l,pipeline:()=>z,runTransmute:()=>h});var g=`layout:\r
+  fontFamily: Caladea\r
+  fontSize: 11.3\r
+  lineHeight: 1.52\r
+  pageSize: LETTER\r
+  margins:\r
+    top: 76\r
+    right: 80\r
+    bottom: 76\r
+    left: 80\r
+  hyphenation: soft\r
+  justifyEngine: advanced\r
+  justifyStrategy: auto\r
+\r
+footer:\r
+  default:\r
+    elements:\r
+      - type: paragraph\r
+        content: "{pageNumber}"\r
+        properties:\r
+          style:\r
+            textAlign: center\r
+            fontSize: 9\r
+            color: "#6b7280"\r
+            fontFamily: Caladea\r
+            marginTop: 35\r
+\r
+styles:\r
+  heading-1:\r
+    fontSize: 25\r
+    lineHeight: 1.2\r
+    color: "#0f3f63"\r
+    marginTop: 14.4\r
+    marginBottom: 12\r
+    hyphenation: "off"\r
+    textAlign: left\r
+  heading-2:\r
+    fontSize: 19.2\r
+    color: "#14527f"\r
+    marginTop: 10.4\r
+    marginBottom: 8.5\r
+    hyphenation: "off"\r
+    textAlign: left\r
+  heading-3:\r
+    fontSize: 15.6\r
+    color: "#1c5e8f"\r
+    marginTop: 7.4\r
+    marginBottom: 7\r
+    hyphenation: "off"\r
+    textAlign: left\r
+  paragraph:\r
+    textAlign: left\r
+    hyphenation: soft\r
+    marginBottom: 9.6\r
+  inline-code:\r
+    fontFamily: Cousine\r
+    fontSize: 9.9\r
+    color: "#18334b"\r
+    backgroundColor: "#ecf2f9"\r
+    borderRadius: 2\r
+  code-block:\r
+    fontFamily: Cousine\r
+    fontSize: 9.8\r
+    lineHeight: 1.34\r
+    color: "#1f2937"\r
+    backgroundColor: "#f4f7fb"\r
+    borderWidth: 0.8\r
+    borderColor: "#cdd7e3"\r
+    borderRadius: 4\r
+    paddingTop: 7\r
+    paddingBottom: 7\r
+    paddingLeft: 10\r
+    paddingRight: 10\r
+    marginTop: 0\r
+    marginBottom: 11\r
+  blockquote:\r
+    textAlign: left\r
+    hyphenation: soft\r
+    color: "#1f3448"\r
+    paddingLeft: 15\r
+    paddingRight: 8\r
+    borderLeftWidth: 1.6\r
+    borderLeftColor: "#628bb0"\r
+    backgroundColor: "#f7fafd"\r
+    marginTop: 0\r
+    marginBottom: 11\r
+  blockquote-attribution:\r
+    textAlign: right\r
+    fontStyle: normal\r
+    color: "#4b5563"\r
+    marginTop: 2\r
+    marginBottom: 8\r
+  thematic-break:\r
+    borderTopWidth: 0.8\r
+    borderTopColor: "#5a7c9e"\r
+    marginTop: 6.4\r
+    marginBottom: 16\r
+  citation-marker:\r
+    fontSize: 8.4\r
+    color: "#334e68"\r
+  footnote-marker:\r
+    fontSize: 8.4\r
+    baselineShift: 3\r
+  footnotes-heading:\r
+    fontSize: 13.8\r
+    color: "#0f3f63"\r
+    hyphenation: "off"\r
+    marginTop: 8.4\r
+    marginBottom: 6\r
+  footnotes-item:\r
+    textAlign: left\r
+    hyphenation: "off"\r
+    fontSize: 10.3\r
+    lineHeight: 1.38\r
+    paddingLeft: 12\r
+    textIndent: -12\r
+    marginBottom: 3.4\r
+  references-heading:\r
+    fontSize: 13.8\r
+    color: "#0f3f63"\r
+    hyphenation: "off"\r
+    marginTop: 8.4\r
+    marginBottom: 6\r
+  references-item:\r
+    textAlign: left\r
+    hyphenation: "off"\r
+    fontSize: 10.3\r
+    lineHeight: 1.38\r
+    paddingLeft: 12\r
+    textIndent: -12\r
+    marginBottom: 3.4\r
+  definition-term:\r
+    fontWeight: 700\r
+    color: "#0f3f63"\r
+    keepWithNext: true\r
+    marginTop: 0\r
+    marginBottom: 1.4\r
+  definition-desc:\r
+    paddingLeft: 14\r
+    marginBottom: 6\r
+  table-cell:\r
+    paddingTop: 4\r
+    paddingBottom: 4\r
+    paddingLeft: 5\r
+    paddingRight: 5\r
+    borderWidth: 0.6\r
+    borderColor: "#111111"\r
+`;var d=`layout:\r
+  fontFamily: Caladea\r
+  fontSize: 11.8\r
+  lineHeight: 1.5\r
+  pageSize:\r
+    width: 432\r
+    height: 648\r
+  margins:\r
+    top: 72\r
+    right: 64\r
+    bottom: 68\r
+    left: 64\r
+  hyphenation: auto\r
+  justifyEngine: advanced\r
+  justifyStrategy: auto\r
+\r
+footer:\r
+  default:\r
+    elements:\r
+      - type: paragraph\r
+        content: "\\u2014 {pageNumber} \\u2014"\r
+        properties:\r
+          style:\r
+            textAlign: center\r
+            fontSize: 9\r
+            color: "#8a7d6e"\r
+            fontFamily: Caladea\r
+            marginTop: 31\r
+\r
+styles:\r
+  heading-1:\r
+    fontSize: 22\r
+    lineHeight: 1.25\r
+    textAlign: center\r
+    fontStyle: italic\r
+    hyphenation: "off"\r
+    marginTop: 54\r
+    marginBottom: 34\r
+    letterSpacing: 0.4\r
+    keepWithNext: true\r
+  heading-2:\r
+    fontSize: 10.4\r
+    lineHeight: 1.3\r
+    textAlign: center\r
+    fontWeight: 400\r
+    hyphenation: "off"\r
+    letterSpacing: 2.4\r
+    marginTop: 22\r
+    marginBottom: 18\r
+    keepWithNext: true\r
+  heading-3:\r
+    fontSize: 11.8\r
+    fontStyle: italic\r
+    textAlign: left\r
+    hyphenation: "off"\r
+    marginTop: 12\r
+    marginBottom: 6\r
+    keepWithNext: true\r
+  paragraph:\r
+    textAlign: justify\r
+    hyphenation: auto\r
+    lineHeight: 1.5\r
+    textIndent: 18\r
+    marginBottom: 0\r
+  inline-code:\r
+    fontFamily: Caladea\r
+    fontStyle: italic\r
+    color: "#2a2218"\r
+    backgroundColor: "#ffffff"\r
+  code-block:\r
+    fontFamily: Cousine\r
+    fontSize: 9.6\r
+    lineHeight: 1.42\r
+    color: "#2a2218"\r
+    backgroundColor: "#f8f5ef"\r
+    borderWidth: 0\r
+    borderRadius: 0\r
+    paddingTop: 10\r
+    paddingBottom: 10\r
+    paddingLeft: 14\r
+    paddingRight: 14\r
+    marginTop: 10\r
+    marginBottom: 10\r
+  blockquote:\r
+    textAlign: left\r
+    hyphenation: "off"\r
+    fontStyle: italic\r
+    fontSize: 11\r
+    lineHeight: 1.52\r
+    color: "#2e2618"\r
+    paddingLeft: 30\r
+    paddingRight: 30\r
+    borderLeftWidth: 0\r
+    marginTop: 12\r
+    marginBottom: 12\r
+  blockquote-attribution:\r
+    textAlign: right\r
+    fontStyle: normal\r
+    fontSize: 9.4\r
+    color: "#7a6e5e"\r
+    marginTop: 3\r
+    marginBottom: 10\r
+  thematic-break:\r
+    width: 48\r
+    marginLeft: 128\r
+    borderTopWidth: 0.5\r
+    borderTopColor: "#c0b09a"\r
+    marginTop: 18\r
+    marginBottom: 18\r
+  citation-marker:\r
+    fontSize: 8\r
+    color: "#6a5e4e"\r
+  footnote-marker:\r
+    fontSize: 8\r
+    baselineShift: 3\r
+  footnotes-heading:\r
+    fontSize: 10.4\r
+    hyphenation: "off"\r
+    marginTop: 12\r
+    marginBottom: 6\r
+  footnotes-item:\r
+    textAlign: left\r
+    hyphenation: "off"\r
+    fontSize: 9.4\r
+    lineHeight: 1.4\r
+    paddingLeft: 12\r
+    textIndent: -12\r
+    marginBottom: 3.6\r
+  references-heading:\r
+    fontSize: 10.4\r
+    hyphenation: "off"\r
+    marginTop: 10\r
+    marginBottom: 6\r
+  references-item:\r
+    textAlign: left\r
+    hyphenation: "off"\r
+    fontSize: 9.4\r
+    lineHeight: 1.4\r
+    paddingLeft: 12\r
+    textIndent: -12\r
+    marginBottom: 3.6\r
+  definition-term:\r
+    fontStyle: italic\r
+    fontWeight: 700\r
+    color: "#2a2218"\r
+    keepWithNext: true\r
+    marginTop: 0\r
+    marginBottom: 1.4\r
+  definition-desc:\r
+    paddingLeft: 16\r
+    marginBottom: 7\r
+  table-cell:\r
+    paddingTop: 5\r
+    paddingBottom: 5\r
+    paddingLeft: 6\r
+    paddingRight: 6\r
+    borderWidth: 0.45\r
+    borderColor: "#b0a08a"\r
+`;var m=`layout:\r
+  fontFamily: Carlito\r
+  fontSize: 11.1\r
+  lineHeight: 1.68\r
+  pageSize: A4\r
+  margins:\r
+    top: 84\r
+    right: 76\r
+    bottom: 86\r
+    left: 76\r
+  hyphenation: soft\r
+  justifyEngine: advanced\r
+  justifyStrategy: auto\r
+\r
+styles:\r
+  heading-1:\r
+    fontFamily: Caladea\r
+    fontSize: 27\r
+    lineHeight: 1.2\r
+    color: "#101622"\r
+    marginTop: 26.2\r
+    marginBottom: 22\r
+    hyphenation: "off"\r
+    textAlign: center\r
+    keepWithNext: true\r
+  subheading:\r
+    fontFamily: Carlito\r
+    fontSize: 10.2\r
+    lineHeight: 1.36\r
+    color: "#6f7785"\r
+    letterSpacing: 0.9\r
+    textAlign: center\r
+    marginTop: -8\r
+    marginBottom: 28\r
+    keepWithNext: true\r
+  heading-2:\r
+    fontFamily: Carlito\r
+    fontSize: 12\r
+    fontWeight: 700\r
+    color: "#2f3d52"\r
+    marginTop: 18.2\r
+    marginBottom: 12\r
+    hyphenation: "off"\r
+    textAlign: left\r
+  heading-3:\r
+    fontFamily: Carlito\r
+    fontSize: 10.8\r
+    fontWeight: 700\r
+    color: "#506079"\r
+    marginTop: 8.2\r
+    marginBottom: 8\r
+    hyphenation: "off"\r
+    textAlign: left\r
+  paragraph:\r
+    textAlign: left\r
+    hyphenation: soft\r
+    lineHeight: 1.7\r
+    marginBottom: 11.8\r
+  footnotes-heading:\r
+    fontFamily: Carlito\r
+  footnotes-item:\r
+    fontFamily: Carlito\r
+  references-heading:\r
+    fontFamily: Carlito\r
+  references-item:\r
+    fontFamily: Carlito\r
+  inline-code:\r
+    fontFamily: Cousine\r
+    fontSize: 9.6\r
+    color: "#1f3550"\r
+    backgroundColor: "#f0f3f8"\r
+    borderRadius: 2\r
+  code-block:\r
+    fontFamily: Cousine\r
+    fontSize: 9.7\r
+    lineHeight: 1.36\r
+    allowLineSplit: true\r
+    overflowPolicy: clip\r
+    color: "#1f2937"\r
+    backgroundColor: "#f8fafc"\r
+    borderWidth: 0.8\r
+    borderColor: "#d7deea"\r
+    borderRadius: 4\r
+    paddingTop: 8\r
+    paddingBottom: 8\r
+    paddingLeft: 11\r
+    paddingRight: 11\r
+    marginTop: 0\r
+    marginBottom: 14\r
+  blockquote:\r
+    textAlign: left\r
+    hyphenation: "off"\r
+    fontFamily: Caladea\r
+    fontStyle: italic\r
+    fontSize: 12\r
+    lineHeight: 1.56\r
+    color: "#2a3344"\r
+    paddingLeft: 18\r
+    paddingRight: 18\r
+    borderLeftWidth: 0\r
+    backgroundColor: "#ffffff"\r
+    marginTop: 2.2\r
+    marginBottom: 16\r
+  blockquote-attribution:\r
+    textAlign: right\r
+    fontStyle: normal\r
+    fontFamily: Carlito\r
+    fontSize: 9.8\r
+    color: "#677185"\r
+    marginTop: 3\r
+    marginBottom: 10\r
+  thematic-break:\r
+    width: 132\r
+    marginLeft: 0\r
+    borderTopWidth: 0.45\r
+    borderTopColor: "#aeb9ca"\r
+    opacity: 0.9\r
+    marginTop: 16.2\r
+    marginBottom: 24\r
+  definition-term:\r
+    fontWeight: 700\r
+    color: "#2f3d52"\r
+    keepWithNext: true\r
+    marginTop: 0\r
+    marginBottom: 2\r
+  definition-desc:\r
+    paddingLeft: 14\r
+    marginBottom: 8\r
+  table-cell:\r
+    fontFamily: Carlito\r
+    paddingTop: 5\r
+    paddingBottom: 5\r
+    paddingLeft: 6\r
+    paddingRight: 6\r
+    borderWidth: 0.6\r
+    borderColor: "#bfc9d8"\r
+`;var a={default:g,opensource:m,novel:d},l=Object.keys(a);var p=`# Getting Started with VMPrint
 
 VMPrint is a **deterministic** document layout engine. You write Markdown, and it produces
 a bit-perfect document \u2014 identical on every run.
@@ -32,4 +473,4 @@ Blockquotes and attributions are first-class:
 Links become citation markers in the AST.[^1]
 
 [^1]: Footnotes are collected and emitted as a numbered list at document end.
-`,u=["default","opensource","novel"];function l(t,e){let n=window.VMPrintTransmuter,o=n.themes[e]??n.themes.default,r=performance.now(),a=n.transmute(t,{theme:o}),c=performance.now()-r,d=Array.isArray(a.elements)?a.elements.length:0;return{json:JSON.stringify(a,null,2),elementCount:d,ms:c}}var w={SAMPLE_MARKDOWN:i,THEME_NAMES:u,runTransmute:l};return f(M);})();
+`;function h(e,t){let n=window.VMPrintTransmuter,i=a[t]??a.default,o=performance.now(),r=n.transmute(e,{theme:i}),c=performance.now()-o,s=Array.isArray(r.elements)?r.elements.length:0;return{json:JSON.stringify(r,null,2),elementCount:s,ms:c}}var z={SAMPLE_MARKDOWN:p,THEME_NAMES:l,runTransmute:h};return B(A);})();

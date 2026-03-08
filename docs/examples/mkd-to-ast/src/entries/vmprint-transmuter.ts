@@ -1,1 +1,1 @@
-export { transmute, themes } from '@vmprint/transmuter-mkd';
+export { transmute } from '@vmprint/transmuter-mkd-mkd';
