@@ -14,8 +14,7 @@
     "fontFamily": "Arimo",
     "fontSize": 11,
     "lineHeight": 1.3,
-    "storyWrapOpticalUnderhang": true,
-    "showPageNumbers": true
+    "storyWrapOpticalUnderhang": true
   },
   "fonts": {
     "regular": "Arimo"

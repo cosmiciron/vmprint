@@ -10,8 +10,7 @@
     },
     "fontFamily": "Helvetica",
     "fontSize": 12,
-    "lineHeight": 1.25,
-    "showPageNumbers": false
+    "lineHeight": 1.25
   },
   "fonts": {
     "regular": "Helvetica"

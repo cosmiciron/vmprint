@@ -13,8 +13,7 @@
                                },
                    "fontFamily":  "Arimo",
                    "fontSize":  10,
-                   "lineHeight":  1.15,
-                   "showPageNumbers":  false
+                   "lineHeight":  1.15
                },
     "fonts":  {
                   "regular":  "Arimo"
