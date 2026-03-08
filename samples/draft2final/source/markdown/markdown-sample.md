@@ -1,3 +1,8 @@
+---
+format: markdown
+theme: default
+---
+
 # VMPrint Deployment Handbook
 
 This default markdown theme targets a modern technical manual: comfortable on screen, crisp in print, and visually structured for fast scanning during implementation work [manual].

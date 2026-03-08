@@ -185,6 +185,140 @@ export class PdfContext implements Context {
         return this;
     }
 
+    showShapedGlyphs(
+        fontId: string,
+        fontSize: number,
+        color: string,
+        x: number,
+        y: number,
+        ascent: number,
+        glyphs: import('@vmprint/contracts').ContextShapedGlyph[]
+    ): this {
+        if (!glyphs || glyphs.length === 0) return this;
+
+        // Set font and fill color OUTSIDE the BT/ET block (PDF spec requirement).
+        this.font(fontId, fontSize);
+        this.fillColor(color);
+
+        const docAny = this.doc as any;
+        const pdfFont = docAny._font as any;
+        if (!pdfFont || typeof pdfFont.subset?.includeGlyph !== 'function') {
+            // Fallback: reconstruct Unicode string and use normal text() path.
+            // This won't produce correctly shaped Arabic glyphs, but won't crash.
+            const fallbackText = glyphs
+                .flatMap(g => g.codePoints)
+                .filter(cp => cp > 0)
+                .map(cp => String.fromCodePoint(cp))
+                .join('');
+            if (fallbackText) {
+                const baselinePx = (ascent / 1000) * fontSize;
+                this.doc.text(fallbackText, x, y, { lineBreak: false, baseline: -baselinePx } as any);
+            }
+            return this;
+        }
+
+        // Convert each fontkit glyph ID into a PDFKit subset ID and hex string.
+        // This mirrors EmbeddedFont.encode() but uses our pre-computed shaped IDs
+        // instead of re-running font.layout() (which would lose contextual forms).
+        const upm = pdfFont.font?.unitsPerEm || 1000;
+        const hexPairs: string[] = [];
+        const actualAdvances: number[] = [];
+        const defaultAdvances: number[] = [];
+        const xOffsets: number[] = [];
+        const yOffsets: number[] = [];
+
+        for (const sg of glyphs) {
+            const fkGlyph = pdfFont.font?.getGlyph(sg.id);
+            if (!fkGlyph) continue;
+
+            const subsetId = pdfFont.subset.includeGlyph(sg.id);
+            hexPairs.push(`0000${subsetId.toString(16)}`.slice(-4));
+
+            // Register advance width in the PDF widths array (required for PDF spec).
+            if (pdfFont.widths[subsetId] == null) {
+                pdfFont.widths[subsetId] = (fkGlyph.advanceWidth || 0) * (1000 / upm);
+            }
+            // Register ToUnicode mapping so PDF readers can extract/copy text correctly.
+            // Always populate unicode[subsetId] — even with an empty array for glyphs that have
+            // no Unicode mapping (ligature components, marks, etc.). Leaving it undefined creates
+            // a sparse-array hole that causes `for...of` in pdfkit's toUnicodeCmap() to receive
+            // `undefined` and throw "TypeError: codePoints is not iterable".
+            if (pdfFont.unicode[subsetId] == null) {
+                pdfFont.unicode[subsetId] = sg.codePoints.length > 0 ? sg.codePoints : [];
+            }
+
+            actualAdvances.push(sg.xAdvance);
+            xOffsets.push(sg.xOffset || 0);
+            yOffsets.push(sg.yOffset || 0);
+            // Default glyph advance in PDF user-space points (no GPOS adjustment)
+            defaultAdvances.push((fkGlyph.advanceWidth || 0) * (fontSize / upm));
+        }
+
+        if (hexPairs.length === 0) return this;
+
+        // Compute baseline Y, mirroring pdfkit's _fragment convention exactly:
+        //   - pdfkit applies a local Y-flip CTM: transform(1, 0, 0, -1, 0, H)
+        //   - then sets Tm y as:  y_tm = H - y_input - dy  (where dy = ascender in pts)
+        // We replicate this inside our own save/restore so the flip doesn't leak.
+        const baselinePx = (ascent / 1000) * fontSize;
+        const H = docAny.page.height as number;
+        const y_tm = H - y - baselinePx;
+        const hasPositionOffsets = xOffsets.some(v => Math.abs(v) > 0.01) || yOffsets.some(v => Math.abs(v) > 0.01);
+
+        // Build TJ array: sequence of <hexGlyphId> entries with optional numeric kerning
+        // adjustments between glyphs. TJ positive numbers shift the pen LEFT (i.e., they
+        // REDUCE the advance), so to achieve our measured advance, we emit:
+        //   adjustment = (defaultAdvance - measuredAdvance) * (1000 / fontSize)
+        const num = (n: number) => Math.round(n * 100) / 100;
+        const tjParts: string[] = [];
+        for (let i = 0; i < hexPairs.length; i++) {
+            tjParts.push(`<${hexPairs[i]}>`);
+            // Only add adjustment between glyphs (not after the last one).
+            if (i < hexPairs.length - 1) {
+                const diff = (defaultAdvances[i] - actualAdvances[i]) * (1000 / fontSize);
+                if (Math.abs(diff) > 0.5) {
+                    tjParts.push(`${num(diff)}`);
+                }
+            }
+        }
+
+        // Register the font in the current page's resource dictionary. pdfkit only does this
+        // inside its own _fragment path; since we bypass that path we must do it explicitly.
+        if (docAny.page?.fonts && pdfFont.id != null) {
+            docAny.page.fonts[pdfFont.id] = pdfFont.ref();
+        }
+
+        // Emit the PDF text stream, replicating pdfkit's _fragment coordinate handling:
+        //   save → Y-flip CTM → BT → Tm/Tf/Tj/TJ → ET → restore
+        docAny.save();
+        docAny.transform(1, 0, 0, -1, 0, H);   // local Y-flip, matches pdfkit's _fragment
+        docAny.addContent('BT');
+        docAny.addContent(`/${pdfFont.id} ${num(fontSize)} Tf`);
+        docAny.addContent('0 Tr');
+
+        if (!hasPositionOffsets) {
+            docAny.addContent(`1 0 0 1 ${num(x)} ${num(y_tm)} Tm`);
+            docAny.addContent(`[${tjParts.join(' ')}] TJ`);
+        } else {
+            // When a run has non-zero x/y offsets (marks/GPOS), place each glyph
+            // individually so offsets are preserved exactly.
+            let penX = 0;
+            for (let i = 0; i < hexPairs.length; i++) {
+                const gx = x + penX + xOffsets[i];
+                // yOffset uses top-left user coordinates; with local Y-flip we subtract.
+                const gy = y_tm - yOffsets[i];
+                docAny.addContent(`1 0 0 1 ${num(gx)} ${num(gy)} Tm`);
+                docAny.addContent(`<${hexPairs[i]}> Tj`);
+                penX += actualAdvances[i];
+            }
+        }
+
+        docAny.addContent('ET');
+        docAny.restore();
+
+        return this;
+    }
+
     image(source: string | Uint8Array, x: number, y: number, options?: ContextImageOptions): this {
         const imageSource = typeof source === 'string' ? source : Buffer.from(source);
         this.doc.image(imageSource as any, x, y, {
@@ -200,5 +334,6 @@ export class PdfContext implements Context {
     }
 
 }
+
 
 export default PdfContext;

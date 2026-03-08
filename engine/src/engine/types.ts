@@ -7,6 +7,14 @@ export type ImageFitMode = 'contain' | 'fill';
 export type VmprintDocumentVersion = '1.0';
 export type VmprintIRVersion = '1.0';
 
+export type ShapedGlyph = {
+    id: number;
+    codePoints: number[];
+    xAdvance: number;
+    xOffset: number;
+    yOffset: number;
+};
+
 export type TextSegment = {
     text: string,
     fontFamily?: string,
@@ -14,13 +22,23 @@ export type TextSegment = {
     style?: Record<string, any>,
     inlineObject?: InlineObjectSegment,
     inlineMetrics?: InlineObjectMetrics,
+    /** Per-glyph positions from fontkit layout, used for LTR kerned text. */
     glyphs?: { char: string, x: number, y: number }[],
+    /**
+     * Raw shaped glyph data from fontkit layout for RTL / CTL text.
+     * Carries the correct contextual glyph IDs (e.g. uni0627.fina vs uni0627)
+     * that must be emitted directly to PDF without re-running shaping.
+     */
+    shapedGlyphs?: ShapedGlyph[],
     width?: number,
     ascent?: number,
     descent?: number,
     justifyAfter?: number,
-    forcedBreakAfter?: boolean
+    forcedBreakAfter?: boolean,
+    scriptClass?: string,
+    direction?: 'ltr' | 'rtl'
 };
+
 
 export type RichLine = TextSegment[];
 

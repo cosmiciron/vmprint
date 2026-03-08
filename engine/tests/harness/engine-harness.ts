@@ -279,10 +279,11 @@ export class MockContext implements Context {
     public textTrace: TextTraceCall[] = [];
     public imageTrace: ImageTraceCall[] = [];
 
-    constructor(private readonly _pageWidth: number = 1000, private readonly _pageHeight: number = 1000) {}
+    constructor(private readonly _pageWidth: number = 1000, private readonly _pageHeight: number = 1000) { }
 
     addPage(): void { this.pagesAdded += 1; }
     end(): void { }
+    pipe(_stream: import('@vmprint/contracts').VmprintOutputStream): void { }
     async registerFont(_id: string, _buffer: Uint8Array): Promise<void> { }
     font(_family: string, _size?: number): this { return this; }
     fontSize(_size: number): this { return this; }
@@ -317,6 +318,24 @@ export class MockContext implements Context {
             width: Number(_options?.width || 0),
             height: Number(_options?.height || 0)
         });
+        return this;
+    }
+    showShapedGlyphs(
+        _fontId: string, _fontSize: number, _color: string,
+        x: number, y: number, _ascent: number,
+        glyphs: import('@vmprint/contracts').ContextShapedGlyph[]
+    ): this {
+        // Record into textTrace so assertAdvancedRenderSignals can detect RTL segments.
+        // Reconstruct the Unicode text from codepoints for hasRtlChars() to work.
+        const str = glyphs
+            .flatMap(g => g.codePoints)
+            .filter(cp => cp > 0)
+            .map(cp => String.fromCodePoint(cp))
+            .join('');
+        if (str) {
+            this.textCalls += 1;
+            this.textTrace.push({ str, x, y });
+        }
         return this;
     }
     getSize(): { width: number; height: number } {

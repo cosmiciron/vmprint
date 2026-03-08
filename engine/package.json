@@ -34,6 +34,7 @@
     },
     "dependencies": {
         "@vmprint/contracts": "file:../contracts",
+        "bidi-js": "^1.0.3",
         "dfa": "^1.2.0",
         "fontkit": "^2.0.4",
         "restructure": "^3.0.2",

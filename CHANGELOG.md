@@ -6,6 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.1.3] - 2026-03-07
+
+### Added
+
+#### AST Reference Guide
+- New comprehensive documentation at `documents/AST-REFERENCE.md` covering the complete VMPrint document input format
+- Detailed reference for every supported node type, property, style field, and configuration option
+- Examples for `DocumentInput`, `LayoutConfig`, elements, and page regions
+
+#### Full Unicode Bidirectional Algorithm Support
+- Complete implementation of Unicode Bidirectional Algorithm (UAX #9) for proper RTL/LTR text handling
+- New `bidi-js` dependency added to engine for embedding level calculation
+- New `splitByBidiDirection()` function in `text-script-segmentation.ts` for BIDI run segmentation
+- Intelligent neutral character handling — spaces and punctuation between LTR/RTL runs are now properly assigned based on neighboring strong characters
+- New engine test fixture: `18-multilingual-arabic` with comprehensive Arabic and mixed bidi layout coverage
+
+### Fixed
+
+#### RTL and Mixed Bidi Rendering
+- RTL text now renders with full UAX #9 compliance
+- Mixed LTR/RTL text within paragraphs now displays with correct visual ordering
+- Arabic text shaping correctly applies contextual forms (initial, medial, final, isolated) with proper glyph connection
+- Embedded LTR runs within RTL paragraphs (and vice versa) now render in the correct visual order
+- Fixed item-order reversal for LTR runs within RTL lines to ensure proper visual placement
+
+### Changed
+
+#### Engine Bidirectional Text Processing
+- `reorderItemsForRtl()` now respects pre-computed BIDI direction from layout engine instead of re-sniffing text
+- Text processor measurement cache keys now include direction and script class for context-aware caching
+- Font shaping integration improved — script tags (`arab`, `deva`, `thai`, etc.) and direction (`ltr`/`rtl`) now properly passed to fontkit
+- RTL runs now use explicit OpenType feature list for consistent shaping across measurement and rendering
+- All layout snapshot fixtures regenerated to reflect the improved bidi handling
+
+#### Documentation
+- README updated to remove note about partial RTL/bidi support — full support is now implemented
+- All language showcase images regenerated with improved bidi rendering
+
 ## [0.1.2] - 2026-03-07
 
 ### Added

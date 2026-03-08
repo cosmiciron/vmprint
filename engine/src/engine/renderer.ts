@@ -62,7 +62,7 @@ export class Renderer {
             if (this.config.layout.pageBackground) {
                 context.save();
                 context.fillColor(this.config.layout.pageBackground).opacity(1)
-                       .rect(0, 0, page.width, page.height).fill();
+                    .rect(0, 0, page.width, page.height).fill();
                 context.restore();
             }
             const hasOverlay = !!(this.overlay?.backdrop || this.overlay?.overlay);
@@ -216,7 +216,7 @@ export class Renderer {
             w: box.w,
             h: box.h,
             style: box.style ? { ...box.style } : undefined,
-            lines: box.lines?.map(line => line.map(seg => ({ text: seg.text, width: seg.width }))),
+            lines: box.lines?.map(line => line.map(seg => ({ text: seg.text, width: seg.width, direction: seg.direction }))),
             meta: box.meta ? { ...box.meta } : undefined,
             properties: this.buildOverlayBoxProperties(box)
         }));

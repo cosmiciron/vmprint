@@ -135,23 +135,31 @@ export const drawRichLineSegments = (
                 const fontAscent = options.getFontAscent(fam, wt, st);
                 options.drawInlineBoxSegment(seg, drawX, finalY, Number(size) || options.fontSize, fontAscent);
             }
-        } else if (!seg.linkTarget && seg.glyphs && seg.glyphs.length > 0) {
-            seg.glyphs.forEach((glyph) => {
-                const glyphX = drawX + glyph.x;
-                const glyphY = finalY + glyph.y;
-                if (typeof glyph.char === 'string' && glyph.char.length > 0) {
-                    context.text(glyph.char, glyphX, glyphY, {
-                        lineBreak: false,
-                        characterSpacing: 0,
-                        ascent: segAscender,
-                        ...(seg.linkTarget ? { link: seg.linkTarget } : {})
-                    });
-                }
-            });
+        } else if (!seg.linkTarget && seg.shapedGlyphs && seg.shapedGlyphs.length > 0) {
+            // PRIMARY PATH for RTL/Arabic: emit pre-shaped glyph IDs directly to the PDF stream.
+            // This bypasses PDFKit's EmbeddedFont.encode() which would call font.layout() on each
+            // character or the full string without the shaping context we computed at layout time.
+            // The shaped glyph IDs (e.g. uni0627.fina = 9) must be emitted as-is to the PDF.
+            context.showShapedGlyphs(
+                options.getFontId(fam, wt, st),
+                Number(size) || options.fontSize,
+                color,
+                drawX,
+                finalY,
+                segAscender,
+                seg.shapedGlyphs as import('@vmprint/contracts').ContextShapedGlyph[]
+            );
         } else {
             const dX = drawX || 0;
             const dW = options.lineWidthLimit || 0;
             const dH = options.effectiveLineHeight || 0;
+            // For RTL/Arabic segments: pass explicit OpenType shaping features so PDFKit forwards them
+            // to fontkit.layout(), which applies Arabic contextual substitution (init/medi/fina/liga/curs).
+            // The features array mirrors what measureText used to compute the segment width, ensuring
+            // PDFKit's render-time shaping produces the same glyphs as the layout-time measurement.
+            const otFeatures = seg.direction === 'rtl'
+                ? ['ccmp', 'isol', 'init', 'medi', 'fina', 'rlig', 'liga', 'calt', 'curs', 'kern']
+                : undefined;
             if (!isNaN(dX) && !isNaN(finalY)) {
                 context.text(seg.text, dX, finalY, {
                     lineBreak: false,
@@ -159,8 +167,9 @@ export const drawRichLineSegments = (
                     height: dH,
                     characterSpacing: options.letterSpacing,
                     ascent: segAscender,
+                    features: otFeatures,
                     ...(seg.linkTarget ? { link: seg.linkTarget } : {})
-                });
+                } as any);
             }
         }
 

@@ -12,8 +12,8 @@ manuscript:
   footnotes:
     mode: endnotes
     heading: Notes from the Heap
-  typography:
-    smartQuotes: true
+typography:
+  smartQuotes: true
 ---
 
 # The Novelization of a Glitch

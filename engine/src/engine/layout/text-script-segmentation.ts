@@ -1,5 +1,7 @@
 export type ScriptFontSegment = { text: string; fontName?: string; fontObject?: any };
 
+import bidiFactory from 'bidi-js';
+const bidi = bidiFactory();
 export function isCJKChar(code: number): boolean {
     return (code >= 0x4E00 && code <= 0x9FFF) ||
         (code >= 0x3400 && code <= 0x4DBF) ||
@@ -78,6 +80,99 @@ export function hasRtlScript(text: string): boolean {
         if (isRtl) return true;
     }
     return false;
+}
+
+export function splitByBidiDirection(text: string, baseDirection: string): { text: string; direction: 'ltr' | 'rtl' }[] {
+    if (!text) return [];
+
+    const bidiBase = baseDirection === 'rtl' ? 'rtl' : (baseDirection === 'ltr' ? 'ltr' : 'auto');
+    const embedding = bidi.getEmbeddingLevels(text, bidiBase as any);
+
+    const runs: { text: string; direction: 'ltr' | 'rtl' }[] = [];
+    let currentLevel = embedding.levels[0];
+    let currentStart = 0;
+
+    for (let i = 1; i < text.length; i++) {
+        if (embedding.levels[i] !== currentLevel) {
+            runs.push({
+                text: text.substring(currentStart, i),
+                direction: currentLevel % 2 === 1 ? 'rtl' : 'ltr'
+            });
+            currentStart = i;
+            currentLevel = embedding.levels[i];
+        }
+    }
+
+    if (currentStart < text.length) {
+        runs.push({
+            text: text.substring(currentStart, text.length),
+            direction: currentLevel % 2 === 1 ? 'rtl' : 'ltr'
+        });
+    }
+
+    // Post-process neutral runs (spaces/punctuation). Embedding levels can leave
+    // neutrals at the paragraph level in mixed text, which fragments LTR phrases
+    // in RTL paragraphs (e.g. one run per word + neutral spaces), then run-level
+    // reordering reverses the phrase word order. Reassign neutral runs using
+    // neighboring strong runs, then merge adjacent same-direction runs.
+    const detectStrongDirection = (value: string): 'ltr' | 'rtl' | 'neutral' => {
+        for (const ch of value) {
+            const cp = ch.codePointAt(0) || 0;
+            const isRtl =
+                (cp >= 0x0590 && cp <= 0x08FF) ||
+                (cp >= 0xFB1D && cp <= 0xFDFF) ||
+                (cp >= 0xFE70 && cp <= 0xFEFF);
+            if (isRtl) return 'rtl';
+            if (/\p{L}|\p{N}/u.test(ch)) return 'ltr';
+        }
+        return 'neutral';
+    };
+
+    const resolved = runs.map((run) => ({ ...run }));
+    for (let i = 0; i < resolved.length; i++) {
+        const strong = detectStrongDirection(resolved[i].text);
+        if (strong !== 'neutral') {
+            resolved[i].direction = strong;
+            continue;
+        }
+
+        const prevStrong = (() => {
+            for (let j = i - 1; j >= 0; j--) {
+                const d = detectStrongDirection(resolved[j].text);
+                if (d !== 'neutral') return d;
+            }
+            return null;
+        })();
+        const nextStrong = (() => {
+            for (let j = i + 1; j < resolved.length; j++) {
+                const d = detectStrongDirection(resolved[j].text);
+                if (d !== 'neutral') return d;
+            }
+            return null;
+        })();
+
+        if (prevStrong && nextStrong && prevStrong === nextStrong) {
+            resolved[i].direction = prevStrong;
+        } else if (prevStrong) {
+            resolved[i].direction = prevStrong;
+        } else if (nextStrong) {
+            resolved[i].direction = nextStrong;
+        } else {
+            resolved[i].direction = bidiBase === 'rtl' ? 'rtl' : 'ltr';
+        }
+    }
+
+    const merged: { text: string; direction: 'ltr' | 'rtl' }[] = [];
+    for (const run of resolved) {
+        const last = merged[merged.length - 1];
+        if (last && last.direction === run.direction) {
+            last.text += run.text;
+        } else {
+            merged.push({ ...run });
+        }
+    }
+
+    return merged;
 }
 
 export function splitByScriptType(

@@ -15,7 +15,6 @@
     "fontFamily": "Arimo",
     "fontSize": 11,
     "lineHeight": 1.32,
-    "showPageNumbers": false,
     "lang": "en",
     "direction": "auto",
     "hyphenation": "auto",

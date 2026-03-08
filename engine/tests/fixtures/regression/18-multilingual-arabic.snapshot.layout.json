@@ -1,0 +1,864 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 97.1,
+        "lines": [
+          [
+            {
+              "text": "Arabic & Mixed BIDI Layout ",
+              "width": 426.734375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Tests",
+              "width": 81.21875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 193.1,
+        "w": 468,
+        "h": 91.03125,
+        "lines": [
+          [
+            {
+              "text": "This fixture specifically tests the visual accuracy, ",
+              "width": 434.599609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fontkit shaping integration, and Unicode Bidi ",
+              "width": 395.810547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Algorithm implementation for complex RTL scripts.",
+              "width": 446.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 320.13125,
+        "w": 468,
+        "h": 36.4125,
+        "lines": [
+          [
+            {
+              "text": "1. Pure Arabic Shaping (RTL Mode)",
+              "width": 401.367188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 372.54375,
+        "w": 468,
+        "h": 188.064,
+        "lines": [
+          [
+            {
+              "text": "مرحبا",
+              "width": 71.9568,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "بك",
+              "width": 40.7322,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "في",
+              "width": 40.4586,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "عالم",
+              "width": 55.2672,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "الطباعة",
+              "width": 96.8202,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            }
+          ],
+          [
+            {
+              "text": "المبرمجة",
+              "width": 117.0666,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": ".",
+              "width": 9.648,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 584.60775,
+        "w": 468,
+        "h": 91.03125,
+        "lines": [
+          [
+            {
+              "text": "Notice how the letters connect smoothly. This ",
+              "width": 407.958984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "confirms fontkit is receiving the 'arab' script tag and '",
+              "width": 461.660156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "rtl' direction correctly.",
+              "width": 188.310547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 92,
+        "w": 468,
+        "h": 72.825,
+        "lines": [
+          [
+            {
+              "text": "2. Mixed Script - Arabic inside English (",
+              "width": 449.425781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "LTR Base)",
+              "width": 116.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 180.825,
+        "w": 468,
+        "h": 278.1108,
+        "lines": [
+          [
+            {
+              "text": "The word ",
+              "width": 160.066406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "للنشر",
+              "width": 73.4958,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " means 'for ",
+              "width": 186.943359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishing' and ",
+              "width": 249.064453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "مرحباً",
+              "width": 71.9568,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " means '",
+              "width": 134.929688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "welcome' in Arabic.",
+              "width": 308.988281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 482.9358,
+        "w": 468,
+        "h": 91.03125,
+        "lines": [
+          [
+            {
+              "text": "The Arabic words should be shaped correctly, ",
+              "width": 411.318359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "written right-to-left internally, but the overall ",
+              "width": 387.949219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "sentence flows left-to-right.",
+              "width": 238.994141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 92,
+        "w": 468,
+        "h": 72.825,
+        "lines": [
+          [
+            {
+              "text": "3. Mixed Script - English inside Arabic (",
+              "width": 449.425781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "RTL Base)",
+              "width": 118.6875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 180.825,
+        "w": 468,
+        "h": 185.4072,
+        "lines": [
+          [
+            {
+              "text": "تم",
+              "width": 29.4462,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "تصميم",
+              "width": 94.4262,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "VMPrint",
+              "width": 128.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " ",
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "0.1.0",
+              "width": 80.068359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " ",
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "لإنتاج",
+              "width": 73.6668,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "مستندات",
+              "width": 131.8068,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "PDF",
+              "width": 72,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " ",
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "بدقة",
+              "width": 59.3028,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "متناهية",
+              "width": 101.403,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": ".",
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 390.2322,
+        "w": 468,
+        "h": 91.03125,
+        "lines": [
+          [
+            {
+              "text": "The base paragraph direction is RTL. The English ",
+              "width": 446.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "product name 'VMPrint 0.1.0' should flow LTR within ",
+              "width": 466.367188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the RTL stream.",
+              "width": 143.017578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 72,
+        "y": 92,
+        "w": 468,
+        "h": 36.4125,
+        "lines": [
+          [
+            {
+              "text": "4. Arabic Punctuation and Numbers",
+              "width": 406.734375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 144.4125,
+        "w": 468,
+        "h": 282.096,
+        "lines": [
+          [
+            {
+              "text": "تتطلب",
+              "width": 94.905,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "نسبة",
+              "width": 66.6216,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "100",
+              "width": 61.776,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "%",
+              "width": 29.916,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "من",
+              "width": 42.921,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "المشاريع",
+              "width": 115.7328,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            }
+          ],
+          [
+            {
+              "text": "دقة",
+              "width": 48.222,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "في",
+              "width": 40.4586,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "الأرقام",
+              "width": 81.3618,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "(",
+              "width": 10.8,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "مثل",
+              "width": 55.6776,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "123,456",
+              "width": 133.2,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": ")",
+              "width": 10.8,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            }
+          ],
+          [
+            {
+              "text": "وعلامات",
+              "width": 114.8436,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "الترقيم",
+              "width": 89.5698,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "؟",
+              "width": 14.8428,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "نعم",
+              "width": 46.2384,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "،",
+              "width": 11.2176,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 9.36,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "بالتأكيد",
+              "width": 95.7258,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "!",
+              "width": 9.684,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 450.5085,
+        "w": 468,
+        "h": 60.6875,
+        "lines": [
+          [
+            {
+              "text": "The numbers '100%' and '123,456' must be ordered ",
+              "width": 463.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "correctly despite being nested in RTL context.",
+              "width": 405.410156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

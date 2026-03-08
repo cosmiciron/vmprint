@@ -54,10 +54,38 @@ export interface Context {
 
     // Text
     text(str: string, x: number, y: number, options?: ContextTextOptions): this;
+    /**
+     * Emit pre-shaped glyphs directly to the PDF stream using their fontkit glyph IDs.
+     * This bypasses PDFKit's text()/encode() path, which would re-run shaping and lose the
+     * contextual glyph substitutions (init/medi/fina/liga) computed at layout time.
+     * Required for correct rendering of Arabic and other RTL/CTL scripts.
+     */
+    showShapedGlyphs(
+        fontId: string,
+        fontSize: number,
+        color: string,
+        x: number,
+        y: number,
+        ascent: number,
+        glyphs: ContextShapedGlyph[]
+    ): this;
     image(source: string | Uint8Array, x: number, y: number, options?: ContextImageOptions): this;
 
     // Access to underlying width/height (needed for page numbering/layout helper)
     getSize(): { width: number; height: number };
+}
+
+export interface ContextShapedGlyph {
+    /** Fontkit-assigned glyph ID for the shaped contextual form (e.g. uni0627.fina = id 9). */
+    id: number;
+    /** Unicode codepoints (for ToUnicode CMap, used by PDF text extraction / copy-paste). */
+    codePoints: number[];
+    /** Advance width in points (scaled). */
+    xAdvance: number;
+    /** Horizontal offset in points (for positioned GPOS kerning etc.). */
+    xOffset: number;
+    /** Vertical offset in points. */
+    yOffset: number;
 }
 
 export interface ContextFontRegistrationOptions {

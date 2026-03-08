@@ -24,7 +24,6 @@ const __dirname  = path.dirname(__filename);
 const WORKSPACE_ROOT  = path.resolve(__dirname, '..', '..', '..', '..');
 const REGRESSION_DIR  = __dirname;
 const OUTPUT_DIR      = path.join(REGRESSION_DIR, 'output');
-const CONTEXT_PATH    = path.join(WORKSPACE_ROOT, 'contexts', 'pdf', 'src', 'index.ts');
 const FONT_MANAGER    = path.join(WORKSPACE_ROOT, 'font-managers', 'local', 'src', 'index.ts');
 
 // ── Ensure output directory exists ───────────────────────────────────────────
@@ -55,7 +54,6 @@ for (const fixture of fixtures) {
         `npm run dev --workspace=cli --`,
         `--input "${inputPath}"`,
         `--output "${outputPath}"`,
-        `--context "${CONTEXT_PATH}"`,
         `--font-manager "${FONT_MANAGER}"`,
     ].join(' ');
 

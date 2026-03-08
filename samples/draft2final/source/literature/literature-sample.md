@@ -1,3 +1,8 @@
+---
+format: literature
+theme: default
+---
+
 # From *The Orchard Beyond Midnight*
 
 ```epigraph

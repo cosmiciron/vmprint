@@ -23,6 +23,7 @@ function isForbiddenLineStart(text: string): boolean {
 
 type ScriptSegment = { text: string; fontName?: string; fontObject?: any };
 type ScriptRun = { text: string; isCJK: boolean };
+type BidiDirectionRun = { text: string; direction: 'ltr' | 'rtl' };
 
 export function buildRichWrapTokens(params: {
     flattenedSegments: TextSegment[];
@@ -31,6 +32,7 @@ export function buildRichWrapTokens(params: {
     advancedJustify: boolean;
     direction: string;
     preserveDirectionalBoundaries: boolean;
+    splitByBidiDirection: (text: string, baseDirection: string) => BidiDirectionRun[];
     segmentTextByFont: (text: string, preferredFamily?: string, preferredLocale?: string) => ScriptSegment[];
     splitByScriptType: (text: string) => ScriptRun[];
     getScriptClass: (text: string) => string;
@@ -67,53 +69,62 @@ export function buildRichWrapTokens(params: {
         const locale = params.getSegmenterLocale((seg.style || params.primaryStyle) as ElementStyle);
         const scriptSegments = params.segmentTextByFont(seg.text, seg.fontFamily, locale);
         for (const scriptSeg of scriptSegments) {
-            const scriptRuns = params.splitByScriptType(scriptSeg.text);
+            const bidiRuns = params.splitByBidiDirection(scriptSeg.text, params.direction || 'ltr');
+            for (const bidiRun of bidiRuns) {
+                const scriptRuns = params.splitByScriptType(bidiRun.text);
 
-            for (const run of scriptRuns) {
-                const segmenter = params.makeWordSegmenter(locale, run.isCJK);
-                const subSegments = segmenter.segment(run.text);
+                for (const run of scriptRuns) {
+                    const segmenter = params.makeWordSegmenter(locale, run.isCJK);
+                    const subSegments = segmenter.segment(run.text);
 
-                for (const { segment } of subSegments) {
-                    const rawSubSeg = {
-                        ...seg,
-                        text: segment,
-                        fontFamily: scriptSeg.fontName || seg.fontFamily
-                    };
+                    for (const { segment } of subSegments) {
+                        const rawSubSeg = {
+                            ...seg,
+                            text: segment,
+                            fontFamily: scriptSeg.fontName || seg.fontFamily
+                        };
 
-                    const richSubSeg = params.transformSegment(rawSubSeg, rawSubSeg.fontFamily);
-                    const textValue = richSubSeg.text || '';
-                    if (textValue.trim().length > 0) {
-                        const scriptClass = params.getScriptClass(textValue);
-                        const optScale = params.getOpticalScale(scriptClass);
-                        if (optScale !== 1.0) {
-                            const currentStyle = richSubSeg.style || {};
-                            const baseSize = Number(currentStyle.fontSize || params.defaultFontSize);
-                            const scaledSize = baseSize * optScale;
-                            if (scaledSize !== baseSize) {
-                                richSubSeg.style = {
-                                    ...currentStyle,
-                                    fontSize: scaledSize
-                                };
+                        const richSubSeg = params.transformSegment(rawSubSeg, rawSubSeg.fontFamily);
+                        const textValue = richSubSeg.text || '';
+                        if (textValue.trim().length > 0) {
+                            const scriptClass = params.getScriptClass(textValue);
+                            richSubSeg.scriptClass = scriptClass;
+                            richSubSeg.direction = bidiRun.direction;
+
+                            const optScale = params.getOpticalScale(scriptClass);
+                            if (optScale !== 1.0) {
+                                const currentStyle = richSubSeg.style || {};
+                                const baseSize = Number(currentStyle.fontSize || params.defaultFontSize);
+                                const scaledSize = baseSize * optScale;
+                                if (scaledSize !== baseSize) {
+                                    richSubSeg.style = {
+                                        ...currentStyle,
+                                        fontSize: scaledSize
+                                    };
+                                }
                             }
+                        } else {
+                            // Inherit BIDI run direction for spaces/empty tokens
+                            richSubSeg.direction = bidiRun.direction;
                         }
-                    }
-                    const preserveBoundaries =
-                        params.advancedJustify ||
-                        params.preserveDirectionalBoundaries ||
-                        (params.direction === 'auto' && params.hasRtlScript(richSubSeg.text || '')) ||
-                        ((richSubSeg.style as any)?.textAlign === 'justify' && params.isAdvancedJustifyEnabled(richSubSeg.style as any));
+                        const preserveBoundaries =
+                            params.advancedJustify ||
+                            params.preserveDirectionalBoundaries ||
+                            (params.direction === 'auto' && params.hasRtlScript(richSubSeg.text || '')) ||
+                            ((richSubSeg.style as any)?.textAlign === 'justify' && params.isAdvancedJustifyEnabled(richSubSeg.style as any));
 
-                    const resolved = params.resolveRichFontInfo(richSubSeg, params.defaultFontSize);
-                    tokens.push({
-                        kind: 'segment',
-                        segment: richSubSeg,
-                        font: resolved.font,
-                        fontSize: resolved.fontSize,
-                        locale,
-                        allowMerge: !preserveBoundaries,
-                        hyphenationStyle: (richSubSeg.style || seg.style || params.primaryStyle) as ElementStyle,
-                        noLineStart: isForbiddenLineStart(richSubSeg.text || '')
-                    });
+                        const resolved = params.resolveRichFontInfo(richSubSeg, params.defaultFontSize);
+                        tokens.push({
+                            kind: 'segment',
+                            segment: richSubSeg,
+                            font: resolved.font,
+                            fontSize: resolved.fontSize,
+                            locale,
+                            allowMerge: !preserveBoundaries,
+                            hyphenationStyle: (richSubSeg.style || seg.style || params.primaryStyle) as ElementStyle,
+                            noLineStart: isForbiddenLineStart(richSubSeg.text || '')
+                        });
+                    }
                 }
             }
         }

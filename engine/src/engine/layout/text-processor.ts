@@ -14,7 +14,8 @@ import {
     isCJKChar as isCjkCodePoint,
     isThaiChar as isThaiCodePoint,
     segmentTextByFont as segmentTextByFontBySupport,
-    splitByScriptType as splitTextByScriptType
+    splitByScriptType as splitTextByScriptType,
+    splitByBidiDirection
 } from './text-script-segmentation';
 import { tryHyphenateSegmentToFit as hyphenateSegmentToFit } from './text-hyphenation';
 import { applyAdvancedJustification as applyJustification } from './text-justification';
@@ -294,14 +295,17 @@ export class TextProcessor extends FontProcessor {
             throw new Error(`[TextProcessor] Missing measurement font for text "${text.slice(0, 24)}". Ensure fonts are loaded before layout.`);
         }
 
-        // Cache Key: Unique string representing the font, size, letterSpacing and text
+        // Cache Key: Unique string representing the font, size, letterSpacing and text with context
         const fontKey = measurementFont.postscriptName || measurementFont.familyName || 'unknown';
-        const cacheKey = `${fontKey}-${measurementFontSize}-${letterSpacing}-${text}`;
+        const ctxDirection = populateSegment?.direction || 'ltr';
+        const ctxScriptClass = populateSegment?.scriptClass || 'none';
+        const cacheKey = `${fontKey}-${measurementFontSize}-${letterSpacing}-${ctxScriptClass}-${ctxDirection}-${text}`;
 
         const cached = this.runtime.measurementCache.get(cacheKey);
         if (cached) {
             if (populateSegment) {
                 populateSegment.glyphs = this.cloneGlyphs(cached.glyphs);
+                if (cached.shapedGlyphs) populateSegment.shapedGlyphs = cached.shapedGlyphs;
                 populateSegment.width = cached.width;
                 populateSegment.ascent = cached.ascent;
                 populateSegment.descent = cached.descent;
@@ -316,9 +320,31 @@ export class TextProcessor extends FontProcessor {
 
         const scale = measurementFontSize / upm;
         try {
-            const run = measurementFont.layout(text);
+            const SCRIPT_MAP: Record<string, string> = {
+                arabic: 'arab',
+                devanagari: 'deva',
+                thai: 'thai',
+                korean: 'hang',
+                cjk: 'hani'
+            };
+            const otScript = SCRIPT_MAP[populateSegment?.scriptClass || ''] || 'latn';
+            const otDirection = populateSegment?.direction === 'rtl' ? 'rtl' : 'ltr';
+            const isRtl = otDirection === 'rtl';
+
+            // Keep explicit OT feature forcing only on RTL runs. For LTR/other scripts,
+            // use fontkit defaults so measurement matches render-path defaults.
+            const run = isRtl
+                ? measurementFont.layout(
+                    text,
+                    ['ccmp', 'isol', 'init', 'medi', 'fina', 'rlig', 'liga', 'calt', 'curs', 'kern'],
+                    otScript,
+                    undefined,
+                    otDirection
+                )
+                : measurementFont.layout(text);
             let width = 0;
             const glyphs: { char: string, x: number, y: number }[] = [];
+            const shapedGlyphs: import('../types').ShapedGlyph[] = [];
 
             for (let i = 0; i < run.glyphs.length; i++) {
                 const glyph = run.glyphs[i];
@@ -326,20 +352,35 @@ export class TextProcessor extends FontProcessor {
 
                 const drawX = width + (pos.xOffset || 0) * scale;
                 const drawY = (pos.yOffset || 0) * scale;
-                const char = String.fromCodePoint(...glyph.codePoints);
+                const char = (glyph.codePoints && glyph.codePoints.length > 0) ? String.fromCodePoint(...glyph.codePoints) : '';
 
                 glyphs.push({ char, x: drawX, y: drawY });
+
                 const xAdvance = pos.xAdvance !== undefined ? pos.xAdvance : glyph.advanceWidth;
                 if (xAdvance === undefined || !Number.isFinite(xAdvance)) {
                     throw new Error(`[TextProcessor] Missing xAdvance for glyph in "${fontKey}".`);
                 }
+
+                // For RTL segments, store raw fontkit glyph IDs so the renderer can emit them
+                // directly via PDFKit's subset without re-running shaping. This preserves the
+                // contextual substitution forms (fina/medi/init/liga) that fontkit computed here.
+                if (isRtl) {
+                    shapedGlyphs.push({
+                        id: glyph.id,
+                        codePoints: glyph.codePoints ? [...glyph.codePoints] : [],
+                        xAdvance: xAdvance * scale,
+                        xOffset: (pos.xOffset || 0) * scale,
+                        yOffset: (pos.yOffset || 0) * scale
+                    });
+                }
+
                 width += (xAdvance * scale) + letterSpacing;
             }
 
             const { ascent, descent } = this.getFontVerticalMetrics(measurementFont);
 
             // Save to cache (LRU eviction: keep at most 50,000 entries)
-            this.runtime.measurementCache.set(cacheKey, { width, glyphs, ascent, descent });
+            this.runtime.measurementCache.set(cacheKey, { width, glyphs, shapedGlyphs: isRtl ? shapedGlyphs : undefined, ascent, descent });
             if (this.runtime.measurementCache.size > 50_000) {
                 const oldestKey = this.runtime.measurementCache.keys().next().value;
                 if (oldestKey !== undefined) this.runtime.measurementCache.delete(oldestKey);
@@ -347,6 +388,7 @@ export class TextProcessor extends FontProcessor {
 
             if (populateSegment) {
                 populateSegment.glyphs = glyphs;
+                if (isRtl) populateSegment.shapedGlyphs = shapedGlyphs;
                 populateSegment.width = width;
                 populateSegment.ascent = ascent;
                 populateSegment.descent = descent;
@@ -654,6 +696,7 @@ export class TextProcessor extends FontProcessor {
             advancedJustify,
             direction,
             preserveDirectionalBoundaries,
+            splitByBidiDirection: (value, base) => splitByBidiDirection(value, base),
             segmentTextByFont: (value, preferredFamily, preferredLocale) =>
                 this.segmentTextByFont(value, preferredFamily, preferredLocale),
             splitByScriptType: (value) => this.splitByScriptType(value),

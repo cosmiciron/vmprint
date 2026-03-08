@@ -191,8 +191,6 @@ Most libraries treat international text as an optional concern — get ASCII lay
 - Mixed-script runs — Latin with embedded CJK, inline code within prose — share the same baseline and are measured correctly across font boundaries.
 - Two justification modes: space-based (standard for Latin) and inter-character (standard for CJK and some print conventions).
 
-RTL/bidi support is partial today. Full UAX #9-grade bidirectional behavior is a v1.x item.
-
 ![VMPrint manifesto](documents/readme-assets/languages-1.png)
 
 ![VMPrint manifesto](documents/readme-assets/languages-2.png)

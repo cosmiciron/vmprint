@@ -6,6 +6,7 @@ export interface EngineRuntime {
     measurementCache: Map<string, {
         width: number;
         glyphs: { char: string; x: number; y: number }[];
+        shapedGlyphs?: import('./types').ShapedGlyph[];
         ascent: number;
         descent: number;
     }>;
