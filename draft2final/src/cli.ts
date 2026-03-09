@@ -1,5 +1,6 @@
 ﻿import fs from 'node:fs';
 import path from 'node:path';
+import { spawn } from 'node:child_process';
 import type { VmprintOutputStream } from '@vmprint/contracts';
 import { createEngineRuntime, LayoutEngine, LayoutUtils, Renderer, resolveDocumentPaths, toLayoutConfig } from '@vmprint/engine';
 import PdfContext from '@vmprint/context-pdf';
@@ -20,12 +21,20 @@ type ResolvedImage = {
 type TransmuterName = 'mkd-mkd' | 'mkd-academic' | 'mkd-literature' | 'mkd-manuscript' | 'mkd-screenplay';
 
 type CliOptions = {
+  initPath?: string;
   inputPath?: string;
   using?: TransmuterName;
   outPath?: string;
   configPath?: string;
   themePath?: string;
+  guide?: boolean;
   version?: boolean;
+};
+
+const GUIDE_URL = 'https://github.com/cosmiciron/vmprint/blob/main/docs/draft2final/README.md';
+const INIT_TEMPLATE_MAP: Partial<Record<TransmuterName, string>> = {
+  'mkd-manuscript': path.join('templates', 'mkd-manuscript', 'starter.md'),
+  'mkd-screenplay': path.join('templates', 'mkd-screenplay', 'starter.md')
 };
 
 class NodeWriteStreamAdapter implements VmprintOutputStream {
@@ -51,13 +60,33 @@ class NodeWriteStreamAdapter implements VmprintOutputStream {
   }
 }
 
-function scaffoldProject(projectName: string): void {
-  const targetDir = path.resolve(process.cwd(), projectName);
-  if (fs.existsSync(targetDir)) {
-    throw new Error(`Directory "${projectName}" already exists.`);
+function loadStarterTemplate(usingName?: TransmuterName): string | undefined {
+  if (!usingName) return undefined;
+  const relativePath = INIT_TEMPLATE_MAP[usingName];
+  if (!relativePath) return undefined;
+  const candidates = [
+    path.resolve(__dirname, '..', relativePath),
+    path.resolve(__dirname, '..', 'dist', relativePath),
+    path.resolve(process.cwd(), relativePath),
+    path.resolve(process.cwd(), 'dist', relativePath),
+    path.resolve(process.cwd(), 'draft2final', relativePath),
+    path.resolve(process.cwd(), 'draft2final', 'dist', relativePath)
+  ];
+  for (const templatePath of candidates) {
+    if (fs.existsSync(templatePath)) {
+      return fs.readFileSync(templatePath, 'utf8');
+    }
+  }
+  return undefined;
+}
+
+function scaffoldProject(targetPathArg: string, usingName?: TransmuterName): void {
+  const targetPath = path.resolve(process.cwd(), targetPathArg);
+  if (fs.existsSync(targetPath)) {
+    throw new Error(`Path "${targetPathArg}" already exists.`);
   }
 
-  const markdownContent = [
+  const fallbackMarkdownContent = [
     '---',
     'title: Hello World',
     'author: Author Name',
@@ -81,36 +110,19 @@ function scaffoldProject(projectName: string): void {
     'Enjoy your typesetting!',
     ''
   ].join('\n');
+  const markdownContent = loadStarterTemplate(usingName) ?? fallbackMarkdownContent;
 
-  const configContent = [
-    '# Draft2Final Configuration Overrides',
-    'layout:',
-    '  pageSize: LETTER',
-    '  margins:',
-    '    top: 72',
-    '    right: 72',
-    '    bottom: 72',
-    '    left: 72',
-    ''
-  ].join('\n');
+  fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+  fs.writeFileSync(targetPath, markdownContent, 'utf8');
 
-  const themeContent = [
-    '# Draft2Final Theme Overrides',
-    'styles:',
-    '  heading-1:',
-    '    color: "#1d4ed8"',
-    '  paragraph:',
-    '    fontSize: 12',
-    ''
-  ].join('\n');
-
-  fs.mkdirSync(targetDir, { recursive: true });
-  fs.writeFileSync(path.join(targetDir, 'document.md'), markdownContent, 'utf8');
-  fs.writeFileSync(path.join(targetDir, 'config.yaml'), configContent, 'utf8');
-  fs.writeFileSync(path.join(targetDir, 'theme.yaml'), themeContent, 'utf8');
-
-  process.stdout.write(`[draft2final] Scaffolded new project in ./${projectName}/\n`);
-  process.stdout.write(`  Run: cd ${projectName} && draft2final document.md --config config.yaml --theme theme.yaml\n`);
+  process.stdout.write(`[draft2final] Created starter file: ${targetPath}\n`);
+  if (usingName === 'mkd-manuscript' || usingName === 'mkd-screenplay') {
+    process.stdout.write(`  To build a PDF, run:\n`);
+    process.stdout.write(`    draft2final ${targetPathArg} --using ${usingName} --out ${path.parse(targetPathArg).name}.pdf\n`);
+    return;
+  }
+  process.stdout.write(`  To build a PDF, run:\n`);
+  process.stdout.write(`    draft2final ${targetPathArg} --using mkd-mkd --out ${path.parse(targetPathArg).name}.pdf\n`);
 }
 
 function printHelp(): void {
@@ -120,11 +132,14 @@ function printHelp(): void {
       '',
       'Usage:',
       '  draft2final <input.md> [--using <mkd-mkd|mkd-academic|mkd-literature|mkd-manuscript|mkd-screenplay>] [options]',
+      '  draft2final --init <file.md> [--using <mkd-manuscript|mkd-screenplay|mkd-mkd>]',
       '',
       'Options:',
+      '  --init <file.md>      Write a starter Markdown file at the given path',
       '  -o, --out <path>      Write output file (.pdf for PDF, .json for AST; default: <input>.pdf)',
       '  --config <path>       YAML config override file',
       '  --theme <path|name>   YAML theme file path or theme name under themes/<using>/',
+      '  --guide               Open the draft2final user guide on GitHub',
       '  -v, --version         Show version',
       '  -h, --help            Show this help',
       '',
@@ -133,12 +148,52 @@ function printHelp(): void {
       '  Loads user-editable config file: config/<using>.config.yaml (if present)',
       '',
       'Examples:',
+      '  draft2final --init my-manuscript.md --using mkd-manuscript',
+      '  draft2final --init my-screenplay.md --using mkd-screenplay',
       '  draft2final sample.md --using mkd-academic --out sample.pdf',
       '  draft2final sample.md --using mkd-academic --out sample.json',
       '  draft2final screenplay.md --using mkd-screenplay --theme ./themes/studio.yaml',
       '  draft2final manuscript.md --using mkd-manuscript --config ./my-manuscript.config.yaml'
     ].join('\n') + '\n'
   );
+}
+
+function printWelcome(): void {
+  process.stdout.write(
+    [
+      `draft2final v${pkg.version}`,
+      '',
+      'Write in Markdown. Render polished PDFs.',
+      '',
+      'Useful commands:',
+      '  draft2final --init my-manuscript.md --using mkd-manuscript',
+      '  draft2final my-draft.md --using mkd-manuscript',
+      '  draft2final notes.md --using mkd-mkd --theme opensource',
+      '  draft2final scene.md --using mkd-screenplay --out scene.pdf',
+      '',
+      'Guide:',
+      `  draft2final --guide`,
+      `  ${GUIDE_URL}`,
+      '',
+      'More:',
+      '  draft2final --help'
+    ].join('\n') + '\n'
+  );
+}
+
+function openExternalUrl(url: string): void {
+  if (process.platform === 'win32') {
+    const child = spawn('cmd', ['/c', 'start', '""', url], { stdio: 'ignore', windowsHide: true, detached: true });
+    child.unref();
+    return;
+  }
+  if (process.platform === 'darwin') {
+    const child = spawn('open', [url], { stdio: 'ignore', detached: true });
+    child.unref();
+    return;
+  }
+  const child = spawn('xdg-open', [url], { stdio: 'ignore', detached: true });
+  child.unref();
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -152,13 +207,16 @@ function parseArgs(argv: string[]): CliOptions {
       process.exit(0);
     }
     if (arg === '--init') {
-      const name = argv[++i] || 'my-project';
-      scaffoldProject(name);
-      process.exit(0);
+      options.initPath = argv[++i] || 'my-project';
+      continue;
     }
     if (arg === '-v' || arg === '--version') {
       process.stdout.write(`v${pkg.version}\n`);
       process.exit(0);
+    }
+    if (arg === '--guide') {
+      options.guide = true;
+      continue;
     }
     if (arg === '--using') {
       options.using = argv[++i] as TransmuterName;
@@ -189,6 +247,13 @@ function parseArgs(argv: string[]): CliOptions {
   return options;
 }
 
+function assertSupportedUsingName(usingName: string | undefined): asserts usingName is TransmuterName | undefined {
+  if (!usingName) return;
+  if (!['mkd-mkd', 'mkd-academic', 'mkd-literature', 'mkd-manuscript', 'mkd-screenplay'].includes(usingName)) {
+    throw new Error(`Unsupported transmuter "${usingName}".`);
+  }
+}
+
 function assertValidOptions(options: CliOptions): asserts options is CliOptions & { inputPath: string; using: TransmuterName } {
   if (!options.inputPath) {
     throw new Error('Missing input file. See --help.');
@@ -196,9 +261,7 @@ function assertValidOptions(options: CliOptions): asserts options is CliOptions 
   if (!options.using) {
     throw new Error('Missing transmuter. Pass --using or set frontmatter format/using/transmuter.');
   }
-  if (!['mkd-mkd', 'mkd-academic', 'mkd-literature', 'mkd-manuscript', 'mkd-screenplay'].includes(options.using)) {
-    throw new Error(`Unsupported transmuter "${options.using}".`);
-  }
+  assertSupportedUsingName(options.using);
 }
 
 function mapFrontmatterValueToUsing(value: string | undefined): TransmuterName | undefined {
@@ -442,7 +505,22 @@ async function renderPdf(ir: unknown, inputPath: string, outputPath: string): Pr
 
 async function main(): Promise<void> {
   const start = Date.now();
-  const options = parseArgs(process.argv.slice(2));
+  const argv = process.argv.slice(2);
+  if (argv.length === 0) {
+    printWelcome();
+    return;
+  }
+  const options = parseArgs(argv);
+  assertSupportedUsingName(options.using);
+  if (options.guide) {
+    openExternalUrl(GUIDE_URL);
+    process.stdout.write(`[draft2final] Opened guide: ${GUIDE_URL}\n`);
+    return;
+  }
+  if (options.initPath) {
+    scaffoldProject(options.initPath, options.using);
+    return;
+  }
   if (!options.inputPath) {
     throw new Error('Missing input file. See --help.');
   }

@@ -56,3 +56,22 @@ for (const fontDir of includeFonts) {
 }
 
 console.log('[bundle-assets] Asset bundling complete.');
+
+// 3. Copy starter templates from transmuters
+const starterTemplates = [
+  {
+    src: path.join(repoRoot, 'transmuters', 'mkd-manuscript', 'templates', 'starter.md'),
+    dest: path.join(distDir, 'templates', 'mkd-manuscript', 'starter.md')
+  },
+  {
+    src: path.join(repoRoot, 'transmuters', 'mkd-screenplay', 'templates', 'starter.md'),
+    dest: path.join(distDir, 'templates', 'mkd-screenplay', 'starter.md')
+  }
+];
+
+for (const template of starterTemplates) {
+  if (!fs.existsSync(template.src)) continue;
+  fs.mkdirSync(path.dirname(template.dest), { recursive: true });
+  fs.copyFileSync(template.src, template.dest);
+  console.log(`[bundle-assets] Bundled starter template: ${path.basename(path.dirname(template.dest))}`);
+}

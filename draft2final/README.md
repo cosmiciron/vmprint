@@ -2,21 +2,23 @@
 
 Thin transmuter-first CLI wrapper that compiles source files to VMPrint `DocumentInput` via a selected transmuter, then renders PDF through VMPrint engine + PDF context.
 
-## Tutorial
-
-Want a follow-along guide that walks through tech manual, screenplay, manuscript, and remix examples?
-
-- See [TUTORIAL.md](./TUTORIAL.md)
-
 ## Usage
 
 ```bash
+draft2final
+draft2final --guide
+draft2final --init my-manuscript.md --using mkd-manuscript
+draft2final --init my-screenplay.md --using mkd-screenplay
 draft2final input.md --using mkd-mkd
 draft2final screenplay.md --using mkd-screenplay --out screenplay.pdf
 draft2final screenplay.md --using mkd-screenplay --out screenplay.ast.json
 draft2final manuscript.md --using mkd-manuscript --config my.config.yaml --theme my.theme.yaml
 draft2final manuscript.md --using mkd-manuscript --theme classic
 ```
+
+With no arguments, `draft2final` shows a short welcome screen with example commands and a link to the guide.
+
+`--init <file.md>` writes a starter Markdown file at the exact path you pass. For `mkd-manuscript` and `mkd-screenplay`, it uses built-in starter templates drawn from those transmuters.
 
 `--out` determines output mode by extension:
 
@@ -35,6 +37,8 @@ draft2final manuscript.md --using mkd-manuscript --theme classic
 - a theme name resolved from `themes/<using>/<name>.yaml` (or `.yml`)
 
 Frontmatter `theme:` uses the same resolution behavior.
+
+`--guide` opens the user guide on GitHub.
 
 ## Default Config Files
 
