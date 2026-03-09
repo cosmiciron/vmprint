@@ -10,6 +10,8 @@ import { transmute as transmuteLiterature } from '@vmprint/transmuter-mkd-litera
 import { transmute as transmuteManuscript } from '@vmprint/transmuter-mkd-manuscript';
 import { transmute as transmuteScreenplay } from '@vmprint/transmuter-mkd-screenplay';
 
+import pkg from '../package.json';
+
 type ResolvedImage = {
   data: string;
   mimeType: 'image/png' | 'image/jpeg';
@@ -23,6 +25,7 @@ type CliOptions = {
   outPath?: string;
   configPath?: string;
   themePath?: string;
+  version?: boolean;
 };
 
 class NodeWriteStreamAdapter implements VmprintOutputStream {
@@ -48,9 +51,73 @@ class NodeWriteStreamAdapter implements VmprintOutputStream {
   }
 }
 
+function scaffoldProject(projectName: string): void {
+  const targetDir = path.resolve(process.cwd(), projectName);
+  if (fs.existsSync(targetDir)) {
+    throw new Error(`Directory "${projectName}" already exists.`);
+  }
+
+  const markdownContent = [
+    '---',
+    'title: Hello World',
+    'author: Author Name',
+    'format: markdown',
+    '---',
+    '',
+    '# Welcome to Draft2Final',
+    '',
+    'This is a sample document scaffolded by the CLI.',
+    '',
+    '## Typography',
+    '',
+    'By default, this uses **Caladea** for serif text and **Cousine** for `monospaced code`.',
+    '',
+    '### Lists',
+    '',
+    '- One',
+    '- Two',
+    '- Three',
+    '',
+    'Enjoy your typesetting!',
+    ''
+  ].join('\n');
+
+  const configContent = [
+    '# Draft2Final Configuration Overrides',
+    'layout:',
+    '  pageSize: LETTER',
+    '  margins:',
+    '    top: 72',
+    '    right: 72',
+    '    bottom: 72',
+    '    left: 72',
+    ''
+  ].join('\n');
+
+  const themeContent = [
+    '# Draft2Final Theme Overrides',
+    'styles:',
+    '  heading-1:',
+    '    color: "#1d4ed8"',
+    '  paragraph:',
+    '    fontSize: 12',
+    ''
+  ].join('\n');
+
+  fs.mkdirSync(targetDir, { recursive: true });
+  fs.writeFileSync(path.join(targetDir, 'document.md'), markdownContent, 'utf8');
+  fs.writeFileSync(path.join(targetDir, 'config.yaml'), configContent, 'utf8');
+  fs.writeFileSync(path.join(targetDir, 'theme.yaml'), themeContent, 'utf8');
+
+  process.stdout.write(`[draft2final] Scaffolded new project in ./${projectName}/\n`);
+  process.stdout.write(`  Run: cd ${projectName} && draft2final document.md --config config.yaml --theme theme.yaml\n`);
+}
+
 function printHelp(): void {
   process.stdout.write(
     [
+      `draft2final v${pkg.version}`,
+      '',
       'Usage:',
       '  draft2final <input.md> [--using <mkd-mkd|mkd-academic|mkd-literature|mkd-manuscript|mkd-screenplay>] [options]',
       '',
@@ -58,6 +125,7 @@ function printHelp(): void {
       '  -o, --out <path>      Write output file (.pdf for PDF, .json for AST; default: <input>.pdf)',
       '  --config <path>       YAML config override file',
       '  --theme <path|name>   YAML theme file path or theme name under themes/<using>/',
+      '  -v, --version         Show version',
       '  -h, --help            Show this help',
       '',
       'Defaults:',
@@ -81,6 +149,15 @@ function parseArgs(argv: string[]): CliOptions {
 
     if (arg === '-h' || arg === '--help') {
       printHelp();
+      process.exit(0);
+    }
+    if (arg === '--init') {
+      const name = argv[++i] || 'my-project';
+      scaffoldProject(name);
+      process.exit(0);
+    }
+    if (arg === '-v' || arg === '--version') {
+      process.stdout.write(`v${pkg.version}\n`);
       process.exit(0);
     }
     if (arg === '--using') {
@@ -287,6 +364,8 @@ async function renderPdf(ir: unknown, inputPath: string, outputPath: string): Pr
   const documentIR = resolveDocumentPaths(ir as never, inputPath);
   const config = toLayoutConfig(documentIR, false);
   const engine = new LayoutEngine(config, runtime);
+  
+  process.stdout.write(`[draft2final] Loading fonts and paginating...\n`);
   await engine.waitForFonts();
   const pages = engine.paginate(documentIR.elements);
 
@@ -303,17 +382,23 @@ async function renderPdf(ir: unknown, inputPath: string, outputPath: string): Pr
   context.pipe(outputStream);
 
   const renderer = new Renderer(config, false, runtime);
+  process.stdout.write(`[draft2final] Rendering ${pages.length} pages...\n`);
   await renderer.render(pages, context);
   await outputStream.waitForFinish();
 }
 
 async function main(): Promise<void> {
+  const start = Date.now();
   const options = parseArgs(process.argv.slice(2));
   if (!options.inputPath) {
     throw new Error('Missing input file. See --help.');
   }
 
   const inputPath = path.resolve(options.inputPath);
+  if (!fs.existsSync(inputPath)) {
+    throw new Error(`Input file not found: ${inputPath}`);
+  }
+
   const markdown = fs.readFileSync(inputPath, 'utf8');
   options.using = resolveUsing(options, markdown);
   if (!options.using) {
@@ -328,6 +413,7 @@ async function main(): Promise<void> {
     : defaultConfig;
   const theme = resolveThemeContent(options.using, inputPath, markdown, options.themePath);
 
+  process.stdout.write(`[draft2final] Transmuting via ${options.using}...\n`);
   const ir = runTransmuter(options.using, markdown, resolveImage, config, theme);
   const outputPath = resolveOutputPdfPath(inputPath, options.outPath);
   const mode = getOutputMode(outputPath);
@@ -340,7 +426,8 @@ async function main(): Promise<void> {
   }
 
   await renderPdf(ir, inputPath, outputPath);
-  process.stdout.write(`[draft2final] Wrote ${outputPath}\n`);
+  const duration = ((Date.now() - start) / 1000).toFixed(2);
+  process.stdout.write(`[draft2final] Success: ${outputPath} (${duration}s)\n`);
 }
 
 void main().catch((error: unknown) => {

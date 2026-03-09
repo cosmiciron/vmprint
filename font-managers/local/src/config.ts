@@ -68,8 +68,7 @@ export const LOCAL_FONT_REGISTRY: FontConfig[] = [
     { name: 'Noto Sans Bold Italic', family: 'Noto Sans', weight: 700, style: 'italic', src: resolveLocalFontUrl('NotoSans/NotoSans-BoldItalic.ttf'), unicodeRange: 'U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F,U+2190-21FF,U+2C60-2C7F,U+A720-A7FF', enabled: true, fallback: false },
 
     // Greek & Cyrillic (Complementing Noto Sans baseline)
-    { name: 'Noto Sans Greek Regular', family: 'Noto Sans Greek', weight: 400, style: 'normal', src: resolveLocalFontUrl('NotoSansGreek/NotoSansGreek-Regular.ttf'), unicodeRange: 'U+0370-03FF', enabled: true, fallback: true },
-    { name: 'Noto Sans Cyrillic Regular', family: 'Noto Sans Cyrillic', weight: 400, style: 'normal', src: resolveLocalFontUrl('NotoSansCyrillic/NotoSansCyrillic-Regular.ttf'), unicodeRange: 'U+0400-04FF', enabled: true, fallback: true },
+    // Greek and Cyrillic are natively supported by the standard Noto Sans font bundled with the engine.
 
     // Carlito (Calibri-compatible)
     { name: 'Carlito Regular', family: 'Carlito', weight: 400, style: 'normal', src: resolveLocalFontUrl('Carlito/Carlito-Regular.ttf'), unicodeRange: 'U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F,U+2190-21FF,U+2C60-2C7F,U+A720-A7FF', enabled: true, fallback: false },
