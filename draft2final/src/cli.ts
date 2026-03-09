@@ -21,13 +21,12 @@ type ResolvedImage = {
 type TransmuterName = 'mkd-mkd' | 'mkd-academic' | 'mkd-literature' | 'mkd-manuscript' | 'mkd-screenplay';
 
 type CliOptions = {
-  initPath?: string;
+  newPath?: string;
   inputPath?: string;
-  using?: TransmuterName;
-  outPath?: string;
-  configPath?: string;
-  themePath?: string;
-  guide?: boolean;
+  as?: TransmuterName;
+  outputPath?: string;
+  stylePath?: string;
+  onlineGuide?: boolean;
   version?: boolean;
 };
 
@@ -90,7 +89,6 @@ function scaffoldProject(targetPathArg: string, usingName?: TransmuterName): voi
     '---',
     'title: Hello World',
     'author: Author Name',
-    'format: markdown',
     '---',
     '',
     '# Welcome to Draft2Final',
@@ -117,12 +115,25 @@ function scaffoldProject(targetPathArg: string, usingName?: TransmuterName): voi
 
   process.stdout.write(`[draft2final] Created starter file: ${targetPath}\n`);
   if (usingName === 'mkd-manuscript' || usingName === 'mkd-screenplay') {
+    const shortName = usingName === 'mkd-manuscript' ? 'manuscript' : 'screenplay';
     process.stdout.write(`  To build a PDF, run:\n`);
-    process.stdout.write(`    draft2final ${targetPathArg} --using ${usingName} --out ${path.parse(targetPathArg).name}.pdf\n`);
+    process.stdout.write(`    draft2final ${targetPathArg} --as ${shortName}\n`);
     return;
   }
   process.stdout.write(`  To build a PDF, run:\n`);
-  process.stdout.write(`    draft2final ${targetPathArg} --using mkd-mkd --out ${path.parse(targetPathArg).name}.pdf\n`);
+  process.stdout.write(`    draft2final ${targetPathArg}\n`);
+}
+
+function normalizeFormatName(value: string | undefined): TransmuterName | undefined {
+  if (!value) return undefined;
+  const normalized = value.trim().toLowerCase().replace(/^['"]|['"]$/g, '');
+  const mapped: Record<string, TransmuterName> = {
+    academic: 'mkd-academic',
+    literature: 'mkd-literature',
+    manuscript: 'mkd-manuscript',
+    screenplay: 'mkd-screenplay'
+  };
+  return mapped[normalized];
 }
 
 function printHelp(): void {
@@ -131,53 +142,64 @@ function printHelp(): void {
       `draft2final v${pkg.version}`,
       '',
       'Usage:',
-      '  draft2final <input.md> [--using <mkd-mkd|mkd-academic|mkd-literature|mkd-manuscript|mkd-screenplay>] [options]',
-      '  draft2final --init <file.md> [--using <mkd-manuscript|mkd-screenplay|mkd-mkd>]',
+      '  draft2final story.md',
+      '  draft2final story.md --as manuscript',
+      '  draft2final --new story.md --as manuscript',
       '',
       'Options:',
-      '  --init <file.md>      Write a starter Markdown file at the given path',
-      '  -o, --out <path>      Write output file (.pdf for PDF, .json for AST; default: <input>.pdf)',
-      '  --config <path>       YAML config override file',
-      '  --theme <path|name>   YAML theme file path or theme name under themes/<using>/',
-      '  --guide               Open the draft2final user guide',
-      '  -v, --version         Show version',
-      '  -h, --help            Show this help',
+      '  --new <file.md>      Create a starter Markdown file',
+      '  --as <format>        The type of document (manuscript, screenplay, academic, literature)',
+      '  --style <name>       Choose a visual style/theme (e.g. "classic", "standard")',
+      '  --output <path>      Write output file (.pdf or .json)',
+      '  --online-guide       Open the user guide in your browser',
+      '  --version            Show version',
+      '  --help               Show this help',
       '',
-      'Defaults:',
-      '  If --using is omitted, frontmatter is checked: using, transmuter, then format',
-      '  Loads user-editable config file: config/<using>.config.yaml (if present)',
+      'Forms (--as):',
+      '  manuscript    The gold standard for prose submissions',
+      '  screenplay    Industry-standard script formatting with dual-dialogue',
+      '  academic      Precise layouts for research drafts and formal papers',
+      '  literature    Clean, elegant designs for poetry and prose',
       '',
       'Examples:',
-      '  draft2final --init my-manuscript.md --using mkd-manuscript',
-      '  draft2final --init my-screenplay.md --using mkd-screenplay',
-      '  draft2final sample.md --using mkd-academic --out sample.pdf',
-      '  draft2final sample.md --using mkd-academic --out sample.json',
-      '  draft2final screenplay.md --using mkd-screenplay --theme ./themes/studio.yaml',
-      '  draft2final manuscript.md --using mkd-manuscript --config ./my-manuscript.config.yaml'
+      '  draft2final story.md',
+      '  draft2final story.md --as manuscript',
+      '  draft2final script.md --as screenplay --style classic',
+      '  draft2final paper.md --as academic --output draft.pdf'
     ].join('\n') + '\n'
   );
 }
 
 function printWelcome(): void {
+  const B = '\x1b[1m';
+  const R = '\x1b[0m';
+  const G = '\x1b[32m';
+  const C = '\x1b[36m';
+  const M = '\x1b[35m';
+  const D = '\x1b[90m'; // Dim
+
   process.stdout.write(
     [
-      `draft2final v${pkg.version}`,
       '',
-      'Write in Markdown. Render polished PDFs.',
+      `  ${B}${M}✦${R} ${B}${C}DRAFT 2 FINAL${R} ${D}v${pkg.version}${R}`,
+      `  ${D}Industrial-strength typesetting for the discerning writer.${R}`,
       '',
-      'Useful commands:',
-      '  draft2final --init my-manuscript.md --using mkd-manuscript',
-      '  draft2final my-draft.md --using mkd-manuscript',
-      '  draft2final notes.md --using mkd-mkd --theme opensource',
-      '  draft2final scene.md --using mkd-screenplay --out scene.pdf',
+      `  ${B}Turn your writings in plain text into beautifully formatted:${R}`,
+      `    ${G}manuscript${R}   Novels and memoirs`,
+      `    ${G}screenplay${R}   Film and stage scripts`,
+      `    ${G}academic${R}     Formal research papers`,
+      `    ${G}literature${R}   Literary prose and poetry`,
       '',
-      'Guide:',
-      `  draft2final --guide`,
-      `  ${GUIDE_URL}`,
+      `  ${B}Quick Start${R}`,
+      `    ${D}1.${R} Create    ${C}draft2final --new story.md --as manuscript${R}`,
+      `    ${D}2.${R} Render    ${C}draft2final story.md${R}`,
       '',
-      'More:',
-      '  draft2final --help'
-    ].join('\n') + '\n'
+      `  ${B}Documentation${R}`,
+      `    ${B}--online-guide${R}`,
+      '',
+      `  ${D}Type${R} --help ${D}for more options.${R}`,
+      ''
+    ].join('\n')
   );
 }
 
@@ -202,40 +224,36 @@ function parseArgs(argv: string[]): CliOptions {
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
 
-    if (arg === '-h' || arg === '--help') {
+    if (arg === '--help') {
       printHelp();
       process.exit(0);
     }
-    if (arg === '--init') {
-      options.initPath = argv[++i] || 'my-project';
+    if (arg === '--new') {
+      options.newPath = argv[++i] || 'my-project.md';
       continue;
     }
-    if (arg === '-v' || arg === '--version') {
+    if (arg === '--version') {
       process.stdout.write(`v${pkg.version}\n`);
       process.exit(0);
     }
-    if (arg === '--guide') {
-      options.guide = true;
+    if (arg === '--online-guide') {
+      options.onlineGuide = true;
       continue;
     }
-    if (arg === '--using') {
-      options.using = argv[++i] as TransmuterName;
+    if (arg === '--as') {
+      options.as = normalizeFormatName(argv[++i]);
       continue;
     }
-    if (arg === '-o' || arg === '--out') {
-      options.outPath = argv[++i];
+    if (arg === '--output') {
+      options.outputPath = argv[++i];
       continue;
     }
-    if (arg === '--config') {
-      options.configPath = argv[++i];
-      continue;
-    }
-    if (arg === '--theme') {
-      options.themePath = argv[++i];
+    if (arg === '--style') {
+      options.stylePath = argv[++i];
       continue;
     }
     if (arg.startsWith('-')) {
-      throw new Error(`Unknown option: ${arg}`);
+      throw new Error(`Unknown option: ${arg}. Type --help for valid options.`);
     }
     if (!options.inputPath) {
       options.inputPath = arg;
@@ -250,36 +268,22 @@ function parseArgs(argv: string[]): CliOptions {
 function assertSupportedUsingName(usingName: string | undefined): asserts usingName is TransmuterName | undefined {
   if (!usingName) return;
   if (!['mkd-mkd', 'mkd-academic', 'mkd-literature', 'mkd-manuscript', 'mkd-screenplay'].includes(usingName)) {
-    throw new Error(`Unsupported transmuter "${usingName}".`);
+    throw new Error(`Unsupported document type. Use --help to see available formats.`);
   }
 }
 
-function assertValidOptions(options: CliOptions): asserts options is CliOptions & { inputPath: string; using: TransmuterName } {
+function assertValidOptions(options: CliOptions): asserts options is CliOptions & { inputPath: string; as: TransmuterName } {
   if (!options.inputPath) {
     throw new Error('Missing input file. See --help.');
   }
-  if (!options.using) {
-    throw new Error('Missing transmuter. Pass --using or set frontmatter format/using/transmuter.');
+  if (!options.as) {
+    (options as any).as = 'mkd-mkd';
   }
-  assertSupportedUsingName(options.using);
+  assertSupportedUsingName(options.as);
 }
 
 function mapFrontmatterValueToUsing(value: string | undefined): TransmuterName | undefined {
-  if (!value) return undefined;
-  const normalized = value.trim().toLowerCase().replace(/^['"]|['"]$/g, '');
-  const mapped: Record<string, TransmuterName> = {
-    'mkd-mkd': 'mkd-mkd',
-    'mkd-academic': 'mkd-academic',
-    'mkd-literature': 'mkd-literature',
-    'mkd-manuscript': 'mkd-manuscript',
-    'mkd-screenplay': 'mkd-screenplay',
-    markdown: 'mkd-mkd',
-    academic: 'mkd-academic',
-    literature: 'mkd-literature',
-    manuscript: 'mkd-manuscript',
-    screenplay: 'mkd-screenplay'
-  };
-  return mapped[normalized];
+  return normalizeFormatName(value);
 }
 
 function extractFrontmatterStringValue(markdown: string, key: string): string | undefined {
@@ -293,12 +297,11 @@ function extractFrontmatterStringValue(markdown: string, key: string): string | 
 }
 
 function resolveUsing(options: CliOptions, markdown: string): TransmuterName | undefined {
-  if (options.using) return options.using;
-  const byUsing = mapFrontmatterValueToUsing(extractFrontmatterStringValue(markdown, 'using'));
-  if (byUsing) return byUsing;
-  const byTransmuter = mapFrontmatterValueToUsing(extractFrontmatterStringValue(markdown, 'transmuter'));
-  if (byTransmuter) return byTransmuter;
-  return mapFrontmatterValueToUsing(extractFrontmatterStringValue(markdown, 'format'));
+  if (options.as) return options.as;
+  const byAs = normalizeFormatName(extractFrontmatterStringValue(markdown, 'as'));
+  if (byAs) return byAs;
+
+  return 'mkd-mkd';
 }
 
 function cleanScalar(value: string): string {
@@ -329,8 +332,8 @@ function createFsImageResolver(markdownPath: string): (src: string) => ResolvedI
     const mimeType = ext === '.png'
       ? 'image/png'
       : ext === '.jpg' || ext === '.jpeg'
-      ? 'image/jpeg'
-      : null;
+        ? 'image/jpeg'
+        : null;
     if (!mimeType) return null;
 
     const data = fs.readFileSync(resolvedPath).toString('base64');
@@ -338,11 +341,7 @@ function createFsImageResolver(markdownPath: string): (src: string) => ResolvedI
   };
 }
 
-function loadDefaultConfig(usingName: TransmuterName): string | undefined {
-  const configPath = path.resolve(__dirname, '..', 'config', `${usingName}.config.yaml`);
-  if (!fs.existsSync(configPath)) return undefined;
-  return fs.readFileSync(configPath, 'utf8');
-}
+
 
 function resolveThemeContent(
   usingName: TransmuterName,
@@ -350,7 +349,7 @@ function resolveThemeContent(
   markdown: string,
   cliTheme?: string
 ): string | undefined {
-  const frontmatterTheme = extractFrontmatterStringValue(markdown, 'theme');
+  const frontmatterTheme = extractFrontmatterStringValue(markdown, 'theme') ?? extractFrontmatterStringValue(markdown, 'style');
   const rawTheme = cliTheme ?? frontmatterTheme;
   if (!rawTheme) return undefined;
   const themeValue = cleanScalar(rawTheme);
@@ -371,9 +370,9 @@ function resolveThemeContent(
   const themeCandidates = hasExt
     ? [path.resolve(rootDir, 'themes', usingName, themeValue)]
     : [
-        path.resolve(rootDir, 'themes', usingName, `${themeValue}.yaml`),
-        path.resolve(rootDir, 'themes', usingName, `${themeValue}.yml`)
-      ];
+      path.resolve(rootDir, 'themes', usingName, `${themeValue}.yaml`),
+      path.resolve(rootDir, 'themes', usingName, `${themeValue}.yml`)
+    ];
   for (const candidate of themeCandidates) {
     if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
       return fs.readFileSync(candidate, 'utf8');
@@ -394,12 +393,10 @@ function runTransmuter(
   name: TransmuterName,
   markdown: string,
   resolveImage?: (src: string) => ResolvedImage | null,
-  config?: string,
   theme?: string
 ): unknown {
   const options = {
     ...(resolveImage ? { resolveImage } : {}),
-    ...(config ? { config } : {}),
     ...(theme ? { theme } : {})
   };
   if (name === 'mkd-mkd') return transmuteMkd(markdown, options);
@@ -424,7 +421,7 @@ function getOutputMode(outputPath: string): 'pdf' | 'json' {
 
 function pruneUnusedFallbacks(registry: any[], elements: any[]): void {
   const usedCodePoints = new Set<number>();
-  
+
   const extract = (els: any[]) => {
     if (!els) return;
     for (const el of els) {
@@ -443,9 +440,9 @@ function pruneUnusedFallbacks(registry: any[], elements: any[]): void {
       }
     }
   };
-  
+
   extract(elements);
-  
+
   for (const font of registry) {
     if (font.fallback && font.enabled && font.unicodeRange) {
       let isUsed = false;
@@ -474,13 +471,13 @@ function pruneUnusedFallbacks(registry: any[], elements: any[]): void {
 async function renderPdf(ir: unknown, inputPath: string, outputPath: string): Promise<void> {
   const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
   const documentIR = resolveDocumentPaths(ir as never, inputPath);
-  
+
   pruneUnusedFallbacks(runtime.fontRegistry, documentIR.elements);
 
   const config = toLayoutConfig(documentIR, false);
   const engine = new LayoutEngine(config, runtime);
 
-  
+
   process.stdout.write(`[draft2final] Loading fonts and paginating...\n`);
   await engine.waitForFonts();
   const pages = engine.paginate(documentIR.elements);
@@ -511,14 +508,14 @@ async function main(): Promise<void> {
     return;
   }
   const options = parseArgs(argv);
-  assertSupportedUsingName(options.using);
-  if (options.guide) {
+  assertSupportedUsingName(options.as);
+  if (options.onlineGuide) {
     openExternalUrl(GUIDE_URL);
     process.stdout.write(`[draft2final] Opened guide: ${GUIDE_URL}\n`);
     return;
   }
-  if (options.initPath) {
-    scaffoldProject(options.initPath, options.using);
+  if (options.newPath) {
+    scaffoldProject(options.newPath, options.as);
     return;
   }
   if (!options.inputPath) {
@@ -531,22 +528,25 @@ async function main(): Promise<void> {
   }
 
   const markdown = fs.readFileSync(inputPath, 'utf8');
-  options.using = resolveUsing(options, markdown);
-  if (!options.using) {
-    throw new Error('Unable to determine transmuter. Pass --using or add frontmatter: format/using/transmuter.');
+  options.as = resolveUsing(options, markdown);
+  if (!options.as) {
+    options.as = 'mkd-mkd';
   }
-  assertValidOptions(options as CliOptions & { inputPath: string; using: TransmuterName });
+  assertValidOptions(options as CliOptions & { inputPath: string; as: TransmuterName });
   const resolveImage = createFsImageResolver(inputPath);
 
-  const defaultConfig = loadDefaultConfig(options.using);
-  const config = options.configPath
-    ? fs.readFileSync(path.resolve(options.configPath), 'utf8')
-    : defaultConfig;
-  const theme = resolveThemeContent(options.using, inputPath, markdown, options.themePath);
+  const theme = resolveThemeContent(options.as, inputPath, markdown, options.stylePath);
 
-  process.stdout.write(`[draft2final] Transmuting via ${options.using}...\n`);
-  const ir = runTransmuter(options.using, markdown, resolveImage, config, theme);
-  const outputPath = resolveOutputPdfPath(inputPath, options.outPath);
+  const humanName = Object.entries({
+    academic: 'mkd-academic',
+    literature: 'mkd-literature',
+    manuscript: 'mkd-manuscript',
+    screenplay: 'mkd-screenplay'
+  }).find(([_, v]) => v === options.as)?.[0] || 'plain markdown';
+
+  process.stdout.write(`[draft2final] Transmuting as ${humanName}...\n`);
+  const ir = runTransmuter(options.as, markdown, resolveImage, theme);
+  const outputPath = resolveOutputPdfPath(inputPath, options.outputPath);
   const mode = getOutputMode(outputPath);
 
   if (mode === 'json') {

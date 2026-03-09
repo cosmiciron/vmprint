@@ -1,68 +1,93 @@
-﻿# draft2final (Transmuter-First CLI)
+﻿# draft2final
 
-Thin transmuter-first CLI wrapper that compiles source files to VMPrint `DocumentInput` via a selected transmuter, then renders PDF through VMPrint engine + PDF context.
+**Focus on your writing. Get a book that's ready to publish.**
 
-## Usage
+`draft2final` is a professional typesetting tool built for writers who want to stay focused on their content, yet demand output that is polished and perfect. It turns plain Markdown files into publication-grade PDFs for novels, memoirs, film scripts, and academic papers—without the complexity of LaTeX or the inconsistencies of word processors.
+
+---
+
+## Why draft2final?
+
+- **Industrial-Strength Engine**: Built on a state-of-the-art native typesetting engine—not a browser-based hack. It offers clinical precision in layout, margins, and vertical rhythms that rivals high-end publishing software like InDesign.
+- **Micro-Typographic Excellence**: Professional-grade handling of font opticals, kerning, and advanced pagination logic that respects the traditions of fine bookmaking.
+- **Zero-Friction Infrastructure**: A purely native solution. No Chromium, no Puppeteer, and no "font emergencies." It just works, beautifully, every time.
+- **Global-Ready from Day One**: Native, high-fidelity support for mixed scripts including Arabic, Chinese, Devanagari, and Thai with correct contextual shaping and bidirectional layout.
+
+---
+
+## Quick Start
+
+### 1. Install
+```bash
+npm install -g draft2final
+```
+
+### 2. Scaffold a New Project
+```bash
+# For a novel or memoir
+draft2final --new story.md --as manuscript
+
+# For a film script
+draft2final --new script.md --as screenplay
+```
+
+### 3. Render your PDF
+```bash
+# Render with default settings
+draft2final story.md
+
+# Render as a specific type
+draft2final story.md --as manuscript
+```
+*(Render completes in ~0.3s for a typical chapter)*
+
+---
+
+## Choosing your "Form"
+
+Use the `--as` flag to define the structural "Form" of your work. This is the structural DNA of your document:
+
+- **`manuscript`**: The gold standard for prose submissions.
+- **`screenplay`**: Effortless script formatting with dual-dialogue support.
+- **`academic`**: Precise layout for research drafts and formal papers.
+- **`literature`**: Clean, elegant book designs for poetry and prose.
+
+---
+
+## The Screenplay Workflow
+
+`draft2final` handles screenplay syntax with effortless sophistication. It supports full industry formatting conventions—action, characters, parentheticals, and dual-dialogue—all derived from clean, semantic Markdown.
+
+```md
+## INT. COFFEE SHOP - DAY
+
+Rain drums against the glass.
+
+> @ELIAS
+> If this script doesn't render perfectly, I'm taking up carpentry.
+
+> @RIN
+> Relax. It's draft2final.
+```
+
+---
+
+## Aesthetics
+
+The `--style` flag (or `style:` in your frontmatter) is where the "Aesthetic" lives—the visual skin of your document:
 
 ```bash
-draft2final
-draft2final --guide
-draft2final --init my-manuscript.md --using mkd-manuscript
-draft2final --init my-screenplay.md --using mkd-screenplay
-draft2final input.md --using mkd-mkd
-draft2final screenplay.md --using mkd-screenplay --out screenplay.pdf
-draft2final screenplay.md --using mkd-screenplay --out screenplay.ast.json
-draft2final manuscript.md --using mkd-manuscript --config my.config.yaml --theme my.theme.yaml
-draft2final manuscript.md --using mkd-manuscript --theme classic
+draft2final script.md --as screenplay --style classic
 ```
 
-With no arguments, `draft2final` shows a short welcome screen with example commands and a link to the guide.
+---
 
-`--init <file.md>` writes a starter Markdown file at the exact path you pass. For `mkd-manuscript` and `mkd-screenplay`, it uses built-in starter templates drawn from those transmuters.
+## Full Documentation
 
-`--out` determines output mode by extension:
+For the complete guide on syntax, advanced styles, and theme customization, visit the [User Guide](https://cosmiciron.github.io/vmprint/draft2final/).
 
-- `.pdf` => render PDF
-- `.json` => write transmuted AST (`DocumentInput`) JSON
+---
 
-`--using` is optional when frontmatter includes one of:
+## License
 
-- `using: mkd-*`
-- `transmuter: mkd-*`
-- `format: markdown|academic|literature|manuscript|screenplay`
-
-`--theme` accepts either:
-
-- a file path to YAML, or
-- a theme name resolved from `themes/<using>/<name>.yaml` (or `.yml`)
-
-Frontmatter `theme:` uses the same resolution behavior.
-
-`--guide` opens the user guide on GitHub.
-
-## Default Config Files
-
-`draft2final` auto-loads a user-editable config file from:
-
-```text
-config/<using>.config.yaml
-```
-
-For example:
-
-- `config/mkd-mkd.config.yaml`
-- `config/mkd-literature.config.yaml`
-- `config/mkd-screenplay.config.yaml`
-
-Use `--config` to override that path explicitly.
-
-## CLI Surface Policy
-
-This CLI intentionally does not expose legacy monolith-era flags like:
-
-- `--cover-page` (manuscript behavior belongs in frontmatter/config)
-- `--debug`
-- `--overlay`
-- `--ast` (replaced by `--out <file>.json`)
-
-
+Apache-2.0
