@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.0] - 2026-03-09
+
+### Added
+
+#### Global JIT Typesetting
+- Draft2Final and the vmprint CLI now selectively auto-download massive CJK and complex script fonts from the jsDelivr CDN, caching them persistently in the user's `~/.vmprint/fonts` directory.
+- Added extensive language mappings in `LocalFontManager` for global fallback support (Hebrew, Bengali, Tamil, Telugu, Malayalam, Gujarati, Kannada, Gurmukhi, Khmer, Lao, Sinhala, Arabic, and Indic scripts).
+
+#### Standalone Zero-Dependency CLI
+- The `draft2final` orchestrator is now distributed as a single 4.4MB compiled executable via `tsup`, drastically improving global installation speed, execution startup time, and cross-platform reliability.
+- **Smart Asset Bundling**: The essential Latin Pack fonts (Caladea, Cousine, Arimo, Tinos, Courier Prime) and core PDF metrics are bundled directly in the `@draft2final/cli` distribution for instant out-of-the-box offline support.
+
+#### CLI Polish
+- **Interactive Scaffolding**: Added `draft2final --init <project>` command to instantly generate new Markdown, Config, and Theme boilerplate.
+- **Progress Tracking**: Concurrent background downloads for global fonts now display a smooth, unified terminal progress indicator using the Web Streams API.
+- Added `-v` / `--version` flags and improved stage timing logs.
+
+### Changed
+
+#### Selective Font Pruning
+- The core CLI and Draft2Final both deeply scan the Document AST prior to layout to extract literal used characters. The engine instantly prunes and disables unused fallback fonts to prevent unnecessary network downloads.
+- Extracted heavy 50MB+ CJK font binaries (Noto Sans JP, KR, SC) to an orphan `assets` Git branch to keep the core developer repository lean and extremely fast to clone.
+
+### Fixed
+- Stopped standard English punctuation (like the em-dash) from erroneously triggering heavy Chinese/Japanese fallback font downloads by removing overlapping general punctuation blocks from the CJK Unicode ranges.
+- Prevented terminal flickering and layout overlaps during concurrent multi-font JIT downloads.
+
 ## [0.2.0] - 2026-03-08
 
 ### Added

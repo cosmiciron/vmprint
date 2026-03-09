@@ -1,6 +1,6 @@
 {
   "name": "@draft2final/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Thin transmuter-first Markdown-to-PDF orchestrator for VMPrint.",
   "author": "cosmiciron",
   "license": "Apache-2.0",

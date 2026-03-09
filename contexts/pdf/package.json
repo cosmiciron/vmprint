@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/context-pdf",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "PDF rendering context for vmprint, powered by pdfkit.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
