@@ -5,11 +5,11 @@ import type { VmprintOutputStream } from '@vmprint/contracts';
 import { createEngineRuntime, LayoutEngine, LayoutUtils, Renderer, resolveDocumentPaths, toLayoutConfig } from '@vmprint/engine';
 import PdfContext from '@vmprint/context-pdf';
 import LocalFontManager from '@vmprint/local-fonts';
-import { transmute as transmuteMkd } from '@vmprint/transmuter-mkd-mkd';
-import { transmute as transmuteAcademic } from '@vmprint/transmuter-mkd-academic';
-import { transmute as transmuteLiterature } from '@vmprint/transmuter-mkd-literature';
-import { transmute as transmuteManuscript } from '@vmprint/transmuter-mkd-manuscript';
-import { transmute as transmuteScreenplay } from '@vmprint/transmuter-mkd-screenplay';
+import { transmuter as transmuterMkd, transmute as transmuteMkd } from '@vmprint/transmuter-mkd-mkd';
+import { transmuter as transmuterAcademic, transmute as transmuteAcademic } from '@vmprint/transmuter-mkd-academic';
+import { transmuter as transmuterLiterature, transmute as transmuteLiterature } from '@vmprint/transmuter-mkd-literature';
+import { transmuter as transmuterManuscript, transmute as transmuteManuscript } from '@vmprint/transmuter-mkd-manuscript';
+import { transmuter as transmuterScreenplay, transmute as transmuteScreenplay } from '@vmprint/transmuter-mkd-screenplay';
 
 import pkg from '../package.json';
 
@@ -28,9 +28,10 @@ type CliOptions = {
   stylePath?: string;
   onlineGuide?: boolean;
   version?: boolean;
+  prepare?: boolean;
 };
 
-const GUIDE_URL = 'https://cosmiciron.github.io/vmprint/draft2final/';
+const GUIDE_URL = 'https://www.draft2final.app/guide';
 const INIT_TEMPLATE_MAP: Partial<Record<TransmuterName, string>> = {
   'mkd-manuscript': path.join('templates', 'mkd-manuscript', 'starter.md'),
   'mkd-screenplay': path.join('templates', 'mkd-screenplay', 'starter.md')
@@ -145,10 +146,12 @@ function printHelp(): void {
       'Usage:',
       '  draft2final story.md',
       '  draft2final story.md --as manuscript',
+      '  draft2final --prepare story.md --as manuscript',
       '  draft2final --new story.md --as manuscript',
       '',
       'Options:',
       '  --new <file.md>      Create a starter Markdown file',
+      '  --prepare <file.md>  Apply recommended front matter settings to an existing file',
       '  --as <format>        The type of document (manuscript, screenplay, academic, literature)',
       '  --style <name>       Choose a visual style/theme (e.g. "classic", "standard")',
       '  --output <path>      Write output file (.pdf or .json)',
@@ -241,15 +244,24 @@ function parseArgs(argv: string[]): CliOptions {
       options.onlineGuide = true;
       continue;
     }
-    if (arg === '--as') {
+    if (arg === '--prepare') {
+      options.prepare = true;
+      const next = argv[i + 1];
+      if (next && !next.startsWith('-')) {
+        options.inputPath = next;
+        i++;
+      }
+      continue;
+    }
+    if (arg === '--as' || arg === '--using') {
       options.as = normalizeFormatName(argv[++i]);
       continue;
     }
-    if (arg === '--output') {
+    if (arg === '--output' || arg === '--out') {
       options.outputPath = argv[++i];
       continue;
     }
-    if (arg === '--style') {
+    if (arg === '--style' || arg === '--theme') {
       options.stylePath = argv[++i];
       continue;
     }
@@ -301,12 +313,59 @@ function resolveUsing(options: CliOptions, markdown: string): TransmuterName | u
   if (options.as) return options.as;
   const byAs = normalizeFormatName(extractFrontmatterStringValue(markdown, 'as'));
   if (byAs) return byAs;
+  const byFormat = normalizeFormatName(extractFrontmatterStringValue(markdown, 'format'));
+  if (byFormat) return byFormat;
 
   return 'mkd-mkd';
 }
 
 function cleanScalar(value: string): string {
   return value.trim().replace(/^['"]|['"]$/g, '');
+}
+
+function patchFrontMatter(markdown: string, updates: Record<string, string>, boilerplate?: string): string {
+  const normalized = markdown.replace(/^\uFEFF/, '');
+  const match = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(normalized);
+
+  if (match) {
+    let body = match[1];
+    for (const [key, value] of Object.entries(updates)) {
+      // Mapping for migration
+      const alias = key === 'as' ? 'format' : key === 'style' ? 'theme' : null;
+
+      const rePrimary = new RegExp(`^\\s*${key}\\s*:\\s*(.+?)\\s*$`, 'mi');
+      const reAlias = alias ? new RegExp(`^\\s*${alias}\\s*:\\s*(.+?)\\s*$`, 'mi') : null;
+
+      if (rePrimary.test(body)) {
+        body = body.replace(rePrimary, `${key}: ${value}`);
+      } else if (reAlias && reAlias.test(body)) {
+        // Migration: replace old key with new key
+        body = body.replace(reAlias, `${key}: ${value}`);
+      } else {
+        body = body.trimEnd() + `\n${key}: ${value}`;
+      }
+    }
+
+    if (boilerplate) {
+      // Extract the first line (the header) to check if this specific block already exists
+      const header = boilerplate.split('\n')[0];
+      if (!body.includes(header)) {
+        body = body.trimEnd() + `\n\n${boilerplate}`;
+      }
+    }
+
+    return normalized.replace(match[0], `---\n${body.trim()}\n---\n`);
+  } else {
+    let head = '---\n';
+    for (const [key, value] of Object.entries(updates)) {
+      head += `${key}: ${value}\n`;
+    }
+    if (boilerplate) {
+      head += `\n${boilerplate}\n`;
+    }
+    head += '---\n\n';
+    return head + normalized;
+  }
 }
 
 function createFsImageResolver(markdownPath: string): (src: string) => ResolvedImage | null {
@@ -350,7 +409,7 @@ function resolveThemeContent(
   markdown: string,
   cliTheme?: string
 ): string | undefined {
-  const frontmatterTheme = extractFrontmatterStringValue(markdown, 'theme') ?? extractFrontmatterStringValue(markdown, 'style');
+  const frontmatterTheme = extractFrontmatterStringValue(markdown, 'style') ?? extractFrontmatterStringValue(markdown, 'theme');
   const rawTheme = cliTheme ?? frontmatterTheme;
   if (!rawTheme) return undefined;
   const themeValue = cleanScalar(rawTheme);
@@ -529,6 +588,43 @@ async function main(): Promise<void> {
   }
 
   const markdown = fs.readFileSync(inputPath, 'utf8');
+
+  if (options.prepare) {
+    const updates: Record<string, string> = {};
+    if (options.as) {
+      const humanAs = Object.entries({
+        academic: 'mkd-academic',
+        literature: 'mkd-literature',
+        manuscript: 'mkd-manuscript',
+        screenplay: 'mkd-screenplay',
+        markdown: 'mkd-mkd'
+      }).find(([_, v]) => v === options.as)?.[0] || 'markdown';
+      updates['as'] = humanAs;
+    }
+    if (options.stylePath) updates['style'] = options.stylePath;
+
+    if (Object.keys(updates).length === 0) {
+      process.stdout.write(`[draft2final] No updates specified for preparation of ${options.inputPath}.\n`);
+      return;
+    }
+
+    let boilerplate: string | undefined;
+    if (options.as) {
+      const mapper = {
+        'mkd-manuscript': transmuterManuscript,
+        'mkd-screenplay': transmuterScreenplay,
+        'mkd-academic': transmuterAcademic,
+        'mkd-literature': transmuterLiterature,
+        'mkd-mkd': transmuterMkd
+      };
+      boilerplate = mapper[options.as]?.getBoilerplate?.();
+    }
+
+    const patched = patchFrontMatter(markdown, updates, boilerplate);
+    fs.writeFileSync(inputPath, patched, 'utf8');
+    process.stdout.write(`[draft2final] Prepared: ${options.inputPath} (front matter updated)\n`);
+    return;
+  }
   options.as = resolveUsing(options, markdown);
   if (!options.as) {
     options.as = 'mkd-mkd';

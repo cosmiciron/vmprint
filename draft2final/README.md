@@ -43,6 +43,20 @@ draft2final story.md --as manuscript
 
 ---
 
+## Preparing Existing Files
+
+If you have an existing Markdown file and want to add the required front matter and recommended configuration:
+
+```bash
+draft2final --prepare story.md --as manuscript
+```
+
+This will:
+1.  Add/update the `as: manuscript` key in the front matter.
+2.  Inject a commented-out block of **recommended settings** for that specific format (boilerplate), making it easy to discover and tune options without leaving your editor.
+
+---
+
 ## Choosing your "Form"
 
 Use the `--as` flag to define the structural "Form" of your work. This is the structural DNA of your document:
@@ -84,7 +98,7 @@ draft2final script.md --as screenplay --style classic
 
 ## Full Documentation
 
-For the complete guide on syntax, advanced styles, and theme customization, visit the [User Guide](https://cosmiciron.github.io/vmprint/draft2final/).
+For the complete guide on syntax, advanced styles, and theme customization, visit the [User Guide](https://www.draft2final.app/guide).
 
 ---
 

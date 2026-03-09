@@ -1,6 +1,6 @@
 ---
-format: academic
-theme: default
+as: academic
+style: default
 ---
 
 # On the Topology of Coffee Spills in Zero-Gravity Seminar Rooms

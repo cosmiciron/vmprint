@@ -293,5 +293,26 @@ export function transmute(markdown: string, options?: ManuscriptTransmuteOptions
 export type ManuscriptTransmuter = Transmuter<string, DocumentInput, ManuscriptTransmuteOptions>;
 
 export const transmuter: ManuscriptTransmuter = {
-  transmute
+  transmute,
+  getBoilerplate() {
+    return [
+      '# Manuscript Settings',
+      '# manuscript:',
+      '#   coverPage:',
+      '#     mode: separate-cover-page  # Options: none, first-page-cover, separate-cover-page',
+      '#   runningHeader:',
+      '#     enabled: true',
+      '#     format: "{surname} / {shortTitle} / {n}"',
+      '#   chapter:',
+      '#     pageBreakBefore: true',
+      '#   sceneBreak:',
+      '#     symbol: "#"',
+      '#   footnotes:',
+      '#     heading: Notes',
+      '#',
+      '# typography:',
+      '#   smartQuotes: true',
+      '#   smartDashes: true'
+    ].join('\n');
+  }
 };

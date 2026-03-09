@@ -142,6 +142,22 @@ class DraftWatermark implements OverlayProvider {
 }
 ```
 
+### `Transmuter`
+
+The contract for source-to-AST conversion. Implement this to convert specific source formats (like Markdown) into VMPrint's `DocumentInput` AST.
+
+```ts
+interface Transmuter<Input = string, Output = unknown, Options = TransmuterOptions> {
+  transmute(input: Input, options?: Options): Output;
+  getBoilerplate?(): string;
+}
+```
+
+- `transmute` — converts input source into typeset boxes or a document IR.
+- `getBoilerplate` — (Optional) returns a recommended configuration block (e.g., YAML) to assist users in setting up a new document for this transmuter's format.
+
+This decoupling allows tools like `draft2final` to orchestrate multiple input formats and default configurations without being coupled to the internal logic of any specific format.
+
 ## Usage
 
 ```bash

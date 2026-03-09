@@ -1,6 +1,6 @@
 {
   "name": "draft2final",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Professional manuscript and screenplay compiler. Turn Markdown into publication-grade PDFs.",
   "keywords": [
     "typesetting",

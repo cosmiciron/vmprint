@@ -1,6 +1,6 @@
 ---
-format: manuscript
-theme: default
+as: manuscript
+style: default
 manuscript:
   coverPage:
     mode: separate-cover-page

@@ -10,8 +10,6 @@ Documentation and static examples live under this directory.
 
 ## Source Files (Repository)
 
-- draft2final user guide: [`draft2final/README.md`](draft2final/README.md)
-- draft2final starter samples: [`draft2final/samples/README.md`](draft2final/samples/README.md)
 - Examples landing page source: [`examples/index.html`](examples/index.html)
 - AST JSON -> PDF source: [`examples/ast-to-pdf/index.html`](examples/ast-to-pdf/index.html)
 - Markdown -> AST source: [`examples/mkd-to-ast/index.html`](examples/mkd-to-ast/index.html)

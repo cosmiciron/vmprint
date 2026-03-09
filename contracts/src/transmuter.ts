@@ -9,4 +9,5 @@ export interface Transmuter<
     Options extends TransmuterOptions = TransmuterOptions
 > {
     transmute(input: Input, options?: Options): Output;
+    getBoilerplate?(): string;
 }

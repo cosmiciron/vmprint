@@ -335,5 +335,17 @@ export function transmute(markdown: string, options?: LiteratureTransmuteOptions
 export type LiteratureTransmuter = Transmuter<string, DocumentInput, LiteratureTransmuteOptions>;
 
 export const transmuter: LiteratureTransmuter = {
-  transmute
+  transmute,
+  getBoilerplate() {
+    return [
+      '# Literature Settings',
+      '# literature:',
+      '#   dropCap:',
+      '#     enabled: true',
+      '#     lines: 3',
+      '#',
+      '# typography:',
+      '#   smartQuotes: true'
+    ].join('\n');
+  }
 };

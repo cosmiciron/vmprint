@@ -284,5 +284,15 @@ export function transmute(markdown: string, options?: ScreenplayTransmuteOptions
 export type ScreenplayTransmuter = Transmuter<string, DocumentInput, ScreenplayTransmuteOptions>;
 
 export const transmuter: ScreenplayTransmuter = {
-  transmute
+  transmute,
+  getBoilerplate() {
+    return [
+      '# Screenplay Settings',
+      '# screenplay:',
+      '#   includeTitlePage: true',
+      '#',
+      '# typography:',
+      '#   smartQuotes: true'
+    ].join('\n');
+  }
 };

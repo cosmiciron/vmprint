@@ -176,5 +176,12 @@ export function transmute(markdown: string, options?: MarkdownTransmuteOptions):
 export type MarkdownTransmuter = Transmuter<string, DocumentInput, MarkdownTransmuteOptions>;
 
 export const transmuter: MarkdownTransmuter = {
-  transmute
+  transmute,
+  getBoilerplate() {
+    return [
+      '# Standard Markdown Settings',
+      '# typography:',
+      '#   smartQuotes: true'
+    ].join('\n');
+  }
 };

@@ -1,4 +1,4 @@
-import {
+ï»¿import {
   transmuteMarkdown,
   type DocumentInput,
   type Element,
@@ -286,9 +286,9 @@ styles:
     marginTop: 0
     marginBottom: 18
 
-  # H2 = numbered section headings (Abstract, 1. Background, …).
+  # H2 = numbered section headings (Abstract, 1. Background, ï¿½).
   # 14pt bold is the accepted weight for single-column academic papers
-  # at 10–11pt body size (IEEE, APA, Chicago A-level heading).
+  # at 10ï¿½11pt body size (IEEE, APA, Chicago A-level heading).
   heading-2:
     fontSize: 14
     lineHeight: 1.25
@@ -298,7 +298,7 @@ styles:
     marginTop: 18
     marginBottom: 8
 
-  # H3 = subsection headings — bold italic per Chicago/APA convention.
+  # H3 = subsection headings ï¿½ bold italic per Chicago/APA convention.
   heading-3:
     fontSize: 12
     lineHeight: 1.3
@@ -406,5 +406,18 @@ export function transmute(markdown: string, options?: AcademicTransmuteOptions):
 export type AcademicTransmuter = Transmuter<string, DocumentInput, AcademicTransmuteOptions>;
 
 export const transmuter: AcademicTransmuter = {
-  transmute
+  transmute,
+  getBoilerplate() {
+    return [
+      '# Academic Settings',
+      '# academic:',
+      '#   footnoteNumbering: arabic # Options: arabic, roman, alpha',
+      '#',
+      '# references:',
+      '#   heading: References',
+      '#',
+      '# typography:',
+      '#   smartQuotes: true'
+    ].join('\n');
+  }
 };

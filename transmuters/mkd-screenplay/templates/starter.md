@@ -1,5 +1,5 @@
 ---
-format: screenplay
+as: screenplay
 ---
 
 # LAST TRAIN TO ORBIT

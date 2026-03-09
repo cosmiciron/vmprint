@@ -116,7 +116,7 @@ npm run dev --prefix cli -- --input engine/tests/fixtures/regression/00-all-capa
 Source-to-PDF (screenplay transmuter):
 
 ```bash
-npm run dev --prefix draft2final -- samples/draft2final/source/screenplay/screenplay-sample.md --using mkd-screenplay --out screenplay.pdf
+npm run dev --prefix draft2final -- samples/draft2final/source/screenplay/screenplay-sample.md --as screenplay --out screenplay.pdf
 ```
 
 ## Full API Example
