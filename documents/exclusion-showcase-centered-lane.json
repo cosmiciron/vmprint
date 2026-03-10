@@ -1,0 +1,54 @@
+{
+  "documentVersion": "1.0",
+  "layout": {
+    "pageSize": { "width": 320, "height": 220 },
+    "margins": { "top": 20, "right": 20, "bottom": 20, "left": 20 },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.2,
+    "_experimentalPageStartExclusionTop": 20,
+    "_experimentalPageStartExclusionHeight": 45,
+    "_experimentalPageStartExclusionLeftWidth": 70,
+    "_experimentalPageStartExclusionRightWidth": 70,
+    "_experimentalPageStartExclusionSelector": "first"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "title": {
+      "fontSize": 16,
+      "fontWeight": 700,
+      "marginBottom": 8
+    },
+    "caption": {
+      "fontSize": 10,
+      "marginBottom": 10,
+      "color": "#555555"
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    }
+  },
+  "elements": [
+    {
+      "type": "title",
+      "content": "Exclusion Showcase: Center Lane"
+    },
+    {
+      "type": "caption",
+      "content": "Two page-start exclusion shapes occupy the left and right edges. The session resolves them into a centered constrained band, and opening actors are deferred below it instead of being forced through bad geometry."
+    },
+    {
+      "type": "p",
+      "content": "First actor. This paragraph is deferred below the constrained band because both edge regions are excluded for the opening zone."
+    },
+    {
+      "type": "p",
+      "content": "Second actor. Once the blocked band ends, the full page width becomes available again and normal flow resumes below the constrained zone."
+    }
+  ]
+}

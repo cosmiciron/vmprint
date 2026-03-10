@@ -28,6 +28,11 @@ type FixtureMetric = {
     reservationConstraintApplications: number;
     reservationWrites: number;
     reservationArtifactMs: number;
+    exclusionBlockedCursorCalls: number;
+    exclusionBlockedCursorMs: number;
+    exclusionBandResolutionCalls: number;
+    exclusionBandResolutionMs: number;
+    exclusionLaneApplications: number;
 };
 
 type Summary = {
@@ -87,7 +92,12 @@ function average(metrics: FixtureMetric[]): FixtureMetric[] {
                 reservationConstraintNegotiationMs: Number((sum((item) => item.reservationConstraintNegotiationMs) / n).toFixed(2)),
                 reservationConstraintApplications: Number((sum((item) => item.reservationConstraintApplications) / n).toFixed(2)),
                 reservationWrites: Number((sum((item) => item.reservationWrites) / n).toFixed(2)),
-                reservationArtifactMs: Number((sum((item) => item.reservationArtifactMs) / n).toFixed(2))
+                reservationArtifactMs: Number((sum((item) => item.reservationArtifactMs) / n).toFixed(2)),
+                exclusionBlockedCursorCalls: Number((sum((item) => item.exclusionBlockedCursorCalls) / n).toFixed(2)),
+                exclusionBlockedCursorMs: Number((sum((item) => item.exclusionBlockedCursorMs) / n).toFixed(2)),
+                exclusionBandResolutionCalls: Number((sum((item) => item.exclusionBandResolutionCalls) / n).toFixed(2)),
+                exclusionBandResolutionMs: Number((sum((item) => item.exclusionBandResolutionMs) / n).toFixed(2)),
+                exclusionLaneApplications: Number((sum((item) => item.exclusionLaneApplications) / n).toFixed(2))
             };
         })
         .sort((left, right) => right.totalMs - left.totalMs);
@@ -169,7 +179,12 @@ async function run(): Promise<void> {
                 reservationConstraintNegotiationMs: Number((profile.reservationConstraintNegotiationMs || 0).toFixed(2)),
                 reservationConstraintApplications: Number(profile.reservationConstraintApplications || 0),
                 reservationWrites: Number(profile.reservationWrites || 0),
-                reservationArtifactMs: Number((profile.reservationArtifactMs || 0).toFixed(2))
+                reservationArtifactMs: Number((profile.reservationArtifactMs || 0).toFixed(2)),
+                exclusionBlockedCursorCalls: Number(profile.exclusionBlockedCursorCalls || 0),
+                exclusionBlockedCursorMs: Number((profile.exclusionBlockedCursorMs || 0).toFixed(2)),
+                exclusionBandResolutionCalls: Number(profile.exclusionBandResolutionCalls || 0),
+                exclusionBandResolutionMs: Number((profile.exclusionBandResolutionMs || 0).toFixed(2)),
+                exclusionLaneApplications: Number(profile.exclusionLaneApplications || 0)
             });
         }
     }

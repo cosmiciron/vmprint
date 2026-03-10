@@ -26,6 +26,8 @@ const LAYOUT_KEYS = new Set([
     '_experimentalPageStartReservationSelector',
     '_experimentalPageStartExclusionTop',
     '_experimentalPageStartExclusionHeight',
+    '_experimentalPageStartExclusionLeftWidth',
+    '_experimentalPageStartExclusionRightWidth',
     '_experimentalPageStartExclusionSelector',
     'pageNumberStart',
     'lang',
@@ -259,6 +261,12 @@ function validateLayout(layout: unknown, documentPath: string): void {
     }
     if (obj._experimentalPageStartExclusionHeight !== undefined) {
         assertFiniteNumberAt(obj._experimentalPageStartExclusionHeight, 'layout._experimentalPageStartExclusionHeight', documentPath);
+    }
+    if (obj._experimentalPageStartExclusionLeftWidth !== undefined) {
+        assertFiniteNumberAt(obj._experimentalPageStartExclusionLeftWidth, 'layout._experimentalPageStartExclusionLeftWidth', documentPath);
+    }
+    if (obj._experimentalPageStartExclusionRightWidth !== undefined) {
+        assertFiniteNumberAt(obj._experimentalPageStartExclusionRightWidth, 'layout._experimentalPageStartExclusionRightWidth', documentPath);
     }
     if (obj._experimentalPageStartExclusionSelector !== undefined) {
         assertStringAt(obj._experimentalPageStartExclusionSelector, 'layout._experimentalPageStartExclusionSelector', documentPath);

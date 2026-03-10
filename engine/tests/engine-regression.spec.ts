@@ -811,10 +811,14 @@ async function run() {
             const session = engine.getLastSimulationReportReader();
             assert.ok(session.report, 'reservation probe should still publish a simulation report');
             const reservationSummary = session.require(simulationArtifactKeys.pageReservationSummary);
+            const reservationSpatialSummary = session.require(simulationArtifactKeys.pageSpatialConstraintSummary);
             assert.equal(reservationSummary.length, 1, 'reservation probe should publish one reservation summary entry');
             assert.equal(reservationSummary[0]?.pageIndex, 0, 'reservation summary should point at the first page');
             assert.equal(reservationSummary[0]?.reservationCount, 1, 'reservation summary should count the emitted reservation');
             assert.ok((reservationSummary[0]?.totalReservedHeight || 0) >= 100, 'reservation summary should retain reserved height');
+            assert.equal(reservationSpatialSummary.length, 1, 'reservation probe should publish one unified spatial summary entry');
+            assert.equal(reservationSpatialSummary[0]?.reservationCount, 1, 'unified spatial summary should include reservation count');
+            assert.equal(reservationSpatialSummary[0]?.exclusionCount, 0, 'unified spatial summary should not invent exclusions for the reservation-only probe');
 
             const pageStartReservationEngine = new LayoutEngine({
                 ...config,
@@ -894,9 +898,80 @@ async function run() {
             const exclusionSession = exclusionEngine.getLastSimulationReportReader();
             assert.ok(exclusionSession.report, 'page-start exclusion should still publish a simulation report');
             const exclusionSummary = exclusionSession.require(simulationArtifactKeys.pageExclusionSummary);
+            const exclusionSpatialSummary = exclusionSession.require(simulationArtifactKeys.pageSpatialConstraintSummary);
             assert.equal(exclusionSummary.length, 1, 'page-start exclusion should publish one exclusion summary entry');
             assert.equal(exclusionSummary[0]?.pageIndex, 0, 'page-start exclusion should target the first page');
             assert.ok((exclusionSummary[0]?.totalExcludedHeight || 0) >= 35, 'page-start exclusion summary should retain the excluded height');
+            assert.equal(exclusionSpatialSummary.length, 1, 'page-start exclusion should publish one unified spatial summary entry');
+            assert.equal(exclusionSpatialSummary[0]?.reservationCount, 0, 'unified spatial summary should not invent reservations for the exclusion-only probe');
+            assert.equal(exclusionSpatialSummary[0]?.exclusionCount, 1, 'unified spatial summary should include exclusion count');
+
+            const laneExclusionEngine = new LayoutEngine({
+                ...config,
+                layout: {
+                    ...config.layout,
+                    _experimentalPageStartExclusionTop: 20,
+                    _experimentalPageStartExclusionHeight: 45,
+                    _experimentalPageStartExclusionLeftWidth: 80,
+                    _experimentalPageStartExclusionSelector: 'first'
+                }
+            } as any);
+            await laneExclusionEngine.waitForFonts();
+
+            const laneExclusionPages = laneExclusionEngine.paginate(baselineElements as any);
+            assert.equal(laneExclusionPages.length, 1, 'lane exclusion probe should stay on one page');
+
+            const findFirstBoxForSource = (pages: any[], sourceId: string): any => {
+                for (const page of pages) {
+                    const box = (page.boxes || []).find((entry: any) => {
+                        const actual = String(entry.meta?.sourceId || '');
+                        return actual === sourceId || actual.endsWith(`:${sourceId}`);
+                    });
+                    if (box) return box;
+                }
+                return null;
+            };
+
+            const baselineFirstBox = findFirstBoxForSource(baselinePages, 'probe-first');
+            const laneFirstBox = findFirstBoxForSource(laneExclusionPages, 'probe-first');
+            assert.ok(laneFirstBox, 'lane exclusion should still emit the first actor');
+            assert.ok(Number(laneFirstBox.x || 0) > Number(baselineFirstBox?.x || 0) + 40, 'lane exclusion should shift the first actor right into the remaining lane');
+
+            const centeredLaneExclusionEngine = new LayoutEngine({
+                ...config,
+                layout: {
+                    ...config.layout,
+                    _experimentalPageStartExclusionTop: 20,
+                    _experimentalPageStartExclusionHeight: 45,
+                    _experimentalPageStartExclusionLeftWidth: 70,
+                    _experimentalPageStartExclusionRightWidth: 70,
+                    _experimentalPageStartExclusionSelector: 'first'
+                }
+            } as any);
+            await centeredLaneExclusionEngine.waitForFonts();
+
+            const centeredLanePages = centeredLaneExclusionEngine.paginate(baselineElements as any);
+            assert.equal(centeredLanePages.length, 2, 'centered lane exclusion probe should defer full-width actors below the constrained band');
+
+            const centeredLaneFirstBox = findFirstBoxForSource(centeredLanePages, 'probe-first');
+            assert.ok(centeredLaneFirstBox, 'centered lane exclusion should still emit the first paragraph');
+            assert.equal(findFirstPageIndexForSource(centeredLanePages, 'probe-first'), 0, 'centered lane exclusion should keep the first paragraph on the first page');
+            assert.ok(
+                Number(centeredLaneFirstBox.x || 0) === Number(baselineFirstBox?.x || 0),
+                'centered lane exclusion should restore full-width placement once the constrained band is cleared'
+            );
+            assert.ok(
+                Number(centeredLaneFirstBox.y || 0) > baselineFirstY + 20,
+                'centered lane exclusion should move the first paragraph below the constrained band instead of forcing it through the lane'
+            );
+
+            const centeredLaneSession = centeredLaneExclusionEngine.getLastSimulationReportReader();
+            const centeredLaneSummary = centeredLaneSession.require(simulationArtifactKeys.pageExclusionSummary);
+            const centeredLaneSpatialSummary = centeredLaneSession.require(simulationArtifactKeys.pageSpatialConstraintSummary);
+            assert.equal(centeredLaneSummary.length, 1, 'centered lane exclusion should publish one page summary entry');
+            assert.equal(centeredLaneSummary[0]?.exclusionCount, 2, 'centered lane exclusion should publish two exclusion shapes on the first page');
+            assert.ok((centeredLaneSummary[0]?.totalExcludedHeight || 0) >= 90, 'centered lane exclusion summary should retain both exclusion heights');
+            assert.equal(centeredLaneSpatialSummary[0]?.exclusionCount, 2, 'unified spatial summary should reflect both centered-lane exclusions');
         }
     );
 

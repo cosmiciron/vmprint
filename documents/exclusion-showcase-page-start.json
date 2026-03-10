@@ -1,0 +1,52 @@
+{
+  "documentVersion": "1.0",
+  "layout": {
+    "pageSize": { "width": 320, "height": 220 },
+    "margins": { "top": 20, "right": 20, "bottom": 20, "left": 20 },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.2,
+    "_experimentalPageStartExclusionTop": 20,
+    "_experimentalPageStartExclusionHeight": 42,
+    "_experimentalPageStartExclusionSelector": "first"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "title": {
+      "fontSize": 16,
+      "fontWeight": 700,
+      "marginBottom": 8
+    },
+    "caption": {
+      "fontSize": 10,
+      "marginBottom": 10,
+      "color": "#555555"
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    }
+  },
+  "elements": [
+    {
+      "type": "title",
+      "content": "Exclusion Showcase: Page Start"
+    },
+    {
+      "type": "caption",
+      "content": "A first-page exclusion band occupies the top content area. The overlay marks the blocked strip, and the first actor is pushed below it without a paginator-specific rule."
+    },
+    {
+      "type": "p",
+      "content": "First actor. This paragraph is displaced downward because the session-owned exclusion band blocks the top content strip before placement begins."
+    },
+    {
+      "type": "p",
+      "content": "Second actor. It still flows normally after the first paragraph, but the whole stack begins lower because of the exclusion state."
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import type { PageNumberSummary } from './page-number-artifact-collaborator';
 import type { PageOverrideSummary } from './page-override-artifact-collaborator';
 import type { PageReservationSummary } from './page-reservation-artifact-collaborator';
 import type { PageExclusionSummary } from './page-exclusion-artifact-collaborator';
+import type { PageSpatialConstraintSummary } from './page-spatial-constraint-artifact-collaborator';
 import type { PageRegionSummary } from './page-region-artifact-collaborator';
 import type { SourcePositionSummary } from './source-position-artifact-collaborator';
 import type { LayoutProfileMetrics } from './layout-session';
@@ -13,6 +14,7 @@ export type SimulationArtifactMap = {
     pageOverrideSummary?: PageOverrideSummary[];
     pageReservationSummary?: PageReservationSummary[];
     pageExclusionSummary?: PageExclusionSummary[];
+    pageSpatialConstraintSummary?: PageSpatialConstraintSummary[];
     pageRegionSummary?: PageRegionSummary[];
     sourcePositionMap?: SourcePositionSummary[];
 };
@@ -26,6 +28,7 @@ export const simulationArtifactKeys = {
     pageOverrideSummary: 'pageOverrideSummary',
     pageReservationSummary: 'pageReservationSummary',
     pageExclusionSummary: 'pageExclusionSummary',
+    pageSpatialConstraintSummary: 'pageSpatialConstraintSummary',
     pageRegionSummary: 'pageRegionSummary',
     sourcePositionMap: 'sourcePositionMap'
 } as const satisfies Record<SimulationArtifactKey, SimulationArtifactKey>;
@@ -36,6 +39,7 @@ export const knownSimulationArtifactKeys: readonly SimulationArtifactKey[] = [
     simulationArtifactKeys.pageOverrideSummary,
     simulationArtifactKeys.pageReservationSummary,
     simulationArtifactKeys.pageExclusionSummary,
+    simulationArtifactKeys.pageSpatialConstraintSummary,
     simulationArtifactKeys.pageRegionSummary,
     simulationArtifactKeys.sourcePositionMap
 ] as const;

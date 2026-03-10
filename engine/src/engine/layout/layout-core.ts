@@ -24,6 +24,7 @@ import { PageNumberArtifactCollaborator } from './page-number-artifact-collabora
 import { PageOverrideArtifactCollaborator } from './page-override-artifact-collaborator';
 import { PageExclusionArtifactCollaborator } from './page-exclusion-artifact-collaborator';
 import { PageReservationArtifactCollaborator } from './page-reservation-artifact-collaborator';
+import { PageSpatialConstraintArtifactCollaborator } from './page-spatial-constraint-artifact-collaborator';
 import { PageRegionArtifactCollaborator } from './page-region-artifact-collaborator';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import { createSimulationReportReader, SimulationReport, SimulationReportReader } from './simulation-report';
@@ -769,6 +770,7 @@ export class LayoutProcessor extends TextProcessor {
             new PageNumberArtifactCollaborator(this.config),
             new PageOverrideArtifactCollaborator(),
             new PageReservationArtifactCollaborator(),
+            new PageSpatialConstraintArtifactCollaborator(),
             new PageRegionArtifactCollaborator(),
             new SourcePositionArtifactCollaborator(),
             new PageRegionCollaborator(this.config, {

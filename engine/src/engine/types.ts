@@ -295,6 +295,8 @@ export interface LayoutConfig {
         _experimentalPageStartReservationSelector?: PageReservationSelector;
         _experimentalPageStartExclusionTop?: number;
         _experimentalPageStartExclusionHeight?: number;
+        _experimentalPageStartExclusionLeftWidth?: number;
+        _experimentalPageStartExclusionRightWidth?: number;
         _experimentalPageStartExclusionSelector?: PageReservationSelector;
         pageNumberStart?: number;
         lang?: string;
