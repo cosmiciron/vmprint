@@ -117,13 +117,24 @@ function summarizePrepareKinds(profile: {
 async function run(): Promise<void> {
     const repeatArg = process.argv.find((arg) => arg.startsWith('--repeat='));
     const warmupArg = process.argv.find((arg) => arg.startsWith('--warmup='));
+    const fixtureArg = process.argv.find((arg) => arg.startsWith('--fixture='));
     const repeatCount = Math.max(1, Number.parseInt((repeatArg?.split('=')[1] || '3'), 10) || 3);
     const warmupCount = Math.max(0, Number.parseInt((warmupArg?.split('=')[1] || '1'), 10) || 0);
+    const fixtureFilter = (fixtureArg?.split('=')[1] || '').trim();
 
     const fixturesDir = path.resolve(__dirname, 'fixtures', 'regression');
     const files = fs.readdirSync(fixturesDir)
         .filter((file) => file.endsWith('.json') && !file.endsWith('.snapshot.layout.json'))
-        .sort((a, b) => a.localeCompare(b));
+        .sort((a, b) => a.localeCompare(b))
+        .filter((file) => !fixtureFilter || file.includes(fixtureFilter));
+
+    if (files.length === 0) {
+        throw new Error(
+            fixtureFilter
+                ? `No regression fixtures matched --fixture=${fixtureFilter}`
+                : 'No regression fixtures found for performance benchmark'
+        );
+    }
 
     const LocalFontManager = await loadLocalFontManager();
     const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
@@ -207,7 +218,10 @@ async function run(): Promise<void> {
     };
 
     console.log('=== VMPrint Engine Performance Benchmark ===');
-    console.log(`warmupCount=${warmupCount}, repeatCount=${repeatCount}, fixtures=${files.length}`);
+    console.log(
+        `warmupCount=${warmupCount}, repeatCount=${repeatCount}, fixtures=${files.length}` +
+        (fixtureFilter ? `, filter=${fixtureFilter}` : '')
+    );
     console.table(averaged);
     console.log('--- Summary ---');
     console.log(JSON.stringify(summary, null, 2));

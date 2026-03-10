@@ -23,34 +23,6 @@ export function paginatePackagers(
     const pageLimit = contextBase.pageHeight - margins.bottom;
     const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
         prevAfter + marginTop;
-    const placeSplitMarkers = (markers: any[], availableWidth: number): void => {
-        for (const marker of markers) {
-            const markerLayoutBefore = resolveLayoutBefore(lastSpacingAfter, marker.marginTop || 0);
-            const markerTotalHeight =
-                Math.max(0, marker.measuredContentHeight || 0) +
-                markerLayoutBefore +
-                Math.max(0, marker.marginBottom || 0);
-            if (currentY + markerTotalHeight > pageLimit + LAYOUT_DEFAULTS.wrapTolerance) {
-                continue;
-            }
-            const positioned = (processor as any).positionFlowBox(
-                marker,
-                currentY,
-                markerLayoutBefore,
-                margins,
-                availableWidth,
-                currentPageIndex
-            );
-            const markerBoxes = Array.isArray(positioned) ? positioned : [positioned];
-            for (const box of markerBoxes) {
-                if (box.meta) box.meta = { ...box.meta, pageIndex: currentPageIndex };
-                currentPageBoxes.push(box);
-            }
-            const markerEffectiveHeight = Math.max(markerTotalHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-            currentY += markerEffectiveHeight - Math.max(0, marker.marginBottom || 0);
-            lastSpacingAfter = Math.max(0, marker.marginBottom || 0);
-        }
-    };
 
     session?.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
 
@@ -191,28 +163,7 @@ export function paginatePackagers(
                 const splitCandidate = keepPlan!.splitCandidate;
 
                 if (prefixFits && splitCandidate && !splitCandidate.isUnbreakable(effectiveAvailableHeight - prefixHeight)) {
-                    let continuation: any = null;
-                    let markerReserve = 0;
-                    continuation = session?.getContinuationArtifacts(splitCandidate.actorId);
-                    if (!continuation) {
-                        const splitFlowBox = (splitCandidate as any).flowBox;
-                        const continuationSpec =
-                            splitFlowBox?.properties?.paginationContinuation ??
-                            splitFlowBox?._sourceElement?.properties?.paginationContinuation;
-                        if (continuationSpec) {
-                            if (splitFlowBox && splitFlowBox.properties && splitFlowBox.properties.paginationContinuation === undefined) {
-                                splitFlowBox.properties.paginationContinuation = continuationSpec;
-                            }
-                            continuation = (processor as any).getContinuationArtifacts(splitFlowBox);
-                        }
-                    }
-                    if (continuation?.markerAfterSplit) {
-                        const marker = continuation.markerAfterSplit;
-                        markerReserve =
-                            Math.max(0, marker.measuredContentHeight || 0) +
-                            Math.max(0, marker.marginTop || 0) +
-                            Math.max(0, marker.marginBottom || 0);
-                    }
+                    const markerReserve = session?.getSplitMarkerReserve(splitCandidate) ?? 0;
 
                     const prefixStartIndex = currentPageBoxes.length;
                     const prefixStartY = currentY;
@@ -262,39 +213,62 @@ export function paginatePackagers(
                     session?.notifySplitAttempt(splitAttempt);
                     const { currentFragment: partA, continuationFragment: partB } = splitCandidate.split(candidateAvailable, splitContext);
                     if (partA && partB) {
-                        session?.notifySplitAccepted(splitAttempt, {
-                            currentFragment: partA,
-                            continuationFragment: partB
-                        });
                         const partAContext = {
                             ...contextBase,
                             pageIndex: currentPageIndex,
                             cursorY: currentY
                         };
                         const partABoxes = partA.emitBoxes(availableWidth, (pageLimit - currentY) - candidateLayoutDelta, partAContext) || [];
-                        for (const box of partABoxes) {
-                            box.y = (box.y || 0) + currentY + candidateLayoutDelta;
-                            if (box.meta) box.meta = { ...box.meta, pageIndex: currentPageIndex };
-                            currentPageBoxes.push(box);
-                        }
                         const partAMarginTop = partA.getMarginTop();
                         const partAMarginBottom = partA.getMarginBottom();
                         const partALayoutBefore = resolveLayoutBefore(lastSpacingAfter, partAMarginTop);
                         const partAContentHeight = Math.max(0, partA.getRequiredHeight() - partAMarginTop - partAMarginBottom);
                         const partARequiredHeight = partAContentHeight + partALayoutBefore + partAMarginBottom;
                         const partAEffectiveHeight = Math.max(partARequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-                        currentY += partAEffectiveHeight - partAMarginBottom;
-                        lastSpacingAfter = partAMarginBottom;
-                        placeSplitMarkers(session?.consumeMarkersAfterSplit(partA.actorId) ?? [], availableWidth);
+                        if (session) {
+                            const committed = session.finalizeAcceptedSplit(splitAttempt, {
+                                currentFragment: partA,
+                                continuationFragment: partB
+                            }, partABoxes, {
+                                currentY,
+                                layoutDelta: candidateLayoutDelta,
+                                effectiveHeight: partAEffectiveHeight,
+                                marginBottom: partAMarginBottom,
+                                pageIndex: currentPageIndex,
+                                actorId: partA.actorId,
+                                lastSpacingAfter,
+                                pageLimit,
+                                availableWidth,
+                                actorQueue: packagers,
+                                queueStartIndex: i,
+                                queueReplaceCount: sequence.length,
+                                predecessor: splitCandidate
+                            },
+                                (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
+                                    (processor as any).positionFlowBox(
+                                        marker,
+                                        markerCurrentY,
+                                        markerLayoutBefore,
+                                        margins,
+                                        markerAvailableWidth,
+                                        markerPageIndex
+                                    )
+                            );
+                            currentPageBoxes.push(...committed.boxes);
+                            currentY = committed.currentY;
+                            lastSpacingAfter = committed.lastSpacingAfter;
+                        } else {
+                            for (const box of partABoxes) {
+                                box.y = (box.y || 0) + currentY + candidateLayoutDelta;
+                                if (box.meta) box.meta = { ...box.meta, pageIndex: currentPageIndex };
+                                currentPageBoxes.push(box);
+                            }
+                            currentY += partAEffectiveHeight - partAMarginBottom;
+                            lastSpacingAfter = partAMarginBottom;
+                        }
 
                         pushNewPage();
-                        if (partB) {
-                            session?.notifyContinuationEnqueued(splitCandidate, partB);
-                        }
-                        const stagedActors = partB ? (session?.consumeActorsBeforeContinuation(partB.actorId) ?? []) : [];
-                        if (stagedActors.length > 0) {
-                            packagers.splice(i, sequence.length, ...stagedActors, partB);
-                        } else {
+                        if (!session) {
                             packagers.splice(i, sequence.length, partB);
                         }
                         session?.recordProfile('keepWithNextBranchCalls', 1);
@@ -355,17 +329,29 @@ export function paginatePackagers(
                 }
             }
             // It fits!
-            for (const box of boxes) {
-                // Adjust box Y to match page absolute Y
-                box.y = (box.y || 0) + currentY + layoutDelta;
-                if (box.meta) {
-                    box.meta = { ...box.meta, pageIndex: currentPageIndex };
+            if (session) {
+                const committed = session.commitFragmentBoxes(packager, boxes, {
+                    currentY,
+                    layoutDelta,
+                    effectiveHeight,
+                    marginBottom,
+                    pageIndex: currentPageIndex
+                });
+                currentPageBoxes.push(...committed.boxes);
+                currentY = committed.currentY;
+                lastSpacingAfter = committed.lastSpacingAfter;
+            } else {
+                for (const box of boxes) {
+                    // Adjust box Y to match page absolute Y
+                    box.y = (box.y || 0) + currentY + layoutDelta;
+                    if (box.meta) {
+                        box.meta = { ...box.meta, pageIndex: currentPageIndex };
+                    }
+                    currentPageBoxes.push(box);
                 }
-                currentPageBoxes.push(box);
+                currentY += effectiveHeight - marginBottom;
+                lastSpacingAfter = marginBottom;
             }
-            session?.notifyActorCommitted(packager, boxes);
-            currentY += effectiveHeight - marginBottom;
-            lastSpacingAfter = marginBottom;
             i++;
             continue;
         }
@@ -420,27 +406,7 @@ export function paginatePackagers(
         }
 
         // Let's try to split
-        let continuation: any = null;
-        let markerReserve = 0;
-        continuation = session?.getContinuationArtifacts(packager.actorId);
-        if (!continuation) {
-            const flowBox = (packager as any).flowBox;
-            const continuationSpec = flowBox?.properties?.paginationContinuation ?? flowBox?._sourceElement?.properties?.paginationContinuation;
-            if (continuationSpec) {
-                if (flowBox && flowBox.properties && flowBox.properties.paginationContinuation === undefined) {
-                    flowBox.properties.paginationContinuation = continuationSpec;
-                }
-                continuation = (processor as any).getContinuationArtifacts(flowBox);
-            }
-        }
-        if (continuation?.markerAfterSplit) {
-            const marker = continuation.markerAfterSplit;
-            markerReserve =
-                Math.max(0, marker.measuredContentHeight || 0) +
-                Math.max(0, marker.marginTop || 0) +
-                Math.max(0, marker.marginBottom || 0);
-        }
-
+        const markerReserve = session?.getSplitMarkerReserve(packager) ?? 0;
         const splitAvailableHeight = availableHeightAdjusted - markerReserve;
         const splitAttempt = {
             actor: packager,
@@ -458,14 +424,24 @@ export function paginatePackagers(
                 // we'll treat it as un-fittable and just force emit.
                 const boxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context) || [];
                 requiredHeight = packager.getRequiredHeight();
-                for (const box of boxes) {
-                    box.y = (box.y || 0) + currentY;
-                    if (box.meta) {
-                        box.meta = { ...box.meta, pageIndex: currentPageIndex };
+                if (session) {
+                    const committed = session.commitFragmentBoxes(packager, boxes, {
+                        currentY,
+                        layoutDelta: 0,
+                        effectiveHeight,
+                        marginBottom,
+                        pageIndex: currentPageIndex
+                    });
+                    currentPageBoxes.push(...committed.boxes);
+                } else {
+                    for (const box of boxes) {
+                        box.y = (box.y || 0) + currentY;
+                        if (box.meta) {
+                            box.meta = { ...box.meta, pageIndex: currentPageIndex };
+                        }
+                        currentPageBoxes.push(box);
                     }
-                    currentPageBoxes.push(box);
                 }
-                session?.notifyActorCommitted(packager, boxes);
                 pushNewPage();
                 i++;
                 continue;
@@ -476,10 +452,6 @@ export function paginatePackagers(
         }
 
         // We have a successful split
-        session?.notifySplitAccepted(splitAttempt, {
-            currentFragment: fitsCurrent,
-            continuationFragment: pushedNext
-        });
         const splitContext: PackagerContext = {
             ...contextBase,
             pageIndex: currentPageIndex,
@@ -508,29 +480,59 @@ export function paginatePackagers(
         }
         const fitsAvailableHeightAdjusted = availableHeight - fitsLayoutDelta;
         const currentBoxes = fitsCurrent.emitBoxes(availableWidth, fitsAvailableHeightAdjusted, splitContext) || [];
-        for (const box of currentBoxes) {
-            box.y = (box.y || 0) + currentY + fitsLayoutDelta;
-            if (box.meta) {
-                box.meta = { ...box.meta, pageIndex: currentPageIndex };
+        if (session) {
+            const committed = session.finalizeAcceptedSplit(splitAttempt, {
+                currentFragment: fitsCurrent,
+                continuationFragment: pushedNext
+            }, currentBoxes, {
+                currentY,
+                layoutDelta: fitsLayoutDelta,
+                effectiveHeight: fitsEffectiveHeight,
+                marginBottom: fitsMarginBottom,
+                pageIndex: currentPageIndex,
+                actorId: fitsCurrent.actorId,
+                lastSpacingAfter,
+                pageLimit,
+                availableWidth,
+                actorQueue: packagers,
+                queueStartIndex: i,
+                queueReplaceCount: 1,
+                predecessor: packager
+            },
+                (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
+                    (processor as any).positionFlowBox(
+                        marker,
+                        markerCurrentY,
+                        markerLayoutBefore,
+                        margins,
+                        markerAvailableWidth,
+                        markerPageIndex
+                    )
+            );
+            currentPageBoxes.push(...committed.boxes);
+            currentY = committed.currentY;
+            lastSpacingAfter = committed.lastSpacingAfter;
+        } else {
+            for (const box of currentBoxes) {
+                box.y = (box.y || 0) + currentY + fitsLayoutDelta;
+                if (box.meta) {
+                    box.meta = { ...box.meta, pageIndex: currentPageIndex };
+                }
+                currentPageBoxes.push(box);
             }
-            currentPageBoxes.push(box);
-        }
-        session?.notifyActorCommitted(fitsCurrent, currentBoxes);
 
-        currentY += fitsEffectiveHeight - fitsMarginBottom;
-        lastSpacingAfter = fitsMarginBottom;
-        placeSplitMarkers(session?.consumeMarkersAfterSplit(fitsCurrent.actorId) ?? [], availableWidth);
+            currentY += fitsEffectiveHeight - fitsMarginBottom;
+            lastSpacingAfter = fitsMarginBottom;
+        }
         pushNewPage();
 
         // The remaining packager takes the place of the current packager but we don't advance i
-        if (pushedNext) {
-            session?.notifyContinuationEnqueued(packager, pushedNext);
-            const stagedActors = session?.consumeActorsBeforeContinuation(pushedNext.actorId) ?? [];
-            if (stagedActors.length > 0) {
-                packagers.splice(i, 1, ...stagedActors, pushedNext);
-            } else {
-                packagers[i] = pushedNext;
+        if (session) {
+            if (!packagers[i]) {
+                i++;
             }
+        } else if (pushedNext) {
+            packagers[i] = pushedNext;
         } else {
             i++;
         }

@@ -1,24 +1,12 @@
-import { ContinuationArtifacts, FlowBox } from './layout-core-types';
+import { FlowBox } from './layout-core-types';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import { PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
 import { FlowBoxPackager } from './packagers/flow-box-packager';
 
-function resolveFlowBox(actor: PackagerUnit): FlowBox | null {
-    const flowBox = (actor as any).flowBox as FlowBox | undefined;
-    if (!flowBox) return null;
-    return flowBox;
-}
-
-function hasContinuationSpec(flowBox: FlowBox): boolean {
-    return !!(flowBox?.properties?.paginationContinuation ?? flowBox?._sourceElement?.properties?.paginationContinuation);
-}
-
 export class ContinuationMarkerCollaborator implements LayoutCollaborator {
     onActorPrepared(actor: PackagerUnit, session: LayoutSession): void {
-        if (session.getContinuationArtifacts(actor.actorId)) return;
-        const artifacts = this.resolveArtifacts(actor);
+        const artifacts = session.ensureContinuationArtifacts(actor);
         if (!artifacts) return;
-        session.setContinuationArtifacts(actor.actorId, artifacts);
     }
 
     onSplitAccepted(
@@ -26,9 +14,8 @@ export class ContinuationMarkerCollaborator implements LayoutCollaborator {
         result: PackagerSplitResult,
         session: LayoutSession
     ): void {
-        const artifacts = session.getContinuationArtifacts(attempt.actor.actorId) ?? this.resolveArtifacts(attempt.actor);
+        const artifacts = session.ensureContinuationArtifacts(attempt.actor);
         if (!artifacts) return;
-        session.setContinuationArtifacts(attempt.actor.actorId, artifacts);
         if (result.currentFragment && artifacts.markerAfterSplit) {
             session.stageMarkersAfterSplit(result.currentFragment.actorId, [artifacts.markerAfterSplit]);
         }
@@ -43,19 +30,5 @@ export class ContinuationMarkerCollaborator implements LayoutCollaborator {
             new FlowBoxPackager(processor, marker)
         );
         session.stageActorsBeforeContinuation(continuation.actorId, markerPackagers);
-    }
-
-    private resolveArtifacts(actor: PackagerUnit): ContinuationArtifacts | undefined {
-        const flowBox = resolveFlowBox(actor);
-        if (!flowBox || !hasContinuationSpec(flowBox)) return;
-
-        const continuationSpec =
-            flowBox.properties?.paginationContinuation ??
-            flowBox._sourceElement?.properties?.paginationContinuation;
-        if (continuationSpec && flowBox.properties && flowBox.properties.paginationContinuation === undefined) {
-            flowBox.properties.paginationContinuation = continuationSpec;
-        }
-
-        return ((actor as any).processor as any)?.getContinuationArtifacts?.(flowBox) as ContinuationArtifacts | undefined;
     }
 }

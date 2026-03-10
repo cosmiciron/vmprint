@@ -767,7 +767,7 @@ export class LayoutProcessor extends TextProcessor {
             new ExperimentalPageReservationCollaborator(),
             new FragmentTransitionArtifactCollaborator(),
             new PageExclusionArtifactCollaborator(),
-            new PageNumberArtifactCollaborator(this.config),
+            new PageNumberArtifactCollaborator(),
             new PageOverrideArtifactCollaborator(),
             new PageReservationArtifactCollaborator(),
             new PageSpatialConstraintArtifactCollaborator(),

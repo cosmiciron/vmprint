@@ -1,4 +1,4 @@
-import type { Box, Page, PageReservationSelector } from '../types';
+import type { Box, Page, PageRegionContent, PageReservationSelector } from '../types';
 import type { EngineRuntime } from '../runtime';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { PackagerUnit } from './packagers/packager-types';
@@ -90,6 +90,56 @@ export type ResolvedPlacementFrame = SpatialPlacementSurface & {
 export type SpatialPlacementDecision =
     | { action: 'commit' }
     | { action: 'defer'; nextCursorY: number };
+
+export type SplitMarkerPlacementState = {
+    currentY: number;
+    lastSpacingAfter: number;
+    pageLimit: number;
+    pageIndex: number;
+    availableWidth: number;
+};
+
+export type FragmentCommitState = {
+    currentY: number;
+    layoutDelta: number;
+    effectiveHeight: number;
+    marginBottom: number;
+    pageIndex: number;
+};
+
+export type SplitFragmentAftermathState = FragmentCommitState & {
+    actorId: string;
+    lastSpacingAfter: number;
+    pageLimit: number;
+    availableWidth: number;
+};
+
+export type AcceptedSplitAftermathState = SplitFragmentAftermathState & {
+    actorQueue: PackagerUnit[];
+    queueStartIndex: number;
+    queueReplaceCount: number;
+    predecessor: PackagerUnit;
+};
+
+export type PageRegionResolution = {
+    header: PageRegionContent | null;
+    footer: PageRegionContent | null;
+};
+
+export type PageOverrideState = 'inherit' | 'replace' | 'suppress';
+
+export type PageFinalizationState = {
+    pageIndex: number;
+    physicalPageNumber: number;
+    logicalPageNumber: number | null;
+    usesLogicalNumbering: boolean;
+    resolvedRegions: PageRegionResolution;
+    overrideSourceId: string | null;
+    headerOverride: PageOverrideState;
+    footerOverride: PageOverrideState;
+    renderedHeader: boolean;
+    renderedFooter: boolean;
+};
 
 export class ConstraintField {
     readonly reservations: RegionReservation[] = [];
@@ -348,6 +398,7 @@ export class LayoutSession {
     private readonly fragmentTransitionsBySource = new Map<string, FragmentTransition[]>();
     private readonly pageReservationsByPage = new Map<number, RegionReservation[]>();
     private readonly pageExclusionsByPage = new Map<number, SpatialExclusion[]>();
+    private readonly pageFinalizationStates = new Map<number, PageFinalizationState>();
     private readonly artifacts = new Map<string, unknown>();
     private finalizedPages: Page[] = [];
     private simulationReport?: SimulationReport;
@@ -370,6 +421,7 @@ export class LayoutSession {
         this.finalizedPages = [];
         this.pageReservationsByPage.clear();
         this.pageExclusionsByPage.clear();
+        this.pageFinalizationStates.clear();
         this.currentPageReservations = [];
         this.currentPageExclusions = [];
         for (const collaborator of this.collaborators) {
@@ -531,6 +583,18 @@ export class LayoutSession {
         return this.finalizedPages;
     }
 
+    recordPageFinalization(state: PageFinalizationState): void {
+        this.pageFinalizationStates.set(state.pageIndex, state);
+    }
+
+    getPageFinalizationState(pageIndex: number): PageFinalizationState | undefined {
+        return this.pageFinalizationStates.get(pageIndex);
+    }
+
+    getPageFinalizationStates(): readonly PageFinalizationState[] {
+        return Array.from(this.pageFinalizationStates.values()).sort((a, b) => a.pageIndex - b.pageIndex);
+    }
+
     reservePageSpace(reservation: PageReservationIntent, pageIndex: number = this.currentPageIndex): void {
         const selector = reservation.selector ?? 'current';
         if (selector !== 'current' && !this.matchesPageReservationSelector(pageIndex, selector)) {
@@ -669,6 +733,29 @@ export class LayoutSession {
         return this.continuationArtifacts.get(actorId);
     }
 
+    ensureContinuationArtifacts(actor: PackagerUnit): ContinuationArtifacts | undefined {
+        const cached = this.getContinuationArtifacts(actor.actorId);
+        if (cached) return cached;
+
+        const resolved = this.resolveContinuationArtifacts(actor);
+        if (resolved) {
+            this.setContinuationArtifacts(actor.actorId, resolved);
+        }
+        return resolved;
+    }
+
+    getSplitMarkerReserve(actor: PackagerUnit): number {
+        const artifacts = this.ensureContinuationArtifacts(actor);
+        const marker = artifacts?.markerAfterSplit;
+        if (!marker) return 0;
+
+        return (
+            Math.max(0, marker.measuredContentHeight || 0) +
+            Math.max(0, marker.marginTop || 0) +
+            Math.max(0, marker.marginBottom || 0)
+        );
+    }
+
     stageActorsBeforeContinuation(continuationActorId: string, actors: PackagerUnit[]): void {
         if (!actors.length) return;
         this.stagedContinuationActors.set(continuationActorId, actors);
@@ -692,6 +779,151 @@ export class LayoutSession {
         const markers = this.stagedAfterSplitMarkers.get(fragmentActorId) ?? [];
         this.stagedAfterSplitMarkers.delete(fragmentActorId);
         return markers;
+    }
+
+    placeSplitMarkersAfterFragment(
+        fragmentActorId: string,
+        state: SplitMarkerPlacementState,
+        positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
+    ): { boxes: Box[]; currentY: number; lastSpacingAfter: number } {
+        const markers = this.consumeMarkersAfterSplit(fragmentActorId);
+        const placedBoxes: Box[] = [];
+        let currentY = state.currentY;
+        let lastSpacingAfter = state.lastSpacingAfter;
+
+        for (const marker of markers) {
+            const markerMarginTop = Math.max(0, marker.marginTop || 0);
+            const markerMarginBottom = Math.max(0, marker.marginBottom || 0);
+            const markerLayoutBefore = lastSpacingAfter + markerMarginTop;
+            const markerTotalHeight =
+                Math.max(0, marker.measuredContentHeight || 0) +
+                markerLayoutBefore +
+                markerMarginBottom;
+            if (currentY + markerTotalHeight > state.pageLimit + LAYOUT_DEFAULTS.wrapTolerance) {
+                continue;
+            }
+
+            const positioned = positionMarker(
+                marker,
+                currentY,
+                markerLayoutBefore,
+                state.availableWidth,
+                state.pageIndex
+            );
+            const markerBoxes = Array.isArray(positioned) ? positioned : [positioned];
+            for (const box of markerBoxes) {
+                if (box.meta) box.meta = { ...box.meta, pageIndex: state.pageIndex };
+                placedBoxes.push(box);
+            }
+
+            const markerEffectiveHeight = Math.max(markerTotalHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+            currentY += markerEffectiveHeight - markerMarginBottom;
+            lastSpacingAfter = markerMarginBottom;
+        }
+
+        return { boxes: placedBoxes, currentY, lastSpacingAfter };
+    }
+
+    commitFragmentBoxes(
+        actor: PackagerUnit,
+        boxes: readonly Box[],
+        state: FragmentCommitState
+    ): { boxes: Box[]; currentY: number; lastSpacingAfter: number } {
+        const committedBoxes = boxes.map((box) => {
+            const committed = {
+                ...box,
+                y: (box.y || 0) + state.currentY + state.layoutDelta
+            };
+            if (committed.meta) {
+                committed.meta = { ...committed.meta, pageIndex: state.pageIndex };
+            }
+            return committed;
+        });
+
+        this.notifyActorCommitted(actor, committedBoxes);
+
+        return {
+            boxes: committedBoxes,
+            currentY: state.currentY + state.effectiveHeight - state.marginBottom,
+            lastSpacingAfter: state.marginBottom
+        };
+    }
+
+    commitSplitFragmentWithMarkers(
+        actor: PackagerUnit,
+        boxes: readonly Box[],
+        state: SplitFragmentAftermathState,
+        positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
+    ): { boxes: Box[]; currentY: number; lastSpacingAfter: number } {
+        const committed = this.commitFragmentBoxes(actor, boxes, state);
+        const markerPlacement = this.placeSplitMarkersAfterFragment(
+            state.actorId,
+            {
+                currentY: committed.currentY,
+                lastSpacingAfter: committed.lastSpacingAfter,
+                pageLimit: state.pageLimit,
+                pageIndex: state.pageIndex,
+                availableWidth: state.availableWidth
+            },
+            positionMarker
+        );
+
+        return {
+            boxes: [...committed.boxes, ...markerPlacement.boxes],
+            currentY: markerPlacement.currentY,
+            lastSpacingAfter: markerPlacement.lastSpacingAfter
+        };
+    }
+
+    finalizeAcceptedSplit(
+        attempt: SplitAttempt,
+        result: PackagerSplitResult,
+        boxes: readonly Box[],
+        state: AcceptedSplitAftermathState,
+        positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
+    ): { boxes: Box[]; currentY: number; lastSpacingAfter: number; continuationInstalled: boolean } {
+        if (!result.currentFragment) {
+            throw new Error('finalizeAcceptedSplit requires a current fragment');
+        }
+        this.notifySplitAccepted(attempt, result);
+        const committed = this.commitSplitFragmentWithMarkers(result.currentFragment, boxes, state, positionMarker);
+        const continuationInstalled = this.installContinuationIntoQueue(
+            state.actorQueue,
+            state.queueStartIndex,
+            state.queueReplaceCount,
+            state.predecessor,
+            result.continuationFragment
+        );
+
+        return {
+            boxes: committed.boxes,
+            currentY: committed.currentY,
+            lastSpacingAfter: committed.lastSpacingAfter,
+            continuationInstalled
+        };
+    }
+
+    installContinuationIntoQueue(
+        actorQueue: PackagerUnit[],
+        startIndex: number,
+        replaceCount: number,
+        predecessor: PackagerUnit,
+        continuation: PackagerUnit | null | undefined
+    ): boolean {
+        if (!continuation) {
+            actorQueue.splice(startIndex, replaceCount);
+            return false;
+        }
+
+        this.notifyContinuationEnqueued(predecessor, continuation);
+        const stagedActors = this.consumeActorsBeforeContinuation(continuation.actorId);
+        if (stagedActors.length > 0) {
+            actorQueue.splice(startIndex, replaceCount, ...stagedActors, continuation);
+            return true;
+        }
+
+        actorQueue.splice(startIndex, replaceCount, continuation);
+        return true;
     }
 
     setKeepWithNextPlan(actorId: string, plan: KeepWithNextPlan): void {
@@ -739,5 +971,21 @@ export class LayoutSession {
         entry.calls += 1;
         entry.ms += Number.isFinite(durationMs) ? Number(durationMs) : 0;
         this.profile.keepWithNextPrepareByKind[normalizedKind] = entry;
+    }
+
+    private resolveContinuationArtifacts(actor: PackagerUnit): ContinuationArtifacts | undefined {
+        const flowBox = (actor as any).flowBox as FlowBox | undefined;
+        if (!flowBox) return undefined;
+
+        const continuationSpec =
+            flowBox.properties?.paginationContinuation ??
+            flowBox._sourceElement?.properties?.paginationContinuation;
+        if (!continuationSpec) return undefined;
+
+        if (flowBox.properties && flowBox.properties.paginationContinuation === undefined) {
+            flowBox.properties.paginationContinuation = continuationSpec;
+        }
+
+        return ((actor as any).processor as any)?.getContinuationArtifacts?.(flowBox) as ContinuationArtifacts | undefined;
     }
 }

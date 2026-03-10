@@ -1,6 +1,11 @@
 import { Box, LayoutConfig, Page, PageRegionContent, PageRegionDefinition } from '../types';
 import { LayoutUtils } from './layout-utils';
-import { LayoutCollaborator, LayoutSession, PageSurface } from './layout-session';
+import {
+    LayoutCollaborator,
+    LayoutSession,
+    PageOverrideState,
+    PageSurface
+} from './layout-session';
 
 type RegionRect = {
     x: number;
@@ -28,10 +33,6 @@ export class PageRegionCollaborator implements LayoutCollaborator {
         this.logicalPageNumber = Math.max(0, Math.floor(Number(config.layout.pageNumberStart ?? 1)) - 1);
     }
 
-    onSimulationStart(_session: LayoutSession): void {
-        this.logicalPageNumber = Math.max(0, Math.floor(Number(this.config.layout.pageNumberStart ?? 1)) - 1);
-    }
-
     onPageFinalized(surface: PageSurface): void {
         const page: Page = surface.finalize();
         const baseline = resolveBaselineRegions(this.config, page.index);
@@ -54,6 +55,26 @@ export class PageRegionCollaborator implements LayoutCollaborator {
                 ...this.callbacks.layoutRegion(footerContent, getFooterRect(this.config, page), page.index, 'footer')
             );
         }
+
+        this.session?.recordPageFinalization({
+            pageIndex: page.index,
+            physicalPageNumber,
+            logicalPageNumber: logicalNumber,
+            usesLogicalNumbering: usesLogical,
+            resolvedRegions: resolved,
+            overrideSourceId: findOverrideSourceId(page, override),
+            headerOverride: resolveOverrideState(override?.header),
+            footerOverride: resolveOverrideState(override?.footer),
+            renderedHeader: !!headerContent,
+            renderedFooter: !!footerContent
+        });
+    }
+
+    private session?: LayoutSession;
+
+    onSimulationStart(session: LayoutSession): void {
+        this.logicalPageNumber = Math.max(0, Math.floor(Number(this.config.layout.pageNumberStart ?? 1)) - 1);
+        this.session = session;
     }
 }
 
@@ -66,6 +87,12 @@ export type PageOverrideCandidate = {
     header?: PageRegionContent | null;
     footer?: PageRegionContent | null;
 };
+
+export function resolveOverrideState(value: unknown): PageOverrideState {
+    if (value === undefined) return 'inherit';
+    if (value === null) return 'suppress';
+    return 'replace';
+}
 
 function resolveRegionDefinition(
     definition: PageRegionDefinition | undefined,
@@ -124,6 +151,21 @@ export function applyPageOverride(base: ResolvedRegions, override: PageOverrideC
         header: override.header !== undefined ? (override.header ?? null) : base.header,
         footer: override.footer !== undefined ? (override.footer ?? null) : base.footer
     };
+}
+
+export function findOverrideSourceId(page: Page, winningOverride: PageOverrideCandidate | null): string | null {
+    if (!winningOverride) return null;
+
+    for (const box of page.boxes || []) {
+        const overrides = box.properties?.pageOverrides;
+        if (!overrides) continue;
+        const sameHeader = overrides.header === winningOverride.header;
+        const sameFooter = overrides.footer === winningOverride.footer;
+        if (!sameHeader && !sameFooter) continue;
+        return box.meta?.sourceId ?? null;
+    }
+
+    return null;
 }
 
 function hasLogicalPageNumberTokenInText(text: string): boolean {
