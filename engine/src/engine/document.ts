@@ -8,6 +8,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 }
 
 const ROOT_KEYS = new Set(['documentVersion', 'layout', 'fonts', 'styles', 'elements', 'header', 'footer', 'debug']);
+const PAGE_RESERVATION_SELECTOR_VALUES = new Set(['first', 'odd', 'even', 'all']);
 const LAYOUT_KEYS = new Set([
     'pageSize',
     'orientation',
@@ -21,6 +22,11 @@ const LAYOUT_KEYS = new Set([
     'headerInsetBottom',
     'footerInsetTop',
     'footerInsetBottom',
+    '_experimentalPageReservationOnFirstPageStart',
+    '_experimentalPageStartReservationSelector',
+    '_experimentalPageStartExclusionTop',
+    '_experimentalPageStartExclusionHeight',
+    '_experimentalPageStartExclusionSelector',
     'pageNumberStart',
     'lang',
     'direction',
@@ -235,6 +241,35 @@ function validateLayout(layout: unknown, documentPath: string): void {
     if (obj.headerInsetBottom !== undefined) assertFiniteNumberAt(obj.headerInsetBottom, 'layout.headerInsetBottom', documentPath);
     if (obj.footerInsetTop !== undefined) assertFiniteNumberAt(obj.footerInsetTop, 'layout.footerInsetTop', documentPath);
     if (obj.footerInsetBottom !== undefined) assertFiniteNumberAt(obj.footerInsetBottom, 'layout.footerInsetBottom', documentPath);
+    if (obj._experimentalPageReservationOnFirstPageStart !== undefined) {
+        assertFiniteNumberAt(obj._experimentalPageReservationOnFirstPageStart, 'layout._experimentalPageReservationOnFirstPageStart', documentPath);
+    }
+    if (obj._experimentalPageStartReservationSelector !== undefined) {
+        assertStringAt(obj._experimentalPageStartReservationSelector, 'layout._experimentalPageStartReservationSelector', documentPath);
+        if (!PAGE_RESERVATION_SELECTOR_VALUES.has(String(obj._experimentalPageStartReservationSelector))) {
+            contractError(
+                documentPath,
+                'layout._experimentalPageStartReservationSelector',
+                'expected one of "first", "odd", "even", or "all".'
+            );
+        }
+    }
+    if (obj._experimentalPageStartExclusionTop !== undefined) {
+        assertFiniteNumberAt(obj._experimentalPageStartExclusionTop, 'layout._experimentalPageStartExclusionTop', documentPath);
+    }
+    if (obj._experimentalPageStartExclusionHeight !== undefined) {
+        assertFiniteNumberAt(obj._experimentalPageStartExclusionHeight, 'layout._experimentalPageStartExclusionHeight', documentPath);
+    }
+    if (obj._experimentalPageStartExclusionSelector !== undefined) {
+        assertStringAt(obj._experimentalPageStartExclusionSelector, 'layout._experimentalPageStartExclusionSelector', documentPath);
+        if (!PAGE_RESERVATION_SELECTOR_VALUES.has(String(obj._experimentalPageStartExclusionSelector))) {
+            contractError(
+                documentPath,
+                'layout._experimentalPageStartExclusionSelector',
+                'expected one of "first", "odd", "even", or "all".'
+            );
+        }
+    }
     if (obj.pageNumberStart !== undefined) assertFiniteNumberAt(obj.pageNumberStart, 'layout.pageNumberStart', documentPath);
     if (obj.lang !== undefined) assertStringAt(obj.lang, 'layout.lang', documentPath);
     if (obj.hyphenateCaps !== undefined) assertBooleanAt(obj.hyphenateCaps, 'layout.hyphenateCaps', documentPath);

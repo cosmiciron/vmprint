@@ -21,6 +21,13 @@ type FixtureMetric = {
     keepPreparedActors: number;
     keepEarlyExitCalls: number;
     keepPrepareKinds: string;
+    reservationCommitProbeCalls: number;
+    reservationCommitProbeMs: number;
+    reservationConstraintNegotiationCalls: number;
+    reservationConstraintNegotiationMs: number;
+    reservationConstraintApplications: number;
+    reservationWrites: number;
+    reservationArtifactMs: number;
 };
 
 type Summary = {
@@ -73,7 +80,14 @@ function average(metrics: FixtureMetric[]): FixtureMetric[] {
                 keepBranchMs: Number((sum((item) => item.keepBranchMs) / n).toFixed(2)),
                 keepPreparedActors: Number((sum((item) => item.keepPreparedActors) / n).toFixed(2)),
                 keepEarlyExitCalls: Number((sum((item) => item.keepEarlyExitCalls) / n).toFixed(2)),
-                keepPrepareKinds: sample.keepPrepareKinds
+                keepPrepareKinds: sample.keepPrepareKinds,
+                reservationCommitProbeCalls: Number((sum((item) => item.reservationCommitProbeCalls) / n).toFixed(2)),
+                reservationCommitProbeMs: Number((sum((item) => item.reservationCommitProbeMs) / n).toFixed(2)),
+                reservationConstraintNegotiationCalls: Number((sum((item) => item.reservationConstraintNegotiationCalls) / n).toFixed(2)),
+                reservationConstraintNegotiationMs: Number((sum((item) => item.reservationConstraintNegotiationMs) / n).toFixed(2)),
+                reservationConstraintApplications: Number((sum((item) => item.reservationConstraintApplications) / n).toFixed(2)),
+                reservationWrites: Number((sum((item) => item.reservationWrites) / n).toFixed(2)),
+                reservationArtifactMs: Number((sum((item) => item.reservationArtifactMs) / n).toFixed(2))
             };
         })
         .sort((left, right) => right.totalMs - left.totalMs);
@@ -148,7 +162,14 @@ async function run(): Promise<void> {
                 keepBranchMs: Number((profile.keepWithNextBranchMs || 0).toFixed(2)),
                 keepPreparedActors: Number(profile.keepWithNextPreparedActors || 0),
                 keepEarlyExitCalls: Number(profile.keepWithNextEarlyExitCalls || 0),
-                keepPrepareKinds: summarizePrepareKinds(profile)
+                keepPrepareKinds: summarizePrepareKinds(profile),
+                reservationCommitProbeCalls: Number(profile.reservationCommitProbeCalls || 0),
+                reservationCommitProbeMs: Number((profile.reservationCommitProbeMs || 0).toFixed(2)),
+                reservationConstraintNegotiationCalls: Number(profile.reservationConstraintNegotiationCalls || 0),
+                reservationConstraintNegotiationMs: Number((profile.reservationConstraintNegotiationMs || 0).toFixed(2)),
+                reservationConstraintApplications: Number(profile.reservationConstraintApplications || 0),
+                reservationWrites: Number(profile.reservationWrites || 0),
+                reservationArtifactMs: Number((profile.reservationArtifactMs || 0).toFixed(2))
             });
         }
     }

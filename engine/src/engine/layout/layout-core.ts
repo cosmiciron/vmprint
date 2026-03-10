@@ -13,12 +13,17 @@ import {
 } from './layout-core-types';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
 import { ContinuationMarkerCollaborator } from './continuation-marker-collaborator';
+import { ExperimentalPageReservationCollaborator } from './experimental-page-reservation-collaborator';
+import { ExperimentalPageStartExclusionCollaborator } from './experimental-page-start-exclusion-collaborator';
+import { ExperimentalPageStartReservationCollaborator } from './experimental-page-start-reservation-collaborator';
 import { FragmentTransitionArtifactCollaborator } from './fragment-transition-artifact-collaborator';
 import { freezeFlowFragment } from './flow-fragment-state';
 import { KeepWithNextCollaborator } from './keep-with-next-collaborator';
 import { PageRegionCollaborator } from './layout-page-finalization';
 import { PageNumberArtifactCollaborator } from './page-number-artifact-collaborator';
 import { PageOverrideArtifactCollaborator } from './page-override-artifact-collaborator';
+import { PageExclusionArtifactCollaborator } from './page-exclusion-artifact-collaborator';
+import { PageReservationArtifactCollaborator } from './page-reservation-artifact-collaborator';
 import { PageRegionArtifactCollaborator } from './page-region-artifact-collaborator';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import { createSimulationReportReader, SimulationReport, SimulationReportReader } from './simulation-report';
@@ -756,9 +761,14 @@ export class LayoutProcessor extends TextProcessor {
         return [
             new KeepWithNextCollaborator(),
             new ContinuationMarkerCollaborator(),
+            new ExperimentalPageStartExclusionCollaborator(this.config),
+            new ExperimentalPageStartReservationCollaborator(this.config),
+            new ExperimentalPageReservationCollaborator(),
             new FragmentTransitionArtifactCollaborator(),
+            new PageExclusionArtifactCollaborator(),
             new PageNumberArtifactCollaborator(this.config),
             new PageOverrideArtifactCollaborator(),
+            new PageReservationArtifactCollaborator(),
             new PageRegionArtifactCollaborator(),
             new SourcePositionArtifactCollaborator(),
             new PageRegionCollaborator(this.config, {

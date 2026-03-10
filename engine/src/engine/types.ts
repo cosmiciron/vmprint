@@ -4,6 +4,7 @@ export type HyphenationMode = 'off' | 'auto' | 'soft';
 export type JustifyEngineMode = 'legacy' | 'advanced';
 export type JustifyStrategy = 'auto' | 'space' | 'inter-character';
 export type ImageFitMode = 'contain' | 'fill';
+export type PageReservationSelector = 'first' | 'odd' | 'even' | 'all';
 export type VmprintDocumentVersion = '1.0';
 export type VmprintIRVersion = '1.0';
 
@@ -160,6 +161,7 @@ export interface ElementProperties extends Record<string, any> {
     marginTop?: number;
     marginBottom?: number;
     paginationContinuation?: Record<string, any>;
+    _experimentalPageReservationAfter?: number;
     pageOverrides?: {
         header?: PageRegionContent | null;
         footer?: PageRegionContent | null;
@@ -289,6 +291,11 @@ export interface LayoutConfig {
         headerInsetBottom?: number;
         footerInsetTop?: number;
         footerInsetBottom?: number;
+        _experimentalPageReservationOnFirstPageStart?: number;
+        _experimentalPageStartReservationSelector?: PageReservationSelector;
+        _experimentalPageStartExclusionTop?: number;
+        _experimentalPageStartExclusionHeight?: number;
+        _experimentalPageStartExclusionSelector?: PageReservationSelector;
         pageNumberStart?: number;
         lang?: string;
         direction?: TextDirection;

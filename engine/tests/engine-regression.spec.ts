@@ -399,6 +399,24 @@ function assertHeaderFooterTestSignals(pages: any[], fixtureName: string): void 
     });
 }
 
+function buildExperimentalReservationConfig() {
+    return {
+        layout: {
+            pageSize: { width: 320, height: 220 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
+            fontFamily: 'Arimo',
+            fontSize: 12,
+            lineHeight: 1.2
+        },
+        fonts: {
+            regular: 'Arimo'
+        },
+        styles: {
+            p: { marginBottom: 8, allowLineSplit: true, orphans: 2, widows: 2 }
+        }
+    } as const;
+}
+
 function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: string): void {
     const reader = engine.getLastSimulationReportReader?.();
     assert.ok(reader?.report, `${fixtureName}: expected simulation report`);
@@ -749,6 +767,138 @@ async function run() {
             );
         }
     }
+
+    await checkAsync(
+        'experimental page reservation system',
+        'a committed actor can reserve page space for subsequent actors through session-owned constraint state',
+        async () => {
+            const config = buildExperimentalReservationConfig();
+            const engine = new LayoutEngine(config);
+            await engine.waitForFonts();
+
+            const sharedText =
+                'VMPrint reservation probe text spans a few stable lines in a narrow measure. '.repeat(2);
+
+            const baselineElements = [
+                { type: 'p', content: sharedText, properties: { sourceId: 'probe-first' } },
+                { type: 'p', content: sharedText, properties: { sourceId: 'probe-second' } }
+            ];
+            const reservedElements = [
+                { type: 'p', content: sharedText, properties: { sourceId: 'probe-first', _experimentalPageReservationAfter: 100 } },
+                { type: 'p', content: sharedText, properties: { sourceId: 'probe-second' } }
+            ];
+
+            const baselinePages = engine.paginate(baselineElements as any);
+            const reservedPages = engine.paginate(reservedElements as any);
+
+            const findFirstPageIndexForSource = (pages: any[], sourceId: string): number => {
+                for (const page of pages) {
+                    if ((page.boxes || []).some((box: any) => {
+                        const actual = String(box.meta?.sourceId || '');
+                        return actual === sourceId || actual.endsWith(`:${sourceId}`);
+                    })) {
+                        return page.index;
+                    }
+                }
+                return -1;
+            };
+
+            assert.equal(baselinePages.length, 1, 'baseline probe should fit on a single page');
+            assert.equal(reservedPages.length, 2, 'reservation probe should push the second actor to a new page');
+            assert.equal(findFirstPageIndexForSource(baselinePages, 'probe-second'), 0, 'baseline second actor should stay on page 0');
+            assert.equal(findFirstPageIndexForSource(reservedPages, 'probe-second'), 1, 'reserved second actor should move to page 1');
+
+            const session = engine.getLastSimulationReportReader();
+            assert.ok(session.report, 'reservation probe should still publish a simulation report');
+            const reservationSummary = session.require(simulationArtifactKeys.pageReservationSummary);
+            assert.equal(reservationSummary.length, 1, 'reservation probe should publish one reservation summary entry');
+            assert.equal(reservationSummary[0]?.pageIndex, 0, 'reservation summary should point at the first page');
+            assert.equal(reservationSummary[0]?.reservationCount, 1, 'reservation summary should count the emitted reservation');
+            assert.ok((reservationSummary[0]?.totalReservedHeight || 0) >= 100, 'reservation summary should retain reserved height');
+
+            const pageStartReservationEngine = new LayoutEngine({
+                ...config,
+                layout: {
+                    ...config.layout,
+                    _experimentalPageReservationOnFirstPageStart: 120
+                }
+            } as any);
+            await pageStartReservationEngine.waitForFonts();
+
+            const pageStartReservedPages = pageStartReservationEngine.paginate(baselineElements as any);
+            assert.equal(pageStartReservedPages.length, 2, 'page-start reservation should also push the second actor to a new page');
+            assert.equal(findFirstPageIndexForSource(pageStartReservedPages, 'probe-second'), 1, 'page-start reservation should move the second actor to page 1');
+
+            const pageStartSession = pageStartReservationEngine.getLastSimulationReportReader();
+            assert.ok(pageStartSession.report, 'page-start reservation should still publish a simulation report');
+            const pageStartSummary = pageStartSession.require(simulationArtifactKeys.pageReservationSummary);
+            assert.equal(pageStartSummary.length, 1, 'page-start reservation should publish one reservation summary entry');
+            assert.equal(pageStartSummary[0]?.pageIndex, 0, 'page-start reservation should point at the first page');
+            assert.ok((pageStartSummary[0]?.totalReservedHeight || 0) >= 120, 'page-start reservation summary should retain the configured height');
+
+            const multiPageElements = Array.from({ length: 6 }, (_, index) => ({
+                type: 'p',
+                content: sharedText,
+                properties: { sourceId: `odd-probe-${index}` }
+            }));
+            const oddSelectorEngine = new LayoutEngine({
+                ...config,
+                layout: {
+                    ...config.layout,
+                    _experimentalPageReservationOnFirstPageStart: 20,
+                    _experimentalPageStartReservationSelector: 'odd'
+                }
+            } as any);
+            await oddSelectorEngine.waitForFonts();
+
+            const oddSelectorPages = oddSelectorEngine.paginate(multiPageElements as any);
+            assert.ok(oddSelectorPages.length >= 3, 'odd-selector reservation probe should produce at least three pages');
+
+            const oddSelectorSession = oddSelectorEngine.getLastSimulationReportReader();
+            const oddSelectorSummary = oddSelectorSession.require(simulationArtifactKeys.pageReservationSummary);
+            assert.ok(oddSelectorSummary.length >= 2, 'odd-selector reservation should publish multiple summary entries');
+            assert.ok(
+                oddSelectorSummary.every((entry) => entry.pageIndex % 2 === 0),
+                'odd-selector reservation should only target odd physical pages'
+            );
+
+            const exclusionEngine = new LayoutEngine({
+                ...config,
+                layout: {
+                    ...config.layout,
+                    _experimentalPageStartExclusionTop: 20,
+                    _experimentalPageStartExclusionHeight: 35,
+                    _experimentalPageStartExclusionSelector: 'first'
+                }
+            } as any);
+            await exclusionEngine.waitForFonts();
+
+            const exclusionPages = exclusionEngine.paginate(baselineElements as any);
+            assert.equal(exclusionPages.length, 1, 'page-start exclusion probe should stay on one page');
+
+            const findFirstBoxYForSource = (pages: any[], sourceId: string): number => {
+                for (const page of pages) {
+                    const box = (page.boxes || []).find((entry: any) => {
+                        const actual = String(entry.meta?.sourceId || '');
+                        return actual === sourceId || actual.endsWith(`:${sourceId}`);
+                    });
+                    if (box) return Number(box.y || 0);
+                }
+                return -1;
+            };
+
+            const baselineFirstY = findFirstBoxYForSource(baselinePages, 'probe-first');
+            const excludedFirstY = findFirstBoxYForSource(exclusionPages, 'probe-first');
+            assert.ok(excludedFirstY > baselineFirstY + 20, 'page-start exclusion should push the first actor noticeably lower on the page');
+
+            const exclusionSession = exclusionEngine.getLastSimulationReportReader();
+            assert.ok(exclusionSession.report, 'page-start exclusion should still publish a simulation report');
+            const exclusionSummary = exclusionSession.require(simulationArtifactKeys.pageExclusionSummary);
+            assert.equal(exclusionSummary.length, 1, 'page-start exclusion should publish one exclusion summary entry');
+            assert.equal(exclusionSummary[0]?.pageIndex, 0, 'page-start exclusion should target the first page');
+            assert.ok((exclusionSummary[0]?.totalExcludedHeight || 0) >= 35, 'page-start exclusion summary should retain the excluded height');
+        }
+    );
 
     console.log(`[engine-regression.spec] OK (${fixtures.length} fixtures)`);
 }

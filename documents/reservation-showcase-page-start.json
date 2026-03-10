@@ -1,0 +1,51 @@
+{
+  "documentVersion": "1.0",
+  "layout": {
+    "pageSize": { "width": 320, "height": 220 },
+    "margins": { "top": 20, "right": 20, "bottom": 20, "left": 20 },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.2,
+    "_experimentalPageReservationOnFirstPageStart": 120,
+    "_experimentalPageStartReservationSelector": "first"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "title": {
+      "fontSize": 16,
+      "fontWeight": 700,
+      "marginBottom": 10
+    },
+    "caption": {
+      "fontSize": 10,
+      "marginBottom": 10,
+      "color": "#555555"
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    }
+  },
+  "elements": [
+    {
+      "type": "title",
+      "content": "Reservation Showcase: Page Start"
+    },
+    {
+      "type": "caption",
+      "content": "The first page reserves height at page start. The same content that would normally fit now spills to page two before any actor-specific reservation is used."
+    },
+    {
+      "type": "p",
+      "content": "Opening actor. The page-start reservation is applied before this page lays out content."
+    },
+    {
+      "type": "p",
+      "content": "Follower actor. Because the first page begins with reserved height already deducted, this paragraph is pushed onto the next page."
+    }
+  ]
+}

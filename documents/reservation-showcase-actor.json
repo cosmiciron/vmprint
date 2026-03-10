@@ -1,0 +1,98 @@
+{
+  "documentVersion": "1.0",
+  "layout": {
+    "pageSize": { "width": 320, "height": 220 },
+    "margins": { "top": 20, "right": 20, "bottom": 20, "left": 20 },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.2
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "title": {
+      "fontSize": 16,
+      "fontWeight": 700,
+      "marginBottom": 10
+    },
+    "caption": {
+      "fontSize": 10,
+      "marginBottom": 10,
+      "color": "#555555"
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "reserved": {
+      "backgroundColor": "#f6e8d7",
+      "paddingTop": 6,
+      "paddingRight": 6,
+      "paddingBottom": 6,
+      "paddingLeft": 6,
+      "borderWidth": 1,
+      "borderColor": "#d4b28a",
+      "marginBottom": 8
+    },
+    "moved": {
+      "backgroundColor": "#e3f0ff",
+      "paddingTop": 6,
+      "paddingRight": 6,
+      "paddingBottom": 6,
+      "paddingLeft": 6,
+      "borderWidth": 1,
+      "borderColor": "#90b8e8",
+      "marginBottom": 8
+    }
+  },
+  "elements": [
+    {
+      "type": "title",
+      "content": "Reservation Showcase: After Commit"
+    },
+    {
+      "type": "caption",
+      "content": "The beige block reserves space after it commits. The blue block is forced onto the next page by session-owned reservation state."
+    },
+    {
+      "type": "p",
+      "content": "This page is intentionally small so the reservation effect is obvious."
+    },
+    {
+      "type": "p",
+      "content": "Reserved actor. After this actor commits, the experimental reservation system deducts extra height from the current page before the next actor is evaluated.",
+      "properties": {
+        "sourceId": "actor-reserved",
+        "_experimentalPageReservationAfter": 100,
+        "style": {
+          "backgroundColor": "#f6e8d7",
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "borderWidth": 1,
+          "borderColor": "#d4b28a"
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Moved actor. Without the reservation, this paragraph fits on page one. With the reservation, it begins on page two.",
+      "properties": {
+        "sourceId": "actor-moved",
+        "style": {
+          "backgroundColor": "#e3f0ff",
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "borderWidth": 1,
+          "borderColor": "#90b8e8"
+        }
+      }
+    }
+  ]
+}

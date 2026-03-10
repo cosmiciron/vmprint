@@ -111,7 +111,17 @@ export function paginatePackagers(
             context
         });
         session?.notifyConstraintNegotiation(packager, constraintField);
+        const blockedTopY = constraintField.resolveBlockedCursorY(currentY + layoutBefore);
+        if (blockedTopY > currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
+            currentY = blockedTopY - layoutBefore;
+            availableHeight = pageLimit - currentY;
+            if (availableHeight <= 0 && currentY > margins.top) {
+                pushNewPage();
+                continue;
+            }
+        }
         const availableHeightAdjusted = constraintField.effectiveAvailableHeight;
+        const effectiveAvailableHeight = layoutDelta + availableHeightAdjusted;
 
         preparePackagerForPhase(packager, 'commit', availableWidth, availableHeightAdjusted, context);
         session?.notifyActorPrepared(packager);
@@ -124,7 +134,7 @@ export function paginatePackagers(
                 actorQueue: packagers,
                 actorIndex: i,
                 availableWidth,
-                availableHeight,
+                availableHeight: effectiveAvailableHeight,
                 lastSpacingAfter,
                 isAtPageTop,
                 context
@@ -132,7 +142,7 @@ export function paginatePackagers(
             : null;
         const sequence = keepPlan?.sequence ?? [packager];
         const sequenceHeight = keepPlan?.sequenceHeight ?? (effectiveHeight - marginBottom);
-        const fitsOnCurrent = keepPlan?.fitsOnCurrent ?? (sequenceHeight <= availableHeight);
+        const fitsOnCurrent = keepPlan?.fitsOnCurrent ?? (sequenceHeight <= effectiveAvailableHeight);
 
         if (!fitsOnCurrent) {
             // Avoid stranding early keepWithNext units by splitting the final splittable unit.
@@ -143,7 +153,7 @@ export function paginatePackagers(
                 const prefix = keepPlan!.prefix;
                 const splitCandidate = keepPlan!.splitCandidate;
 
-                if (prefixFits && splitCandidate && !splitCandidate.isUnbreakable(availableHeight - prefixHeight)) {
+                if (prefixFits && splitCandidate && !splitCandidate.isUnbreakable(effectiveAvailableHeight - prefixHeight)) {
                     let continuation: any = null;
                     let markerReserve = 0;
                     continuation = session?.getContinuationArtifacts(splitCandidate.actorId);
@@ -272,7 +282,7 @@ export function paginatePackagers(
             }
         }
 
-        if (requiredHeight <= availableHeight) {
+        if (requiredHeight <= effectiveAvailableHeight) {
             const boxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
             if (!boxes) {
                 pushNewPage();
@@ -296,7 +306,7 @@ export function paginatePackagers(
 
         // It doesn't fit
         if (isAtPageTop) {
-            if (packager.isUnbreakable(availableHeight)) {
+            if (packager.isUnbreakable(effectiveAvailableHeight)) {
                 // It's unbreakable and we're at the top, we must force it or it's an error. 
                 // As per design: packager decides the overflow behavior. We just place it.
                 const boxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
@@ -318,7 +328,7 @@ export function paginatePackagers(
             }
         } else {
             const previewBoxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
-            if (packager.isUnbreakable(availableHeight) || !previewBoxes) {
+            if (packager.isUnbreakable(effectiveAvailableHeight) || !previewBoxes) {
                 // Try on a new page
                 pushNewPage();
                 continue;

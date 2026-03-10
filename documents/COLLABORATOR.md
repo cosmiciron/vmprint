@@ -295,11 +295,11 @@ This identity is then mirrored into `BoxMeta` at emit time — `BoxMeta` already
 
 ---
 
-## 9. Telemetry vs. Intent
+## 9. Artifacts vs. Intent
 
 One of the most important consequences of the simulation model is the distinction between **observation** and **influence**.
 
-### Telemetry Systems (Observe)
+### Artifact Systems (Observe)
 These observe committed simulation results and must not affect layout behavior.
 
 *   Table of contents capture — records committed heading positions and page indices
@@ -313,6 +313,17 @@ These influence the simulation before commitment via the constraint negotiation 
 *   Reserved region systems — reduce available page height before actor placement
 *   Exclusion zone systems — inject obstacles into `ConstraintField` (same mechanism as `StoryPackager`'s internal `SpatialMap`)
 *   Counter and running furniture systems — manage page-scoped state across frames
+
+### What Has Now Been Proven
+
+The engine has now demonstrated this distinction with a concrete reservation subsystem:
+
+*   **Observation path**: reservation state is published as a `pageReservationSummary` artifact in the simulation report.
+*   **Influence path**: reservation systems reduce `ConstraintField.effectiveAvailableHeight` before subsequent actor placement.
+*   **Multiple production phases**: reservations can be produced both after actor commitment and at page start.
+*   **Shared selector logic**: page targeting (`first`, `odd`, `even`, `all`) belongs to session-owned world-state logic, not to individual collaborator policy.
+
+This matters because it is the first proof that unusual layout behavior can be expressed as a shared simulation subsystem rather than as paginator-local special cases.
 
 ### The `SpatialMap` Bridge
 `SpatialMap` is already used as an internal exclusion mechanism inside `StoryPackager`. When `ConstraintField` is introduced as a shared simulation object, `SpatialMap` should be promoted to the shared system it conceptually is — the same mechanism that `StoryPackager` uses for float obstacles should be the mechanism that a `ReservedFooterRegionSystem` uses to carve out page margins. No new mechanism is needed; only promotion and sharing.
@@ -362,7 +373,7 @@ For documents where the TOC page count genuinely cannot be known in advance, a t
 
 At this phase:
 
-*   Telemetry systems produce their final artifacts (heading maps, index terms, source position maps).
+*   Artifact systems produce their final artifacts (heading maps, index terms, source position maps).
 *   The print pipeline receives the committed `Page[]` and the collaborator telemetry.
 *   Post-processing steps (TOC generation, cross-reference resolution, PDF bookmark trees) operate on this data.
 *   A targeted re-run, if needed, is initiated by the pipeline host — not by the collaborator system itself.
@@ -414,10 +425,10 @@ export interface LayoutCollaborator {
     onPageFinalized?(surface: PageSurface, session: LayoutSession): void;
 
     /**
-     * Called after all pages are complete. Telemetry systems produce final artifacts here.
-     * Return true to request a fixpoint re-run (see Section 10).
+     * Called after all pages are complete. Systems read finalized session-owned state
+     * and publish final artifacts here. Re-run decisions belong to the pipeline host.
      */
-    onSimulationComplete?(pages: Page[], session: LayoutSession): boolean | void;
+    onSimulationComplete?(session: LayoutSession): boolean | void;
 }
 ```
 
@@ -454,11 +465,31 @@ interface LayoutSession {
     notifyActorCommitted(actor: PackagerUnit, committed: Box[]): void;
     notifyContinuationProduced(predecessor: PackagerUnit, successor: PackagerUnit): void;
     notifyPageFinalized(): Page;
-    notifySimulationComplete(pages: Page[]): boolean;
+    finalizePages(pages: Page[]): Page[];
+
+    // Read-side runtime surfaces
+    getFinalizedPages(): readonly Page[];
+    getSimulationReport(): SimulationReport | undefined;
+    getSimulationReportReader(): SimulationReportReader;
 }
 ```
 
 `EngineRuntime` is unchanged. It holds shared infrastructure (font caches, measurement cache). `LayoutSession` holds per-run state. These are already conceptually separate; `LayoutSession` makes the boundary explicit.
+
+### `LayoutSession` as Selector Owner
+
+Reservation targeting is now a useful litmus test for whether a rule belongs in session-owned world state or in a collaborator.
+
+The answer is: **session-owned**.
+
+Collaborators may publish the intent to reserve space, but page selection logic such as:
+
+*   first page only
+*   odd pages
+*   even pages
+*   all pages
+
+should be interpreted by the session itself. This prevents each collaborator from reinventing page policy and keeps targeting logic deterministic, shared, and testable.
 
 ### `ConstraintField`
 

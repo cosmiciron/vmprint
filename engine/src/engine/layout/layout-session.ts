@@ -1,10 +1,11 @@
-import type { Box, Page } from '../types';
+import type { Box, Page, PageReservationSelector } from '../types';
 import type { EngineRuntime } from '../runtime';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { PackagerUnit } from './packagers/packager-types';
 import type { KeepWithNextPlan } from './keep-with-next-collaborator';
 import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
+import { LAYOUT_DEFAULTS } from './defaults';
 import type {
     SimulationArtifactKey,
     SimulationArtifactMap,
@@ -22,12 +23,23 @@ export type LayoutProfileMetrics = {
     keepWithNextPreparedActors: number;
     keepWithNextEarlyExitCalls: number;
     keepWithNextPrepareByKind: Record<string, { calls: number; ms: number }>;
+    reservationCommitProbeCalls: number;
+    reservationCommitProbeMs: number;
+    reservationConstraintNegotiationCalls: number;
+    reservationConstraintNegotiationMs: number;
+    reservationConstraintApplications: number;
+    reservationWrites: number;
+    reservationArtifactMs: number;
 };
 
 export type RegionReservation = {
     id: string;
     height: number;
     source?: string;
+};
+
+export type PageReservationIntent = RegionReservation & {
+    selector?: 'current' | PageReservationSelector;
 };
 
 export type SpatialExclusion = {
@@ -54,6 +66,29 @@ export class ConstraintField {
             return sum + height;
         }, 0);
         return Math.max(0, this.availableHeight - reserved);
+    }
+
+    resolveBlockedCursorY(cursorY: number): number {
+        let resolvedY = Number.isFinite(cursorY) ? Number(cursorY) : 0;
+        let advanced = true;
+
+        while (advanced) {
+            advanced = false;
+            for (const exclusion of this.exclusions) {
+                const top = Number.isFinite(exclusion.y) ? Math.max(0, Number(exclusion.y)) : 0;
+                const bottom = top + (Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0);
+                const spansWidth =
+                    Number(exclusion.x) <= LAYOUT_DEFAULTS.wrapTolerance &&
+                    (Number(exclusion.x) + Number(exclusion.w)) >= (this.availableWidth - LAYOUT_DEFAULTS.wrapTolerance);
+                if (!spansWidth) continue;
+                if (resolvedY + LAYOUT_DEFAULTS.wrapTolerance < top) continue;
+                if (resolvedY >= bottom - LAYOUT_DEFAULTS.wrapTolerance) continue;
+                resolvedY = bottom;
+                advanced = true;
+            }
+        }
+
+        return resolvedY;
     }
 }
 
@@ -134,7 +169,14 @@ export class LayoutSession {
         keepWithNextBranchMs: 0,
         keepWithNextPreparedActors: 0,
         keepWithNextEarlyExitCalls: 0,
-        keepWithNextPrepareByKind: {}
+        keepWithNextPrepareByKind: {},
+        reservationCommitProbeCalls: 0,
+        reservationCommitProbeMs: 0,
+        reservationConstraintNegotiationCalls: 0,
+        reservationConstraintNegotiationMs: 0,
+        reservationConstraintApplications: 0,
+        reservationWrites: 0,
+        reservationArtifactMs: 0
     };
     private readonly continuationArtifacts = new Map<string, ContinuationArtifacts>();
     private readonly stagedContinuationActors = new Map<string, PackagerUnit[]>();
@@ -143,11 +185,15 @@ export class LayoutSession {
     private readonly fragmentTransitions: FragmentTransition[] = [];
     private readonly fragmentTransitionsByActor = new Map<string, FragmentTransition>();
     private readonly fragmentTransitionsBySource = new Map<string, FragmentTransition[]>();
+    private readonly pageReservationsByPage = new Map<number, RegionReservation[]>();
+    private readonly pageExclusionsByPage = new Map<number, SpatialExclusion[]>();
     private readonly artifacts = new Map<string, unknown>();
     private finalizedPages: Page[] = [];
     private simulationReport?: SimulationReport;
     private simulationReportReader: SimulationReportReader = createSimulationReportReader(undefined);
     private paginationLoopState: PaginationLoopState | null = null;
+    private currentPageReservations: RegionReservation[] = [];
+    private currentPageExclusions: SpatialExclusion[] = [];
 
     currentPageIndex = 0;
     currentY = 0;
@@ -161,6 +207,10 @@ export class LayoutSession {
 
     notifySimulationStart(): void {
         this.finalizedPages = [];
+        this.pageReservationsByPage.clear();
+        this.pageExclusionsByPage.clear();
+        this.currentPageReservations = [];
+        this.currentPageExclusions = [];
         for (const collaborator of this.collaborators) {
             collaborator.onSimulationStart?.(this);
         }
@@ -176,6 +226,8 @@ export class LayoutSession {
     notifyPageStart(pageIndex: number, width: number, height: number, boxes: Box[]): void {
         this.currentPageIndex = pageIndex;
         this.currentSurface = new PageSurface(pageIndex, width, height, boxes);
+        this.currentPageReservations = [];
+        this.currentPageExclusions = [];
         for (const collaborator of this.collaborators) {
             collaborator.onPageStart?.(pageIndex, this.currentSurface, this);
         }
@@ -183,6 +235,16 @@ export class LayoutSession {
 
     notifyConstraintNegotiation(actor: PackagerUnit, constraints: ConstraintField): void {
         this.currentConstraintField = constraints;
+        const startedAt = performance.now();
+        this.recordProfile('reservationConstraintNegotiationCalls', 1);
+        for (const reservation of this.currentPageReservations) {
+            constraints.reservations.push({ ...reservation });
+            this.recordProfile('reservationConstraintApplications', 1);
+        }
+        for (const exclusion of this.currentPageExclusions) {
+            constraints.exclusions.push({ ...exclusion });
+        }
+        this.recordProfile('reservationConstraintNegotiationMs', performance.now() - startedAt);
         for (const collaborator of this.collaborators) {
             collaborator.onConstraintNegotiation?.(actor, constraints, this);
         }
@@ -289,6 +351,8 @@ export class LayoutSession {
             fragmentationSummary: this.artifacts.get(simulationArtifactKeys.fragmentationSummary) as SimulationArtifactMap['fragmentationSummary'],
             pageNumberSummary: this.artifacts.get(simulationArtifactKeys.pageNumberSummary) as SimulationArtifactMap['pageNumberSummary'],
             pageOverrideSummary: this.artifacts.get(simulationArtifactKeys.pageOverrideSummary) as SimulationArtifactMap['pageOverrideSummary'],
+            pageExclusionSummary: this.artifacts.get(simulationArtifactKeys.pageExclusionSummary) as SimulationArtifactMap['pageExclusionSummary'],
+            pageReservationSummary: this.artifacts.get(simulationArtifactKeys.pageReservationSummary) as SimulationArtifactMap['pageReservationSummary'],
             pageRegionSummary: this.artifacts.get(simulationArtifactKeys.pageRegionSummary) as SimulationArtifactMap['pageRegionSummary'],
             sourcePositionMap: this.artifacts.get(simulationArtifactKeys.sourcePositionMap) as SimulationArtifactMap['sourcePositionMap']
         };
@@ -303,6 +367,86 @@ export class LayoutSession {
 
     getFinalizedPages(): readonly Page[] {
         return this.finalizedPages;
+    }
+
+    reservePageSpace(reservation: PageReservationIntent, pageIndex: number = this.currentPageIndex): void {
+        const selector = reservation.selector ?? 'current';
+        if (selector !== 'current' && !this.matchesPageReservationSelector(pageIndex, selector)) {
+            return;
+        }
+
+        const normalizedHeight = Number.isFinite(reservation.height) ? Math.max(0, Number(reservation.height)) : 0;
+        if (!(normalizedHeight > 0)) return;
+
+        const normalized: RegionReservation = {
+            ...reservation,
+            height: normalizedHeight
+        };
+        if (pageIndex === this.currentPageIndex) {
+            this.currentPageReservations.push(normalized);
+        }
+        const pageReservations = this.pageReservationsByPage.get(pageIndex) ?? [];
+        pageReservations.push(normalized);
+        this.pageReservationsByPage.set(pageIndex, pageReservations);
+        this.recordProfile('reservationWrites', 1);
+    }
+
+    reserveCurrentPageSpace(reservation: RegionReservation): void {
+        this.reservePageSpace(reservation, this.currentPageIndex);
+    }
+
+    getCurrentPageReservations(): readonly RegionReservation[] {
+        return this.currentPageReservations;
+    }
+
+    getPageReservations(pageIndex: number): readonly RegionReservation[] {
+        return this.pageReservationsByPage.get(pageIndex) ?? [];
+    }
+
+    getReservationPageIndices(): readonly number[] {
+        return Array.from(this.pageReservationsByPage.keys()).sort((a, b) => a - b);
+    }
+
+    excludePageSpace(exclusion: SpatialExclusion, pageIndex: number = this.currentPageIndex): void {
+        const normalized: SpatialExclusion = {
+            ...exclusion,
+            x: Number.isFinite(exclusion.x) ? Number(exclusion.x) : 0,
+            y: Number.isFinite(exclusion.y) ? Math.max(0, Number(exclusion.y)) : 0,
+            w: Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0,
+            h: Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0
+        };
+        if (!(normalized.w > 0) || !(normalized.h > 0)) return;
+
+        if (pageIndex === this.currentPageIndex) {
+            this.currentPageExclusions.push(normalized);
+        }
+        const pageExclusions = this.pageExclusionsByPage.get(pageIndex) ?? [];
+        pageExclusions.push(normalized);
+        this.pageExclusionsByPage.set(pageIndex, pageExclusions);
+    }
+
+    getPageExclusions(pageIndex: number): readonly SpatialExclusion[] {
+        return this.pageExclusionsByPage.get(pageIndex) ?? [];
+    }
+
+    getExclusionPageIndices(): readonly number[] {
+        return Array.from(this.pageExclusionsByPage.keys()).sort((a, b) => a - b);
+    }
+
+    matchesPageReservationSelector(pageIndex: number, selector: PageReservationSelector = 'first'): boolean {
+        if (!Number.isFinite(pageIndex) || pageIndex < 0) return false;
+
+        switch (selector) {
+            case 'all':
+                return true;
+            case 'odd':
+                return pageIndex % 2 === 0;
+            case 'even':
+                return pageIndex % 2 === 1;
+            case 'first':
+            default:
+                return pageIndex === 0;
+        }
     }
 
     buildSimulationReport(): SimulationReport {
