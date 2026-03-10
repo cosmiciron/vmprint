@@ -36,6 +36,7 @@ type FixtureMetric = {
 };
 
 type Summary = {
+    warmupCount: number;
     repeatCount: number;
     fixtureCount: number;
     totalLayoutMs: number;
@@ -115,7 +116,9 @@ function summarizePrepareKinds(profile: {
 
 async function run(): Promise<void> {
     const repeatArg = process.argv.find((arg) => arg.startsWith('--repeat='));
+    const warmupArg = process.argv.find((arg) => arg.startsWith('--warmup='));
     const repeatCount = Math.max(1, Number.parseInt((repeatArg?.split('=')[1] || '3'), 10) || 3);
+    const warmupCount = Math.max(0, Number.parseInt((warmupArg?.split('=')[1] || '1'), 10) || 0);
 
     const fixturesDir = path.resolve(__dirname, 'fixtures', 'regression');
     const files = fs.readdirSync(fixturesDir)
@@ -127,7 +130,8 @@ async function run(): Promise<void> {
 
     const rawMetrics: FixtureMetric[] = [];
 
-    for (let runIndex = 0; runIndex < repeatCount; runIndex += 1) {
+    for (let runIndex = 0; runIndex < warmupCount + repeatCount; runIndex += 1) {
+        const shouldRecord = runIndex >= warmupCount;
         for (const file of files) {
             const fixturePath = path.join(fixturesDir, file);
             const document = resolveDocumentPaths(JSON.parse(fs.readFileSync(fixturePath, 'utf8')), fixturePath);
@@ -155,6 +159,8 @@ async function run(): Promise<void> {
             const renderer = new Renderer(config, false, runtime);
             await renderer.render(pages, context);
             const t3 = performance.now();
+
+            if (!shouldRecord) continue;
 
             rawMetrics.push({
                 file,
@@ -191,6 +197,7 @@ async function run(): Promise<void> {
 
     const averaged = average(rawMetrics);
     const summary: Summary = {
+        warmupCount,
         repeatCount,
         fixtureCount: files.length,
         totalLayoutMs: Number(averaged.reduce((acc, item) => acc + item.layoutMs, 0).toFixed(2)),
@@ -200,7 +207,7 @@ async function run(): Promise<void> {
     };
 
     console.log('=== VMPrint Engine Performance Benchmark ===');
-    console.log(`repeatCount=${repeatCount}, fixtures=${files.length}`);
+    console.log(`warmupCount=${warmupCount}, repeatCount=${repeatCount}, fixtures=${files.length}`);
     console.table(averaged);
     console.log('--- Summary ---');
     console.log(JSON.stringify(summary, null, 2));

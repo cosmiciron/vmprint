@@ -23,33 +23,6 @@ export function paginatePackagers(
     const pageLimit = contextBase.pageHeight - margins.bottom;
     const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
         prevAfter + marginTop;
-    const boxesOverlapExclusions = (boxes: LayoutBox[], exclusions: { x: number; y: number; w: number; h: number }[]): boolean => {
-        for (const box of boxes) {
-            const boxLeft = Number.isFinite(box.x) ? Number(box.x) : 0;
-            const boxTop = Number.isFinite(box.y) ? Number(box.y) : 0;
-            const boxRight = boxLeft + (Number.isFinite(box.w) ? Math.max(0, Number(box.w)) : 0);
-            const boxBottom = boxTop + (Number.isFinite(box.h) ? Math.max(0, Number(box.h)) : 0);
-
-            for (const exclusion of exclusions) {
-                const exclusionLeft = Number.isFinite(exclusion.x) ? Number(exclusion.x) : 0;
-                const exclusionTop = Number.isFinite(exclusion.y) ? Number(exclusion.y) : 0;
-                const exclusionRight = exclusionLeft + (Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0);
-                const exclusionBottom = exclusionTop + (Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0);
-
-                const overlapsHorizontally =
-                    boxLeft < exclusionRight - LAYOUT_DEFAULTS.wrapTolerance &&
-                    boxRight > exclusionLeft + LAYOUT_DEFAULTS.wrapTolerance;
-                const overlapsVertically =
-                    boxTop < exclusionBottom - LAYOUT_DEFAULTS.wrapTolerance &&
-                    boxBottom > exclusionTop + LAYOUT_DEFAULTS.wrapTolerance;
-                if (overlapsHorizontally && overlapsVertically) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    };
     const placeSplitMarkers = (markers: any[], availableWidth: number): void => {
         for (const marker of markers) {
             const markerLayoutBefore = resolveLayoutBefore(lastSpacingAfter, marker.marginTop || 0);
@@ -123,23 +96,22 @@ export function paginatePackagers(
         const layoutDelta = layoutBefore - marginTop;
         const constraintField = new ConstraintField(availableWidth, availableHeight - layoutDelta);
         session?.notifyConstraintNegotiation(packager, constraintField);
-        const blockedCursorStart = performance.now();
-        const blockedTopY = constraintField.resolveBlockedCursorY(currentY + layoutBefore);
+        const placementSurfaceStart = performance.now();
+        const placementSurface = constraintField.resolvePlacementSurface(currentY + layoutBefore);
         session?.recordProfile('exclusionBlockedCursorCalls', 1);
-        session?.recordProfile('exclusionBlockedCursorMs', performance.now() - blockedCursorStart);
-        if (blockedTopY > currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
-            currentY = blockedTopY - layoutBefore;
+        session?.recordProfile('exclusionBandResolutionCalls', 1);
+        const placementSurfaceDuration = performance.now() - placementSurfaceStart;
+        session?.recordProfile('exclusionBlockedCursorMs', placementSurfaceDuration);
+        session?.recordProfile('exclusionBandResolutionMs', placementSurfaceDuration);
+        if (placementSurface.cursorY > currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
+            currentY = placementSurface.cursorY - layoutBefore;
             availableHeight = pageLimit - currentY;
             if (availableHeight <= 0 && currentY > margins.top) {
                 pushNewPage();
                 continue;
             }
         }
-        const contentBandStart = performance.now();
-        const activeExclusionBand = constraintField.resolveActiveExclusionBand(currentY + layoutBefore);
-        const contentBand = activeExclusionBand ? constraintField.resolveActiveContentBand(currentY + layoutBefore) : null;
-        session?.recordProfile('exclusionBandResolutionCalls', 1);
-        session?.recordProfile('exclusionBandResolutionMs', performance.now() - contentBandStart);
+        const contentBand = placementSurface.contentBand;
         if (contentBand) {
             session?.recordProfile('exclusionLaneApplications', 1);
         }
@@ -336,13 +308,14 @@ export function paginatePackagers(
                 pushNewPage();
                 continue;
             }
-            if (activeExclusionBand && contentBand) {
+            if (contentBand) {
                 const absoluteBoxes = boxes.map((box) => ({
                     ...box,
                     y: (box.y || 0) + currentY + layoutDelta
                 }));
-                if (boxesOverlapExclusions(absoluteBoxes, activeExclusionBand.exclusions)) {
-                    currentY = Math.max(currentY, activeExclusionBand.bottom - layoutBefore);
+                const placementDecision = constraintField.evaluatePlacement(absoluteBoxes, currentY + layoutBefore);
+                if (placementDecision.action === 'defer') {
+                    currentY = Math.max(currentY, placementDecision.nextCursorY - layoutBefore);
                     availableHeight = pageLimit - currentY;
                     if (availableHeight <= 0 && currentY > margins.top) {
                         pushNewPage();

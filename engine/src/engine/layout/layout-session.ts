@@ -71,6 +71,16 @@ export type ActiveExclusionBand = {
     bottom: number;
 };
 
+export type SpatialPlacementSurface = {
+    cursorY: number;
+    activeBand: ActiveExclusionBand | null;
+    contentBand: ContentBand | null;
+};
+
+export type SpatialPlacementDecision =
+    | { action: 'commit' }
+    | { action: 'defer'; nextCursorY: number };
+
 export class ConstraintField {
     readonly reservations: RegionReservation[] = [];
     readonly exclusions: SpatialExclusion[] = [];
@@ -159,6 +169,52 @@ export class ConstraintField {
 
         if (!activeExclusions.length) return null;
         return { exclusions: activeExclusions, top, bottom };
+    }
+
+    resolvePlacementSurface(cursorY: number): SpatialPlacementSurface {
+        const resolvedCursorY = this.resolveBlockedCursorY(cursorY);
+        const activeBand = this.resolveActiveExclusionBand(resolvedCursorY);
+        return {
+            cursorY: resolvedCursorY,
+            activeBand,
+            contentBand: activeBand ? this.resolveActiveContentBand(resolvedCursorY) : null
+        };
+    }
+
+    evaluatePlacement(boxes: readonly Box[], cursorY: number): SpatialPlacementDecision {
+        const activeBand = this.resolveActiveExclusionBand(cursorY);
+        if (!activeBand) {
+            return { action: 'commit' };
+        }
+
+        for (const box of boxes) {
+            const boxLeft = Number.isFinite(box.x) ? Number(box.x) : 0;
+            const boxTop = Number.isFinite(box.y) ? Number(box.y) : 0;
+            const boxRight = boxLeft + (Number.isFinite(box.w) ? Math.max(0, Number(box.w)) : 0);
+            const boxBottom = boxTop + (Number.isFinite(box.h) ? Math.max(0, Number(box.h)) : 0);
+
+            for (const exclusion of activeBand.exclusions) {
+                const exclusionLeft = Number.isFinite(exclusion.x) ? Number(exclusion.x) : 0;
+                const exclusionTop = Number.isFinite(exclusion.y) ? Math.max(0, Number(exclusion.y)) : 0;
+                const exclusionRight = exclusionLeft + (Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0);
+                const exclusionBottom = exclusionTop + (Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0);
+
+                const overlapsHorizontally =
+                    boxLeft < exclusionRight - LAYOUT_DEFAULTS.wrapTolerance &&
+                    boxRight > exclusionLeft + LAYOUT_DEFAULTS.wrapTolerance;
+                const overlapsVertically =
+                    boxTop < exclusionBottom - LAYOUT_DEFAULTS.wrapTolerance &&
+                    boxBottom > exclusionTop + LAYOUT_DEFAULTS.wrapTolerance;
+                if (overlapsHorizontally && overlapsVertically) {
+                    return {
+                        action: 'defer',
+                        nextCursorY: activeBand.bottom
+                    };
+                }
+            }
+        }
+
+        return { action: 'commit' };
     }
 }
 
