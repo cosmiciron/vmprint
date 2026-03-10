@@ -1,7 +1,7 @@
 import { performance } from 'node:perf_hooks';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { LayoutCollaborator, LayoutSession, PaginationLoopState } from './layout-session';
-import { PackagerUnit } from './packagers/packager-types';
+import { PackagerUnit, preparePackagerForPhase } from './packagers/packager-types';
 
 export type KeepWithNextPlan = {
     sequence: PackagerUnit[];
@@ -29,14 +29,6 @@ function computeUnitHeight(unit: PackagerUnit, prevSpacingAfter: number): { heig
     };
 }
 
-function prepareLookaheadUnit(unit: PackagerUnit, availableWidth: number, availableHeight: number, context: PaginationLoopState['context']): void {
-    if (unit.prepareLookahead) {
-        unit.prepareLookahead(availableWidth, availableHeight, context);
-        return;
-    }
-    unit.prepare(availableWidth, availableHeight, context);
-}
-
 export function computeKeepWithNextPlan(state: PaginationLoopState, session?: LayoutSession): KeepWithNextPlan {
     const { actorQueue, actorIndex, availableWidth, lastSpacingAfter, context } = state;
     const packager = actorQueue[actorIndex];
@@ -62,7 +54,7 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
         }
         const remainingHeight = Math.max(0, state.availableHeight - sequenceHeight);
         const prepareStart = performance.now();
-        prepareLookaheadUnit(nextPackager, availableWidth, remainingHeight, context);
+        preparePackagerForPhase(nextPackager, 'lookahead', availableWidth, remainingHeight, context);
         const prepareMs = performance.now() - prepareStart;
         session?.recordProfile('keepWithNextPreparedActors', 1);
         session?.recordKeepWithNextPrepare(nextPackager.actorKind, prepareMs);

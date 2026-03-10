@@ -43,6 +43,11 @@ export type SimulationReport = {
 
 export type SimulationReportReader = {
     readonly report: SimulationReport | null | undefined;
+    readonly pageCount: number;
+    readonly actorCount: number;
+    readonly splitTransitionCount: number;
+    readonly generatedBoxCount: number;
+    readonly profile: LayoutProfileMetrics | undefined;
     get<K extends SimulationArtifactKey>(key: K): SimulationArtifactMap[K] | undefined;
     has<K extends SimulationArtifactKey>(key: K): boolean;
     require<K extends SimulationArtifactKey>(key: K): NonNullable<SimulationArtifactMap[K]>;
@@ -78,6 +83,11 @@ export function createSimulationReportReader(
 ): SimulationReportReader {
     return {
         report,
+        pageCount: report?.pageCount ?? 0,
+        actorCount: report?.actorCount ?? 0,
+        splitTransitionCount: report?.splitTransitionCount ?? 0,
+        generatedBoxCount: report?.generatedBoxCount ?? 0,
+        profile: report?.profile,
         get: (key) => getSimulationArtifact(report, key),
         has: (key) => hasSimulationArtifact(report, key),
         require: (key) => requireSimulationArtifact(report, key)

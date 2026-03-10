@@ -1,4 +1,3 @@
-import type { Page } from '../types';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 
@@ -10,26 +9,29 @@ export type FragmentationSummary = {
 };
 
 export class FragmentTransitionArtifactCollaborator implements LayoutCollaborator {
-    onSimulationComplete(_pages: Page[], session: LayoutSession): void {
-        const summaries = new Map<string, FragmentationSummary>();
-        for (const transition of session.getFragmentTransitions()) {
-            const existing = summaries.get(transition.sourceActorId) ?? {
-                sourceActorId: transition.sourceActorId,
+    onSimulationComplete(session: LayoutSession): void {
+        const summaries: FragmentationSummary[] = session.getFragmentTransitionSourceIds().map((sourceActorId) => {
+            const summary: FragmentationSummary = {
+                sourceActorId,
                 splitCount: 0,
                 continuationCount: 0,
                 pageIndices: []
             };
-            existing.splitCount += 1;
-            if (transition.continuationActorId) {
-                existing.continuationCount += 1;
-            }
-            if (!existing.pageIndices.includes(transition.pageIndex)) {
-                existing.pageIndices.push(transition.pageIndex);
-                existing.pageIndices.sort((a, b) => a - b);
-            }
-            summaries.set(transition.sourceActorId, existing);
-        }
 
-        session.publishArtifact(simulationArtifactKeys.fragmentationSummary, Array.from(summaries.values()));
+            for (const transition of session.getFragmentTransitionsBySource(sourceActorId)) {
+                summary.splitCount += 1;
+                if (transition.continuationActorId) {
+                    summary.continuationCount += 1;
+                }
+                if (!summary.pageIndices.includes(transition.pageIndex)) {
+                    summary.pageIndices.push(transition.pageIndex);
+                }
+            }
+
+            summary.pageIndices.sort((a, b) => a - b);
+            return summary;
+        });
+
+        session.publishArtifact(simulationArtifactKeys.fragmentationSummary, summaries);
     }
 }

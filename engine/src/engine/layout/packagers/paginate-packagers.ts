@@ -4,7 +4,7 @@ import { LayoutProcessor } from '../layout-core';
 import { LAYOUT_DEFAULTS } from '../defaults';
 import { computeKeepWithNextPlan } from '../keep-with-next-collaborator';
 import { ConstraintField, LayoutSession } from '../layout-session';
-import { PackagerContext, PackagerUnit, LayoutBox } from './packager-types';
+import { PackagerContext, PackagerUnit, LayoutBox, preparePackagerForPhase } from './packager-types';
 
 export function paginatePackagers(
     processor: LayoutProcessor,
@@ -113,7 +113,7 @@ export function paginatePackagers(
         session?.notifyConstraintNegotiation(packager, constraintField);
         const availableHeightAdjusted = constraintField.effectiveAvailableHeight;
 
-        packager.prepare(availableWidth, availableHeightAdjusted, context);
+        preparePackagerForPhase(packager, 'commit', availableWidth, availableHeightAdjusted, context);
         session?.notifyActorPrepared(packager);
         const contentHeight = Math.max(0, packager.getRequiredHeight() - marginTop - marginBottom);
         let requiredHeight = contentHeight + layoutBefore + marginBottom;

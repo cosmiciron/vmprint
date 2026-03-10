@@ -1,4 +1,3 @@
-import type { Page } from '../types';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 
@@ -10,7 +9,8 @@ export type PageRegionSummary = {
 };
 
 export class PageRegionArtifactCollaborator implements LayoutCollaborator {
-    onSimulationComplete(pages: Page[], session: LayoutSession): void {
+    onSimulationComplete(session: LayoutSession): void {
+        const pages = session.getFinalizedPages();
         const summaries: PageRegionSummary[] = pages.map((page) => {
             let headerBoxes = 0;
             let footerBoxes = 0;

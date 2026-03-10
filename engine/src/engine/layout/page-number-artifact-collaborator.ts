@@ -1,4 +1,4 @@
-import type { LayoutConfig, Page } from '../types';
+import type { LayoutConfig } from '../types';
 import {
     applyPageOverride,
     findWinningPageOverride,
@@ -20,7 +20,8 @@ export type PageNumberSummary = {
 export class PageNumberArtifactCollaborator implements LayoutCollaborator {
     constructor(private readonly config: LayoutConfig) {}
 
-    onSimulationComplete(pages: Page[], session: LayoutSession): void {
+    onSimulationComplete(session: LayoutSession): void {
+        const pages = session.getFinalizedPages();
         let logicalPageNumber = Math.max(0, Math.floor(Number(this.config.layout.pageNumberStart ?? 1)) - 1);
         const summaries: PageNumberSummary[] = pages.map((page) => {
             const baseline = resolveBaselineRegions(this.config, page.index);

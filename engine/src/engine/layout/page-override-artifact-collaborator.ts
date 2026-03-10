@@ -1,4 +1,3 @@
-import type { Page } from '../types';
 import { findWinningPageOverride } from './layout-page-finalization';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
@@ -17,7 +16,8 @@ function resolveOverrideState(value: unknown): 'inherit' | 'replace' | 'suppress
 }
 
 export class PageOverrideArtifactCollaborator implements LayoutCollaborator {
-    onSimulationComplete(pages: Page[], session: LayoutSession): void {
+    onSimulationComplete(session: LayoutSession): void {
+        const pages = session.getFinalizedPages();
         const summaries: PageOverrideSummary[] = pages.map((page) => {
             const winningOverride = findWinningPageOverride(page);
             let overrideSourceId: string | null = null;

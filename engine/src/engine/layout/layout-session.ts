@@ -5,8 +5,14 @@ import type { PackagerUnit } from './packagers/packager-types';
 import type { KeepWithNextPlan } from './keep-with-next-collaborator';
 import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
-import type { SimulationArtifactKey, SimulationArtifactMap, SimulationArtifacts, SimulationReport } from './simulation-report';
-import { simulationArtifactKeys } from './simulation-report';
+import type {
+    SimulationArtifactKey,
+    SimulationArtifactMap,
+    SimulationArtifacts,
+    SimulationReport,
+    SimulationReportReader
+} from './simulation-report';
+import { createSimulationReportReader, simulationArtifactKeys } from './simulation-report';
 
 export type LayoutProfileMetrics = {
     keepWithNextPlanCalls: number;
@@ -99,7 +105,7 @@ export interface LayoutCollaborator {
     onActorCommitted?(actor: PackagerUnit, committed: Box[], surface: PageSurface, session: LayoutSession): void;
     onContinuationProduced?(predecessor: PackagerUnit, successor: PackagerUnit, session: LayoutSession): void;
     onPageFinalized?(surface: PageSurface, session: LayoutSession): void;
-    onSimulationComplete?(pages: Page[], session: LayoutSession): boolean | void;
+    onSimulationComplete?(session: LayoutSession): boolean | void;
 }
 
 export type PaginationLoopState = {
@@ -138,7 +144,9 @@ export class LayoutSession {
     private readonly fragmentTransitionsByActor = new Map<string, FragmentTransition>();
     private readonly fragmentTransitionsBySource = new Map<string, FragmentTransition[]>();
     private readonly artifacts = new Map<string, unknown>();
+    private finalizedPages: Page[] = [];
     private simulationReport?: SimulationReport;
+    private simulationReportReader: SimulationReportReader = createSimulationReportReader(undefined);
     private paginationLoopState: PaginationLoopState | null = null;
 
     currentPageIndex = 0;
@@ -152,6 +160,7 @@ export class LayoutSession {
     }
 
     notifySimulationStart(): void {
+        this.finalizedPages = [];
         for (const collaborator of this.collaborators) {
             collaborator.onSimulationStart?.(this);
         }
@@ -254,9 +263,13 @@ export class LayoutSession {
             return surface.finalize();
         });
 
+        this.finalizedPages = finalizedPages;
+
         for (const collaborator of this.collaborators) {
-            collaborator.onSimulationComplete?.(finalizedPages, this);
+            collaborator.onSimulationComplete?.(this);
         }
+
+        this.setSimulationReport(this.buildSimulationReport());
 
         return finalizedPages;
     }
@@ -288,12 +301,42 @@ export class LayoutSession {
         return artifacts;
     }
 
+    getFinalizedPages(): readonly Page[] {
+        return this.finalizedPages;
+    }
+
+    buildSimulationReport(): SimulationReport {
+        const pages = this.finalizedPages;
+        const generatedBoxCount = pages.reduce((sum, page) => {
+            return sum + (page.boxes || []).reduce((pageSum, box) => {
+                return pageSum + (box.meta?.generated === true ? 1 : 0);
+            }, 0);
+        }, 0);
+
+        return {
+            pageCount: pages.length,
+            actorCount: this.actorRegistry.length,
+            splitTransitionCount: this.getFragmentTransitions().length,
+            generatedBoxCount,
+            profile: {
+                ...this.profile,
+                keepWithNextPrepareByKind: { ...this.profile.keepWithNextPrepareByKind }
+            },
+            artifacts: this.buildSimulationArtifacts()
+        };
+    }
+
     setSimulationReport(report: SimulationReport): void {
         this.simulationReport = report;
+        this.simulationReportReader = createSimulationReportReader(report);
     }
 
     getSimulationReport(): SimulationReport | undefined {
         return this.simulationReport;
+    }
+
+    getSimulationReportReader(): SimulationReportReader {
+        return this.simulationReportReader;
     }
 
     setContinuationArtifacts(actorId: string, artifacts: ContinuationArtifacts): void {
@@ -355,6 +398,10 @@ export class LayoutSession {
 
     getFragmentTransitionsBySource(sourceActorId: string): readonly FragmentTransition[] {
         return this.fragmentTransitionsBySource.get(sourceActorId) ?? [];
+    }
+
+    getFragmentTransitionSourceIds(): readonly string[] {
+        return Array.from(this.fragmentTransitionsBySource.keys());
     }
 
     recordProfile(metric: keyof LayoutProfileMetrics, delta: number): void {

@@ -1,4 +1,3 @@
-import type { Page } from '../types';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 
@@ -12,7 +11,8 @@ export type SourcePositionSummary = {
 };
 
 export class SourcePositionArtifactCollaborator implements LayoutCollaborator {
-    onSimulationComplete(pages: Page[], session: LayoutSession): void {
+    onSimulationComplete(session: LayoutSession): void {
+        const pages = session.getFinalizedPages();
         const summaries = new Map<string, SourcePositionSummary>();
 
         for (const page of pages) {

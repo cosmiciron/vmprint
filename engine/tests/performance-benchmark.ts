@@ -41,7 +41,6 @@ const {
     toLayoutConfig,
     resolveDocumentPaths,
     LayoutUtils,
-    createSimulationReportReader
 } = engine as any;
 const { MockContext, loadLocalFontManager } = harness as any;
 
@@ -116,7 +115,7 @@ async function run(): Promise<void> {
             const t1 = performance.now();
             const pages = engineInstance.paginate(document.elements);
             const t2 = performance.now();
-            const reportReader = createSimulationReportReader(engineInstance.getLastSimulationReport?.());
+            const reportReader = engineInstance.getLastSimulationReportReader?.() || { report: undefined };
             const profile = reportReader.report?.profile || {
                 keepWithNextPlanCalls: 0,
                 keepWithNextPlanMs: 0,

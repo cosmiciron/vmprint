@@ -18,6 +18,8 @@ export type PackagerSplitResult = {
     continuationFragment: PackagerUnit | null;
 };
 
+export type PackagerPreparationPhase = 'commit' | 'lookahead';
+
 export interface PackagerUnit {
     readonly actorId: string;
     readonly sourceId: string;
@@ -61,4 +63,19 @@ export interface PackagerUnit {
 
     readonly pageBreakBefore?: boolean;
     readonly keepWithNext?: boolean;
+}
+
+export function preparePackagerForPhase(
+    unit: PackagerUnit,
+    phase: PackagerPreparationPhase,
+    availableWidth: number,
+    availableHeight: number,
+    context: PackagerContext
+): void {
+    if (phase === 'lookahead' && unit.prepareLookahead) {
+        unit.prepareLookahead(availableWidth, availableHeight, context);
+        return;
+    }
+
+    unit.prepare(availableWidth, availableHeight, context);
 }

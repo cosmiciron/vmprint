@@ -21,8 +21,7 @@ import { PageNumberArtifactCollaborator } from './page-number-artifact-collabora
 import { PageOverrideArtifactCollaborator } from './page-override-artifact-collaborator';
 import { PageRegionArtifactCollaborator } from './page-region-artifact-collaborator';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
-import { SimulationReport } from './simulation-report';
-import { SimulationReportCollaborator } from './simulation-report-collaborator';
+import { createSimulationReportReader, SimulationReport, SimulationReportReader } from './simulation-report';
 import { SourcePositionArtifactCollaborator } from './source-position-artifact-collaborator';
 import {
     buildTableModel,
@@ -383,12 +382,13 @@ export class LayoutProcessor extends TextProcessor {
         return session.finalizePages(pages);
     }
 
-    getLastLayoutSession(): LayoutSession | null {
-        return this.lastLayoutSession;
-    }
-
     getLastSimulationReport(): SimulationReport | undefined {
         return this.lastLayoutSession?.getSimulationReport();
+    }
+
+    getLastSimulationReportReader(): SimulationReportReader {
+        return this.lastLayoutSession?.getSimulationReportReader()
+            ?? createSimulationReportReader(undefined);
     }
 
     private shapeTableElement(element: Element, identitySeed?: FlowIdentitySeed): FlowBox {
@@ -761,7 +761,6 @@ export class LayoutProcessor extends TextProcessor {
             new PageOverrideArtifactCollaborator(),
             new PageRegionArtifactCollaborator(),
             new SourcePositionArtifactCollaborator(),
-            new SimulationReportCollaborator(),
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType) =>
                     this.layoutRegion(content, rect, pageIndex, sourceType)
