@@ -13,10 +13,17 @@ import {
 } from './layout-core-types';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
 import { ContinuationMarkerCollaborator } from './continuation-marker-collaborator';
+import { FragmentTransitionTelemetryCollaborator } from './fragment-transition-telemetry-collaborator';
 import { freezeFlowFragment } from './flow-fragment-state';
 import { KeepWithNextCollaborator } from './keep-with-next-collaborator';
 import { PageRegionCollaborator } from './layout-page-finalization';
+import { PageNumberTelemetryCollaborator } from './page-number-telemetry-collaborator';
+import { PageOverrideTelemetryCollaborator } from './page-override-telemetry-collaborator';
+import { PageRegionTelemetryCollaborator } from './page-region-telemetry-collaborator';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
+import { SimulationReport } from './simulation-report';
+import { SimulationReportCollaborator } from './simulation-report-collaborator';
+import { SourcePositionMapCollaborator } from './source-position-map-collaborator';
 import {
     buildTableModel,
     isTableElement,
@@ -378,6 +385,10 @@ export class LayoutProcessor extends TextProcessor {
 
     getLastLayoutSession(): LayoutSession | null {
         return this.lastLayoutSession;
+    }
+
+    getLastSimulationReport(): SimulationReport | undefined {
+        return this.lastLayoutSession?.getSimulationReport();
     }
 
     private shapeTableElement(element: Element, identitySeed?: FlowIdentitySeed): FlowBox {
@@ -745,6 +756,12 @@ export class LayoutProcessor extends TextProcessor {
         return [
             new KeepWithNextCollaborator(),
             new ContinuationMarkerCollaborator(),
+            new FragmentTransitionTelemetryCollaborator(),
+            new PageNumberTelemetryCollaborator(this.config),
+            new PageOverrideTelemetryCollaborator(),
+            new PageRegionTelemetryCollaborator(),
+            new SourcePositionMapCollaborator(),
+            new SimulationReportCollaborator(),
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType) =>
                     this.layoutRegion(content, rect, pageIndex, sourceType)

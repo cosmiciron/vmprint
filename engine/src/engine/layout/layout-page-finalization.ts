@@ -57,12 +57,12 @@ export class PageRegionCollaborator implements LayoutCollaborator {
     }
 }
 
-type ResolvedRegions = {
+export type ResolvedRegions = {
     header: PageRegionContent | null;
     footer: PageRegionContent | null;
 };
 
-type PageOverrideCandidate = {
+export type PageOverrideCandidate = {
     header?: PageRegionContent | null;
     footer?: PageRegionContent | null;
 };
@@ -85,14 +85,14 @@ function resolveRegionDefinition(
     return definition.default ?? null;
 }
 
-function resolveBaselineRegions(config: LayoutConfig, pageIndex: number): ResolvedRegions {
+export function resolveBaselineRegions(config: LayoutConfig, pageIndex: number): ResolvedRegions {
     return {
         header: resolveRegionDefinition(config.header, pageIndex),
         footer: resolveRegionDefinition(config.footer, pageIndex)
     };
 }
 
-function findWinningPageOverride(page: Page): PageOverrideCandidate | null {
+export function findWinningPageOverride(page: Page): PageOverrideCandidate | null {
     const seen = new Set<string>();
     let firstCandidate: PageOverrideCandidate | null = null;
 
@@ -118,7 +118,7 @@ function findWinningPageOverride(page: Page): PageOverrideCandidate | null {
     return firstCandidate;
 }
 
-function applyPageOverride(base: ResolvedRegions, override: PageOverrideCandidate | null): ResolvedRegions {
+export function applyPageOverride(base: ResolvedRegions, override: PageOverrideCandidate | null): ResolvedRegions {
     if (!override) return base;
     return {
         header: override.header !== undefined ? (override.header ?? null) : base.header,
@@ -136,7 +136,7 @@ function elementContainsLogicalPageNumber(element: { content?: string; children?
     return element.children.some((child) => elementContainsLogicalPageNumber(child));
 }
 
-function regionContainsLogicalPageNumber(content: PageRegionContent | null): boolean {
+export function regionContainsLogicalPageNumber(content: PageRegionContent | null): boolean {
     if (!content) return false;
     return (content.elements || []).some((element) => elementContainsLogicalPageNumber(element));
 }

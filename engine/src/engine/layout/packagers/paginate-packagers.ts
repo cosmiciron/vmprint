@@ -5,7 +5,6 @@ import { LAYOUT_DEFAULTS } from '../defaults';
 import { computeKeepWithNextPlan } from '../keep-with-next-collaborator';
 import { ConstraintField, LayoutSession } from '../layout-session';
 import { PackagerContext, PackagerUnit, LayoutBox } from './packager-types';
-import { FlowBoxPackager } from './flow-box-packager';
 
 export function paginatePackagers(
     processor: LayoutProcessor,
@@ -24,6 +23,34 @@ export function paginatePackagers(
     const pageLimit = contextBase.pageHeight - margins.bottom;
     const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
         prevAfter + marginTop;
+    const placeSplitMarkers = (markers: any[], availableWidth: number): void => {
+        for (const marker of markers) {
+            const markerLayoutBefore = resolveLayoutBefore(lastSpacingAfter, marker.marginTop || 0);
+            const markerTotalHeight =
+                Math.max(0, marker.measuredContentHeight || 0) +
+                markerLayoutBefore +
+                Math.max(0, marker.marginBottom || 0);
+            if (currentY + markerTotalHeight > pageLimit + LAYOUT_DEFAULTS.wrapTolerance) {
+                continue;
+            }
+            const positioned = (processor as any).positionFlowBox(
+                marker,
+                currentY,
+                markerLayoutBefore,
+                margins,
+                availableWidth,
+                currentPageIndex
+            );
+            const markerBoxes = Array.isArray(positioned) ? positioned : [positioned];
+            for (const box of markerBoxes) {
+                if (box.meta) box.meta = { ...box.meta, pageIndex: currentPageIndex };
+                currentPageBoxes.push(box);
+            }
+            const markerEffectiveHeight = Math.max(markerTotalHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+            currentY += markerEffectiveHeight - Math.max(0, marker.marginBottom || 0);
+            lastSpacingAfter = Math.max(0, marker.marginBottom || 0);
+        }
+    };
 
     session?.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
 
@@ -179,8 +206,19 @@ export function paginatePackagers(
                         pageIndex: currentPageIndex,
                         cursorY: currentY
                     };
+                    const splitAttempt = {
+                        actor: splitCandidate,
+                        availableWidth,
+                        availableHeight: candidateAvailable,
+                        context: splitContext
+                    };
+                    session?.notifySplitAttempt(splitAttempt);
                     const { currentFragment: partA, continuationFragment: partB } = splitCandidate.split(candidateAvailable, splitContext);
                     if (partA && partB) {
+                        session?.notifySplitAccepted(splitAttempt, {
+                            currentFragment: partA,
+                            continuationFragment: partB
+                        });
                         const partAContext = {
                             ...contextBase,
                             pageIndex: currentPageIndex,
@@ -200,46 +238,15 @@ export function paginatePackagers(
                         const partAEffectiveHeight = Math.max(partARequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
                         currentY += partAEffectiveHeight - partAMarginBottom;
                         lastSpacingAfter = partAMarginBottom;
-
-                        if (continuation?.markerAfterSplit) {
-                            const marker = continuation.markerAfterSplit;
-                            const markerLayoutBefore = resolveLayoutBefore(lastSpacingAfter, marker.marginTop || 0);
-                            const markerTotalHeight =
-                                Math.max(0, marker.measuredContentHeight || 0) +
-                                markerLayoutBefore +
-                                Math.max(0, marker.marginBottom || 0);
-                            if (currentY + markerTotalHeight <= pageLimit + LAYOUT_DEFAULTS.wrapTolerance) {
-                                const positioned = (processor as any).positionFlowBox(
-                                    marker,
-                                    currentY,
-                                    markerLayoutBefore,
-                                    margins,
-                                    availableWidth,
-                                    currentPageIndex
-                                );
-                                const markerBoxes = Array.isArray(positioned) ? positioned : [positioned];
-                                for (const box of markerBoxes) {
-                                    if (box.meta) box.meta = { ...box.meta, pageIndex: currentPageIndex };
-                                    currentPageBoxes.push(box);
-                                }
-                                const markerEffectiveHeight = Math.max(markerTotalHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-                                currentY += markerEffectiveHeight - Math.max(0, marker.marginBottom || 0);
-                                lastSpacingAfter = Math.max(0, marker.marginBottom || 0);
-                            }
-                        }
+                        placeSplitMarkers(session?.consumeMarkersAfterSplit(partA.actorId) ?? [], availableWidth);
 
                         pushNewPage();
                         if (partB) {
-                            session?.notifyContinuationProduced(splitCandidate, partB);
+                            session?.notifyContinuationEnqueued(splitCandidate, partB);
                         }
-                        if (continuation?.markersBeforeContinuation?.length > 0) {
-                            const markerPackagers = continuation.markersBeforeContinuation.map((marker: any) =>
-                                new FlowBoxPackager(processor, marker)
-                            );
-                            for (const markerPackager of markerPackagers) {
-                                session?.notifyActorSpawn(markerPackager);
-                            }
-                            packagers.splice(i, sequence.length, ...markerPackagers, partB);
+                        const stagedActors = partB ? (session?.consumeActorsBeforeContinuation(partB.actorId) ?? []) : [];
+                        if (stagedActors.length > 0) {
+                            packagers.splice(i, sequence.length, ...stagedActors, partB);
                         } else {
                             packagers.splice(i, sequence.length, partB);
                         }
@@ -359,6 +366,13 @@ export function paginatePackagers(
         }
 
         const splitAvailableHeight = availableHeightAdjusted - markerReserve;
+        const splitAttempt = {
+            actor: packager,
+            availableWidth,
+            availableHeight: splitAvailableHeight,
+            context
+        };
+        session?.notifySplitAttempt(splitAttempt);
         const { currentFragment: fitsCurrent, continuationFragment: pushedNext } = packager.split(splitAvailableHeight, context);
 
         if (!fitsCurrent) {
@@ -386,6 +400,10 @@ export function paginatePackagers(
         }
 
         // We have a successful split
+        session?.notifySplitAccepted(splitAttempt, {
+            currentFragment: fitsCurrent,
+            continuationFragment: pushedNext
+        });
         const splitContext: PackagerContext = {
             ...contextBase,
             pageIndex: currentPageIndex,
@@ -411,47 +429,15 @@ export function paginatePackagers(
 
         currentY += fitsEffectiveHeight - fitsMarginBottom;
         lastSpacingAfter = fitsMarginBottom;
-
-        if (continuation?.markerAfterSplit) {
-            const marker = continuation.markerAfterSplit;
-            const markerLayoutBefore = resolveLayoutBefore(lastSpacingAfter, marker.marginTop || 0);
-            const markerTotalHeight =
-                Math.max(0, marker.measuredContentHeight || 0) +
-                markerLayoutBefore +
-                Math.max(0, marker.marginBottom || 0);
-
-            if (currentY + markerTotalHeight <= pageLimit + LAYOUT_DEFAULTS.wrapTolerance) {
-                const positioned = (processor as any).positionFlowBox(
-                    marker,
-                    currentY,
-                    markerLayoutBefore,
-                    margins,
-                    availableWidth,
-                    currentPageIndex
-                );
-                const markerBoxes = Array.isArray(positioned) ? positioned : [positioned];
-                for (const box of markerBoxes) {
-                    if (box.meta) box.meta = { ...box.meta, pageIndex: currentPageIndex };
-                    currentPageBoxes.push(box);
-                }
-                const markerEffectiveHeight = Math.max(markerTotalHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-                currentY += markerEffectiveHeight - Math.max(0, marker.marginBottom || 0);
-                lastSpacingAfter = Math.max(0, marker.marginBottom || 0);
-            }
-        }
+        placeSplitMarkers(session?.consumeMarkersAfterSplit(fitsCurrent.actorId) ?? [], availableWidth);
         pushNewPage();
 
         // The remaining packager takes the place of the current packager but we don't advance i
         if (pushedNext) {
-            session?.notifyContinuationProduced(packager, pushedNext);
-            if (continuation?.markersBeforeContinuation?.length > 0) {
-                const markerPackagers = continuation.markersBeforeContinuation.map((marker: any) =>
-                    new FlowBoxPackager(processor, marker)
-                );
-                for (const markerPackager of markerPackagers) {
-                    session?.notifyActorSpawn(markerPackager);
-                }
-                packagers.splice(i, 1, ...markerPackagers, pushedNext);
+            session?.notifyContinuationEnqueued(packager, pushedNext);
+            const stagedActors = session?.consumeActorsBeforeContinuation(pushedNext.actorId) ?? [];
+            if (stagedActors.length > 0) {
+                packagers.splice(i, 1, ...stagedActors, pushedNext);
             } else {
                 packagers[i] = pushedNext;
             }

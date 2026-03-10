@@ -7,5 +7,6 @@ export { loadFont, getCachedFont, getCachedBuffer, registerFontBuffer } from './
 export * from './engine/document';
 export * from './engine/runtime';
 export * from './engine/layout/track-sizing';
+export * from './engine/layout/simulation-report';
 export { buildDataUri } from './engine/image-data';
 export { LayoutUtils } from './engine/layout/layout-utils';

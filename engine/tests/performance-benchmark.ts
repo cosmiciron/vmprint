@@ -108,7 +108,8 @@ async function run(): Promise<void> {
             const t1 = performance.now();
             const pages = engineInstance.paginate(document.elements);
             const t2 = performance.now();
-            const profile = engineInstance.getLastLayoutSession?.()?.profile || {
+            const profile = engineInstance.getLastSimulationReport?.()?.profile
+                || engineInstance.getLastLayoutSession?.()?.profile || {
                 keepWithNextPlanCalls: 0,
                 keepWithNextPlanMs: 0,
                 keepWithNextBranchCalls: 0,

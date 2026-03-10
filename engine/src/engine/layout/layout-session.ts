@@ -1,9 +1,11 @@
 import type { Box, Page } from '../types';
 import type { EngineRuntime } from '../runtime';
-import type { ContinuationArtifacts } from './layout-core-types';
+import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { PackagerUnit } from './packagers/packager-types';
 import type { KeepWithNextPlan } from './keep-with-next-collaborator';
 import type { PackagerContext } from './packagers/packager-types';
+import type { PackagerSplitResult } from './packagers/packager-types';
+import type { SimulationReport } from './simulation-report';
 
 export type LayoutProfileMetrics = {
     keepWithNextPlanCalls: number;
@@ -66,12 +68,33 @@ export class PageSurface {
     }
 }
 
+export type SplitAttempt = {
+    actor: PackagerUnit;
+    availableWidth: number;
+    availableHeight: number;
+    context: PackagerContext;
+};
+
+export type FragmentTransition = {
+    predecessorActorId: string;
+    currentFragmentActorId: string | null;
+    continuationActorId: string | null;
+    sourceActorId: string;
+    pageIndex: number;
+    availableWidth: number;
+    availableHeight: number;
+    continuationEnqueued: boolean;
+};
+
 export interface LayoutCollaborator {
     onSimulationStart?(session: LayoutSession): void;
     onActorSpawn?(actor: PackagerUnit, session: LayoutSession): void;
     onPageStart?(pageIndex: number, surface: PageSurface, session: LayoutSession): void;
     onConstraintNegotiation?(actor: PackagerUnit, constraints: ConstraintField, session: LayoutSession): void;
     onActorPrepared?(actor: PackagerUnit, session: LayoutSession): void;
+    onSplitAttempt?(attempt: SplitAttempt, session: LayoutSession): void;
+    onSplitAccepted?(attempt: SplitAttempt, result: PackagerSplitResult, session: LayoutSession): void;
+    onContinuationEnqueued?(predecessor: PackagerUnit, successor: PackagerUnit, session: LayoutSession): void;
     onActorCommitted?(actor: PackagerUnit, committed: Box[], surface: PageSurface, session: LayoutSession): void;
     onContinuationProduced?(predecessor: PackagerUnit, successor: PackagerUnit, session: LayoutSession): void;
     onPageFinalized?(surface: PageSurface, session: LayoutSession): void;
@@ -108,7 +131,13 @@ export class LayoutSession {
         keepWithNextPrepareByKind: {}
     };
     private readonly continuationArtifacts = new Map<string, ContinuationArtifacts>();
+    private readonly stagedContinuationActors = new Map<string, PackagerUnit[]>();
+    private readonly stagedAfterSplitMarkers = new Map<string, FlowBox[]>();
     private readonly keepWithNextPlans = new Map<string, KeepWithNextPlan>();
+    private readonly fragmentTransitions: FragmentTransition[] = [];
+    private readonly fragmentTransitionsByActor = new Map<string, FragmentTransition>();
+    private readonly fragmentTransitionsBySource = new Map<string, FragmentTransition[]>();
+    private simulationReport?: SimulationReport;
     private paginationLoopState: PaginationLoopState | null = null;
 
     currentPageIndex = 0;
@@ -155,6 +184,39 @@ export class LayoutSession {
         }
     }
 
+    notifySplitAttempt(attempt: SplitAttempt): void {
+        for (const collaborator of this.collaborators) {
+            collaborator.onSplitAttempt?.(attempt, this);
+        }
+    }
+
+    notifySplitAccepted(attempt: SplitAttempt, result: PackagerSplitResult): void {
+        const transition: FragmentTransition = {
+            predecessorActorId: attempt.actor.actorId,
+            currentFragmentActorId: result.currentFragment?.actorId ?? null,
+            continuationActorId: result.continuationFragment?.actorId ?? null,
+            sourceActorId: attempt.actor.sourceId,
+            pageIndex: attempt.context.pageIndex,
+            availableWidth: attempt.availableWidth,
+            availableHeight: attempt.availableHeight,
+            continuationEnqueued: false
+        };
+        this.fragmentTransitions.push(transition);
+        this.fragmentTransitionsByActor.set(attempt.actor.actorId, transition);
+        const sourceTransitions = this.fragmentTransitionsBySource.get(transition.sourceActorId) ?? [];
+        sourceTransitions.push(transition);
+        this.fragmentTransitionsBySource.set(transition.sourceActorId, sourceTransitions);
+        if (result.currentFragment) {
+            this.fragmentTransitionsByActor.set(result.currentFragment.actorId, transition);
+        }
+        if (result.continuationFragment) {
+            this.fragmentTransitionsByActor.set(result.continuationFragment.actorId, transition);
+        }
+        for (const collaborator of this.collaborators) {
+            collaborator.onSplitAccepted?.(attempt, result, this);
+        }
+    }
+
     notifyActorCommitted(actor: PackagerUnit, committed: Box[]): void {
         if (!this.currentSurface) return;
         for (const collaborator of this.collaborators) {
@@ -165,6 +227,19 @@ export class LayoutSession {
     notifyContinuationProduced(predecessor: PackagerUnit, successor: PackagerUnit): void {
         this.actorRegistry.push(successor);
         for (const collaborator of this.collaborators) {
+            collaborator.onContinuationProduced?.(predecessor, successor, this);
+        }
+    }
+
+    notifyContinuationEnqueued(predecessor: PackagerUnit, successor: PackagerUnit): void {
+        this.actorRegistry.push(successor);
+        const transition = this.fragmentTransitionsByActor.get(successor.actorId)
+            ?? this.fragmentTransitionsByActor.get(predecessor.actorId);
+        if (transition) {
+            transition.continuationEnqueued = true;
+        }
+        for (const collaborator of this.collaborators) {
+            collaborator.onContinuationEnqueued?.(predecessor, successor, this);
             collaborator.onContinuationProduced?.(predecessor, successor, this);
         }
     }
@@ -193,12 +268,50 @@ export class LayoutSession {
         return this.telemetry.get(key) as T | undefined;
     }
 
+    getTelemetrySnapshot(): Record<string, unknown> {
+        return Object.fromEntries(this.telemetry.entries());
+    }
+
+    setSimulationReport(report: SimulationReport): void {
+        this.simulationReport = report;
+        this.telemetry.set('simulationReport', report);
+    }
+
+    getSimulationReport(): SimulationReport | undefined {
+        return this.simulationReport;
+    }
+
     setContinuationArtifacts(actorId: string, artifacts: ContinuationArtifacts): void {
         this.continuationArtifacts.set(actorId, artifacts);
     }
 
     getContinuationArtifacts(actorId: string): ContinuationArtifacts | undefined {
         return this.continuationArtifacts.get(actorId);
+    }
+
+    stageActorsBeforeContinuation(continuationActorId: string, actors: PackagerUnit[]): void {
+        if (!actors.length) return;
+        this.stagedContinuationActors.set(continuationActorId, actors);
+        for (const actor of actors) {
+            this.notifyActorSpawn(actor);
+        }
+    }
+
+    consumeActorsBeforeContinuation(continuationActorId: string): PackagerUnit[] {
+        const actors = this.stagedContinuationActors.get(continuationActorId) ?? [];
+        this.stagedContinuationActors.delete(continuationActorId);
+        return actors;
+    }
+
+    stageMarkersAfterSplit(fragmentActorId: string, markers: FlowBox[]): void {
+        if (!markers.length) return;
+        this.stagedAfterSplitMarkers.set(fragmentActorId, markers);
+    }
+
+    consumeMarkersAfterSplit(fragmentActorId: string): FlowBox[] {
+        const markers = this.stagedAfterSplitMarkers.get(fragmentActorId) ?? [];
+        this.stagedAfterSplitMarkers.delete(fragmentActorId);
+        return markers;
     }
 
     setKeepWithNextPlan(actorId: string, plan: KeepWithNextPlan): void {
@@ -215,6 +328,18 @@ export class LayoutSession {
 
     getPaginationLoopState(): PaginationLoopState | null {
         return this.paginationLoopState;
+    }
+
+    getFragmentTransitions(): readonly FragmentTransition[] {
+        return this.fragmentTransitions;
+    }
+
+    getFragmentTransition(actorId: string): FragmentTransition | undefined {
+        return this.fragmentTransitionsByActor.get(actorId);
+    }
+
+    getFragmentTransitionsBySource(sourceActorId: string): readonly FragmentTransition[] {
+        return this.fragmentTransitionsBySource.get(sourceActorId) ?? [];
     }
 
     recordProfile(metric: keyof LayoutProfileMetrics, delta: number): void {
