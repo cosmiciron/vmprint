@@ -1,5 +1,6 @@
 import { Box, LayoutConfig, Page, PageRegionContent, PageRegionDefinition } from '../types';
 import { LayoutUtils } from './layout-utils';
+import { LayoutCollaborator, LayoutSession, PageSurface } from './layout-session';
 
 type RegionRect = {
     x: number;
@@ -16,6 +17,45 @@ type FinalizePagesCallbacks = {
         sourceType: 'header' | 'footer'
     ) => Box[];
 };
+
+export class PageRegionCollaborator implements LayoutCollaborator {
+    private logicalPageNumber: number;
+
+    constructor(
+        private readonly config: LayoutConfig,
+        private readonly callbacks: FinalizePagesCallbacks
+    ) {
+        this.logicalPageNumber = Math.max(0, Math.floor(Number(config.layout.pageNumberStart ?? 1)) - 1);
+    }
+
+    onSimulationStart(_session: LayoutSession): void {
+        this.logicalPageNumber = Math.max(0, Math.floor(Number(this.config.layout.pageNumberStart ?? 1)) - 1);
+    }
+
+    onPageFinalized(surface: PageSurface): void {
+        const page: Page = surface.finalize();
+        const baseline = resolveBaselineRegions(this.config, page.index);
+        const override = findWinningPageOverride(page);
+        const resolved = applyPageOverride(baseline, override);
+        const usesLogical = regionContainsLogicalPageNumber(resolved.header) || regionContainsLogicalPageNumber(resolved.footer);
+        const logicalNumber = usesLogical ? ++this.logicalPageNumber : null;
+        const physicalPageNumber = page.index + 1;
+
+        const headerContent = materializePageTokens(resolved.header, physicalPageNumber, logicalNumber);
+        const footerContent = materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber);
+
+        if (headerContent) {
+            surface.boxes.push(
+                ...this.callbacks.layoutRegion(headerContent, getHeaderRect(this.config, page), page.index, 'header')
+            );
+        }
+        if (footerContent) {
+            surface.boxes.push(
+                ...this.callbacks.layoutRegion(footerContent, getFooterRect(this.config, page), page.index, 'footer')
+            );
+        }
+    }
+}
 
 type ResolvedRegions = {
     header: PageRegionContent | null;

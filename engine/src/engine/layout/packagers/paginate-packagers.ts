@@ -1,10 +1,16 @@
 import { Box, Element, Page } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { LAYOUT_DEFAULTS } from '../defaults';
+import { ConstraintField, LayoutSession } from '../layout-session';
 import { PackagerContext, PackagerUnit, LayoutBox } from './packager-types';
 import { FlowBoxPackager } from './flow-box-packager';
 
-export function paginatePackagers(processor: LayoutProcessor, packagers: PackagerUnit[], contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>): Page[] {
+export function paginatePackagers(
+    processor: LayoutProcessor,
+    packagers: PackagerUnit[],
+    contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
+    session?: LayoutSession
+): Page[] {
     const pages: Page[] = [];
     let currentPageBoxes: LayoutBox[] = [];
     let currentPageIndex = 0;
@@ -16,6 +22,8 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
     const pageLimit = contextBase.pageHeight - margins.bottom;
     const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
         prevAfter + marginTop;
+
+    session?.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
 
     const pushNewPage = () => {
         if (currentPageBoxes.length > 0) {
@@ -30,6 +38,7 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
         currentPageBoxes = [];
         currentY = margins.top;
         lastSpacingAfter = 0;
+        session?.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
     };
 
     let i = 0;
@@ -62,9 +71,12 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
         const marginBottom = packager.getMarginBottom();
         const layoutBefore = resolveLayoutBefore(lastSpacingAfter, marginTop);
         const layoutDelta = layoutBefore - marginTop;
-        const availableHeightAdjusted = availableHeight - layoutDelta;
+        const constraintField = new ConstraintField(availableWidth, availableHeight - layoutDelta);
+        session?.notifyConstraintNegotiation(packager, constraintField);
+        const availableHeightAdjusted = constraintField.effectiveAvailableHeight;
 
         packager.prepare(availableWidth, availableHeightAdjusted, context);
+        session?.notifyActorPrepared(packager);
         const contentHeight = Math.max(0, packager.getRequiredHeight() - marginTop - marginBottom);
         let requiredHeight = contentHeight + layoutBefore + marginBottom;
         let effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
@@ -119,24 +131,27 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
                 }
 
                 if (prefixFits && !splitCandidate.isUnbreakable(availableHeight - prefixHeight)) {
-                    const splitFlowBox = (splitCandidate as any).flowBox;
                     let continuation: any = null;
                     let markerReserve = 0;
-                    const continuationSpec =
-                        splitFlowBox?.properties?.paginationContinuation ??
-                        splitFlowBox?._sourceElement?.properties?.paginationContinuation;
-                    if (continuationSpec) {
-                        if (splitFlowBox && splitFlowBox.properties && splitFlowBox.properties.paginationContinuation === undefined) {
-                            splitFlowBox.properties.paginationContinuation = continuationSpec;
+                    continuation = session?.getContinuationArtifacts(splitCandidate.actorId);
+                    if (!continuation) {
+                        const splitFlowBox = (splitCandidate as any).flowBox;
+                        const continuationSpec =
+                            splitFlowBox?.properties?.paginationContinuation ??
+                            splitFlowBox?._sourceElement?.properties?.paginationContinuation;
+                        if (continuationSpec) {
+                            if (splitFlowBox && splitFlowBox.properties && splitFlowBox.properties.paginationContinuation === undefined) {
+                                splitFlowBox.properties.paginationContinuation = continuationSpec;
+                            }
+                            continuation = (processor as any).getContinuationArtifacts(splitFlowBox);
                         }
-                        continuation = (processor as any).getContinuationArtifacts(splitFlowBox);
-                        if (continuation?.markerAfterSplit) {
-                            const marker = continuation.markerAfterSplit;
-                            markerReserve =
-                                Math.max(0, marker.measuredContentHeight || 0) +
-                                Math.max(0, marker.marginTop || 0) +
-                                Math.max(0, marker.marginBottom || 0);
-                        }
+                    }
+                    if (continuation?.markerAfterSplit) {
+                        const marker = continuation.markerAfterSplit;
+                        markerReserve =
+                            Math.max(0, marker.measuredContentHeight || 0) +
+                            Math.max(0, marker.marginTop || 0) +
+                            Math.max(0, marker.marginBottom || 0);
                     }
 
                     const prefixStartIndex = currentPageBoxes.length;
@@ -228,10 +243,16 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
                         }
 
                         pushNewPage();
+                        if (partB) {
+                            session?.notifyContinuationProduced(splitCandidate, partB);
+                        }
                         if (continuation?.markersBeforeContinuation?.length > 0) {
                             const markerPackagers = continuation.markersBeforeContinuation.map((marker: any) =>
                                 new FlowBoxPackager(processor, marker)
                             );
+                            for (const markerPackager of markerPackagers) {
+                                session?.notifyActorSpawn(markerPackager);
+                            }
                             packagers.splice(i, sequence.length, ...markerPackagers, partB);
                         } else {
                             packagers.splice(i, sequence.length, partB);
@@ -269,6 +290,7 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
                 }
                 currentPageBoxes.push(box);
             }
+            session?.notifyActorCommitted(packager, boxes);
             currentY += effectiveHeight - marginBottom;
             lastSpacingAfter = marginBottom;
             i++;
@@ -289,6 +311,7 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
                         }
                         currentPageBoxes.push(box);
                     }
+                    session?.notifyActorCommitted(packager, boxes);
                     currentY += effectiveHeight - marginBottom;
                     lastSpacingAfter = marginBottom;
                 }
@@ -324,22 +347,25 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
         }
 
         // Let's try to split
-        const flowBox = (packager as any).flowBox;
         let continuation: any = null;
         let markerReserve = 0;
-        const continuationSpec = flowBox?.properties?.paginationContinuation ?? flowBox?._sourceElement?.properties?.paginationContinuation;
-        if (continuationSpec) {
-            if (flowBox && flowBox.properties && flowBox.properties.paginationContinuation === undefined) {
-                flowBox.properties.paginationContinuation = continuationSpec;
+        continuation = session?.getContinuationArtifacts(packager.actorId);
+        if (!continuation) {
+            const flowBox = (packager as any).flowBox;
+            const continuationSpec = flowBox?.properties?.paginationContinuation ?? flowBox?._sourceElement?.properties?.paginationContinuation;
+            if (continuationSpec) {
+                if (flowBox && flowBox.properties && flowBox.properties.paginationContinuation === undefined) {
+                    flowBox.properties.paginationContinuation = continuationSpec;
+                }
+                continuation = (processor as any).getContinuationArtifacts(flowBox);
             }
-            continuation = (processor as any).getContinuationArtifacts(flowBox);
-            if (continuation?.markerAfterSplit) {
-                const marker = continuation.markerAfterSplit;
-                markerReserve =
-                    Math.max(0, marker.measuredContentHeight || 0) +
-                    Math.max(0, marker.marginTop || 0) +
-                    Math.max(0, marker.marginBottom || 0);
-            }
+        }
+        if (continuation?.markerAfterSplit) {
+            const marker = continuation.markerAfterSplit;
+            markerReserve =
+                Math.max(0, marker.measuredContentHeight || 0) +
+                Math.max(0, marker.marginTop || 0) +
+                Math.max(0, marker.marginBottom || 0);
         }
 
         const splitAvailableHeight = availableHeightAdjusted - markerReserve;
@@ -359,6 +385,7 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
                     }
                     currentPageBoxes.push(box);
                 }
+                session?.notifyActorCommitted(packager, boxes);
                 pushNewPage();
                 i++;
                 continue;
@@ -390,6 +417,7 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
             }
             currentPageBoxes.push(box);
         }
+        session?.notifyActorCommitted(fitsCurrent, currentBoxes);
 
         currentY += fitsEffectiveHeight - fitsMarginBottom;
         lastSpacingAfter = fitsMarginBottom;
@@ -425,10 +453,14 @@ export function paginatePackagers(processor: LayoutProcessor, packagers: Package
 
         // The remaining packager takes the place of the current packager but we don't advance i
         if (pushedNext) {
+            session?.notifyContinuationProduced(packager, pushedNext);
             if (continuation?.markersBeforeContinuation?.length > 0) {
                 const markerPackagers = continuation.markersBeforeContinuation.map((marker: any) =>
                     new FlowBoxPackager(processor, marker)
                 );
+                for (const markerPackager of markerPackagers) {
+                    session?.notifyActorSpawn(markerPackager);
+                }
                 packagers.splice(i, 1, ...markerPackagers, pushedNext);
             } else {
                 packagers[i] = pushedNext;

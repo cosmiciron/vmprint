@@ -12,7 +12,9 @@ import {
     ResolvedLinesResult
 } from './layout-core-types';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
-import { finalizePagesWithCallbacks } from './layout-page-finalization';
+import { ContinuationMarkerCollaborator } from './continuation-marker-collaborator';
+import { PageRegionCollaborator } from './layout-page-finalization';
+import { LayoutCollaborator, LayoutSession } from './layout-session';
 import {
     buildTableModel,
     isTableElement,
@@ -350,16 +352,24 @@ export class LayoutProcessor extends TextProcessor {
      * input elements -> flow boxes -> paginated flow boxes -> positioned page boxes.
      */
     paginate(elements: Element[]): Page[] {
-        const packagers = createPackagers(elements, this);
         const { height: pageHeight, width: pageWidth } = this.getPageDimensions();
+        const session = new LayoutSession({
+            runtime: this.getRuntime(),
+            collaborators: this.createLayoutCollaborators()
+        });
+        session.notifySimulationStart();
+        const packagers = createPackagers(elements, this);
+        for (const packager of packagers) {
+            session.notifyActorSpawn(packager);
+        }
         const contextBase = {
             processor: this,
             pageWidth,
             pageHeight,
             margins: this.config.layout.margins
         };
-        const pages = paginatePackagers(this, packagers, contextBase);
-        return this.finalizePages(pages);
+        const pages = paginatePackagers(this, packagers, contextBase, session);
+        return session.finalizePages(pages);
     }
 
     private shapeTableElement(element: Element, identitySeed?: FlowIdentitySeed): FlowBox {
@@ -727,10 +737,14 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 
-    private finalizePages(pages: Page[]): Page[] {
-        return finalizePagesWithCallbacks(pages, this.config, {
-            layoutRegion: (content, rect, pageIndex, sourceType) => this.layoutRegion(content, rect, pageIndex, sourceType)
-        });
+    private createLayoutCollaborators(): LayoutCollaborator[] {
+        return [
+            new ContinuationMarkerCollaborator(),
+            new PageRegionCollaborator(this.config, {
+                layoutRegion: (content, rect, pageIndex, sourceType) =>
+                    this.layoutRegion(content, rect, pageIndex, sourceType)
+            })
+        ];
     }
 
     private layoutRegion(

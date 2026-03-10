@@ -48,6 +48,7 @@ import { LayoutProcessor } from '../layout-core';
 import { LayoutUtils } from '../layout-utils';
 import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
+import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { LayoutBox, PackagerContext, PackagerUnit } from './packager-types';
 import { OccupiedRect, SpatialMap } from './spatial-map';
 
@@ -135,10 +136,20 @@ type StoryPourResult = FullPourResult | MultiColumnPourResult;
 class FrozenStoryPackager implements PackagerUnit {
     private readonly frozenBoxes: Box[];
     private readonly frozenHeight: number;
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
 
-    constructor(boxes: Box[], height: number) {
+    constructor(boxes: Box[], height: number, identity: PackagerIdentity) {
         this.frozenBoxes = boxes;
         this.frozenHeight = height;
+        this.actorId = identity.actorId;
+        this.sourceId = identity.sourceId;
+        this.actorKind = identity.actorKind;
+        this.fragmentIndex = identity.fragmentIndex;
+        this.continuationOf = identity.continuationOf;
     }
 
     prepare(_aw: number, _ah: number, _ctx: PackagerContext): void {
@@ -183,19 +194,31 @@ export class StoryPackager implements PackagerUnit {
 
     readonly pageBreakBefore: boolean = false;
     readonly keepWithNext: boolean = false;
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
 
     constructor(
         storyElement: Element,
         processor: LayoutProcessor,
         storyIndex: number,
         initialObstacles?: CarryOverObstacle[],
-        storyYOffset?: number
+        storyYOffset?: number,
+        identity?: PackagerIdentity
     ) {
         this.storyElement = storyElement;
         this.processor = processor;
         this.storyIndex = storyIndex;
         this.initialObstacles = initialObstacles ?? [];
         this.storyYOffset = storyYOffset ?? 0;
+        const resolvedIdentity = identity ?? createElementPackagerIdentity(storyElement, [storyIndex]);
+        this.actorId = resolvedIdentity.actorId;
+        this.sourceId = resolvedIdentity.sourceId;
+        this.actorKind = resolvedIdentity.actorKind;
+        this.fragmentIndex = resolvedIdentity.fragmentIndex;
+        this.continuationOf = resolvedIdentity.continuationOf;
     }
 
     // -- PackagerUnit ---------------------------------------------------------
@@ -1025,14 +1048,14 @@ export class StoryPackager implements PackagerUnit {
 
     private splitColumns(result: MultiColumnPourResult): [PackagerUnit | null, PackagerUnit | null] {
         if (!result.hasOverflow || !result.continuation) {
-            return [new FrozenStoryPackager(result.allBoxes, result.occupiedHeight), null];
+            return [new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this), null];
         }
         if (result.allBoxes.length === 0) {
             return [null, this];
         }
 
         const children = this.storyElement.children ?? [];
-        const partA = new FrozenStoryPackager(result.allBoxes, result.occupiedHeight);
+        const partA = new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this);
         const partBChildren: Element[] = [];
         if (result.continuation.continuationElement) {
             partBChildren.push(result.continuation.continuationElement);
@@ -1053,7 +1076,8 @@ export class StoryPackager implements PackagerUnit {
             this.processor,
             this.storyIndex,
             result.continuation.carryOvers,
-            this.storyYOffset + result.continuation.consumedStoryHeight
+            this.storyYOffset + result.continuation.consumedStoryHeight,
+            createContinuationIdentity(this)
         );
         return [partA, partB];
     }
@@ -1195,7 +1219,7 @@ export class StoryPackager implements PackagerUnit {
         }
 
         // -- partA (frozen) -------------------------------------------------
-        const partA = new FrozenStoryPackager(partABoxes, partAHeight);
+        const partA = new FrozenStoryPackager(partABoxes, partAHeight, this);
 
         // -- partB children -------------------------------------------------
         const partBChildren: Element[] = [];
@@ -1228,7 +1252,8 @@ export class StoryPackager implements PackagerUnit {
             this.processor,
             this.storyIndex,
             carryOvers,
-            this.storyYOffset + splitH
+            this.storyYOffset + splitH,
+            createContinuationIdentity(this)
         );
 
         return [partA, partB];

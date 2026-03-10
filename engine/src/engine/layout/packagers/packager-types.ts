@@ -14,6 +14,12 @@ export interface PackagerContext {
 }
 
 export interface PackagerUnit {
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
     /**
      * Prepare internal measurement/materialization state for the given space
      * without emitting boxes. Must update getRequiredHeight().

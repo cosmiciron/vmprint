@@ -6,20 +6,22 @@ import { DropCapPackager } from './dropcap-packager';
 import { TablePackager } from './table-packager';
 import { StoryPackager } from './story-packager';
 import { isTableElement } from '../layout-table';
+import { createElementPackagerIdentity } from './packager-identity';
 
 export function buildPackagerForElement(item: Element, index: number, processor: LayoutProcessor): PackagerUnit {
+    const identity = createElementPackagerIdentity(item, [index]);
     if (item.type === 'story') {
-        return new StoryPackager(item, processor, index);
+        return new StoryPackager(item, processor, index, undefined, undefined, identity);
     }
     const flowBox = (processor as any).shapeElement(item, { path: [index] });
     if (isTableElement(item)) {
-        return new TablePackager(processor, flowBox);
+        return new TablePackager(processor, flowBox, identity);
     }
     const dropCap = item.properties?.dropCap;
     if (dropCap && dropCap.enabled) {
-        return new DropCapPackager(processor, item, index, dropCap);
+        return new DropCapPackager(processor, item, index, dropCap, identity);
     }
-    return new FlowBoxPackager(processor, flowBox);
+    return new FlowBoxPackager(processor, flowBox, identity);
 }
 
 export function createPackagers(elements: Element[], processor: LayoutProcessor): PackagerUnit[] {

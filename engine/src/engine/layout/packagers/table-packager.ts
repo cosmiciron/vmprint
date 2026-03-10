@@ -2,6 +2,7 @@ import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import { materializeTableFlowBox, splitTableFlowBox } from '../layout-table';
+import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { PackagerContext, PackagerUnit } from './packager-types';
 
 /**
@@ -15,12 +16,24 @@ export class TablePackager implements PackagerUnit {
     private requiredHeight: number = 0;
     private isMaterialized: boolean = false;
 
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
     get pageBreakBefore(): boolean | undefined { return this.flowBox.pageBreakBefore; }
     get keepWithNext(): boolean | undefined { return this.flowBox.keepWithNext; }
 
-    constructor(processor: LayoutProcessor, flowBox: FlowBox) {
+    constructor(processor: LayoutProcessor, flowBox: FlowBox, identity?: PackagerIdentity) {
         this.processor = processor;
         this.flowBox = flowBox;
+        const resolvedIdentity = createFlowBoxPackagerIdentity(flowBox, identity);
+        this.actorId = resolvedIdentity.actorId;
+        this.sourceId = resolvedIdentity.sourceId;
+        this.actorKind = resolvedIdentity.actorKind;
+        this.fragmentIndex = resolvedIdentity.fragmentIndex;
+        this.continuationOf = resolvedIdentity.continuationOf;
     }
 
     private materialize(availableWidth: number) {
@@ -116,8 +129,18 @@ export class TablePackager implements PackagerUnit {
             return [null, this];
         }
 
-        const partA = new TablePackager(this.processor, splitResult.partA);
-        const partB = new TablePackager(this.processor, splitResult.partB);
+        const partA = new TablePackager(this.processor, splitResult.partA, {
+            actorId: this.actorId,
+            sourceId: this.sourceId,
+            actorKind: this.actorKind,
+            fragmentIndex: this.fragmentIndex,
+            continuationOf: this.continuationOf
+        });
+        const partB = new TablePackager(
+            this.processor,
+            splitResult.partB,
+            createContinuationIdentity(this, splitResult.partB.meta?.fragmentIndex)
+        );
         return [partA, partB];
     }
 }

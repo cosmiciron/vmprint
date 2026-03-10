@@ -1,6 +1,7 @@
 import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
+import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { PackagerContext, PackagerUnit } from './packager-types';
 
 /**
@@ -15,12 +16,24 @@ export class FlowBoxPackager implements PackagerUnit {
     private requiredHeight: number = 0;
     private isMaterialized: boolean = false;
 
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
     get pageBreakBefore(): boolean | undefined { return this.flowBox.pageBreakBefore; }
     get keepWithNext(): boolean | undefined { return this.flowBox.keepWithNext; }
 
-    constructor(processor: LayoutProcessor, flowBox: FlowBox) {
+    constructor(processor: LayoutProcessor, flowBox: FlowBox, identity?: PackagerIdentity) {
         this.processor = processor;
         this.flowBox = flowBox;
+        const resolvedIdentity = createFlowBoxPackagerIdentity(flowBox, identity);
+        this.actorId = resolvedIdentity.actorId;
+        this.sourceId = resolvedIdentity.sourceId;
+        this.actorKind = resolvedIdentity.actorKind;
+        this.fragmentIndex = resolvedIdentity.fragmentIndex;
+        this.continuationOf = resolvedIdentity.continuationOf;
     }
 
     private materialize(availableWidth: number) {
@@ -115,8 +128,18 @@ export class FlowBoxPackager implements PackagerUnit {
         }
 
         // We successfully split
-        const partA = new FlowBoxPackager(this.processor, splitResult.partA);
-        const partB = new FlowBoxPackager(this.processor, splitResult.partB);
+        const partA = new FlowBoxPackager(this.processor, splitResult.partA, {
+            actorId: this.actorId,
+            sourceId: this.sourceId,
+            actorKind: this.actorKind,
+            fragmentIndex: this.fragmentIndex,
+            continuationOf: this.continuationOf
+        });
+        const partB = new FlowBoxPackager(
+            this.processor,
+            splitResult.partB,
+            createContinuationIdentity(this, splitResult.partB.meta?.fragmentIndex)
+        );
         return [partA, partB];
     }
 }

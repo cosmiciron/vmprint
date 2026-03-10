@@ -4,6 +4,7 @@ import { FlowBox } from '../layout-core-types';
 import { LayoutUtils } from '../layout-utils';
 import { LAYOUT_DEFAULTS } from '../defaults';
 import { FlowBoxPackager } from './flow-box-packager';
+import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { LayoutBox, PackagerContext, PackagerUnit } from './packager-types';
 
 type DropCapParts = {
@@ -23,6 +24,12 @@ class DropCapFragmentPackager implements PackagerUnit {
     private unifiedLayoutBefore: number;
     private requiredHeight: number;
 
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
     get pageBreakBefore(): boolean | undefined { return this.wrap.pageBreakBefore; }
     get keepWithNext(): boolean | undefined { return this.wrap.keepWithNext; }
 
@@ -32,7 +39,8 @@ class DropCapFragmentPackager implements PackagerUnit {
         wrap: FlowBox,
         body: FlowBox | null,
         wrapOffsetX: number,
-        unifiedLayoutBefore: number
+        unifiedLayoutBefore: number,
+        identity: PackagerIdentity
     ) {
         this.processor = processor;
         this.dropCap = dropCap;
@@ -40,6 +48,11 @@ class DropCapFragmentPackager implements PackagerUnit {
         this.body = body;
         this.wrapOffsetX = wrapOffsetX;
         this.unifiedLayoutBefore = unifiedLayoutBefore;
+        this.actorId = identity.actorId;
+        this.sourceId = identity.sourceId;
+        this.actorKind = identity.actorKind;
+        this.fragmentIndex = identity.fragmentIndex;
+        this.continuationOf = identity.continuationOf;
 
         const capHeight = Math.max(0, this.dropCap.measuredContentHeight);
         const wrapHeight = Math.max(0, this.wrap.measuredContentHeight);
@@ -255,14 +268,26 @@ export class DropCapPackager implements PackagerUnit {
     private cachedAvailableWidth: number = -1;
     private requiredHeight: number = 0;
 
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
     get pageBreakBefore(): boolean | undefined { return this.cachedParts?.wrap.pageBreakBefore ?? false; }
     get keepWithNext(): boolean | undefined { return this.cachedParts?.wrap.keepWithNext ?? false; }
 
-    constructor(processor: LayoutProcessor, element: Element, index: number, spec: DropCapSpec) {
+    constructor(processor: LayoutProcessor, element: Element, index: number, spec: DropCapSpec, identity?: PackagerIdentity) {
         this.processor = processor;
         this.element = element;
         this.index = index;
         this.spec = spec;
+        const resolvedIdentity = identity ?? createElementPackagerIdentity(element, [index]);
+        this.actorId = resolvedIdentity.actorId;
+        this.sourceId = resolvedIdentity.sourceId;
+        this.actorKind = resolvedIdentity.actorKind;
+        this.fragmentIndex = resolvedIdentity.fragmentIndex;
+        this.continuationOf = resolvedIdentity.continuationOf;
     }
 
     private materialize(availableWidth: number, context: PackagerContext): void {
@@ -567,7 +592,17 @@ export class DropCapPackager implements PackagerUnit {
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] | null {
         this.prepare(availableWidth, availableHeight, context);
         if (!this.cachedParts) {
-            const fallback = new FlowBoxPackager(this.processor, (this.processor as any).shapeElement(this.element, { path: [this.index] }));
+            const fallback = new FlowBoxPackager(
+                this.processor,
+                (this.processor as any).shapeElement(this.element, { path: [this.index] }),
+                {
+                    actorId: this.actorId,
+                    sourceId: this.sourceId,
+                    actorKind: this.actorKind,
+                    fragmentIndex: this.fragmentIndex,
+                    continuationOf: this.continuationOf
+                }
+            );
             fallback.prepare(availableWidth, availableHeight, context);
             return fallback.emitBoxes(availableWidth, availableHeight, context) as LayoutBox[];
         }
@@ -578,7 +613,8 @@ export class DropCapPackager implements PackagerUnit {
             this.cachedParts.wrap,
             this.cachedParts.body,
             this.cachedParts.wrapOffsetX,
-            this.cachedParts.unifiedLayoutBefore
+            this.cachedParts.unifiedLayoutBefore,
+            this
         );
         return fragment.emitBoxes(availableWidth, availableHeight, context);
     }
@@ -622,9 +658,14 @@ export class DropCapPackager implements PackagerUnit {
             wrap,
             partA,
             wrapOffsetX,
-            unifiedLayoutBefore
+            unifiedLayoutBefore,
+            this
         );
-        const pushedNext = new FlowBoxPackager(this.processor, partB);
+        const pushedNext = new FlowBoxPackager(
+            this.processor,
+            partB,
+            createContinuationIdentity(this, partB.meta?.fragmentIndex)
+        );
         return [fitsCurrent, pushedNext];
     }
 
