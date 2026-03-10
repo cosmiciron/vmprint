@@ -34,7 +34,15 @@ type Summary = {
 
 const engine = (engineModule as any).default ?? (engineModule as any)['module.exports'] ?? engineModule;
 const harness = (harnessModule as any).default ?? (harnessModule as any)['module.exports'] ?? harnessModule;
-const { LayoutEngine, Renderer, createEngineRuntime, toLayoutConfig, resolveDocumentPaths, LayoutUtils } = engine as any;
+const {
+    LayoutEngine,
+    Renderer,
+    createEngineRuntime,
+    toLayoutConfig,
+    resolveDocumentPaths,
+    LayoutUtils,
+    createSimulationReportReader
+} = engine as any;
 const { MockContext, loadLocalFontManager } = harness as any;
 
 function average(metrics: FixtureMetric[]): FixtureMetric[] {
@@ -108,8 +116,8 @@ async function run(): Promise<void> {
             const t1 = performance.now();
             const pages = engineInstance.paginate(document.elements);
             const t2 = performance.now();
-            const profile = engineInstance.getLastSimulationReport?.()?.profile
-                || engineInstance.getLastLayoutSession?.()?.profile || {
+            const reportReader = createSimulationReportReader(engineInstance.getLastSimulationReport?.());
+            const profile = reportReader.report?.profile || {
                 keepWithNextPlanCalls: 0,
                 keepWithNextPlanMs: 0,
                 keepWithNextBranchCalls: 0,

@@ -6,6 +6,7 @@ import {
     resolveBaselineRegions
 } from './layout-page-finalization';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
+import { simulationArtifactKeys } from './simulation-report';
 
 export type PageNumberSummary = {
     pageIndex: number;
@@ -16,7 +17,7 @@ export type PageNumberSummary = {
     renderedFooter: boolean;
 };
 
-export class PageNumberTelemetryCollaborator implements LayoutCollaborator {
+export class PageNumberArtifactCollaborator implements LayoutCollaborator {
     constructor(private readonly config: LayoutConfig) {}
 
     onSimulationComplete(pages: Page[], session: LayoutSession): void {
@@ -42,6 +43,6 @@ export class PageNumberTelemetryCollaborator implements LayoutCollaborator {
             };
         });
 
-        session.setTelemetry('pageNumberSummary', summaries);
+        session.publishArtifact(simulationArtifactKeys.pageNumberSummary, summaries);
     }
 }

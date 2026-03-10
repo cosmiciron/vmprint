@@ -1,5 +1,6 @@
 import type { Page } from '../types';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
+import { simulationArtifactKeys } from './simulation-report';
 
 export type FragmentationSummary = {
     sourceActorId: string;
@@ -8,7 +9,7 @@ export type FragmentationSummary = {
     pageIndices: number[];
 };
 
-export class FragmentTransitionTelemetryCollaborator implements LayoutCollaborator {
+export class FragmentTransitionArtifactCollaborator implements LayoutCollaborator {
     onSimulationComplete(_pages: Page[], session: LayoutSession): void {
         const summaries = new Map<string, FragmentationSummary>();
         for (const transition of session.getFragmentTransitions()) {
@@ -29,6 +30,6 @@ export class FragmentTransitionTelemetryCollaborator implements LayoutCollaborat
             summaries.set(transition.sourceActorId, existing);
         }
 
-        session.setTelemetry('fragmentationSummary', Array.from(summaries.values()));
+        session.publishArtifact(simulationArtifactKeys.fragmentationSummary, Array.from(summaries.values()));
     }
 }

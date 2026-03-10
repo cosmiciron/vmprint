@@ -1,6 +1,7 @@
 import type { Page } from '../types';
 import { findWinningPageOverride } from './layout-page-finalization';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
+import { simulationArtifactKeys } from './simulation-report';
 
 export type PageOverrideSummary = {
     pageIndex: number;
@@ -15,7 +16,7 @@ function resolveOverrideState(value: unknown): 'inherit' | 'replace' | 'suppress
     return 'replace';
 }
 
-export class PageOverrideTelemetryCollaborator implements LayoutCollaborator {
+export class PageOverrideArtifactCollaborator implements LayoutCollaborator {
     onSimulationComplete(pages: Page[], session: LayoutSession): void {
         const summaries: PageOverrideSummary[] = pages.map((page) => {
             const winningOverride = findWinningPageOverride(page);
@@ -41,6 +42,6 @@ export class PageOverrideTelemetryCollaborator implements LayoutCollaborator {
             };
         });
 
-        session.setTelemetry('pageOverrideSummary', summaries);
+        session.publishArtifact(simulationArtifactKeys.pageOverrideSummary, summaries);
     }
 }

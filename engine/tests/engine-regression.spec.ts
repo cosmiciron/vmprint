@@ -14,6 +14,10 @@ import {
 } from './harness/engine-harness';
 import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src/engine/document';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
+import {
+    createSimulationReportReader,
+    simulationArtifactKeys
+} from '../src/engine/layout/simulation-report';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
 
 const UPDATE_LAYOUT_SNAPSHOTS =
@@ -396,6 +400,49 @@ function assertHeaderFooterTestSignals(pages: any[], fixtureName: string): void 
     });
 }
 
+function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: string): void {
+    const report = engine.getLastSimulationReport?.();
+    const reader = createSimulationReportReader(report);
+    assert.ok(report, `${fixtureName}: expected simulation report`);
+    assert.equal(report.pageCount, pages.length, `${fixtureName}: simulation report pageCount mismatch`);
+    assert.ok(
+        reader.has(simulationArtifactKeys.fragmentationSummary),
+        `${fixtureName}: simulation report should expose fragmentationSummary`
+    );
+    const fragmentationSummary = reader.require(simulationArtifactKeys.fragmentationSummary);
+    assert.equal(
+        report.splitTransitionCount,
+        fragmentationSummary.reduce((sum: number, item: any) => sum + Number(item?.splitCount || 0), 0),
+        `${fixtureName}: simulation report splitTransitionCount mismatch`
+    );
+    assert.ok(report.actorCount > 0, `${fixtureName}: simulation report should record actorCount`);
+    assert.ok(report.profile, `${fixtureName}: simulation report should include profile`);
+    assert.equal(typeof report.profile.keepWithNextPlanCalls, 'number', `${fixtureName}: report profile shape mismatch`);
+    assert.ok(reader.report?.artifacts, `${fixtureName}: simulation report should include artifacts`);
+    assert.ok(
+        reader.has(simulationArtifactKeys.sourcePositionMap),
+        `${fixtureName}: simulation report should expose sourcePositionMap`
+    );
+    assert.ok(
+        reader.has(simulationArtifactKeys.pageRegionSummary),
+        `${fixtureName}: simulation report should expose pageRegionSummary`
+    );
+    assert.ok(
+        reader.has(simulationArtifactKeys.pageNumberSummary),
+        `${fixtureName}: simulation report should expose pageNumberSummary`
+    );
+    assert.ok(
+        reader.has(simulationArtifactKeys.pageOverrideSummary),
+        `${fixtureName}: simulation report should expose pageOverrideSummary`
+    );
+    const pageRegionSummary = reader.require(simulationArtifactKeys.pageRegionSummary);
+    assert.equal(
+        report.generatedBoxCount,
+        pageRegionSummary.reduce((sum: number, item: any) => sum + Number(item?.generatedBoxes || 0), 0),
+        `${fixtureName}: simulation report generatedBoxCount mismatch`
+    );
+}
+
 function resolveSnapshotPath(fixturePath: string): string {
     const ext = path.extname(fixturePath);
     return fixturePath.slice(0, fixturePath.length - ext.length) + '.snapshot.layout.json';
@@ -481,6 +528,13 @@ async function run() {
                     snapshotPages(pagesB),
                     `${fixture.name}: layout is not deterministic between runs`
                 );
+            }
+        );
+        check(
+            `${fixture.name} simulation report contract`,
+            'paginate() produces a simulation report whose top-level counts and typed artifact sections are available',
+            () => {
+                assertSimulationReportSignals(engine, pagesA, fixture.name);
             }
         );
         check(

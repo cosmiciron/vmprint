@@ -13,17 +13,17 @@ import {
 } from './layout-core-types';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
 import { ContinuationMarkerCollaborator } from './continuation-marker-collaborator';
-import { FragmentTransitionTelemetryCollaborator } from './fragment-transition-telemetry-collaborator';
+import { FragmentTransitionArtifactCollaborator } from './fragment-transition-artifact-collaborator';
 import { freezeFlowFragment } from './flow-fragment-state';
 import { KeepWithNextCollaborator } from './keep-with-next-collaborator';
 import { PageRegionCollaborator } from './layout-page-finalization';
-import { PageNumberTelemetryCollaborator } from './page-number-telemetry-collaborator';
-import { PageOverrideTelemetryCollaborator } from './page-override-telemetry-collaborator';
-import { PageRegionTelemetryCollaborator } from './page-region-telemetry-collaborator';
+import { PageNumberArtifactCollaborator } from './page-number-artifact-collaborator';
+import { PageOverrideArtifactCollaborator } from './page-override-artifact-collaborator';
+import { PageRegionArtifactCollaborator } from './page-region-artifact-collaborator';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import { SimulationReport } from './simulation-report';
 import { SimulationReportCollaborator } from './simulation-report-collaborator';
-import { SourcePositionMapCollaborator } from './source-position-map-collaborator';
+import { SourcePositionArtifactCollaborator } from './source-position-artifact-collaborator';
 import {
     buildTableModel,
     isTableElement,
@@ -756,11 +756,11 @@ export class LayoutProcessor extends TextProcessor {
         return [
             new KeepWithNextCollaborator(),
             new ContinuationMarkerCollaborator(),
-            new FragmentTransitionTelemetryCollaborator(),
-            new PageNumberTelemetryCollaborator(this.config),
-            new PageOverrideTelemetryCollaborator(),
-            new PageRegionTelemetryCollaborator(),
-            new SourcePositionMapCollaborator(),
+            new FragmentTransitionArtifactCollaborator(),
+            new PageNumberArtifactCollaborator(this.config),
+            new PageOverrideArtifactCollaborator(),
+            new PageRegionArtifactCollaborator(),
+            new SourcePositionArtifactCollaborator(),
             new SimulationReportCollaborator(),
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType) =>

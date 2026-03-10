@@ -5,7 +5,8 @@ import type { PackagerUnit } from './packagers/packager-types';
 import type { KeepWithNextPlan } from './keep-with-next-collaborator';
 import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
-import type { SimulationReport } from './simulation-report';
+import type { SimulationArtifactKey, SimulationArtifactMap, SimulationArtifacts, SimulationReport } from './simulation-report';
+import { simulationArtifactKeys } from './simulation-report';
 
 export type LayoutProfileMetrics = {
     keepWithNextPlanCalls: number;
@@ -120,7 +121,6 @@ export class LayoutSession {
     readonly runtime: EngineRuntime;
     readonly collaborators: readonly LayoutCollaborator[];
     readonly actorRegistry: PackagerUnit[] = [];
-    readonly telemetry = new Map<string, unknown>();
     readonly profile: LayoutProfileMetrics = {
         keepWithNextPlanCalls: 0,
         keepWithNextPlanMs: 0,
@@ -137,6 +137,7 @@ export class LayoutSession {
     private readonly fragmentTransitions: FragmentTransition[] = [];
     private readonly fragmentTransitionsByActor = new Map<string, FragmentTransition>();
     private readonly fragmentTransitionsBySource = new Map<string, FragmentTransition[]>();
+    private readonly artifacts = new Map<string, unknown>();
     private simulationReport?: SimulationReport;
     private paginationLoopState: PaginationLoopState | null = null;
 
@@ -260,21 +261,35 @@ export class LayoutSession {
         return finalizedPages;
     }
 
-    setTelemetry<T>(key: string, value: T): void {
-        this.telemetry.set(key, value);
+    // Collaborator-facing artifact publication. Downstream consumers should prefer
+    // getSimulationReport() over reading individual artifacts directly.
+    publishArtifact<K extends SimulationArtifactKey>(key: K, value: SimulationArtifactMap[K]): void;
+    publishArtifact(key: string, value: unknown): void;
+    publishArtifact(key: string, value: unknown): void {
+        this.artifacts.set(key, value);
     }
 
-    getTelemetry<T>(key: string): T | undefined {
-        return this.telemetry.get(key) as T | undefined;
-    }
+    // Report assembly helper. The raw artifact registry remains internal;
+    // downstream consumers should read the consolidated simulation report.
+    buildSimulationArtifacts(): SimulationArtifacts {
+        const artifacts: SimulationArtifacts = {
+            fragmentationSummary: this.artifacts.get(simulationArtifactKeys.fragmentationSummary) as SimulationArtifactMap['fragmentationSummary'],
+            pageNumberSummary: this.artifacts.get(simulationArtifactKeys.pageNumberSummary) as SimulationArtifactMap['pageNumberSummary'],
+            pageOverrideSummary: this.artifacts.get(simulationArtifactKeys.pageOverrideSummary) as SimulationArtifactMap['pageOverrideSummary'],
+            pageRegionSummary: this.artifacts.get(simulationArtifactKeys.pageRegionSummary) as SimulationArtifactMap['pageRegionSummary'],
+            sourcePositionMap: this.artifacts.get(simulationArtifactKeys.sourcePositionMap) as SimulationArtifactMap['sourcePositionMap']
+        };
 
-    getTelemetrySnapshot(): Record<string, unknown> {
-        return Object.fromEntries(this.telemetry.entries());
+        for (const [key, value] of this.artifacts.entries()) {
+            if (key in artifacts && artifacts[key] !== undefined) continue;
+            artifacts[key] = value;
+        }
+
+        return artifacts;
     }
 
     setSimulationReport(report: SimulationReport): void {
         this.simulationReport = report;
-        this.telemetry.set('simulationReport', report);
     }
 
     getSimulationReport(): SimulationReport | undefined {

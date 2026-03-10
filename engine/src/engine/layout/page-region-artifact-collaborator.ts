@@ -1,5 +1,6 @@
 import type { Page } from '../types';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
+import { simulationArtifactKeys } from './simulation-report';
 
 export type PageRegionSummary = {
     pageIndex: number;
@@ -8,7 +9,7 @@ export type PageRegionSummary = {
     generatedBoxes: number;
 };
 
-export class PageRegionTelemetryCollaborator implements LayoutCollaborator {
+export class PageRegionArtifactCollaborator implements LayoutCollaborator {
     onSimulationComplete(pages: Page[], session: LayoutSession): void {
         const summaries: PageRegionSummary[] = pages.map((page) => {
             let headerBoxes = 0;
@@ -34,6 +35,6 @@ export class PageRegionTelemetryCollaborator implements LayoutCollaborator {
             };
         });
 
-        session.setTelemetry('pageRegionSummary', summaries);
+        session.publishArtifact(simulationArtifactKeys.pageRegionSummary, summaries);
     }
 }

@@ -1,5 +1,6 @@
 import type { Page } from '../types';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
+import { simulationArtifactKeys } from './simulation-report';
 
 export type SourcePositionSummary = {
     sourceId: string;
@@ -10,7 +11,7 @@ export type SourcePositionSummary = {
     fragmentCount: number;
 };
 
-export class SourcePositionMapCollaborator implements LayoutCollaborator {
+export class SourcePositionArtifactCollaborator implements LayoutCollaborator {
     onSimulationComplete(pages: Page[], session: LayoutSession): void {
         const summaries = new Map<string, SourcePositionSummary>();
 
@@ -53,6 +54,6 @@ export class SourcePositionMapCollaborator implements LayoutCollaborator {
             }
         }
 
-        session.setTelemetry('sourcePositionMap', Array.from(summaries.values()));
+        session.publishArtifact(simulationArtifactKeys.sourcePositionMap, Array.from(summaries.values()));
     }
 }
