@@ -2,7 +2,7 @@ import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { PackagerContext, PackagerUnit } from './packager-types';
+import { PackagerContext, PackagerSplitResult, PackagerUnit } from './packager-types';
 
 /**
  * A basic packager for standard reflowable layout boxes (e.g. paragraph, header, normal image).
@@ -110,10 +110,10 @@ export class FlowBoxPackager implements PackagerUnit {
         return this.flowBox.marginBottom;
     }
 
-    split(availableHeight: number, context: PackagerContext): [PackagerUnit | null, PackagerUnit | null] {
+    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
         this.materialize(this.lastAvailableWidth);
         if (this.isUnbreakable(availableHeight)) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         // Defer to LayoutProcessor's split logic
@@ -124,7 +124,7 @@ export class FlowBoxPackager implements PackagerUnit {
         );
 
         if (!splitResult) {
-            return [null, this]; // Couldn't split neatly
+            return { currentFragment: null, continuationFragment: this }; // Couldn't split neatly
         }
 
         // We successfully split
@@ -140,6 +140,6 @@ export class FlowBoxPackager implements PackagerUnit {
             splitResult.partB,
             createContinuationIdentity(this, splitResult.partB.meta?.fragmentIndex)
         );
-        return [partA, partB];
+        return { currentFragment: partA, continuationFragment: partB };
     }
 }

@@ -179,7 +179,7 @@ export function paginatePackagers(
                         pageIndex: currentPageIndex,
                         cursorY: currentY
                     };
-                    const [partA, partB] = splitCandidate.split(candidateAvailable, splitContext);
+                    const { currentFragment: partA, continuationFragment: partB } = splitCandidate.split(candidateAvailable, splitContext);
                     if (partA && partB) {
                         const partAContext = {
                             ...contextBase,
@@ -359,7 +359,7 @@ export function paginatePackagers(
         }
 
         const splitAvailableHeight = availableHeightAdjusted - markerReserve;
-        const [fitsCurrent, pushedNext] = packager.split(splitAvailableHeight, context);
+        const { currentFragment: fitsCurrent, continuationFragment: pushedNext } = packager.split(splitAvailableHeight, context);
 
         if (!fitsCurrent) {
             if (isAtPageTop) {

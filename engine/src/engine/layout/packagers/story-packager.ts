@@ -49,7 +49,7 @@ import { LayoutUtils } from '../layout-utils';
 import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { LayoutBox, PackagerContext, PackagerUnit } from './packager-types';
+import { LayoutBox, PackagerContext, PackagerSplitResult, PackagerUnit } from './packager-types';
 import { OccupiedRect, SpatialMap } from './spatial-map';
 
 // ---------------------------------------------------------------------------
@@ -160,8 +160,8 @@ class FrozenStoryPackager implements PackagerUnit {
         return this.frozenBoxes.map((b) => ({ ...b, properties: { ...(b.properties || {}) } }));
     }
 
-    split(_ah: number, _ctx: PackagerContext): [PackagerUnit | null, PackagerUnit | null] {
-        return [null, this];
+    split(_ah: number, _ctx: PackagerContext): PackagerSplitResult {
+        return { currentFragment: null, continuationFragment: this };
     }
 
     getRequiredHeight(): number { return this.frozenHeight; }
@@ -277,7 +277,7 @@ export class StoryPackager implements PackagerUnit {
     getMarginTop(): number { return 0; }
     getMarginBottom(): number { return 0; }
 
-    split(availableHeight: number, context: PackagerContext): [PackagerUnit | null, PackagerUnit | null] {
+    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
         const availableWidth = this.lastAvailableWidth > 0
             ? this.lastAvailableWidth
             : (context.pageWidth - context.margins.left - context.margins.right);
@@ -1066,12 +1066,12 @@ export class StoryPackager implements PackagerUnit {
         };
     }
 
-    private splitColumns(result: MultiColumnPourResult): [PackagerUnit | null, PackagerUnit | null] {
+    private splitColumns(result: MultiColumnPourResult): PackagerSplitResult {
         if (!result.hasOverflow || !result.continuation) {
-            return [new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this), null];
+            return { currentFragment: new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this), continuationFragment: null };
         }
         if (result.allBoxes.length === 0) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         const children = this.storyElement.children ?? [];
@@ -1084,7 +1084,7 @@ export class StoryPackager implements PackagerUnit {
             partBChildren.push(children[i]);
         }
         if (partBChildren.length === 0 && result.continuation.carryOvers.length === 0) {
-            return [partA, null];
+            return { currentFragment: partA, continuationFragment: null };
         }
 
         const partBElement: Element = {
@@ -1099,7 +1099,7 @@ export class StoryPackager implements PackagerUnit {
             this.storyYOffset + result.continuation.consumedStoryHeight,
             createContinuationIdentity(this)
         );
-        return [partA, partB];
+        return { currentFragment: partA, continuationFragment: partB };
     }
 
     private splitResult(
@@ -1107,7 +1107,7 @@ export class StoryPackager implements PackagerUnit {
         splitH: number,
         availableWidth: number,
         margins: { left: number; right: number; top: number; bottom: number }
-    ): [PackagerUnit | null, PackagerUnit | null] {
+    ): PackagerSplitResult {
         const children = this.storyElement.children ?? [];
 
         const partABoxes: Box[] = [];
@@ -1217,7 +1217,7 @@ export class StoryPackager implements PackagerUnit {
 
         if (partABoxes.length === 0) {
             // Nothing fits → cannot split (tell paginator to try a new page).
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         // -- Carry-over obstacles -------------------------------------------
@@ -1259,7 +1259,7 @@ export class StoryPackager implements PackagerUnit {
 
         if (partBChildren.length === 0 && carryOvers.length === 0) {
             // Nothing left for partB.
-            return [partA, null];
+            return { currentFragment: partA, continuationFragment: null };
         }
 
         const partBElement: Element = {
@@ -1276,7 +1276,7 @@ export class StoryPackager implements PackagerUnit {
             createContinuationIdentity(this)
         );
 
-        return [partA, partB];
+        return { currentFragment: partA, continuationFragment: partB };
     }
 
     // -- Helpers -------------------------------------------------------------

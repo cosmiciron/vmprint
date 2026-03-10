@@ -11,7 +11,7 @@ import {
 } from '../flow-fragment-state';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { LayoutBox, PackagerContext, PackagerUnit } from './packager-types';
+import { LayoutBox, PackagerContext, PackagerSplitResult, PackagerUnit } from './packager-types';
 
 type DropCapParts = {
     dropCap: FlowBox;
@@ -122,8 +122,8 @@ class DropCapFragmentPackager implements PackagerUnit {
         return boxes;
     }
 
-    split(_availableHeight: number, _context: PackagerContext): [PackagerUnit | null, PackagerUnit | null] {
-        return [null, this];
+    split(_availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+        return { currentFragment: null, continuationFragment: this };
     }
 
     getRequiredHeight(): number {
@@ -621,16 +621,16 @@ export class DropCapPackager implements PackagerUnit {
         return fragment.emitBoxes(availableWidth, availableHeight, context);
     }
 
-    split(availableHeight: number, context: PackagerContext): [PackagerUnit | null, PackagerUnit | null] {
+    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
         if (this.isUnbreakable(availableHeight)) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
         const availableWidth = this.cachedAvailableWidth > 0
             ? this.cachedAvailableWidth
             : (context.pageWidth - context.margins.left - context.margins.right);
         this.prepare(availableWidth, availableHeight, context);
         if (!this.cachedParts) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         const { dropCap, wrap, body, wrapOffsetX, unifiedLayoutBefore } = this.cachedParts;
@@ -639,17 +639,17 @@ export class DropCapPackager implements PackagerUnit {
         const firstBlockHeight = unifiedLayoutBefore + Math.max(capHeight, wrapHeight);
 
         if (availableHeight <= firstBlockHeight + LAYOUT_DEFAULTS.wrapTolerance) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         if (!body) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         const splitAvailable = availableHeight - firstBlockHeight;
         const splitResult = (this.processor as any).splitFlowBox(body, splitAvailable, 0);
         if (!splitResult) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         const partA = splitResult.partA as FlowBox;
@@ -668,7 +668,7 @@ export class DropCapPackager implements PackagerUnit {
             partB,
             createContinuationIdentity(this, partB.meta?.fragmentIndex)
         );
-        return [fitsCurrent, pushedNext];
+        return { currentFragment: fitsCurrent, continuationFragment: pushedNext };
     }
 
     getRequiredHeight(): number {

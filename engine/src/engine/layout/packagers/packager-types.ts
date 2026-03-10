@@ -13,6 +13,11 @@ export interface PackagerContext {
     pageHeight: number;
 }
 
+export type PackagerSplitResult = {
+    currentFragment: PackagerUnit | null;
+    continuationFragment: PackagerUnit | null;
+};
+
 export interface PackagerUnit {
     readonly actorId: string;
     readonly sourceId: string;
@@ -42,7 +47,7 @@ export interface PackagerUnit {
     /**
      * Splits this unit.
      */
-    split(availableHeight: number, context: PackagerContext): [PackagerUnit | null, PackagerUnit | null];
+    split(availableHeight: number, context: PackagerContext): PackagerSplitResult;
 
     /**
      * Required height for the last materialized state (after emitBoxes).

@@ -3,7 +3,7 @@ import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import { materializeTableFlowBox, splitTableFlowBox } from '../layout-table';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { PackagerContext, PackagerUnit } from './packager-types';
+import { PackagerContext, PackagerSplitResult, PackagerUnit } from './packager-types';
 
 /**
  * Dedicated packager for table flow boxes.
@@ -113,10 +113,10 @@ export class TablePackager implements PackagerUnit {
         return this.flowBox.marginBottom;
     }
 
-    split(availableHeight: number, _context: PackagerContext): [PackagerUnit | null, PackagerUnit | null] {
+    split(availableHeight: number, _context: PackagerContext): PackagerSplitResult {
         this.materialize(this.lastAvailableWidth);
         if (this.isUnbreakable(availableHeight)) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         const splitResult = splitTableFlowBox(
@@ -126,7 +126,7 @@ export class TablePackager implements PackagerUnit {
         );
 
         if (!splitResult) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         const partA = new TablePackager(this.processor, splitResult.partA, {
@@ -141,6 +141,6 @@ export class TablePackager implements PackagerUnit {
             splitResult.partB,
             createContinuationIdentity(this, splitResult.partB.meta?.fragmentIndex)
         );
-        return [partA, partB];
+        return { currentFragment: partA, continuationFragment: partB };
     }
 }
