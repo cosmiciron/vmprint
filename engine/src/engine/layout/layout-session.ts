@@ -2,6 +2,18 @@ import type { Box, Page } from '../types';
 import type { EngineRuntime } from '../runtime';
 import type { ContinuationArtifacts } from './layout-core-types';
 import type { PackagerUnit } from './packagers/packager-types';
+import type { KeepWithNextPlan } from './keep-with-next-collaborator';
+import type { PackagerContext } from './packagers/packager-types';
+
+export type LayoutProfileMetrics = {
+    keepWithNextPlanCalls: number;
+    keepWithNextPlanMs: number;
+    keepWithNextBranchCalls: number;
+    keepWithNextBranchMs: number;
+    keepWithNextPreparedActors: number;
+    keepWithNextEarlyExitCalls: number;
+    keepWithNextPrepareByKind: Record<string, { calls: number; ms: number }>;
+};
 
 export type RegionReservation = {
     id: string;
@@ -66,6 +78,16 @@ export interface LayoutCollaborator {
     onSimulationComplete?(pages: Page[], session: LayoutSession): boolean | void;
 }
 
+export type PaginationLoopState = {
+    actorQueue: PackagerUnit[];
+    actorIndex: number;
+    availableWidth: number;
+    availableHeight: number;
+    lastSpacingAfter: number;
+    isAtPageTop: boolean;
+    context: PackagerContext;
+};
+
 type LayoutSessionOptions = {
     runtime: EngineRuntime;
     collaborators?: readonly LayoutCollaborator[];
@@ -76,7 +98,18 @@ export class LayoutSession {
     readonly collaborators: readonly LayoutCollaborator[];
     readonly actorRegistry: PackagerUnit[] = [];
     readonly telemetry = new Map<string, unknown>();
+    readonly profile: LayoutProfileMetrics = {
+        keepWithNextPlanCalls: 0,
+        keepWithNextPlanMs: 0,
+        keepWithNextBranchCalls: 0,
+        keepWithNextBranchMs: 0,
+        keepWithNextPreparedActors: 0,
+        keepWithNextEarlyExitCalls: 0,
+        keepWithNextPrepareByKind: {}
+    };
     private readonly continuationArtifacts = new Map<string, ContinuationArtifacts>();
+    private readonly keepWithNextPlans = new Map<string, KeepWithNextPlan>();
+    private paginationLoopState: PaginationLoopState | null = null;
 
     currentPageIndex = 0;
     currentY = 0;
@@ -166,5 +199,36 @@ export class LayoutSession {
 
     getContinuationArtifacts(actorId: string): ContinuationArtifacts | undefined {
         return this.continuationArtifacts.get(actorId);
+    }
+
+    setKeepWithNextPlan(actorId: string, plan: KeepWithNextPlan): void {
+        this.keepWithNextPlans.set(actorId, plan);
+    }
+
+    getKeepWithNextPlan(actorId: string): KeepWithNextPlan | undefined {
+        return this.keepWithNextPlans.get(actorId);
+    }
+
+    setPaginationLoopState(state: PaginationLoopState): void {
+        this.paginationLoopState = state;
+    }
+
+    getPaginationLoopState(): PaginationLoopState | null {
+        return this.paginationLoopState;
+    }
+
+    recordProfile(metric: keyof LayoutProfileMetrics, delta: number): void {
+        const value = Number.isFinite(delta) ? Number(delta) : 0;
+        if (typeof this.profile[metric] === 'number') {
+            (this.profile[metric] as number) += value;
+        }
+    }
+
+    recordKeepWithNextPrepare(actorKind: string, durationMs: number): void {
+        const normalizedKind = actorKind || 'unknown';
+        const entry = this.profile.keepWithNextPrepareByKind[normalizedKind] ?? { calls: 0, ms: 0 };
+        entry.calls += 1;
+        entry.ms += Number.isFinite(durationMs) ? Number(durationMs) : 0;
+        this.profile.keepWithNextPrepareByKind[normalizedKind] = entry;
     }
 }

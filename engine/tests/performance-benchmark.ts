@@ -14,6 +14,13 @@ type FixtureMetric = {
     layoutMs: number;
     renderMs: number;
     totalMs: number;
+    keepPlanCalls: number;
+    keepPlanMs: number;
+    keepBranchCalls: number;
+    keepBranchMs: number;
+    keepPreparedActors: number;
+    keepEarlyExitCalls: number;
+    keepPrepareKinds: string;
 };
 
 type Summary = {
@@ -52,10 +59,27 @@ function average(metrics: FixtureMetric[]): FixtureMetric[] {
                 fontMs: Number((sum((item) => item.fontMs) / n).toFixed(2)),
                 layoutMs: Number((sum((item) => item.layoutMs) / n).toFixed(2)),
                 renderMs: Number((sum((item) => item.renderMs) / n).toFixed(2)),
-                totalMs: Number((sum((item) => item.totalMs) / n).toFixed(2))
+                totalMs: Number((sum((item) => item.totalMs) / n).toFixed(2)),
+                keepPlanCalls: Number((sum((item) => item.keepPlanCalls) / n).toFixed(2)),
+                keepPlanMs: Number((sum((item) => item.keepPlanMs) / n).toFixed(2)),
+                keepBranchCalls: Number((sum((item) => item.keepBranchCalls) / n).toFixed(2)),
+                keepBranchMs: Number((sum((item) => item.keepBranchMs) / n).toFixed(2)),
+                keepPreparedActors: Number((sum((item) => item.keepPreparedActors) / n).toFixed(2)),
+                keepEarlyExitCalls: Number((sum((item) => item.keepEarlyExitCalls) / n).toFixed(2)),
+                keepPrepareKinds: sample.keepPrepareKinds
             };
         })
         .sort((left, right) => right.totalMs - left.totalMs);
+}
+
+function summarizePrepareKinds(profile: {
+    keepWithNextPrepareByKind?: Record<string, { calls: number; ms: number }>;
+} | null | undefined): string {
+    const entries = Object.entries(profile?.keepWithNextPrepareByKind ?? {})
+        .sort((left, right) => right[1].ms - left[1].ms)
+        .slice(0, 3)
+        .map(([kind, metrics]) => `${kind}:${metrics.calls}/${metrics.ms.toFixed(2)}ms`);
+    return entries.join(', ');
 }
 
 async function run(): Promise<void> {
@@ -84,6 +108,15 @@ async function run(): Promise<void> {
             const t1 = performance.now();
             const pages = engineInstance.paginate(document.elements);
             const t2 = performance.now();
+            const profile = engineInstance.getLastLayoutSession?.()?.profile || {
+                keepWithNextPlanCalls: 0,
+                keepWithNextPlanMs: 0,
+                keepWithNextBranchCalls: 0,
+                keepWithNextBranchMs: 0,
+                keepWithNextPreparedActors: 0,
+                keepWithNextEarlyExitCalls: 0,
+                keepWithNextPrepareByKind: {}
+            };
 
             const pageSize = LayoutUtils.getPageDimensions(config);
             const context = new MockContext(pageSize.width, pageSize.height);
@@ -100,7 +133,14 @@ async function run(): Promise<void> {
                 fontMs: Number((t1 - t0).toFixed(2)),
                 layoutMs: Number((t2 - t1).toFixed(2)),
                 renderMs: Number((t3 - t2).toFixed(2)),
-                totalMs: Number((t3 - t0).toFixed(2))
+                totalMs: Number((t3 - t0).toFixed(2)),
+                keepPlanCalls: Number(profile.keepWithNextPlanCalls || 0),
+                keepPlanMs: Number((profile.keepWithNextPlanMs || 0).toFixed(2)),
+                keepBranchCalls: Number(profile.keepWithNextBranchCalls || 0),
+                keepBranchMs: Number((profile.keepWithNextBranchMs || 0).toFixed(2)),
+                keepPreparedActors: Number(profile.keepWithNextPreparedActors || 0),
+                keepEarlyExitCalls: Number(profile.keepWithNextEarlyExitCalls || 0),
+                keepPrepareKinds: summarizePrepareKinds(profile)
             });
         }
     }

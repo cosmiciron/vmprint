@@ -13,6 +13,7 @@ import {
 } from './layout-core-types';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
 import { ContinuationMarkerCollaborator } from './continuation-marker-collaborator';
+import { KeepWithNextCollaborator } from './keep-with-next-collaborator';
 import { PageRegionCollaborator } from './layout-page-finalization';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import {
@@ -30,6 +31,7 @@ import { paginatePackagers } from './packagers/paginate-packagers';
 
 export class LayoutProcessor extends TextProcessor {
     private static readonly REGION_LAYOUT_HEIGHT = 1000000;
+    private lastLayoutSession: LayoutSession | null = null;
 
     private normalizeOverflowPolicy(value: unknown): OverflowPolicy {
         if (value === undefined || value === null || value === '') return LAYOUT_DEFAULTS.overflowPolicy;
@@ -357,6 +359,7 @@ export class LayoutProcessor extends TextProcessor {
             runtime: this.getRuntime(),
             collaborators: this.createLayoutCollaborators()
         });
+        this.lastLayoutSession = session;
         session.notifySimulationStart();
         const packagers = createPackagers(elements, this);
         for (const packager of packagers) {
@@ -370,6 +373,10 @@ export class LayoutProcessor extends TextProcessor {
         };
         const pages = paginatePackagers(this, packagers, contextBase, session);
         return session.finalizePages(pages);
+    }
+
+    getLastLayoutSession(): LayoutSession | null {
+        return this.lastLayoutSession;
     }
 
     private shapeTableElement(element: Element, identitySeed?: FlowIdentitySeed): FlowBox {
@@ -739,6 +746,7 @@ export class LayoutProcessor extends TextProcessor {
 
     private createLayoutCollaborators(): LayoutCollaborator[] {
         return [
+            new KeepWithNextCollaborator(),
             new ContinuationMarkerCollaborator(),
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType) =>

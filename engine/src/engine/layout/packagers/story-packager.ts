@@ -241,6 +241,26 @@ export class StoryPackager implements PackagerUnit {
         this.lastAvailableHeight = availableHeight;
     }
 
+    prepareLookahead(availableWidth: number, _availableHeight: number, context: PackagerContext): void {
+        const columnConfig = this.getStoryColumnConfig();
+        if (columnConfig.columns <= 1) {
+            this.prepare(availableWidth, _availableHeight, context);
+            return;
+        }
+        if (
+            this.lastAvailableWidth === availableWidth &&
+            !Number.isFinite(this.lastAvailableHeight) &&
+            this.lastResult
+        ) {
+            return;
+        }
+        // Keep-with-next planning only needs a conservative fit probe. For multi-column stories,
+        // reuse the cheaper width-driven full-pour instead of a commit-grade column simulation.
+        this.lastResult = this.pourAll(availableWidth, context.margins);
+        this.lastAvailableWidth = availableWidth;
+        this.lastAvailableHeight = Number.POSITIVE_INFINITY;
+    }
+
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] {
         this.prepare(availableWidth, availableHeight, context);
         return cloneBoxes(this.lastResult?.allBoxes || []);

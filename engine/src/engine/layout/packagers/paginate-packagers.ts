@@ -1,6 +1,8 @@
+import { performance } from 'node:perf_hooks';
 import { Box, Element, Page } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { LAYOUT_DEFAULTS } from '../defaults';
+import { computeKeepWithNextPlan } from '../keep-with-next-collaborator';
 import { ConstraintField, LayoutSession } from '../layout-session';
 import { PackagerContext, PackagerUnit, LayoutBox } from './packager-types';
 import { FlowBoxPackager } from './flow-box-packager';
@@ -72,6 +74,15 @@ export function paginatePackagers(
         const layoutBefore = resolveLayoutBefore(lastSpacingAfter, marginTop);
         const layoutDelta = layoutBefore - marginTop;
         const constraintField = new ConstraintField(availableWidth, availableHeight - layoutDelta);
+        session?.setPaginationLoopState({
+            actorQueue: packagers,
+            actorIndex: i,
+            availableWidth,
+            availableHeight,
+            lastSpacingAfter,
+            isAtPageTop,
+            context
+        });
         session?.notifyConstraintNegotiation(packager, constraintField);
         const availableHeightAdjusted = constraintField.effectiveAvailableHeight;
 
@@ -81,56 +92,31 @@ export function paginatePackagers(
         let requiredHeight = contentHeight + layoutBefore + marginBottom;
         let effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
 
-        // V1 Parity: Gather the sequence
-        const sequence: PackagerUnit[] = [packager];
-        let sequenceHeight = 0;
-        let tempLastSpacing = lastSpacingAfter;
-        let j = i;
-        while (j < packagers.length && packagers[j].keepWithNext && j + 1 < packagers.length) {
-            const nextPackager = packagers[j + 1];
-            nextPackager.emitBoxes(availableWidth, 999999, context);
-            sequence.push(nextPackager);
-            j++;
-        }
-
-        for (const unit of sequence) {
-            const unitMarginTop = unit.getMarginTop();
-            const unitMarginBottom = unit.getMarginBottom();
-            const unitLayoutBefore = resolveLayoutBefore(tempLastSpacing, unitMarginTop);
-            const unitContentHeight = Math.max(0, unit.getRequiredHeight() - unitMarginTop - unitMarginBottom);
-            const unitRequiredHeight = unitContentHeight + unitLayoutBefore + unitMarginBottom;
-            const unitEffectiveHeight = Math.max(unitRequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-            sequenceHeight += unitEffectiveHeight - unitMarginBottom;
-            tempLastSpacing = unitMarginBottom;
-        }
-
-        const fitsOnCurrent = sequenceHeight <= availableHeight;
+        const keepPlan = packager.keepWithNext
+            ? (session?.getKeepWithNextPlan(packager.actorId) ?? computeKeepWithNextPlan({
+                actorQueue: packagers,
+                actorIndex: i,
+                availableWidth,
+                availableHeight,
+                lastSpacingAfter,
+                isAtPageTop,
+                context
+            }))
+            : null;
+        const sequence = keepPlan?.sequence ?? [packager];
+        const sequenceHeight = keepPlan?.sequenceHeight ?? (effectiveHeight - marginBottom);
+        const fitsOnCurrent = keepPlan?.fitsOnCurrent ?? (sequenceHeight <= availableHeight);
 
         if (!fitsOnCurrent) {
             // Avoid stranding early keepWithNext units by splitting the final splittable unit.
             if (sequence.length > 1 && packager.keepWithNext && !isAtPageTop) {
-                let prefixHeight = 0;
-                let prefixFits = true;
-                const prefix = sequence.slice(0, -1);
-                const splitCandidate = sequence[sequence.length - 1];
+                const keepBranchStart = performance.now();
+                const prefixHeight = keepPlan!.prefixHeight;
+                const prefixFits = keepPlan!.prefixFits;
+                const prefix = keepPlan!.prefix;
+                const splitCandidate = keepPlan!.splitCandidate;
 
-                let prefixLastSpacing = lastSpacingAfter;
-                for (const p of prefix) {
-                    const pMarginTop = p.getMarginTop();
-                    const pMarginBottom = p.getMarginBottom();
-                    const pLayoutBefore = resolveLayoutBefore(prefixLastSpacing, pMarginTop);
-                    const pContentHeight = Math.max(0, p.getRequiredHeight() - pMarginTop - pMarginBottom);
-                    const pRequiredHeight = pContentHeight + pLayoutBefore + pMarginBottom;
-                    const pEffectiveHeight = Math.max(pRequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-                    prefixHeight += pEffectiveHeight - pMarginBottom;
-                    prefixLastSpacing = pMarginBottom;
-                    if (prefixHeight > availableHeight) {
-                        prefixFits = false;
-                        break;
-                    }
-                }
-
-                if (prefixFits && !splitCandidate.isUnbreakable(availableHeight - prefixHeight)) {
+                if (prefixFits && splitCandidate && !splitCandidate.isUnbreakable(availableHeight - prefixHeight)) {
                     let continuation: any = null;
                     let markerReserve = 0;
                     continuation = session?.getContinuationArtifacts(splitCandidate.actorId);
@@ -257,6 +243,8 @@ export function paginatePackagers(
                         } else {
                             packagers.splice(i, sequence.length, partB);
                         }
+                        session?.recordProfile('keepWithNextBranchCalls', 1);
+                        session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
                         continue;
                     } else {
                         // Split failed; rollback prefix placement to avoid duplicating keepWithNext units.
@@ -265,6 +253,8 @@ export function paginatePackagers(
                         lastSpacingAfter = prefixStartSpacing;
                     }
                 }
+                session?.recordProfile('keepWithNextBranchCalls', 1);
+                session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
             }
 
             // If a keepWithNext sequence doesn't fit, we push the group to the next page.

@@ -26,6 +26,12 @@ export interface PackagerUnit {
      */
     prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void;
 
+    /**
+     * Prepare speculative measurement state for planning phases such as keepWithNext.
+     * Implementations may use a cheaper conservative probe than commit-time prepare().
+     */
+    prepareLookahead?(availableWidth: number, availableHeight: number, context: PackagerContext): void;
+
     /** 
      * Emit boxes for the given available space.
      * Returns null if it absolutely cannot even start to fit.
