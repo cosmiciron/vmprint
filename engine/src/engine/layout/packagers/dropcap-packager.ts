@@ -591,6 +591,13 @@ export class DropCapPackager implements PackagerUnit {
         this.materialize(availableWidth, context);
     }
 
+    getMinimumPlacementWidth(fullAvailableWidth: number, _context: PackagerContext): number {
+        // Drop caps derive a coupled geometry between the cap box and the
+        // wrapped opening lines. Narrowed spatial lanes should not force that
+        // composite actor through a degraded first-line shape.
+        return fullAvailableWidth;
+    }
+
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] | null {
         this.prepare(availableWidth, availableHeight, context);
         if (!this.cachedParts) {

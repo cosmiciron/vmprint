@@ -58,6 +58,16 @@ export class FlowBoxPackager implements PackagerUnit {
         this.lastAvailableHeight = availableHeight;
     }
 
+    getMinimumPlacementWidth(_fullAvailableWidth: number, _context: PackagerContext): number | null {
+        if (this.flowBox.image) {
+            return Math.max(0, Number(this.flowBox.measuredWidth || 0));
+        }
+        if (!this.flowBox.allowLineSplit || this.flowBox.overflowPolicy === 'move-whole') {
+            return Math.max(0, Number(this.flowBox.measuredWidth || 0));
+        }
+        return null;
+    }
+
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): Box[] {
         this.prepare(availableWidth, availableHeight, context);
 

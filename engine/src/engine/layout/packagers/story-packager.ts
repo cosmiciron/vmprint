@@ -261,6 +261,22 @@ export class StoryPackager implements PackagerUnit {
         this.lastAvailableHeight = Number.POSITIVE_INFINITY;
     }
 
+    acceptsPlacementFrame(frameAvailableWidth: number, fullAvailableWidth: number, _context: PackagerContext): boolean {
+        const columnConfig = this.getStoryColumnConfig();
+        if (columnConfig.columns > 1 && frameAvailableWidth < fullAvailableWidth) {
+            return false;
+        }
+        return true;
+    }
+
+    getMinimumPlacementWidth(fullAvailableWidth: number, _context: PackagerContext): number | null {
+        const columnConfig = this.getStoryColumnConfig();
+        if (columnConfig.columns > 1) {
+            return fullAvailableWidth;
+        }
+        return null;
+    }
+
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] {
         this.prepare(availableWidth, availableHeight, context);
         return cloneBoxes(this.lastResult?.allBoxes || []);

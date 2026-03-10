@@ -77,6 +77,16 @@ export type SpatialPlacementSurface = {
     contentBand: ContentBand | null;
 };
 
+export type PlacementFrameMargins = {
+    left: number;
+    right: number;
+};
+
+export type ResolvedPlacementFrame = SpatialPlacementSurface & {
+    availableWidth: number;
+    margins: PlacementFrameMargins;
+};
+
 export type SpatialPlacementDecision =
     | { action: 'commit' }
     | { action: 'defer'; nextCursorY: number };
@@ -178,6 +188,26 @@ export class ConstraintField {
             cursorY: resolvedCursorY,
             activeBand,
             contentBand: activeBand ? this.resolveActiveContentBand(resolvedCursorY) : null
+        };
+    }
+
+    resolvePlacementFrame(cursorY: number, margins: PlacementFrameMargins): ResolvedPlacementFrame {
+        const surface = this.resolvePlacementSurface(cursorY);
+        const laneLeftOffset = surface.contentBand?.xOffset ?? 0;
+        const laneRightOffset = Math.max(
+            0,
+            (this.availableWidth - laneLeftOffset) - (surface.contentBand?.width ?? this.availableWidth)
+        );
+
+        return {
+            ...surface,
+            availableWidth: surface.contentBand?.width ?? this.availableWidth,
+            margins: surface.contentBand
+                ? {
+                    left: margins.left + laneLeftOffset,
+                    right: margins.right + laneRightOffset
+                }
+                : margins
         };
     }
 

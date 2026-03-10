@@ -97,39 +97,37 @@ export function paginatePackagers(
         const constraintField = new ConstraintField(availableWidth, availableHeight - layoutDelta);
         session?.notifyConstraintNegotiation(packager, constraintField);
         const placementSurfaceStart = performance.now();
-        const placementSurface = constraintField.resolvePlacementSurface(currentY + layoutBefore);
+        const placementFrame = constraintField.resolvePlacementFrame(currentY + layoutBefore, {
+            left: margins.left,
+            right: margins.right
+        });
         session?.recordProfile('exclusionBlockedCursorCalls', 1);
         session?.recordProfile('exclusionBandResolutionCalls', 1);
         const placementSurfaceDuration = performance.now() - placementSurfaceStart;
         session?.recordProfile('exclusionBlockedCursorMs', placementSurfaceDuration);
         session?.recordProfile('exclusionBandResolutionMs', placementSurfaceDuration);
-        if (placementSurface.cursorY > currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
-            currentY = placementSurface.cursorY - layoutBefore;
+        if (placementFrame.cursorY > currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
+            currentY = placementFrame.cursorY - layoutBefore;
             availableHeight = pageLimit - currentY;
             if (availableHeight <= 0 && currentY > margins.top) {
                 pushNewPage();
                 continue;
             }
         }
-        const contentBand = placementSurface.contentBand;
+        const contentBand = placementFrame.contentBand;
         if (contentBand) {
             session?.recordProfile('exclusionLaneApplications', 1);
         }
-        const laneLeftOffset = contentBand?.xOffset ?? 0;
-        const laneRightOffset = Math.max(0, (constraintField.availableWidth - laneLeftOffset) - (contentBand?.width ?? constraintField.availableWidth));
-        const laneMargins = contentBand
-            ? {
-                ...margins,
-                left: margins.left + laneLeftOffset,
-                right: margins.right + laneRightOffset
-            }
-            : margins;
-        availableWidth = contentBand?.width ?? availableWidth;
+        availableWidth = placementFrame.availableWidth;
         const context: PackagerContext = {
             ...contextBase,
             pageIndex: currentPageIndex,
             cursorY: currentY,
-            margins: laneMargins
+            margins: {
+                ...margins,
+                left: placementFrame.margins.left,
+                right: placementFrame.margins.right
+            }
         };
         session?.setPaginationLoopState({
             actorQueue: packagers,
@@ -303,6 +301,42 @@ export function paginatePackagers(
         }
 
         if (requiredHeight <= effectiveAvailableHeight) {
+            const minimumPlacementWidth = packager.getMinimumPlacementWidth?.(constraintField.availableWidth, context);
+            if (
+                contentBand &&
+                minimumPlacementWidth !== null &&
+                minimumPlacementWidth !== undefined &&
+                placementFrame.availableWidth + LAYOUT_DEFAULTS.wrapTolerance < minimumPlacementWidth
+            ) {
+                const nextCursorY = placementFrame.activeBand?.bottom ?? placementFrame.cursorY;
+                if (nextCursorY <= currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
+                    pushNewPage();
+                    continue;
+                }
+                currentY = Math.max(currentY, nextCursorY - layoutBefore);
+                availableHeight = pageLimit - currentY;
+                if (availableHeight <= 0 && currentY > margins.top) {
+                    pushNewPage();
+                }
+                continue;
+            }
+            if (
+                contentBand &&
+                packager.acceptsPlacementFrame &&
+                !packager.acceptsPlacementFrame(placementFrame.availableWidth, constraintField.availableWidth, context)
+            ) {
+                const nextCursorY = placementFrame.activeBand?.bottom ?? placementFrame.cursorY;
+                if (nextCursorY <= currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
+                    pushNewPage();
+                    continue;
+                }
+                currentY = Math.max(currentY, nextCursorY - layoutBefore);
+                availableHeight = pageLimit - currentY;
+                if (availableHeight <= 0 && currentY > margins.top) {
+                    pushNewPage();
+                }
+                continue;
+            }
             const boxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
             if (!boxes) {
                 pushNewPage();

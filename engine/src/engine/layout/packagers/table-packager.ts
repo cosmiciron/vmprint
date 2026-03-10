@@ -72,6 +72,14 @@ export class TablePackager implements PackagerUnit {
         this.materialize(availableWidth);
     }
 
+    getMinimumPlacementWidth(fullAvailableWidth: number, _context: PackagerContext): number {
+        return fullAvailableWidth;
+    }
+
+    acceptsPlacementFrame(frameAvailableWidth: number, fullAvailableWidth: number, _context: PackagerContext): boolean {
+        return frameAvailableWidth >= fullAvailableWidth;
+    }
+
     emitBoxes(availableWidth: number, _availableHeight: number, context: PackagerContext): Box[] {
         this.prepare(availableWidth, _availableHeight, context);
 

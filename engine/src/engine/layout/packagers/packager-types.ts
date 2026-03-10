@@ -39,6 +39,19 @@ export interface PackagerUnit {
      */
     prepareLookahead?(availableWidth: number, availableHeight: number, context: PackagerContext): void;
 
+    /**
+     * The minimum width at which this actor considers a placement frame worth
+     * attempting. Returning null/undefined means "no opinion".
+     */
+    getMinimumPlacementWidth?(fullAvailableWidth: number, context: PackagerContext): number | null | undefined;
+
+    /**
+     * Allows width-sensitive actors to reject a narrowed spatial placement frame
+     * before emitBoxes() is attempted. Returning false tells the paginator to
+     * defer below the constrained band instead of forcing the actor through it.
+     */
+    acceptsPlacementFrame?(frameAvailableWidth: number, fullAvailableWidth: number, context: PackagerContext): boolean;
+
     /** 
      * Emit boxes for the given available space.
      * Returns null if it absolutely cannot even start to fit.

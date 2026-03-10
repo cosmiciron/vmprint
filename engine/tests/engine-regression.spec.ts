@@ -932,6 +932,17 @@ async function run() {
                 return null;
             };
 
+            const findMinimumBoxXForSource = (pages: any[], sourceId: string): number => {
+                const matches = pages.flatMap((page: any) =>
+                    (page.boxes || []).filter((entry: any) => {
+                        const actual = String(entry.meta?.sourceId || '');
+                        return actual === sourceId || actual.endsWith(`:${sourceId}`);
+                    })
+                );
+                if (!matches.length) return -1;
+                return Math.min(...matches.map((entry: any) => Number(entry.x || 0)));
+            };
+
             const baselineFirstBox = findFirstBoxForSource(baselinePages, 'probe-first');
             const laneFirstBox = findFirstBoxForSource(laneExclusionPages, 'probe-first');
             assert.ok(laneFirstBox, 'lane exclusion should still emit the first actor');
@@ -972,6 +983,59 @@ async function run() {
             assert.equal(centeredLaneSummary[0]?.exclusionCount, 2, 'centered lane exclusion should publish two exclusion shapes on the first page');
             assert.ok((centeredLaneSummary[0]?.totalExcludedHeight || 0) >= 90, 'centered lane exclusion summary should retain both exclusion heights');
             assert.equal(centeredLaneSpatialSummary[0]?.exclusionCount, 2, 'unified spatial summary should reflect both centered-lane exclusions');
+
+            const dropcapLaneEngine = new LayoutEngine({
+                ...config,
+                layout: {
+                    ...config.layout,
+                    _experimentalPageStartExclusionTop: 20,
+                    _experimentalPageStartExclusionHeight: 45,
+                    _experimentalPageStartExclusionLeftWidth: 70,
+                    _experimentalPageStartExclusionRightWidth: 70,
+                    _experimentalPageStartExclusionSelector: 'first'
+                }
+            } as any);
+            await dropcapLaneEngine.waitForFonts();
+
+            const dropcapElements = [
+                {
+                    type: 'p',
+                    content:
+                        'Drop cap probe text should be deferred below the constrained band when the centered lane is too narrow for the composite actor. '.repeat(2),
+                    properties: {
+                        sourceId: 'dropcap-lane-probe',
+                        dropCap: {
+                            enabled: true,
+                            lines: 3,
+                            gap: 6,
+                            characterStyle: {
+                                fontFamily: 'Arimo',
+                                fontWeight: 700
+                            }
+                        }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: sharedText,
+                    properties: { sourceId: 'dropcap-follow' }
+                }
+            ];
+
+            const dropcapLanePages = dropcapLaneEngine.paginate(dropcapElements as any);
+            assert.equal(dropcapLanePages.length, 2, 'dropcap lane probe should defer below the constrained band rather than force the drop cap through it');
+
+            const dropcapLaneFirstBox = findFirstBoxForSource(dropcapLanePages, 'dropcap-lane-probe');
+            assert.ok(dropcapLaneFirstBox, 'dropcap lane probe should still emit the paragraph');
+            const dropcapLaneMinX = findMinimumBoxXForSource(dropcapLanePages, 'dropcap-lane-probe');
+            assert.ok(
+                dropcapLaneMinX <= Number(baselineFirstBox?.x || 0) + 0.1,
+                'dropcap lane probe should restore full-width placement instead of entering the centered lane'
+            );
+            assert.ok(
+                Number(dropcapLaneFirstBox.y || 0) > baselineFirstY + 20,
+                'dropcap lane probe should defer the opening paragraph below the constrained band'
+            );
         }
     );
 
