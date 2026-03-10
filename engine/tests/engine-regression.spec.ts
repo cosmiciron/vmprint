@@ -1036,6 +1036,54 @@ async function run() {
                 Number(dropcapLaneFirstBox.y || 0) > baselineFirstY + 20,
                 'dropcap lane probe should defer the opening paragraph below the constrained band'
             );
+
+            const baselineStoryElements = [
+                {
+                    type: 'story',
+                    children: [
+                        {
+                            type: 'p',
+                            content: sharedText.repeat(4),
+                            properties: { sourceId: 'story-lane-first' }
+                        },
+                        {
+                            type: 'p',
+                            content: sharedText.repeat(3),
+                            properties: { sourceId: 'story-lane-second' }
+                        }
+                    ]
+                }
+            ];
+            const baselineStoryEngine = new LayoutEngine(config as any);
+            await baselineStoryEngine.waitForFonts();
+            const centeredLaneStoryEngine = new LayoutEngine({
+                ...config,
+                layout: {
+                    ...config.layout,
+                    _experimentalPageStartExclusionTop: 20,
+                    _experimentalPageStartExclusionHeight: 45,
+                    _experimentalPageStartExclusionLeftWidth: 70,
+                    _experimentalPageStartExclusionRightWidth: 70,
+                    _experimentalPageStartExclusionSelector: 'first'
+                }
+            } as any);
+            await centeredLaneStoryEngine.waitForFonts();
+
+            const baselineStoryPages = baselineStoryEngine.paginate(baselineStoryElements as any);
+            const centeredLaneStoryPages = centeredLaneStoryEngine.paginate(baselineStoryElements as any);
+
+            const baselineStoryFirstBox = findFirstBoxForSource(baselineStoryPages, 'story-lane-first');
+            const centeredLaneStoryFirstBox = findFirstBoxForSource(centeredLaneStoryPages, 'story-lane-first');
+            const centeredLaneStoryMinX = findMinimumBoxXForSource(centeredLaneStoryPages, 'story-lane-first');
+            assert.ok(centeredLaneStoryFirstBox, 'centered lane story probe should still emit the first story paragraph');
+            assert.ok(
+                Number(centeredLaneStoryFirstBox.y || 0) > Number(baselineStoryFirstBox?.y || 0) + 20,
+                'centered lane story probe should defer the story below the constrained band'
+            );
+            assert.ok(
+                centeredLaneStoryMinX <= Number(baselineStoryFirstBox?.x || 0) + 0.1,
+                'centered lane story probe should restore full-width placement for the frozen story fragment'
+            );
         }
     );
 

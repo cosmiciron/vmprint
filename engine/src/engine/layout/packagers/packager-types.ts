@@ -20,6 +20,11 @@ export type PackagerSplitResult = {
 
 export type PackagerPreparationPhase = 'commit' | 'lookahead';
 
+export type PackagerPlacementPreference = {
+    minimumWidth?: number | null;
+    acceptsFrame?: boolean | null;
+};
+
 export interface PackagerUnit {
     readonly actorId: string;
     readonly sourceId: string;
@@ -38,6 +43,12 @@ export interface PackagerUnit {
      * Implementations may use a cheaper conservative probe than commit-time prepare().
      */
     prepareLookahead?(availableWidth: number, availableHeight: number, context: PackagerContext): void;
+
+    /**
+     * Consolidated actor-owned opinion about whether a narrowed placement frame
+     * is worth attempting.
+     */
+    getPlacementPreference?(fullAvailableWidth: number, context: PackagerContext): PackagerPlacementPreference | null | undefined;
 
     /**
      * The minimum width at which this actor considers a placement frame worth
@@ -91,4 +102,49 @@ export function preparePackagerForPhase(
     }
 
     unit.prepare(availableWidth, availableHeight, context);
+}
+
+export function resolvePackagerPlacementPreference(
+    unit: PackagerUnit,
+    fullAvailableWidth: number,
+    context: PackagerContext
+): PackagerPlacementPreference | null {
+    const consolidated = unit.getPlacementPreference?.(fullAvailableWidth, context);
+    if (consolidated) {
+        return consolidated;
+    }
+
+    const minimumWidth = unit.getMinimumPlacementWidth?.(fullAvailableWidth, context) ?? null;
+    if (minimumWidth === null || minimumWidth === undefined) {
+        return null;
+    }
+
+    return { minimumWidth };
+}
+
+export function rejectsPlacementFrame(
+    unit: PackagerUnit,
+    frameAvailableWidth: number,
+    fullAvailableWidth: number,
+    context: PackagerContext
+): boolean {
+    const preference = resolvePackagerPlacementPreference(unit, fullAvailableWidth, context);
+    if (
+        preference &&
+        preference.minimumWidth !== null &&
+        preference.minimumWidth !== undefined &&
+        frameAvailableWidth + 0 < preference.minimumWidth
+    ) {
+        return true;
+    }
+
+    if (preference && preference.acceptsFrame !== null && preference.acceptsFrame !== undefined) {
+        return preference.acceptsFrame === false;
+    }
+
+    if (unit.acceptsPlacementFrame) {
+        return !unit.acceptsPlacementFrame(frameAvailableWidth, fullAvailableWidth, context);
+    }
+
+    return false;
 }

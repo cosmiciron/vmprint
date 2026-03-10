@@ -2,7 +2,7 @@ import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { PackagerContext, PackagerSplitResult, PackagerUnit } from './packager-types';
+import { PackagerContext, PackagerPlacementPreference, PackagerSplitResult, PackagerUnit } from './packager-types';
 
 /**
  * A basic packager for standard reflowable layout boxes (e.g. paragraph, header, normal image).
@@ -58,12 +58,12 @@ export class FlowBoxPackager implements PackagerUnit {
         this.lastAvailableHeight = availableHeight;
     }
 
-    getMinimumPlacementWidth(_fullAvailableWidth: number, _context: PackagerContext): number | null {
+    getPlacementPreference(_fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference | null {
         if (this.flowBox.image) {
-            return Math.max(0, Number(this.flowBox.measuredWidth || 0));
+            return { minimumWidth: Math.max(0, Number(this.flowBox.measuredWidth || 0)) };
         }
         if (!this.flowBox.allowLineSplit || this.flowBox.overflowPolicy === 'move-whole') {
-            return Math.max(0, Number(this.flowBox.measuredWidth || 0));
+            return { minimumWidth: Math.max(0, Number(this.flowBox.measuredWidth || 0)) };
         }
         return null;
     }

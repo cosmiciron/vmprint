@@ -49,7 +49,7 @@ import { LayoutUtils } from '../layout-utils';
 import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { LayoutBox, PackagerContext, PackagerSplitResult, PackagerUnit } from './packager-types';
+import { LayoutBox, PackagerContext, PackagerPlacementPreference, PackagerSplitResult, PackagerUnit } from './packager-types';
 import { OccupiedRect, SpatialMap } from './spatial-map';
 
 // ---------------------------------------------------------------------------
@@ -136,15 +136,20 @@ type StoryPourResult = FullPourResult | MultiColumnPourResult;
 class FrozenStoryPackager implements PackagerUnit {
     private readonly frozenBoxes: Box[];
     private readonly frozenHeight: number;
+    private readonly minimumPlacementWidth: number | null;
     readonly actorId: string;
     readonly sourceId: string;
     readonly actorKind: string;
     readonly fragmentIndex: number;
     readonly continuationOf?: string;
 
-    constructor(boxes: Box[], height: number, identity: PackagerIdentity) {
+    constructor(boxes: Box[], height: number, identity: PackagerIdentity, minimumPlacementWidth?: number | null) {
         this.frozenBoxes = boxes;
         this.frozenHeight = height;
+        this.minimumPlacementWidth =
+            minimumPlacementWidth !== null && minimumPlacementWidth !== undefined
+                ? Math.max(0, Number(minimumPlacementWidth))
+                : null;
         this.actorId = identity.actorId;
         this.sourceId = identity.sourceId;
         this.actorKind = identity.actorKind;
@@ -154,6 +159,16 @@ class FrozenStoryPackager implements PackagerUnit {
 
     prepare(_aw: number, _ah: number, _ctx: PackagerContext): void {
         // Frozen content is already materialized.
+    }
+
+    getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference | null {
+        if (this.minimumPlacementWidth === null) {
+            return null;
+        }
+        return {
+            minimumWidth: Math.max(this.minimumPlacementWidth, fullAvailableWidth),
+            acceptsFrame: true
+        };
     }
 
     emitBoxes(_aw: number, _ah: number, _ctx: PackagerContext): Box[] {
@@ -261,18 +276,13 @@ export class StoryPackager implements PackagerUnit {
         this.lastAvailableHeight = Number.POSITIVE_INFINITY;
     }
 
-    acceptsPlacementFrame(frameAvailableWidth: number, fullAvailableWidth: number, _context: PackagerContext): boolean {
-        const columnConfig = this.getStoryColumnConfig();
-        if (columnConfig.columns > 1 && frameAvailableWidth < fullAvailableWidth) {
-            return false;
-        }
-        return true;
-    }
-
-    getMinimumPlacementWidth(fullAvailableWidth: number, _context: PackagerContext): number | null {
+    getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference | null {
         const columnConfig = this.getStoryColumnConfig();
         if (columnConfig.columns > 1) {
-            return fullAvailableWidth;
+            return {
+                minimumWidth: fullAvailableWidth,
+                acceptsFrame: true
+            };
         }
         return null;
     }
@@ -305,7 +315,7 @@ export class StoryPackager implements PackagerUnit {
                 : this.pourAll(availableWidth, context.margins)
         );
         if (columnConfig.columns > 1) {
-            return this.splitColumns(result as MultiColumnPourResult);
+            return this.splitColumns(result as MultiColumnPourResult, availableWidth);
         }
         return this.splitResult(result as FullPourResult, availableHeight, availableWidth, context.margins);
     }
@@ -1082,16 +1092,19 @@ export class StoryPackager implements PackagerUnit {
         };
     }
 
-    private splitColumns(result: MultiColumnPourResult): PackagerSplitResult {
+    private splitColumns(result: MultiColumnPourResult, availableWidth: number): PackagerSplitResult {
         if (!result.hasOverflow || !result.continuation) {
-            return { currentFragment: new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this), continuationFragment: null };
+            return {
+                currentFragment: new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this, availableWidth),
+                continuationFragment: null
+            };
         }
         if (result.allBoxes.length === 0) {
             return { currentFragment: null, continuationFragment: this };
         }
 
         const children = this.storyElement.children ?? [];
-        const partA = new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this);
+        const partA = new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this, availableWidth);
         const partBChildren: Element[] = [];
         if (result.continuation.continuationElement) {
             partBChildren.push(result.continuation.continuationElement);
@@ -1255,7 +1268,7 @@ export class StoryPackager implements PackagerUnit {
         }
 
         // -- partA (frozen) -------------------------------------------------
-        const partA = new FrozenStoryPackager(partABoxes, partAHeight, this);
+        const partA = new FrozenStoryPackager(partABoxes, partAHeight, this, availableWidth);
 
         // -- partB children -------------------------------------------------
         const partBChildren: Element[] = [];

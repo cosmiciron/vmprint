@@ -11,7 +11,7 @@ import {
 } from '../flow-fragment-state';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { LayoutBox, PackagerContext, PackagerSplitResult, PackagerUnit } from './packager-types';
+import { LayoutBox, PackagerContext, PackagerPlacementPreference, PackagerSplitResult, PackagerUnit } from './packager-types';
 
 type DropCapParts = {
     dropCap: FlowBox;
@@ -73,6 +73,13 @@ class DropCapFragmentPackager implements PackagerUnit {
 
     prepare(_availableWidth: number, _availableHeight: number, _context: PackagerContext): void {
         // Fragment geometry is fully determined at construction time.
+    }
+
+    getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference {
+        return {
+            minimumWidth: fullAvailableWidth,
+            acceptsFrame: true
+        };
     }
 
     emitBoxes(availableWidth: number, _availableHeight: number, context: PackagerContext): Box[] {
@@ -591,11 +598,11 @@ export class DropCapPackager implements PackagerUnit {
         this.materialize(availableWidth, context);
     }
 
-    getMinimumPlacementWidth(fullAvailableWidth: number, _context: PackagerContext): number {
-        // Drop caps derive a coupled geometry between the cap box and the
-        // wrapped opening lines. Narrowed spatial lanes should not force that
-        // composite actor through a degraded first-line shape.
-        return fullAvailableWidth;
+    getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference {
+        return {
+            minimumWidth: fullAvailableWidth,
+            acceptsFrame: true
+        };
     }
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] | null {

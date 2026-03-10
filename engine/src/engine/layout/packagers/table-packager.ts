@@ -3,7 +3,7 @@ import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import { materializeTableFlowBox, splitTableFlowBox } from '../layout-table';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { PackagerContext, PackagerSplitResult, PackagerUnit } from './packager-types';
+import { PackagerContext, PackagerPlacementPreference, PackagerSplitResult, PackagerUnit } from './packager-types';
 
 /**
  * Dedicated packager for table flow boxes.
@@ -72,12 +72,11 @@ export class TablePackager implements PackagerUnit {
         this.materialize(availableWidth);
     }
 
-    getMinimumPlacementWidth(fullAvailableWidth: number, _context: PackagerContext): number {
-        return fullAvailableWidth;
-    }
-
-    acceptsPlacementFrame(frameAvailableWidth: number, fullAvailableWidth: number, _context: PackagerContext): boolean {
-        return frameAvailableWidth >= fullAvailableWidth;
+    getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference {
+        return {
+            minimumWidth: fullAvailableWidth,
+            acceptsFrame: true
+        };
     }
 
     emitBoxes(availableWidth: number, _availableHeight: number, context: PackagerContext): Box[] {

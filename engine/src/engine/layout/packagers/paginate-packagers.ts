@@ -4,7 +4,7 @@ import { LayoutProcessor } from '../layout-core';
 import { LAYOUT_DEFAULTS } from '../defaults';
 import { computeKeepWithNextPlan } from '../keep-with-next-collaborator';
 import { ConstraintField, LayoutSession } from '../layout-session';
-import { PackagerContext, PackagerUnit, LayoutBox, preparePackagerForPhase } from './packager-types';
+import { PackagerContext, PackagerUnit, LayoutBox, preparePackagerForPhase, rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packager-types';
 
 export function paginatePackagers(
     processor: LayoutProcessor,
@@ -118,6 +118,25 @@ export function paginatePackagers(
         if (contentBand) {
             session?.recordProfile('exclusionLaneApplications', 1);
         }
+        const resolveDeferredCursorY = (candidate: PackagerUnit): number | null => {
+            if (!contentBand) return null;
+
+            const placementPreference = resolvePackagerPlacementPreference(candidate, constraintField.availableWidth, context);
+            const minimumPlacementWidth = placementPreference?.minimumWidth;
+            if (
+                minimumPlacementWidth !== null &&
+                minimumPlacementWidth !== undefined &&
+                placementFrame.availableWidth + LAYOUT_DEFAULTS.wrapTolerance < minimumPlacementWidth
+            ) {
+                return placementFrame.activeBand?.bottom ?? placementFrame.cursorY;
+            }
+
+            if (rejectsPlacementFrame(candidate, placementFrame.availableWidth, constraintField.availableWidth, context)) {
+                return placementFrame.activeBand?.bottom ?? placementFrame.cursorY;
+            }
+
+            return null;
+        };
         availableWidth = placementFrame.availableWidth;
         const context: PackagerContext = {
             ...contextBase,
@@ -301,31 +320,9 @@ export function paginatePackagers(
         }
 
         if (requiredHeight <= effectiveAvailableHeight) {
-            const minimumPlacementWidth = packager.getMinimumPlacementWidth?.(constraintField.availableWidth, context);
-            if (
-                contentBand &&
-                minimumPlacementWidth !== null &&
-                minimumPlacementWidth !== undefined &&
-                placementFrame.availableWidth + LAYOUT_DEFAULTS.wrapTolerance < minimumPlacementWidth
-            ) {
-                const nextCursorY = placementFrame.activeBand?.bottom ?? placementFrame.cursorY;
-                if (nextCursorY <= currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
-                    pushNewPage();
-                    continue;
-                }
-                currentY = Math.max(currentY, nextCursorY - layoutBefore);
-                availableHeight = pageLimit - currentY;
-                if (availableHeight <= 0 && currentY > margins.top) {
-                    pushNewPage();
-                }
-                continue;
-            }
-            if (
-                contentBand &&
-                packager.acceptsPlacementFrame &&
-                !packager.acceptsPlacementFrame(placementFrame.availableWidth, constraintField.availableWidth, context)
-            ) {
-                const nextCursorY = placementFrame.activeBand?.bottom ?? placementFrame.cursorY;
+            const deferredCursorY = resolveDeferredCursorY(packager);
+            if (deferredCursorY !== null) {
+                const nextCursorY = deferredCursorY;
                 if (nextCursorY <= currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
                     pushNewPage();
                     continue;
@@ -495,6 +492,20 @@ export function paginatePackagers(
         const fitsContentHeight = Math.max(0, fitsCurrent.getRequiredHeight() - fitsMarginTop - fitsMarginBottom);
         const fitsRequiredHeight = fitsContentHeight + fitsLayoutBefore + fitsMarginBottom;
         const fitsEffectiveHeight = Math.max(fitsRequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+        const deferredSplitCursorY = resolveDeferredCursorY(fitsCurrent);
+        if (deferredSplitCursorY !== null) {
+            const nextCursorY = deferredSplitCursorY;
+            if (nextCursorY <= currentY + fitsLayoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
+                pushNewPage();
+                continue;
+            }
+            currentY = Math.max(currentY, nextCursorY - fitsLayoutBefore);
+            availableHeight = pageLimit - currentY;
+            if (availableHeight <= 0 && currentY > margins.top) {
+                pushNewPage();
+            }
+            continue;
+        }
         const fitsAvailableHeightAdjusted = availableHeight - fitsLayoutDelta;
         const currentBoxes = fitsCurrent.emitBoxes(availableWidth, fitsAvailableHeightAdjusted, splitContext) || [];
         for (const box of currentBoxes) {
