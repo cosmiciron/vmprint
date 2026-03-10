@@ -4,6 +4,13 @@ import { solveTrackSizing, TrackSizingDefinition } from './track-sizing';
 import { FlowBox, FlowMaterializationContext, ResolvedLinesResult } from './layout-core-types';
 import { LAYOUT_DEFAULTS } from './defaults';
 import {
+    createContinuationFragmentMeta,
+    createContinuationFragmentStyle,
+    createLeadingFragmentMeta,
+    createLeadingFragmentStyle,
+    freezeFlowFragment
+} from './flow-fragment-state';
+import {
     TableCellMaterialized,
     TableCellPlacement,
     TableModel,
@@ -694,13 +701,17 @@ export function splitTableFlowBox(
         ...resolved,
         rowIndices: partAIndices.slice()
     };
+    const partBResolved: TableResolvedLayout = {
+        ...resolved,
+        rowIndices: partBIndices.slice()
+    };
 
     const partAModel: TableModel = { ...model, rowIndices: partAIndices.slice() };
     const partBModel: TableModel = { ...model, rowIndices: partBIndices.slice() };
-    const partA: FlowBox = {
-        ...box,
+    const partA = freezeFlowFragment(box, {
+        meta: createLeadingFragmentMeta(box.meta),
         style: {
-            ...box.style,
+            ...createLeadingFragmentStyle(box.style),
             marginBottom: 0
         },
         lines: Array.from({ length: Math.max(1, partAIndices.length) }, () => []),
@@ -713,38 +724,27 @@ export function splitTableFlowBox(
             _tableResolved: partAResolved,
             _isFirstLine: true,
             _isLastLine: false
-        },
-        _materializationMode: 'frozen',
-        _materializationContextKey: undefined,
-        _unresolvedElement: undefined
-    };
+        }
+    });
 
-    const partB: FlowBox = {
-        ...box,
-        meta: {
-            ...box.meta,
-            fragmentIndex: box.meta.fragmentIndex + 1,
-            isContinuation: true,
-            pageIndex: undefined
-        },
+    const partB = freezeFlowFragment(box, {
+        meta: createContinuationFragmentMeta(box.meta, box.meta.fragmentIndex + 1),
         style: {
-            ...box.style,
+            ...createContinuationFragmentStyle(box.style),
             marginTop: 0
         },
         lines: Array.from({ length: Math.max(1, partBIndices.length) }, () => []),
         marginTop: 0,
         allowLineSplit: partBIndices.length > 1,
-        measuredContentHeight: box.heightOverride ?? 0,
+        measuredContentHeight: box.heightOverride ?? computeFragmentHeight(partBIndices),
         properties: {
             ...box.properties,
             _tableModel: partBModel,
-            _tableResolved: undefined,
+            _tableResolved: partBResolved,
             _isFirstLine: false,
             _isLastLine: true
-        },
-        _materializationContextKey: undefined,
-        _unresolvedElement: box._sourceElement
-    };
+        }
+    });
 
     return { partA, partB };
 }

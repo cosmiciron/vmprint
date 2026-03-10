@@ -3,6 +3,12 @@ import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import { LayoutUtils } from '../layout-utils';
 import { LAYOUT_DEFAULTS } from '../defaults';
+import {
+    createContinuationFragmentMeta,
+    createContinuationFragmentStyle,
+    createLeadingFragmentMeta,
+    createLeadingFragmentStyle
+} from '../flow-fragment-state';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { LayoutBox, PackagerContext, PackagerUnit } from './packager-types';
@@ -528,14 +534,10 @@ export class DropCapPackager implements PackagerUnit {
         }
 
         const wrapStyle: ElementStyle = elementB
-            ? { ...baseFlow.style, borderBottomWidth: 0, paddingBottom: 0, marginBottom: 0 }
+            ? createLeadingFragmentStyle(baseFlow.style)
             : { ...baseFlow.style };
 
-        const wrapMeta = {
-            ...baseFlow.meta,
-            isContinuation: baseFlow.meta.isContinuation || baseFlow.meta.fragmentIndex > 0,
-            pageIndex: undefined
-        };
+        const wrapMeta = createLeadingFragmentMeta(baseFlow.meta);
         const wrapProps = {
             ...baseFlow.properties,
             _isFirstLine: true,
@@ -548,7 +550,7 @@ export class DropCapPackager implements PackagerUnit {
 
         let bodyFlow: FlowBox | null = null;
         if (elementB && (this.processor as any).getElementText(elementB)) {
-            const bodyStyle: ElementStyle = { ...baseFlow.style, borderTopWidth: 0, paddingTop: 0, marginTop: 0, textIndent: 0 };
+            const bodyStyle: ElementStyle = createContinuationFragmentStyle(baseFlow.style);
             const bodyLinesResult = (this.processor as any).resolveLines(
                 elementB,
                 bodyStyle,
@@ -556,7 +558,7 @@ export class DropCapPackager implements PackagerUnit {
                 { pageIndex: 0, cursorY: 0, contentWidth: availableWidth }
             );
             if (bodyLinesResult.lines && bodyLinesResult.lines.length > 0) {
-                const bodyMeta = { ...baseFlow.meta, fragmentIndex: baseFlow.meta.fragmentIndex + 1, isContinuation: true, pageIndex: undefined };
+                const bodyMeta = createContinuationFragmentMeta(baseFlow.meta, baseFlow.meta.fragmentIndex + 1);
                 const bodyProps = { ...baseFlow.properties, _isFirstLine: false, _isLastLine: true };
                 bodyFlow = (this.processor as any).rebuildFlowBox(baseFlow, bodyLinesResult.lines, bodyStyle, bodyMeta, bodyProps) as FlowBox;
                 bodyFlow.marginTop = 0;

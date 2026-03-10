@@ -1,5 +1,11 @@
 import { BoxMeta, Element, ElementStyle, RichLine } from '../types';
 import { LAYOUT_DEFAULTS } from './defaults';
+import {
+    createContinuationFragmentMeta,
+    createContinuationFragmentStyle,
+    createLeadingFragmentMeta,
+    createLeadingFragmentStyle
+} from './flow-fragment-state';
 import { LayoutUtils } from './layout-utils';
 import {
     ContinuationArtifacts,
@@ -185,30 +191,10 @@ export function splitFlowBoxWithCallbacks(
     const linesA = box.lines.slice(0, linesA_Count);
     const linesB = box.lines.slice(linesA_Count);
 
-    const partAStyle: ElementStyle = {
-        ...style,
-        borderBottomWidth: 0,
-        paddingBottom: 0,
-        marginBottom: 0
-    };
-    const partBStyle: ElementStyle = {
-        ...style,
-        borderTopWidth: 0,
-        paddingTop: 0,
-        marginTop: 0,
-        textIndent: 0
-    };
-    const partAMeta: BoxMeta = {
-        ...box.meta,
-        isContinuation: box.meta.isContinuation || box.meta.fragmentIndex > 0,
-        pageIndex: undefined
-    };
-    const partBMeta: BoxMeta = {
-        ...box.meta,
-        fragmentIndex: box.meta.fragmentIndex + 1,
-        isContinuation: true,
-        pageIndex: undefined
-    };
+    const partAStyle: ElementStyle = createLeadingFragmentStyle(style);
+    const partBStyle: ElementStyle = createContinuationFragmentStyle(style);
+    const partAMeta: BoxMeta = createLeadingFragmentMeta(box.meta);
+    const partBMeta: BoxMeta = createContinuationFragmentMeta(box.meta, box.meta.fragmentIndex + 1);
 
     const partA = callbacks.rebuildFlowBox(box, linesA, partAStyle, partAMeta, {
         ...box.properties,

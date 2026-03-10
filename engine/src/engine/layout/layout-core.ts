@@ -13,6 +13,7 @@ import {
 } from './layout-core-types';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
 import { ContinuationMarkerCollaborator } from './continuation-marker-collaborator';
+import { freezeFlowFragment } from './flow-fragment-state';
 import { KeepWithNextCollaborator } from './keep-with-next-collaborator';
 import { PageRegionCollaborator } from './layout-page-finalization';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
@@ -691,17 +692,13 @@ export class LayoutProcessor extends TextProcessor {
         );
         const insetsVertical = LayoutUtils.getVerticalInsets(style);
         let measuredContentHeight = lineHeight + insetsVertical;
-        return {
-            ...base,
+        return freezeFlowFragment(base, {
             meta,
             style,
             lines,
             properties,
-            measuredContentHeight,
-            _materializationMode: 'frozen',
-            _materializationContextKey: undefined,
-            _unresolvedElement: undefined
-        };
+            measuredContentHeight
+        });
     }
 
 
