@@ -25,6 +25,11 @@ export type ActorFormationAssessment = {
     memberCount: number;
     prefixCount: number;
     tailSplitCandidateActorId: string | null;
+    tailSplitViable: boolean;
+    tailSplitAllowedAtCurrentPosition: boolean;
+    tailSplitBreakableInCurrentTerrain: boolean;
+    tailSplitViableWithMarkerReserve: boolean;
+    requiresPageAdvance: boolean;
 };
 
 export type ActorFormationResolution =
@@ -44,6 +49,7 @@ export type KeepWithNextFormationPlan = {
     prefixHeight: number;
     prefixFits: boolean;
     splitCandidate: PackagerUnit | null;
+    splitMarkerReserve?: number;
 };
 
 export function formationWantsWholeCommit(plan: KeepWithNextFormationPlan): boolean {
@@ -54,6 +60,46 @@ export function formationWantsWholeDeferral(plan: KeepWithNextFormationPlan): bo
     return plan.resolution.action === 'defer-whole';
 }
 
+export function formationWholeFits(plan: KeepWithNextFormationPlan): boolean {
+    return plan.assessment.wholeFits;
+}
+
+export function formationRequiresPageAdvance(plan: KeepWithNextFormationPlan): boolean {
+    return plan.assessment.requiresPageAdvance;
+}
+
 export function formationWantsTailSplit(plan: KeepWithNextFormationPlan): boolean {
     return plan.resolution.action === 'split-tail';
+}
+
+export function formationCanExecuteTailSplit(plan: KeepWithNextFormationPlan): boolean {
+    return (
+        plan.resolution.action === 'split-tail' &&
+        plan.assessment.tailSplitAllowedAtCurrentPosition &&
+        plan.assessment.tailSplitViableWithMarkerReserve
+    );
+}
+
+export function getTailSplitExecution(plan: KeepWithNextFormationPlan): {
+    prefix: PackagerUnit[];
+    splitCandidate: PackagerUnit;
+    memberCount: number;
+    splitMarkerReserve: number;
+} | null {
+    if (plan.resolution.action !== 'split-tail') {
+        return null;
+    }
+
+    const members = plan.formation.members;
+    const prefixMembers = members.slice(0, plan.resolution.prefixCount);
+    const prefix = prefixMembers.map(member => member.actor);
+    const splitCandidate = members[plan.resolution.prefixCount]?.actor ?? null;
+    if (!splitCandidate) return null;
+
+    return {
+        prefix,
+        splitCandidate,
+        memberCount: members.length,
+        splitMarkerReserve: plan.splitMarkerReserve ?? 0
+    };
 }

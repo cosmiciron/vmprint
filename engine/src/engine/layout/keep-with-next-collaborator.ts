@@ -76,6 +76,12 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
     const prefixHeight = prefix.length > 0 ? cumulativeHeights[prefix.length - 1] : 0;
     const prefixFits = prefixHeight <= state.availableHeight;
     const splitCandidate = sequence.length > 1 ? sequence[sequence.length - 1] : null;
+    const tailSplitBreakableInCurrentTerrain =
+        splitCandidate !== null && !splitCandidate.isUnbreakable(state.availableHeight - prefixHeight);
+    const splitMarkerReserve = splitCandidate && session ? session.getSplitMarkerReserve(splitCandidate) : 0;
+    const tailSplitViableWithMarkerReserve =
+        splitCandidate !== null &&
+        !splitCandidate.isUnbreakable(state.availableHeight - prefixHeight - splitMarkerReserve);
     if (members.length > 1) {
         members[members.length - 1] = {
             ...members[members.length - 1],
@@ -89,7 +95,12 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
         prefixFits,
         memberCount: sequence.length,
         prefixCount: prefix.length,
-        tailSplitCandidateActorId: splitCandidate?.actorId ?? null
+        tailSplitCandidateActorId: splitCandidate?.actorId ?? null,
+        tailSplitViable: sequence.length > 1 && prefixFits && splitCandidate !== null,
+        tailSplitAllowedAtCurrentPosition: !state.isAtPageTop && sequence.length > 1 && prefixFits && splitCandidate !== null,
+        tailSplitBreakableInCurrentTerrain,
+        tailSplitViableWithMarkerReserve,
+        requiresPageAdvance: sequence.length > 1 && !fitsOnCurrent
     };
     const resolution =
         sequence.length <= 1
@@ -120,7 +131,8 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
         prefix,
         prefixHeight,
         prefixFits,
-        splitCandidate
+        splitCandidate,
+        splitMarkerReserve
     };
 }
 

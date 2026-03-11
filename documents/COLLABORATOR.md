@@ -161,6 +161,44 @@ interface PackagerUnit {
 
 This allows collaborators to reason about actors **before** boxes are emitted — necessary for reservation systems that need to know what is coming before it is committed.
 
+### Transformable Actors
+
+The runtime actor model must not assume that actors are rigid units.
+
+In VMPrint, actors are often **transformable**. They may need to alter their runtime form in order to navigate terrain, preserve readability, or maintain formation rules.
+
+This capability space is broader than `split()`.
+
+**Split**
+The actor fragments into a committed current piece and a continuation successor. This is the existing `split(availableHeight, context)` behavior.
+
+**Morph**
+The actor recomputes itself under changed terrain. Examples include reflowing line breaks, hyphenation, or internal geometry when the `ConstraintField` introduces exclusions or narrowed lanes.
+
+**Clone**
+The actor duplicates a stable substructure onto a new surface while continuing as the same higher-level actor. The clearest example is repeated table headers across pages. This is not merely a split; it is duplication in service of readability.
+
+**Continue**
+The runtime preserves identity links across transformed fragments, clones, or successors so that systems can reason about the actor as one evolving entity.
+
+This matters because future orchestration systems must not treat actors as rigid pieces moving through space. A formation coordinator may need to know:
+
+*   whether an actor can split at all
+*   whether it can morph to fit constrained terrain
+*   whether it can clone stable subparts for readability
+*   whether a transformation preserves formation validity or forces page advance
+
+This is especially relevant to:
+
+*   `keepWithNext` and other formation/orchestration policies
+*   tables with repeated headers
+*   story and drop-cap fragments that must preserve actor-owned spatial intent across continuation boundaries
+
+The important architectural rule is:
+
+> Do not encode cloning, morphing, or continuation-preservation as packager-specific paginator exceptions.
+> Treat them as actor transformation capabilities expressed through the simulation model.
+
 ---
 
 ## 5. The Collaborator as a System

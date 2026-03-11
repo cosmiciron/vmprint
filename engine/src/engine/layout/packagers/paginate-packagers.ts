@@ -1,6 +1,11 @@
 import { performance } from 'node:perf_hooks';
 import { Box, Element, Page } from '../../types';
-import { formationWantsTailSplit } from '../actor-formation';
+import {
+    formationCanExecuteTailSplit,
+    formationRequiresPageAdvance,
+    formationWholeFits,
+    getTailSplitExecution
+} from '../actor-formation';
 import { LayoutProcessor } from '../layout-core';
 import { LAYOUT_DEFAULTS } from '../defaults';
 import { computeKeepWithNextPlan } from '../keep-with-next-collaborator';
@@ -150,22 +155,18 @@ export function paginatePackagers(
                 context
             }))
             : null;
-        const sequence = keepPlan?.sequence ?? [packager];
-        const sequenceHeight = keepPlan?.sequenceHeight ?? (effectiveHeight - marginBottom);
-        const fitsOnCurrent = keepPlan?.assessment.wholeFits ?? keepPlan?.fitsOnCurrent ?? (sequenceHeight <= effectiveAvailableHeight);
+        const fitsOnCurrent = keepPlan
+            ? formationWholeFits(keepPlan)
+            : ((effectiveHeight - marginBottom) <= effectiveAvailableHeight);
 
         if (!fitsOnCurrent) {
             // Avoid stranding early keepWithNext units by splitting the final splittable unit.
-            if (keepPlan && formationWantsTailSplit(keepPlan) && !isAtPageTop) {
+            if (keepPlan && formationCanExecuteTailSplit(keepPlan)) {
                 const keepBranchStart = performance.now();
-                const prefixHeight = keepPlan!.prefixHeight;
-                const prefixFits = keepPlan!.assessment.prefixFits;
-                const prefix = keepPlan!.prefix;
-                const splitCandidate = keepPlan!.splitCandidate;
+                const execution = getTailSplitExecution(keepPlan);
 
-                if (prefixFits && splitCandidate && !splitCandidate.isUnbreakable(effectiveAvailableHeight - prefixHeight)) {
-                    const markerReserve = session?.getSplitMarkerReserve(splitCandidate) ?? 0;
-
+                if (execution) {
+                    const { prefix, splitCandidate, memberCount, splitMarkerReserve: markerReserve } = execution;
                     const prefixStartIndex = currentPageBoxes.length;
                     const prefixStartY = currentY;
                     const prefixStartSpacing = lastSpacingAfter;
@@ -273,9 +274,9 @@ export function paginatePackagers(
 
                         pushNewPage();
                         if (session) {
-                            session.installContinuationIntoQueue(packagers, i, sequence.length, splitCandidate, partB);
+                            session.installContinuationIntoQueue(packagers, i, memberCount, splitCandidate, partB);
                         } else {
-                            packagers.splice(i, sequence.length, partB);
+                            packagers.splice(i, memberCount, partB);
                         }
                         session?.recordProfile('keepWithNextBranchCalls', 1);
                         session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
@@ -293,7 +294,8 @@ export function paginatePackagers(
 
             // If a keepWithNext sequence doesn't fit, we push the group to the next page.
             // For single units, we allow the packager to attempt a mid-page split.
-            if (!isAtPageTop && sequence.length > 1) {
+            const requiresPageAdvance = keepPlan ? formationRequiresPageAdvance(keepPlan) : false;
+            if (!isAtPageTop && requiresPageAdvance) {
                 pushNewPage();
                 continue;
             }
