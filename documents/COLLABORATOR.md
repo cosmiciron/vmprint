@@ -230,11 +230,20 @@ That means:
 This is intentionally **not** a global full-engine save-state system.
 It is a targeted mechanism for local, high-ambiguity transition seams.
 
-Likely consumers include:
+Validated consumers now include:
 
 *   accepted split fragment placement after split acceptance
-*   page-boundary transition negotiation for continuations
+*   page-boundary continuation settlement after a split has already been accepted
 *   future multi-actor orchestration seams where a formation has partially committed to one path but not yet settled
+
+What has now been proven in the engine is:
+
+*   local branch snapshots can capture page-local placement state, queue state, split staging state, reservations, exclusions, and fragment-transition state
+*   an accepted split can be fully previewed against that snapshot, then rolled back cleanly
+*   queue/continuation handling can be derived from the preview branch and then committed deterministically
+*   this works not only for the original troublesome pagination-fragment fixture, but also for a second purpose-built accepted-split branching probe designed to expose leaked marker, queue, or reservation state
+
+In other words, snapshot branching is no longer a speculative design note. It is now a validated engine primitive for ambiguous transition seams.
 
 The architectural rule is:
 
@@ -404,6 +413,17 @@ The engine has now demonstrated this distinction with a concrete reservation sub
 *   **Shared selector logic**: page targeting (`first`, `odd`, `even`, `all`) belongs to session-owned world-state logic, not to individual collaborator policy.
 
 This matters because it is the first proof that unusual layout behavior can be expressed as a shared simulation subsystem rather than as paginator-local special cases.
+
+The engine has also now validated a second kind of shared runtime tool:
+
+*   **snapshot branching for ambiguous transition seams**
+
+This is distinct from reservation/exclusion systems. Reservations and exclusions model persistent world-state influence. Snapshot branching models unstable local boundaries where the engine must preview one deterministic branch, inspect the result, and either commit it or roll it back cleanly.
+
+That distinction is important:
+
+*   use persistent state for durable spatial rules
+*   use local snapshots for Schrodinger-like transition seams that are neither safely committed nor safely discarded yet
 
 ### The `SpatialMap` Bridge
 `SpatialMap` is already used as an internal exclusion mechanism inside `StoryPackager`. When `ConstraintField` is introduced as a shared simulation object, `SpatialMap` should be promoted to the shared system it conceptually is — the same mechanism that `StoryPackager` uses for float obstacles should be the mechanism that a `ReservedFooterRegionSystem` uses to carve out page margins. No new mechanism is needed; only promotion and sharing.

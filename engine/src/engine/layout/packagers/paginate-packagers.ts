@@ -32,6 +32,24 @@ export function paginatePackagers(
     session?.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
 
     const pushNewPage = () => {
+        if (session) {
+            const outcome = session.advancePage(
+                currentPageBoxes,
+                currentPageIndex,
+                contextBase.pageWidth,
+                contextBase.pageHeight,
+                margins.top
+            );
+            if (outcome.finalizedPage) {
+                pages.push(outcome.finalizedPage);
+            }
+            currentPageIndex = outcome.nextPageIndex;
+            currentPageBoxes = outcome.nextPageBoxes;
+            currentY = outcome.nextCurrentY;
+            lastSpacingAfter = outcome.nextLastSpacingAfter;
+            return;
+        }
+
         if (currentPageBoxes.length > 0) {
             pages.push({
                 index: currentPageIndex,
@@ -44,7 +62,6 @@ export function paginatePackagers(
         currentPageBoxes = [];
         currentY = margins.top;
         lastSpacingAfter = 0;
-        session?.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
     };
 
     let i = 0;

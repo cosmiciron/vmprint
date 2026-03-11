@@ -395,6 +395,14 @@ export type DeferredSplitPlacementOutcome = {
     nextCurrentY: number;
 };
 
+export type PageAdvanceOutcome = {
+    finalizedPage: Page | null;
+    nextPageIndex: number;
+    nextPageBoxes: Box[];
+    nextCurrentY: number;
+    nextLastSpacingAfter: number;
+};
+
 export type ActorPlacementCommitOutcome =
     | {
         action: 'defer';
@@ -575,6 +583,35 @@ export class LayoutSession {
         for (const collaborator of this.collaborators) {
             collaborator.onPageStart?.(pageIndex, this.currentSurface, this);
         }
+    }
+
+    advancePage(
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTopY: number
+    ): PageAdvanceOutcome {
+        const finalizedPage = currentPageBoxes.length > 0
+            ? {
+                index: currentPageIndex,
+                boxes: currentPageBoxes,
+                width: pageWidth,
+                height: pageHeight
+            }
+            : null;
+
+        const nextPageIndex = currentPageIndex + 1;
+        const nextPageBoxes: Box[] = [];
+        this.notifyPageStart(nextPageIndex, pageWidth, pageHeight, nextPageBoxes);
+
+        return {
+            finalizedPage,
+            nextPageIndex,
+            nextPageBoxes,
+            nextCurrentY: nextPageTopY,
+            nextLastSpacingAfter: 0
+        };
     }
 
     notifyConstraintNegotiation(actor: PackagerUnit, constraints: ConstraintField): void {
