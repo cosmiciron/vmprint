@@ -41,8 +41,12 @@ export type ActorFormationResolution =
 export type TailSplitFailureOutcome = 'advance-page' | 'fallthrough-local-handling';
 export type FormationOverflowFallbackOutcome = 'advance-page' | 'fallthrough-local-overflow';
 export type TailSplitSuccessOutcome = 'page-turn-and-continue';
-export type WholeFormationPlacementOutcome = 'commit-whole-on-current-page' | 'overflow-current-page';
-export type WholeFormationOverflowEntryOutcome = 'attempt-tail-split' | FormationOverflowFallbackOutcome;
+export type TailSplitPostAttemptOutcome = TailSplitSuccessOutcome | TailSplitFailureOutcome;
+type WholeFormationOverflowEntryOutcome = 'attempt-tail-split' | FormationOverflowFallbackOutcome;
+export type WholeFormationOverflowHandling = {
+    tailSplitExecution: ReturnType<typeof getTailSplitExecution>;
+    fallbackHandling: FormationOverflowFallbackOutcome | null;
+};
 
 export type KeepWithNextFormationPlan = {
     formation: ActorFormation;
@@ -51,26 +55,8 @@ export type KeepWithNextFormationPlan = {
     splitMarkerReserve?: number;
 };
 
-export function formationWantsWholeCommit(plan: KeepWithNextFormationPlan): boolean {
-    return plan.resolution.action === 'commit-whole' || plan.resolution.action === 'single-actor';
-}
-
-export function formationWantsWholeDeferral(plan: KeepWithNextFormationPlan): boolean {
-    return plan.resolution.action === 'defer-whole';
-}
-
-export function formationWholeFits(plan: KeepWithNextFormationPlan): boolean {
-    return plan.assessment.wholeFits;
-}
-
-export function getWholeFormationPlacementOutcome(plan: KeepWithNextFormationPlan): WholeFormationPlacementOutcome {
-    return formationWholeFits(plan)
-        ? 'commit-whole-on-current-page'
-        : 'overflow-current-page';
-}
-
 export function formationOverflowsCurrentPlacement(plan: KeepWithNextFormationPlan): boolean {
-    return getWholeFormationPlacementOutcome(plan) === 'overflow-current-page';
+    return !plan.assessment.wholeFits;
 }
 
 export function formationRequiresPageAdvance(plan: KeepWithNextFormationPlan): boolean {
@@ -106,7 +92,7 @@ export function getFormationOverflowFallbackOutcome(
         : 'fallthrough-local-overflow';
 }
 
-export function getWholeFormationOverflowEntryOutcome(
+function getWholeFormationOverflowEntryOutcome(
     plan: KeepWithNextFormationPlan,
     isAtPageTop: boolean
 ): WholeFormationOverflowEntryOutcome {
@@ -117,10 +103,32 @@ export function getWholeFormationOverflowEntryOutcome(
     return getFormationOverflowFallbackOutcome(plan, isAtPageTop);
 }
 
-export function formationOverflowFallsThroughLocally(
-    outcome: WholeFormationOverflowEntryOutcome | null
-): boolean {
-    return outcome === 'fallthrough-local-overflow';
+function getWholeFormationOverflowState(
+    plan: KeepWithNextFormationPlan,
+    isAtPageTop: boolean
+): WholeFormationOverflowEntryOutcome | null {
+    return formationOverflowsCurrentPlacement(plan)
+        ? getWholeFormationOverflowEntryOutcome(plan, isAtPageTop)
+        : null;
+}
+
+export function getWholeFormationOverflowHandling(
+    plan: KeepWithNextFormationPlan,
+    isAtPageTop: boolean
+): WholeFormationOverflowHandling | null {
+    const overflowState = getWholeFormationOverflowState(plan, isAtPageTop);
+    if (overflowState === null) {
+        return null;
+    }
+
+    return {
+        tailSplitExecution: overflowState === 'attempt-tail-split'
+            ? getTailSplitExecution(plan)
+            : null,
+        fallbackHandling: overflowState === 'attempt-tail-split'
+            ? null
+            : overflowState
+    };
 }
 
 export function getTailSplitSuccessOutcome(plan: KeepWithNextFormationPlan): TailSplitSuccessOutcome | null {
@@ -129,8 +137,16 @@ export function getTailSplitSuccessOutcome(plan: KeepWithNextFormationPlan): Tai
         : null;
 }
 
-export function formationWantsTailSplit(plan: KeepWithNextFormationPlan): boolean {
-    return plan.resolution.action === 'split-tail';
+export function getTailSplitPostAttemptOutcome(
+    plan: KeepWithNextFormationPlan,
+    attemptSucceeded: boolean,
+    isAtPageTop: boolean
+): TailSplitPostAttemptOutcome | null {
+    if (attemptSucceeded) {
+        return getTailSplitSuccessOutcome(plan);
+    }
+
+    return getTailSplitFailureOutcome(plan, isAtPageTop);
 }
 
 export function formationCanExecuteTailSplit(plan: KeepWithNextFormationPlan): boolean {

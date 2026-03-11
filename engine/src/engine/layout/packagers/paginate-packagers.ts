@@ -1,13 +1,8 @@
 import { performance } from 'node:perf_hooks';
 import { Box, Element, Page } from '../../types';
 import {
-    formationCanExecuteTailSplit,
-    formationOverflowFallsThroughLocally,
-    formationOverflowsCurrentPlacement,
-    getTailSplitSuccessOutcome,
-    getTailSplitFailureOutcome,
-    getTailSplitExecution,
-    getWholeFormationOverflowEntryOutcome
+    getTailSplitPostAttemptOutcome,
+    getWholeFormationOverflowHandling
 } from '../actor-formation';
 import { LayoutProcessor } from '../layout-core';
 import { LAYOUT_DEFAULTS } from '../defaults';
@@ -158,21 +153,21 @@ export function paginatePackagers(
                 context
             }))
             : null;
-        const wholeFormationOverflowEntryOutcome = keepPlan && formationOverflowsCurrentPlacement(keepPlan)
-            ? getWholeFormationOverflowEntryOutcome(keepPlan, isAtPageTop)
+        const wholeFormationOverflowHandling = keepPlan
+            ? getWholeFormationOverflowHandling(keepPlan, isAtPageTop)
             : null;
+        const wholeFormationTailSplitExecution = wholeFormationOverflowHandling?.tailSplitExecution ?? null;
+        const wholeFormationOverflowFallbackOutcome = wholeFormationOverflowHandling?.fallbackHandling ?? null;
         const overflowsCurrentPlacement = keepPlan
-            ? formationOverflowsCurrentPlacement(keepPlan)
+            ? wholeFormationOverflowHandling !== null
             : ((effectiveHeight - marginBottom) > effectiveAvailableHeight);
 
         if (overflowsCurrentPlacement) {
             // Avoid stranding early keepWithNext units by splitting the final splittable unit.
-            if (keepPlan && wholeFormationOverflowEntryOutcome === 'attempt-tail-split') {
+            if (keepPlan && wholeFormationTailSplitExecution) {
                 const keepBranchStart = performance.now();
-                const execution = getTailSplitExecution(keepPlan);
-
-                if (execution) {
-                    const { prefix, splitCandidate, replaceCount, splitMarkerReserve: markerReserve } = execution;
+                {
+                    const { prefix, splitCandidate, replaceCount, splitMarkerReserve: markerReserve } = wholeFormationTailSplitExecution;
                     const prefixPlacementCheckpoint = {
                         boxStartIndex: currentPageBoxes.length,
                         currentY,
@@ -311,7 +306,7 @@ export function paginatePackagers(
                             lastSpacingAfter = partAMarginBottom;
                         }
 
-                        if (getTailSplitSuccessOutcome(keepPlan) === 'page-turn-and-continue') {
+                        if (getTailSplitPostAttemptOutcome(keepPlan, true, isAtPageTop) === 'page-turn-and-continue') {
                             pushNewPage();
                             if (!session) {
                                 packagers.splice(i, replaceCount, partB);
@@ -331,26 +326,26 @@ export function paginatePackagers(
                             currentY = prefixPlacementCheckpoint.currentY;
                             lastSpacingAfter = prefixPlacementCheckpoint.lastSpacingAfter;
                         }
-                        if (getTailSplitFailureOutcome(keepPlan, isAtPageTop) === 'advance-page') {
+                        if (getTailSplitPostAttemptOutcome(keepPlan, false, isAtPageTop) === 'advance-page') {
                             session?.recordProfile('keepWithNextBranchCalls', 1);
                             session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
                             pushNewPage();
                             continue;
                         }
                     }
-                }
                 session?.recordProfile('keepWithNextBranchCalls', 1);
                 session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
+                }
             }
 
             // If a keepWithNext sequence doesn't fit, we push the group to the next page.
             // For single units, we allow the packager to attempt a mid-page split.
-            if (wholeFormationOverflowEntryOutcome === 'advance-page') {
+            if (wholeFormationOverflowFallbackOutcome === 'advance-page') {
                 pushNewPage();
                 continue;
             }
 
-            if (keepPlan && formationOverflowFallsThroughLocally(wholeFormationOverflowEntryOutcome)) {
+            if (wholeFormationOverflowFallbackOutcome === 'fallthrough-local-overflow') {
                 // Fall through to local single-actor overflow handling.
             }
         }
