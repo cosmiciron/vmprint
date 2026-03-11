@@ -6,6 +6,7 @@ import type { KeepWithNextFormationPlan } from './actor-formation';
 import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
 import { LAYOUT_DEFAULTS } from './defaults';
+import { rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
 import type {
     SimulationArtifactKey,
     SimulationArtifactMap,
@@ -352,6 +353,55 @@ export type TailSplitFormationOutcome = {
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
     queue: ContinuationQueueOutcome;
 };
+
+export type GenericSplitOutcome = {
+    committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
+    queue: ContinuationQueueOutcome;
+};
+
+export type ForcedOverflowCommitOutcome = {
+    committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
+    shouldAdvancePage: boolean;
+};
+
+export type ActorOverflowPreSplitHandlingOutcome = {
+    committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number } | null;
+    shouldAdvancePage: boolean;
+    shouldAdvanceIndex: boolean;
+};
+
+export type ActorOverflowSplitEntryHandlingOutcome = {
+    splitExecution: SplitExecution | null;
+    shouldAdvancePage: boolean;
+};
+
+export type ActorSplitFailureHandlingOutcome = {
+    committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number } | null;
+    shouldAdvancePage: boolean;
+    shouldAdvanceIndex: boolean;
+};
+
+export type DeferredSplitPlacementOutcome = {
+    shouldAdvancePage: boolean;
+    nextCurrentY: number;
+};
+
+export type ActorPlacementCommitOutcome =
+    | {
+        action: 'defer';
+        nextCurrentY: number;
+        shouldAdvancePage: boolean;
+    }
+    | {
+        action: 'commit';
+        committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
+    };
+
+export type ActorPlacementExecutionOutcome =
+    | {
+        action: 'retry-next-page';
+    }
+    | ActorPlacementCommitOutcome;
 
 export type SequencePlacementCheckpoint = {
     boxStartIndex: number;
@@ -1125,6 +1175,246 @@ export class LayoutSession {
                 continuation
             )
         };
+    }
+
+    finalizeGenericAcceptedSplit(
+        actorQueue: PackagerUnit[],
+        startIndex: number,
+        predecessor: PackagerUnit,
+        continuation: PackagerUnit | null | undefined,
+        attempt: SplitAttempt,
+        result: PackagerSplitResult,
+        boxes: readonly Box[],
+        state: SplitFragmentAftermathState,
+        positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
+    ): GenericSplitOutcome {
+        const committed = this.acceptAndCommitSplitFragment(
+            attempt,
+            result,
+            boxes,
+            state,
+            positionMarker
+        );
+
+        return {
+            committed,
+            queue: this.settleContinuationQueue(
+                actorQueue,
+                startIndex,
+                1,
+                predecessor,
+                continuation
+            )
+        };
+    }
+
+    finalizeForcedOverflowCommit(
+        actor: PackagerUnit,
+        boxes: readonly Box[],
+        state: FragmentCommitState
+    ): ForcedOverflowCommitOutcome {
+        return {
+            committed: this.commitFragmentBoxes(actor, boxes, state),
+            shouldAdvancePage: true
+        };
+    }
+
+    handleActorOverflowPreSplit(
+        outcome: 'force-commit-at-top' | 'advance-page-before-split',
+        actor: PackagerUnit,
+        boxes: readonly Box[] | null,
+        state: FragmentCommitState
+    ): ActorOverflowPreSplitHandlingOutcome {
+        if (outcome === 'advance-page-before-split') {
+            return {
+                committed: null,
+                shouldAdvancePage: true,
+                shouldAdvanceIndex: false
+            };
+        }
+
+        const forced = this.finalizeForcedOverflowCommit(actor, boxes ?? [], state);
+        return {
+            committed: forced.committed,
+            shouldAdvancePage: forced.shouldAdvancePage,
+            shouldAdvanceIndex: true
+        };
+    }
+
+    handleActorOverflowSplitEntry(
+        outcome: 'advance-page-for-top-split' | 'attempt-split-now',
+        actor: PackagerUnit,
+        availableWidth: number,
+        availableHeight: number,
+        context: PackagerContext
+    ): ActorOverflowSplitEntryHandlingOutcome {
+        if (outcome === 'advance-page-for-top-split') {
+            return {
+                splitExecution: null,
+                shouldAdvancePage: true
+            };
+        }
+
+        return {
+            splitExecution: this.executeSplitAttempt(actor, availableWidth, availableHeight, context),
+            shouldAdvancePage: false
+        };
+    }
+
+    handleActorSplitFailure(
+        actor: PackagerUnit,
+        boxes: readonly Box[] | null,
+        state: FragmentCommitState,
+        isAtPageTop: boolean
+    ): ActorSplitFailureHandlingOutcome {
+        if (!isAtPageTop) {
+            return {
+                committed: null,
+                shouldAdvancePage: true,
+                shouldAdvanceIndex: false
+            };
+        }
+
+        return {
+            committed: this.commitFragmentBoxes(actor, boxes ?? [], state),
+            shouldAdvancePage: true,
+            shouldAdvanceIndex: true
+        };
+    }
+
+    resolveDeferredSplitPlacement(
+        currentY: number,
+        nextCursorY: number,
+        layoutBefore: number,
+        pageLimit: number,
+        pageTop: number
+    ): DeferredSplitPlacementOutcome {
+        if (nextCursorY <= currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
+            return {
+                shouldAdvancePage: true,
+                nextCurrentY: currentY
+            };
+        }
+
+        const nextCurrentY = Math.max(currentY, nextCursorY - layoutBefore);
+        const remainingHeight = pageLimit - nextCurrentY;
+        return {
+            shouldAdvancePage: remainingHeight <= 0 && nextCurrentY > pageTop,
+            nextCurrentY
+        };
+    }
+
+    resolveDeferredActorPlacement(
+        actor: PackagerUnit,
+        placementFrame: ResolvedPlacementFrame,
+        constraintField: ConstraintField,
+        currentY: number,
+        layoutBefore: number,
+        pageLimit: number,
+        pageTop: number,
+        context: PackagerContext
+    ): DeferredSplitPlacementOutcome | null {
+        if (!placementFrame.contentBand) {
+            return null;
+        }
+
+        const placementPreference = resolvePackagerPlacementPreference(
+            actor,
+            constraintField.availableWidth,
+            context
+        );
+        const minimumPlacementWidth = placementPreference?.minimumWidth;
+        if (
+            minimumPlacementWidth !== null &&
+            minimumPlacementWidth !== undefined &&
+            placementFrame.availableWidth + LAYOUT_DEFAULTS.wrapTolerance < minimumPlacementWidth
+        ) {
+            return this.resolveDeferredSplitPlacement(
+                currentY,
+                placementFrame.activeBand?.bottom ?? placementFrame.cursorY,
+                layoutBefore,
+                pageLimit,
+                pageTop
+            );
+        }
+
+        if (
+            rejectsPlacementFrame(
+                actor,
+                placementFrame.availableWidth,
+                constraintField.availableWidth,
+                context
+            )
+        ) {
+            return this.resolveDeferredSplitPlacement(
+                currentY,
+                placementFrame.activeBand?.bottom ?? placementFrame.cursorY,
+                layoutBefore,
+                pageLimit,
+                pageTop
+            );
+        }
+
+        return null;
+    }
+
+    finalizeActorPlacementCommit(
+        actor: PackagerUnit,
+        boxes: readonly Box[],
+        state: FragmentCommitState,
+        constraintField: ConstraintField,
+        layoutBefore: number,
+        pageLimit: number,
+        pageTop: number
+    ): ActorPlacementCommitOutcome {
+        const hasLaneConstraint = !!constraintField.resolveActiveContentBand(state.currentY + layoutBefore);
+        if (hasLaneConstraint) {
+            const absoluteBoxes = boxes.map((box) => ({
+                ...box,
+                y: (box.y || 0) + state.currentY + state.layoutDelta
+            }));
+            const placementDecision = constraintField.evaluatePlacement(absoluteBoxes, state.currentY + layoutBefore);
+            if (placementDecision.action === 'defer') {
+                const nextCurrentY = Math.max(state.currentY, placementDecision.nextCursorY - layoutBefore);
+                return {
+                    action: 'defer',
+                    nextCurrentY,
+                    shouldAdvancePage: (pageLimit - nextCurrentY) <= 0 && nextCurrentY > pageTop
+                };
+            }
+        }
+
+        return {
+            action: 'commit',
+            committed: this.commitFragmentBoxes(actor, boxes, state)
+        };
+    }
+
+    executeActorPlacement(
+        actor: PackagerUnit,
+        availableWidth: number,
+        availableHeight: number,
+        context: PackagerContext,
+        state: FragmentCommitState,
+        constraintField: ConstraintField,
+        layoutBefore: number,
+        pageLimit: number,
+        pageTop: number
+    ): ActorPlacementExecutionOutcome {
+        const boxes = actor.emitBoxes(availableWidth, availableHeight, context);
+        if (!boxes) {
+            return { action: 'retry-next-page' };
+        }
+
+        return this.finalizeActorPlacementCommit(
+            actor,
+            boxes,
+            state,
+            constraintField,
+            layoutBefore,
+            pageLimit,
+            pageTop
+        );
     }
 
     setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan): void {

@@ -1,5 +1,6 @@
 import { performance } from 'node:perf_hooks';
 import { Box, Element, Page } from '../../types';
+import { getActorOverflowHandling } from '../actor-overflow';
 import {
     getTailSplitPostAttemptOutcome,
     getWholeFormationOverflowHandling
@@ -351,53 +352,84 @@ export function paginatePackagers(
         }
 
         if (requiredHeight <= effectiveAvailableHeight) {
-            const deferredCursorY = resolveDeferredCursorY(packager);
-            if (deferredCursorY !== null) {
-                const nextCursorY = deferredCursorY;
-                if (nextCursorY <= currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
-                    pushNewPage();
-                    continue;
-                }
-                currentY = Math.max(currentY, nextCursorY - layoutBefore);
-                availableHeight = pageLimit - currentY;
-                if (availableHeight <= 0 && currentY > margins.top) {
-                    pushNewPage();
-                }
-                continue;
-            }
-            const boxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
-            if (!boxes) {
-                pushNewPage();
-                continue;
-            }
-            if (contentBand) {
-                const absoluteBoxes = boxes.map((box) => ({
-                    ...box,
-                    y: (box.y || 0) + currentY + layoutDelta
-                }));
-                const placementDecision = constraintField.evaluatePlacement(absoluteBoxes, currentY + layoutBefore);
-                if (placementDecision.action === 'defer') {
-                    currentY = Math.max(currentY, placementDecision.nextCursorY - layoutBefore);
-                    availableHeight = pageLimit - currentY;
-                    if (availableHeight <= 0 && currentY > margins.top) {
-                        pushNewPage();
+            const deferredPlacement = session
+                ? session.resolveDeferredActorPlacement(
+                    packager,
+                    placementFrame,
+                    constraintField,
+                    currentY,
+                    layoutBefore,
+                    pageLimit,
+                    margins.top,
+                    context
+                )
+                : (() => {
+                    const deferredCursorY = resolveDeferredCursorY(packager);
+                    if (deferredCursorY === null) return null;
+                    const nextCursorY = deferredCursorY;
+                    if (nextCursorY <= currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
+                        return {
+                            shouldAdvancePage: true,
+                            nextCurrentY: currentY
+                        };
                     }
-                    continue;
+                    const nextCurrentY = Math.max(currentY, nextCursorY - layoutBefore);
+                    return {
+                        shouldAdvancePage: (pageLimit - nextCurrentY) <= 0 && nextCurrentY > margins.top,
+                        nextCurrentY
+                    };
+                })();
+            if (deferredPlacement) {
+                currentY = deferredPlacement.nextCurrentY;
+                if (deferredPlacement.shouldAdvancePage) {
+                    pushNewPage();
                 }
+                continue;
             }
             // It fits!
             if (session) {
-                const committed = session.commitFragmentBoxes(packager, boxes, {
+                const outcome = session.executeActorPlacement(packager, availableWidth, availableHeightAdjusted, context, {
                     currentY,
                     layoutDelta,
                     effectiveHeight,
                     marginBottom,
                     pageIndex: currentPageIndex
-                });
-                currentPageBoxes.push(...committed.boxes);
-                currentY = committed.currentY;
-                lastSpacingAfter = committed.lastSpacingAfter;
+                }, constraintField, layoutBefore, pageLimit, margins.top);
+                if (outcome.action === 'retry-next-page') {
+                    pushNewPage();
+                    continue;
+                }
+                if (outcome.action === 'defer') {
+                    currentY = outcome.nextCurrentY;
+                    if (outcome.shouldAdvancePage) {
+                        pushNewPage();
+                    }
+                    continue;
+                }
+                currentPageBoxes.push(...outcome.committed.boxes);
+                currentY = outcome.committed.currentY;
+                lastSpacingAfter = outcome.committed.lastSpacingAfter;
             } else {
+                const boxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
+                if (!boxes) {
+                    pushNewPage();
+                    continue;
+                }
+                if (contentBand) {
+                    const absoluteBoxes = boxes.map((box) => ({
+                        ...box,
+                        y: (box.y || 0) + currentY + layoutDelta
+                    }));
+                    const placementDecision = constraintField.evaluatePlacement(absoluteBoxes, currentY + layoutBefore);
+                    if (placementDecision.action === 'defer') {
+                        currentY = Math.max(currentY, placementDecision.nextCursorY - layoutBefore);
+                        availableHeight = pageLimit - currentY;
+                        if (availableHeight <= 0 && currentY > margins.top) {
+                            pushNewPage();
+                        }
+                        continue;
+                    }
+                }
                 for (const box of boxes) {
                     // Adjust box Y to match page absolute Y
                     box.y = (box.y || 0) + currentY + layoutDelta;
@@ -414,9 +446,60 @@ export function paginatePackagers(
         }
 
         // It doesn't fit
-        if (isAtPageTop) {
-            if (packager.isUnbreakable(effectiveAvailableHeight)) {
-                // It's unbreakable and we're at the top, we must force it or it's an error. 
+        const overflowIsUnbreakable = packager.isUnbreakable(effectiveAvailableHeight);
+        const overflowPreviewBoxes = isAtPageTop
+            ? true
+            : !!packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
+        const isTablePackager = !!(packager as any).flowBox?.properties?._tableModel;
+        const isStoryPackager = !!(packager as any).storyElement;
+        const allowsMidPageSplit = isTablePackager || isStoryPackager;
+        const emptyLayoutBefore = resolveLayoutBefore(0, marginTop);
+        const emptyAvailable = pageLimit - margins.top;
+        const requiredOnEmpty = contentHeight + emptyLayoutBefore + marginBottom;
+        const overflowHandling = getActorOverflowHandling({
+            isAtPageTop,
+            isUnbreakable: overflowIsUnbreakable,
+            hasPreviewBoxes: overflowPreviewBoxes,
+            allowsMidPageSplit,
+            overflowsEmptyPage: requiredOnEmpty > emptyAvailable + LAYOUT_DEFAULTS.wrapTolerance
+        });
+
+        if (
+            overflowHandling.preSplitOutcome === 'force-commit-at-top' ||
+            overflowHandling.preSplitOutcome === 'advance-page-before-split'
+        ) {
+            if (session) {
+                const boxes = overflowHandling.preSplitOutcome === 'force-commit-at-top'
+                    ? (packager.emitBoxes(availableWidth, availableHeightAdjusted, context) || [])
+                    : null;
+                const outcome = session.handleActorOverflowPreSplit(
+                    overflowHandling.preSplitOutcome,
+                    packager,
+                    boxes,
+                    {
+                        currentY,
+                        layoutDelta,
+                        effectiveHeight,
+                        marginBottom,
+                        pageIndex: currentPageIndex
+                    }
+                );
+                if (outcome.committed) {
+                    currentPageBoxes.push(...outcome.committed.boxes);
+                    currentY = outcome.committed.currentY;
+                    lastSpacingAfter = outcome.committed.lastSpacingAfter;
+                }
+                if (outcome.shouldAdvancePage) {
+                    pushNewPage();
+                }
+                if (outcome.shouldAdvanceIndex) {
+                    i++;
+                }
+                continue;
+            }
+
+            if (overflowHandling.preSplitOutcome === 'force-commit-at-top') {
+                // It's unbreakable and we're at the top, we must force it or it's an error.
                 // As per design: packager decides the overflow behavior. We just place it.
                 const boxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
                 if (boxes) {
@@ -427,7 +510,6 @@ export function paginatePackagers(
                         }
                         currentPageBoxes.push(box);
                     }
-                    session?.notifyActorCommitted(packager, boxes);
                     currentY += effectiveHeight - marginBottom;
                     lastSpacingAfter = marginBottom;
                 }
@@ -435,82 +517,86 @@ export function paginatePackagers(
                 i++;
                 continue;
             }
-        } else {
-            const previewBoxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
-            if (packager.isUnbreakable(effectiveAvailableHeight) || !previewBoxes) {
-                // Try on a new page
-                pushNewPage();
-                continue;
-            }
-        }
 
-        // If it would overflow even an empty page, force a new page so the split happens at page top.
-        if (!isAtPageTop) {
-            const isTablePackager = !!(packager as any).flowBox?.properties?._tableModel;
-            const isStoryPackager = !!(packager as any).storyElement;
-            if (isTablePackager || isStoryPackager) {
-                // Tables and stories are allowed to split mid-page.
-                // Skip the page-top split forcing.
-            } else {
-            const emptyLayoutBefore = resolveLayoutBefore(0, marginTop);
-            const emptyAvailable = pageLimit - margins.top;
-            const requiredOnEmpty = contentHeight + emptyLayoutBefore + marginBottom;
-            if (requiredOnEmpty > emptyAvailable + LAYOUT_DEFAULTS.wrapTolerance) {
-                pushNewPage();
-                continue;
-            }
-            }
+            pushNewPage();
+            continue;
         }
 
         // Let's try to split
         const markerReserve = session?.getSplitMarkerReserve(packager) ?? 0;
         const splitAvailableHeight = availableHeightAdjusted - markerReserve;
-        const splitExecution = session
-            ? session.executeSplitAttempt(packager, availableWidth, splitAvailableHeight, context)
-            : {
-                attempt: {
-                    actor: packager,
-                    availableWidth,
-                    availableHeight: splitAvailableHeight,
-                    context
-                },
-                result: packager.split(splitAvailableHeight, context)
-            };
+        const splitEntryHandling = session && overflowHandling.splitEntryOutcome
+            ? session.handleActorOverflowSplitEntry(
+                overflowHandling.splitEntryOutcome,
+                packager,
+                availableWidth,
+                splitAvailableHeight,
+                context
+            )
+            : null;
+        if (splitEntryHandling?.shouldAdvancePage) {
+            pushNewPage();
+            continue;
+        }
+        const splitExecution = splitEntryHandling?.splitExecution ?? {
+            attempt: {
+                actor: packager,
+                availableWidth,
+                availableHeight: splitAvailableHeight,
+                context
+            },
+            result: packager.split(splitAvailableHeight, context)
+        };
         const splitAttempt = splitExecution.attempt;
         const { currentFragment: fitsCurrent, continuationFragment: pushedNext } = splitExecution.result;
 
         if (!fitsCurrent) {
+            if (session) {
+                const boxes = isAtPageTop
+                    ? (packager.emitBoxes(availableWidth, availableHeightAdjusted, context) || [])
+                    : null;
+                const outcome = session.handleActorSplitFailure(
+                    packager,
+                    boxes,
+                    {
+                        currentY,
+                        layoutDelta: 0,
+                        effectiveHeight,
+                        marginBottom,
+                        pageIndex: currentPageIndex
+                    },
+                    isAtPageTop
+                );
+                if (outcome.committed) {
+                    currentPageBoxes.push(...outcome.committed.boxes);
+                }
+                pushNewPage();
+                if (outcome.shouldAdvanceIndex) {
+                    i++;
+                }
+                continue;
+            }
+
             if (isAtPageTop) {
                 // Return to avoid infinite loop. It wouldn't split even at top of page.
                 // Packager should be forcing if it can't split, but if it returned null,
                 // we'll treat it as un-fittable and just force emit.
                 const boxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context) || [];
                 requiredHeight = packager.getRequiredHeight();
-                if (session) {
-                    const committed = session.commitFragmentBoxes(packager, boxes, {
-                        currentY,
-                        layoutDelta: 0,
-                        effectiveHeight,
-                        marginBottom,
-                        pageIndex: currentPageIndex
-                    });
-                    currentPageBoxes.push(...committed.boxes);
-                } else {
-                    for (const box of boxes) {
-                        box.y = (box.y || 0) + currentY;
-                        if (box.meta) {
-                            box.meta = { ...box.meta, pageIndex: currentPageIndex };
-                        }
-                        currentPageBoxes.push(box);
+                for (const box of boxes) {
+                    box.y = (box.y || 0) + currentY;
+                    if (box.meta) {
+                        box.meta = { ...box.meta, pageIndex: currentPageIndex };
                     }
+                    currentPageBoxes.push(box);
                 }
                 pushNewPage();
                 i++;
                 continue;
-            } else {
-                pushNewPage();
-                continue;
             }
+
+            pushNewPage();
+            continue;
         }
 
         // We have a successful split
@@ -531,6 +617,20 @@ export function paginatePackagers(
         );
         const deferredSplitCursorY = resolveDeferredCursorY(fitsCurrent);
         if (deferredSplitCursorY !== null) {
+            if (session) {
+                const outcome = session.resolveDeferredSplitPlacement(
+                    currentY,
+                    deferredSplitCursorY,
+                    fitsLayoutBefore,
+                    pageLimit,
+                    margins.top
+                );
+                currentY = outcome.nextCurrentY;
+                if (outcome.shouldAdvancePage) {
+                    pushNewPage();
+                }
+                continue;
+            }
             const nextCursorY = deferredSplitCursorY;
             if (nextCursorY <= currentY + fitsLayoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
                 pushNewPage();
@@ -546,17 +646,25 @@ export function paginatePackagers(
         const fitsAvailableHeightAdjusted = availableHeight - fitsLayoutDelta;
         const currentBoxes = fitsCurrent.emitBoxes(availableWidth, fitsAvailableHeightAdjusted, splitContext) || [];
         if (session) {
-            const committed = session.acceptAndCommitSplitFragment(splitAttempt, {
-                currentFragment: fitsCurrent,
-                continuationFragment: pushedNext
-            }, currentBoxes, session.createSplitFragmentAftermathState(fitsCurrent, {
-                currentY,
-                layoutDelta: fitsLayoutDelta,
-                lastSpacingAfter,
-                pageLimit,
-                availableWidth,
-                pageIndex: currentPageIndex
-            }),
+            const outcome = session.finalizeGenericAcceptedSplit(
+                packagers,
+                i,
+                packager,
+                pushedNext,
+                splitAttempt,
+                {
+                    currentFragment: fitsCurrent,
+                    continuationFragment: pushedNext
+                },
+                currentBoxes,
+                session.createSplitFragmentAftermathState(fitsCurrent, {
+                    currentY,
+                    layoutDelta: fitsLayoutDelta,
+                    lastSpacingAfter,
+                    pageLimit,
+                    availableWidth,
+                    pageIndex: currentPageIndex
+                }),
                 (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
                     (processor as any).positionFlowBox(
                         marker,
@@ -567,9 +675,14 @@ export function paginatePackagers(
                         markerPageIndex
                     )
             );
-            currentPageBoxes.push(...committed.boxes);
-            currentY = committed.currentY;
-            lastSpacingAfter = committed.lastSpacingAfter;
+            currentPageBoxes.push(...outcome.committed.boxes);
+            currentY = outcome.committed.currentY;
+            lastSpacingAfter = outcome.committed.lastSpacingAfter;
+            pushNewPage();
+            if (!outcome.queue.continuationInstalled) {
+                i++;
+            }
+            continue;
         } else {
             for (const box of currentBoxes) {
                 box.y = (box.y || 0) + currentY + fitsLayoutDelta;
@@ -585,12 +698,7 @@ export function paginatePackagers(
         pushNewPage();
 
         // The remaining packager takes the place of the current packager but we don't advance i
-        if (session) {
-            const { continuationInstalled } = session.settleContinuationQueue(packagers, i, 1, packager, pushedNext);
-            if (!continuationInstalled) {
-                i++;
-            }
-        } else if (pushedNext) {
+        if (pushedNext) {
             packagers[i] = pushedNext;
         } else {
             i++;
