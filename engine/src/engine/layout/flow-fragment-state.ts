@@ -15,6 +15,7 @@ export function createLeadingFragmentMeta(meta: BoxMeta): BoxMeta {
     return {
         ...meta,
         isContinuation: meta.isContinuation || meta.fragmentIndex > 0,
+        transformKind: 'split',
         pageIndex: undefined
     };
 }
@@ -24,6 +25,7 @@ export function createContinuationFragmentMeta(meta: BoxMeta, fragmentIndex: num
         ...meta,
         fragmentIndex,
         isContinuation: true,
+        transformKind: 'split',
         pageIndex: undefined
     };
 }

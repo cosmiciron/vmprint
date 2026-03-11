@@ -389,6 +389,36 @@ function assertDropCapPaginationSignals(pages: any[], fixtureName: string): void
     assert.ok(moveWholeDropcap, `${fixtureName}: expected dropcap-move-whole dropcap box`);
 }
 
+function assertSplitTransformSignals(pages: any[], fixtureName: string, engine: any): void {
+    if (
+        fixtureName !== '07-pagination-fragments.json'
+        && fixtureName !== '08-dropcap-pagination.json'
+        && fixtureName !== '10-packager-split-scenarios.json'
+    ) {
+        return;
+    }
+
+    const splitBoxes = pages.flatMap((page: any) =>
+        (page.boxes || []).filter((box: any) =>
+            Number(box.meta?.fragmentIndex || 0) > 0
+            || box.meta?.isContinuation
+        )
+    );
+    assert.ok(splitBoxes.length > 0, `${fixtureName}: expected continuation fragment boxes`);
+    assert.ok(
+        splitBoxes.some((box: any) => box.meta?.transformKind === 'split'),
+        `${fixtureName}: expected continuation fragment boxes to carry explicit split transform metadata`
+    );
+
+    const transformSummary = engine.getLastSimulationReportReader().require(simulationArtifactKeys.transformSummary);
+    const splitEntries = transformSummary.filter((item: any) => item?.transformKind === 'split');
+    assert.ok(splitEntries.length > 0, `${fixtureName}: expected transformSummary to report split transforms`);
+    assert.ok(
+        splitEntries.some((item: any) => Array.isArray(item?.fragmentIndices) && item.fragmentIndices.some((value: any) => Number(value) > 0)),
+        `${fixtureName}: expected split transform summary to retain continuation fragment indices`
+    );
+}
+
 function assertHeaderFooterTestSignals(pages: any[], fixtureName: string): void {
     if (fixtureName !== '17-header-footer-test.json') return;
 
@@ -836,6 +866,19 @@ async function run() {
                 }
             );
         }
+        if (
+            fixture.name === '07-pagination-fragments.json'
+            || fixture.name === '08-dropcap-pagination.json'
+            || fixture.name === '10-packager-split-scenarios.json'
+        ) {
+            check(
+                `${fixture.name} split transform signals`,
+                'split-heavy fixtures publish split transform summaries with continuation fragment indices',
+                () => {
+                    assertSplitTransformSignals(pagesA, fixture.name, engine);
+                }
+            );
+        }
         if (fixture.name === '17-header-footer-test.json') {
             check(
                 `${fixture.name} header/footer test signals`,
@@ -1131,6 +1174,146 @@ async function run() {
             assert.equal(centeredLaneSummary[0]?.exclusionCount, 2, 'centered lane exclusion should publish two exclusion shapes on the first page');
             assert.ok((centeredLaneSummary[0]?.totalExcludedHeight || 0) >= 90, 'centered lane exclusion summary should retain both exclusion heights');
             assert.equal(centeredLaneSpatialSummary[0]?.exclusionCount, 2, 'unified spatial summary should reflect both centered-lane exclusions');
+
+            const interiorExclusionEngine = new LayoutEngine({
+                ...config,
+                layout: {
+                    ...config.layout,
+                    _experimentalPageStartExclusionTop: 20,
+                    _experimentalPageStartExclusionHeight: 45,
+                    _experimentalPageStartExclusionX: 90,
+                    _experimentalPageStartExclusionWidth: 80,
+                    _experimentalPageStartExclusionSelector: 'first'
+                }
+            } as any);
+            await interiorExclusionEngine.waitForFonts();
+
+            const interiorExclusionPages = interiorExclusionEngine.paginate(baselineElements as any);
+            assert.equal(interiorExclusionPages.length, 1, 'interior exclusion probe should negotiate a same-page lane');
+
+            const interiorFirstBox = findFirstBoxForSource(interiorExclusionPages, 'probe-first');
+            assert.ok(interiorFirstBox, 'interior exclusion probe should still emit the first actor');
+            assert.ok(
+                Number(interiorFirstBox.x || 0) > Number(baselineFirstBox?.x || 0) + 40,
+                'interior exclusion probe should shift the first actor into the wider right-hand lane'
+            );
+            assert.ok(
+                Number(interiorFirstBox.y || 0) <= baselineFirstY + 1,
+                'interior exclusion probe should not defer vertically when a same-page horizontal lane is available'
+            );
+
+            const interiorExclusionSession = interiorExclusionEngine.getLastSimulationReportReader();
+            const interiorExclusionSummary = interiorExclusionSession.require(simulationArtifactKeys.pageExclusionSummary);
+            assert.equal(interiorExclusionSummary.length, 1, 'interior exclusion probe should publish one exclusion summary entry');
+            assert.equal(interiorExclusionSummary[0]?.exclusionCount, 1, 'interior exclusion probe should publish one interior exclusion shape');
+
+            const multiInteriorExclusionEngine = new LayoutEngine({
+                ...config,
+                layout: {
+                    ...config.layout,
+                    _experimentalPageStartExclusionTop: 20,
+                    _experimentalPageStartExclusionHeight: 45,
+                    _experimentalPageStartExclusionX: 30,
+                    _experimentalPageStartExclusionWidth: 40,
+                    _experimentalPageStartExclusionX2: 220,
+                    _experimentalPageStartExclusionWidth2: 40,
+                    _experimentalPageStartExclusionSelector: 'first'
+                }
+            } as any);
+            await multiInteriorExclusionEngine.waitForFonts();
+
+            const multiInteriorElements = [
+                {
+                    type: 'p',
+                    content: 'Lane probe.',
+                    properties: {
+                        sourceId: 'probe-first',
+                        style: { marginBottom: 0 }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: sharedText,
+                    properties: { sourceId: 'probe-second' }
+                }
+            ];
+            const multiInteriorPages = multiInteriorExclusionEngine.paginate(multiInteriorElements as any);
+            assert.equal(multiInteriorPages.length, 1, 'multi-interior exclusion probe should negotiate a same-page lane');
+
+            const multiInteriorFirstBox = findFirstBoxForSource(multiInteriorPages, 'probe-first');
+            assert.ok(multiInteriorFirstBox, 'multi-interior exclusion probe should still emit the first actor');
+            const baselineFirstX = Number(baselineFirstBox?.x || 0);
+            const multiInteriorX = Number(multiInteriorFirstBox.x || 0);
+            assert.equal(
+                multiInteriorX,
+                baselineFirstX,
+                'multi-interior exclusion probe should restore full-width placement when the fragmented band does not yield an acceptable lane'
+            );
+            assert.ok(
+                Number(multiInteriorFirstBox.y || 0) > baselineFirstY + 20,
+                'multi-interior exclusion probe should defer below the fragmented exclusion band instead of forcing a bad lateral fit'
+            );
+
+            const multiInteriorSession = multiInteriorExclusionEngine.getLastSimulationReportReader();
+            const multiInteriorSummary = multiInteriorSession.require(simulationArtifactKeys.pageExclusionSummary);
+            const multiInteriorSpatialSummary = multiInteriorSession.require(simulationArtifactKeys.pageSpatialConstraintSummary);
+            assert.equal(multiInteriorSummary.length, 1, 'multi-interior exclusion probe should publish one summary entry');
+            assert.equal(multiInteriorSummary[0]?.exclusionCount, 2, 'multi-interior exclusion probe should publish both interior exclusion shapes');
+            assert.equal(multiInteriorSpatialSummary[0]?.exclusionCount, 2, 'unified spatial summary should reflect both interior exclusions');
+
+            const narrowLaneProbeEngine = new LayoutEngine({
+                ...config,
+                layout: {
+                    ...config.layout,
+                    _experimentalPageStartExclusionTop: 20,
+                    _experimentalPageStartExclusionHeight: 45,
+                    _experimentalPageStartExclusionX: 60,
+                    _experimentalPageStartExclusionWidth: 40,
+                    _experimentalPageStartExclusionX2: 210,
+                    _experimentalPageStartExclusionWidth2: 40,
+                    _experimentalPageStartExclusionSelector: 'first'
+                }
+            } as any);
+            await narrowLaneProbeEngine.waitForFonts();
+
+            const narrowLaneElements = [
+                {
+                    type: 'p',
+                    content: 'Narrow lane probe.',
+                    properties: {
+                        sourceId: 'probe-narrow',
+                        style: { fontSize: 10, marginBottom: 0 }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: sharedText,
+                    properties: { sourceId: 'probe-after-narrow' }
+                }
+            ];
+
+            const narrowLanePages = narrowLaneProbeEngine.paginate(narrowLaneElements as any);
+            assert.equal(narrowLanePages.length, 1, 'narrow multi-interior probe should stay on one page');
+
+            const narrowLaneFirstBox = findFirstBoxForSource(narrowLanePages, 'probe-narrow');
+            assert.ok(narrowLaneFirstBox, 'narrow multi-interior probe should emit the first actor');
+            const narrowLaneX = Number(narrowLaneFirstBox.x || 0);
+            assert.equal(
+                narrowLaneX,
+                baselineFirstX,
+                'narrow multi-interior probe should still prefer restored full-width placement over fragmented same-band lanes'
+            );
+            assert.ok(
+                Number(narrowLaneFirstBox.y || 0) > baselineFirstY + 20,
+                'narrow multi-interior probe should also defer below the fragmented band instead of forcing a narrow actor through it'
+            );
+
+            const narrowLaneSession = narrowLaneProbeEngine.getLastSimulationReportReader();
+            const narrowLaneSummary = narrowLaneSession.require(simulationArtifactKeys.pageExclusionSummary);
+            const narrowLaneSpatialSummary = narrowLaneSession.require(simulationArtifactKeys.pageSpatialConstraintSummary);
+            assert.equal(narrowLaneSummary.length, 1, 'narrow multi-interior probe should publish one summary entry');
+            assert.equal(narrowLaneSummary[0]?.exclusionCount, 2, 'narrow multi-interior probe should publish both interior exclusion shapes');
+            assert.equal(narrowLaneSpatialSummary[0]?.exclusionCount, 2, 'unified spatial summary should reflect both narrow-lane exclusions');
 
             const dropcapLaneEngine = new LayoutEngine({
                 ...config,

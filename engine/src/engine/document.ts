@@ -26,6 +26,10 @@ const LAYOUT_KEYS = new Set([
     '_experimentalPageStartReservationSelector',
     '_experimentalPageStartExclusionTop',
     '_experimentalPageStartExclusionHeight',
+    '_experimentalPageStartExclusionX',
+    '_experimentalPageStartExclusionWidth',
+    '_experimentalPageStartExclusionX2',
+    '_experimentalPageStartExclusionWidth2',
     '_experimentalPageStartExclusionLeftWidth',
     '_experimentalPageStartExclusionRightWidth',
     '_experimentalPageStartExclusionSelector',
@@ -261,6 +265,18 @@ function validateLayout(layout: unknown, documentPath: string): void {
     }
     if (obj._experimentalPageStartExclusionHeight !== undefined) {
         assertFiniteNumberAt(obj._experimentalPageStartExclusionHeight, 'layout._experimentalPageStartExclusionHeight', documentPath);
+    }
+    if (obj._experimentalPageStartExclusionX !== undefined) {
+        assertFiniteNumberAt(obj._experimentalPageStartExclusionX, 'layout._experimentalPageStartExclusionX', documentPath);
+    }
+    if (obj._experimentalPageStartExclusionWidth !== undefined) {
+        assertFiniteNumberAt(obj._experimentalPageStartExclusionWidth, 'layout._experimentalPageStartExclusionWidth', documentPath);
+    }
+    if (obj._experimentalPageStartExclusionX2 !== undefined) {
+        assertFiniteNumberAt(obj._experimentalPageStartExclusionX2, 'layout._experimentalPageStartExclusionX2', documentPath);
+    }
+    if (obj._experimentalPageStartExclusionWidth2 !== undefined) {
+        assertFiniteNumberAt(obj._experimentalPageStartExclusionWidth2, 'layout._experimentalPageStartExclusionWidth2', documentPath);
     }
     if (obj._experimentalPageStartExclusionLeftWidth !== undefined) {
         assertFiniteNumberAt(obj._experimentalPageStartExclusionLeftWidth, 'layout._experimentalPageStartExclusionLeftWidth', documentPath);

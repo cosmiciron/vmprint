@@ -295,6 +295,10 @@ export interface LayoutConfig {
         _experimentalPageStartReservationSelector?: PageReservationSelector;
         _experimentalPageStartExclusionTop?: number;
         _experimentalPageStartExclusionHeight?: number;
+        _experimentalPageStartExclusionX?: number;
+        _experimentalPageStartExclusionWidth?: number;
+        _experimentalPageStartExclusionX2?: number;
+        _experimentalPageStartExclusionWidth2?: number;
         _experimentalPageStartExclusionLeftWidth?: number;
         _experimentalPageStartExclusionRightWidth?: number;
         _experimentalPageStartExclusionSelector?: PageReservationSelector;
@@ -377,7 +381,7 @@ export interface BoxMeta {
     pageIndex?: number;
     generated?: boolean;
     originSourceId?: string;
-    transformKind?: 'clone';
+    transformKind?: 'clone' | 'split';
     clonedFromSourceId?: string;
 }
 

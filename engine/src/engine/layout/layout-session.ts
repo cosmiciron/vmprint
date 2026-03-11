@@ -67,6 +67,11 @@ export type ContentBand = {
     width: number;
 };
 
+type HorizontalInterval = {
+    start: number;
+    end: number;
+};
+
 export type ActiveExclusionBand = {
     exclusions: SpatialExclusion[];
     top: number;
@@ -226,29 +231,25 @@ export class ConstraintField {
     resolveActiveContentBand(cursorY: number): ContentBand | null {
         const activeBand = this.resolveActiveExclusionBand(cursorY);
         if (!activeBand) return null;
+        const mergedIntervals = this.resolveMergedHorizontalExclusionIntervals(activeBand.exclusions);
+        const contentIntervals = this.resolveAvailableHorizontalIntervals(mergedIntervals);
+        if (!contentIntervals.length) return null;
 
-        let leftInset = 0;
-        let rightInset = 0;
-
-        for (const exclusion of activeBand.exclusions) {
-            const left = Number.isFinite(exclusion.x) ? Math.max(0, Number(exclusion.x)) : 0;
-            const width = Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0;
-            const right = left + width;
-
-            if (left <= LAYOUT_DEFAULTS.wrapTolerance) {
-                leftInset = Math.max(leftInset, right);
+        const widestInterval = contentIntervals.reduce((best, candidate) => {
+            const bestWidth = best.end - best.start;
+            const candidateWidth = candidate.end - candidate.start;
+            if (candidateWidth > bestWidth + LAYOUT_DEFAULTS.wrapTolerance) return candidate;
+            if (Math.abs(candidateWidth - bestWidth) <= LAYOUT_DEFAULTS.wrapTolerance && candidate.start < best.start) {
+                return candidate;
             }
+            return best;
+        });
 
-            if (right >= this.availableWidth - LAYOUT_DEFAULTS.wrapTolerance) {
-                rightInset = Math.max(rightInset, Math.max(0, this.availableWidth - left));
-            }
-        }
-
-        if (leftInset <= 0 && rightInset <= 0) return null;
-        const laneWidth = Math.max(0, this.availableWidth - leftInset - rightInset);
+        const width = Math.max(0, widestInterval.end - widestInterval.start);
+        if (width >= this.availableWidth - LAYOUT_DEFAULTS.wrapTolerance) return null;
         return {
-            xOffset: leftInset,
-            width: laneWidth
+            xOffset: widestInterval.start,
+            width
         };
     }
 
@@ -337,6 +338,51 @@ export class ConstraintField {
         }
 
         return { action: 'commit' };
+    }
+
+    private resolveMergedHorizontalExclusionIntervals(exclusions: readonly SpatialExclusion[]): HorizontalInterval[] {
+        const intervals = exclusions
+            .map((exclusion): HorizontalInterval | null => {
+                const start = Number.isFinite(exclusion.x) ? Math.max(0, Math.min(this.availableWidth, Number(exclusion.x))) : 0;
+                const width = Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0;
+                const end = Math.max(start, Math.min(this.availableWidth, start + width));
+                if (end - start <= LAYOUT_DEFAULTS.wrapTolerance) return null;
+                return { start, end };
+            })
+            .filter((interval): interval is HorizontalInterval => interval !== null)
+            .sort((a, b) => a.start - b.start);
+
+        if (!intervals.length) return [];
+
+        const merged: HorizontalInterval[] = [intervals[0]];
+        for (let index = 1; index < intervals.length; index += 1) {
+            const current = intervals[index];
+            const previous = merged[merged.length - 1];
+            if (current.start <= previous.end + LAYOUT_DEFAULTS.wrapTolerance) {
+                previous.end = Math.max(previous.end, current.end);
+                continue;
+            }
+            merged.push({ ...current });
+        }
+        return merged;
+    }
+
+    private resolveAvailableHorizontalIntervals(occupied: readonly HorizontalInterval[]): HorizontalInterval[] {
+        const intervals: HorizontalInterval[] = [];
+        let cursor = 0;
+
+        for (const interval of occupied) {
+            if (interval.start > cursor + LAYOUT_DEFAULTS.wrapTolerance) {
+                intervals.push({ start: cursor, end: interval.start });
+            }
+            cursor = Math.max(cursor, interval.end);
+        }
+
+        if (cursor < this.availableWidth - LAYOUT_DEFAULTS.wrapTolerance) {
+            intervals.push({ start: cursor, end: this.availableWidth });
+        }
+
+        return intervals.filter((interval) => (interval.end - interval.start) > LAYOUT_DEFAULTS.wrapTolerance);
     }
 }
 
