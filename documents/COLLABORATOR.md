@@ -199,6 +199,48 @@ The important architectural rule is:
 > Do not encode cloning, morphing, or continuation-preservation as packager-specific paginator exceptions.
 > Treat them as actor transformation capabilities expressed through the simulation model.
 
+### Transitional Ambiguity and Snapshot Branching
+
+Some runtime seams are not well-described by a large taxonomy of transitional states.
+
+The clearest example is **accepted split placement**:
+
+*   a split has already been accepted
+*   a continuation already exists conceptually
+*   marker and queue aftermath may already be prepared
+*   but the accepted fragment is not yet truly settled on the page surface
+
+This is the simulation equivalent of an actor crossing a world-transition boundary in a game:
+the crossing has begun, dependent systems are already reacting, but the actor is not yet fully resolved in the new terrain.
+
+For this class of problem, VMPrint should prefer **local transition snapshots** over an ever-growing list of intermediate statuses.
+
+The philosophy is:
+
+*   coarse, stable engine phases should remain explicit states
+*   ambiguous branchy seams should use snapshot-and-branch semantics
+
+That means:
+
+*   capture a local snapshot of page / queue / cursor / relevant session-owned transition state
+*   attempt one deterministic branch from that snapshot
+*   if the branch settles cleanly, commit the resulting world
+*   if it does not, discard it and choose the next deterministic branch
+
+This is intentionally **not** a global full-engine save-state system.
+It is a targeted mechanism for local, high-ambiguity transition seams.
+
+Likely consumers include:
+
+*   accepted split fragment placement after split acceptance
+*   page-boundary transition negotiation for continuations
+*   future multi-actor orchestration seams where a formation has partially committed to one path but not yet settled
+
+The architectural rule is:
+
+> Do not solve ambiguous transition seams by proliferating fine-grained limbo states when a local snapshot-and-branch model is cleaner.
+> Use explicit states for stable phases; use snapshots for unstable boundaries.
+
 ---
 
 ## 5. The Collaborator as a System

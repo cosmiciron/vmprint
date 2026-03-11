@@ -403,7 +403,27 @@ export type ActorPlacementExecutionOutcome =
     }
     | ActorPlacementCommitOutcome;
 
+export type ActorPlacementAttemptOutcome =
+    | {
+        action: 'retry-next-page';
+    }
+    | {
+        action: 'defer';
+        nextCurrentY: number;
+        shouldAdvancePage: boolean;
+    }
+    | {
+        action: 'commit';
+        committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
+    };
+
 export type SequencePlacementCheckpoint = {
+    boxStartIndex: number;
+    currentY: number;
+    lastSpacingAfter: number;
+};
+
+export type LocalTransitionSnapshot = {
     boxStartIndex: number;
     currentY: number;
     lastSpacingAfter: number;
@@ -1003,15 +1023,34 @@ export class LayoutSession {
         return { boxes: placedBoxes, currentY, lastSpacingAfter };
     }
 
+    captureLocalTransitionSnapshot(
+        pageBoxes: readonly Box[],
+        currentY: number,
+        lastSpacingAfter: number
+    ): LocalTransitionSnapshot {
+        return {
+            boxStartIndex: pageBoxes.length,
+            currentY,
+            lastSpacingAfter
+        };
+    }
+
+    restoreLocalTransitionSnapshot(
+        pageBoxes: Box[],
+        snapshot: LocalTransitionSnapshot
+    ): { currentY: number; lastSpacingAfter: number } {
+        pageBoxes.splice(snapshot.boxStartIndex);
+        return {
+            currentY: snapshot.currentY,
+            lastSpacingAfter: snapshot.lastSpacingAfter
+        };
+    }
+
     rollbackActorSequencePlacement(
         pageBoxes: Box[],
         checkpoint: SequencePlacementCheckpoint
     ): { currentY: number; lastSpacingAfter: number } {
-        pageBoxes.splice(checkpoint.boxStartIndex);
-        return {
-            currentY: checkpoint.currentY,
-            lastSpacingAfter: checkpoint.lastSpacingAfter
-        };
+        return this.restoreLocalTransitionSnapshot(pageBoxes, checkpoint);
     }
 
     commitFragmentBoxes(
@@ -1409,6 +1448,49 @@ export class LayoutSession {
         return this.finalizeActorPlacementCommit(
             actor,
             boxes,
+            state,
+            constraintField,
+            layoutBefore,
+            pageLimit,
+            pageTop
+        );
+    }
+
+    attemptActorPlacement(
+        actor: PackagerUnit,
+        placementFrame: ResolvedPlacementFrame,
+        availableWidth: number,
+        availableHeight: number,
+        context: PackagerContext,
+        state: FragmentCommitState,
+        constraintField: ConstraintField,
+        layoutBefore: number,
+        pageLimit: number,
+        pageTop: number
+    ): ActorPlacementAttemptOutcome {
+        const deferred = this.resolveDeferredActorPlacement(
+            actor,
+            placementFrame,
+            constraintField,
+            state.currentY,
+            layoutBefore,
+            pageLimit,
+            pageTop,
+            context
+        );
+        if (deferred) {
+            return {
+                action: 'defer',
+                nextCurrentY: deferred.nextCurrentY,
+                shouldAdvancePage: deferred.shouldAdvancePage
+            };
+        }
+
+        return this.executeActorPlacement(
+            actor,
+            availableWidth,
+            availableHeight,
+            context,
             state,
             constraintField,
             layoutBefore,

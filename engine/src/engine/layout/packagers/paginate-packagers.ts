@@ -169,11 +169,13 @@ export function paginatePackagers(
                 const keepBranchStart = performance.now();
                 {
                     const { prefix, splitCandidate, replaceCount, splitMarkerReserve: markerReserve } = wholeFormationTailSplitExecution;
-                    const prefixPlacementCheckpoint = {
-                        boxStartIndex: currentPageBoxes.length,
-                        currentY,
-                        lastSpacingAfter
-                    };
+                    const prefixPlacementCheckpoint = session
+                        ? session.captureLocalTransitionSnapshot(currentPageBoxes, currentY, lastSpacingAfter)
+                        : {
+                            boxStartIndex: currentPageBoxes.length,
+                            currentY,
+                            lastSpacingAfter
+                        };
 
                     if (session) {
                         const placedPrefix = session.placeActorSequence(prefix, {
@@ -352,18 +354,44 @@ export function paginatePackagers(
         }
 
         if (requiredHeight <= effectiveAvailableHeight) {
-            const deferredPlacement = session
-                ? session.resolveDeferredActorPlacement(
+            if (session) {
+                const outcome = session.attemptActorPlacement(
                     packager,
                     placementFrame,
+                    availableWidth,
+                    availableHeightAdjusted,
+                    context,
+                    {
+                        currentY,
+                        layoutDelta,
+                        effectiveHeight,
+                        marginBottom,
+                        pageIndex: currentPageIndex
+                    },
                     constraintField,
-                    currentY,
                     layoutBefore,
                     pageLimit,
-                    margins.top,
-                    context
-                )
-                : (() => {
+                    margins.top
+                );
+                if (outcome.action === 'retry-next-page') {
+                    pushNewPage();
+                    continue;
+                }
+                if (outcome.action === 'defer') {
+                    currentY = outcome.nextCurrentY;
+                    if (outcome.shouldAdvancePage) {
+                        pushNewPage();
+                    }
+                    continue;
+                }
+                currentPageBoxes.push(...outcome.committed.boxes);
+                currentY = outcome.committed.currentY;
+                lastSpacingAfter = outcome.committed.lastSpacingAfter;
+                i++;
+                continue;
+            }
+
+            const deferredPlacement = (() => {
                     const deferredCursorY = resolveDeferredCursorY(packager);
                     if (deferredCursorY === null) return null;
                     const nextCursorY = deferredCursorY;
@@ -386,61 +414,36 @@ export function paginatePackagers(
                 }
                 continue;
             }
-            // It fits!
-            if (session) {
-                const outcome = session.executeActorPlacement(packager, availableWidth, availableHeightAdjusted, context, {
-                    currentY,
-                    layoutDelta,
-                    effectiveHeight,
-                    marginBottom,
-                    pageIndex: currentPageIndex
-                }, constraintField, layoutBefore, pageLimit, margins.top);
-                if (outcome.action === 'retry-next-page') {
-                    pushNewPage();
-                    continue;
-                }
-                if (outcome.action === 'defer') {
-                    currentY = outcome.nextCurrentY;
-                    if (outcome.shouldAdvancePage) {
+            const boxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
+            if (!boxes) {
+                pushNewPage();
+                continue;
+            }
+            if (contentBand) {
+                const absoluteBoxes = boxes.map((box) => ({
+                    ...box,
+                    y: (box.y || 0) + currentY + layoutDelta
+                }));
+                const placementDecision = constraintField.evaluatePlacement(absoluteBoxes, currentY + layoutBefore);
+                if (placementDecision.action === 'defer') {
+                    currentY = Math.max(currentY, placementDecision.nextCursorY - layoutBefore);
+                    availableHeight = pageLimit - currentY;
+                    if (availableHeight <= 0 && currentY > margins.top) {
                         pushNewPage();
                     }
                     continue;
                 }
-                currentPageBoxes.push(...outcome.committed.boxes);
-                currentY = outcome.committed.currentY;
-                lastSpacingAfter = outcome.committed.lastSpacingAfter;
-            } else {
-                const boxes = packager.emitBoxes(availableWidth, availableHeightAdjusted, context);
-                if (!boxes) {
-                    pushNewPage();
-                    continue;
-                }
-                if (contentBand) {
-                    const absoluteBoxes = boxes.map((box) => ({
-                        ...box,
-                        y: (box.y || 0) + currentY + layoutDelta
-                    }));
-                    const placementDecision = constraintField.evaluatePlacement(absoluteBoxes, currentY + layoutBefore);
-                    if (placementDecision.action === 'defer') {
-                        currentY = Math.max(currentY, placementDecision.nextCursorY - layoutBefore);
-                        availableHeight = pageLimit - currentY;
-                        if (availableHeight <= 0 && currentY > margins.top) {
-                            pushNewPage();
-                        }
-                        continue;
-                    }
-                }
-                for (const box of boxes) {
-                    // Adjust box Y to match page absolute Y
-                    box.y = (box.y || 0) + currentY + layoutDelta;
-                    if (box.meta) {
-                        box.meta = { ...box.meta, pageIndex: currentPageIndex };
-                    }
-                    currentPageBoxes.push(box);
-                }
-                currentY += effectiveHeight - marginBottom;
-                lastSpacingAfter = marginBottom;
             }
+            for (const box of boxes) {
+                // Adjust box Y to match page absolute Y
+                box.y = (box.y || 0) + currentY + layoutDelta;
+                if (box.meta) {
+                    box.meta = { ...box.meta, pageIndex: currentPageIndex };
+                }
+                currentPageBoxes.push(box);
+            }
+            currentY += effectiveHeight - marginBottom;
+            lastSpacingAfter = marginBottom;
             i++;
             continue;
         }
