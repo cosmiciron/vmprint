@@ -1,8 +1,8 @@
 import { performance } from 'node:perf_hooks';
 import { Box, Element, Page } from '../../types';
 import {
+    formationMustAdvancePage,
     formationCanExecuteTailSplit,
-    formationRequiresPageAdvance,
     formationWholeFits,
     getTailSplitExecution
 } from '../actor-formation';
@@ -166,83 +166,116 @@ export function paginatePackagers(
                 const execution = getTailSplitExecution(keepPlan);
 
                 if (execution) {
-                    const { prefix, splitCandidate, memberCount, splitMarkerReserve: markerReserve } = execution;
-                    const prefixStartIndex = currentPageBoxes.length;
-                    const prefixStartY = currentY;
-                    const prefixStartSpacing = lastSpacingAfter;
+                    const { prefix, splitCandidate, replaceCount, splitMarkerReserve: markerReserve } = execution;
+                    const prefixPlacementCheckpoint = {
+                        boxStartIndex: currentPageBoxes.length,
+                        currentY,
+                        lastSpacingAfter
+                    };
 
-                    // Place prefix units now.
-                    for (const p of prefix) {
-                        const pMarginTop = p.getMarginTop();
-                        const pMarginBottom = p.getMarginBottom();
-                        const pLayoutBefore = resolveLayoutBefore(lastSpacingAfter, pMarginTop);
-                        const pLayoutDelta = pLayoutBefore - pMarginTop;
-                        const pAvailableHeight = (pageLimit - currentY) - pLayoutDelta;
-                        const pContext = {
-                            ...contextBase,
+                    if (session) {
+                        const placedPrefix = session.placeActorSequence(prefix, {
+                            currentY,
+                            lastSpacingAfter,
                             pageIndex: currentPageIndex,
-                            cursorY: currentY
-                        };
-                        const pBoxes = p.emitBoxes(availableWidth, pAvailableHeight, pContext) || [];
-                        for (const box of pBoxes) {
-                            box.y = (box.y || 0) + currentY + pLayoutDelta;
-                            if (box.meta) box.meta = { ...box.meta, pageIndex: currentPageIndex };
-                            currentPageBoxes.push(box);
+                            pageLimit,
+                            availableWidth
+                        }, contextBase);
+                        currentPageBoxes.push(...placedPrefix.boxes);
+                        currentY = placedPrefix.currentY;
+                        lastSpacingAfter = placedPrefix.lastSpacingAfter;
+                    } else {
+                        // Place prefix units now.
+                        for (const p of prefix) {
+                            const pMarginTop = p.getMarginTop();
+                            const pMarginBottom = p.getMarginBottom();
+                            const pLayoutBefore = resolveLayoutBefore(lastSpacingAfter, pMarginTop);
+                            const pLayoutDelta = pLayoutBefore - pMarginTop;
+                            const pAvailableHeight = (pageLimit - currentY) - pLayoutDelta;
+                            const pContext = {
+                                ...contextBase,
+                                pageIndex: currentPageIndex,
+                                cursorY: currentY
+                            };
+                            const pBoxes = p.emitBoxes(availableWidth, pAvailableHeight, pContext) || [];
+                            for (const box of pBoxes) {
+                                box.y = (box.y || 0) + currentY + pLayoutDelta;
+                                if (box.meta) box.meta = { ...box.meta, pageIndex: currentPageIndex };
+                                currentPageBoxes.push(box);
+                            }
+                            const pContentHeight = Math.max(0, p.getRequiredHeight() - pMarginTop - pMarginBottom);
+                            const pRequiredHeight = pContentHeight + pLayoutBefore + pMarginBottom;
+                            const pEffectiveHeight = Math.max(pRequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+                            currentY += pEffectiveHeight - pMarginBottom;
+                            lastSpacingAfter = pMarginBottom;
                         }
-                        const pContentHeight = Math.max(0, p.getRequiredHeight() - pMarginTop - pMarginBottom);
-                        const pRequiredHeight = pContentHeight + pLayoutBefore + pMarginBottom;
-                        const pEffectiveHeight = Math.max(pRequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-                        currentY += pEffectiveHeight - pMarginBottom;
-                        lastSpacingAfter = pMarginBottom;
                     }
 
-                    const candidateMarginTop = splitCandidate.getMarginTop();
-                    const candidateMarginBottom = splitCandidate.getMarginBottom();
-                    const candidateLayoutBefore = resolveLayoutBefore(lastSpacingAfter, candidateMarginTop);
-                    const candidateLayoutDelta = candidateLayoutBefore - candidateMarginTop;
-                    const candidateAvailable = (pageLimit - currentY) - candidateLayoutDelta - markerReserve;
-                    const splitContext = {
-                        ...contextBase,
-                        pageIndex: currentPageIndex,
-                        cursorY: currentY
-                    };
-                    const splitAttempt = {
-                        actor: splitCandidate,
-                        availableWidth,
-                        availableHeight: candidateAvailable,
-                        context: splitContext
-                    };
-                    session?.notifySplitAttempt(splitAttempt);
-                    const { currentFragment: partA, continuationFragment: partB } = splitCandidate.split(candidateAvailable, splitContext);
+                    const splitExecution = session
+                        ? session.executePositionedSplitAttempt(
+                            splitCandidate,
+                            availableWidth,
+                            currentY,
+                            lastSpacingAfter,
+                            pageLimit,
+                            currentPageIndex,
+                            markerReserve,
+                            contextBase
+                        )
+                        : (() => {
+                            const candidateMarginTop = splitCandidate.getMarginTop();
+                            const candidateLayoutBefore = resolveLayoutBefore(lastSpacingAfter, candidateMarginTop);
+                            const candidateLayoutDelta = candidateLayoutBefore - candidateMarginTop;
+                            const emitAvailableHeight = (pageLimit - currentY) - candidateLayoutDelta;
+                            const splitContext = {
+                                ...contextBase,
+                                pageIndex: currentPageIndex,
+                                cursorY: currentY
+                            };
+                            return {
+                                execution: {
+                                    attempt: {
+                                        actor: splitCandidate,
+                                        availableWidth,
+                                        availableHeight: emitAvailableHeight - markerReserve,
+                                        context: splitContext
+                                    },
+                                    result: splitCandidate.split(emitAvailableHeight - markerReserve, splitContext)
+                                },
+                                layoutDelta: candidateLayoutDelta,
+                                emitAvailableHeight
+                            };
+                        })();
+                    const splitAttempt = splitExecution.execution.attempt;
+                    const { currentFragment: partA, continuationFragment: partB } = splitExecution.execution.result;
                     if (partA && partB) {
                         const partAContext = {
                             ...contextBase,
                             pageIndex: currentPageIndex,
                             cursorY: currentY
                         };
-                        const partABoxes = partA.emitBoxes(availableWidth, (pageLimit - currentY) - candidateLayoutDelta, partAContext) || [];
+                        const partABoxes = partA.emitBoxes(availableWidth, splitExecution.emitAvailableHeight, partAContext) || [];
                         if (session) {
-                            session.notifySplitAccepted(splitAttempt, {
-                                currentFragment: partA,
-                                continuationFragment: partB
-                            });
-                            const partAMarginTop = partA.getMarginTop();
-                            const partAMarginBottom = partA.getMarginBottom();
-                            const partALayoutBefore = resolveLayoutBefore(lastSpacingAfter, partAMarginTop);
-                            const partAContentHeight = Math.max(0, partA.getRequiredHeight() - partAMarginTop - partAMarginBottom);
-                            const partARequiredHeight = partAContentHeight + partALayoutBefore + partAMarginBottom;
-                            const partAEffectiveHeight = Math.max(partARequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-                            const committed = session.commitSplitFragmentWithMarkers(partA, partABoxes, {
-                                currentY,
-                                layoutDelta: candidateLayoutDelta,
-                                effectiveHeight: partAEffectiveHeight,
-                                marginBottom: partAMarginBottom,
-                                pageIndex: currentPageIndex,
-                                actorId: partA.actorId,
-                                lastSpacingAfter,
-                                pageLimit,
-                                availableWidth
-                            },
+                            const outcome = session.finalizeTailSplitFormation(
+                                packagers,
+                                i,
+                                replaceCount,
+                                splitCandidate,
+                                partB,
+                                splitAttempt,
+                                {
+                                    currentFragment: partA,
+                                    continuationFragment: partB
+                                },
+                                partABoxes,
+                                session.createSplitFragmentAftermathState(partA, {
+                                    currentY,
+                                    layoutDelta: splitExecution.layoutDelta,
+                                    lastSpacingAfter,
+                                    pageLimit,
+                                    availableWidth,
+                                    pageIndex: currentPageIndex
+                                }),
                                 (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
                                     (processor as any).positionFlowBox(
                                         marker,
@@ -253,9 +286,9 @@ export function paginatePackagers(
                                         markerPageIndex
                                     )
                             );
-                            currentPageBoxes.push(...committed.boxes);
-                            currentY = committed.currentY;
-                            lastSpacingAfter = committed.lastSpacingAfter;
+                            currentPageBoxes.push(...outcome.committed.boxes);
+                            currentY = outcome.committed.currentY;
+                            lastSpacingAfter = outcome.committed.lastSpacingAfter;
                         } else {
                             const partAMarginTop = partA.getMarginTop();
                             const partAMarginBottom = partA.getMarginBottom();
@@ -264,7 +297,7 @@ export function paginatePackagers(
                             const partARequiredHeight = partAContentHeight + partALayoutBefore + partAMarginBottom;
                             const partAEffectiveHeight = Math.max(partARequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
                             for (const box of partABoxes) {
-                                box.y = (box.y || 0) + currentY + candidateLayoutDelta;
+                                box.y = (box.y || 0) + currentY + splitExecution.layoutDelta;
                                 if (box.meta) box.meta = { ...box.meta, pageIndex: currentPageIndex };
                                 currentPageBoxes.push(box);
                             }
@@ -273,19 +306,23 @@ export function paginatePackagers(
                         }
 
                         pushNewPage();
-                        if (session) {
-                            session.installContinuationIntoQueue(packagers, i, memberCount, splitCandidate, partB);
-                        } else {
-                            packagers.splice(i, memberCount, partB);
+                        if (!session) {
+                            packagers.splice(i, replaceCount, partB);
                         }
                         session?.recordProfile('keepWithNextBranchCalls', 1);
                         session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
                         continue;
                     } else {
                         // Split failed; rollback prefix placement to avoid duplicating keepWithNext units.
-                        currentPageBoxes.splice(prefixStartIndex);
-                        currentY = prefixStartY;
-                        lastSpacingAfter = prefixStartSpacing;
+                        if (session) {
+                            const rolledBack = session.rollbackActorSequencePlacement(currentPageBoxes, prefixPlacementCheckpoint);
+                            currentY = rolledBack.currentY;
+                            lastSpacingAfter = rolledBack.lastSpacingAfter;
+                        } else {
+                            currentPageBoxes.splice(prefixPlacementCheckpoint.boxStartIndex);
+                            currentY = prefixPlacementCheckpoint.currentY;
+                            lastSpacingAfter = prefixPlacementCheckpoint.lastSpacingAfter;
+                        }
                     }
                 }
                 session?.recordProfile('keepWithNextBranchCalls', 1);
@@ -294,8 +331,7 @@ export function paginatePackagers(
 
             // If a keepWithNext sequence doesn't fit, we push the group to the next page.
             // For single units, we allow the packager to attempt a mid-page split.
-            const requiresPageAdvance = keepPlan ? formationRequiresPageAdvance(keepPlan) : false;
-            if (!isAtPageTop && requiresPageAdvance) {
+            if (keepPlan && formationMustAdvancePage(keepPlan, isAtPageTop)) {
                 pushNewPage();
                 continue;
             }
@@ -416,14 +452,19 @@ export function paginatePackagers(
         // Let's try to split
         const markerReserve = session?.getSplitMarkerReserve(packager) ?? 0;
         const splitAvailableHeight = availableHeightAdjusted - markerReserve;
-        const splitAttempt = {
-            actor: packager,
-            availableWidth,
-            availableHeight: splitAvailableHeight,
-            context
-        };
-        session?.notifySplitAttempt(splitAttempt);
-        const { currentFragment: fitsCurrent, continuationFragment: pushedNext } = packager.split(splitAvailableHeight, context);
+        const splitExecution = session
+            ? session.executeSplitAttempt(packager, availableWidth, splitAvailableHeight, context)
+            : {
+                attempt: {
+                    actor: packager,
+                    availableWidth,
+                    availableHeight: splitAvailableHeight,
+                    context
+                },
+                result: packager.split(splitAvailableHeight, context)
+            };
+        const splitAttempt = splitExecution.attempt;
+        const { currentFragment: fitsCurrent, continuationFragment: pushedNext } = splitExecution.result;
 
         if (!fitsCurrent) {
             if (isAtPageTop) {
@@ -492,26 +533,17 @@ export function paginatePackagers(
         const fitsAvailableHeightAdjusted = availableHeight - fitsLayoutDelta;
         const currentBoxes = fitsCurrent.emitBoxes(availableWidth, fitsAvailableHeightAdjusted, splitContext) || [];
         if (session) {
-            session.notifySplitAccepted(splitAttempt, {
+            const committed = session.acceptAndCommitSplitFragment(splitAttempt, {
                 currentFragment: fitsCurrent,
                 continuationFragment: pushedNext
-            });
-            const committed = session.commitSplitFragmentWithMarkers(fitsCurrent, currentBoxes, {
+            }, currentBoxes, session.createSplitFragmentAftermathState(fitsCurrent, {
                 currentY,
                 layoutDelta: fitsLayoutDelta,
-                effectiveHeight: Math.max(
-                    Math.max(0, fitsCurrent.getRequiredHeight() - fitsMarginTop - fitsMarginBottom) +
-                    fitsLayoutBefore +
-                    fitsMarginBottom,
-                    LAYOUT_DEFAULTS.minEffectiveHeight
-                ),
-                marginBottom: fitsMarginBottom,
-                pageIndex: currentPageIndex,
-                actorId: fitsCurrent.actorId,
                 lastSpacingAfter,
                 pageLimit,
-                availableWidth
-            },
+                availableWidth,
+                pageIndex: currentPageIndex
+            }),
                 (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
                     (processor as any).positionFlowBox(
                         marker,
@@ -541,7 +573,7 @@ export function paginatePackagers(
 
         // The remaining packager takes the place of the current packager but we don't advance i
         if (session) {
-            const continuationInstalled = session.installContinuationIntoQueue(packagers, i, 1, packager, pushedNext);
+            const { continuationInstalled } = session.settleContinuationQueue(packagers, i, 1, packager, pushedNext);
             if (!continuationInstalled) {
                 i++;
             }

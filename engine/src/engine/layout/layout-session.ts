@@ -107,11 +107,28 @@ export type FragmentCommitState = {
     pageIndex: number;
 };
 
+export type SequencePlacementState = {
+    currentY: number;
+    lastSpacingAfter: number;
+    pageIndex: number;
+    pageLimit: number;
+    availableWidth: number;
+};
+
 export type SplitFragmentAftermathState = FragmentCommitState & {
     actorId: string;
     lastSpacingAfter: number;
     pageLimit: number;
     availableWidth: number;
+};
+
+export type SplitFragmentAftermathInput = {
+    currentY: number;
+    layoutDelta: number;
+    lastSpacingAfter: number;
+    pageLimit: number;
+    availableWidth: number;
+    pageIndex: number;
 };
 
 export type PageRegionResolution = {
@@ -316,6 +333,32 @@ export type SplitAttempt = {
     context: PackagerContext;
 };
 
+export type SplitExecution = {
+    attempt: SplitAttempt;
+    result: PackagerSplitResult;
+};
+
+export type PositionedSplitExecution = {
+    execution: SplitExecution;
+    layoutDelta: number;
+    emitAvailableHeight: number;
+};
+
+export type ContinuationQueueOutcome = {
+    continuationInstalled: boolean;
+};
+
+export type TailSplitFormationOutcome = {
+    committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
+    queue: ContinuationQueueOutcome;
+};
+
+export type SequencePlacementCheckpoint = {
+    boxStartIndex: number;
+    currentY: number;
+    lastSpacingAfter: number;
+};
+
 export type FragmentTransition = {
     predecessorActorId: string;
     currentFragmentActorId: string | null;
@@ -466,6 +509,57 @@ export class LayoutSession {
         for (const collaborator of this.collaborators) {
             collaborator.onSplitAttempt?.(attempt, this);
         }
+    }
+
+    executeSplitAttempt(
+        actor: PackagerUnit,
+        availableWidth: number,
+        availableHeight: number,
+        context: PackagerContext
+    ): SplitExecution {
+        const attempt = {
+            actor,
+            availableWidth,
+            availableHeight,
+            context
+        };
+        this.notifySplitAttempt(attempt);
+        return {
+            attempt,
+            result: actor.split(availableHeight, context)
+        };
+    }
+
+    executePositionedSplitAttempt(
+        actor: PackagerUnit,
+        availableWidth: number,
+        currentY: number,
+        lastSpacingAfter: number,
+        pageLimit: number,
+        pageIndex: number,
+        markerReserve: number,
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>
+    ): PositionedSplitExecution {
+        const marginTop = actor.getMarginTop();
+        const layoutBefore = lastSpacingAfter + marginTop;
+        const layoutDelta = layoutBefore - marginTop;
+        const emitAvailableHeight = (pageLimit - currentY) - layoutDelta;
+        const context = {
+            ...contextBase,
+            pageIndex,
+            cursorY: currentY
+        };
+
+        return {
+            execution: this.executeSplitAttempt(
+                actor,
+                availableWidth,
+                emitAvailableHeight - markerReserve,
+                context
+            ),
+            layoutDelta,
+            emitAvailableHeight
+        };
     }
 
     notifySplitAccepted(attempt: SplitAttempt, result: PackagerSplitResult): void {
@@ -817,6 +911,59 @@ export class LayoutSession {
         return { boxes: placedBoxes, currentY, lastSpacingAfter };
     }
 
+    placeActorSequence(
+        actors: readonly PackagerUnit[],
+        state: SequencePlacementState,
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>
+    ): { boxes: Box[]; currentY: number; lastSpacingAfter: number } {
+        const placedBoxes: Box[] = [];
+        let currentY = state.currentY;
+        let lastSpacingAfter = state.lastSpacingAfter;
+
+        for (const actor of actors) {
+            const marginTop = actor.getMarginTop();
+            const marginBottom = actor.getMarginBottom();
+            const layoutBefore = lastSpacingAfter + marginTop;
+            const layoutDelta = layoutBefore - marginTop;
+            const availableHeight = (state.pageLimit - currentY) - layoutDelta;
+            const context = {
+                ...contextBase,
+                pageIndex: state.pageIndex,
+                cursorY: currentY
+            };
+            const boxes = actor.emitBoxes(state.availableWidth, availableHeight, context) || [];
+            for (const box of boxes) {
+                const placed = {
+                    ...box,
+                    y: (box.y || 0) + currentY + layoutDelta
+                };
+                if (placed.meta) {
+                    placed.meta = { ...placed.meta, pageIndex: state.pageIndex };
+                }
+                placedBoxes.push(placed);
+            }
+
+            const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
+            const requiredHeight = contentHeight + layoutBefore + marginBottom;
+            const effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+            currentY += effectiveHeight - marginBottom;
+            lastSpacingAfter = marginBottom;
+        }
+
+        return { boxes: placedBoxes, currentY, lastSpacingAfter };
+    }
+
+    rollbackActorSequencePlacement(
+        pageBoxes: Box[],
+        checkpoint: SequencePlacementCheckpoint
+    ): { currentY: number; lastSpacingAfter: number } {
+        pageBoxes.splice(checkpoint.boxStartIndex);
+        return {
+            currentY: checkpoint.currentY,
+            lastSpacingAfter: checkpoint.lastSpacingAfter
+        };
+    }
+
     commitFragmentBoxes(
         actor: PackagerUnit,
         boxes: readonly Box[],
@@ -868,6 +1015,45 @@ export class LayoutSession {
         };
     }
 
+    acceptAndCommitSplitFragment(
+        attempt: SplitAttempt,
+        result: PackagerSplitResult,
+        boxes: readonly Box[],
+        state: SplitFragmentAftermathState,
+        positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
+    ): { boxes: Box[]; currentY: number; lastSpacingAfter: number } {
+        this.notifySplitAccepted(attempt, result);
+        return this.commitSplitFragmentWithMarkers(
+            result.currentFragment as PackagerUnit,
+            boxes,
+            state,
+            positionMarker
+        );
+    }
+
+    createSplitFragmentAftermathState(
+        actor: PackagerUnit,
+        input: SplitFragmentAftermathInput
+    ): SplitFragmentAftermathState {
+        const marginTop = actor.getMarginTop();
+        const marginBottom = actor.getMarginBottom();
+        const layoutBefore = input.lastSpacingAfter + marginTop;
+        const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
+        const requiredHeight = contentHeight + layoutBefore + marginBottom;
+
+        return {
+            currentY: input.currentY,
+            layoutDelta: input.layoutDelta,
+            effectiveHeight: Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight),
+            marginBottom,
+            pageIndex: input.pageIndex,
+            actorId: actor.actorId,
+            lastSpacingAfter: input.lastSpacingAfter,
+            pageLimit: input.pageLimit,
+            availableWidth: input.availableWidth
+        };
+    }
+
     installContinuationIntoQueue(
         actorQueue: PackagerUnit[],
         startIndex: number,
@@ -889,6 +1075,56 @@ export class LayoutSession {
 
         actorQueue.splice(startIndex, replaceCount, continuation);
         return true;
+    }
+
+    settleContinuationQueue(
+        actorQueue: PackagerUnit[],
+        startIndex: number,
+        replaceCount: number,
+        predecessor: PackagerUnit,
+        continuation: PackagerUnit | null | undefined
+    ): ContinuationQueueOutcome {
+        return {
+            continuationInstalled: this.installContinuationIntoQueue(
+                actorQueue,
+                startIndex,
+                replaceCount,
+                predecessor,
+                continuation
+            )
+        };
+    }
+
+    finalizeTailSplitFormation(
+        actorQueue: PackagerUnit[],
+        startIndex: number,
+        replaceCount: number,
+        predecessor: PackagerUnit,
+        continuation: PackagerUnit | null | undefined,
+        attempt: SplitAttempt,
+        result: PackagerSplitResult,
+        boxes: readonly Box[],
+        state: SplitFragmentAftermathState,
+        positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
+    ): TailSplitFormationOutcome {
+        const committed = this.acceptAndCommitSplitFragment(
+            attempt,
+            result,
+            boxes,
+            state,
+            positionMarker
+        );
+
+        return {
+            committed,
+            queue: this.settleContinuationQueue(
+                actorQueue,
+                startIndex,
+                replaceCount,
+                predecessor,
+                continuation
+            )
+        };
     }
 
     setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan): void {

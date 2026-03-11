@@ -68,6 +68,10 @@ export function formationRequiresPageAdvance(plan: KeepWithNextFormationPlan): b
     return plan.assessment.requiresPageAdvance;
 }
 
+export function formationMustAdvancePage(plan: KeepWithNextFormationPlan, isAtPageTop: boolean): boolean {
+    return !isAtPageTop && formationRequiresPageAdvance(plan);
+}
+
 export function formationWantsTailSplit(plan: KeepWithNextFormationPlan): boolean {
     return plan.resolution.action === 'split-tail';
 }
@@ -83,7 +87,7 @@ export function formationCanExecuteTailSplit(plan: KeepWithNextFormationPlan): b
 export function getTailSplitExecution(plan: KeepWithNextFormationPlan): {
     prefix: PackagerUnit[];
     splitCandidate: PackagerUnit;
-    memberCount: number;
+    replaceCount: number;
     splitMarkerReserve: number;
 } | null {
     if (plan.resolution.action !== 'split-tail') {
@@ -99,7 +103,7 @@ export function getTailSplitExecution(plan: KeepWithNextFormationPlan): {
     return {
         prefix,
         splitCandidate,
-        memberCount: members.length,
+        replaceCount: members.length,
         splitMarkerReserve: plan.splitMarkerReserve ?? 0
     };
 }
