@@ -1,17 +1,10 @@
 import { performance } from 'node:perf_hooks';
+import type { ActorFormationMember, KeepWithNextFormationPlan } from './actor-formation';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { LayoutCollaborator, LayoutSession, PaginationLoopState } from './layout-session';
 import { PackagerUnit, preparePackagerForPhase } from './packagers/packager-types';
 
-export type KeepWithNextPlan = {
-    sequence: PackagerUnit[];
-    sequenceHeight: number;
-    fitsOnCurrent: boolean;
-    prefix: PackagerUnit[];
-    prefixHeight: number;
-    prefixFits: boolean;
-    splitCandidate: PackagerUnit | null;
-};
+export type KeepWithNextPlan = KeepWithNextFormationPlan;
 
 const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
     prevAfter + marginTop;
@@ -33,6 +26,7 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
     const { actorQueue, actorIndex, availableWidth, lastSpacingAfter, context } = state;
     const packager = actorQueue[actorIndex];
     const sequence: PackagerUnit[] = [packager];
+    const members: ActorFormationMember[] = [];
     const cumulativeHeights: number[] = [];
     let tempLastSpacing = lastSpacingAfter;
     let sequenceHeight = 0;
@@ -40,6 +34,12 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
     sequenceHeight += initialMeasured.height;
     tempLastSpacing = initialMeasured.nextSpacingAfter;
     cumulativeHeights.push(sequenceHeight);
+    members.push({
+        actor: packager,
+        role: packager.keepWithNext && actorIndex + 1 < actorQueue.length ? 'leader' : 'member',
+        measuredHeight: initialMeasured.height,
+        nextSpacingAfter: initialMeasured.nextSpacingAfter
+    });
 
     let j = actorIndex;
     while (j < actorQueue.length && actorQueue[j].keepWithNext && j + 1 < actorQueue.length) {
@@ -63,21 +63,64 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
         sequenceHeight += measured.height;
         tempLastSpacing = measured.nextSpacingAfter;
         cumulativeHeights.push(sequenceHeight);
+        members.push({
+            actor: nextPackager,
+            role: 'member',
+            measuredHeight: measured.height,
+            nextSpacingAfter: measured.nextSpacingAfter
+        });
         j++;
     }
 
     const prefix = sequence.slice(0, -1);
     const prefixHeight = prefix.length > 0 ? cumulativeHeights[prefix.length - 1] : 0;
     const prefixFits = prefixHeight <= state.availableHeight;
+    const splitCandidate = sequence.length > 1 ? sequence[sequence.length - 1] : null;
+    if (members.length > 1) {
+        members[members.length - 1] = {
+            ...members[members.length - 1],
+            role: 'tail-split-candidate'
+        };
+    }
+
+    const fitsOnCurrent = sequenceHeight <= state.availableHeight;
+    const assessment = {
+        wholeFits: fitsOnCurrent,
+        prefixFits,
+        memberCount: sequence.length,
+        prefixCount: prefix.length,
+        tailSplitCandidateActorId: splitCandidate?.actorId ?? null
+    };
+    const resolution =
+        sequence.length <= 1
+            ? { action: 'single-actor' as const }
+            : fitsOnCurrent
+                ? { action: 'commit-whole' as const }
+                : prefixFits && splitCandidate
+                    ? {
+                        action: 'split-tail' as const,
+                        prefixCount: prefix.length,
+                        splitCandidateActorId: splitCandidate.actorId
+                    }
+                    : { action: 'defer-whole' as const };
 
     return {
+        formation: {
+            formationId: `keep-with-next:${packager.actorId}`,
+            policy: 'keep-with-next',
+            availableWidth,
+            availableHeight: state.availableHeight,
+            members
+        },
+        assessment,
+        resolution,
         sequence,
         sequenceHeight,
-        fitsOnCurrent: sequenceHeight <= state.availableHeight,
+        fitsOnCurrent,
         prefix,
         prefixHeight,
         prefixFits,
-        splitCandidate: sequence.length > 1 ? sequence[sequence.length - 1] : null
+        splitCandidate
     };
 }
 

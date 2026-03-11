@@ -1,5 +1,6 @@
 import { performance } from 'node:perf_hooks';
 import { Box, Element, Page } from '../../types';
+import { formationWantsTailSplit } from '../actor-formation';
 import { LayoutProcessor } from '../layout-core';
 import { LAYOUT_DEFAULTS } from '../defaults';
 import { computeKeepWithNextPlan } from '../keep-with-next-collaborator';
@@ -151,14 +152,14 @@ export function paginatePackagers(
             : null;
         const sequence = keepPlan?.sequence ?? [packager];
         const sequenceHeight = keepPlan?.sequenceHeight ?? (effectiveHeight - marginBottom);
-        const fitsOnCurrent = keepPlan?.fitsOnCurrent ?? (sequenceHeight <= effectiveAvailableHeight);
+        const fitsOnCurrent = keepPlan?.assessment.wholeFits ?? keepPlan?.fitsOnCurrent ?? (sequenceHeight <= effectiveAvailableHeight);
 
         if (!fitsOnCurrent) {
             // Avoid stranding early keepWithNext units by splitting the final splittable unit.
-            if (sequence.length > 1 && packager.keepWithNext && !isAtPageTop) {
+            if (keepPlan && formationWantsTailSplit(keepPlan) && !isAtPageTop) {
                 const keepBranchStart = performance.now();
                 const prefixHeight = keepPlan!.prefixHeight;
-                const prefixFits = keepPlan!.prefixFits;
+                const prefixFits = keepPlan!.assessment.prefixFits;
                 const prefix = keepPlan!.prefix;
                 const splitCandidate = keepPlan!.splitCandidate;
 
@@ -219,17 +220,18 @@ export function paginatePackagers(
                             cursorY: currentY
                         };
                         const partABoxes = partA.emitBoxes(availableWidth, (pageLimit - currentY) - candidateLayoutDelta, partAContext) || [];
-                        const partAMarginTop = partA.getMarginTop();
-                        const partAMarginBottom = partA.getMarginBottom();
-                        const partALayoutBefore = resolveLayoutBefore(lastSpacingAfter, partAMarginTop);
-                        const partAContentHeight = Math.max(0, partA.getRequiredHeight() - partAMarginTop - partAMarginBottom);
-                        const partARequiredHeight = partAContentHeight + partALayoutBefore + partAMarginBottom;
-                        const partAEffectiveHeight = Math.max(partARequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
                         if (session) {
-                            const committed = session.finalizeAcceptedSplit(splitAttempt, {
+                            session.notifySplitAccepted(splitAttempt, {
                                 currentFragment: partA,
                                 continuationFragment: partB
-                            }, partABoxes, {
+                            });
+                            const partAMarginTop = partA.getMarginTop();
+                            const partAMarginBottom = partA.getMarginBottom();
+                            const partALayoutBefore = resolveLayoutBefore(lastSpacingAfter, partAMarginTop);
+                            const partAContentHeight = Math.max(0, partA.getRequiredHeight() - partAMarginTop - partAMarginBottom);
+                            const partARequiredHeight = partAContentHeight + partALayoutBefore + partAMarginBottom;
+                            const partAEffectiveHeight = Math.max(partARequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+                            const committed = session.commitSplitFragmentWithMarkers(partA, partABoxes, {
                                 currentY,
                                 layoutDelta: candidateLayoutDelta,
                                 effectiveHeight: partAEffectiveHeight,
@@ -238,11 +240,7 @@ export function paginatePackagers(
                                 actorId: partA.actorId,
                                 lastSpacingAfter,
                                 pageLimit,
-                                availableWidth,
-                                actorQueue: packagers,
-                                queueStartIndex: i,
-                                queueReplaceCount: sequence.length,
-                                predecessor: splitCandidate
+                                availableWidth
                             },
                                 (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
                                     (processor as any).positionFlowBox(
@@ -258,6 +256,12 @@ export function paginatePackagers(
                             currentY = committed.currentY;
                             lastSpacingAfter = committed.lastSpacingAfter;
                         } else {
+                            const partAMarginTop = partA.getMarginTop();
+                            const partAMarginBottom = partA.getMarginBottom();
+                            const partALayoutBefore = resolveLayoutBefore(lastSpacingAfter, partAMarginTop);
+                            const partAContentHeight = Math.max(0, partA.getRequiredHeight() - partAMarginTop - partAMarginBottom);
+                            const partARequiredHeight = partAContentHeight + partALayoutBefore + partAMarginBottom;
+                            const partAEffectiveHeight = Math.max(partARequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
                             for (const box of partABoxes) {
                                 box.y = (box.y || 0) + currentY + candidateLayoutDelta;
                                 if (box.meta) box.meta = { ...box.meta, pageIndex: currentPageIndex };
@@ -268,7 +272,9 @@ export function paginatePackagers(
                         }
 
                         pushNewPage();
-                        if (!session) {
+                        if (session) {
+                            session.installContinuationIntoQueue(packagers, i, sequence.length, splitCandidate, partB);
+                        } else {
                             packagers.splice(i, sequence.length, partB);
                         }
                         session?.recordProfile('keepWithNextBranchCalls', 1);
@@ -457,13 +463,16 @@ export function paginatePackagers(
             pageIndex: currentPageIndex,
             cursorY: currentY
         };
-        const fitsMarginTop = fitsCurrent.getMarginTop();
         const fitsMarginBottom = fitsCurrent.getMarginBottom();
+        const fitsMarginTop = fitsCurrent.getMarginTop();
         const fitsLayoutBefore = resolveLayoutBefore(lastSpacingAfter, fitsMarginTop);
         const fitsLayoutDelta = fitsLayoutBefore - fitsMarginTop;
-        const fitsContentHeight = Math.max(0, fitsCurrent.getRequiredHeight() - fitsMarginTop - fitsMarginBottom);
-        const fitsRequiredHeight = fitsContentHeight + fitsLayoutBefore + fitsMarginBottom;
-        const fitsEffectiveHeight = Math.max(fitsRequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+        const fitsEffectiveHeight = Math.max(
+            Math.max(0, fitsCurrent.getRequiredHeight() - fitsMarginTop - fitsMarginBottom) +
+            fitsLayoutBefore +
+            fitsMarginBottom,
+            LAYOUT_DEFAULTS.minEffectiveHeight
+        );
         const deferredSplitCursorY = resolveDeferredCursorY(fitsCurrent);
         if (deferredSplitCursorY !== null) {
             const nextCursorY = deferredSplitCursorY;
@@ -481,23 +490,25 @@ export function paginatePackagers(
         const fitsAvailableHeightAdjusted = availableHeight - fitsLayoutDelta;
         const currentBoxes = fitsCurrent.emitBoxes(availableWidth, fitsAvailableHeightAdjusted, splitContext) || [];
         if (session) {
-            const committed = session.finalizeAcceptedSplit(splitAttempt, {
+            session.notifySplitAccepted(splitAttempt, {
                 currentFragment: fitsCurrent,
                 continuationFragment: pushedNext
-            }, currentBoxes, {
+            });
+            const committed = session.commitSplitFragmentWithMarkers(fitsCurrent, currentBoxes, {
                 currentY,
                 layoutDelta: fitsLayoutDelta,
-                effectiveHeight: fitsEffectiveHeight,
+                effectiveHeight: Math.max(
+                    Math.max(0, fitsCurrent.getRequiredHeight() - fitsMarginTop - fitsMarginBottom) +
+                    fitsLayoutBefore +
+                    fitsMarginBottom,
+                    LAYOUT_DEFAULTS.minEffectiveHeight
+                ),
                 marginBottom: fitsMarginBottom,
                 pageIndex: currentPageIndex,
                 actorId: fitsCurrent.actorId,
                 lastSpacingAfter,
                 pageLimit,
-                availableWidth,
-                actorQueue: packagers,
-                queueStartIndex: i,
-                queueReplaceCount: 1,
-                predecessor: packager
+                availableWidth
             },
                 (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
                     (processor as any).positionFlowBox(
@@ -528,7 +539,8 @@ export function paginatePackagers(
 
         // The remaining packager takes the place of the current packager but we don't advance i
         if (session) {
-            if (!packagers[i]) {
+            const continuationInstalled = session.installContinuationIntoQueue(packagers, i, 1, packager, pushedNext);
+            if (!continuationInstalled) {
                 i++;
             }
         } else if (pushedNext) {

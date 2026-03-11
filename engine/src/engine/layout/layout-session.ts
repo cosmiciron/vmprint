@@ -2,7 +2,7 @@ import type { Box, Page, PageRegionContent, PageReservationSelector } from '../t
 import type { EngineRuntime } from '../runtime';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { PackagerUnit } from './packagers/packager-types';
-import type { KeepWithNextPlan } from './keep-with-next-collaborator';
+import type { KeepWithNextFormationPlan } from './actor-formation';
 import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
 import { LAYOUT_DEFAULTS } from './defaults';
@@ -112,13 +112,6 @@ export type SplitFragmentAftermathState = FragmentCommitState & {
     lastSpacingAfter: number;
     pageLimit: number;
     availableWidth: number;
-};
-
-export type AcceptedSplitAftermathState = SplitFragmentAftermathState & {
-    actorQueue: PackagerUnit[];
-    queueStartIndex: number;
-    queueReplaceCount: number;
-    predecessor: PackagerUnit;
 };
 
 export type PageRegionResolution = {
@@ -392,7 +385,7 @@ export class LayoutSession {
     private readonly continuationArtifacts = new Map<string, ContinuationArtifacts>();
     private readonly stagedContinuationActors = new Map<string, PackagerUnit[]>();
     private readonly stagedAfterSplitMarkers = new Map<string, FlowBox[]>();
-    private readonly keepWithNextPlans = new Map<string, KeepWithNextPlan>();
+    private readonly keepWithNextPlans = new Map<string, KeepWithNextFormationPlan>();
     private readonly fragmentTransitions: FragmentTransition[] = [];
     private readonly fragmentTransitionsByActor = new Map<string, FragmentTransition>();
     private readonly fragmentTransitionsBySource = new Map<string, FragmentTransition[]>();
@@ -875,34 +868,6 @@ export class LayoutSession {
         };
     }
 
-    finalizeAcceptedSplit(
-        attempt: SplitAttempt,
-        result: PackagerSplitResult,
-        boxes: readonly Box[],
-        state: AcceptedSplitAftermathState,
-        positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
-    ): { boxes: Box[]; currentY: number; lastSpacingAfter: number; continuationInstalled: boolean } {
-        if (!result.currentFragment) {
-            throw new Error('finalizeAcceptedSplit requires a current fragment');
-        }
-        this.notifySplitAccepted(attempt, result);
-        const committed = this.commitSplitFragmentWithMarkers(result.currentFragment, boxes, state, positionMarker);
-        const continuationInstalled = this.installContinuationIntoQueue(
-            state.actorQueue,
-            state.queueStartIndex,
-            state.queueReplaceCount,
-            state.predecessor,
-            result.continuationFragment
-        );
-
-        return {
-            boxes: committed.boxes,
-            currentY: committed.currentY,
-            lastSpacingAfter: committed.lastSpacingAfter,
-            continuationInstalled
-        };
-    }
-
     installContinuationIntoQueue(
         actorQueue: PackagerUnit[],
         startIndex: number,
@@ -926,11 +891,11 @@ export class LayoutSession {
         return true;
     }
 
-    setKeepWithNextPlan(actorId: string, plan: KeepWithNextPlan): void {
+    setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan): void {
         this.keepWithNextPlans.set(actorId, plan);
     }
 
-    getKeepWithNextPlan(actorId: string): KeepWithNextPlan | undefined {
+    getKeepWithNextPlan(actorId: string): KeepWithNextFormationPlan | undefined {
         return this.keepWithNextPlans.get(actorId);
     }
 
