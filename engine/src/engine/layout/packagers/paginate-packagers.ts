@@ -169,8 +169,12 @@ export function paginatePackagers(
                 const keepBranchStart = performance.now();
                 {
                     const { prefix, splitCandidate, replaceCount, splitMarkerReserve: markerReserve } = wholeFormationTailSplitExecution;
-                    const prefixPlacementCheckpoint = session
-                        ? session.captureLocalTransitionSnapshot(currentPageBoxes, currentY, lastSpacingAfter)
+                    const prefixPlacementCheckpoint: ReturnType<LayoutSession['captureLocalBranchSnapshot']> | {
+                        boxStartIndex: number;
+                        currentY: number;
+                        lastSpacingAfter: number;
+                    } = session
+                        ? session.captureLocalBranchSnapshot(currentPageBoxes, packagers, currentY, lastSpacingAfter)
                         : {
                             boxStartIndex: currentPageBoxes.length,
                             currentY,
@@ -261,6 +265,7 @@ export function paginatePackagers(
                         const partABoxes = partA.emitBoxes(availableWidth, splitExecution.emitAvailableHeight, partAContext) || [];
                         if (session) {
                             const outcome = session.finalizeTailSplitFormation(
+                                currentPageBoxes,
                                 packagers,
                                 i,
                                 replaceCount,
@@ -321,7 +326,11 @@ export function paginatePackagers(
                     } else {
                         // Split failed; rollback prefix placement to avoid duplicating keepWithNext units.
                         if (session) {
-                            const rolledBack = session.rollbackActorSequencePlacement(currentPageBoxes, prefixPlacementCheckpoint);
+                            const rolledBack = session.restoreLocalBranchSnapshot(
+                                currentPageBoxes,
+                                packagers,
+                                prefixPlacementCheckpoint as ReturnType<LayoutSession['captureLocalBranchSnapshot']>
+                            );
                             currentY = rolledBack.currentY;
                             lastSpacingAfter = rolledBack.lastSpacingAfter;
                         } else {
@@ -650,6 +659,7 @@ export function paginatePackagers(
         const currentBoxes = fitsCurrent.emitBoxes(availableWidth, fitsAvailableHeightAdjusted, splitContext) || [];
         if (session) {
             const outcome = session.finalizeGenericAcceptedSplit(
+                currentPageBoxes,
                 packagers,
                 i,
                 packager,
@@ -682,7 +692,7 @@ export function paginatePackagers(
             currentY = outcome.committed.currentY;
             lastSpacingAfter = outcome.committed.lastSpacingAfter;
             pushNewPage();
-            if (!outcome.queue.continuationInstalled) {
+            if (outcome.queueHandling.shouldAdvanceIndex) {
                 i++;
             }
             continue;

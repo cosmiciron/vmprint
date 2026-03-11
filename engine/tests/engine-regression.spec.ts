@@ -169,6 +169,43 @@ function assertPackagerShatterShowcaseSignals(pages: any[], fixtureName: string)
     );
 }
 
+function assertAcceptedSplitBranchingSignals(pages: any[], fixtureName: string): void {
+    const flattenText = (box: any): string => {
+        if (typeof box?.text === 'string' && box.text.length > 0) return box.text;
+        if (!Array.isArray(box?.lines)) return '';
+        return box.lines
+            .flatMap((line: any[]) => line || [])
+            .map((segment: any) => String(segment?.text || ''))
+            .join('');
+    };
+    const matchesSourceId = (box: any, id: string): boolean => {
+        const sourceId = String(box.meta?.sourceId || '');
+        return sourceId === id || sourceId.endsWith(`:${id}`);
+    };
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    assert.ok(pages.length >= 4, `${fixtureName}: expected multiple pages across both accepted-split seams`);
+
+    const branchA = allBoxes.filter((box: any) => matchesSourceId(box, 'accepted-branch-a'));
+    const branchB = allBoxes.filter((box: any) => matchesSourceId(box, 'accepted-branch-b'));
+    assert.ok(branchA.some((box: any) => Number(box.meta?.fragmentIndex || 0) === 0), `${fixtureName}: expected branch A fragmentIndex=0`);
+    assert.ok(branchA.some((box: any) => Number(box.meta?.fragmentIndex || 0) > 0), `${fixtureName}: expected branch A continuation fragment`);
+    assert.ok(branchB.some((box: any) => Number(box.meta?.fragmentIndex || 0) === 0), `${fixtureName}: expected branch B fragmentIndex=0`);
+    assert.ok(branchB.some((box: any) => Number(box.meta?.fragmentIndex || 0) > 0), `${fixtureName}: expected branch B continuation fragment`);
+
+    const countText = (needle: string): number =>
+        allBoxes.filter((box: any) => flattenText(box).includes(needle)).length;
+
+    assert.equal(countText('A continues on next page'), 1, `${fixtureName}: expected exactly one A after-split marker`);
+    assert.equal(countText('A continued from previous page'), 1, `${fixtureName}: expected exactly one A continuation marker`);
+    assert.equal(countText('B continues on next page'), 1, `${fixtureName}: expected exactly one B after-split marker`);
+    assert.equal(countText('B continued from previous page'), 1, `${fixtureName}: expected exactly one B continuation marker`);
+    assert.equal(
+        allBoxes.filter((box: any) => matchesSourceId(box, 'branch-postlude')).length,
+        1,
+        `${fixtureName}: expected the postlude to appear exactly once`
+    );
+}
+
 function assertStoryPackagerShowcaseSignals(pages: any[], fixtureName: string): void {
     // Must produce multiple pages (story is long enough to paginate).
     assert.ok(pages.length >= 2, `${fixtureName}: expected at least two pages`);
@@ -676,6 +713,15 @@ async function run() {
                 'keepWithNext, mid-page table, and page-top overflow splits are all exercised',
                 () => {
                     assertPackagerShatterShowcaseSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '19-accepted-split-branching.json') {
+            check(
+                `${fixture.name} accepted split branching signals`,
+                'two accepted-split seams each emit exactly one marker pair and leave no duplicated post-split residue behind',
+                () => {
+                    assertAcceptedSplitBranchingSignals(pagesA, fixture.name);
                 }
             );
         }

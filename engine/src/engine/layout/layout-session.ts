@@ -347,16 +347,25 @@ export type PositionedSplitExecution = {
 
 export type ContinuationQueueOutcome = {
     continuationInstalled: boolean;
+    snapshot: LocalQueueSnapshot;
 };
 
 export type TailSplitFormationOutcome = {
+    branchSnapshot: LocalBranchSnapshot;
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
-    queue: ContinuationQueueOutcome;
+    queuePreview: ContinuationQueueOutcome;
+    queueHandling: AcceptedSplitQueueHandling;
 };
 
 export type GenericSplitOutcome = {
+    branchSnapshot: LocalBranchSnapshot;
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
-    queue: ContinuationQueueOutcome;
+    queuePreview: ContinuationQueueOutcome;
+    queueHandling: AcceptedSplitQueueHandling;
+};
+
+export type AcceptedSplitQueueHandling = {
+    shouldAdvanceIndex: boolean;
 };
 
 export type ForcedOverflowCommitOutcome = {
@@ -428,6 +437,22 @@ export type LocalTransitionSnapshot = {
     currentY: number;
     lastSpacingAfter: number;
 };
+
+export type LocalQueueSnapshot = {
+    actorQueue: PackagerUnit[];
+    stagedContinuationActors: Map<string, PackagerUnit[]>;
+    stagedAfterSplitMarkers: Map<string, FlowBox[]>;
+};
+
+export type LocalSplitStateSnapshot = {
+    currentPageReservations: RegionReservation[];
+    currentPageExclusions: SpatialExclusion[];
+    fragmentTransitions: FragmentTransition[];
+    fragmentTransitionsByActor: Map<string, FragmentTransition>;
+    fragmentTransitionsBySource: Map<string, FragmentTransition[]>;
+};
+
+export type LocalBranchSnapshot = LocalTransitionSnapshot & LocalQueueSnapshot & LocalSplitStateSnapshot;
 
 export type FragmentTransition = {
     predecessorActorId: string;
@@ -1035,6 +1060,48 @@ export class LayoutSession {
         };
     }
 
+    captureLocalBranchSnapshot(
+        pageBoxes: readonly Box[],
+        actorQueue: readonly PackagerUnit[],
+        currentY: number,
+        lastSpacingAfter: number
+    ): LocalBranchSnapshot {
+        return {
+            ...this.captureLocalTransitionSnapshot(pageBoxes, currentY, lastSpacingAfter),
+            ...this.captureLocalQueueSnapshot(actorQueue),
+            ...this.captureLocalSplitStateSnapshot()
+        };
+    }
+
+    captureLocalQueueSnapshot(
+        actorQueue: readonly PackagerUnit[]
+    ): LocalQueueSnapshot {
+        return {
+            actorQueue: [...actorQueue],
+            stagedContinuationActors: new Map(
+                Array.from(this.stagedContinuationActors.entries(), ([actorId, actors]) => [actorId, [...actors]])
+            ),
+            stagedAfterSplitMarkers: new Map(
+                Array.from(this.stagedAfterSplitMarkers.entries(), ([actorId, markers]) => [actorId, [...markers]])
+            )
+        };
+    }
+
+    captureLocalSplitStateSnapshot(): LocalSplitStateSnapshot {
+        return {
+            currentPageReservations: this.currentPageReservations.map((reservation) => ({ ...reservation })),
+            currentPageExclusions: this.currentPageExclusions.map((exclusion) => ({ ...exclusion })),
+            fragmentTransitions: [...this.fragmentTransitions],
+            fragmentTransitionsByActor: new Map(this.fragmentTransitionsByActor),
+            fragmentTransitionsBySource: new Map(
+                Array.from(this.fragmentTransitionsBySource.entries(), ([sourceActorId, transitions]) => [
+                    sourceActorId,
+                    [...transitions]
+                ])
+            )
+        };
+    }
+
     restoreLocalTransitionSnapshot(
         pageBoxes: Box[],
         snapshot: LocalTransitionSnapshot
@@ -1044,6 +1111,64 @@ export class LayoutSession {
             currentY: snapshot.currentY,
             lastSpacingAfter: snapshot.lastSpacingAfter
         };
+    }
+
+    restoreLocalBranchSnapshot(
+        pageBoxes: Box[],
+        actorQueue: PackagerUnit[],
+        snapshot: LocalBranchSnapshot
+    ): { currentY: number; lastSpacingAfter: number } {
+        this.rollbackContinuationQueue(actorQueue, snapshot);
+        this.restoreLocalSplitStateSnapshot(snapshot);
+        return this.restoreLocalTransitionSnapshot(pageBoxes, snapshot);
+    }
+
+    restoreLocalQueueSnapshot(
+        actorQueue: PackagerUnit[],
+        snapshot: LocalQueueSnapshot
+    ): void {
+        actorQueue.splice(0, actorQueue.length, ...snapshot.actorQueue);
+        this.stagedContinuationActors.clear();
+        for (const [actorId, actors] of snapshot.stagedContinuationActors.entries()) {
+            this.stagedContinuationActors.set(actorId, [...actors]);
+        }
+        this.stagedAfterSplitMarkers.clear();
+        for (const [actorId, markers] of snapshot.stagedAfterSplitMarkers.entries()) {
+            this.stagedAfterSplitMarkers.set(actorId, [...markers]);
+        }
+    }
+
+    rollbackContinuationQueue(
+        actorQueue: PackagerUnit[],
+        snapshot: LocalQueueSnapshot
+    ): void {
+        this.restoreLocalQueueSnapshot(actorQueue, snapshot);
+    }
+
+    restoreLocalSplitStateSnapshot(snapshot: LocalSplitStateSnapshot): void {
+        this.currentPageReservations = snapshot.currentPageReservations.map((reservation) => ({ ...reservation }));
+        this.currentPageExclusions = snapshot.currentPageExclusions.map((exclusion) => ({ ...exclusion }));
+
+        this.fragmentTransitions.length = 0;
+        this.fragmentTransitions.push(...snapshot.fragmentTransitions);
+
+        this.fragmentTransitionsByActor.clear();
+        for (const [actorId, transition] of snapshot.fragmentTransitionsByActor.entries()) {
+            this.fragmentTransitionsByActor.set(actorId, transition);
+        }
+
+        this.fragmentTransitionsBySource.clear();
+        for (const [sourceActorId, transitions] of snapshot.fragmentTransitionsBySource.entries()) {
+            this.fragmentTransitionsBySource.set(sourceActorId, [...transitions]);
+        }
+    }
+
+    rollbackAcceptedSplitBranch(
+        pageBoxes: Box[],
+        actorQueue: PackagerUnit[],
+        snapshot: LocalBranchSnapshot
+    ): { currentY: number; lastSpacingAfter: number } {
+        return this.restoreLocalBranchSnapshot(pageBoxes, actorQueue, snapshot);
     }
 
     rollbackActorSequencePlacement(
@@ -1148,14 +1273,17 @@ export class LayoutSession {
         startIndex: number,
         replaceCount: number,
         predecessor: PackagerUnit,
-        continuation: PackagerUnit | null | undefined
+        continuation: PackagerUnit | null | undefined,
+        options: { notify?: boolean } = {}
     ): boolean {
         if (!continuation) {
             actorQueue.splice(startIndex, replaceCount);
             return false;
         }
 
-        this.notifyContinuationEnqueued(predecessor, continuation);
+        if (options.notify !== false) {
+            this.notifyContinuationEnqueued(predecessor, continuation);
+        }
         const stagedActors = this.consumeActorsBeforeContinuation(continuation.actorId);
         if (stagedActors.length > 0) {
             actorQueue.splice(startIndex, replaceCount, ...stagedActors, continuation);
@@ -1171,20 +1299,93 @@ export class LayoutSession {
         startIndex: number,
         replaceCount: number,
         predecessor: PackagerUnit,
-        continuation: PackagerUnit | null | undefined
+        continuation: PackagerUnit | null | undefined,
+        options: { notify?: boolean } = {}
     ): ContinuationQueueOutcome {
+        const snapshot = this.captureLocalQueueSnapshot(actorQueue);
         return {
+            snapshot,
             continuationInstalled: this.installContinuationIntoQueue(
                 actorQueue,
                 startIndex,
                 replaceCount,
                 predecessor,
-                continuation
+                continuation,
+                options
             )
         };
     }
 
+    previewContinuationQueueSettlement(
+        actorQueue: PackagerUnit[],
+        startIndex: number,
+        replaceCount: number,
+        predecessor: PackagerUnit,
+        continuation: PackagerUnit | null | undefined
+    ): ContinuationQueueOutcome {
+        const preview = this.settleContinuationQueue(
+            actorQueue,
+            startIndex,
+            replaceCount,
+            predecessor,
+            continuation,
+            { notify: false }
+        );
+        this.rollbackContinuationQueue(actorQueue, preview.snapshot);
+        return preview;
+    }
+
+    getAcceptedSplitQueueHandling(preview: ContinuationQueueOutcome): AcceptedSplitQueueHandling {
+        return {
+            shouldAdvanceIndex: !preview.continuationInstalled
+        };
+    }
+
+    previewAcceptedSplitSettlement(
+        pageBoxes: readonly Box[],
+        actorQueue: PackagerUnit[],
+        startIndex: number,
+        replaceCount: number,
+        predecessor: PackagerUnit,
+        continuation: PackagerUnit | null | undefined,
+        attempt: SplitAttempt,
+        result: PackagerSplitResult,
+        boxes: readonly Box[],
+        state: SplitFragmentAftermathState,
+        positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
+    ): { queuePreview: ContinuationQueueOutcome; queueHandling: AcceptedSplitQueueHandling } {
+        const snapshot = this.captureLocalBranchSnapshot(
+            pageBoxes,
+            actorQueue,
+            state.currentY,
+            state.lastSpacingAfter
+        );
+
+        this.acceptAndCommitSplitFragment(
+            attempt,
+            result,
+            boxes,
+            state,
+            positionMarker
+        );
+        const queuePreview = this.settleContinuationQueue(
+            actorQueue,
+            startIndex,
+            replaceCount,
+            predecessor,
+            continuation,
+            { notify: false }
+        );
+        this.rollbackAcceptedSplitBranch(pageBoxes as Box[], actorQueue, snapshot);
+
+        return {
+            queuePreview,
+            queueHandling: this.getAcceptedSplitQueueHandling(queuePreview)
+        };
+    }
+
     finalizeTailSplitFormation(
+        pageBoxes: readonly Box[],
         actorQueue: PackagerUnit[],
         startIndex: number,
         replaceCount: number,
@@ -1196,6 +1397,12 @@ export class LayoutSession {
         state: SplitFragmentAftermathState,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): TailSplitFormationOutcome {
+        const snapshot = this.captureLocalBranchSnapshot(
+            pageBoxes,
+            actorQueue,
+            state.currentY,
+            state.lastSpacingAfter
+        );
         const committed = this.acceptAndCommitSplitFragment(
             attempt,
             result,
@@ -1203,20 +1410,37 @@ export class LayoutSession {
             state,
             positionMarker
         );
+        const preview = this.previewAcceptedSplitSettlement(
+            pageBoxes,
+            actorQueue,
+            startIndex,
+            replaceCount,
+            predecessor,
+            continuation,
+            attempt,
+            result,
+            boxes,
+            state,
+            positionMarker
+        );
+        this.settleContinuationQueue(
+            actorQueue,
+            startIndex,
+            replaceCount,
+            predecessor,
+            continuation
+        );
 
         return {
+            branchSnapshot: snapshot,
             committed,
-            queue: this.settleContinuationQueue(
-                actorQueue,
-                startIndex,
-                replaceCount,
-                predecessor,
-                continuation
-            )
+            queuePreview: preview.queuePreview,
+            queueHandling: preview.queueHandling
         };
     }
 
     finalizeGenericAcceptedSplit(
+        pageBoxes: readonly Box[],
         actorQueue: PackagerUnit[],
         startIndex: number,
         predecessor: PackagerUnit,
@@ -1227,6 +1451,12 @@ export class LayoutSession {
         state: SplitFragmentAftermathState,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): GenericSplitOutcome {
+        const snapshot = this.captureLocalBranchSnapshot(
+            pageBoxes,
+            actorQueue,
+            state.currentY,
+            state.lastSpacingAfter
+        );
         const committed = this.acceptAndCommitSplitFragment(
             attempt,
             result,
@@ -1235,15 +1465,32 @@ export class LayoutSession {
             positionMarker
         );
 
+        const preview = this.previewAcceptedSplitSettlement(
+            pageBoxes,
+            actorQueue,
+            startIndex,
+            1,
+            predecessor,
+            continuation,
+            attempt,
+            result,
+            boxes,
+            state,
+            positionMarker
+        );
+        this.settleContinuationQueue(
+            actorQueue,
+            startIndex,
+            1,
+            predecessor,
+            continuation
+        );
+
         return {
+            branchSnapshot: snapshot,
             committed,
-            queue: this.settleContinuationQueue(
-                actorQueue,
-                startIndex,
-                1,
-                predecessor,
-                continuation
-            )
+            queuePreview: preview.queuePreview,
+            queueHandling: preview.queueHandling
         };
     }
 
