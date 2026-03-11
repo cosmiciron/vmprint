@@ -38,17 +38,16 @@ export type ActorFormationResolution =
     | { action: 'split-tail'; prefixCount: number; splitCandidateActorId: string }
     | { action: 'single-actor' };
 
+export type TailSplitFailureOutcome = 'advance-page' | 'fallthrough-local-handling';
+export type FormationOverflowFallbackOutcome = 'advance-page' | 'fallthrough-local-overflow';
+export type TailSplitSuccessOutcome = 'page-turn-and-continue';
+export type WholeFormationPlacementOutcome = 'commit-whole-on-current-page' | 'overflow-current-page';
+export type WholeFormationOverflowEntryOutcome = 'attempt-tail-split' | FormationOverflowFallbackOutcome;
+
 export type KeepWithNextFormationPlan = {
     formation: ActorFormation;
     assessment: ActorFormationAssessment;
     resolution: ActorFormationResolution;
-    sequence: PackagerUnit[];
-    sequenceHeight: number;
-    fitsOnCurrent: boolean;
-    prefix: PackagerUnit[];
-    prefixHeight: number;
-    prefixFits: boolean;
-    splitCandidate: PackagerUnit | null;
     splitMarkerReserve?: number;
 };
 
@@ -64,12 +63,70 @@ export function formationWholeFits(plan: KeepWithNextFormationPlan): boolean {
     return plan.assessment.wholeFits;
 }
 
+export function getWholeFormationPlacementOutcome(plan: KeepWithNextFormationPlan): WholeFormationPlacementOutcome {
+    return formationWholeFits(plan)
+        ? 'commit-whole-on-current-page'
+        : 'overflow-current-page';
+}
+
+export function formationOverflowsCurrentPlacement(plan: KeepWithNextFormationPlan): boolean {
+    return getWholeFormationPlacementOutcome(plan) === 'overflow-current-page';
+}
+
 export function formationRequiresPageAdvance(plan: KeepWithNextFormationPlan): boolean {
     return plan.assessment.requiresPageAdvance;
 }
 
 export function formationMustAdvancePage(plan: KeepWithNextFormationPlan, isAtPageTop: boolean): boolean {
     return !isAtPageTop && formationRequiresPageAdvance(plan);
+}
+
+export function formationMustAdvanceAfterFailedTailSplit(
+    plan: KeepWithNextFormationPlan,
+    isAtPageTop: boolean
+): boolean {
+    return formationMustAdvancePage(plan, isAtPageTop);
+}
+
+export function getTailSplitFailureOutcome(
+    plan: KeepWithNextFormationPlan,
+    isAtPageTop: boolean
+): TailSplitFailureOutcome {
+    return formationMustAdvanceAfterFailedTailSplit(plan, isAtPageTop)
+        ? 'advance-page'
+        : 'fallthrough-local-handling';
+}
+
+export function getFormationOverflowFallbackOutcome(
+    plan: KeepWithNextFormationPlan,
+    isAtPageTop: boolean
+): FormationOverflowFallbackOutcome {
+    return formationMustAdvancePage(plan, isAtPageTop)
+        ? 'advance-page'
+        : 'fallthrough-local-overflow';
+}
+
+export function getWholeFormationOverflowEntryOutcome(
+    plan: KeepWithNextFormationPlan,
+    isAtPageTop: boolean
+): WholeFormationOverflowEntryOutcome {
+    if (formationCanExecuteTailSplit(plan)) {
+        return 'attempt-tail-split';
+    }
+
+    return getFormationOverflowFallbackOutcome(plan, isAtPageTop);
+}
+
+export function formationOverflowFallsThroughLocally(
+    outcome: WholeFormationOverflowEntryOutcome | null
+): boolean {
+    return outcome === 'fallthrough-local-overflow';
+}
+
+export function getTailSplitSuccessOutcome(plan: KeepWithNextFormationPlan): TailSplitSuccessOutcome | null {
+    return plan.resolution.action === 'split-tail'
+        ? 'page-turn-and-continue'
+        : null;
 }
 
 export function formationWantsTailSplit(plan: KeepWithNextFormationPlan): boolean {

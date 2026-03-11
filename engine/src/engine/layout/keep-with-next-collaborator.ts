@@ -125,13 +125,6 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
         },
         assessment,
         resolution,
-        sequence,
-        sequenceHeight,
-        fitsOnCurrent,
-        prefix,
-        prefixHeight,
-        prefixFits,
-        splitCandidate,
         splitMarkerReserve
     };
 }
