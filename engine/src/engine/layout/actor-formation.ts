@@ -42,7 +42,6 @@ export type TailSplitFailureOutcome = 'advance-page' | 'fallthrough-local-handli
 export type FormationOverflowFallbackOutcome = 'advance-page' | 'fallthrough-local-overflow';
 export type TailSplitSuccessOutcome = 'page-turn-and-continue';
 export type TailSplitPostAttemptOutcome = TailSplitSuccessOutcome | TailSplitFailureOutcome;
-type WholeFormationOverflowEntryOutcome = 'attempt-tail-split' | FormationOverflowFallbackOutcome;
 export type WholeFormationOverflowHandling = {
     tailSplitExecution: ReturnType<typeof getTailSplitExecution>;
     fallbackHandling: FormationOverflowFallbackOutcome | null;
@@ -54,10 +53,6 @@ export type KeepWithNextFormationPlan = {
     resolution: ActorFormationResolution;
     splitMarkerReserve?: number;
 };
-
-export function formationOverflowsCurrentPlacement(plan: KeepWithNextFormationPlan): boolean {
-    return !plan.assessment.wholeFits;
-}
 
 export function formationRequiresPageAdvance(plan: KeepWithNextFormationPlan): boolean {
     return plan.assessment.requiresPageAdvance;
@@ -83,51 +78,21 @@ export function getTailSplitFailureOutcome(
         : 'fallthrough-local-handling';
 }
 
-export function getFormationOverflowFallbackOutcome(
-    plan: KeepWithNextFormationPlan,
-    isAtPageTop: boolean
-): FormationOverflowFallbackOutcome {
-    return formationMustAdvancePage(plan, isAtPageTop)
-        ? 'advance-page'
-        : 'fallthrough-local-overflow';
-}
-
-function getWholeFormationOverflowEntryOutcome(
-    plan: KeepWithNextFormationPlan,
-    isAtPageTop: boolean
-): WholeFormationOverflowEntryOutcome {
-    if (formationCanExecuteTailSplit(plan)) {
-        return 'attempt-tail-split';
-    }
-
-    return getFormationOverflowFallbackOutcome(plan, isAtPageTop);
-}
-
-function getWholeFormationOverflowState(
-    plan: KeepWithNextFormationPlan,
-    isAtPageTop: boolean
-): WholeFormationOverflowEntryOutcome | null {
-    return formationOverflowsCurrentPlacement(plan)
-        ? getWholeFormationOverflowEntryOutcome(plan, isAtPageTop)
-        : null;
-}
-
 export function getWholeFormationOverflowHandling(
     plan: KeepWithNextFormationPlan,
     isAtPageTop: boolean
 ): WholeFormationOverflowHandling | null {
-    const overflowState = getWholeFormationOverflowState(plan, isAtPageTop);
-    if (overflowState === null) {
+    if (plan.assessment.wholeFits) {
         return null;
     }
 
     return {
-        tailSplitExecution: overflowState === 'attempt-tail-split'
+        tailSplitExecution: formationCanExecuteTailSplit(plan)
             ? getTailSplitExecution(plan)
             : null,
-        fallbackHandling: overflowState === 'attempt-tail-split'
+        fallbackHandling: formationCanExecuteTailSplit(plan)
             ? null
-            : overflowState
+            : (formationMustAdvancePage(plan, isAtPageTop) ? 'advance-page' : 'fallthrough-local-overflow')
     };
 }
 
