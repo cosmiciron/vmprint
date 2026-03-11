@@ -377,6 +377,8 @@ export interface BoxMeta {
     pageIndex?: number;
     generated?: boolean;
     originSourceId?: string;
+    transformKind?: 'clone';
+    clonedFromSourceId?: string;
 }
 
 export interface Page {

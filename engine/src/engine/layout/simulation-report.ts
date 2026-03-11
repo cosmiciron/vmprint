@@ -1,4 +1,5 @@
 import type { FragmentationSummary } from './fragment-transition-artifact-collaborator';
+import type { TransformSummary } from './transform-artifact-collaborator';
 import type { PageNumberSummary } from './page-number-artifact-collaborator';
 import type { PageOverrideSummary } from './page-override-artifact-collaborator';
 import type { PageReservationSummary } from './page-reservation-artifact-collaborator';
@@ -10,6 +11,7 @@ import type { LayoutProfileMetrics } from './layout-session';
 
 export type SimulationArtifactMap = {
     fragmentationSummary?: FragmentationSummary[];
+    transformSummary?: TransformSummary[];
     pageNumberSummary?: PageNumberSummary[];
     pageOverrideSummary?: PageOverrideSummary[];
     pageReservationSummary?: PageReservationSummary[];
@@ -24,6 +26,7 @@ export type SimulationArtifacts = SimulationArtifactMap & Record<string, unknown
 
 export const simulationArtifactKeys = {
     fragmentationSummary: 'fragmentationSummary',
+    transformSummary: 'transformSummary',
     pageNumberSummary: 'pageNumberSummary',
     pageOverrideSummary: 'pageOverrideSummary',
     pageReservationSummary: 'pageReservationSummary',
@@ -35,6 +38,7 @@ export const simulationArtifactKeys = {
 
 export const knownSimulationArtifactKeys: readonly SimulationArtifactKey[] = [
     simulationArtifactKeys.fragmentationSummary,
+    simulationArtifactKeys.transformSummary,
     simulationArtifactKeys.pageNumberSummary,
     simulationArtifactKeys.pageOverrideSummary,
     simulationArtifactKeys.pageReservationSummary,

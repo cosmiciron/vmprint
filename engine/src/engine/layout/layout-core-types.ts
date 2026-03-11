@@ -51,6 +51,8 @@ export type FlowIdentitySeed = {
     isContinuation?: boolean;
     generated?: boolean;
     originSourceId?: string;
+    transformKind?: 'clone';
+    clonedFromSourceId?: string;
 };
 
 export type ContinuationMarkerSpec = {

@@ -28,6 +28,16 @@ export function createContinuationFragmentMeta(meta: BoxMeta, fragmentIndex: num
     };
 }
 
+export function createClonedBoxMeta(meta: BoxMeta, clonedFromSourceId: string): BoxMeta {
+    return {
+        ...meta,
+        generated: true,
+        originSourceId: meta.originSourceId || clonedFromSourceId,
+        transformKind: 'clone',
+        clonedFromSourceId
+    };
+}
+
 export function createLeadingFragmentStyle(style: ElementStyle): ElementStyle {
     return {
         ...style,

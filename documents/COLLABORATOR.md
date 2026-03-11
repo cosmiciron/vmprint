@@ -199,6 +199,14 @@ The important architectural rule is:
 > Do not encode cloning, morphing, or continuation-preservation as packager-specific paginator exceptions.
 > Treat them as actor transformation capabilities expressed through the simulation model.
 
+What has now been proven in the engine is:
+
+*   repeated table headers on continuation pages can be emitted as explicit cloned substructures rather than silent duplication
+*   clone identity can survive into box metadata and runtime artifact summaries
+*   clone-aware output holds not only on the original mixed-span table fixture, but also on a second purpose-built probe with two independent multi-page tables in one run
+
+So cloning is no longer only an architectural intent. It is now a validated engine primitive for transformable actors.
+
 ### Transitional Ambiguity and Snapshot Branching
 
 Some runtime seams are not well-described by a large taxonomy of transitional states.

@@ -50,7 +50,11 @@ function assertNoInputMutation(elements: any[], fixtureName: string): void {
     elements.forEach(visit);
 }
 
-function assertTableMixedSpanFixtureSignals(pages: any[], fixtureName: string): void {
+function assertTableMixedSpanFixtureSignals(
+    pages: any[],
+    fixtureName: string,
+    engine: any
+): void {
     const pageCells = pages.map((page: any) => (page.boxes || []).filter((box: any) => box.type === 'table_cell'));
     const allCells = pageCells.flat();
     assert.ok(allCells.length > 0, `${fixtureName}: expected table_cell output`);
@@ -89,6 +93,25 @@ function assertTableMixedSpanFixtureSignals(pages: any[], fixtureName: string): 
     assert.ok(pagesWithTable.length >= 2, `${fixtureName}: expected table content to span at least two pages`);
     assert.ok(pagesWithTable[0].rows.includes(0), `${fixtureName}: expected header row on first table page`);
     assert.ok(pagesWithTable[1].rows.includes(0), `${fixtureName}: expected repeated header row on continuation table page`);
+
+    const continuationHeaderClones = pageCells
+        .slice(1)
+        .flatMap((cellsOnPage) =>
+            cellsOnPage.filter((cell: any) =>
+                Number(cell.properties?._tableRowIndex) === 0
+                && cell.meta?.transformKind === 'clone'
+                && cell.meta?.clonedFromSourceId
+            )
+        );
+    assert.ok(
+        continuationHeaderClones.length > 0,
+        `${fixtureName}: expected repeated continuation headers to be emitted as cloned substructures`
+    );
+    const transformSummary = engine.getLastSimulationReportReader().require(simulationArtifactKeys.transformSummary);
+    assert.ok(
+        transformSummary.some((item: any) => item?.transformKind === 'clone' && Number(item?.count || 0) > 0),
+        `${fixtureName}: expected transformSummary to report cloned continuation headers`
+    );
 
     // Fixture-anchored structural checks (rows 1-4 are deterministic in input).
     const row2Col0 = allCells.find((cell: any) =>
@@ -454,6 +477,85 @@ function buildExperimentalReservationConfig() {
     } as const;
 }
 
+function buildCloneProbeConfig() {
+    return {
+        layout: {
+            pageSize: { width: 320, height: 220 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
+            fontFamily: 'Arimo',
+            fontSize: 10,
+            lineHeight: 1.15
+        },
+        fonts: {
+            regular: 'Arimo'
+        },
+        styles: {
+            p: { marginBottom: 8 },
+            table: {
+                marginTop: 0,
+                marginBottom: 10,
+                padding: 0,
+                borderWidth: 0
+            },
+            'table-cell': {
+                fontSize: 9,
+                lineHeight: 1.15,
+                paddingTop: 4,
+                paddingBottom: 4,
+                paddingLeft: 5,
+                paddingRight: 5,
+                borderWidth: 0.6,
+                borderColor: '#111111'
+            }
+        }
+    } as const;
+}
+
+function buildCloneProbeTable(id: string, rowCount: number): any {
+    const rows = [
+        {
+            type: 'table-row',
+            properties: { semanticRole: 'header', sourceId: `${id}-header-row` },
+            children: [
+                { type: 'table-cell', content: `${id.toUpperCase()} ID`, properties: { sourceId: `${id}-h-id` } },
+                { type: 'table-cell', content: `${id.toUpperCase()} Task`, properties: { sourceId: `${id}-h-task` } },
+                { type: 'table-cell', content: `${id.toUpperCase()} Note`, properties: { sourceId: `${id}-h-note` } }
+            ]
+        }
+    ];
+
+    for (let index = 0; index < rowCount; index += 1) {
+        rows.push({
+            type: 'table-row',
+            properties: { sourceId: `${id}-row-${index}` },
+            children: [
+                { type: 'table-cell', content: `${id.toUpperCase()}-${String(index + 1).padStart(2, '0')}` },
+                { type: 'table-cell', content: `Branch ${id.toUpperCase()} row ${index + 1} keeps the table tall enough to force a repeated header on the next page.` },
+                { type: 'table-cell', content: `note-${index + 1}` }
+            ]
+        });
+    }
+
+    return {
+        type: 'table',
+        properties: {
+            sourceId: `${id}-table`,
+            table: {
+                headerRows: 1,
+                repeatHeader: true,
+                columnGap: 3,
+                rowGap: 1,
+                columns: [
+                    { mode: 'fixed', value: 58 },
+                    { mode: 'flex', fr: 2, min: 100 },
+                    { mode: 'fixed', value: 70 }
+                ]
+            }
+        },
+        children: rows
+    };
+}
+
 function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: string): void {
     const reader = engine.getLastSimulationReportReader?.();
     assert.ok(reader?.report, `${fixtureName}: expected simulation report`);
@@ -703,7 +805,7 @@ async function run() {
                 `${fixture.name} mixed-span table signals`,
                 'colSpan + rowSpan cells paginate deterministically with repeated headers and no span boundary splits',
                 () => {
-                    assertTableMixedSpanFixtureSignals(pagesA, fixture.name);
+                    assertTableMixedSpanFixtureSignals(pagesA, fixture.name, engine);
                 }
             );
         }
@@ -1130,6 +1232,75 @@ async function run() {
                 centeredLaneStoryMinX <= Number(baselineStoryFirstBox?.x || 0) + 0.1,
                 'centered lane story probe should restore full-width placement for the frozen story fragment'
             );
+        }
+    );
+
+    await checkAsync(
+        'transformable actor cloning probe',
+        'two independent multi-page tables each emit their own repeated-header clones and clone summaries without leaking into each other',
+        async () => {
+            const config = buildCloneProbeConfig();
+            const engine = new LayoutEngine(config);
+            await engine.waitForFonts();
+
+            const elements = [
+                {
+                    type: 'p',
+                    content: 'Transformable actor clone probe. Two multi-page tables must each repeat their own headers as explicit clones.'
+                },
+                buildCloneProbeTable('clone-a', 14),
+                {
+                    type: 'p',
+                    content: 'Interlude. Ordinary flow resumes between the first and second cloned-table seams.',
+                    properties: { sourceId: 'clone-probe-interlude' }
+                },
+                buildCloneProbeTable('clone-b', 14),
+                {
+                    type: 'p',
+                    content: 'Postlude. The clone system should leave normal flow intact after both tables.',
+                    properties: { sourceId: 'clone-probe-postlude' }
+                }
+            ];
+
+            const pages = engine.paginate(elements as any);
+            assert.ok(pages.length >= 4, 'clone probe should span several pages');
+
+            const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+            const matchesSourceId = (actual: unknown, expected: string): boolean => {
+                const value = String(actual || '');
+                return value === expected || value.endsWith(`:${expected}`);
+            };
+            const clonedHeaders = allBoxes.filter((box: any) =>
+                box.type === 'table_cell'
+                && box.meta?.transformKind === 'clone'
+                && typeof box.meta?.sourceId === 'string'
+                && (
+                    String(box.meta.sourceId).includes('clone-a-h-')
+                    || String(box.meta.sourceId).includes('clone-b-h-')
+                )
+            );
+            assert.ok(clonedHeaders.length > 0, 'clone probe should emit cloned continuation headers');
+
+            const clonedHeaderIds = clonedHeaders.map((box: any) => String(box.meta?.sourceId || ''));
+            ['clone-a-h-id', 'clone-a-h-task', 'clone-a-h-note', 'clone-b-h-id', 'clone-b-h-task', 'clone-b-h-note'].forEach((id) => {
+                assert.ok(clonedHeaderIds.some((actual) => matchesSourceId(actual, id)), `clone probe should clone header cell ${id}`);
+            });
+
+            const reader = engine.getLastSimulationReportReader();
+            const transformSummary = reader.require(simulationArtifactKeys.transformSummary);
+            ['clone-a-h-id', 'clone-a-h-task', 'clone-a-h-note', 'clone-b-h-id', 'clone-b-h-task', 'clone-b-h-note'].forEach((id) => {
+                const entry = transformSummary.find((item: any) => matchesSourceId(item?.sourceId, id));
+                assert.ok(entry, `clone probe should publish transform summary for ${id}`);
+                assert.equal(entry?.transformKind, 'clone', `clone probe should classify ${id} as clone`);
+                assert.ok(Number(entry?.count || 0) > 0, `clone probe should count cloned emissions for ${id}`);
+                assert.ok(Array.isArray(entry?.pageIndices) && entry.pageIndices.length > 0, `clone probe should report page indices for ${id}`);
+            });
+
+            const postludeBoxes = allBoxes.filter((box: any) => {
+                const actual = String(box.meta?.sourceId || '');
+                return actual === 'clone-probe-postlude' || actual.endsWith(':clone-probe-postlude');
+            });
+            assert.equal(postludeBoxes.length, 1, 'clone probe should leave the postlude as a single ordinary flow box');
         }
     );
 

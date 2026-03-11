@@ -24,22 +24,18 @@ type FinalizePagesCallbacks = {
 };
 
 export class PageRegionCollaborator implements LayoutCollaborator {
-    private logicalPageNumber: number;
-
     constructor(
         private readonly config: LayoutConfig,
         private readonly callbacks: FinalizePagesCallbacks
-    ) {
-        this.logicalPageNumber = Math.max(0, Math.floor(Number(config.layout.pageNumberStart ?? 1)) - 1);
-    }
+    ) { }
 
-    onPageFinalized(surface: PageSurface): void {
+    onPageFinalized(surface: PageSurface, session: LayoutSession): void {
         const page: Page = surface.finalize();
         const baseline = resolveBaselineRegions(this.config, page.index);
         const override = findWinningPageOverride(page);
         const resolved = applyPageOverride(baseline, override);
         const usesLogical = regionContainsLogicalPageNumber(resolved.header) || regionContainsLogicalPageNumber(resolved.footer);
-        const logicalNumber = usesLogical ? ++this.logicalPageNumber : null;
+        const logicalNumber = session.allocateLogicalPageNumber(usesLogical);
         const physicalPageNumber = page.index + 1;
 
         const headerContent = materializePageTokens(resolved.header, physicalPageNumber, logicalNumber);
@@ -56,7 +52,7 @@ export class PageRegionCollaborator implements LayoutCollaborator {
             );
         }
 
-        this.session?.recordPageFinalization({
+        session.recordPageFinalization({
             pageIndex: page.index,
             physicalPageNumber,
             logicalPageNumber: logicalNumber,
@@ -70,11 +66,8 @@ export class PageRegionCollaborator implements LayoutCollaborator {
         });
     }
 
-    private session?: LayoutSession;
-
     onSimulationStart(session: LayoutSession): void {
-        this.logicalPageNumber = Math.max(0, Math.floor(Number(this.config.layout.pageNumberStart ?? 1)) - 1);
-        this.session = session;
+        session.resetLogicalPageNumbering(Number(this.config.layout.pageNumberStart ?? 1));
     }
 }
 

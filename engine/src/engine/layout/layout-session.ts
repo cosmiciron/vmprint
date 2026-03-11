@@ -1,8 +1,9 @@
 import type { Box, Page, PageRegionContent, PageReservationSelector } from '../types';
 import type { EngineRuntime } from '../runtime';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
+import type { ActorOverflowHandling } from './actor-overflow';
 import type { PackagerUnit } from './packagers/packager-types';
-import type { KeepWithNextFormationPlan } from './actor-formation';
+import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
 import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
 import { LAYOUT_DEFAULTS } from './defaults';
@@ -82,6 +83,36 @@ export type PlacementFrameMargins = {
     left: number;
     right: number;
 };
+
+export type PaginationState = {
+    currentPageIndex: number;
+    currentPageBoxes: Box[];
+    currentY: number;
+    lastSpacingAfter: number;
+};
+
+export type PaginationLoopAction =
+    | {
+        action: 'continue-loop';
+        paginationState: PaginationState;
+        nextActorIndex: number;
+    }
+    | {
+        action: 'continue-tail-split';
+        tailSplitExecution: {
+            prefix: PackagerUnit[];
+            splitCandidate: PackagerUnit;
+            replaceCount: number;
+            splitMarkerReserve: number;
+        };
+    }
+    | {
+        action: 'continue-to-split';
+        splitExecution: SplitExecution;
+    }
+    | {
+        action: 'fallthrough-local-overflow';
+    };
 
 export type ResolvedPlacementFrame = SpatialPlacementSurface & {
     availableWidth: number;
@@ -357,6 +388,65 @@ export type TailSplitFormationOutcome = {
     queueHandling: AcceptedSplitQueueHandling;
 };
 
+export type TailSplitFormationSettlementOutcome = {
+    nextPageIndex: number;
+    nextPageBoxes: Box[];
+    nextCurrentY: number;
+    nextLastSpacingAfter: number;
+    nextActorIndex: number;
+};
+
+export type TailSplitFailureSettlementOutcome = {
+    nextPageIndex: number;
+    nextPageBoxes: Box[];
+    nextCurrentY: number;
+    nextLastSpacingAfter: number;
+    nextActorIndex: number;
+};
+
+export type WholeFormationOverflowEntryOutcome =
+    | {
+        action: 'advance-page';
+        nextPageIndex: number;
+        nextPageBoxes: Box[];
+        nextCurrentY: number;
+        nextLastSpacingAfter: number;
+    }
+    | {
+        action: 'continue-tail-split';
+        tailSplitExecution: {
+            prefix: PackagerUnit[];
+            splitCandidate: PackagerUnit;
+            replaceCount: number;
+            splitMarkerReserve: number;
+        };
+    }
+    | {
+        action: 'fallthrough-local-overflow';
+    };
+
+export type WholeFormationOverflowEntrySettlementOutcome =
+    | {
+        action: 'advance-page';
+        nextPageIndex: number;
+        nextPageBoxes: Box[];
+        nextCurrentY: number;
+        nextLastSpacingAfter: number;
+        nextActorIndex: number;
+    }
+    | {
+        action: 'continue-tail-split';
+        tailSplitExecution: {
+            prefix: PackagerUnit[];
+            splitCandidate: PackagerUnit;
+            replaceCount: number;
+            splitMarkerReserve: number;
+        };
+    }
+    | {
+        action: 'fallthrough-local-overflow';
+    };
+
 export type GenericSplitOutcome = {
     branchSnapshot: LocalBranchSnapshot;
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
@@ -384,10 +474,53 @@ export type ActorOverflowSplitEntryHandlingOutcome = {
     shouldAdvancePage: boolean;
 };
 
+export type ActorOverflowEntryHandlingOutcome =
+    | {
+        action: 'handled';
+        nextCurrentY: number;
+        nextLastSpacingAfter: number;
+        shouldAdvancePage: boolean;
+        shouldAdvanceIndex: boolean;
+    }
+    | {
+        action: 'continue-to-split';
+        splitExecution: SplitExecution;
+    };
+
+export type ActorOverflowEntrySettlementOutcome =
+    | {
+        action: 'handled';
+        nextPageIndex: number;
+        nextPageBoxes: Box[];
+        nextCurrentY: number;
+        nextLastSpacingAfter: number;
+        nextActorIndex: number;
+    }
+    | {
+        action: 'continue-to-split';
+        splitExecution: SplitExecution;
+    };
+
 export type ActorSplitFailureHandlingOutcome = {
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number } | null;
     shouldAdvancePage: boolean;
     shouldAdvanceIndex: boolean;
+};
+
+export type ActorSplitFailureResolution = {
+    nextCurrentY: number;
+    nextLastSpacingAfter: number;
+    shouldAdvancePage: boolean;
+    shouldAdvanceIndex: boolean;
+    committedBoxes: Box[];
+};
+
+export type ActorSplitFailureSettlementOutcome = {
+    nextPageIndex: number;
+    nextPageBoxes: Box[];
+    nextCurrentY: number;
+    nextLastSpacingAfter: number;
+    nextActorIndex: number;
 };
 
 export type DeferredSplitPlacementOutcome = {
@@ -395,8 +528,31 @@ export type DeferredSplitPlacementOutcome = {
     nextCurrentY: number;
 };
 
+export type DeferredSplitPlacementSettlementOutcome = {
+    nextPageIndex: number;
+    nextPageBoxes: Box[];
+    nextCurrentY: number;
+    nextLastSpacingAfter: number;
+    nextActorIndex: number;
+};
+
+export type GenericSplitSuccessHandlingOutcome = {
+    nextCurrentY: number;
+    nextLastSpacingAfter: number;
+    shouldAdvancePage: boolean;
+    shouldAdvanceIndex: boolean;
+    committedBoxes: Box[];
+};
+
+export type GenericSplitSuccessSettlementOutcome = {
+    nextPageIndex: number;
+    nextPageBoxes: Box[];
+    nextCurrentY: number;
+    nextLastSpacingAfter: number;
+    nextActorIndex: number;
+};
+
 export type PageAdvanceOutcome = {
-    finalizedPage: Page | null;
     nextPageIndex: number;
     nextPageBoxes: Box[];
     nextCurrentY: number;
@@ -433,6 +589,21 @@ export type ActorPlacementAttemptOutcome =
         action: 'commit';
         committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
     };
+
+export type ActorPlacementHandlingOutcome = {
+    nextCurrentY: number;
+    nextLastSpacingAfter: number;
+    shouldAdvancePage: boolean;
+    shouldAdvanceIndex: boolean;
+};
+
+export type ActorPlacementSettlementOutcome = {
+    nextPageIndex: number;
+    nextPageBoxes: Box[];
+    nextCurrentY: number;
+    nextLastSpacingAfter: number;
+    nextActorIndex: number;
+};
 
 export type SequencePlacementCheckpoint = {
     boxStartIndex: number;
@@ -491,6 +662,7 @@ export interface LayoutCollaborator {
 export type PaginationLoopState = {
     actorQueue: PackagerUnit[];
     actorIndex: number;
+    paginationState: PaginationState;
     availableWidth: number;
     availableHeight: number;
     lastSpacingAfter: number;
@@ -538,6 +710,7 @@ export class LayoutSession {
     private readonly pageReservationsByPage = new Map<number, RegionReservation[]>();
     private readonly pageExclusionsByPage = new Map<number, SpatialExclusion[]>();
     private readonly pageFinalizationStates = new Map<number, PageFinalizationState>();
+    private logicalPageNumberCursor = 0;
     private readonly artifacts = new Map<string, unknown>();
     private finalizedPages: Page[] = [];
     private simulationReport?: SimulationReport;
@@ -561,6 +734,7 @@ export class LayoutSession {
         this.pageReservationsByPage.clear();
         this.pageExclusionsByPage.clear();
         this.pageFinalizationStates.clear();
+        this.logicalPageNumberCursor = 0;
         this.currentPageReservations = [];
         this.currentPageExclusions = [];
         for (const collaborator of this.collaborators) {
@@ -586,27 +760,22 @@ export class LayoutSession {
     }
 
     advancePage(
+        pages: Page[],
         currentPageBoxes: Box[],
         currentPageIndex: number,
         pageWidth: number,
         pageHeight: number,
         nextPageTopY: number
     ): PageAdvanceOutcome {
-        const finalizedPage = currentPageBoxes.length > 0
-            ? {
-                index: currentPageIndex,
-                boxes: currentPageBoxes,
-                width: pageWidth,
-                height: pageHeight
-            }
-            : null;
+        if (currentPageBoxes.length > 0) {
+            pages.push(this.finalizeCommittedPage(currentPageIndex, pageWidth, pageHeight, currentPageBoxes));
+        }
 
         const nextPageIndex = currentPageIndex + 1;
         const nextPageBoxes: Box[] = [];
         this.notifyPageStart(nextPageIndex, pageWidth, pageHeight, nextPageBoxes);
 
         return {
-            finalizedPage,
             nextPageIndex,
             nextPageBoxes,
             nextCurrentY: nextPageTopY,
@@ -748,16 +917,88 @@ export class LayoutSession {
         }
     }
 
-    finalizePages(pages: Page[]): Page[] {
-        const finalizedPages = pages.map((page) => {
-            const surface = new PageSurface(page.index, page.width, page.height, [...page.boxes]);
-            for (const collaborator of this.collaborators) {
-                collaborator.onPageFinalized?.(surface, this);
-            }
-            return surface.finalize();
-        });
+    finalizeCommittedPage(pageIndex: number, width: number, height: number, boxes: readonly Box[]): Page {
+        const surface = new PageSurface(pageIndex, width, height, [...boxes]);
+        for (const collaborator of this.collaborators) {
+            collaborator.onPageFinalized?.(surface, this);
+        }
+        return surface.finalize();
+    }
 
-        this.finalizedPages = finalizedPages;
+    closePagination(
+        pages: Page[],
+        currentPageBoxes: readonly Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number
+    ): void {
+        if (currentPageBoxes.length === 0) return;
+        pages.push(this.finalizeCommittedPage(currentPageIndex, pageWidth, pageHeight, currentPageBoxes));
+    }
+
+    resolveNextActorIndex(currentIndex: number, shouldAdvanceIndex: boolean): number {
+        return shouldAdvanceIndex ? currentIndex + 1 : currentIndex;
+    }
+
+    applyPaginationState(target: PaginationState, next: PaginationState): void {
+        target.currentPageIndex = next.currentPageIndex;
+        target.currentPageBoxes = next.currentPageBoxes;
+        target.currentY = next.currentY;
+        target.lastSpacingAfter = next.lastSpacingAfter;
+    }
+
+    createContinueLoopAction(
+        paginationState: PaginationState,
+        nextActorIndex: number
+    ): PaginationLoopAction {
+        return {
+            action: 'continue-loop',
+            paginationState,
+            nextActorIndex
+        };
+    }
+
+    restartCurrentActorOnNextPage(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTopY: number,
+        actorIndex: number
+    ): PaginationLoopAction {
+        const pageAdvance = this.advancePage(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTopY
+        );
+        return this.createContinueLoopAction(
+            {
+                currentPageIndex: pageAdvance.nextPageIndex,
+                currentPageBoxes: pageAdvance.nextPageBoxes,
+                currentY: pageAdvance.nextCurrentY,
+                lastSpacingAfter: pageAdvance.nextLastSpacingAfter
+            },
+            actorIndex
+        );
+    }
+
+    applyPaginationLoopAction(
+        target: PaginationState,
+        action: PaginationLoopAction
+    ): number {
+        if (action.action !== 'continue-loop') {
+            throw new Error(`Cannot apply non-continuation loop action directly: ${action.action}`);
+        }
+        this.applyPaginationState(target, action.paginationState);
+        return action.nextActorIndex;
+    }
+
+    finalizePages(pages: Page[]): Page[] {
+        this.finalizedPages = pages;
 
         for (const collaborator of this.collaborators) {
             collaborator.onSimulationComplete?.(this);
@@ -765,7 +1006,7 @@ export class LayoutSession {
 
         this.setSimulationReport(this.buildSimulationReport());
 
-        return finalizedPages;
+        return pages;
     }
 
     // Collaborator-facing artifact publication. Downstream consumers should prefer
@@ -781,6 +1022,7 @@ export class LayoutSession {
     buildSimulationArtifacts(): SimulationArtifacts {
         const artifacts: SimulationArtifacts = {
             fragmentationSummary: this.artifacts.get(simulationArtifactKeys.fragmentationSummary) as SimulationArtifactMap['fragmentationSummary'],
+            transformSummary: this.artifacts.get(simulationArtifactKeys.transformSummary) as SimulationArtifactMap['transformSummary'],
             pageNumberSummary: this.artifacts.get(simulationArtifactKeys.pageNumberSummary) as SimulationArtifactMap['pageNumberSummary'],
             pageOverrideSummary: this.artifacts.get(simulationArtifactKeys.pageOverrideSummary) as SimulationArtifactMap['pageOverrideSummary'],
             pageExclusionSummary: this.artifacts.get(simulationArtifactKeys.pageExclusionSummary) as SimulationArtifactMap['pageExclusionSummary'],
@@ -804,6 +1046,19 @@ export class LayoutSession {
 
     recordPageFinalization(state: PageFinalizationState): void {
         this.pageFinalizationStates.set(state.pageIndex, state);
+    }
+
+    resetLogicalPageNumbering(startAt: number): void {
+        const normalized = Number.isFinite(startAt) ? Math.floor(Number(startAt)) : 1;
+        this.logicalPageNumberCursor = Math.max(0, normalized - 1);
+    }
+
+    allocateLogicalPageNumber(usesLogicalNumbering: boolean): number | null {
+        if (!usesLogicalNumbering) {
+            return null;
+        }
+        this.logicalPageNumberCursor += 1;
+        return this.logicalPageNumberCursor;
     }
 
     getPageFinalizationState(pageIndex: number): PageFinalizationState | undefined {
@@ -1476,6 +1731,196 @@ export class LayoutSession {
         };
     }
 
+    settleTailSplitFormation(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTopY: number,
+        currentActorIndex: number,
+        outcome: TailSplitFormationOutcome
+    ): TailSplitFormationSettlementOutcome {
+        currentPageBoxes.push(...outcome.committed.boxes);
+        const advanced = this.advancePage(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTopY
+        );
+        return {
+            nextPageIndex: advanced.nextPageIndex,
+            nextPageBoxes: advanced.nextPageBoxes,
+            nextCurrentY: advanced.nextCurrentY,
+            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
+            nextActorIndex: this.resolveNextActorIndex(currentActorIndex, outcome.queueHandling.shouldAdvanceIndex)
+        };
+    }
+
+    settleTailSplitFailure(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTop: number,
+        currentActorIndex: number,
+        actorQueue: PackagerUnit[],
+        checkpoint: ReturnType<LayoutSession['captureLocalBranchSnapshot']>,
+        shouldAdvancePage: boolean
+    ): TailSplitFailureSettlementOutcome {
+        const rolledBack = this.restoreLocalBranchSnapshot(currentPageBoxes, actorQueue, checkpoint);
+        if (!shouldAdvancePage) {
+            return {
+                nextPageIndex: currentPageIndex,
+                nextPageBoxes: currentPageBoxes,
+                nextCurrentY: rolledBack.currentY,
+                nextLastSpacingAfter: rolledBack.lastSpacingAfter,
+                nextActorIndex: currentActorIndex
+            };
+        }
+
+        const advanced = this.advancePage(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTop
+        );
+        return {
+            nextPageIndex: advanced.nextPageIndex,
+            nextPageBoxes: advanced.nextPageBoxes,
+            nextCurrentY: advanced.nextCurrentY,
+            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
+            nextActorIndex: currentActorIndex
+        };
+    }
+
+    handleWholeFormationOverflowEntry(
+        handling: WholeFormationOverflowHandling,
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTop: number
+    ): WholeFormationOverflowEntryOutcome {
+        if (handling.tailSplitExecution) {
+            return {
+                action: 'continue-tail-split',
+                tailSplitExecution: handling.tailSplitExecution
+            };
+        }
+
+        if (handling.fallbackHandling === 'advance-page') {
+            const advanced = this.advancePage(
+                pages,
+                currentPageBoxes,
+                currentPageIndex,
+                pageWidth,
+                pageHeight,
+                nextPageTop
+            );
+            return {
+                action: 'advance-page',
+                nextPageIndex: advanced.nextPageIndex,
+                nextPageBoxes: advanced.nextPageBoxes,
+                nextCurrentY: advanced.nextCurrentY,
+                nextLastSpacingAfter: advanced.nextLastSpacingAfter
+            };
+        }
+
+        return { action: 'fallthrough-local-overflow' };
+    }
+
+    settleWholeFormationOverflowEntry(
+        currentActorIndex: number,
+        outcome: WholeFormationOverflowEntryOutcome
+    ): WholeFormationOverflowEntrySettlementOutcome {
+        if (outcome.action === 'advance-page') {
+            return {
+                action: 'advance-page',
+                nextPageIndex: outcome.nextPageIndex,
+                nextPageBoxes: outcome.nextPageBoxes,
+                nextCurrentY: outcome.nextCurrentY,
+                nextLastSpacingAfter: outcome.nextLastSpacingAfter,
+                nextActorIndex: currentActorIndex
+            };
+        }
+
+        if (outcome.action === 'continue-tail-split') {
+            return outcome;
+        }
+
+        return outcome;
+    }
+
+    toPaginationLoopAction(outcome: TailSplitFormationSettlementOutcome): PaginationLoopAction;
+    toPaginationLoopAction(outcome: WholeFormationOverflowEntrySettlementOutcome): PaginationLoopAction;
+    toPaginationLoopAction(outcome: ActorOverflowEntrySettlementOutcome): PaginationLoopAction;
+    toPaginationLoopAction(outcome: ActorSplitFailureSettlementOutcome): PaginationLoopAction;
+    toPaginationLoopAction(outcome: GenericSplitSuccessSettlementOutcome): PaginationLoopAction;
+    toPaginationLoopAction(outcome: ActorPlacementSettlementOutcome): PaginationLoopAction;
+    toPaginationLoopAction(outcome: DeferredSplitPlacementSettlementOutcome): PaginationLoopAction;
+    toPaginationLoopAction(outcome: {
+        action?: string;
+        tailSplitExecution?: {
+            prefix: PackagerUnit[];
+            splitCandidate: PackagerUnit;
+            replaceCount: number;
+            splitMarkerReserve: number;
+        };
+        splitExecution?: SplitExecution;
+        nextPageIndex?: number;
+        nextPageBoxes?: Box[];
+        nextCurrentY?: number;
+        nextLastSpacingAfter?: number;
+        nextActorIndex?: number;
+    }, nextActorIndex?: number): PaginationLoopAction {
+        if (outcome.action === 'continue-tail-split') {
+            if (!outcome.tailSplitExecution) {
+                throw new Error('continue-tail-split outcome missing tailSplitExecution');
+            }
+            return {
+                action: 'continue-tail-split',
+                tailSplitExecution: outcome.tailSplitExecution
+            };
+        }
+        if (outcome.action === 'continue-to-split') {
+            if (!outcome.splitExecution) {
+                throw new Error('continue-to-split outcome missing splitExecution');
+            }
+            return {
+                action: 'continue-to-split',
+                splitExecution: outcome.splitExecution
+            };
+        }
+        if (outcome.action === 'fallthrough-local-overflow') {
+            return { action: 'fallthrough-local-overflow' };
+        }
+        if (
+            outcome.nextPageIndex === undefined
+            || outcome.nextPageBoxes === undefined
+            || outcome.nextCurrentY === undefined
+            || outcome.nextLastSpacingAfter === undefined
+            || (nextActorIndex === undefined && outcome.nextActorIndex === undefined)
+        ) {
+            throw new Error('continue-loop outcome missing pagination state');
+        }
+        return this.createContinueLoopAction(
+            {
+                currentPageIndex: outcome.nextPageIndex,
+                currentPageBoxes: outcome.nextPageBoxes,
+                currentY: outcome.nextCurrentY,
+                lastSpacingAfter: outcome.nextLastSpacingAfter
+            },
+            nextActorIndex ?? outcome.nextActorIndex!
+        );
+    }
+
     finalizeGenericAcceptedSplit(
         pageBoxes: readonly Box[],
         actorQueue: PackagerUnit[],
@@ -1584,6 +2029,100 @@ export class LayoutSession {
         };
     }
 
+    handleActorOverflowEntry(
+        overflowHandling: ActorOverflowHandling,
+        actor: PackagerUnit,
+        boxes: readonly Box[] | null,
+        state: FragmentCommitState,
+        availableWidth: number,
+        availableHeight: number,
+        context: PackagerContext,
+        currentY: number,
+        lastSpacingAfter: number
+    ): ActorOverflowEntryHandlingOutcome {
+        if (overflowHandling.preSplitOutcome !== 'continue-to-split-phase') {
+            const outcome = this.handleActorOverflowPreSplit(
+                overflowHandling.preSplitOutcome,
+                actor,
+                boxes,
+                state
+            );
+            return {
+                action: 'handled',
+                nextCurrentY: outcome.committed?.currentY ?? currentY,
+                nextLastSpacingAfter: outcome.committed?.lastSpacingAfter ?? lastSpacingAfter,
+                shouldAdvancePage: outcome.shouldAdvancePage,
+                shouldAdvanceIndex: outcome.shouldAdvanceIndex
+            };
+        }
+
+        const splitEntry = this.handleActorOverflowSplitEntry(
+            overflowHandling.splitEntryOutcome!,
+            actor,
+            availableWidth,
+            availableHeight,
+            context
+        );
+
+        if (splitEntry.shouldAdvancePage || !splitEntry.splitExecution) {
+            return {
+                action: 'handled',
+                nextCurrentY: currentY,
+                nextLastSpacingAfter: lastSpacingAfter,
+                shouldAdvancePage: true,
+                shouldAdvanceIndex: false
+            };
+        }
+
+        return {
+            action: 'continue-to-split',
+            splitExecution: splitEntry.splitExecution
+        };
+    }
+
+    settleActorOverflowEntry(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTopY: number,
+        currentActorIndex: number,
+        overflowEntry: ActorOverflowEntryHandlingOutcome
+    ): ActorOverflowEntrySettlementOutcome {
+        if (overflowEntry.action === 'continue-to-split') {
+            return overflowEntry;
+        }
+
+        if (!overflowEntry.shouldAdvancePage) {
+            return {
+                action: 'handled',
+                nextPageIndex: currentPageIndex,
+                nextPageBoxes: currentPageBoxes,
+                nextCurrentY: overflowEntry.nextCurrentY,
+                nextLastSpacingAfter: overflowEntry.nextLastSpacingAfter,
+                nextActorIndex: this.resolveNextActorIndex(currentActorIndex, overflowEntry.shouldAdvanceIndex)
+            };
+        }
+
+        const advanced = this.advancePage(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTopY
+        );
+        return {
+            action: 'handled',
+            nextPageIndex: advanced.nextPageIndex,
+            nextPageBoxes: advanced.nextPageBoxes,
+            nextCurrentY: advanced.nextCurrentY,
+            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
+            nextActorIndex: this.resolveNextActorIndex(currentActorIndex, overflowEntry.shouldAdvanceIndex)
+        };
+    }
+
     handleActorSplitFailure(
         actor: PackagerUnit,
         boxes: readonly Box[] | null,
@@ -1602,6 +2141,63 @@ export class LayoutSession {
             committed: this.commitFragmentBoxes(actor, boxes ?? [], state),
             shouldAdvancePage: true,
             shouldAdvanceIndex: true
+        };
+    }
+
+    resolveActorSplitFailure(
+        actor: PackagerUnit,
+        boxes: readonly Box[] | null,
+        state: FragmentCommitState,
+        isAtPageTop: boolean,
+        currentY: number,
+        lastSpacingAfter: number
+    ): ActorSplitFailureResolution {
+        const outcome = this.handleActorSplitFailure(actor, boxes, state, isAtPageTop);
+        return {
+            nextCurrentY: outcome.committed?.currentY ?? currentY,
+            nextLastSpacingAfter: outcome.committed?.lastSpacingAfter ?? lastSpacingAfter,
+            shouldAdvancePage: outcome.shouldAdvancePage,
+            shouldAdvanceIndex: outcome.shouldAdvanceIndex,
+            committedBoxes: outcome.committed?.boxes ?? []
+        };
+    }
+
+    settleActorSplitFailure(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTopY: number,
+        currentActorIndex: number,
+        resolution: ActorSplitFailureResolution
+    ): ActorSplitFailureSettlementOutcome {
+        currentPageBoxes.push(...resolution.committedBoxes);
+
+        if (!resolution.shouldAdvancePage) {
+            return {
+                nextPageIndex: currentPageIndex,
+                nextPageBoxes: currentPageBoxes,
+                nextCurrentY: resolution.nextCurrentY,
+                nextLastSpacingAfter: resolution.nextLastSpacingAfter,
+                nextActorIndex: this.resolveNextActorIndex(currentActorIndex, resolution.shouldAdvanceIndex)
+            };
+        }
+
+        const advanced = this.advancePage(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTopY
+        );
+        return {
+            nextPageIndex: advanced.nextPageIndex,
+            nextPageBoxes: advanced.nextPageBoxes,
+            nextCurrentY: advanced.nextCurrentY,
+            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
+            nextActorIndex: this.resolveNextActorIndex(currentActorIndex, resolution.shouldAdvanceIndex)
         };
     }
 
@@ -1624,6 +2220,139 @@ export class LayoutSession {
         return {
             shouldAdvancePage: remainingHeight <= 0 && nextCurrentY > pageTop,
             nextCurrentY
+        };
+    }
+
+    settleDeferredSplitPlacement(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTopY: number,
+        currentActorIndex: number,
+        lastSpacingAfter: number,
+        outcome: DeferredSplitPlacementOutcome
+    ): DeferredSplitPlacementSettlementOutcome {
+        if (!outcome.shouldAdvancePage) {
+            return {
+                nextPageIndex: currentPageIndex,
+                nextPageBoxes: currentPageBoxes,
+                nextCurrentY: outcome.nextCurrentY,
+                nextLastSpacingAfter: lastSpacingAfter,
+                nextActorIndex: currentActorIndex
+            };
+        }
+
+        const advanced = this.advancePage(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTopY
+        );
+        return {
+            nextPageIndex: advanced.nextPageIndex,
+            nextPageBoxes: advanced.nextPageBoxes,
+            nextCurrentY: advanced.nextCurrentY,
+            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
+            nextActorIndex: currentActorIndex
+        };
+    }
+
+    handleGenericSplitSuccess(
+        currentPageBoxes: readonly Box[],
+        actorQueue: PackagerUnit[],
+        startIndex: number,
+        predecessor: PackagerUnit,
+        continuation: PackagerUnit | null | undefined,
+        attempt: SplitAttempt,
+        result: PackagerSplitResult,
+        currentFragment: PackagerUnit,
+        currentBoxes: readonly Box[],
+        state: SplitFragmentAftermathState,
+        deferredSplitCursorY: number | null,
+        layoutBefore: number,
+        pageLimit: number,
+        pageTop: number,
+        positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
+    ): GenericSplitSuccessHandlingOutcome {
+        if (deferredSplitCursorY !== null) {
+            const deferred = this.resolveDeferredSplitPlacement(
+                state.currentY,
+                deferredSplitCursorY,
+                layoutBefore,
+                pageLimit,
+                pageTop
+            );
+            return {
+                nextCurrentY: deferred.nextCurrentY,
+                nextLastSpacingAfter: state.lastSpacingAfter,
+                shouldAdvancePage: deferred.shouldAdvancePage,
+                shouldAdvanceIndex: false,
+                committedBoxes: []
+            };
+        }
+
+        const outcome = this.finalizeGenericAcceptedSplit(
+            currentPageBoxes,
+            actorQueue,
+            startIndex,
+            predecessor,
+            continuation,
+            attempt,
+            result,
+            currentBoxes,
+            state,
+            positionMarker
+        );
+
+        return {
+            nextCurrentY: outcome.committed.currentY,
+            nextLastSpacingAfter: outcome.committed.lastSpacingAfter,
+            shouldAdvancePage: true,
+            shouldAdvanceIndex: outcome.queueHandling.shouldAdvanceIndex,
+            committedBoxes: outcome.committed.boxes
+        };
+    }
+
+    settleGenericSplitSuccess(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTopY: number,
+        currentActorIndex: number,
+        handling: GenericSplitSuccessHandlingOutcome
+    ): GenericSplitSuccessSettlementOutcome {
+        currentPageBoxes.push(...handling.committedBoxes);
+
+        if (!handling.shouldAdvancePage) {
+            return {
+                nextPageIndex: currentPageIndex,
+                nextPageBoxes: currentPageBoxes,
+                nextCurrentY: handling.nextCurrentY,
+                nextLastSpacingAfter: handling.nextLastSpacingAfter,
+                nextActorIndex: this.resolveNextActorIndex(currentActorIndex, handling.shouldAdvanceIndex)
+            };
+        }
+
+        const advanced = this.advancePage(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTopY
+        );
+        return {
+            nextPageIndex: advanced.nextPageIndex,
+            nextPageBoxes: advanced.nextPageBoxes,
+            nextCurrentY: advanced.nextCurrentY,
+            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
+            nextActorIndex: this.resolveNextActorIndex(currentActorIndex, handling.shouldAdvanceIndex)
         };
     }
 
@@ -1781,6 +2510,85 @@ export class LayoutSession {
             pageLimit,
             pageTop
         );
+    }
+
+    handleActorPlacementAttempt(
+        currentPageBoxes: Box[],
+        outcome: ActorPlacementAttemptOutcome,
+        currentY: number,
+        lastSpacingAfter: number
+    ): ActorPlacementHandlingOutcome {
+        if (outcome.action === 'retry-next-page') {
+            return {
+                nextCurrentY: currentY,
+                nextLastSpacingAfter: lastSpacingAfter,
+                shouldAdvancePage: true,
+                shouldAdvanceIndex: false
+            };
+        }
+
+        if (outcome.action === 'defer') {
+            return {
+                nextCurrentY: outcome.nextCurrentY,
+                nextLastSpacingAfter: lastSpacingAfter,
+                shouldAdvancePage: outcome.shouldAdvancePage,
+                shouldAdvanceIndex: false
+            };
+        }
+
+        currentPageBoxes.push(...outcome.committed.boxes);
+        return {
+            nextCurrentY: outcome.committed.currentY,
+            nextLastSpacingAfter: outcome.committed.lastSpacingAfter,
+            shouldAdvancePage: false,
+            shouldAdvanceIndex: true
+        };
+    }
+
+    settleActorPlacementAttempt(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTopY: number,
+        currentActorIndex: number,
+        outcome: ActorPlacementAttemptOutcome,
+        currentY: number,
+        lastSpacingAfter: number
+    ): ActorPlacementSettlementOutcome {
+        const handling = this.handleActorPlacementAttempt(
+            currentPageBoxes,
+            outcome,
+            currentY,
+            lastSpacingAfter
+        );
+
+        if (!handling.shouldAdvancePage) {
+            return {
+                nextPageIndex: currentPageIndex,
+                nextPageBoxes: currentPageBoxes,
+                nextCurrentY: handling.nextCurrentY,
+                nextLastSpacingAfter: handling.nextLastSpacingAfter,
+                nextActorIndex: this.resolveNextActorIndex(currentActorIndex, handling.shouldAdvanceIndex)
+            };
+        }
+
+        const advanced = this.advancePage(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTopY
+        );
+        return {
+            nextPageIndex: advanced.nextPageIndex,
+            nextPageBoxes: advanced.nextPageBoxes,
+            nextCurrentY: advanced.nextCurrentY,
+            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
+            nextActorIndex: this.resolveNextActorIndex(currentActorIndex, handling.shouldAdvanceIndex)
+        };
     }
 
     setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan): void {

@@ -29,6 +29,7 @@ import { PageRegionArtifactCollaborator } from './page-region-artifact-collabora
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import { createSimulationReportReader, SimulationReport, SimulationReportReader } from './simulation-report';
 import { SourcePositionArtifactCollaborator } from './source-position-artifact-collaborator';
+import { TransformArtifactCollaborator } from './transform-artifact-collaborator';
 import {
     buildTableModel,
     isTableElement,
@@ -346,7 +347,9 @@ export class LayoutProcessor extends TextProcessor {
             fragmentIndex,
             isContinuation: continuation,
             generated: !!seed?.generated,
-            originSourceId: seed?.originSourceId
+            originSourceId: seed?.originSourceId,
+            transformKind: seed?.transformKind,
+            clonedFromSourceId: seed?.clonedFromSourceId
         };
 
         if (reflowKey) meta.reflowKey = reflowKey;
@@ -766,6 +769,7 @@ export class LayoutProcessor extends TextProcessor {
             new ExperimentalPageStartReservationCollaborator(this.config),
             new ExperimentalPageReservationCollaborator(),
             new FragmentTransitionArtifactCollaborator(),
+            new TransformArtifactCollaborator(),
             new PageExclusionArtifactCollaborator(),
             new PageNumberArtifactCollaborator(),
             new PageOverrideArtifactCollaborator(),

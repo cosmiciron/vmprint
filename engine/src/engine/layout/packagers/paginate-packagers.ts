@@ -8,7 +8,7 @@ import {
 import { LayoutProcessor } from '../layout-core';
 import { LAYOUT_DEFAULTS } from '../defaults';
 import { computeKeepWithNextPlan } from '../keep-with-next-collaborator';
-import { ConstraintField, LayoutSession } from '../layout-session';
+import { ConstraintField, LayoutSession, PaginationState } from '../layout-session';
 import { PackagerContext, PackagerUnit, LayoutBox, preparePackagerForPhase, rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packager-types';
 
 export function paginatePackagers(
@@ -24,6 +24,36 @@ export function paginatePackagers(
     const margins = contextBase.margins;
     let currentY = margins.top;
     let lastSpacingAfter = 0;
+    const paginationState: PaginationState = {
+        currentPageIndex,
+        currentPageBoxes,
+        currentY,
+        lastSpacingAfter
+    };
+    const applySessionPaginationState = (next: PaginationState) => {
+        if (session) {
+            session.applyPaginationState(paginationState, next);
+        } else {
+            paginationState.currentPageIndex = next.currentPageIndex;
+            paginationState.currentPageBoxes = next.currentPageBoxes;
+            paginationState.currentY = next.currentY;
+            paginationState.lastSpacingAfter = next.lastSpacingAfter;
+        }
+        currentPageIndex = paginationState.currentPageIndex;
+        currentPageBoxes = paginationState.currentPageBoxes as LayoutBox[];
+        currentY = paginationState.currentY;
+        lastSpacingAfter = paginationState.lastSpacingAfter;
+    };
+    const applySessionLoopAction = (action: ReturnType<LayoutSession['toPaginationLoopAction']>) => {
+        if (!session) {
+            throw new Error('Session loop action requires an active layout session.');
+        }
+        i = session.applyPaginationLoopAction(paginationState, action);
+        currentPageIndex = paginationState.currentPageIndex;
+        currentPageBoxes = paginationState.currentPageBoxes as LayoutBox[];
+        currentY = paginationState.currentY;
+        lastSpacingAfter = paginationState.lastSpacingAfter;
+    };
 
     const pageLimit = contextBase.pageHeight - margins.bottom;
     const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
@@ -34,19 +64,19 @@ export function paginatePackagers(
     const pushNewPage = () => {
         if (session) {
             const outcome = session.advancePage(
+                pages,
                 currentPageBoxes,
                 currentPageIndex,
                 contextBase.pageWidth,
                 contextBase.pageHeight,
                 margins.top
             );
-            if (outcome.finalizedPage) {
-                pages.push(outcome.finalizedPage);
-            }
-            currentPageIndex = outcome.nextPageIndex;
-            currentPageBoxes = outcome.nextPageBoxes;
-            currentY = outcome.nextCurrentY;
-            lastSpacingAfter = outcome.nextLastSpacingAfter;
+            applySessionPaginationState({
+                currentPageIndex: outcome.nextPageIndex,
+                currentPageBoxes: outcome.nextPageBoxes,
+                currentY: outcome.nextCurrentY,
+                lastSpacingAfter: outcome.nextLastSpacingAfter
+            });
             return;
         }
 
@@ -73,6 +103,18 @@ export function paginatePackagers(
 
         // Ensure minimum valid space for checking if we can fit at all
         if (availableHeight <= 0 && currentY > margins.top) {
+            if (session) {
+                applySessionLoopAction(session.restartCurrentActorOnNextPage(
+                    pages,
+                    currentPageBoxes,
+                    currentPageIndex,
+                    contextBase.pageWidth,
+                    contextBase.pageHeight,
+                    margins.top,
+                    i
+                ));
+                continue;
+            }
             pushNewPage();
             continue;
         }
@@ -80,6 +122,18 @@ export function paginatePackagers(
         const isAtPageTop = currentY === margins.top && currentPageBoxes.length === 0;
 
         if (packager.pageBreakBefore && !isAtPageTop) {
+            if (session) {
+                applySessionLoopAction(session.restartCurrentActorOnNextPage(
+                    pages,
+                    currentPageBoxes,
+                    currentPageIndex,
+                    contextBase.pageWidth,
+                    contextBase.pageHeight,
+                    margins.top,
+                    i
+                ));
+                continue;
+            }
             pushNewPage();
             continue;
         }
@@ -104,6 +158,18 @@ export function paginatePackagers(
             currentY = placementFrame.cursorY - layoutBefore;
             availableHeight = pageLimit - currentY;
             if (availableHeight <= 0 && currentY > margins.top) {
+                if (session) {
+                    applySessionLoopAction(session.restartCurrentActorOnNextPage(
+                        pages,
+                        currentPageBoxes,
+                        currentPageIndex,
+                        contextBase.pageWidth,
+                        contextBase.pageHeight,
+                        margins.top,
+                        i
+                    ));
+                    continue;
+                }
                 pushNewPage();
                 continue;
             }
@@ -145,6 +211,12 @@ export function paginatePackagers(
         session?.setPaginationLoopState({
             actorQueue: packagers,
             actorIndex: i,
+            paginationState: {
+                currentPageIndex,
+                currentPageBoxes,
+                currentY,
+                lastSpacingAfter
+            },
             availableWidth,
             availableHeight,
             lastSpacingAfter,
@@ -164,6 +236,12 @@ export function paginatePackagers(
             ? (session?.getKeepWithNextPlan(packager.actorId) ?? computeKeepWithNextPlan({
                 actorQueue: packagers,
                 actorIndex: i,
+                paginationState: {
+                    currentPageIndex,
+                    currentPageBoxes,
+                    currentY,
+                    lastSpacingAfter
+                },
                 availableWidth,
                 availableHeight: effectiveAvailableHeight,
                 lastSpacingAfter,
@@ -174,8 +252,27 @@ export function paginatePackagers(
         const wholeFormationOverflowHandling = keepPlan
             ? getWholeFormationOverflowHandling(keepPlan, isAtPageTop)
             : null;
-        const wholeFormationTailSplitExecution = wholeFormationOverflowHandling?.tailSplitExecution ?? null;
         const wholeFormationOverflowFallbackOutcome = wholeFormationOverflowHandling?.fallbackHandling ?? null;
+        const wholeFormationOverflowEntry = session && wholeFormationOverflowHandling
+            ? session.settleWholeFormationOverflowEntry(
+                i,
+                session.handleWholeFormationOverflowEntry(
+                    wholeFormationOverflowHandling,
+                    pages,
+                    currentPageBoxes,
+                    currentPageIndex,
+                    contextBase.pageWidth,
+                    contextBase.pageHeight,
+                    margins.top
+                )
+            )
+            : null;
+        const wholeFormationOverflowAction = session && wholeFormationOverflowEntry
+            ? session.toPaginationLoopAction(wholeFormationOverflowEntry)
+            : null;
+        const wholeFormationTailSplitExecution = wholeFormationOverflowAction?.action === 'continue-tail-split'
+            ? wholeFormationOverflowAction.tailSplitExecution
+            : (wholeFormationOverflowHandling?.tailSplitExecution ?? null);
         const overflowsCurrentPlacement = keepPlan
             ? wholeFormationOverflowHandling !== null
             : ((effectiveHeight - marginBottom) > effectiveAvailableHeight);
@@ -312,9 +409,17 @@ export function paginatePackagers(
                                         markerPageIndex
                                     )
                             );
-                            currentPageBoxes.push(...outcome.committed.boxes);
-                            currentY = outcome.committed.currentY;
-                            lastSpacingAfter = outcome.committed.lastSpacingAfter;
+                            const settlement = session.settleTailSplitFormation(
+                                pages,
+                                currentPageBoxes,
+                                currentPageIndex,
+                                contextBase.pageWidth,
+                                contextBase.pageHeight,
+                                margins.top,
+                                i,
+                                outcome
+                            );
+                            applySessionLoopAction(session.toPaginationLoopAction(settlement));
                         } else {
                             const partAMarginTop = partA.getMarginTop();
                             const partAMarginBottom = partA.getMarginBottom();
@@ -332,8 +437,8 @@ export function paginatePackagers(
                         }
 
                         if (getTailSplitPostAttemptOutcome(keepPlan, true, isAtPageTop) === 'page-turn-and-continue') {
-                            pushNewPage();
                             if (!session) {
+                                pushNewPage();
                                 packagers.splice(i, replaceCount, partB);
                             }
                             session?.recordProfile('keepWithNextBranchCalls', 1);
@@ -343,22 +448,31 @@ export function paginatePackagers(
                     } else {
                         // Split failed; rollback prefix placement to avoid duplicating keepWithNext units.
                         if (session) {
-                            const rolledBack = session.restoreLocalBranchSnapshot(
+                            const settlement = session.settleTailSplitFailure(
+                                pages,
                                 currentPageBoxes,
+                                currentPageIndex,
+                                contextBase.pageWidth,
+                                contextBase.pageHeight,
+                                margins.top,
+                                i,
                                 packagers,
-                                prefixPlacementCheckpoint as ReturnType<LayoutSession['captureLocalBranchSnapshot']>
+                                prefixPlacementCheckpoint as ReturnType<LayoutSession['captureLocalBranchSnapshot']>,
+                                getTailSplitPostAttemptOutcome(keepPlan, false, isAtPageTop) === 'advance-page'
                             );
-                            currentY = rolledBack.currentY;
-                            lastSpacingAfter = rolledBack.lastSpacingAfter;
+                            applySessionLoopAction(session.toPaginationLoopAction(settlement));
                         } else {
                             currentPageBoxes.splice(prefixPlacementCheckpoint.boxStartIndex);
                             currentY = prefixPlacementCheckpoint.currentY;
                             lastSpacingAfter = prefixPlacementCheckpoint.lastSpacingAfter;
                         }
-                        if (getTailSplitPostAttemptOutcome(keepPlan, false, isAtPageTop) === 'advance-page') {
-                            session?.recordProfile('keepWithNextBranchCalls', 1);
-                            session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
+                        if (!session && getTailSplitPostAttemptOutcome(keepPlan, false, isAtPageTop) === 'advance-page') {
                             pushNewPage();
+                            continue;
+                        }
+                        if (session && getTailSplitPostAttemptOutcome(keepPlan, false, isAtPageTop) === 'advance-page') {
+                            session.recordProfile('keepWithNextBranchCalls', 1);
+                            session.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
                             continue;
                         }
                     }
@@ -369,6 +483,11 @@ export function paginatePackagers(
 
             // If a keepWithNext sequence doesn't fit, we push the group to the next page.
             // For single units, we allow the packager to attempt a mid-page split.
+            if (wholeFormationOverflowAction?.action === 'continue-loop') {
+                applySessionLoopAction(wholeFormationOverflowAction);
+                continue;
+            }
+
             if (wholeFormationOverflowFallbackOutcome === 'advance-page') {
                 pushNewPage();
                 continue;
@@ -399,21 +518,19 @@ export function paginatePackagers(
                     pageLimit,
                     margins.top
                 );
-                if (outcome.action === 'retry-next-page') {
-                    pushNewPage();
-                    continue;
-                }
-                if (outcome.action === 'defer') {
-                    currentY = outcome.nextCurrentY;
-                    if (outcome.shouldAdvancePage) {
-                        pushNewPage();
-                    }
-                    continue;
-                }
-                currentPageBoxes.push(...outcome.committed.boxes);
-                currentY = outcome.committed.currentY;
-                lastSpacingAfter = outcome.committed.lastSpacingAfter;
-                i++;
+                const handling = session.settleActorPlacementAttempt(
+                    pages,
+                    currentPageBoxes,
+                    currentPageIndex,
+                    contextBase.pageWidth,
+                    contextBase.pageHeight,
+                    margins.top,
+                    i,
+                    outcome,
+                    currentY,
+                    lastSpacingAfter
+                );
+                applySessionLoopAction(session.toPaginationLoopAction(handling));
                 continue;
             }
 
@@ -498,32 +615,45 @@ export function paginatePackagers(
             overflowHandling.preSplitOutcome === 'advance-page-before-split'
         ) {
             if (session) {
-                const boxes = overflowHandling.preSplitOutcome === 'force-commit-at-top'
+                const markerReserve = session.getSplitMarkerReserve(packager);
+                const splitAvailableHeight = availableHeightAdjusted - markerReserve;
+                const preSplitBoxes = overflowHandling.preSplitOutcome === 'force-commit-at-top'
                     ? (packager.emitBoxes(availableWidth, availableHeightAdjusted, context) || [])
                     : null;
-                const outcome = session.handleActorOverflowPreSplit(
-                    overflowHandling.preSplitOutcome,
+                const overflowEntry = session.handleActorOverflowEntry(
+                    overflowHandling,
                     packager,
-                    boxes,
+                    preSplitBoxes,
                     {
                         currentY,
                         layoutDelta,
                         effectiveHeight,
                         marginBottom,
                         pageIndex: currentPageIndex
-                    }
+                    },
+                    availableWidth,
+                    splitAvailableHeight,
+                    context,
+                    currentY,
+                    lastSpacingAfter
                 );
-                if (outcome.committed) {
-                    currentPageBoxes.push(...outcome.committed.boxes);
-                    currentY = outcome.committed.currentY;
-                    lastSpacingAfter = outcome.committed.lastSpacingAfter;
+                if (overflowEntry.action !== 'handled') {
+                    throw new Error('Expected handled overflow entry for pre-split outcomes.');
                 }
-                if (outcome.shouldAdvancePage) {
-                    pushNewPage();
+                const settlement = session.settleActorOverflowEntry(
+                    pages,
+                    currentPageBoxes,
+                    currentPageIndex,
+                    contextBase.pageWidth,
+                    contextBase.pageHeight,
+                    margins.top,
+                    i,
+                    overflowEntry
+                );
+                if (settlement.action !== 'handled') {
+                    throw new Error('Expected handled overflow settlement for pre-split outcomes.');
                 }
-                if (outcome.shouldAdvanceIndex) {
-                    i++;
-                }
+                applySessionLoopAction(session.toPaginationLoopAction(settlement));
                 continue;
             }
 
@@ -554,28 +684,53 @@ export function paginatePackagers(
         // Let's try to split
         const markerReserve = session?.getSplitMarkerReserve(packager) ?? 0;
         const splitAvailableHeight = availableHeightAdjusted - markerReserve;
-        const splitEntryHandling = session && overflowHandling.splitEntryOutcome
-            ? session.handleActorOverflowSplitEntry(
-                overflowHandling.splitEntryOutcome,
+        const overflowEntry = session
+            ? session.handleActorOverflowEntry(
+                overflowHandling,
                 packager,
+                null,
+                {
+                    currentY,
+                    layoutDelta,
+                    effectiveHeight,
+                    marginBottom,
+                    pageIndex: currentPageIndex
+                },
                 availableWidth,
                 splitAvailableHeight,
-                context
+                context,
+                currentY,
+                lastSpacingAfter
             )
             : null;
-        if (splitEntryHandling?.shouldAdvancePage) {
-            pushNewPage();
+        if (session && overflowEntry?.action === 'handled') {
+            const settlement = session.settleActorOverflowEntry(
+                pages,
+                currentPageBoxes,
+                currentPageIndex,
+                contextBase.pageWidth,
+                contextBase.pageHeight,
+                margins.top,
+                i,
+                overflowEntry
+            );
+            if (settlement.action !== 'handled') {
+                throw new Error('Expected handled overflow settlement before split.');
+            }
+            applySessionLoopAction(session.toPaginationLoopAction(settlement));
             continue;
         }
-        const splitExecution = splitEntryHandling?.splitExecution ?? {
-            attempt: {
-                actor: packager,
-                availableWidth,
-                availableHeight: splitAvailableHeight,
-                context
-            },
-            result: packager.split(splitAvailableHeight, context)
-        };
+        const splitExecution = overflowEntry?.action === 'continue-to-split'
+            ? overflowEntry.splitExecution
+            : {
+                attempt: {
+                    actor: packager,
+                    availableWidth,
+                    availableHeight: splitAvailableHeight,
+                    context
+                },
+                result: packager.split(splitAvailableHeight, context)
+            };
         const splitAttempt = splitExecution.attempt;
         const { currentFragment: fitsCurrent, continuationFragment: pushedNext } = splitExecution.result;
 
@@ -584,7 +739,7 @@ export function paginatePackagers(
                 const boxes = isAtPageTop
                     ? (packager.emitBoxes(availableWidth, availableHeightAdjusted, context) || [])
                     : null;
-                const outcome = session.handleActorSplitFailure(
+                const outcome = session.resolveActorSplitFailure(
                     packager,
                     boxes,
                     {
@@ -594,16 +749,22 @@ export function paginatePackagers(
                         marginBottom,
                         pageIndex: currentPageIndex
                     },
-                    isAtPageTop
+                    isAtPageTop,
+                    currentY,
+                    lastSpacingAfter
                 );
-                if (outcome.committed) {
-                    currentPageBoxes.push(...outcome.committed.boxes);
-                }
-                pushNewPage();
-                if (outcome.shouldAdvanceIndex) {
-                    i++;
-                }
-                continue;
+            const settlement = session.settleActorSplitFailure(
+                    pages,
+                    currentPageBoxes,
+                    currentPageIndex,
+                    contextBase.pageWidth,
+                    contextBase.pageHeight,
+                    margins.top,
+                i,
+                outcome
+            );
+            applySessionLoopAction(session.toPaginationLoopAction(settlement));
+            continue;
             }
 
             if (isAtPageTop) {
@@ -645,21 +806,29 @@ export function paginatePackagers(
             LAYOUT_DEFAULTS.minEffectiveHeight
         );
         const deferredSplitCursorY = resolveDeferredCursorY(fitsCurrent);
-        if (deferredSplitCursorY !== null) {
-            if (session) {
-                const outcome = session.resolveDeferredSplitPlacement(
-                    currentY,
+            if (deferredSplitCursorY !== null) {
+                if (session) {
+                    const outcome = session.resolveDeferredSplitPlacement(
+                        currentY,
                     deferredSplitCursorY,
                     fitsLayoutBefore,
                     pageLimit,
                     margins.top
                 );
-                currentY = outcome.nextCurrentY;
-                if (outcome.shouldAdvancePage) {
-                    pushNewPage();
+                const settlement = session.settleDeferredSplitPlacement(
+                    pages,
+                    currentPageBoxes,
+                    currentPageIndex,
+                    contextBase.pageWidth,
+                    contextBase.pageHeight,
+                    margins.top,
+                    i,
+                    lastSpacingAfter,
+                    outcome
+                );
+                    applySessionLoopAction(session.toPaginationLoopAction(settlement));
+                    continue;
                 }
-                continue;
-            }
             const nextCursorY = deferredSplitCursorY;
             if (nextCursorY <= currentY + fitsLayoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
                 pushNewPage();
@@ -675,17 +844,15 @@ export function paginatePackagers(
         const fitsAvailableHeightAdjusted = availableHeight - fitsLayoutDelta;
         const currentBoxes = fitsCurrent.emitBoxes(availableWidth, fitsAvailableHeightAdjusted, splitContext) || [];
         if (session) {
-            const outcome = session.finalizeGenericAcceptedSplit(
+            const handling = session.handleGenericSplitSuccess(
                 currentPageBoxes,
                 packagers,
                 i,
                 packager,
                 pushedNext,
                 splitAttempt,
-                {
-                    currentFragment: fitsCurrent,
-                    continuationFragment: pushedNext
-                },
+                splitExecution.result,
+                fitsCurrent,
                 currentBoxes,
                 session.createSplitFragmentAftermathState(fitsCurrent, {
                     currentY,
@@ -695,6 +862,10 @@ export function paginatePackagers(
                     availableWidth,
                     pageIndex: currentPageIndex
                 }),
+                deferredSplitCursorY,
+                fitsLayoutBefore,
+                pageLimit,
+                margins.top,
                 (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
                     (processor as any).positionFlowBox(
                         marker,
@@ -705,14 +876,18 @@ export function paginatePackagers(
                         markerPageIndex
                     )
             );
-            currentPageBoxes.push(...outcome.committed.boxes);
-            currentY = outcome.committed.currentY;
-            lastSpacingAfter = outcome.committed.lastSpacingAfter;
-            pushNewPage();
-            if (outcome.queueHandling.shouldAdvanceIndex) {
-                i++;
-            }
-            continue;
+                const settlement = session.settleGenericSplitSuccess(
+                pages,
+                currentPageBoxes,
+                currentPageIndex,
+                contextBase.pageWidth,
+                contextBase.pageHeight,
+                margins.top,
+                    i,
+                    handling
+                );
+                applySessionLoopAction(session.toPaginationLoopAction(settlement));
+                continue;
         } else {
             for (const box of currentBoxes) {
                 box.y = (box.y || 0) + currentY + fitsLayoutDelta;
@@ -736,12 +911,22 @@ export function paginatePackagers(
     }
 
     if (currentPageBoxes.length > 0) {
-        pages.push({
-            index: currentPageIndex,
-            boxes: currentPageBoxes,
-            width: contextBase.pageWidth,
-            height: contextBase.pageHeight
-        });
+        if (session) {
+            session.closePagination(
+                pages,
+                currentPageBoxes,
+                currentPageIndex,
+                contextBase.pageWidth,
+                contextBase.pageHeight
+            );
+        } else {
+            pages.push({
+                index: currentPageIndex,
+                boxes: currentPageBoxes,
+                width: contextBase.pageWidth,
+                height: contextBase.pageHeight
+            });
+        }
     }
 
     return pages;

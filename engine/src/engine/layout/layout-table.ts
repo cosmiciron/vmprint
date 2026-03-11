@@ -4,6 +4,7 @@ import { solveTrackSizing, TrackSizingDefinition } from './track-sizing';
 import { FlowBox, FlowMaterializationContext, ResolvedLinesResult } from './layout-core-types';
 import { LAYOUT_DEFAULTS } from './defaults';
 import {
+    createClonedBoxMeta,
     createContinuationFragmentMeta,
     createContinuationFragmentStyle,
     createLeadingFragmentMeta,
@@ -608,6 +609,7 @@ export function materializeTableFlowBox(
         columnGap: model.columnGap,
         rowIndices,
         headerRowIndices: model.headerRowIndices.slice(),
+        clonedRowIndices: [],
         repeatHeader: model.repeatHeader,
         cellsByRowIndex
     };
@@ -699,11 +701,13 @@ export function splitTableFlowBox(
 
     const partAResolved: TableResolvedLayout = {
         ...resolved,
-        rowIndices: partAIndices.slice()
+        rowIndices: partAIndices.slice(),
+        clonedRowIndices: []
     };
     const partBResolved: TableResolvedLayout = {
         ...resolved,
-        rowIndices: partBIndices.slice()
+        rowIndices: partBIndices.slice(),
+        clonedRowIndices: resolved.repeatHeader ? resolved.headerRowIndices.slice() : []
     };
 
     const partAModel: TableModel = { ...model, rowIndices: partAIndices.slice() };
@@ -813,6 +817,7 @@ export function positionTableFlowBoxes(
     const contentY = y + paddingTop + borderTop;
     const columnOffsets = getTableColumnOffsets(resolved.columnWidths, resolved.columnGap);
     const rowIndices = Array.isArray(resolved.rowIndices) ? resolved.rowIndices.slice() : [];
+    const clonedRowSet = new Set<number>(Array.isArray(resolved.clonedRowIndices) ? resolved.clonedRowIndices : []);
     const rowDisplayIndexBySource = new Map<number, number>();
     for (let displayRowIndex = 0; displayRowIndex < rowIndices.length; displayRowIndex++) {
         rowDisplayIndexBySource.set(rowIndices[displayRowIndex], displayRowIndex);
@@ -875,6 +880,16 @@ export function positionTableFlowBoxes(
             };
 
             if (unit.meta.reflowKey) cellMeta.reflowKey = unit.meta.reflowKey;
+            const isRepeatedHeaderClone =
+                (clonedRowSet.has(sourceRowIndex) || (
+                    unit.meta.isContinuation
+                    && resolved.repeatHeader
+                    && resolved.headerRowIndices.includes(sourceRowIndex)
+                    && displayRowIndex < resolved.headerRowIndices.length
+                ));
+            const emittedCellMeta = isRepeatedHeaderClone
+                ? createClonedBoxMeta(cellMeta, normalizedCellSourceId)
+                : cellMeta;
 
             out.push({
                 type: 'table_cell',
@@ -901,7 +916,7 @@ export function positionTableFlowBoxes(
                     _tableColSpan: colSpan,
                     _tableRowSpan: effectiveRowSpan
                 },
-                meta: cellMeta
+                meta: emittedCellMeta
             });
 
             if (cell.childBoxes && cell.childBoxes.length > 0) {
@@ -913,11 +928,14 @@ export function positionTableFlowBoxes(
                 const offsetY = rowCursorY + cellPadTop + cellBorderTop;
                 for (const child of cell.childBoxes) {
                     const childMeta = child.meta ? { ...child.meta, pageIndex } : { pageIndex } as any;
+                    const emittedChildMeta = isRepeatedHeaderClone && childMeta.sourceId
+                        ? createClonedBoxMeta(childMeta, String(childMeta.sourceId))
+                        : childMeta;
                     out.push({
                         ...child,
                         x: Number(child.x || 0) + offsetX,
                         y: Number(child.y || 0) + offsetY,
-                        meta: childMeta
+                        meta: emittedChildMeta
                     });
                 }
             }

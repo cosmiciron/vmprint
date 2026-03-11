@@ -54,6 +54,7 @@ export type TableResolvedLayout = {
     columnGap: number;
     rowIndices: number[];
     headerRowIndices: number[];
+    clonedRowIndices: number[];
     repeatHeader: boolean;
     cellsByRowIndex: TableCellMaterialized[][];
 };
