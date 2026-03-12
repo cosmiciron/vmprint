@@ -334,6 +334,16 @@ export interface LayoutConfig {
     styles: Partial<Record<string, ElementStyle>>;
     header?: PageRegionDefinition;
     footer?: PageRegionDefinition;
+    printPipeline?: {
+        tableOfContents?: {
+            reservedPageCount: number;
+            title?: string;
+            titleType?: string;
+            entryType?: string;
+            indentPerLevel?: number;
+            includeTitle?: boolean;
+        };
+    };
     preloadFontFamilies?: string[];
     debug?: boolean;
 }
@@ -346,6 +356,7 @@ export interface DocumentInput {
     elements: Element[];
     header?: PageRegionDefinition;
     footer?: PageRegionDefinition;
+    printPipeline?: LayoutConfig['printPipeline'];
     debug?: boolean;
 }
 

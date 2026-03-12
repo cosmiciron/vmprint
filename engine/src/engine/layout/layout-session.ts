@@ -10,7 +10,7 @@ import type { PackagerSplitResult } from './packagers/packager-types';
 import { getTailSplitPostAttemptOutcome, getWholeFormationOverflowHandling } from './actor-formation';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { computeKeepWithNextPlan } from './keep-with-next-collaborator';
-import { rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
+import { preparePackagerForPhase, rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
 import type {
     SimulationArtifactKey,
     SimulationArtifactMap,
@@ -646,6 +646,14 @@ export type GenericSplitActionInput = {
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>;
     resolveDeferredCursorY: (candidate: PackagerUnit) => number | null;
     positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[];
+};
+
+export type ActorMeasurement = {
+    marginTop: number;
+    marginBottom: number;
+    contentHeight: number;
+    requiredHeight: number;
+    effectiveHeight: number;
 };
 
 export type ActorSplitFailureHandlingOutcome = {
@@ -1339,6 +1347,7 @@ export class LayoutSession {
     buildSimulationArtifacts(): SimulationArtifacts {
         const artifacts: SimulationArtifacts = {
             fragmentationSummary: this.artifacts.get(simulationArtifactKeys.fragmentationSummary) as SimulationArtifactMap['fragmentationSummary'],
+            transformCapabilitySummary: this.artifacts.get(simulationArtifactKeys.transformCapabilitySummary) as SimulationArtifactMap['transformCapabilitySummary'],
             transformSummary: this.artifacts.get(simulationArtifactKeys.transformSummary) as SimulationArtifactMap['transformSummary'],
             pageNumberSummary: this.artifacts.get(simulationArtifactKeys.pageNumberSummary) as SimulationArtifactMap['pageNumberSummary'],
             pageOverrideSummary: this.artifacts.get(simulationArtifactKeys.pageOverrideSummary) as SimulationArtifactMap['pageOverrideSummary'],
@@ -1346,7 +1355,8 @@ export class LayoutSession {
             pageReservationSummary: this.artifacts.get(simulationArtifactKeys.pageReservationSummary) as SimulationArtifactMap['pageReservationSummary'],
             pageSpatialConstraintSummary: this.artifacts.get(simulationArtifactKeys.pageSpatialConstraintSummary) as SimulationArtifactMap['pageSpatialConstraintSummary'],
             pageRegionSummary: this.artifacts.get(simulationArtifactKeys.pageRegionSummary) as SimulationArtifactMap['pageRegionSummary'],
-            sourcePositionMap: this.artifacts.get(simulationArtifactKeys.sourcePositionMap) as SimulationArtifactMap['sourcePositionMap']
+            sourcePositionMap: this.artifacts.get(simulationArtifactKeys.sourcePositionMap) as SimulationArtifactMap['sourcePositionMap'],
+            headingTelemetry: this.artifacts.get(simulationArtifactKeys.headingTelemetry) as SimulationArtifactMap['headingTelemetry']
         };
 
         for (const [key, value] of this.artifacts.entries()) {
@@ -3476,6 +3486,30 @@ export class LayoutSession {
 
     getFragmentTransitionSourceIds(): readonly string[] {
         return Array.from(this.fragmentTransitionsBySource.keys());
+    }
+
+    measurePreparedActor(
+        actor: PackagerUnit,
+        availableWidth: number,
+        availableHeight: number,
+        layoutBefore: number,
+        context: PackagerContext
+    ): ActorMeasurement {
+        preparePackagerForPhase(actor, 'commit', availableWidth, availableHeight, context);
+        this.notifyActorPrepared(actor);
+
+        const marginTop = actor.getMarginTop();
+        const marginBottom = actor.getMarginBottom();
+        const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
+        const requiredHeight = contentHeight + layoutBefore + marginBottom;
+
+        return {
+            marginTop,
+            marginBottom,
+            contentHeight,
+            requiredHeight,
+            effectiveHeight: Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight)
+        };
     }
 
     recordProfile(metric: keyof LayoutProfileMetrics, delta: number): void {

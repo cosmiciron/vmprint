@@ -199,6 +199,11 @@ Primary targets:
 * simulation-complete artifact handoff for print-domain consumers
 * groundwork for TOC, bookmarks, and cross-reference post-processing
 
+Boundary reminder:
+
+* VMPrint should provide the navigational substrate, assembly mapping, and simulation artifacts that make TOC/bookmark/cross-reference features possible.
+* VMPrint should not casually expand the authored AST to own user-facing generated book features that belong more naturally in downstream composition tools.
+
 Definition of done:
 
 * heading landing data is available as simulation output

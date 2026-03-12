@@ -1,8 +1,7 @@
 import { Box, Element, Page } from '../../types';
 import { LayoutProcessor } from '../layout-core';
-import { LAYOUT_DEFAULTS } from '../defaults';
 import { LayoutSession, PaginationState } from '../layout-session';
-import { PackagerContext, PackagerUnit, LayoutBox, preparePackagerForPhase } from './packager-types';
+import { PackagerContext, PackagerUnit, LayoutBox } from './packager-types';
 
 export function paginatePackagers(
     processor: LayoutProcessor,
@@ -111,12 +110,16 @@ export function paginatePackagers(
             isAtPageTop,
             context
         });
-
-        preparePackagerForPhase(packager, 'commit', availableWidth, availableHeightAdjusted, context);
-        session.notifyActorPrepared(packager);
-        const contentHeight = Math.max(0, packager.getRequiredHeight() - marginTop - marginBottom);
-        let requiredHeight = contentHeight + layoutBefore + marginBottom;
-        let effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+        const measurement = session.measurePreparedActor(
+            packager,
+            availableWidth,
+            availableHeightAdjusted,
+            layoutBefore,
+            context
+        );
+        const contentHeight = measurement.contentHeight;
+        const requiredHeight = measurement.requiredHeight;
+        const effectiveHeight = measurement.effectiveHeight;
 
         const keepWithNextOverflow = packager.keepWithNext
             ? session.resolveKeepWithNextOverflow({

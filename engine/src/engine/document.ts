@@ -7,7 +7,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
     return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
-const ROOT_KEYS = new Set(['documentVersion', 'layout', 'fonts', 'styles', 'elements', 'header', 'footer', 'debug']);
+const ROOT_KEYS = new Set(['documentVersion', 'layout', 'fonts', 'styles', 'elements', 'header', 'footer', 'printPipeline', 'debug']);
 const PAGE_RESERVATION_SELECTOR_VALUES = new Set(['first', 'odd', 'even', 'all']);
 const LAYOUT_KEYS = new Set([
     'pageSize',
@@ -80,6 +80,8 @@ const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 
 const PAGE_REGION_DEFINITION_KEYS = new Set(['default', 'firstPage', 'odd', 'even']);
 const PAGE_REGION_CONTENT_KEYS = new Set(['elements', 'style']);
 const PAGE_OVERRIDES_KEYS = new Set(['header', 'footer']);
+const PRINT_PIPELINE_KEYS = new Set(['tableOfContents']);
+const TABLE_OF_CONTENTS_KEYS = new Set(['reservedPageCount', 'title', 'titleType', 'entryType', 'indentPerLevel', 'includeTitle']);
 const STYLE_KEYS = new Set([
     'fontFamily',
     'fontSize',
@@ -310,6 +312,26 @@ function validateLayout(layout: unknown, documentPath: string): void {
                 continue;
             }
             assertFiniteNumberAt(value, `layout.opticalScaling.${key}`, documentPath);
+        }
+    }
+}
+
+function validatePrintPipeline(printPipeline: unknown, documentPath: string): void {
+    const pipeline = assertPlainObjectAt(printPipeline, 'printPipeline', documentPath);
+    assertAllowedKeys(pipeline, PRINT_PIPELINE_KEYS, 'printPipeline', documentPath);
+
+    if (pipeline.tableOfContents !== undefined) {
+        const toc = assertPlainObjectAt(pipeline.tableOfContents, 'printPipeline.tableOfContents', documentPath);
+        assertAllowedKeys(toc, TABLE_OF_CONTENTS_KEYS, 'printPipeline.tableOfContents', documentPath);
+        assertFiniteNumberAt(toc.reservedPageCount, 'printPipeline.tableOfContents.reservedPageCount', documentPath);
+        if (toc.title !== undefined) assertStringAt(toc.title, 'printPipeline.tableOfContents.title', documentPath);
+        if (toc.titleType !== undefined) assertStringAt(toc.titleType, 'printPipeline.tableOfContents.titleType', documentPath);
+        if (toc.entryType !== undefined) assertStringAt(toc.entryType, 'printPipeline.tableOfContents.entryType', documentPath);
+        if (toc.indentPerLevel !== undefined) {
+            assertFiniteNumberAt(toc.indentPerLevel, 'printPipeline.tableOfContents.indentPerLevel', documentPath);
+        }
+        if (toc.includeTitle !== undefined) {
+            assertBooleanAt(toc.includeTitle, 'printPipeline.tableOfContents.includeTitle', documentPath);
         }
     }
 }
@@ -631,6 +653,7 @@ function validateDocumentContract(document: DocumentInput, documentPath: string)
     });
     if (document.header !== undefined) validatePageRegionDefinition(document.header, 'header', documentPath);
     if (document.footer !== undefined) validatePageRegionDefinition(document.footer, 'footer', documentPath);
+    if (document.printPipeline !== undefined) validatePrintPipeline(document.printPipeline, documentPath);
 }
 
 function deepSortObject<T>(value: T): T {
@@ -744,7 +767,8 @@ export function normalizeDocumentToIR(document: DocumentInput, documentPath: str
         styles: normalizedStyles,
         elements: normalizedElements,
         header: document.header ? deepSortObject(document.header) as any : undefined,
-        footer: document.footer ? deepSortObject(document.footer) as any : undefined
+        footer: document.footer ? deepSortObject(document.footer) as any : undefined,
+        printPipeline: document.printPipeline ? deepSortObject(document.printPipeline) as any : undefined
     };
 }
 
@@ -798,6 +822,7 @@ export function toLayoutConfig(document: DocumentIR, debug: boolean): LayoutConf
         styles: document.styles,
         header: document.header,
         footer: document.footer,
+        printPipeline: document.printPipeline,
         preloadFontFamilies: Array.from(new Set([
             ...collectElementFontFamilies(document.elements),
             ...collectRegionFontFamilies(document.header),

@@ -15,6 +15,13 @@ import {
 import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src/engine/document';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import {
+    buildAssembledTableOfContentsElements,
+    buildAssembledBookmarkTree,
+    buildBookmarkTree,
+    buildTableOfContentsElements,
+    getHeadingOutline,
+    resolvePhysicalPageReference,
+    remapHeadingOutlineWithAssembly,
     simulationArtifactKeys
 } from '../src/engine/layout/simulation-report';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
@@ -694,8 +701,12 @@ function buildCloneProbeTable(id: string, rowCount: number): any {
 
 function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: string): void {
     const reader = engine.getLastSimulationReportReader?.();
+    const printSnapshot = engine.getLastPrintPipelineSnapshot?.();
     assert.ok(reader?.report, `${fixtureName}: expected simulation report`);
     assert.ok(reader, `${fixtureName}: expected simulation report reader`);
+    assert.ok(printSnapshot, `${fixtureName}: expected print pipeline snapshot`);
+    assert.equal(printSnapshot.pages.length, pages.length, `${fixtureName}: print pipeline snapshot page count mismatch`);
+    assert.ok(printSnapshot.reader, `${fixtureName}: expected print pipeline snapshot reader`);
     assert.equal(reader.pageCount, pages.length, `${fixtureName}: simulation report pageCount mismatch`);
     assert.ok(
         reader.has(simulationArtifactKeys.fragmentationSummary),
@@ -722,6 +733,10 @@ function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: s
     assert.ok(
         reader.has(simulationArtifactKeys.pageNumberSummary),
         `${fixtureName}: simulation report should expose pageNumberSummary`
+    );
+    assert.ok(
+        reader.has(simulationArtifactKeys.headingTelemetry),
+        `${fixtureName}: simulation report should expose headingTelemetry`
     );
     assert.ok(
         reader.has(simulationArtifactKeys.pageOverrideSummary),
@@ -1068,6 +1083,619 @@ async function run() {
             );
         }
     }
+
+    await checkAsync(
+        'heading telemetry probe',
+        'heading actors should publish ordered heading telemetry artifacts for the print pipeline handoff',
+        async () => {
+            const config = buildCloneProbeConfig();
+            const engine = new LayoutEngine(config);
+            await engine.waitForFonts();
+            const matchesSourceId = (actual: unknown, expected: string): boolean => {
+                const value = String(actual || '');
+                return value === expected || value.endsWith(`:${expected}`);
+            };
+
+            const elements = [
+                {
+                    type: 'h1',
+                    content: 'Architecture Overhaul',
+                    properties: {
+                        sourceId: 'heading-main',
+                        style: { marginBottom: 10 }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: 'Introductory body copy keeps the layout path realistic while leaving the headings on the first page.',
+                    properties: { sourceId: 'heading-body-a' }
+                },
+                {
+                    type: 'h2',
+                    content: 'Subsystem Handoff',
+                    properties: {
+                        sourceId: 'heading-sub',
+                        style: { marginTop: 8, marginBottom: 8 }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: 'Post-processing should consume heading telemetry from the committed simulation output.',
+                    properties: { sourceId: 'heading-body-b' }
+                }
+            ];
+
+            const pages = engine.paginate(elements as any);
+            assert.ok(pages.length >= 1, 'heading telemetry probe should paginate successfully');
+
+            const reader = engine.getLastSimulationReportReader();
+            const headingTelemetry = reader.require(simulationArtifactKeys.headingTelemetry);
+            const printSnapshot = engine.getLastPrintPipelineSnapshot();
+            const headingOutline = getHeadingOutline(printSnapshot);
+            const bookmarkTree = buildBookmarkTree(printSnapshot);
+            const tocElements = buildTableOfContentsElements(printSnapshot);
+            assert.equal(headingTelemetry.length, 2, 'heading telemetry probe should publish exactly two heading entries');
+            assert.equal(headingOutline.length, 2, 'heading outline should expose two heading entries');
+            assert.equal(bookmarkTree.length, 1, 'bookmark tree should expose one root heading');
+            assert.equal(tocElements.length, 3, 'TOC builder should emit one title plus one entry per heading');
+            assert.equal(printSnapshot.pages.length, pages.length, 'print pipeline snapshot should expose finalized pages');
+            assert.equal(
+                printSnapshot.reader.require(simulationArtifactKeys.headingTelemetry).length,
+                headingTelemetry.length,
+                'print pipeline snapshot should expose heading telemetry through its reader'
+            );
+            assert.deepEqual(
+                headingOutline.map((entry) => ({ sourceId: entry.sourceId, level: entry.level, heading: entry.heading })),
+                [
+                    { sourceId: headingTelemetry[0]?.sourceId, level: 1, heading: 'Architecture Overhaul' },
+                    { sourceId: headingTelemetry[1]?.sourceId, level: 2, heading: 'Subsystem Handoff' }
+                ],
+                'heading outline should provide ordered TOC/bookmark-ready entries'
+            );
+            assert.deepEqual(
+                bookmarkTree.map((entry) => ({
+                    sourceId: entry.sourceId,
+                    level: entry.level,
+                    children: entry.children.map((child) => ({
+                        sourceId: child.sourceId,
+                        level: child.level
+                    }))
+                })),
+                [
+                    {
+                        sourceId: headingTelemetry[0]?.sourceId,
+                        level: 1,
+                        children: [{ sourceId: headingTelemetry[1]?.sourceId, level: 2 }]
+                    }
+                ],
+                'bookmark tree should nest lower-level headings beneath the nearest higher-level heading'
+            );
+            assert.deepEqual(
+                tocElements.map((element) => ({
+                    type: element.type,
+                    content: element.content,
+                    linkTarget: element.properties?.linkTarget,
+                    semanticRole: element.properties?.semanticRole,
+                    sourceId: element.properties?.sourceId,
+                    source: element.properties?._generatedTocSourceId,
+                    level: element.properties?._generatedTocLevel,
+                    pageLabel: element.properties?._generatedTocPageLabel,
+                    generatedLinkTarget: element.properties?._generatedTocLinkTarget
+                })),
+                [
+                    {
+                        type: 'h1',
+                        content: 'Contents',
+                        linkTarget: undefined,
+                        semanticRole: 'toc-title',
+                        sourceId: 'generated-toc-title',
+                        source: undefined,
+                        level: undefined,
+                        pageLabel: undefined,
+                        generatedLinkTarget: undefined
+                    },
+                    {
+                        type: 'p',
+                        content: 'Architecture Overhaul 1',
+                        linkTarget: '#page=1',
+                        semanticRole: 'toc-entry',
+                        sourceId: `generated-toc:${headingTelemetry[0]?.sourceId}`,
+                        source: headingTelemetry[0]?.sourceId,
+                        level: 1,
+                        pageLabel: '1',
+                        generatedLinkTarget: '#page=1'
+                    },
+                    {
+                        type: 'p',
+                        content: 'Subsystem Handoff 1',
+                        linkTarget: '#page=1',
+                        semanticRole: 'toc-entry',
+                        sourceId: `generated-toc:${headingTelemetry[1]?.sourceId}`,
+                        source: headingTelemetry[1]?.sourceId,
+                        level: 2,
+                        pageLabel: '1',
+                        generatedLinkTarget: '#page=1'
+                    }
+                ],
+                'TOC builder should convert heading telemetry into layoutable post-processing elements'
+            );
+
+            const tocEngine = new LayoutEngine(config);
+            await tocEngine.waitForFonts();
+            const tocPages = tocEngine.paginate(tocElements as any);
+            const flattenBoxText = (box: any): string => {
+                if (typeof box?.text === 'string' && box.text.length > 0) return box.text;
+                if (typeof box?.content === 'string' && box.content.length > 0) return box.content;
+                if (!Array.isArray(box?.lines)) return '';
+                return box.lines
+                    .flatMap((line: any[]) => line || [])
+                    .map((segment: any) => String(segment?.text || ''))
+                    .join('');
+            };
+            const tocText = tocPages
+                .flatMap((page: any) => page.boxes || [])
+                .map((box: any) => flattenBoxText(box))
+                .join('\n');
+            assert.ok(tocPages.length >= 1, 'generated TOC fragment should paginate successfully');
+            assert.match(tocText, /Contents/, 'generated TOC fragment should render the TOC title');
+            assert.match(tocText, /Architecture Overhaul 1/, 'generated TOC fragment should include the first heading entry');
+            assert.match(tocText, /Subsystem Handoff 1/, 'generated TOC fragment should include the nested heading entry');
+
+            const reservedPlan = await engine.planReservedTableOfContents(printSnapshot, 1);
+            assert.equal(reservedPlan.reservedPageCount, 1, 'reserved TOC plan should preserve the declared reservation size');
+            assert.equal(reservedPlan.fitsReservation, true, 'reserved TOC plan should fit a one-page reservation for the probe');
+            assert.equal(reservedPlan.overflowPageCount, 0, 'reserved TOC plan should report no overflow when it fits');
+            assert.equal(reservedPlan.tocPages.length, 1, 'reserved TOC plan should expose the separately paginated TOC pages');
+            assert.equal(reservedPlan.tocElements.length, tocElements.length, 'reserved TOC plan should expose the generated TOC elements');
+            assert.equal(reservedPlan.bodyPages.length, pages.length, 'reserved TOC plan should preserve the original body page list');
+            assert.equal(
+                reservedPlan.tocSnapshot.reader.require(simulationArtifactKeys.headingTelemetry).length,
+                1,
+                'generated TOC fragment should publish telemetry only for the generated TOC title heading'
+            );
+
+            const overflowPlan = await engine.planReservedTableOfContents(printSnapshot, 0);
+            assert.equal(overflowPlan.fitsReservation, false, 'reserved TOC plan should report overflow when the reservation is too small');
+            assert.equal(overflowPlan.overflowPageCount, 1, 'reserved TOC overflow should equal the number of generated pages beyond the reservation');
+
+            const configuredEngine = new LayoutEngine({
+                ...config,
+                printPipeline: {
+                    tableOfContents: {
+                        reservedPageCount: 1,
+                        title: 'Table of Contents',
+                        titleType: 'h2',
+                        entryType: 'p',
+                        indentPerLevel: 20,
+                        includeTitle: true
+                    }
+                }
+            });
+            await configuredEngine.waitForFonts();
+            configuredEngine.paginate(elements as any);
+            const configuredPlan = await configuredEngine.planConfiguredTableOfContents();
+            assert.ok(configuredPlan, 'configured TOC planner should activate when the document declares tableOfContents');
+            assert.equal(configuredPlan?.reservedPageCount, 1, 'configured TOC planner should use the declared reservation size');
+            assert.equal(configuredPlan?.fitsReservation, true, 'configured TOC planner should honor the declared reservation');
+            assert.equal(
+                configuredPlan?.tocElements[0]?.content,
+                'Table of Contents',
+                'configured TOC planner should use the declared TOC title'
+            );
+            assert.equal(
+                configuredPlan?.tocElements[0]?.type,
+                'h2',
+                'configured TOC planner should use the declared TOC title type'
+            );
+            assert.equal(
+                configuredPlan?.tocElements[2]?.properties?.style?.marginLeft,
+                20,
+                'configured TOC planner should use the declared indent per heading level'
+            );
+
+            const configuredBundle = await configuredEngine.buildPrintPipelineArtifacts();
+            const assembledTocElements = buildAssembledTableOfContentsElements(
+                printSnapshot,
+                configuredBundle.assembly,
+                {
+                    title: 'Table of Contents',
+                    titleType: 'h2',
+                    entryType: 'p',
+                    indentPerLevel: 20,
+                    includeTitle: true
+                }
+            );
+            assert.equal(configuredBundle.body.pages.length, pages.length, 'print artifact bundle should preserve the committed body snapshot');
+            assert.equal(configuredBundle.tableOfContents.declared, true, 'print artifact bundle should report configured TOC declaration');
+            assert.equal(configuredBundle.tableOfContents.status, 'fits-reservation', 'print artifact bundle should report a fitting TOC reservation');
+            assert.equal(configuredBundle.tableOfContents.overflowPageCount, 0, 'print artifact bundle should report zero overflow when TOC fits');
+            assert.ok(configuredBundle.tableOfContents.plan, 'print artifact bundle should include the configured TOC plan');
+            assert.equal(configuredBundle.assembly.status, 'reserved-front-matter', 'assembly plan should report reserved front matter when TOC fits');
+            assert.equal(configuredBundle.assembly.reservedFrontMatterPageCount, 1, 'assembly plan should preserve reserved TOC page count');
+            assert.equal(configuredBundle.assembly.bodyStartPageIndex, 1, 'assembly plan should start body pages after the reserved TOC block');
+            assert.equal(configuredBundle.assembly.omittedTocPageCount, 0, 'assembly plan should not omit TOC pages when reservation fits');
+            assert.deepEqual(
+                configuredBundle.assembly.bodyFinalPageIndexByBodyPageIndex,
+                [1],
+                'assembly plan should expose final page indices for body pages after front matter insertion'
+            );
+            assert.deepEqual(
+                configuredBundle.assembly.tocFinalPageIndexByTocPageIndex,
+                [0],
+                'assembly plan should expose final page indices for placed TOC pages'
+            );
+            assert.deepEqual(
+                configuredBundle.assembly.pages.slice(0, 2).map((entry) => ({
+                    finalPageIndex: entry.finalPageIndex,
+                    source: entry.source,
+                    sourcePageIndex: entry.sourcePageIndex
+                })),
+                [
+                    { finalPageIndex: 0, source: 'toc', sourcePageIndex: 0 },
+                    { finalPageIndex: 1, source: 'body', sourcePageIndex: 0 }
+                ],
+                'assembly plan should place TOC pages before body pages'
+            );
+            assert.deepEqual(
+                remapHeadingOutlineWithAssembly(headingOutline, configuredBundle.assembly).map((entry) => ({
+                    sourceId: entry.sourceId,
+                    pageIndex: entry.pageIndex
+                })),
+                [
+                    { sourceId: headingTelemetry[0]?.sourceId, pageIndex: 1 },
+                    { sourceId: headingTelemetry[1]?.sourceId, pageIndex: 1 }
+                ],
+                'assembly remapping should translate body heading page indices into final assembled page indices'
+            );
+            assert.deepEqual(
+                resolvePhysicalPageReference(printSnapshot, 0, configuredBundle.assembly),
+                {
+                    originalPageIndex: 0,
+                    finalPageIndex: 1,
+                    originalPageLabel: '1',
+                    finalPageLabel: '2',
+                    originalLinkTarget: '#page=1',
+                    finalLinkTarget: '#page=2'
+                },
+                'generic page-reference resolution should remap body-page references into final assembled page positions'
+            );
+            assert.deepEqual(
+                configuredBundle.bodyPageReferences,
+                [
+                    {
+                        originalPageIndex: 0,
+                        finalPageIndex: 1,
+                        originalPageLabel: '1',
+                        finalPageLabel: '2',
+                        originalLinkTarget: '#page=1',
+                        finalLinkTarget: '#page=2'
+                    }
+                ],
+                'print artifact bundle should expose precomputed body-page references for assembled host consumers'
+            );
+            assert.deepEqual(
+                configuredBundle.navigation.headingOutline.map((entry) => ({
+                    sourceId: entry.sourceId,
+                    pageIndex: entry.pageIndex,
+                    level: entry.level
+                })),
+                [
+                    { sourceId: headingTelemetry[0]?.sourceId, pageIndex: 0, level: 1 },
+                    { sourceId: headingTelemetry[1]?.sourceId, pageIndex: 0, level: 2 }
+                ],
+                'print artifact bundle should expose the raw heading outline as navigational substrate'
+            );
+            assert.deepEqual(
+                configuredBundle.navigation.assembledHeadingOutline.map((entry) => ({
+                    sourceId: entry.sourceId,
+                    pageIndex: entry.pageIndex,
+                    level: entry.level
+                })),
+                [
+                    { sourceId: headingTelemetry[0]?.sourceId, pageIndex: 1, level: 1 },
+                    { sourceId: headingTelemetry[1]?.sourceId, pageIndex: 1, level: 2 }
+                ],
+                'print artifact bundle should expose the assembly-remapped heading outline for host consumers'
+            );
+            assert.deepEqual(
+                configuredBundle.navigation.assembledBookmarkTree.map((entry) => ({
+                    sourceId: entry.sourceId,
+                    pageIndex: entry.pageIndex,
+                    children: entry.children.map((child) => ({
+                        sourceId: child.sourceId,
+                        pageIndex: child.pageIndex
+                    }))
+                })),
+                [
+                    {
+                        sourceId: headingTelemetry[0]?.sourceId,
+                        pageIndex: 1,
+                        children: [{ sourceId: headingTelemetry[1]?.sourceId, pageIndex: 1 }]
+                    }
+                ],
+                'print artifact bundle should expose an assembled bookmark tree without requiring helper reconstruction'
+            );
+            assert.deepEqual(
+                {
+                    main: configuredBundle.navigation.sourceAnchorsBySourceId[headingTelemetry[0]?.sourceId || ''],
+                    sub: configuredBundle.navigation.sourceAnchorsBySourceId[headingTelemetry[1]?.sourceId || '']
+                },
+                {
+                    main: {
+                        sourceId: headingTelemetry[0]?.sourceId,
+                        sourceType: 'h1',
+                        firstPageIndex: 0,
+                        finalFirstPageIndex: 1,
+                        firstY: headingTelemetry[0]?.y,
+                        pageIndices: [0],
+                        finalPageIndices: [1],
+                        fragmentCount: 1,
+                        linkTarget: '#page=1',
+                        finalLinkTarget: '#page=2'
+                    },
+                    sub: {
+                        sourceId: headingTelemetry[1]?.sourceId,
+                        sourceType: 'h2',
+                        firstPageIndex: 0,
+                        finalFirstPageIndex: 1,
+                        firstY: headingTelemetry[1]?.y,
+                        pageIndices: [0],
+                        finalPageIndices: [1],
+                        fragmentCount: 1,
+                        linkTarget: '#page=1',
+                        finalLinkTarget: '#page=2'
+                    }
+                },
+                'print artifact bundle should expose assembled source anchors keyed by sourceId for downstream navigation consumers'
+            );
+            assert.deepEqual(
+                configuredBundle.getSourceAnchor(headingTelemetry[0]?.sourceId || ''),
+                configuredBundle.navigation.sourceAnchorsBySourceId[headingTelemetry[0]?.sourceId || ''],
+                'print artifact bundle should expose a direct sourceId anchor lookup without requiring map plumbing'
+            );
+            assert.equal(
+                configuredBundle.getSourceAnchor('missing-source-id'),
+                undefined,
+                'print artifact bundle sourceId lookup should return undefined for unknown anchors'
+            );
+            assert.deepEqual(
+                assembledTocElements.map((element) => ({
+                    type: element.type,
+                    content: element.content,
+                    linkTarget: element.properties?.linkTarget,
+                    semanticRole: element.properties?.semanticRole,
+                    sourceId: element.properties?.sourceId,
+                    source: element.properties?._generatedTocSourceId,
+                    level: element.properties?._generatedTocLevel,
+                    pageIndex: element.properties?._generatedTocPageIndex,
+                    pageLabel: element.properties?._generatedTocPageLabel,
+                    generatedLinkTarget: element.properties?._generatedTocLinkTarget
+                })),
+                [
+                    {
+                        type: 'h2',
+                        content: 'Table of Contents',
+                        linkTarget: undefined,
+                        semanticRole: 'toc-title',
+                        sourceId: 'generated-toc-title',
+                        source: undefined,
+                        level: undefined,
+                        pageIndex: undefined,
+                        pageLabel: undefined,
+                        generatedLinkTarget: undefined
+                    },
+                    {
+                        type: 'p',
+                        content: 'Architecture Overhaul 2',
+                        linkTarget: '#page=2',
+                        semanticRole: 'toc-entry',
+                        sourceId: `generated-toc:${headingTelemetry[0]?.sourceId}`,
+                        source: headingTelemetry[0]?.sourceId,
+                        level: 1,
+                        pageIndex: 1,
+                        pageLabel: '2',
+                        generatedLinkTarget: '#page=2'
+                    },
+                    {
+                        type: 'p',
+                        content: 'Subsystem Handoff 2',
+                        linkTarget: '#page=2',
+                        semanticRole: 'toc-entry',
+                        sourceId: `generated-toc:${headingTelemetry[1]?.sourceId}`,
+                        source: headingTelemetry[1]?.sourceId,
+                        level: 2,
+                        pageIndex: 1,
+                        pageLabel: '2',
+                        generatedLinkTarget: '#page=2'
+                    }
+                ],
+                'assembled TOC builder should rewrite TOC page labels and navigation targets through the final assembly plan'
+            );
+            assert.deepEqual(
+                buildAssembledBookmarkTree(printSnapshot, configuredBundle.assembly).map((entry) => ({
+                    sourceId: entry.sourceId,
+                    pageIndex: entry.pageIndex,
+                    children: entry.children.map((child) => ({
+                        sourceId: child.sourceId,
+                        pageIndex: child.pageIndex
+                    }))
+                })),
+                [
+                    {
+                        sourceId: headingTelemetry[0]?.sourceId,
+                        pageIndex: 1,
+                        children: [{ sourceId: headingTelemetry[1]?.sourceId, pageIndex: 1 }]
+                    }
+                ],
+                'assembled bookmark tree should expose final page indices after front matter insertion'
+            );
+
+            const overflowingConfiguredEngine = new LayoutEngine({
+                ...config,
+                printPipeline: {
+                    tableOfContents: {
+                        reservedPageCount: 0
+                    }
+                }
+            });
+            await overflowingConfiguredEngine.waitForFonts();
+            overflowingConfiguredEngine.paginate(elements as any);
+            const overflowingBundle = await overflowingConfiguredEngine.buildPrintPipelineArtifacts();
+            assert.equal(overflowingBundle.tableOfContents.declared, true, 'overflow bundle should still report TOC declaration');
+            assert.equal(overflowingBundle.tableOfContents.status, 'overflow', 'overflow bundle should report TOC overflow clearly');
+            assert.equal(overflowingBundle.tableOfContents.overflowPageCount, 1, 'overflow bundle should report the extra TOC pages');
+            assert.equal(overflowingBundle.assembly.status, 'overflow', 'assembly plan should report overflow when reserved TOC space is insufficient');
+            assert.equal(overflowingBundle.assembly.reservedFrontMatterPageCount, 0, 'overflow assembly should preserve the declared reservation size');
+            assert.equal(overflowingBundle.assembly.bodyStartPageIndex, 0, 'overflow assembly should keep the body starting at page 0 when nothing is reserved');
+            assert.equal(overflowingBundle.assembly.omittedTocPageCount, 1, 'overflow assembly should report the omitted TOC pages');
+            assert.deepEqual(
+                overflowingBundle.assembly.bodyFinalPageIndexByBodyPageIndex,
+                [0],
+                'overflow assembly should keep body pages mapped to their original final positions when no front matter was reserved'
+            );
+            assert.deepEqual(
+                overflowingBundle.assembly.tocFinalPageIndexByTocPageIndex,
+                [null],
+                'overflow assembly should report omitted TOC pages with null final-page mapping'
+            );
+            assert.deepEqual(
+                resolvePhysicalPageReference(printSnapshot, 0, overflowingBundle.assembly),
+                {
+                    originalPageIndex: 0,
+                    finalPageIndex: 0,
+                    originalPageLabel: '1',
+                    finalPageLabel: '1',
+                    originalLinkTarget: '#page=1',
+                    finalLinkTarget: '#page=1'
+                },
+                'generic page-reference resolution should preserve body-page references when reserved TOC overflow leaves the body in place'
+            );
+            assert.deepEqual(
+                overflowingBundle.bodyPageReferences,
+                [
+                    {
+                        originalPageIndex: 0,
+                        finalPageIndex: 0,
+                        originalPageLabel: '1',
+                        finalPageLabel: '1',
+                        originalLinkTarget: '#page=1',
+                        finalLinkTarget: '#page=1'
+                    }
+                ],
+                'overflow bundle should still expose stable body-page references when the body remains at its original positions'
+            );
+            assert.deepEqual(
+                overflowingBundle.navigation.assembledHeadingOutline.map((entry) => ({
+                    sourceId: entry.sourceId,
+                    pageIndex: entry.pageIndex
+                })),
+                [
+                    { sourceId: headingTelemetry[0]?.sourceId, pageIndex: 0 },
+                    { sourceId: headingTelemetry[1]?.sourceId, pageIndex: 0 }
+                ],
+                'overflow bundle should preserve assembled heading positions when front matter overflow leaves the body in place'
+            );
+            assert.equal(
+                overflowingBundle.navigation.sourceAnchorsBySourceId[headingTelemetry[0]?.sourceId || '']?.finalLinkTarget,
+                '#page=1',
+                'overflow bundle should preserve source anchor targets when body pages remain unmoved'
+            );
+            assert.equal(
+                overflowingBundle.getSourceAnchor(headingTelemetry[0]?.sourceId || '')?.finalLinkTarget,
+                '#page=1',
+                'overflow bundle sourceId lookup should preserve source anchor targets when body pages remain unmoved'
+            );
+
+            const noTocEngine = new LayoutEngine(config);
+            await noTocEngine.waitForFonts();
+            noTocEngine.paginate(elements as any);
+            const noTocBundle = await noTocEngine.buildPrintPipelineArtifacts();
+            assert.equal(noTocBundle.tableOfContents.declared, false, 'print artifact bundle should report no TOC declaration when absent');
+            assert.equal(noTocBundle.tableOfContents.status, 'not-configured', 'print artifact bundle should distinguish the unconfigured case');
+            assert.equal(noTocBundle.tableOfContents.plan, null, 'print artifact bundle should omit TOC plan when none is configured');
+            assert.equal(noTocBundle.assembly.status, 'body-only', 'assembly plan should report body-only composition when no TOC is configured');
+            assert.equal(noTocBundle.assembly.reservedFrontMatterPageCount, 0, 'body-only assembly should not reserve front matter pages');
+            assert.equal(noTocBundle.assembly.bodyStartPageIndex, 0, 'body-only assembly should start the body at page 0');
+            assert.deepEqual(
+                noTocBundle.assembly.bodyFinalPageIndexByBodyPageIndex,
+                [0],
+                'body-only assembly should expose identity body-page mappings'
+            );
+            assert.deepEqual(
+                noTocBundle.assembly.tocFinalPageIndexByTocPageIndex,
+                [],
+                'body-only assembly should expose no TOC page mappings'
+            );
+            assert.deepEqual(
+                noTocBundle.bodyPageReferences,
+                [
+                    {
+                        originalPageIndex: 0,
+                        finalPageIndex: 0,
+                        originalPageLabel: '1',
+                        finalPageLabel: '1',
+                        originalLinkTarget: '#page=1',
+                        finalLinkTarget: '#page=1'
+                    }
+                ],
+                'body-only bundle should expose identity body-page references for host consumers'
+            );
+            assert.deepEqual(
+                noTocBundle.navigation.assembledBookmarkTree.map((entry) => ({
+                    sourceId: entry.sourceId,
+                    pageIndex: entry.pageIndex,
+                    children: entry.children.map((child) => ({
+                        sourceId: child.sourceId,
+                        pageIndex: child.pageIndex
+                    }))
+                })),
+                [
+                    {
+                        sourceId: headingTelemetry[0]?.sourceId,
+                        pageIndex: 0,
+                        children: [{ sourceId: headingTelemetry[1]?.sourceId, pageIndex: 0 }]
+                    }
+                ],
+                'body-only bundle should expose identity assembled bookmark data when no front matter is inserted'
+            );
+            assert.equal(
+                noTocBundle.navigation.sourceAnchorsBySourceId[headingTelemetry[1]?.sourceId || '']?.finalLinkTarget,
+                '#page=1',
+                'body-only bundle should expose identity source anchor targets when no assembly remapping occurs'
+            );
+            assert.equal(
+                noTocBundle.getSourceAnchor(headingTelemetry[1]?.sourceId || '')?.finalLinkTarget,
+                '#page=1',
+                'body-only bundle sourceId lookup should expose identity source anchor targets when no assembly remapping occurs'
+            );
+
+            const [mainHeading, subHeading] = headingTelemetry;
+            assert.ok(
+                matchesSourceId(mainHeading?.sourceId, 'heading-main'),
+                'heading telemetry should include the first heading sourceId'
+            );
+            assert.equal(mainHeading?.heading, 'Architecture Overhaul', 'heading telemetry should preserve the first heading text');
+            assert.equal(mainHeading?.pageIndex, 0, 'heading telemetry should record the first heading page');
+            assert.equal(mainHeading?.actorKind, 'h1', 'heading telemetry should preserve the first heading actorKind');
+            assert.equal(mainHeading?.sourceType, 'h1', 'heading telemetry should preserve the first heading sourceType');
+            assert.equal(mainHeading?.level, 1, 'heading telemetry should publish the first heading level');
+
+            assert.ok(
+                matchesSourceId(subHeading?.sourceId, 'heading-sub'),
+                'heading telemetry should include the second heading sourceId'
+            );
+            assert.equal(subHeading?.heading, 'Subsystem Handoff', 'heading telemetry should preserve the second heading text');
+            assert.equal(subHeading?.pageIndex, 0, 'heading telemetry should record the second heading page');
+            assert.equal(subHeading?.actorKind, 'h2', 'heading telemetry should preserve the second heading actorKind');
+            assert.equal(subHeading?.sourceType, 'h2', 'heading telemetry should preserve the second heading sourceType');
+            assert.equal(subHeading?.level, 2, 'heading telemetry should publish the second heading level');
+
+            assert.ok(
+                Number(mainHeading?.y || 0) < Number(subHeading?.y || 0),
+                'heading telemetry should remain ordered by committed page position'
+            );
+        }
+    );
 
     await checkAsync(
         'experimental page reservation system',

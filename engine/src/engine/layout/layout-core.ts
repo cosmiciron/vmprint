@@ -18,6 +18,7 @@ import { ExperimentalPageStartExclusionCollaborator } from './experimental-page-
 import { ExperimentalPageStartReservationCollaborator } from './experimental-page-start-reservation-collaborator';
 import { FragmentTransitionArtifactCollaborator } from './fragment-transition-artifact-collaborator';
 import { createMorphedBoxMeta, freezeFlowFragment } from './flow-fragment-state';
+import { HeadingTelemetryCollaborator } from './heading-telemetry-collaborator';
 import { KeepWithNextCollaborator } from './keep-with-next-collaborator';
 import { PageRegionCollaborator } from './layout-page-finalization';
 import { PageNumberArtifactCollaborator } from './page-number-artifact-collaborator';
@@ -27,7 +28,13 @@ import { PageReservationArtifactCollaborator } from './page-reservation-artifact
 import { PageSpatialConstraintArtifactCollaborator } from './page-spatial-constraint-artifact-collaborator';
 import { PageRegionArtifactCollaborator } from './page-region-artifact-collaborator';
 import { LayoutCollaborator, LayoutSession } from './layout-session';
-import { createSimulationReportReader, SimulationReport, SimulationReportReader } from './simulation-report';
+import {
+    createPrintPipelineSnapshot,
+    createSimulationReportReader,
+    PrintPipelineSnapshot,
+    SimulationReport,
+    SimulationReportReader
+} from './simulation-report';
 import { SourcePositionArtifactCollaborator } from './source-position-artifact-collaborator';
 import { TransformCapabilityArtifactCollaborator } from './transform-capability-artifact-collaborator';
 import { TransformArtifactCollaborator } from './transform-artifact-collaborator';
@@ -399,6 +406,12 @@ export class LayoutProcessor extends TextProcessor {
     getLastSimulationReportReader(): SimulationReportReader {
         return this.lastLayoutSession?.getSimulationReportReader()
             ?? createSimulationReportReader(undefined);
+    }
+
+    getLastPrintPipelineSnapshot(): PrintPipelineSnapshot {
+        const pages = this.lastLayoutSession?.getFinalizedPages() ?? [];
+        const report = this.lastLayoutSession?.getSimulationReport();
+        return createPrintPipelineSnapshot(pages, report);
     }
 
     private shapeTableElement(element: Element, identitySeed?: FlowIdentitySeed): FlowBox {
@@ -789,6 +802,7 @@ export class LayoutProcessor extends TextProcessor {
             new PageSpatialConstraintArtifactCollaborator(),
             new PageRegionArtifactCollaborator(),
             new SourcePositionArtifactCollaborator(),
+            new HeadingTelemetryCollaborator(),
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType) =>
                     this.layoutRegion(content, rect, pageIndex, sourceType)
