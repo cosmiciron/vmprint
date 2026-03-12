@@ -49,7 +49,14 @@ import { LayoutUtils } from '../layout-utils';
 import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { LayoutBox, PackagerContext, PackagerPlacementPreference, PackagerSplitResult, PackagerUnit } from './packager-types';
+import {
+    LayoutBox,
+    PackagerContext,
+    PackagerPlacementPreference,
+    PackagerSplitResult,
+    PackagerTransformProfile,
+    PackagerUnit
+} from './packager-types';
 import { OccupiedRect, SpatialMap } from './spatial-map';
 
 // ---------------------------------------------------------------------------
@@ -171,6 +178,18 @@ class FrozenStoryPackager implements PackagerUnit {
         };
     }
 
+    getTransformProfile(): PackagerTransformProfile {
+        return {
+            capabilities: [
+                {
+                    kind: 'split',
+                    preservesIdentity: true,
+                    producesContinuation: true
+                }
+            ]
+        };
+    }
+
     emitBoxes(_aw: number, _ah: number, _ctx: PackagerContext): Box[] {
         return this.frozenBoxes.map((b) => ({ ...b, properties: { ...(b.properties || {}) } }));
     }
@@ -285,6 +304,23 @@ export class StoryPackager implements PackagerUnit {
             };
         }
         return null;
+    }
+
+    getTransformProfile(): PackagerTransformProfile {
+        return {
+            capabilities: [
+                {
+                    kind: 'split',
+                    preservesIdentity: true,
+                    producesContinuation: true
+                },
+                {
+                    kind: 'morph',
+                    preservesIdentity: true,
+                    reflowsContent: true
+                }
+            ]
+        };
     }
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] {

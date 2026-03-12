@@ -20,6 +20,21 @@ export type PackagerSplitResult = {
 
 export type PackagerPreparationPhase = 'commit' | 'lookahead';
 
+export type PackagerTransformKind = 'split' | 'clone' | 'morph';
+
+export type PackagerTransformCapability = {
+    kind: PackagerTransformKind;
+    preservesIdentity?: boolean;
+    producesContinuation?: boolean;
+    reflowsContent?: boolean;
+    clonesStableSubstructure?: boolean;
+};
+
+export type PackagerTransformProfile = {
+    supportedTransforms?: PackagerTransformKind[];
+    capabilities?: PackagerTransformCapability[];
+};
+
 export type PackagerPlacementPreference = {
     minimumWidth?: number | null;
     acceptsFrame?: boolean | null;
@@ -49,6 +64,12 @@ export interface PackagerUnit {
      * is worth attempting.
      */
     getPlacementPreference?(fullAvailableWidth: number, context: PackagerContext): PackagerPlacementPreference | null | undefined;
+
+    /**
+     * Declares the transform kinds this actor can legitimately perform as part
+     * of the runtime simulation.
+     */
+    getTransformProfile?(): PackagerTransformProfile | null | undefined;
 
     /**
      * The minimum width at which this actor considers a placement frame worth
@@ -147,4 +168,43 @@ export function rejectsPlacementFrame(
     }
 
     return false;
+}
+
+export function resolvePackagerTransformProfile(unit: PackagerUnit): PackagerTransformProfile | null {
+    const profile = unit.getTransformProfile?.();
+    if (!profile) {
+        return null;
+    }
+
+    const normalizedCapabilities = new Map<PackagerTransformKind, PackagerTransformCapability>();
+
+    if (Array.isArray(profile.capabilities)) {
+        for (const capability of profile.capabilities) {
+            if (!capability || !capability.kind) continue;
+            normalizedCapabilities.set(capability.kind, {
+                kind: capability.kind,
+                preservesIdentity: capability.preservesIdentity,
+                producesContinuation: capability.producesContinuation,
+                reflowsContent: capability.reflowsContent,
+                clonesStableSubstructure: capability.clonesStableSubstructure
+            });
+        }
+    }
+
+    if (Array.isArray(profile.supportedTransforms)) {
+        for (const kind of profile.supportedTransforms) {
+            if (!normalizedCapabilities.has(kind)) {
+                normalizedCapabilities.set(kind, { kind });
+            }
+        }
+    }
+
+    if (normalizedCapabilities.size === 0) {
+        return null;
+    }
+
+    return {
+        supportedTransforms: Array.from(normalizedCapabilities.keys()),
+        capabilities: Array.from(normalizedCapabilities.values())
+    };
 }

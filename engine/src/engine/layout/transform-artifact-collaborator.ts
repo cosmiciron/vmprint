@@ -3,7 +3,7 @@ import { simulationArtifactKeys } from './simulation-report';
 
 export type TransformSummary = {
     sourceId: string;
-    transformKind: 'clone' | 'split';
+    transformKind: 'clone' | 'split' | 'morph';
     count: number;
     pageIndices: number[];
     fragmentIndices: number[];

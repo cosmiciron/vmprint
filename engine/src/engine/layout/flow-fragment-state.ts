@@ -40,6 +40,13 @@ export function createClonedBoxMeta(meta: BoxMeta, clonedFromSourceId: string): 
     };
 }
 
+export function createMorphedBoxMeta(meta: BoxMeta): BoxMeta {
+    return {
+        ...meta,
+        transformKind: 'morph'
+    };
+}
+
 export function createLeadingFragmentStyle(style: ElementStyle): ElementStyle {
     return {
         ...style,

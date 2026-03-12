@@ -51,7 +51,7 @@ export type FlowIdentitySeed = {
     isContinuation?: boolean;
     generated?: boolean;
     originSourceId?: string;
-    transformKind?: 'clone' | 'split';
+    transformKind?: 'clone' | 'split' | 'morph';
     clonedFromSourceId?: string;
 };
 

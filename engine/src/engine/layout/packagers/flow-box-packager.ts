@@ -2,7 +2,13 @@ import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { PackagerContext, PackagerPlacementPreference, PackagerSplitResult, PackagerUnit } from './packager-types';
+import {
+    PackagerContext,
+    PackagerPlacementPreference,
+    PackagerSplitResult,
+    PackagerTransformProfile,
+    PackagerUnit
+} from './packager-types';
 
 /**
  * A basic packager for standard reflowable layout boxes (e.g. paragraph, header, normal image).
@@ -66,6 +72,24 @@ export class FlowBoxPackager implements PackagerUnit {
             return { minimumWidth: Math.max(0, Number(this.flowBox.measuredWidth || 0)) };
         }
         return null;
+    }
+
+    getTransformProfile(): PackagerTransformProfile {
+        const capabilities: NonNullable<PackagerTransformProfile['capabilities']> = [
+            {
+                kind: 'split',
+                preservesIdentity: true,
+                producesContinuation: true
+            }
+        ];
+        if (this.flowBox._materializationMode === 'reflowable' && !!this.flowBox._sourceElement) {
+            capabilities.push({
+                kind: 'morph',
+                preservesIdentity: true,
+                reflowsContent: true
+            });
+        }
+        return { capabilities };
     }
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): Box[] {

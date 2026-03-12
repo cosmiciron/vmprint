@@ -11,7 +11,14 @@ import {
 } from '../flow-fragment-state';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { LayoutBox, PackagerContext, PackagerPlacementPreference, PackagerSplitResult, PackagerUnit } from './packager-types';
+import {
+    LayoutBox,
+    PackagerContext,
+    PackagerPlacementPreference,
+    PackagerSplitResult,
+    PackagerTransformProfile,
+    PackagerUnit
+} from './packager-types';
 
 type DropCapParts = {
     dropCap: FlowBox;
@@ -79,6 +86,18 @@ class DropCapFragmentPackager implements PackagerUnit {
         return {
             minimumWidth: fullAvailableWidth,
             acceptsFrame: true
+        };
+    }
+
+    getTransformProfile(): PackagerTransformProfile {
+        return {
+            capabilities: [
+                {
+                    kind: 'split',
+                    preservesIdentity: true,
+                    producesContinuation: true
+                }
+            ]
         };
     }
 
@@ -602,6 +621,23 @@ export class DropCapPackager implements PackagerUnit {
         return {
             minimumWidth: fullAvailableWidth,
             acceptsFrame: true
+        };
+    }
+
+    getTransformProfile(): PackagerTransformProfile {
+        return {
+            capabilities: [
+                {
+                    kind: 'split',
+                    preservesIdentity: true,
+                    producesContinuation: true
+                },
+                {
+                    kind: 'morph',
+                    preservesIdentity: true,
+                    reflowsContent: true
+                }
+            ]
         };
     }
 

@@ -3,7 +3,13 @@ import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import { materializeTableFlowBox, splitTableFlowBox } from '../layout-table';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { PackagerContext, PackagerPlacementPreference, PackagerSplitResult, PackagerUnit } from './packager-types';
+import {
+    PackagerContext,
+    PackagerPlacementPreference,
+    PackagerSplitResult,
+    PackagerTransformProfile,
+    PackagerUnit
+} from './packager-types';
 
 /**
  * Dedicated packager for table flow boxes.
@@ -76,6 +82,28 @@ export class TablePackager implements PackagerUnit {
         return {
             minimumWidth: fullAvailableWidth,
             acceptsFrame: true
+        };
+    }
+
+    getTransformProfile(): PackagerTransformProfile {
+        return {
+            capabilities: [
+                {
+                    kind: 'split',
+                    preservesIdentity: true,
+                    producesContinuation: true
+                },
+                {
+                    kind: 'clone',
+                    preservesIdentity: true,
+                    clonesStableSubstructure: true
+                },
+                {
+                    kind: 'morph',
+                    preservesIdentity: true,
+                    reflowsContent: true
+                }
+            ]
         };
     }
 

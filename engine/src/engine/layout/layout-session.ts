@@ -6,6 +6,7 @@ import type { PackagerUnit } from './packagers/packager-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
 import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
+import { getTailSplitPostAttemptOutcome, getWholeFormationOverflowHandling } from './actor-formation';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
 import type {
@@ -1845,6 +1846,127 @@ export class LayoutSession {
         };
     }
 
+    executeTailSplitFormationBranch(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTopY: number,
+        currentActorIndex: number,
+        actorQueue: PackagerUnit[],
+        tailSplitExecution: {
+            prefix: PackagerUnit[];
+            splitCandidate: PackagerUnit;
+            replaceCount: number;
+            splitMarkerReserve: number;
+        },
+        state: {
+            currentY: number;
+            lastSpacingAfter: number;
+            pageLimit: number;
+            availableWidth: number;
+        },
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
+        shouldAdvancePageOnFailure: boolean,
+        positionMarker: (
+            marker: FlowBox,
+            currentY: number,
+            layoutBefore: number,
+            availableWidth: number,
+            pageIndex: number
+        ) => Box | Box[]
+    ): TailSplitFormationSettlementOutcome | TailSplitFailureSettlementOutcome {
+        const { prefix, splitCandidate, replaceCount, splitMarkerReserve } = tailSplitExecution;
+        const checkpoint = this.captureLocalBranchSnapshot(
+            currentPageBoxes,
+            actorQueue,
+            state.currentY,
+            state.lastSpacingAfter
+        );
+
+        const placedPrefix = this.placeActorSequence(prefix, {
+            currentY: state.currentY,
+            lastSpacingAfter: state.lastSpacingAfter,
+            pageIndex: currentPageIndex,
+            pageLimit: state.pageLimit,
+            availableWidth: state.availableWidth
+        }, contextBase);
+        currentPageBoxes.push(...placedPrefix.boxes);
+
+        const splitExecution = this.executePositionedSplitAttempt(
+            splitCandidate,
+            state.availableWidth,
+            placedPrefix.currentY,
+            placedPrefix.lastSpacingAfter,
+            state.pageLimit,
+            currentPageIndex,
+            splitMarkerReserve,
+            contextBase
+        );
+        const splitAttempt = splitExecution.execution.attempt;
+        const { currentFragment: partA, continuationFragment: partB } = splitExecution.execution.result;
+
+        if (partA && partB) {
+            const partAContext = {
+                ...contextBase,
+                pageIndex: currentPageIndex,
+                cursorY: placedPrefix.currentY
+            };
+            const partABoxes = partA.emitBoxes(
+                state.availableWidth,
+                splitExecution.emitAvailableHeight,
+                partAContext
+            ) || [];
+            const outcome = this.finalizeTailSplitFormation(
+                currentPageBoxes,
+                actorQueue,
+                currentActorIndex,
+                replaceCount,
+                splitCandidate,
+                partB,
+                splitAttempt,
+                {
+                    currentFragment: partA,
+                    continuationFragment: partB
+                },
+                partABoxes,
+                this.createSplitFragmentAftermathState(partA, {
+                    currentY: placedPrefix.currentY,
+                    layoutDelta: splitExecution.layoutDelta,
+                    lastSpacingAfter: placedPrefix.lastSpacingAfter,
+                    pageLimit: state.pageLimit,
+                    availableWidth: state.availableWidth,
+                    pageIndex: currentPageIndex
+                }),
+                positionMarker
+            );
+            return this.settleTailSplitFormation(
+                pages,
+                currentPageBoxes,
+                currentPageIndex,
+                pageWidth,
+                pageHeight,
+                nextPageTopY,
+                currentActorIndex,
+                outcome
+            );
+        }
+
+        return this.settleTailSplitFailure(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTopY,
+            currentActorIndex,
+            actorQueue,
+            checkpoint,
+            shouldAdvancePageOnFailure
+        );
+    }
+
     handleWholeFormationOverflowEntry(
         handling: WholeFormationOverflowHandling,
         pages: Page[],
@@ -2645,12 +2767,39 @@ export class LayoutSession {
         return this.keepWithNextPlans.get(actorId);
     }
 
+    resolveKeepWithNextOverflow(
+        actorId: string,
+        isAtPageTop: boolean
+    ): {
+        plan: KeepWithNextFormationPlan;
+        handling: WholeFormationOverflowHandling | null;
+        fallbackOutcome: WholeFormationOverflowHandling['fallbackHandling'];
+        tailSplitSuccessOutcome: ReturnType<typeof getTailSplitPostAttemptOutcome>;
+        tailSplitFailureOutcome: ReturnType<typeof getTailSplitPostAttemptOutcome>;
+    } | null {
+        const plan = this.getKeepWithNextPlan(actorId);
+        if (!plan) return null;
+
+        const handling = getWholeFormationOverflowHandling(plan, isAtPageTop);
+        return {
+            plan,
+            handling,
+            fallbackOutcome: handling?.fallbackHandling ?? null,
+            tailSplitSuccessOutcome: getTailSplitPostAttemptOutcome(plan, true, isAtPageTop),
+            tailSplitFailureOutcome: getTailSplitPostAttemptOutcome(plan, false, isAtPageTop)
+        };
+    }
+
     setPaginationLoopState(state: PaginationLoopState): void {
         this.paginationLoopState = state;
     }
 
     getPaginationLoopState(): PaginationLoopState | null {
         return this.paginationLoopState;
+    }
+
+    getRegisteredActors(): readonly PackagerUnit[] {
+        return this.actorRegistry;
     }
 
     getFragmentTransitions(): readonly FragmentTransition[] {

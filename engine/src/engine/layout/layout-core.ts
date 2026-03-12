@@ -17,7 +17,7 @@ import { ExperimentalPageReservationCollaborator } from './experimental-page-res
 import { ExperimentalPageStartExclusionCollaborator } from './experimental-page-start-exclusion-collaborator';
 import { ExperimentalPageStartReservationCollaborator } from './experimental-page-start-reservation-collaborator';
 import { FragmentTransitionArtifactCollaborator } from './fragment-transition-artifact-collaborator';
-import { freezeFlowFragment } from './flow-fragment-state';
+import { createMorphedBoxMeta, freezeFlowFragment } from './flow-fragment-state';
 import { KeepWithNextCollaborator } from './keep-with-next-collaborator';
 import { PageRegionCollaborator } from './layout-page-finalization';
 import { PageNumberArtifactCollaborator } from './page-number-artifact-collaborator';
@@ -29,6 +29,7 @@ import { PageRegionArtifactCollaborator } from './page-region-artifact-collabora
 import { LayoutCollaborator, LayoutSession } from './layout-session';
 import { createSimulationReportReader, SimulationReport, SimulationReportReader } from './simulation-report';
 import { SourcePositionArtifactCollaborator } from './source-position-artifact-collaborator';
+import { TransformCapabilityArtifactCollaborator } from './transform-capability-artifact-collaborator';
 import { TransformArtifactCollaborator } from './transform-artifact-collaborator';
 import {
     buildTableModel,
@@ -559,6 +560,13 @@ export class LayoutProcessor extends TextProcessor {
         const canRematerialize = unit._materializationMode === 'reflowable' && !!unit._sourceElement;
         if (!unit._unresolvedElement && (!canRematerialize || unit._materializationContextKey === contextKey)) return unit;
 
+        const previousContextKey = unit._materializationContextKey;
+        const isMorphTransition =
+            canRematerialize
+            && !!previousContextKey
+            && previousContextKey !== contextKey
+            && unit.meta?.transformKind === undefined;
+
         const element = unit._unresolvedElement || unit._sourceElement;
         if (!element) return unit;
         const style = unit.style;
@@ -567,6 +575,7 @@ export class LayoutProcessor extends TextProcessor {
 
         if (isTableElement(element)) {
             materializeTableFlowBox(unit, element, context, fontSize, lineHeight, this.getTableLayoutContext());
+            if (isMorphTransition) unit.meta = createMorphedBoxMeta(unit.meta);
             unit._materializationContextKey = contextKey;
             unit._unresolvedElement = undefined;
             return unit;
@@ -576,6 +585,7 @@ export class LayoutProcessor extends TextProcessor {
         if (maybeImage) {
             unit.image = maybeImage;
             this.materializeImageFlowBox(unit, element, context, fontSize, lineHeight);
+            if (isMorphTransition) unit.meta = createMorphedBoxMeta(unit.meta);
             unit._materializationContextKey = contextKey;
             unit._unresolvedElement = undefined;
             return unit;
@@ -615,6 +625,7 @@ export class LayoutProcessor extends TextProcessor {
         } else {
             delete unit.properties._lineYOffsets;
         }
+        if (isMorphTransition) unit.meta = createMorphedBoxMeta(unit.meta);
         unit._materializationContextKey = contextKey;
         unit._unresolvedElement = undefined; // Mark as resolved
 
@@ -769,6 +780,7 @@ export class LayoutProcessor extends TextProcessor {
             new ExperimentalPageStartReservationCollaborator(this.config),
             new ExperimentalPageReservationCollaborator(),
             new FragmentTransitionArtifactCollaborator(),
+            new TransformCapabilityArtifactCollaborator(),
             new TransformArtifactCollaborator(),
             new PageExclusionArtifactCollaborator(),
             new PageNumberArtifactCollaborator(),

@@ -232,8 +232,11 @@ export function paginatePackagers(
         let requiredHeight = contentHeight + layoutBefore + marginBottom;
         let effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
 
+        const keepWithNextOverflow = (packager.keepWithNext && session)
+            ? session.resolveKeepWithNextOverflow(packager.actorId, isAtPageTop)
+            : null;
         const keepPlan = packager.keepWithNext
-            ? (session?.getKeepWithNextPlan(packager.actorId) ?? computeKeepWithNextPlan({
+            ? (keepWithNextOverflow?.plan ?? computeKeepWithNextPlan({
                 actorQueue: packagers,
                 actorIndex: i,
                 paginationState: {
@@ -249,10 +252,12 @@ export function paginatePackagers(
                 context
             }))
             : null;
-        const wholeFormationOverflowHandling = keepPlan
+        const wholeFormationOverflowHandling = keepWithNextOverflow?.handling ?? (keepPlan
             ? getWholeFormationOverflowHandling(keepPlan, isAtPageTop)
-            : null;
-        const wholeFormationOverflowFallbackOutcome = wholeFormationOverflowHandling?.fallbackHandling ?? null;
+            : null);
+        const wholeFormationOverflowFallbackOutcome = keepWithNextOverflow?.fallbackOutcome
+            ?? wholeFormationOverflowHandling?.fallbackHandling
+            ?? null;
         const wholeFormationOverflowEntry = session && wholeFormationOverflowHandling
             ? session.settleWholeFormationOverflowEntry(
                 i,
@@ -282,31 +287,51 @@ export function paginatePackagers(
             if (keepPlan && wholeFormationTailSplitExecution) {
                 const keepBranchStart = performance.now();
                 {
-                    const { prefix, splitCandidate, replaceCount, splitMarkerReserve: markerReserve } = wholeFormationTailSplitExecution;
-                    const prefixPlacementCheckpoint: ReturnType<LayoutSession['captureLocalBranchSnapshot']> | {
-                        boxStartIndex: number;
-                        currentY: number;
-                        lastSpacingAfter: number;
-                    } = session
-                        ? session.captureLocalBranchSnapshot(currentPageBoxes, packagers, currentY, lastSpacingAfter)
-                        : {
+                    if (session) {
+                        const settlement = session.executeTailSplitFormationBranch(
+                            pages,
+                            currentPageBoxes,
+                            currentPageIndex,
+                            contextBase.pageWidth,
+                            contextBase.pageHeight,
+                            margins.top,
+                            i,
+                            packagers,
+                            wholeFormationTailSplitExecution,
+                            {
+                                currentY,
+                                lastSpacingAfter,
+                                pageLimit,
+                                availableWidth
+                            },
+                            contextBase,
+                            (keepWithNextOverflow?.tailSplitFailureOutcome
+                                ?? getTailSplitPostAttemptOutcome(keepPlan, false, isAtPageTop)) === 'advance-page',
+                            (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
+                                (processor as any).positionFlowBox(
+                                    marker,
+                                    markerCurrentY,
+                                    markerLayoutBefore,
+                                    margins,
+                                    markerAvailableWidth,
+                                    markerPageIndex
+                                )
+                        );
+                        applySessionLoopAction(session.toPaginationLoopAction(settlement));
+                        session.recordProfile('keepWithNextBranchCalls', 1);
+                        session.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
+                        continue;
+                    } else {
+                        const { prefix, splitCandidate, replaceCount, splitMarkerReserve: markerReserve } = wholeFormationTailSplitExecution;
+                        const prefixPlacementCheckpoint: {
+                            boxStartIndex: number;
+                            currentY: number;
+                            lastSpacingAfter: number;
+                        } = {
                             boxStartIndex: currentPageBoxes.length,
                             currentY,
                             lastSpacingAfter
                         };
-
-                    if (session) {
-                        const placedPrefix = session.placeActorSequence(prefix, {
-                            currentY,
-                            lastSpacingAfter,
-                            pageIndex: currentPageIndex,
-                            pageLimit,
-                            availableWidth
-                        }, contextBase);
-                        currentPageBoxes.push(...placedPrefix.boxes);
-                        currentY = placedPrefix.currentY;
-                        lastSpacingAfter = placedPrefix.lastSpacingAfter;
-                    } else {
                         // Place prefix units now.
                         for (const p of prefix) {
                             const pMarginTop = p.getMarginTop();
@@ -331,20 +356,7 @@ export function paginatePackagers(
                             currentY += pEffectiveHeight - pMarginBottom;
                             lastSpacingAfter = pMarginBottom;
                         }
-                    }
-
-                    const splitExecution = session
-                        ? session.executePositionedSplitAttempt(
-                            splitCandidate,
-                            availableWidth,
-                            currentY,
-                            lastSpacingAfter,
-                            pageLimit,
-                            currentPageIndex,
-                            markerReserve,
-                            contextBase
-                        )
-                        : (() => {
+                        const splitExecution = (() => {
                             const candidateMarginTop = splitCandidate.getMarginTop();
                             const candidateLayoutBefore = resolveLayoutBefore(lastSpacingAfter, candidateMarginTop);
                             const candidateLayoutDelta = candidateLayoutBefore - candidateMarginTop;
@@ -368,9 +380,8 @@ export function paginatePackagers(
                                 emitAvailableHeight
                             };
                         })();
-                    const splitAttempt = splitExecution.execution.attempt;
-                    const { currentFragment: partA, continuationFragment: partB } = splitExecution.execution.result;
-                    if (partA && partB) {
+                        const { currentFragment: partA, continuationFragment: partB } = splitExecution.execution.result;
+                        if (partA && partB) {
                         const partAContext = {
                             ...contextBase,
                             pageIndex: currentPageIndex,
@@ -436,48 +447,27 @@ export function paginatePackagers(
                             lastSpacingAfter = partAMarginBottom;
                         }
 
-                        if (getTailSplitPostAttemptOutcome(keepPlan, true, isAtPageTop) === 'page-turn-and-continue') {
-                            if (!session) {
+                            if ((keepWithNextOverflow?.tailSplitSuccessOutcome
+                                ?? getTailSplitPostAttemptOutcome(keepPlan, true, isAtPageTop)) === 'page-turn-and-continue') {
                                 pushNewPage();
                                 packagers.splice(i, replaceCount, partB);
+                                session?.recordProfile('keepWithNextBranchCalls', 1);
+                                session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
+                                continue;
                             }
-                            session?.recordProfile('keepWithNextBranchCalls', 1);
-                            session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
-                            continue;
-                        }
-                    } else {
-                        // Split failed; rollback prefix placement to avoid duplicating keepWithNext units.
-                        if (session) {
-                            const settlement = session.settleTailSplitFailure(
-                                pages,
-                                currentPageBoxes,
-                                currentPageIndex,
-                                contextBase.pageWidth,
-                                contextBase.pageHeight,
-                                margins.top,
-                                i,
-                                packagers,
-                                prefixPlacementCheckpoint as ReturnType<LayoutSession['captureLocalBranchSnapshot']>,
-                                getTailSplitPostAttemptOutcome(keepPlan, false, isAtPageTop) === 'advance-page'
-                            );
-                            applySessionLoopAction(session.toPaginationLoopAction(settlement));
                         } else {
+                            // Split failed; rollback prefix placement to avoid duplicating keepWithNext units.
                             currentPageBoxes.splice(prefixPlacementCheckpoint.boxStartIndex);
                             currentY = prefixPlacementCheckpoint.currentY;
                             lastSpacingAfter = prefixPlacementCheckpoint.lastSpacingAfter;
-                        }
-                        if (!session && getTailSplitPostAttemptOutcome(keepPlan, false, isAtPageTop) === 'advance-page') {
-                            pushNewPage();
-                            continue;
-                        }
-                        if (session && getTailSplitPostAttemptOutcome(keepPlan, false, isAtPageTop) === 'advance-page') {
-                            session.recordProfile('keepWithNextBranchCalls', 1);
-                            session.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
-                            continue;
+                            if (getTailSplitPostAttemptOutcome(keepPlan, false, isAtPageTop) === 'advance-page') {
+                                pushNewPage();
+                                continue;
+                            }
                         }
                     }
-                session?.recordProfile('keepWithNextBranchCalls', 1);
-                session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
+                    session?.recordProfile('keepWithNextBranchCalls', 1);
+                    session?.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
                 }
             }
 

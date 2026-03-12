@@ -229,6 +229,112 @@ function assertAcceptedSplitBranchingSignals(pages: any[], fixtureName: string):
     );
 }
 
+function assertTransformCapabilitySignals(
+    fixtureName: string,
+    engine: any,
+    requiredKinds: Array<'split' | 'clone' | 'morph'>
+): void {
+    const capabilitySummary = engine
+        .getLastSimulationReportReader()
+        .require(simulationArtifactKeys.transformCapabilitySummary);
+
+    assert.ok(capabilitySummary.length > 0, `${fixtureName}: expected transformCapabilitySummary entries`);
+    for (const kind of requiredKinds) {
+        assert.ok(
+            capabilitySummary.some((entry: any) => Array.isArray(entry?.supportedTransforms) && entry.supportedTransforms.includes(kind)),
+            `${fixtureName}: expected at least one actor capability entry for transform=${kind}`
+        );
+    }
+}
+
+function assertTransformCapabilitySourceSignals(
+    fixtureName: string,
+    engine: any,
+    sourceId: string,
+    requiredKinds: Array<'split' | 'clone' | 'morph'>
+): void {
+    const capabilitySummary = engine
+        .getLastSimulationReportReader()
+        .require(simulationArtifactKeys.transformCapabilitySummary);
+
+    const matchesSourceId = (actual: unknown, expected: string): boolean => {
+        const value = String(actual || '');
+        return value === expected || value.endsWith(`:${expected}`);
+    };
+
+    const entry = capabilitySummary.find((item: any) => matchesSourceId(item?.sourceId, sourceId));
+    assert.ok(entry, `${fixtureName}: expected transform capability entry for source=${sourceId}`);
+    for (const kind of requiredKinds) {
+        assert.ok(
+            Array.isArray(entry?.supportedTransforms) && entry.supportedTransforms.includes(kind),
+            `${fixtureName}: expected source=${sourceId} to support transform=${kind}`
+        );
+    }
+}
+
+function assertTransformCapabilityActorKindSignals(
+    fixtureName: string,
+    engine: any,
+    actorKind: string,
+    requiredKinds: Array<'split' | 'clone' | 'morph'>
+): void {
+    const capabilitySummary = engine
+        .getLastSimulationReportReader()
+        .require(simulationArtifactKeys.transformCapabilitySummary);
+
+    const entry = capabilitySummary.find((item: any) => String(item?.actorKind || '') === actorKind);
+    assert.ok(entry, `${fixtureName}: expected transform capability entry for actorKind=${actorKind}`);
+    for (const kind of requiredKinds) {
+        assert.ok(
+            Array.isArray(entry?.supportedTransforms) && entry.supportedTransforms.includes(kind),
+            `${fixtureName}: expected actorKind=${actorKind} to support transform=${kind}`
+        );
+    }
+}
+
+function assertTransformCapabilityDetails(
+    fixtureName: string,
+    engine: any,
+    selector: { sourceId?: string; actorKind?: string },
+    expected: Record<string, Record<string, boolean>>
+): void {
+    const capabilitySummary = engine
+        .getLastSimulationReportReader()
+        .require(simulationArtifactKeys.transformCapabilitySummary);
+
+    const matchesSourceId = (actual: unknown, wanted: string): boolean => {
+        const value = String(actual || '');
+        return value === wanted || value.endsWith(`:${wanted}`);
+    };
+
+    const entry = capabilitySummary.find((item: any) => {
+        if (selector.sourceId && !matchesSourceId(item?.sourceId, selector.sourceId)) return false;
+        if (selector.actorKind && String(item?.actorKind || '') !== selector.actorKind) return false;
+        return true;
+    });
+    assert.ok(
+        entry,
+        `${fixtureName}: expected transform capability detail entry for ${
+            selector.sourceId ? `source=${selector.sourceId}` : `actorKind=${selector.actorKind}`
+        }`
+    );
+
+    const capabilityMap = new Map(
+        (entry?.capabilities || []).map((capability: any) => [String(capability?.kind || ''), capability] as const)
+    );
+    for (const [kind, fields] of Object.entries(expected)) {
+        const capability = capabilityMap.get(kind);
+        assert.ok(capability, `${fixtureName}: expected capability details for transform=${kind}`);
+        for (const [field, value] of Object.entries(fields)) {
+            assert.equal(
+                Boolean((capability as any)?.[field]),
+                value,
+                `${fixtureName}: expected transform=${kind} field ${field}=${value}`
+            );
+        }
+    }
+}
+
 function assertStoryPackagerShowcaseSignals(pages: any[], fixtureName: string): void {
     // Must produce multiple pages (story is long enough to paginate).
     assert.ok(pages.length >= 2, `${fixtureName}: expected at least two pages`);
@@ -833,9 +939,10 @@ async function run() {
         if (fixture.name === '09-tables-spans-pagination.json') {
             check(
                 `${fixture.name} mixed-span table signals`,
-                'colSpan + rowSpan cells paginate deterministically with repeated headers and no span boundary splits',
+                'colSpan + rowSpan cells paginate deterministically with repeated headers, no span boundary splits, and table transform capabilities',
                 () => {
                     assertTableMixedSpanFixtureSignals(pagesA, fixture.name, engine);
+                    assertTransformCapabilitySignals(fixture.name, engine, ['split', 'clone', 'morph']);
                 }
             );
         }
@@ -860,9 +967,10 @@ async function run() {
         if (fixture.name === '08-dropcap-pagination.json') {
             check(
                 `${fixture.name} dropcap pagination`,
-                'dropcap stays on first fragment and continuation splits correctly',
+                'dropcap stays on first fragment, continuation splits correctly, and dropcap actors declare split+morph capabilities',
                 () => {
                     assertDropCapPaginationSignals(pagesA, fixture.name);
+                    assertTransformCapabilitySourceSignals(fixture.name, engine, 'dropcap-basic', ['split', 'morph']);
                 }
             );
         }
@@ -873,9 +981,10 @@ async function run() {
         ) {
             check(
                 `${fixture.name} split transform signals`,
-                'split-heavy fixtures publish split transform summaries with continuation fragment indices',
+                'split-heavy fixtures publish split transform summaries with continuation fragment indices and actor split capabilities',
                 () => {
                     assertSplitTransformSignals(pagesA, fixture.name, engine);
+                    assertTransformCapabilitySignals(fixture.name, engine, ['split']);
                 }
             );
         }
@@ -900,9 +1009,10 @@ async function run() {
         if (fixture.name === '15-story-multi-column.json') {
             check(
                 `${fixture.name} multi-column story signals`,
-                'story emits at least two column anchors on page 1 and continues across pages',
+                'story emits at least two column anchors on page 1, continues across pages, and declares split+morph capabilities',
                 () => {
                     assertStoryMultiColumnSignals(pagesA, fixture.name);
+                    assertTransformCapabilityActorKindSignals(fixture.name, engine, 'story', ['split', 'morph']);
                 }
             );
         }

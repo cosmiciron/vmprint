@@ -381,7 +381,7 @@ export interface BoxMeta {
     pageIndex?: number;
     generated?: boolean;
     originSourceId?: string;
-    transformKind?: 'clone' | 'split';
+    transformKind?: 'clone' | 'split' | 'morph';
     clonedFromSourceId?: string;
 }
 
