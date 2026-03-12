@@ -69,6 +69,60 @@ This is the shortest path to meaningful completion because it removes the highes
 
 ## 5. Execution Phases
 
+## Layering Note: Microkernel Direction
+
+The engine is no longer well-described as a linear layout pipeline.
+It is increasingly a stateful simulation runtime whose current layer boundaries are still too soft.
+
+That means the next architectural risk is not only paginator thickness.
+It is also **responsibility bloat inside `LayoutSession`** caused by mixing multiple layers in one object.
+
+The intended direction is therefore a **microkernel-style bottom layer**, not a larger god object with a better name.
+
+The lowest layer should own only substrate concerns that could plausibly exist even outside document pagination:
+
+* actor / entity identity
+* mutable world state
+* actor-to-world and actor-to-actor interaction state
+* event dispatch and collaborator lifecycle wiring
+* snapshots, rollback, and branch transactions
+* artifact publication channels
+* shared spatial state only where it is genuinely substrate-level
+
+The lowest layer should explicitly not own:
+
+* AST interpretation
+* pages as publishing concepts
+* TOC / bookmark / print-domain behavior
+* packager-specific policy
+* pagination-specific overflow and split rules
+
+Use this layer model when judging future extractions:
+
+1. **Simulation Kernel**
+   state, identity, branching, interaction state, events, artifact channels
+2. **Layout Runtime**
+   pagination semantics, page/region meaning, placement, split/continuation policy
+3. **Document Semantics**
+   AST interpretation, document actor meaning, authored structure to actor graph mapping
+4. **Print / Composition Handoff**
+   navigation substrate, assembly mapping, host-facing artifacts, downstream composition inputs
+
+This matters immediately for `LayoutSession`.
+It should now be treated as a temporary mixed-layer object, not as the final heart of the system.
+
+Current extraction guidance:
+
+* first extract state / transaction / event responsibilities downward toward the kernel
+* do not start by extracting cosmetic helper methods
+* do not move print-feature behavior downward
+* keep page semantics and pagination policy above the kernel
+
+If a responsibility could make sense in a non-document simulation, it is a candidate for the kernel.
+If it only makes sense because we are paginating authored documents, it belongs above the kernel.
+
+---
+
 ### Phase A: Thin The Coordinator
 
 Objective:

@@ -64,6 +64,34 @@ VMPrint should continue moving toward this shape:
 
 Packager has not been diminished by this shift. It has been correctly placed inside a larger and stronger simulation system.
 
+That larger system should not harden into one large session object.
+The longer-term direction is a **microkernel-style simulation substrate** at the bottom of the engine.
+
+That bottom layer should own only substrate concerns such as:
+
+* identity
+* mutable world state
+* interaction state
+* events
+* snapshots / rollback
+* artifact channels
+
+It should not own document-specific meaning such as:
+
+* AST interpretation
+* pages as publishing concepts
+* pagination policy
+* print-feature behavior
+
+In practice, VMPrint should be understood as layered:
+
+1. simulation kernel
+2. layout runtime
+3. document semantics
+4. print / composition handoff
+
+This is how the overhaul avoids replacing paginator-centric design with a new `LayoutSession` god object.
+
 ---
 
 ## 4. Working Method
@@ -196,4 +224,3 @@ When unsure, ask:
 
 If yes, continue.
 If not, stop and reassess.
-

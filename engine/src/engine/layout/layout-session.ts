@@ -10,6 +10,8 @@ import type { PackagerSplitResult } from './packagers/packager-types';
 import { getTailSplitPostAttemptOutcome, getWholeFormationOverflowHandling } from './actor-formation';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { computeKeepWithNextPlan } from './keep-with-next-collaborator';
+import { LayoutCollaboratorDispatcher } from './layout-collaborator-dispatcher';
+import { Kernel } from './kernel';
 import { preparePackagerForPhase, rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
 import type {
     SimulationArtifactKey,
@@ -786,6 +788,8 @@ export type LocalSplitStateSnapshot = {
     fragmentTransitionsBySource: Map<string, FragmentTransition[]>;
 };
 
+export type LocalBranchStateSnapshot = LocalQueueSnapshot & LocalSplitStateSnapshot;
+
 export type LocalBranchSnapshot = LocalTransitionSnapshot & LocalQueueSnapshot & LocalSplitStateSnapshot;
 
 export type FragmentTransition = {
@@ -854,7 +858,8 @@ type LayoutSessionOptions = {
 export class LayoutSession {
     readonly runtime: EngineRuntime;
     readonly collaborators: readonly LayoutCollaborator[];
-    readonly actorRegistry: PackagerUnit[] = [];
+    readonly collaboratorDispatcher: LayoutCollaboratorDispatcher;
+    readonly kernel = new Kernel();
     readonly profile: LayoutProfileMetrics = {
         keepWithNextPlanCalls: 0,
         keepWithNextPlanMs: 0,
@@ -876,24 +881,13 @@ export class LayoutSession {
         exclusionBandResolutionMs: 0,
         exclusionLaneApplications: 0
     };
-    private readonly continuationArtifacts = new Map<string, ContinuationArtifacts>();
-    private readonly stagedContinuationActors = new Map<string, PackagerUnit[]>();
-    private readonly stagedAfterSplitMarkers = new Map<string, FlowBox[]>();
     private readonly keepWithNextPlans = new Map<string, KeepWithNextFormationPlan>();
-    private readonly fragmentTransitions: FragmentTransition[] = [];
-    private readonly fragmentTransitionsByActor = new Map<string, FragmentTransition>();
-    private readonly fragmentTransitionsBySource = new Map<string, FragmentTransition[]>();
-    private readonly pageReservationsByPage = new Map<number, RegionReservation[]>();
-    private readonly pageExclusionsByPage = new Map<number, SpatialExclusion[]>();
     private readonly pageFinalizationStates = new Map<number, PageFinalizationState>();
     private logicalPageNumberCursor = 0;
-    private readonly artifacts = new Map<string, unknown>();
     private finalizedPages: Page[] = [];
     private simulationReport?: SimulationReport;
     private simulationReportReader: SimulationReportReader = createSimulationReportReader(undefined);
     private paginationLoopState: PaginationLoopState | null = null;
-    private currentPageReservations: RegionReservation[] = [];
-    private currentPageExclusions: SpatialExclusion[] = [];
 
     currentPageIndex = 0;
     currentY = 0;
@@ -903,36 +897,27 @@ export class LayoutSession {
     constructor(options: LayoutSessionOptions) {
         this.runtime = options.runtime;
         this.collaborators = options.collaborators ?? [];
+        this.collaboratorDispatcher = new LayoutCollaboratorDispatcher(this.collaborators);
     }
 
     notifySimulationStart(): void {
         this.finalizedPages = [];
-        this.pageReservationsByPage.clear();
-        this.pageExclusionsByPage.clear();
+        this.kernel.resetForSimulation();
         this.pageFinalizationStates.clear();
         this.logicalPageNumberCursor = 0;
-        this.currentPageReservations = [];
-        this.currentPageExclusions = [];
-        for (const collaborator of this.collaborators) {
-            collaborator.onSimulationStart?.(this);
-        }
+        this.collaboratorDispatcher.onSimulationStart(this);
     }
 
     notifyActorSpawn(actor: PackagerUnit): void {
-        this.actorRegistry.push(actor);
-        for (const collaborator of this.collaborators) {
-            collaborator.onActorSpawn?.(actor, this);
-        }
+        this.kernel.registerActor(actor);
+        this.collaboratorDispatcher.onActorSpawn(actor, this);
     }
 
     notifyPageStart(pageIndex: number, width: number, height: number, boxes: Box[]): void {
         this.currentPageIndex = pageIndex;
         this.currentSurface = new PageSurface(pageIndex, width, height, boxes);
-        this.currentPageReservations = [];
-        this.currentPageExclusions = [];
-        for (const collaborator of this.collaborators) {
-            collaborator.onPageStart?.(pageIndex, this.currentSurface, this);
-        }
+        this.kernel.beginPage();
+        this.collaboratorDispatcher.onPageStart(pageIndex, this.currentSurface, this);
     }
 
     advancePage(
@@ -963,29 +948,23 @@ export class LayoutSession {
         this.currentConstraintField = constraints;
         const startedAt = performance.now();
         this.recordProfile('reservationConstraintNegotiationCalls', 1);
-        for (const reservation of this.currentPageReservations) {
+        for (const reservation of this.kernel.getCurrentPageReservations()) {
             constraints.reservations.push({ ...reservation });
             this.recordProfile('reservationConstraintApplications', 1);
         }
-        for (const exclusion of this.currentPageExclusions) {
+        for (const exclusion of this.kernel.getCurrentPageExclusions()) {
             constraints.exclusions.push({ ...exclusion });
         }
         this.recordProfile('reservationConstraintNegotiationMs', performance.now() - startedAt);
-        for (const collaborator of this.collaborators) {
-            collaborator.onConstraintNegotiation?.(actor, constraints, this);
-        }
+        this.collaboratorDispatcher.onConstraintNegotiation(actor, constraints, this);
     }
 
     notifyActorPrepared(actor: PackagerUnit): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onActorPrepared?.(actor, this);
-        }
+        this.collaboratorDispatcher.onActorPrepared(actor, this);
     }
 
     notifySplitAttempt(attempt: SplitAttempt): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onSplitAttempt?.(attempt, this);
-        }
+        this.collaboratorDispatcher.onSplitAttempt(attempt, this);
     }
 
     executeSplitAttempt(
@@ -1040,64 +1019,28 @@ export class LayoutSession {
     }
 
     notifySplitAccepted(attempt: SplitAttempt, result: PackagerSplitResult): void {
-        const transition: FragmentTransition = {
-            predecessorActorId: attempt.actor.actorId,
-            currentFragmentActorId: result.currentFragment?.actorId ?? null,
-            continuationActorId: result.continuationFragment?.actorId ?? null,
-            sourceActorId: attempt.actor.sourceId,
-            pageIndex: attempt.context.pageIndex,
-            availableWidth: attempt.availableWidth,
-            availableHeight: attempt.availableHeight,
-            continuationEnqueued: false
-        };
-        this.fragmentTransitions.push(transition);
-        this.fragmentTransitionsByActor.set(attempt.actor.actorId, transition);
-        const sourceTransitions = this.fragmentTransitionsBySource.get(transition.sourceActorId) ?? [];
-        sourceTransitions.push(transition);
-        this.fragmentTransitionsBySource.set(transition.sourceActorId, sourceTransitions);
-        if (result.currentFragment) {
-            this.fragmentTransitionsByActor.set(result.currentFragment.actorId, transition);
-        }
-        if (result.continuationFragment) {
-            this.fragmentTransitionsByActor.set(result.continuationFragment.actorId, transition);
-        }
-        for (const collaborator of this.collaborators) {
-            collaborator.onSplitAccepted?.(attempt, result, this);
-        }
+        this.kernel.registerSplitAccepted(attempt, result);
+        this.collaboratorDispatcher.onSplitAccepted(attempt, result, this);
     }
 
     notifyActorCommitted(actor: PackagerUnit, committed: Box[]): void {
         if (!this.currentSurface) return;
-        for (const collaborator of this.collaborators) {
-            collaborator.onActorCommitted?.(actor, committed, this.currentSurface, this);
-        }
+        this.collaboratorDispatcher.onActorCommitted(actor, committed, this.currentSurface, this);
     }
 
     notifyContinuationProduced(predecessor: PackagerUnit, successor: PackagerUnit): void {
-        this.actorRegistry.push(successor);
-        for (const collaborator of this.collaborators) {
-            collaborator.onContinuationProduced?.(predecessor, successor, this);
-        }
+        this.kernel.markContinuationProduced(successor);
+        this.collaboratorDispatcher.onContinuationProduced(predecessor, successor, this);
     }
 
     notifyContinuationEnqueued(predecessor: PackagerUnit, successor: PackagerUnit): void {
-        this.actorRegistry.push(successor);
-        const transition = this.fragmentTransitionsByActor.get(successor.actorId)
-            ?? this.fragmentTransitionsByActor.get(predecessor.actorId);
-        if (transition) {
-            transition.continuationEnqueued = true;
-        }
-        for (const collaborator of this.collaborators) {
-            collaborator.onContinuationEnqueued?.(predecessor, successor, this);
-            collaborator.onContinuationProduced?.(predecessor, successor, this);
-        }
+        this.kernel.markContinuationEnqueued(predecessor, successor);
+        this.collaboratorDispatcher.onContinuationEnqueued(predecessor, successor, this);
     }
 
     finalizeCommittedPage(pageIndex: number, width: number, height: number, boxes: readonly Box[]): Page {
         const surface = new PageSurface(pageIndex, width, height, [...boxes]);
-        for (const collaborator of this.collaborators) {
-            collaborator.onPageFinalized?.(surface, this);
-        }
+        this.collaboratorDispatcher.onPageFinalized(surface, this);
         return surface.finalize();
     }
 
@@ -1325,9 +1268,7 @@ export class LayoutSession {
     finalizePages(pages: Page[]): Page[] {
         this.finalizedPages = pages;
 
-        for (const collaborator of this.collaborators) {
-            collaborator.onSimulationComplete?.(this);
-        }
+        this.collaboratorDispatcher.onSimulationComplete(this);
 
         this.setSimulationReport(this.buildSimulationReport());
 
@@ -1339,27 +1280,28 @@ export class LayoutSession {
     publishArtifact<K extends SimulationArtifactKey>(key: K, value: SimulationArtifactMap[K]): void;
     publishArtifact(key: string, value: unknown): void;
     publishArtifact(key: string, value: unknown): void {
-        this.artifacts.set(key, value);
+        this.kernel.publishArtifact(key, value);
     }
 
     // Report assembly helper. The raw artifact registry remains internal;
     // downstream consumers should read the consolidated simulation report.
     buildSimulationArtifacts(): SimulationArtifacts {
+        const publishedArtifacts = this.kernel.getPublishedArtifacts();
         const artifacts: SimulationArtifacts = {
-            fragmentationSummary: this.artifacts.get(simulationArtifactKeys.fragmentationSummary) as SimulationArtifactMap['fragmentationSummary'],
-            transformCapabilitySummary: this.artifacts.get(simulationArtifactKeys.transformCapabilitySummary) as SimulationArtifactMap['transformCapabilitySummary'],
-            transformSummary: this.artifacts.get(simulationArtifactKeys.transformSummary) as SimulationArtifactMap['transformSummary'],
-            pageNumberSummary: this.artifacts.get(simulationArtifactKeys.pageNumberSummary) as SimulationArtifactMap['pageNumberSummary'],
-            pageOverrideSummary: this.artifacts.get(simulationArtifactKeys.pageOverrideSummary) as SimulationArtifactMap['pageOverrideSummary'],
-            pageExclusionSummary: this.artifacts.get(simulationArtifactKeys.pageExclusionSummary) as SimulationArtifactMap['pageExclusionSummary'],
-            pageReservationSummary: this.artifacts.get(simulationArtifactKeys.pageReservationSummary) as SimulationArtifactMap['pageReservationSummary'],
-            pageSpatialConstraintSummary: this.artifacts.get(simulationArtifactKeys.pageSpatialConstraintSummary) as SimulationArtifactMap['pageSpatialConstraintSummary'],
-            pageRegionSummary: this.artifacts.get(simulationArtifactKeys.pageRegionSummary) as SimulationArtifactMap['pageRegionSummary'],
-            sourcePositionMap: this.artifacts.get(simulationArtifactKeys.sourcePositionMap) as SimulationArtifactMap['sourcePositionMap'],
-            headingTelemetry: this.artifacts.get(simulationArtifactKeys.headingTelemetry) as SimulationArtifactMap['headingTelemetry']
+            fragmentationSummary: publishedArtifacts.get(simulationArtifactKeys.fragmentationSummary) as SimulationArtifactMap['fragmentationSummary'],
+            transformCapabilitySummary: publishedArtifacts.get(simulationArtifactKeys.transformCapabilitySummary) as SimulationArtifactMap['transformCapabilitySummary'],
+            transformSummary: publishedArtifacts.get(simulationArtifactKeys.transformSummary) as SimulationArtifactMap['transformSummary'],
+            pageNumberSummary: publishedArtifacts.get(simulationArtifactKeys.pageNumberSummary) as SimulationArtifactMap['pageNumberSummary'],
+            pageOverrideSummary: publishedArtifacts.get(simulationArtifactKeys.pageOverrideSummary) as SimulationArtifactMap['pageOverrideSummary'],
+            pageExclusionSummary: publishedArtifacts.get(simulationArtifactKeys.pageExclusionSummary) as SimulationArtifactMap['pageExclusionSummary'],
+            pageReservationSummary: publishedArtifacts.get(simulationArtifactKeys.pageReservationSummary) as SimulationArtifactMap['pageReservationSummary'],
+            pageSpatialConstraintSummary: publishedArtifacts.get(simulationArtifactKeys.pageSpatialConstraintSummary) as SimulationArtifactMap['pageSpatialConstraintSummary'],
+            pageRegionSummary: publishedArtifacts.get(simulationArtifactKeys.pageRegionSummary) as SimulationArtifactMap['pageRegionSummary'],
+            sourcePositionMap: publishedArtifacts.get(simulationArtifactKeys.sourcePositionMap) as SimulationArtifactMap['sourcePositionMap'],
+            headingTelemetry: publishedArtifacts.get(simulationArtifactKeys.headingTelemetry) as SimulationArtifactMap['headingTelemetry']
         };
 
-        for (const [key, value] of this.artifacts.entries()) {
+        for (const [key, value] of publishedArtifacts.entries()) {
             if (key in artifacts && artifacts[key] !== undefined) continue;
             artifacts[key] = value;
         }
@@ -1409,12 +1351,7 @@ export class LayoutSession {
             ...reservation,
             height: normalizedHeight
         };
-        if (pageIndex === this.currentPageIndex) {
-            this.currentPageReservations.push(normalized);
-        }
-        const pageReservations = this.pageReservationsByPage.get(pageIndex) ?? [];
-        pageReservations.push(normalized);
-        this.pageReservationsByPage.set(pageIndex, pageReservations);
+        this.kernel.storePageReservation(pageIndex, this.currentPageIndex, normalized);
         this.recordProfile('reservationWrites', 1);
     }
 
@@ -1423,15 +1360,15 @@ export class LayoutSession {
     }
 
     getCurrentPageReservations(): readonly RegionReservation[] {
-        return this.currentPageReservations;
+        return this.kernel.getCurrentPageReservations();
     }
 
     getPageReservations(pageIndex: number): readonly RegionReservation[] {
-        return this.pageReservationsByPage.get(pageIndex) ?? [];
+        return this.kernel.getPageReservations(pageIndex);
     }
 
     getReservationPageIndices(): readonly number[] {
-        return Array.from(this.pageReservationsByPage.keys()).sort((a, b) => a - b);
+        return this.kernel.getReservationPageIndices();
     }
 
     excludePageSpace(exclusion: PageExclusionIntent, pageIndex: number = this.currentPageIndex): void {
@@ -1449,27 +1386,19 @@ export class LayoutSession {
         };
         if (!(normalized.w > 0) || !(normalized.h > 0)) return;
 
-        if (pageIndex === this.currentPageIndex) {
-            this.currentPageExclusions.push(normalized);
-        }
-        const pageExclusions = this.pageExclusionsByPage.get(pageIndex) ?? [];
-        pageExclusions.push(normalized);
-        this.pageExclusionsByPage.set(pageIndex, pageExclusions);
+        this.kernel.storePageExclusion(pageIndex, this.currentPageIndex, normalized);
     }
 
     getPageExclusions(pageIndex: number): readonly SpatialExclusion[] {
-        return this.pageExclusionsByPage.get(pageIndex) ?? [];
+        return this.kernel.getPageExclusions(pageIndex);
     }
 
     getExclusionPageIndices(): readonly number[] {
-        return Array.from(this.pageExclusionsByPage.keys()).sort((a, b) => a - b);
+        return this.kernel.getExclusionPageIndices();
     }
 
     getSpatialConstraintPageIndices(): readonly number[] {
-        return Array.from(new Set([
-            ...this.pageReservationsByPage.keys(),
-            ...this.pageExclusionsByPage.keys()
-        ])).sort((a, b) => a - b);
+        return this.kernel.getSpatialConstraintPageIndices();
     }
 
     matchesPageSelector(pageIndex: number, selector: PageReservationSelector = 'first'): boolean {
@@ -1502,7 +1431,7 @@ export class LayoutSession {
 
         return {
             pageCount: pages.length,
-            actorCount: this.actorRegistry.length,
+            actorCount: this.kernel.actorRegistry.length,
             splitTransitionCount: this.getFragmentTransitions().length,
             generatedBoxCount,
             profile: {
@@ -1527,11 +1456,11 @@ export class LayoutSession {
     }
 
     setContinuationArtifacts(actorId: string, artifacts: ContinuationArtifacts): void {
-        this.continuationArtifacts.set(actorId, artifacts);
+        this.kernel.setContinuationArtifacts(actorId, artifacts);
     }
 
     getContinuationArtifacts(actorId: string): ContinuationArtifacts | undefined {
-        return this.continuationArtifacts.get(actorId);
+        return this.kernel.getContinuationArtifacts(actorId);
     }
 
     ensureContinuationArtifacts(actor: PackagerUnit): ContinuationArtifacts | undefined {
@@ -1558,28 +1487,22 @@ export class LayoutSession {
     }
 
     stageActorsBeforeContinuation(continuationActorId: string, actors: PackagerUnit[]): void {
-        if (!actors.length) return;
-        this.stagedContinuationActors.set(continuationActorId, actors);
+        this.kernel.stageActorsBeforeContinuation(continuationActorId, actors);
         for (const actor of actors) {
             this.notifyActorSpawn(actor);
         }
     }
 
     consumeActorsBeforeContinuation(continuationActorId: string): PackagerUnit[] {
-        const actors = this.stagedContinuationActors.get(continuationActorId) ?? [];
-        this.stagedContinuationActors.delete(continuationActorId);
-        return actors;
+        return this.kernel.consumeActorsBeforeContinuation(continuationActorId);
     }
 
     stageMarkersAfterSplit(fragmentActorId: string, markers: FlowBox[]): void {
-        if (!markers.length) return;
-        this.stagedAfterSplitMarkers.set(fragmentActorId, markers);
+        this.kernel.stageMarkersAfterSplit(fragmentActorId, markers);
     }
 
     consumeMarkersAfterSplit(fragmentActorId: string): FlowBox[] {
-        const markers = this.stagedAfterSplitMarkers.get(fragmentActorId) ?? [];
-        this.stagedAfterSplitMarkers.delete(fragmentActorId);
-        return markers;
+        return this.kernel.consumeMarkersAfterSplit(fragmentActorId);
     }
 
     placeSplitMarkersAfterFragment(
@@ -1687,38 +1610,18 @@ export class LayoutSession {
     ): LocalBranchSnapshot {
         return {
             ...this.captureLocalTransitionSnapshot(pageBoxes, currentY, lastSpacingAfter),
-            ...this.captureLocalQueueSnapshot(actorQueue),
-            ...this.captureLocalSplitStateSnapshot()
+            ...this.kernel.captureLocalBranchStateSnapshot(actorQueue)
         };
     }
 
     captureLocalQueueSnapshot(
         actorQueue: readonly PackagerUnit[]
     ): LocalQueueSnapshot {
-        return {
-            actorQueue: [...actorQueue],
-            stagedContinuationActors: new Map(
-                Array.from(this.stagedContinuationActors.entries(), ([actorId, actors]) => [actorId, [...actors]])
-            ),
-            stagedAfterSplitMarkers: new Map(
-                Array.from(this.stagedAfterSplitMarkers.entries(), ([actorId, markers]) => [actorId, [...markers]])
-            )
-        };
+        return this.kernel.captureLocalQueueSnapshot(actorQueue);
     }
 
     captureLocalSplitStateSnapshot(): LocalSplitStateSnapshot {
-        return {
-            currentPageReservations: this.currentPageReservations.map((reservation) => ({ ...reservation })),
-            currentPageExclusions: this.currentPageExclusions.map((exclusion) => ({ ...exclusion })),
-            fragmentTransitions: [...this.fragmentTransitions],
-            fragmentTransitionsByActor: new Map(this.fragmentTransitionsByActor),
-            fragmentTransitionsBySource: new Map(
-                Array.from(this.fragmentTransitionsBySource.entries(), ([sourceActorId, transitions]) => [
-                    sourceActorId,
-                    [...transitions]
-                ])
-            )
-        };
+        return this.kernel.captureLocalSplitStateSnapshot();
     }
 
     restoreLocalTransitionSnapshot(
@@ -1737,8 +1640,7 @@ export class LayoutSession {
         actorQueue: PackagerUnit[],
         snapshot: LocalBranchSnapshot
     ): { currentY: number; lastSpacingAfter: number } {
-        this.rollbackContinuationQueue(actorQueue, snapshot);
-        this.restoreLocalSplitStateSnapshot(snapshot);
+        this.kernel.restoreLocalBranchStateSnapshot(actorQueue, snapshot);
         return this.restoreLocalTransitionSnapshot(pageBoxes, snapshot);
     }
 
@@ -1747,39 +1649,18 @@ export class LayoutSession {
         snapshot: LocalQueueSnapshot
     ): void {
         actorQueue.splice(0, actorQueue.length, ...snapshot.actorQueue);
-        this.stagedContinuationActors.clear();
-        for (const [actorId, actors] of snapshot.stagedContinuationActors.entries()) {
-            this.stagedContinuationActors.set(actorId, [...actors]);
-        }
-        this.stagedAfterSplitMarkers.clear();
-        for (const [actorId, markers] of snapshot.stagedAfterSplitMarkers.entries()) {
-            this.stagedAfterSplitMarkers.set(actorId, [...markers]);
-        }
+        this.kernel.restoreLocalQueueSnapshot(snapshot);
     }
 
     rollbackContinuationQueue(
         actorQueue: PackagerUnit[],
         snapshot: LocalQueueSnapshot
     ): void {
-        this.restoreLocalQueueSnapshot(actorQueue, snapshot);
+        this.kernel.rollbackContinuationQueue(actorQueue, snapshot);
     }
 
     restoreLocalSplitStateSnapshot(snapshot: LocalSplitStateSnapshot): void {
-        this.currentPageReservations = snapshot.currentPageReservations.map((reservation) => ({ ...reservation }));
-        this.currentPageExclusions = snapshot.currentPageExclusions.map((exclusion) => ({ ...exclusion }));
-
-        this.fragmentTransitions.length = 0;
-        this.fragmentTransitions.push(...snapshot.fragmentTransitions);
-
-        this.fragmentTransitionsByActor.clear();
-        for (const [actorId, transition] of snapshot.fragmentTransitionsByActor.entries()) {
-            this.fragmentTransitionsByActor.set(actorId, transition);
-        }
-
-        this.fragmentTransitionsBySource.clear();
-        for (const [sourceActorId, transitions] of snapshot.fragmentTransitionsBySource.entries()) {
-            this.fragmentTransitionsBySource.set(sourceActorId, [...transitions]);
-        }
+        this.kernel.restoreLocalSplitStateSnapshot(snapshot);
     }
 
     rollbackAcceptedSplitBranch(
@@ -1895,22 +1776,15 @@ export class LayoutSession {
         continuation: PackagerUnit | null | undefined,
         options: { notify?: boolean } = {}
     ): boolean {
-        if (!continuation) {
-            actorQueue.splice(startIndex, replaceCount);
-            return false;
-        }
-
-        if (options.notify !== false) {
+        if (continuation && options.notify !== false) {
             this.notifyContinuationEnqueued(predecessor, continuation);
         }
-        const stagedActors = this.consumeActorsBeforeContinuation(continuation.actorId);
-        if (stagedActors.length > 0) {
-            actorQueue.splice(startIndex, replaceCount, ...stagedActors, continuation);
-            return true;
-        }
-
-        actorQueue.splice(startIndex, replaceCount, continuation);
-        return true;
+        return this.kernel.installContinuationIntoQueue(
+            actorQueue,
+            startIndex,
+            replaceCount,
+            continuation
+        );
     }
 
     settleContinuationQueue(
@@ -1921,37 +1795,30 @@ export class LayoutSession {
         continuation: PackagerUnit | null | undefined,
         options: { notify?: boolean } = {}
     ): ContinuationQueueOutcome {
-        const snapshot = this.captureLocalQueueSnapshot(actorQueue);
-        return {
-            snapshot,
-            continuationInstalled: this.installContinuationIntoQueue(
-                actorQueue,
-                startIndex,
-                replaceCount,
-                predecessor,
-                continuation,
-                options
-            )
-        };
+        if (continuation && options.notify !== false) {
+            this.notifyContinuationEnqueued(predecessor, continuation);
+        }
+        return this.kernel.settleContinuationQueue(
+            actorQueue,
+            startIndex,
+            replaceCount,
+            continuation
+        );
     }
 
     previewContinuationQueueSettlement(
         actorQueue: PackagerUnit[],
         startIndex: number,
         replaceCount: number,
-        predecessor: PackagerUnit,
+        _predecessor: PackagerUnit,
         continuation: PackagerUnit | null | undefined
     ): ContinuationQueueOutcome {
-        const preview = this.settleContinuationQueue(
+        return this.kernel.previewContinuationQueueSettlement(
             actorQueue,
             startIndex,
             replaceCount,
-            predecessor,
-            continuation,
-            { notify: false }
+            continuation
         );
-        this.rollbackContinuationQueue(actorQueue, preview.snapshot);
-        return preview;
     }
 
     getAcceptedSplitQueueHandling(preview: ContinuationQueueOutcome): AcceptedSplitQueueHandling {
@@ -3469,23 +3336,23 @@ export class LayoutSession {
     }
 
     getRegisteredActors(): readonly PackagerUnit[] {
-        return this.actorRegistry;
+        return this.kernel.actorRegistry;
     }
 
     getFragmentTransitions(): readonly FragmentTransition[] {
-        return this.fragmentTransitions;
+        return this.kernel.getFragmentTransitions();
     }
 
     getFragmentTransition(actorId: string): FragmentTransition | undefined {
-        return this.fragmentTransitionsByActor.get(actorId);
+        return this.kernel.getFragmentTransition(actorId);
     }
 
     getFragmentTransitionsBySource(sourceActorId: string): readonly FragmentTransition[] {
-        return this.fragmentTransitionsBySource.get(sourceActorId) ?? [];
+        return this.kernel.getFragmentTransitionsBySource(sourceActorId);
     }
 
     getFragmentTransitionSourceIds(): readonly string[] {
-        return Array.from(this.fragmentTransitionsBySource.keys());
+        return this.kernel.getFragmentTransitionSourceIds();
     }
 
     measurePreparedActor(
