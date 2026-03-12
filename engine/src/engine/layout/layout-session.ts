@@ -1,13 +1,15 @@
+import { performance } from 'node:perf_hooks';
 import type { Box, Page, PageRegionContent, PageReservationSelector } from '../types';
 import type { EngineRuntime } from '../runtime';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
-import type { ActorOverflowHandling } from './actor-overflow';
+import { getActorOverflowHandling, type ActorOverflowHandling } from './actor-overflow';
 import type { PackagerUnit } from './packagers/packager-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
 import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
 import { getTailSplitPostAttemptOutcome, getWholeFormationOverflowHandling } from './actor-formation';
 import { LAYOUT_DEFAULTS } from './defaults';
+import { computeKeepWithNextPlan } from './keep-with-next-collaborator';
 import { rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
 import type {
     SimulationArtifactKey,
@@ -494,6 +496,20 @@ export type WholeFormationOverflowEntrySettlementOutcome =
         action: 'fallthrough-local-overflow';
     };
 
+export type WholeFormationOverflowResolution = {
+    handling: WholeFormationOverflowHandling | null;
+    fallbackOutcome: WholeFormationOverflowHandling['fallbackHandling'];
+    action: PaginationLoopAction | null;
+    tailSplitExecution: WholeFormationOverflowHandling['tailSplitExecution'];
+};
+
+export type KeepWithNextPlanningResolution = {
+    plan: KeepWithNextFormationPlan | null;
+    handling: WholeFormationOverflowHandling | null;
+    tailSplitSuccessOutcome: ReturnType<typeof getTailSplitPostAttemptOutcome> | null;
+    tailSplitFailureOutcome: ReturnType<typeof getTailSplitPostAttemptOutcome> | null;
+};
+
 export type GenericSplitOutcome = {
     branchSnapshot: LocalBranchSnapshot;
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
@@ -547,6 +563,90 @@ export type ActorOverflowEntrySettlementOutcome =
         action: 'continue-to-split';
         splitExecution: SplitExecution;
     };
+
+export type ActorOverflowResolution =
+    | {
+        action: 'handled';
+        loopAction: PaginationLoopAction;
+    }
+    | {
+        action: 'continue-to-split';
+        splitExecution: SplitExecution;
+    };
+
+export type KeepWithNextOverflowActionInput = {
+    planning: KeepWithNextPlanningResolution | null;
+    wholeFormationOverflow: WholeFormationOverflowResolution;
+    effectiveHeight: number;
+    marginBottom: number;
+    effectiveAvailableHeight: number;
+    isAtPageTop: boolean;
+    pages: Page[];
+    currentPageBoxes: Box[];
+    currentPageIndex: number;
+    pageWidth: number;
+    pageHeight: number;
+    nextPageTopY: number;
+    currentActorIndex: number;
+    actorQueue: PackagerUnit[];
+    state: {
+        currentY: number;
+        lastSpacingAfter: number;
+        pageLimit: number;
+        availableWidth: number;
+    };
+    contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>;
+    positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[];
+};
+
+export type ActorPlacementActionInput = {
+    actor: PackagerUnit;
+    placementFrame: ResolvedPlacementFrame;
+    availableWidth: number;
+    availableHeight: number;
+    context: PackagerContext;
+    state: FragmentCommitState;
+    constraintField: ConstraintField;
+    layoutBefore: number;
+    pageLimit: number;
+    pageTop: number;
+    pages: Page[];
+    currentPageBoxes: Box[];
+    currentPageIndex: number;
+    pageWidth: number;
+    pageHeight: number;
+    nextPageTopY: number;
+    currentActorIndex: number;
+    currentY: number;
+    lastSpacingAfter: number;
+};
+
+export type GenericSplitActionInput = {
+    pages: Page[];
+    currentPageBoxes: Box[];
+    currentPageIndex: number;
+    pageWidth: number;
+    pageHeight: number;
+    nextPageTopY: number;
+    currentActorIndex: number;
+    actorQueue: PackagerUnit[];
+    packager: PackagerUnit;
+    splitExecution: SplitExecution;
+    state: {
+        currentY: number;
+        lastSpacingAfter: number;
+        effectiveHeight: number;
+        marginBottom: number;
+        availableWidth: number;
+        availableHeightAdjusted: number;
+        pageLimit: number;
+        pageTop: number;
+        layoutBefore: number;
+    };
+    contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>;
+    resolveDeferredCursorY: (candidate: PackagerUnit) => number | null;
+    positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[];
+};
 
 export type ActorSplitFailureHandlingOutcome = {
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number } | null;
@@ -716,6 +816,27 @@ export type PaginationLoopState = {
     isAtPageTop: boolean;
     context: PackagerContext;
 };
+
+export type PaginationPlacementPreparation =
+    | {
+        action: 'continue-loop';
+        loopAction: PaginationLoopAction;
+    }
+    | {
+        action: 'ready';
+        currentY: number;
+        availableWidth: number;
+        availableHeight: number;
+        isAtPageTop: boolean;
+        layoutBefore: number;
+        layoutDelta: number;
+        constraintField: ConstraintField;
+        placementFrame: ResolvedPlacementFrame;
+        context: PackagerContext;
+        availableHeightAdjusted: number;
+        effectiveAvailableHeight: number;
+        resolveDeferredCursorY: (candidate: PackagerUnit) => number | null;
+    };
 
 type LayoutSessionOptions = {
     runtime: EngineRuntime;
@@ -1031,6 +1152,155 @@ export class LayoutSession {
             },
             actorIndex
         );
+    }
+
+    preparePaginationPlacement(input: {
+        actor: PackagerUnit;
+        currentActorIndex: number;
+        pages: Page[];
+        currentPageBoxes: Box[];
+        currentPageIndex: number;
+        currentY: number;
+        lastSpacingAfter: number;
+        pageWidth: number;
+        pageHeight: number;
+        pageLimit: number;
+        margins: { top: number; right: number; bottom: number; left: number };
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>;
+    }): PaginationPlacementPreparation {
+        const fullAvailableWidth = input.pageWidth - input.margins.left - input.margins.right;
+        let availableWidth = fullAvailableWidth;
+        let availableHeight = input.pageLimit - input.currentY;
+
+        if (availableHeight <= 0 && input.currentY > input.margins.top) {
+            return {
+                action: 'continue-loop',
+                loopAction: this.restartCurrentActorOnNextPage(
+                    input.pages,
+                    input.currentPageBoxes,
+                    input.currentPageIndex,
+                    input.pageWidth,
+                    input.pageHeight,
+                    input.margins.top,
+                    input.currentActorIndex
+                )
+            };
+        }
+
+        const isAtPageTop = input.currentY === input.margins.top && input.currentPageBoxes.length === 0;
+        if (input.actor.pageBreakBefore && !isAtPageTop) {
+            return {
+                action: 'continue-loop',
+                loopAction: this.restartCurrentActorOnNextPage(
+                    input.pages,
+                    input.currentPageBoxes,
+                    input.currentPageIndex,
+                    input.pageWidth,
+                    input.pageHeight,
+                    input.margins.top,
+                    input.currentActorIndex
+                )
+            };
+        }
+
+        const marginTop = input.actor.getMarginTop();
+        const layoutBefore = input.lastSpacingAfter + marginTop;
+        const layoutDelta = layoutBefore - marginTop;
+        const constraintField = new ConstraintField(availableWidth, availableHeight - layoutDelta);
+        this.notifyConstraintNegotiation(input.actor, constraintField);
+        const placementSurfaceStart = performance.now();
+        const placementFrame = constraintField.resolvePlacementFrame(input.currentY + layoutBefore, {
+            left: input.margins.left,
+            right: input.margins.right
+        });
+        this.recordProfile('exclusionBlockedCursorCalls', 1);
+        this.recordProfile('exclusionBandResolutionCalls', 1);
+        const placementSurfaceDuration = performance.now() - placementSurfaceStart;
+        this.recordProfile('exclusionBlockedCursorMs', placementSurfaceDuration);
+        this.recordProfile('exclusionBandResolutionMs', placementSurfaceDuration);
+
+        let currentY = input.currentY;
+        if (placementFrame.cursorY > input.currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
+            currentY = placementFrame.cursorY - layoutBefore;
+            availableHeight = input.pageLimit - currentY;
+            if (availableHeight <= 0 && currentY > input.margins.top) {
+                return {
+                    action: 'continue-loop',
+                    loopAction: this.restartCurrentActorOnNextPage(
+                        input.pages,
+                        input.currentPageBoxes,
+                        input.currentPageIndex,
+                        input.pageWidth,
+                        input.pageHeight,
+                        input.margins.top,
+                        input.currentActorIndex
+                    )
+                };
+            }
+        }
+
+        if (placementFrame.contentBand) {
+            this.recordProfile('exclusionLaneApplications', 1);
+        }
+
+        availableWidth = placementFrame.availableWidth;
+        const context: PackagerContext = {
+            ...input.contextBase,
+            pageIndex: input.currentPageIndex,
+            cursorY: currentY,
+            margins: {
+                ...input.margins,
+                left: placementFrame.margins.left,
+                right: placementFrame.margins.right
+            }
+        };
+        const availableHeightAdjusted = constraintField.effectiveAvailableHeight;
+        const effectiveAvailableHeight = layoutDelta + availableHeightAdjusted;
+
+        return {
+            action: 'ready',
+            currentY,
+            availableWidth,
+            availableHeight,
+            isAtPageTop,
+            layoutBefore,
+            layoutDelta,
+            constraintField,
+            placementFrame,
+            context,
+            availableHeightAdjusted,
+            effectiveAvailableHeight,
+            resolveDeferredCursorY: (candidate: PackagerUnit): number | null => {
+                if (!placementFrame.contentBand) return null;
+
+                const placementPreference = resolvePackagerPlacementPreference(
+                    candidate,
+                    constraintField.availableWidth,
+                    context
+                );
+                const minimumPlacementWidth = placementPreference?.minimumWidth;
+                if (
+                    minimumPlacementWidth !== null &&
+                    minimumPlacementWidth !== undefined &&
+                    placementFrame.availableWidth + LAYOUT_DEFAULTS.wrapTolerance < minimumPlacementWidth
+                ) {
+                    return placementFrame.activeBand?.bottom ?? placementFrame.cursorY;
+                }
+
+                if (
+                    rejectsPlacementFrame(
+                        candidate,
+                        placementFrame.availableWidth,
+                        constraintField.availableWidth,
+                        context
+                    )
+                ) {
+                    return placementFrame.activeBand?.bottom ?? placementFrame.cursorY;
+                }
+
+                return null;
+            }
+        };
     }
 
     applyPaginationLoopAction(
@@ -2026,6 +2296,86 @@ export class LayoutSession {
         return outcome;
     }
 
+    resolveWholeFormationOverflow(input: {
+        currentActorIndex: number;
+        handling: WholeFormationOverflowHandling | null;
+        pages: Page[];
+        currentPageBoxes: Box[];
+        currentPageIndex: number;
+        pageWidth: number;
+        pageHeight: number;
+        nextPageTop: number;
+    }): WholeFormationOverflowResolution {
+        if (!input.handling) {
+            return {
+                handling: null,
+                fallbackOutcome: null,
+                action: null,
+                tailSplitExecution: null
+            };
+        }
+
+        const settled = this.settleWholeFormationOverflowEntry(
+            input.currentActorIndex,
+            this.handleWholeFormationOverflowEntry(
+                input.handling,
+                input.pages,
+                input.currentPageBoxes,
+                input.currentPageIndex,
+                input.pageWidth,
+                input.pageHeight,
+                input.nextPageTop
+            )
+        );
+        const action = this.toPaginationLoopAction(settled);
+
+        return {
+            handling: input.handling,
+            fallbackOutcome: input.handling.fallbackHandling ?? null,
+            action,
+            tailSplitExecution: action.action === 'continue-tail-split'
+                ? action.tailSplitExecution
+                : (input.handling.tailSplitExecution ?? null)
+        };
+    }
+
+    resolveKeepWithNextOverflowAction(input: KeepWithNextOverflowActionInput): PaginationLoopAction | null {
+        const overflowsCurrentPlacement = input.planning?.plan
+            ? input.wholeFormationOverflow.handling !== null
+            : ((input.effectiveHeight - input.marginBottom) > input.effectiveAvailableHeight);
+        if (!overflowsCurrentPlacement) {
+            return null;
+        }
+
+        if (input.planning?.plan && input.wholeFormationOverflow.tailSplitExecution) {
+            const keepBranchStart = performance.now();
+            const settlement = this.executeTailSplitFormationBranch(
+                input.pages,
+                input.currentPageBoxes,
+                input.currentPageIndex,
+                input.pageWidth,
+                input.pageHeight,
+                input.nextPageTopY,
+                input.currentActorIndex,
+                input.actorQueue,
+                input.wholeFormationOverflow.tailSplitExecution,
+                input.state,
+                input.contextBase,
+                input.planning.tailSplitFailureOutcome === 'advance-page',
+                input.positionMarker
+            );
+            this.recordProfile('keepWithNextBranchCalls', 1);
+            this.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
+            return this.toPaginationLoopAction(settlement);
+        }
+
+        if (input.wholeFormationOverflow.action?.action === 'continue-loop') {
+            return input.wholeFormationOverflow.action;
+        }
+
+        return null;
+    }
+
     toPaginationLoopAction(outcome: TailSplitFormationSettlementOutcome): PaginationLoopAction;
     toPaginationLoopAction(outcome: WholeFormationOverflowEntrySettlementOutcome): PaginationLoopAction;
     toPaginationLoopAction(outcome: ActorOverflowEntrySettlementOutcome): PaginationLoopAction;
@@ -2291,6 +2641,119 @@ export class LayoutSession {
         };
     }
 
+    resolveActorOverflow(input: {
+        actor: PackagerUnit;
+        isAtPageTop: boolean;
+        effectiveAvailableHeight: number;
+        availableWidth: number;
+        availableHeightAdjusted: number;
+        context: PackagerContext;
+        contentHeight: number;
+        marginTop: number;
+        marginBottom: number;
+        pageLimit: number;
+        pageTop: number;
+        pages: Page[];
+        currentPageBoxes: Box[];
+        currentPageIndex: number;
+        pageWidth: number;
+        pageHeight: number;
+        nextPageTopY: number;
+        currentActorIndex: number;
+        currentY: number;
+        lastSpacingAfter: number;
+        state: FragmentCommitState;
+    }): ActorOverflowResolution {
+        const overflowHandling = this.resolveActorOverflowHandling({
+            actor: input.actor,
+            isAtPageTop: input.isAtPageTop,
+            effectiveAvailableHeight: input.effectiveAvailableHeight,
+            availableWidth: input.availableWidth,
+            availableHeightAdjusted: input.availableHeightAdjusted,
+            context: input.context,
+            contentHeight: input.contentHeight,
+            marginTop: input.marginTop,
+            marginBottom: input.marginBottom,
+            pageLimit: input.pageLimit,
+            pageTop: input.pageTop
+        });
+        const markerReserve = this.getSplitMarkerReserve(input.actor);
+        const splitAvailableHeight = input.availableHeightAdjusted - markerReserve;
+        const preSplitBoxes = overflowHandling.preSplitOutcome === 'force-commit-at-top'
+            ? (input.actor.emitBoxes(input.availableWidth, input.availableHeightAdjusted, input.context) || [])
+            : null;
+        const overflowEntry = this.handleActorOverflowEntry(
+            overflowHandling,
+            input.actor,
+            preSplitBoxes,
+            input.state,
+            input.availableWidth,
+            splitAvailableHeight,
+            input.context,
+            input.currentY,
+            input.lastSpacingAfter
+        );
+
+        if (overflowEntry.action === 'continue-to-split') {
+            return {
+                action: 'continue-to-split',
+                splitExecution: overflowEntry.splitExecution
+            };
+        }
+
+        const settlement = this.settleActorOverflowEntry(
+            input.pages,
+            input.currentPageBoxes,
+            input.currentPageIndex,
+            input.pageWidth,
+            input.pageHeight,
+            input.nextPageTopY,
+            input.currentActorIndex,
+            overflowEntry
+        );
+        if (settlement.action !== 'handled') {
+            throw new Error('Expected handled overflow settlement.');
+        }
+
+        return {
+            action: 'handled',
+            loopAction: this.toPaginationLoopAction(settlement)
+        };
+    }
+
+    resolveActorOverflowHandling(input: {
+        actor: PackagerUnit;
+        isAtPageTop: boolean;
+        effectiveAvailableHeight: number;
+        availableWidth: number;
+        availableHeightAdjusted: number;
+        context: PackagerContext;
+        contentHeight: number;
+        marginTop: number;
+        marginBottom: number;
+        pageLimit: number;
+        pageTop: number;
+    }): ActorOverflowHandling {
+        const overflowIsUnbreakable = input.actor.isUnbreakable(input.effectiveAvailableHeight);
+        const overflowPreviewBoxes = input.isAtPageTop
+            ? true
+            : !!input.actor.emitBoxes(input.availableWidth, input.availableHeightAdjusted, input.context);
+        const isTablePackager = !!(input.actor as any).flowBox?.properties?._tableModel;
+        const isStoryPackager = !!(input.actor as any).storyElement;
+        const allowsMidPageSplit = isTablePackager || isStoryPackager;
+        const emptyLayoutBefore = input.marginTop;
+        const emptyAvailable = input.pageLimit - input.pageTop;
+        const requiredOnEmpty = input.contentHeight + emptyLayoutBefore + input.marginBottom;
+
+        return getActorOverflowHandling({
+            isAtPageTop: input.isAtPageTop,
+            isUnbreakable: overflowIsUnbreakable,
+            hasPreviewBoxes: overflowPreviewBoxes,
+            allowsMidPageSplit,
+            overflowsEmptyPage: requiredOnEmpty > emptyAvailable + LAYOUT_DEFAULTS.wrapTolerance
+        });
+    }
+
     handleActorSplitFailure(
         actor: PackagerUnit,
         boxes: readonly Box[] | null,
@@ -2522,6 +2985,164 @@ export class LayoutSession {
             nextLastSpacingAfter: advanced.nextLastSpacingAfter,
             nextActorIndex: this.resolveNextActorIndex(currentActorIndex, handling.shouldAdvanceIndex)
         };
+    }
+
+    executeGenericSplitBranch(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number,
+        nextPageTopY: number,
+        currentActorIndex: number,
+        actorQueue: PackagerUnit[],
+        packager: PackagerUnit,
+        splitExecution: SplitExecution,
+        state: {
+            currentY: number;
+            lastSpacingAfter: number;
+            effectiveHeight: number;
+            marginBottom: number;
+            availableWidth: number;
+            availableHeightAdjusted: number;
+            pageLimit: number;
+            pageTop: number;
+            layoutBefore: number;
+        },
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
+        resolveDeferredCursorY: (candidate: PackagerUnit) => number | null,
+        positionMarker: (
+            marker: FlowBox,
+            currentY: number,
+            layoutBefore: number,
+            availableWidth: number,
+            pageIndex: number
+        ) => Box | Box[]
+    ): ActorSplitFailureSettlementOutcome | DeferredSplitPlacementSettlementOutcome | GenericSplitSuccessSettlementOutcome {
+        const { currentFragment: fitsCurrent, continuationFragment: pushedNext } = splitExecution.result;
+
+        if (!fitsCurrent) {
+            const boxes = state.currentY === state.pageTop
+                ? (packager.emitBoxes(state.availableWidth, state.availableHeightAdjusted, {
+                    ...contextBase,
+                    pageIndex: currentPageIndex,
+                    cursorY: state.currentY
+                }) || [])
+                : null;
+            const outcome = this.resolveActorSplitFailure(
+                packager,
+                boxes,
+                {
+                    currentY: state.currentY,
+                    layoutDelta: 0,
+                    effectiveHeight: state.effectiveHeight,
+                    marginBottom: state.marginBottom,
+                    pageIndex: currentPageIndex
+                },
+                state.currentY === state.pageTop,
+                state.currentY,
+                state.lastSpacingAfter
+            );
+            return this.settleActorSplitFailure(
+                pages,
+                currentPageBoxes,
+                currentPageIndex,
+                pageWidth,
+                pageHeight,
+                nextPageTopY,
+                currentActorIndex,
+                outcome
+            );
+        }
+
+        const splitContext: PackagerContext = {
+            ...contextBase,
+            pageIndex: currentPageIndex,
+            cursorY: state.currentY
+        };
+        const fitsMarginBottom = fitsCurrent.getMarginBottom();
+        const fitsMarginTop = fitsCurrent.getMarginTop();
+        const fitsLayoutBefore = state.lastSpacingAfter + fitsMarginTop;
+        const fitsLayoutDelta = fitsLayoutBefore - fitsMarginTop;
+        const deferredSplitCursorY = resolveDeferredCursorY(fitsCurrent);
+        if (deferredSplitCursorY !== null) {
+            const outcome = this.resolveDeferredSplitPlacement(
+                state.currentY,
+                deferredSplitCursorY,
+                fitsLayoutBefore,
+                state.pageLimit,
+                state.pageTop
+            );
+            return this.settleDeferredSplitPlacement(
+                pages,
+                currentPageBoxes,
+                currentPageIndex,
+                pageWidth,
+                pageHeight,
+                nextPageTopY,
+                currentActorIndex,
+                state.lastSpacingAfter,
+                outcome
+            );
+        }
+
+        const fitsAvailableHeightAdjusted = (state.pageLimit - state.currentY) - fitsLayoutDelta;
+        const currentBoxes = fitsCurrent.emitBoxes(state.availableWidth, fitsAvailableHeightAdjusted, splitContext) || [];
+        const handling = this.handleGenericSplitSuccess(
+            currentPageBoxes,
+            actorQueue,
+            currentActorIndex,
+            packager,
+            pushedNext,
+            splitExecution.attempt,
+            splitExecution.result,
+            fitsCurrent,
+            currentBoxes,
+            this.createSplitFragmentAftermathState(fitsCurrent, {
+                currentY: state.currentY,
+                layoutDelta: fitsLayoutDelta,
+                lastSpacingAfter: state.lastSpacingAfter,
+                pageLimit: state.pageLimit,
+                availableWidth: state.availableWidth,
+                pageIndex: currentPageIndex
+            }),
+            deferredSplitCursorY,
+            fitsLayoutBefore,
+            state.pageLimit,
+            state.pageTop,
+            positionMarker
+        );
+        return this.settleGenericSplitSuccess(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTopY,
+            currentActorIndex,
+            handling
+        );
+    }
+
+    resolveGenericSplitAction(input: GenericSplitActionInput): PaginationLoopAction {
+        return this.toPaginationLoopAction(
+            this.executeGenericSplitBranch(
+                input.pages,
+                input.currentPageBoxes,
+                input.currentPageIndex,
+                input.pageWidth,
+                input.pageHeight,
+                input.nextPageTopY,
+                input.currentActorIndex,
+                input.actorQueue,
+                input.packager,
+                input.splitExecution,
+                input.state,
+                input.contextBase,
+                input.resolveDeferredCursorY,
+                input.positionMarker
+            )
+        );
     }
 
     resolveDeferredActorPlacement(
@@ -2759,6 +3380,34 @@ export class LayoutSession {
         };
     }
 
+    resolveActorPlacementAction(input: ActorPlacementActionInput): PaginationLoopAction {
+        return this.toPaginationLoopAction(
+            this.settleActorPlacementAttempt(
+                input.pages,
+                input.currentPageBoxes,
+                input.currentPageIndex,
+                input.pageWidth,
+                input.pageHeight,
+                input.nextPageTopY,
+                input.currentActorIndex,
+                this.attemptActorPlacement(
+                    input.actor,
+                    input.placementFrame,
+                    input.availableWidth,
+                    input.availableHeight,
+                    input.context,
+                    input.state,
+                    input.constraintField,
+                    input.layoutBefore,
+                    input.pageLimit,
+                    input.pageTop
+                ),
+                input.currentY,
+                input.lastSpacingAfter
+            )
+        );
+    }
+
     setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan): void {
         this.keepWithNextPlans.set(actorId, plan);
     }
@@ -2768,25 +3417,36 @@ export class LayoutSession {
     }
 
     resolveKeepWithNextOverflow(
-        actorId: string,
-        isAtPageTop: boolean
-    ): {
-        plan: KeepWithNextFormationPlan;
-        handling: WholeFormationOverflowHandling | null;
-        fallbackOutcome: WholeFormationOverflowHandling['fallbackHandling'];
-        tailSplitSuccessOutcome: ReturnType<typeof getTailSplitPostAttemptOutcome>;
-        tailSplitFailureOutcome: ReturnType<typeof getTailSplitPostAttemptOutcome>;
-    } | null {
-        const plan = this.getKeepWithNextPlan(actorId);
+        input: {
+            actorId: string;
+            isAtPageTop: boolean;
+            actorQueue: PackagerUnit[];
+            actorIndex: number;
+            paginationState: PaginationState;
+            availableWidth: number;
+            availableHeight: number;
+            lastSpacingAfter: number;
+            context: PackagerContext;
+        }
+    ): KeepWithNextPlanningResolution | null {
+        const plan = this.getKeepWithNextPlan(input.actorId) ?? computeKeepWithNextPlan({
+            actorQueue: input.actorQueue,
+            actorIndex: input.actorIndex,
+            paginationState: input.paginationState,
+            availableWidth: input.availableWidth,
+            availableHeight: input.availableHeight,
+            lastSpacingAfter: input.lastSpacingAfter,
+            isAtPageTop: input.isAtPageTop,
+            context: input.context
+        });
         if (!plan) return null;
 
-        const handling = getWholeFormationOverflowHandling(plan, isAtPageTop);
+        const handling = getWholeFormationOverflowHandling(plan, input.isAtPageTop);
         return {
             plan,
             handling,
-            fallbackOutcome: handling?.fallbackHandling ?? null,
-            tailSplitSuccessOutcome: getTailSplitPostAttemptOutcome(plan, true, isAtPageTop),
-            tailSplitFailureOutcome: getTailSplitPostAttemptOutcome(plan, false, isAtPageTop)
+            tailSplitSuccessOutcome: getTailSplitPostAttemptOutcome(plan, true, input.isAtPageTop),
+            tailSplitFailureOutcome: getTailSplitPostAttemptOutcome(plan, false, input.isAtPageTop)
         };
     }
 
