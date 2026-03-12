@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.1] - 2026-03-12
+
+### Fixed
+
+#### RTL Auto-Direction and Mixed-Script Line Stability
+- Paragraph-level `direction: auto` resolution was hardened so mixed LTR/RTL lines consistently use the paragraph base direction instead of drifting line-by-line.
+- Improved bidi run handling for neutral segments (especially spaces and punctuation) to prevent Arabic/Hebrew phrase fragmentation in mixed-language paragraphs.
+- Neutral whitespace now inherits the active script/font run during segmentation, reducing incorrect LTR space splits inside RTL phrases and improving render order stability.
+- Added and expanded regression coverage for auto-direction and mixed bidi rendering (`engine/tests/auto-direction.spec.ts`, module extraction assertions).
+
+#### Regression Baseline Updates
+- Refreshed engine regression layout snapshots to reflect deterministic output after the bidi/segmentation fixes.
+
+#### Fixture PDF Generation
+- Fixed `engine/tests/fixtures/regression/generate-fixture-pdfs.mjs` so `16-standard-fonts-pdf14.json` uses `StandardFontManager` instead of `LocalFontManager`.
+- Resolved fixture generation failure: `[FontProcessor] Requested font family not registered: Symbol`.
+
+### Changed
+
+#### Release Versions
+- Bumped monorepo version to `0.3.1`.
+- Bumped `draft2final` package version to `1.0.2`.
+
 ## [0.3.0] - 2026-03-09
 
 ### Added

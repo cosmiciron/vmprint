@@ -1463,7 +1463,7 @@
         "x": 72,
         "y": 117.709375,
         "w": 340,
-        "h": 81.9036,
+        "h": 83.232,
         "lines": [
           [
             {
@@ -1694,10 +1694,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "with",
@@ -1868,7 +1868,7 @@
       {
         "type": "h2",
         "x": 72,
-        "y": 223.612975,
+        "y": 224.941375,
         "w": 468,
         "h": 23.709375,
         "lines": [
@@ -1886,7 +1886,7 @@
       {
         "type": "p",
         "x": 72,
-        "y": 257.32235,
+        "y": 258.65075,
         "w": 140,
         "h": 47.41875,
         "lines": [
@@ -1922,7 +1922,7 @@
       {
         "type": "h2",
         "x": 72,
-        "y": 328.7411,
+        "y": 330.0695,
         "w": 468,
         "h": 23.709375,
         "lines": [
@@ -1940,7 +1940,7 @@
       {
         "type": "p",
         "x": 72,
-        "y": 362.450475,
+        "y": 363.778875,
         "w": 120,
         "h": 47.41875,
         "lines": [
@@ -1983,7 +1983,7 @@
       {
         "type": "h2",
         "x": 72,
-        "y": 433.869225,
+        "y": 435.197625,
         "w": 468,
         "h": 23.709375,
         "lines": [
@@ -2001,9 +2001,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 467.5786,
+        "y": 468.907,
         "w": 260,
-        "h": 54.6024,
+        "h": 55.488,
         "lines": [
           [
             {
@@ -2015,10 +2015,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "فقرة",
@@ -2029,10 +2029,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "باتجاه",
@@ -2043,10 +2043,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "من",
@@ -2057,10 +2057,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "اليمين",
@@ -2071,10 +2071,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "إلى",
@@ -2085,10 +2085,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "اليسار",
@@ -2099,10 +2099,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "لاختبار",
@@ -2113,10 +2113,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "تدفق",
@@ -2127,10 +2127,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "العرض",
@@ -2164,10 +2164,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "English",
@@ -2206,10 +2206,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "السطر",
@@ -2220,10 +2220,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "نفسه",
@@ -2245,7 +2245,7 @@
       {
         "type": "h2",
         "x": 72,
-        "y": 546.181,
+        "y": 548.395,
         "w": 468,
         "h": 23.709375,
         "lines": [
@@ -2263,9 +2263,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 579.890375,
+        "y": 582.104375,
         "w": 320,
-        "h": 54.6024,
+        "h": 55.488,
         "lines": [
           [
             {
@@ -2333,10 +2333,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "مرحبا",
@@ -2347,10 +2347,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "بالعالم",
@@ -2361,10 +2361,10 @@
             },
             {
               "text": " ",
-              "width": 3.333984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "width": 3.12,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
             },
             {
               "text": "then",

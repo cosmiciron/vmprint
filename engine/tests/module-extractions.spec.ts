@@ -147,6 +147,34 @@ function testScriptSegmentationHelpers(): void {
             assert.equal(segments[0].fontName, 'Noto Sans JP');
         }
     );
+
+    check(
+        'neutral whitespace inherits active run font',
+        'spaces between Arabic words stay in the Arabic font run to avoid bidi fragmentation',
+        () => {
+            const supportByFamily = new Map<string, boolean>([
+                ['Arimo', true],
+                ['Noto Sans Arabic', true]
+            ]);
+
+            const arabicRange = /[\u0600-\u06FF]/u;
+            const segments = segmentTextByFont({
+                text: 'في البداية',
+                baseFontFamily: 'Arimo',
+                fallbackFamilies: ['Noto Sans Arabic'],
+                getGraphemeClusters: (value) => Array.from(value),
+                resolveLoadedFamilyFont: (familyName: string) => familyName,
+                fontSupportsCluster: (font: string, cluster: string) => {
+                    if (arabicRange.test(cluster)) return font === 'Noto Sans Arabic';
+                    return supportByFamily.get(font) === true;
+                }
+            });
+
+            assert.equal(segments.length, 1);
+            assert.equal(segments[0].fontName, 'Noto Sans Arabic');
+            assert.equal(segments[0].text, 'في البداية');
+        }
+    );
 }
 
 function testAdvancedJustification(): void {

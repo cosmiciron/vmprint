@@ -82,10 +82,36 @@ export function hasRtlScript(text: string): boolean {
     return false;
 }
 
+export function getStrongDirection(text: string): 'ltr' | 'rtl' | 'neutral' {
+    for (const ch of text || '') {
+        const cp = ch.codePointAt(0) || 0;
+        const isRtl =
+            (cp >= 0x0590 && cp <= 0x08FF) ||
+            (cp >= 0xFB1D && cp <= 0xFDFF) ||
+            (cp >= 0xFE70 && cp <= 0xFEFF);
+        if (isRtl) return 'rtl';
+        if (/\p{L}/u.test(ch)) return 'ltr';
+    }
+    return 'neutral';
+}
+
+export function resolveBaseDirection(
+    text: string,
+    requestedDirection: string | undefined,
+    fallbackDirection: 'ltr' | 'rtl' = 'ltr'
+): 'ltr' | 'rtl' {
+    if (requestedDirection === 'rtl') return 'rtl';
+    if (requestedDirection === 'ltr') return 'ltr';
+    const strong = getStrongDirection(text);
+    if (strong === 'rtl') return 'rtl';
+    if (strong === 'ltr') return 'ltr';
+    return fallbackDirection;
+}
+
 export function splitByBidiDirection(text: string, baseDirection: string): { text: string; direction: 'ltr' | 'rtl' }[] {
     if (!text) return [];
 
-    const bidiBase = baseDirection === 'rtl' ? 'rtl' : (baseDirection === 'ltr' ? 'ltr' : 'auto');
+    const bidiBase = resolveBaseDirection(text, baseDirection);
     const embedding = bidi.getEmbeddingLevels(text, bidiBase as any);
 
     const runs: { text: string; direction: 'ltr' | 'rtl' }[] = [];
@@ -115,22 +141,9 @@ export function splitByBidiDirection(text: string, baseDirection: string): { tex
     // in RTL paragraphs (e.g. one run per word + neutral spaces), then run-level
     // reordering reverses the phrase word order. Reassign neutral runs using
     // neighboring strong runs, then merge adjacent same-direction runs.
-    const detectStrongDirection = (value: string): 'ltr' | 'rtl' | 'neutral' => {
-        for (const ch of value) {
-            const cp = ch.codePointAt(0) || 0;
-            const isRtl =
-                (cp >= 0x0590 && cp <= 0x08FF) ||
-                (cp >= 0xFB1D && cp <= 0xFDFF) ||
-                (cp >= 0xFE70 && cp <= 0xFEFF);
-            if (isRtl) return 'rtl';
-            if (/\p{L}|\p{N}/u.test(ch)) return 'ltr';
-        }
-        return 'neutral';
-    };
-
     const resolved = runs.map((run) => ({ ...run }));
     for (let i = 0; i < resolved.length; i++) {
-        const strong = detectStrongDirection(resolved[i].text);
+        const strong = getStrongDirection(resolved[i].text);
         if (strong !== 'neutral') {
             resolved[i].direction = strong;
             continue;
@@ -138,14 +151,14 @@ export function splitByBidiDirection(text: string, baseDirection: string): { tex
 
         const prevStrong = (() => {
             for (let j = i - 1; j >= 0; j--) {
-                const d = detectStrongDirection(resolved[j].text);
+                const d = getStrongDirection(resolved[j].text);
                 if (d !== 'neutral') return d;
             }
             return null;
         })();
         const nextStrong = (() => {
             for (let j = i + 1; j < resolved.length; j++) {
-                const d = detectStrongDirection(resolved[j].text);
+                const d = getStrongDirection(resolved[j].text);
                 if (d !== 'neutral') return d;
             }
             return null;
@@ -307,30 +320,38 @@ export function segmentTextByFont(params: {
         let assignedFamily: string | undefined;
         let assignedFont: any = null;
 
-        const clusterPreferredFamilies = deriveClusterPreferredFamilies(cluster, locale);
-        const clusterPrefKey = clusterPreferredFamilies.join('|');
-        let preferredFamilyOrder: string[];
-        if (clusterPrefKey === lastClusterPrefKey) {
-            preferredFamilyOrder = lastPreferredFamilyOrder;
-        } else {
-            preferredFamilyOrder = reorderFamiliesByPreference(familyOrder, clusterPreferredFamilies);
-            lastClusterPrefKey = clusterPrefKey;
-            lastPreferredFamilyOrder = preferredFamilyOrder;
+        // Keep neutral whitespace with the current run to avoid fragmenting
+        // mixed-script phrases (notably RTL words separated by spaces).
+        if (/^\s+$/u.test(cluster) && currentFamily !== undefined) {
+            assignedFamily = currentFamily;
+            assignedFont = currentFont;
         }
-
-        for (const family of preferredFamilyOrder) {
-            const familyFont = getFamilyFont(family);
-            if (!familyFont) continue;
-            if (params.fontSupportsCluster(familyFont, cluster)) {
-                assignedFamily = family;
-                assignedFont = family === params.baseFontFamily ? null : familyFont;
-                break;
-            }
-        }
-
         if (!assignedFamily) {
-            assignedFamily = baseFamily;
-            assignedFont = baseFamily === params.baseFontFamily ? null : getFamilyFont(baseFamily);
+            const clusterPreferredFamilies = deriveClusterPreferredFamilies(cluster, locale);
+            const clusterPrefKey = clusterPreferredFamilies.join('|');
+            let preferredFamilyOrder: string[];
+            if (clusterPrefKey === lastClusterPrefKey) {
+                preferredFamilyOrder = lastPreferredFamilyOrder;
+            } else {
+                preferredFamilyOrder = reorderFamiliesByPreference(familyOrder, clusterPreferredFamilies);
+                lastClusterPrefKey = clusterPrefKey;
+                lastPreferredFamilyOrder = preferredFamilyOrder;
+            }
+
+            for (const family of preferredFamilyOrder) {
+                const familyFont = getFamilyFont(family);
+                if (!familyFont) continue;
+                if (params.fontSupportsCluster(familyFont, cluster)) {
+                    assignedFamily = family;
+                    assignedFont = family === params.baseFontFamily ? null : familyFont;
+                    break;
+                }
+            }
+
+            if (!assignedFamily) {
+                assignedFamily = baseFamily;
+                assignedFont = baseFamily === params.baseFontFamily ? null : getFamilyFont(baseFamily);
+            }
         }
 
         if (assignedFamily !== currentFamily || assignedFont !== currentFont) {

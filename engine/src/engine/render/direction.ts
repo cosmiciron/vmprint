@@ -9,7 +9,7 @@ export const getStrongDirection = (text: string): 'ltr' | 'rtl' | 'neutral' => {
             (cp >= 0xFB1D && cp <= 0xFDFF) ||
             (cp >= 0xFE70 && cp <= 0xFEFF);
         if (isRtl) return 'rtl';
-        if (/\p{L}|\p{N}/u.test(ch)) return 'ltr';
+        if (/\p{L}/u.test(ch)) return 'ltr';
     }
     return 'neutral';
 };
@@ -32,23 +32,89 @@ export const resolveLineDirection = (
     return strong === 'rtl' ? 'rtl' : 'ltr';
 };
 
-export const reorderItemsForRtl = <T extends { seg: RendererLineSegment; extra: number }>(items: T[]): T[] => {
+export const resolveParagraphDirection = (
+    lines: RendererLine[],
+    containerStyle: ElementStyle,
+    layoutDirection?: string,
+    defaultDirection?: string
+): 'ltr' | 'rtl' => {
+    const configured = String(containerStyle.direction || layoutDirection || defaultDirection);
+    if (configured === 'rtl') return 'rtl';
+    if (configured === 'ltr') return 'ltr';
+
+    const paragraphText = (lines || [])
+        .map((line) => Array.isArray(line) ? line.map((seg) => seg?.text || '').join('') : String(line || ''))
+        .join('\n');
+    const strong = getStrongDirection(paragraphText);
+    return strong === 'rtl' ? 'rtl' : 'ltr';
+};
+
+export const reorderItemsForVisualBidi = <T extends { seg: RendererLineSegment; extra: number }>(
+    items: T[],
+    baseDirection: 'ltr' | 'rtl'
+): T[] => {
     if (items.length <= 1) return items;
+
+    const resolveStrongDirAt = (index: number): 'ltr' | 'rtl' | 'neutral' => {
+        const text = items[index]?.seg?.text || '';
+        return getStrongDirection(text);
+    };
+
+    const resolvedDirs: Array<'ltr' | 'rtl'> = new Array(items.length);
+    for (let i = 0; i < items.length; i++) {
+        const strong = resolveStrongDirAt(i);
+        if (strong !== 'neutral') {
+            resolvedDirs[i] = strong;
+            continue;
+        }
+
+        const segText = items[i]?.seg?.text || '';
+        const segDir = (items[i]?.seg as any)?.direction as ('ltr' | 'rtl' | undefined);
+        const isWhitespace = segText.trim().length === 0;
+
+        if (!isWhitespace && segDir) {
+            resolvedDirs[i] = segDir;
+            continue;
+        }
+
+        let prevStrong: 'ltr' | 'rtl' | null = null;
+        for (let j = i - 1; j >= 0; j--) {
+            const d = resolveStrongDirAt(j);
+            if (d !== 'neutral') {
+                prevStrong = d;
+                break;
+            }
+        }
+
+        let nextStrong: 'ltr' | 'rtl' | null = null;
+        for (let j = i + 1; j < items.length; j++) {
+            const d = resolveStrongDirAt(j);
+            if (d !== 'neutral') {
+                nextStrong = d;
+                break;
+            }
+        }
+
+        if (prevStrong && nextStrong && prevStrong === nextStrong) {
+            resolvedDirs[i] = prevStrong;
+        } else if (prevStrong) {
+            resolvedDirs[i] = prevStrong;
+        } else if (nextStrong) {
+            resolvedDirs[i] = nextStrong;
+        } else if (segDir) {
+            resolvedDirs[i] = segDir;
+        } else {
+            resolvedDirs[i] = baseDirection;
+        }
+    }
 
     const runs: { dir: 'ltr' | 'rtl'; items: T[] }[] = [];
     let currentRun: T[] = [];
-    let currentDir: 'ltr' | 'rtl' = 'rtl';
+    let currentDir: 'ltr' | 'rtl' = baseDirection;
 
-    for (const item of items) {
-        // Prefer the pre-computed BIDI direction from the layout engine (set by splitByBidiDirection).
-        // Fall back to Unicode text-sniffing for segments that weren't BIDI-tagged (e.g. plain string lines).
-        const segDir = (item.seg as any)?.direction as ('ltr' | 'rtl' | undefined);
-        const effectiveDir: 'ltr' | 'rtl' = segDir
-            ? segDir
-            : (():'ltr' | 'rtl' => {
-                const detected = getStrongDirection(item.seg?.text || '');
-                return detected === 'neutral' ? currentDir : detected;
-            })();
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const effectiveDir: 'ltr' | 'rtl' = resolvedDirs[i];
 
         if (currentRun.length === 0) {
             currentRun = [item];
@@ -68,10 +134,16 @@ export const reorderItemsForRtl = <T extends { seg: RendererLineSegment; extra: 
 
     if (currentRun.length > 0) runs.push({ dir: currentDir, items: currentRun });
 
-    // In an RTL line, visual order is run-order reversed. Additionally, LTR runs
-    // must be item-order reversed before placement because drawRichLineSegments
-    // advances from the right edge toward the left.
-    return runs
-        .reverse()
-        .flatMap((run) => run.dir === 'ltr' ? [...run.items].reverse() : run.items);
+    if (baseDirection === 'rtl') {
+        // In an RTL line, visual order is run-order reversed. Additionally, LTR runs
+        // must be item-order reversed before placement because drawRichLineSegments
+        // advances from the right edge toward the left.
+        return runs
+            .reverse()
+            .flatMap((run) => run.dir === 'ltr' ? [...run.items].reverse() : run.items);
+    }
+
+    // In an LTR line, run order remains as authored, but nested RTL runs must have
+    // their item order reversed so the RTL run reads correctly inside LTR context.
+    return runs.flatMap((run) => run.dir === 'rtl' ? [...run.items].reverse() : run.items);
 };

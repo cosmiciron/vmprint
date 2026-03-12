@@ -24,7 +24,8 @@ const __dirname  = path.dirname(__filename);
 const WORKSPACE_ROOT  = path.resolve(__dirname, '..', '..', '..', '..');
 const REGRESSION_DIR  = __dirname;
 const OUTPUT_DIR      = path.join(REGRESSION_DIR, 'output');
-const FONT_MANAGER    = path.join(WORKSPACE_ROOT, 'font-managers', 'local', 'src', 'index.ts');
+const LOCAL_FONT_MANAGER    = path.join(WORKSPACE_ROOT, 'font-managers', 'local', 'src', 'index.ts');
+const STANDARD_FONT_MANAGER = path.join(WORKSPACE_ROOT, 'font-managers', 'standard', 'src', 'index.ts');
 
 // ── Ensure output directory exists ───────────────────────────────────────────
 if (!fs.existsSync(OUTPUT_DIR)) {
@@ -49,12 +50,15 @@ for (const fixture of fixtures) {
     const baseName   = fixture.replace(/\.json$/i, '');
     const outputPath = path.join(OUTPUT_DIR, `${baseName}.pdf`);
 
+    const isStandardFontsFixture = baseName === '16-standard-fonts-pdf14';
+    const fontManagerPath = isStandardFontsFixture ? STANDARD_FONT_MANAGER : LOCAL_FONT_MANAGER;
+
     // CLI auto-picks up <baseName>.overlay.mjs in the same directory — no extra flag needed.
     const cmd = [
         `npm run dev --workspace=cli --`,
         `--input "${inputPath}"`,
         `--output "${outputPath}"`,
-        `--font-manager "${FONT_MANAGER}"`,
+        `--font-manager "${fontManagerPath}"`,
     ].join(' ');
 
     process.stdout.write(`  Rendering ${fixture} … `);

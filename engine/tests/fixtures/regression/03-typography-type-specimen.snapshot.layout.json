@@ -570,106 +570,22 @@
               "fontFamily": "Noto Sans Symbols 2"
             },
             {
-              "text": "→",
-              "width": 11,
+              "text": "→ ← ↑ ↓ ",
+              "width": 53.856,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " ",
-              "width": 2.86,
+              "text": "✓ ✗ ★ ☆ ☑ ⚠ ",
+              "width": 74.734,
               "ascent": 1069,
               "descent": 630,
               "fontFamily": "Noto Sans Symbols 2"
             },
             {
-              "text": "←",
-              "width": 11,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": " ",
-              "width": 2.86,
-              "ascent": 1069,
-              "descent": 630,
-              "fontFamily": "Noto Sans Symbols 2"
-            },
-            {
-              "text": "↑",
-              "width": 11,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": " ",
-              "width": 2.86,
-              "ascent": 1069,
-              "descent": 630,
-              "fontFamily": "Noto Sans Symbols 2"
-            },
-            {
-              "text": "↓",
-              "width": 11,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": " ✓ ✗ ★ ☆ ☑ ⚠ ",
-              "width": 77.594,
-              "ascent": 1069,
-              "descent": 630,
-              "fontFamily": "Noto Sans Symbols 2"
-            },
-            {
-              "text": "∑",
-              "width": 11,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": " ",
-              "width": 2.86,
-              "ascent": 1069,
-              "descent": 630,
-              "fontFamily": "Noto Sans Symbols 2"
-            },
-            {
-              "text": "∞",
-              "width": 11,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": " ",
-              "width": 2.86,
-              "ascent": 1069,
-              "descent": 630,
-              "fontFamily": "Noto Sans Symbols 2"
-            },
-            {
-              "text": "≤",
-              "width": 11,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": " ",
-              "width": 2.86,
-              "ascent": 1069,
-              "descent": 630,
-              "fontFamily": "Noto Sans Symbols 2"
-            },
-            {
-              "text": "≥",
-              "width": 11,
+              "text": "∑ ∞ ≤ ≥",
+              "width": 51.392,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans SC"
@@ -1358,8 +1274,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": ": ",
-              "width": 6.864,
+              "text": ":",
+              "width": 3.484,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": " ",
+              "width": 3.38,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -1686,15 +1609,15 @@
               "fontFamily": "Noto Sans"
             },
             {
-              "text": "→",
-              "width": 12,
+              "text": "→ ",
+              "width": 14.688,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " nearest static match boundary",
-              "width": 175.08,
+              "text": "nearest static match boundary",
+              "width": 171.96,
               "ascent": 1069,
               "descent": 293,
               "fontFamily": "Noto Sans"

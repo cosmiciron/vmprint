@@ -4,7 +4,7 @@ import { LAYOUT_DEFAULTS } from '../layout/defaults';
 import { LayoutUtils } from '../layout/layout-utils';
 import { drawInlineBoxSegment, drawInlineImageSegment } from './box-paint';
 import { drawDebugBaseline } from './debug-draw';
-import { reorderItemsForRtl, resolveLineDirection } from './direction';
+import { reorderItemsForVisualBidi, resolveParagraphDirection } from './direction';
 import { drawRichLineSegments } from './rich-line-draw';
 import {
     buildParagraphMetrics,
@@ -48,6 +48,12 @@ export const drawRichLines = (
 
     const lineFrame = createLineFrameAccessors(boxProperties, startY, width);
     const paragraphMetrics = buildParagraphMetrics(lines, fontSize, lineHeight);
+    const paragraphDirection = resolveParagraphDirection(
+        lines,
+        containerStyle,
+        runtime.layout.direction,
+        LAYOUT_DEFAULTS.textLayout.direction
+    );
 
     lines.forEach((line, lineIndex) => {
         const actualLineFontSize = paragraphMetrics.lineMetrics[lineIndex]?.lineFontSize ?? fontSize;
@@ -66,12 +72,7 @@ export const drawRichLines = (
         const lineOriginX = x + lineOffset;
         const lineTopY = lineFrame.getLineY(lineIndex) ?? currentY;
         let lineBaselineY = lineTopY + vOffset + (lineReferenceAscentScale * actualLineFontSize);
-        const lineDirection = resolveLineDirection(
-            line,
-            containerStyle,
-            runtime.layout.direction,
-            LAYOUT_DEFAULTS.textLayout.direction
-        );
+        const lineDirection = paragraphDirection;
         const lineWidth = computeLineWidth(line);
         const adjustedLineWidth = lineWidth - (letterSpacing || 0);
         const lineX = computeAlignedLineX(
@@ -106,7 +107,7 @@ export const drawRichLines = (
                 });
         } else {
             const rawItems: RendererLineItem[] = line.map((seg, idx) => ({ seg, extra: justifyExtraAfter[idx] || 0 }));
-            const lineItems = lineDirection === 'rtl' ? reorderItemsForRtl(rawItems) : rawItems;
+            const lineItems = reorderItemsForVisualBidi(rawItems, lineDirection);
             lineBaselineY = drawRichLineSegments(context, line, lineItems, {
                 lineDirection,
                 lineX,

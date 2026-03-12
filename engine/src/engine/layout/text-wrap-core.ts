@@ -31,6 +31,7 @@ export function buildRichWrapTokens(params: {
     primaryStyle: ElementStyle;
     advancedJustify: boolean;
     direction: string;
+    baseDirection: 'ltr' | 'rtl';
     preserveDirectionalBoundaries: boolean;
     splitByBidiDirection: (text: string, baseDirection: string) => BidiDirectionRun[];
     segmentTextByFont: (text: string, preferredFamily?: string, preferredLocale?: string) => ScriptSegment[];
@@ -69,7 +70,7 @@ export function buildRichWrapTokens(params: {
         const locale = params.getSegmenterLocale((seg.style || params.primaryStyle) as ElementStyle);
         const scriptSegments = params.segmentTextByFont(seg.text, seg.fontFamily, locale);
         for (const scriptSeg of scriptSegments) {
-            const bidiRuns = params.splitByBidiDirection(scriptSeg.text, params.direction || 'ltr');
+            const bidiRuns = params.splitByBidiDirection(scriptSeg.text, params.baseDirection);
             for (const bidiRun of bidiRuns) {
                 const scriptRuns = params.splitByScriptType(bidiRun.text);
 

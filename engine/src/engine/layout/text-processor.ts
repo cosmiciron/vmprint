@@ -10,9 +10,11 @@ import { resolveRichFontInfo } from './text-tokenizer';
 import { getElementText as extractElementText, getNodeText as extractNodeText, getRichSegments as extractRichSegments, sliceElements as extractSlicedElements } from './rich-text-extractor';
 import {
     getScriptClass as classifyScript,
+    getStrongDirection,
     hasRtlScript as detectRtlScript,
     isCJKChar as isCjkCodePoint,
     isThaiChar as isThaiCodePoint,
+    resolveBaseDirection,
     segmentTextByFont as segmentTextByFontBySupport,
     splitByScriptType as splitTextByScriptType,
     splitByBidiDirection
@@ -330,18 +332,27 @@ export class TextProcessor extends FontProcessor {
             const otScript = SCRIPT_MAP[populateSegment?.scriptClass || ''] || 'latn';
             const otDirection = populateSegment?.direction === 'rtl' ? 'rtl' : 'ltr';
             const isRtl = otDirection === 'rtl';
+            const isWhitespaceOnly = /^\s+$/u.test(text);
+            const layoutText = isWhitespaceOnly ? text.replace(/[\u00A0\u202F]/g, ' ') : text;
 
             // Keep explicit OT feature forcing only on RTL runs. For LTR/other scripts,
             // use fontkit defaults so measurement matches render-path defaults.
-            const run = isRtl
-                ? measurementFont.layout(
-                    text,
-                    ['ccmp', 'isol', 'init', 'medi', 'fina', 'rlig', 'liga', 'calt', 'curs', 'kern'],
-                    otScript,
-                    undefined,
-                    otDirection
-                )
-                : measurementFont.layout(text);
+            let run: any;
+            try {
+                run = (!isWhitespaceOnly && isRtl)
+                    ? measurementFont.layout(
+                        layoutText,
+                        ['ccmp', 'isol', 'init', 'medi', 'fina', 'rlig', 'liga', 'calt', 'curs', 'kern'],
+                        otScript,
+                        undefined,
+                        otDirection
+                    )
+                    : measurementFont.layout(layoutText);
+            } catch {
+                // Fallback path: for edge glyphs (e.g. NBSP in a RTL-tagged run),
+                // use default shaping to keep layout resilient.
+                run = measurementFont.layout(layoutText);
+            }
             let width = 0;
             const glyphs: { char: string, x: number, y: number }[] = [];
             const shapedGlyphs: import('../types').ShapedGlyph[] = [];
@@ -670,10 +681,16 @@ export class TextProcessor extends FontProcessor {
         lineLayoutOut?: { widths: number[]; offsets: number[]; yOffsets: number[] }
     ): RichLine[] {
         if (segments.length === 0) return [[this.createEmptyMeasuredSegment(font)]];
+        const flattenedSegments = flattenSegmentsByHardBreak(segments);
         const primaryStyle = (segments.find((seg) => !!seg.style)?.style || {}) as ElementStyle;
         const advancedJustify = this.isAdvancedJustifyEnabled(primaryStyle) && primaryStyle.textAlign === 'justify';
-        const direction = String(primaryStyle.direction || this.config.layout.direction || LAYOUT_DEFAULTS.textLayout.direction);
-        const preserveDirectionalBoundaries = direction === 'rtl';
+        const configuredDirection = String(primaryStyle.direction || this.config.layout.direction || LAYOUT_DEFAULTS.textLayout.direction);
+        const paragraphText = flattenedSegments.map((seg) => seg.text || '').join('');
+        const baseDirection = resolveBaseDirection(paragraphText, configuredDirection, 'ltr');
+        const paragraphStrongDirection = getStrongDirection(paragraphText);
+        const preserveDirectionalBoundaries =
+            baseDirection === 'rtl' ||
+            (configuredDirection === 'auto' && paragraphStrongDirection === 'rtl');
         const resolvedLineLayout = new Map<number, { width: number; xOffset: number; yOffset: number }>();
         const resolveLineLayout = (lineIndex: number): { width: number; xOffset: number; yOffset: number } => {
             const cached = resolvedLineLayout.get(lineIndex);
@@ -688,13 +705,13 @@ export class TextProcessor extends FontProcessor {
             resolvedLineLayout.set(lineIndex, normalized);
             return normalized;
         };
-        const flattenedSegments = flattenSegmentsByHardBreak(segments);
         const tokens = buildRichWrapTokens({
             flattenedSegments,
             defaultFontSize: fontSize,
             primaryStyle,
             advancedJustify,
-            direction,
+            direction: configuredDirection,
+            baseDirection,
             preserveDirectionalBoundaries,
             splitByBidiDirection: (value, base) => splitByBidiDirection(value, base),
             segmentTextByFont: (value, preferredFamily, preferredLocale) =>
