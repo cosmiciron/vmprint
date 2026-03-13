@@ -7,6 +7,13 @@ export default defineConfig([
     target: 'node18',
     clean: true,
     noExternal: [/(.*)/], // Bundle all dependencies for a standalone CLI
+    external: [
+      '@vmprint/transmuter-mkd-mkd',
+      '@vmprint/transmuter-mkd-academic',
+      '@vmprint/transmuter-mkd-literature',
+      '@vmprint/transmuter-mkd-manuscript',
+      '@vmprint/transmuter-mkd-screenplay'
+    ],
     outExtension() {
       return { js: '.js' };
     },

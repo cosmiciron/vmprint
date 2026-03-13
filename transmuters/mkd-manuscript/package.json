@@ -6,6 +6,15 @@
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "tsx": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "source": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",

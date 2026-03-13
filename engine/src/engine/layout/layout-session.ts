@@ -7,13 +7,15 @@ import type { PackagerUnit } from './packagers/packager-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
 import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
-import { getTailSplitPostAttemptOutcome, getWholeFormationOverflowHandling } from './actor-formation';
+import { getTailSplitPostAttemptOutcome } from './actor-formation';
+import { AIRuntime } from './ai-runtime';
 import { LAYOUT_DEFAULTS } from './defaults';
-import { computeKeepWithNextPlan } from './keep-with-next-collaborator';
-import { LayoutCollaboratorDispatcher } from './layout-collaborator-dispatcher';
+import { EventDispatcher } from './event-dispatcher';
 import { Kernel } from './kernel';
-import { SplitContinuationRuntime } from './split-continuation-runtime';
-import { preparePackagerForPhase, rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
+import { CollisionRuntime } from './collision-runtime';
+import { LifecycleRuntime } from './lifecycle-runtime';
+import { PhysicsRuntime } from './physics-runtime';
+import { TransitionsRuntime } from './transitions-runtime';
 import type {
     SimulationArtifactKey,
     SimulationArtifactMap,
@@ -21,7 +23,7 @@ import type {
     SimulationReport,
     SimulationReportReader
 } from './simulation-report';
-import { createSimulationReportReader, simulationArtifactKeys } from './simulation-report';
+import { SimulationReportBridge } from './simulation-report-bridge';
 
 export type LayoutProfileMetrics = {
     keepWithNextPlanCalls: number;
@@ -859,9 +861,14 @@ type LayoutSessionOptions = {
 export class LayoutSession {
     readonly runtime: EngineRuntime;
     readonly collaborators: readonly LayoutCollaborator[];
-    readonly collaboratorDispatcher: LayoutCollaboratorDispatcher;
+    readonly eventDispatcher: EventDispatcher;
     readonly kernel = new Kernel();
-    readonly splitContinuationRuntime: SplitContinuationRuntime;
+    readonly aiRuntime: AIRuntime;
+    readonly lifecycleRuntime: LifecycleRuntime;
+    readonly collisionRuntime: CollisionRuntime;
+    readonly physicsRuntime: PhysicsRuntime;
+    readonly simulationReportBridge: SimulationReportBridge;
+    readonly transitionsRuntime: TransitionsRuntime;
     readonly profile: LayoutProfileMetrics = {
         keepWithNextPlanCalls: 0,
         keepWithNextPlanMs: 0,
@@ -883,12 +890,6 @@ export class LayoutSession {
         exclusionBandResolutionMs: 0,
         exclusionLaneApplications: 0
     };
-    private readonly keepWithNextPlans = new Map<string, KeepWithNextFormationPlan>();
-    private readonly pageFinalizationStates = new Map<number, PageFinalizationState>();
-    private logicalPageNumberCursor = 0;
-    private finalizedPages: Page[] = [];
-    private simulationReport?: SimulationReport;
-    private simulationReportReader: SimulationReportReader = createSimulationReportReader(undefined);
     private paginationLoopState: PaginationLoopState | null = null;
 
     currentPageIndex = 0;
@@ -899,28 +900,31 @@ export class LayoutSession {
     constructor(options: LayoutSessionOptions) {
         this.runtime = options.runtime;
         this.collaborators = options.collaborators ?? [];
-        this.collaboratorDispatcher = new LayoutCollaboratorDispatcher(this.collaborators);
-        this.splitContinuationRuntime = new SplitContinuationRuntime(this);
+        this.eventDispatcher = new EventDispatcher(this.collaborators);
+        this.aiRuntime = new AIRuntime(this);
+        this.lifecycleRuntime = new LifecycleRuntime(this);
+        this.collisionRuntime = new CollisionRuntime(this);
+        this.physicsRuntime = new PhysicsRuntime(this);
+        this.simulationReportBridge = new SimulationReportBridge(this);
+        this.transitionsRuntime = new TransitionsRuntime(this);
     }
 
     notifySimulationStart(): void {
-        this.finalizedPages = [];
         this.kernel.resetForSimulation();
-        this.pageFinalizationStates.clear();
-        this.logicalPageNumberCursor = 0;
-        this.collaboratorDispatcher.onSimulationStart(this);
+        this.lifecycleRuntime.resetForSimulation();
+        this.eventDispatcher.onSimulationStart(this);
     }
 
     notifyActorSpawn(actor: PackagerUnit): void {
         this.kernel.registerActor(actor);
-        this.collaboratorDispatcher.onActorSpawn(actor, this);
+        this.eventDispatcher.onActorSpawn(actor, this);
     }
 
     notifyPageStart(pageIndex: number, width: number, height: number, boxes: Box[]): void {
         this.currentPageIndex = pageIndex;
         this.currentSurface = new PageSurface(pageIndex, width, height, boxes);
         this.kernel.beginPage();
-        this.collaboratorDispatcher.onPageStart(pageIndex, this.currentSurface, this);
+        this.eventDispatcher.onPageStart(pageIndex, this.currentSurface, this);
     }
 
     advancePage(
@@ -931,20 +935,14 @@ export class LayoutSession {
         pageHeight: number,
         nextPageTopY: number
     ): PageAdvanceOutcome {
-        if (currentPageBoxes.length > 0) {
-            pages.push(this.finalizeCommittedPage(currentPageIndex, pageWidth, pageHeight, currentPageBoxes));
-        }
-
-        const nextPageIndex = currentPageIndex + 1;
-        const nextPageBoxes: Box[] = [];
-        this.notifyPageStart(nextPageIndex, pageWidth, pageHeight, nextPageBoxes);
-
-        return {
-            nextPageIndex,
-            nextPageBoxes,
-            nextCurrentY: nextPageTopY,
-            nextLastSpacingAfter: 0
-        };
+        return this.lifecycleRuntime.advancePage(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTopY
+        );
     }
 
     notifyConstraintNegotiation(actor: PackagerUnit, constraints: ConstraintField): void {
@@ -959,15 +957,15 @@ export class LayoutSession {
             constraints.exclusions.push({ ...exclusion });
         }
         this.recordProfile('reservationConstraintNegotiationMs', performance.now() - startedAt);
-        this.collaboratorDispatcher.onConstraintNegotiation(actor, constraints, this);
+        this.eventDispatcher.onConstraintNegotiation(actor, constraints, this);
     }
 
     notifyActorPrepared(actor: PackagerUnit): void {
-        this.collaboratorDispatcher.onActorPrepared(actor, this);
+        this.eventDispatcher.onActorPrepared(actor, this);
     }
 
     notifySplitAttempt(attempt: SplitAttempt): void {
-        this.collaboratorDispatcher.onSplitAttempt(attempt, this);
+        this.eventDispatcher.onSplitAttempt(attempt, this);
     }
 
     executeSplitAttempt(
@@ -1023,27 +1021,27 @@ export class LayoutSession {
 
     notifySplitAccepted(attempt: SplitAttempt, result: PackagerSplitResult): void {
         this.kernel.registerSplitAccepted(attempt, result);
-        this.collaboratorDispatcher.onSplitAccepted(attempt, result, this);
+        this.eventDispatcher.onSplitAccepted(attempt, result, this);
     }
 
     notifyActorCommitted(actor: PackagerUnit, committed: Box[]): void {
         if (!this.currentSurface) return;
-        this.collaboratorDispatcher.onActorCommitted(actor, committed, this.currentSurface, this);
+        this.eventDispatcher.onActorCommitted(actor, committed, this.currentSurface, this);
     }
 
     notifyContinuationProduced(predecessor: PackagerUnit, successor: PackagerUnit): void {
         this.kernel.markContinuationProduced(successor);
-        this.collaboratorDispatcher.onContinuationProduced(predecessor, successor, this);
+        this.eventDispatcher.onContinuationProduced(predecessor, successor, this);
     }
 
     notifyContinuationEnqueued(predecessor: PackagerUnit, successor: PackagerUnit): void {
         this.kernel.markContinuationEnqueued(predecessor, successor);
-        this.collaboratorDispatcher.onContinuationEnqueued(predecessor, successor, this);
+        this.eventDispatcher.onContinuationEnqueued(predecessor, successor, this);
     }
 
     finalizeCommittedPage(pageIndex: number, width: number, height: number, boxes: readonly Box[]): Page {
         const surface = new PageSurface(pageIndex, width, height, [...boxes]);
-        this.collaboratorDispatcher.onPageFinalized(surface, this);
+        this.eventDispatcher.onPageFinalized(surface, this);
         return surface.finalize();
     }
 
@@ -1054,8 +1052,13 @@ export class LayoutSession {
         pageWidth: number,
         pageHeight: number
     ): void {
-        if (currentPageBoxes.length === 0) return;
-        pages.push(this.finalizeCommittedPage(currentPageIndex, pageWidth, pageHeight, currentPageBoxes));
+        this.lifecycleRuntime.closePagination(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight
+        );
     }
 
     resolveNextActorIndex(currentIndex: number, shouldAdvanceIndex: boolean): number {
@@ -1089,21 +1092,13 @@ export class LayoutSession {
         nextPageTopY: number,
         actorIndex: number
     ): PaginationLoopAction {
-        const pageAdvance = this.advancePage(
+        return this.lifecycleRuntime.restartCurrentActorOnNextPage(
             pages,
             currentPageBoxes,
             currentPageIndex,
             pageWidth,
             pageHeight,
-            nextPageTopY
-        );
-        return this.createContinueLoopAction(
-            {
-                currentPageIndex: pageAdvance.nextPageIndex,
-                currentPageBoxes: pageAdvance.nextPageBoxes,
-                currentY: pageAdvance.nextCurrentY,
-                lastSpacingAfter: pageAdvance.nextLastSpacingAfter
-            },
+            nextPageTopY,
             actorIndex
         );
     }
@@ -1122,139 +1117,7 @@ export class LayoutSession {
         margins: { top: number; right: number; bottom: number; left: number };
         contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>;
     }): PaginationPlacementPreparation {
-        const fullAvailableWidth = input.pageWidth - input.margins.left - input.margins.right;
-        let availableWidth = fullAvailableWidth;
-        let availableHeight = input.pageLimit - input.currentY;
-
-        if (availableHeight <= 0 && input.currentY > input.margins.top) {
-            return {
-                action: 'continue-loop',
-                loopAction: this.restartCurrentActorOnNextPage(
-                    input.pages,
-                    input.currentPageBoxes,
-                    input.currentPageIndex,
-                    input.pageWidth,
-                    input.pageHeight,
-                    input.margins.top,
-                    input.currentActorIndex
-                )
-            };
-        }
-
-        const isAtPageTop = input.currentY === input.margins.top && input.currentPageBoxes.length === 0;
-        if (input.actor.pageBreakBefore && !isAtPageTop) {
-            return {
-                action: 'continue-loop',
-                loopAction: this.restartCurrentActorOnNextPage(
-                    input.pages,
-                    input.currentPageBoxes,
-                    input.currentPageIndex,
-                    input.pageWidth,
-                    input.pageHeight,
-                    input.margins.top,
-                    input.currentActorIndex
-                )
-            };
-        }
-
-        const marginTop = input.actor.getMarginTop();
-        const layoutBefore = input.lastSpacingAfter + marginTop;
-        const layoutDelta = layoutBefore - marginTop;
-        const constraintField = new ConstraintField(availableWidth, availableHeight - layoutDelta);
-        this.notifyConstraintNegotiation(input.actor, constraintField);
-        const placementSurfaceStart = performance.now();
-        const placementFrame = constraintField.resolvePlacementFrame(input.currentY + layoutBefore, {
-            left: input.margins.left,
-            right: input.margins.right
-        });
-        this.recordProfile('exclusionBlockedCursorCalls', 1);
-        this.recordProfile('exclusionBandResolutionCalls', 1);
-        const placementSurfaceDuration = performance.now() - placementSurfaceStart;
-        this.recordProfile('exclusionBlockedCursorMs', placementSurfaceDuration);
-        this.recordProfile('exclusionBandResolutionMs', placementSurfaceDuration);
-
-        let currentY = input.currentY;
-        if (placementFrame.cursorY > input.currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
-            currentY = placementFrame.cursorY - layoutBefore;
-            availableHeight = input.pageLimit - currentY;
-            if (availableHeight <= 0 && currentY > input.margins.top) {
-                return {
-                    action: 'continue-loop',
-                    loopAction: this.restartCurrentActorOnNextPage(
-                        input.pages,
-                        input.currentPageBoxes,
-                        input.currentPageIndex,
-                        input.pageWidth,
-                        input.pageHeight,
-                        input.margins.top,
-                        input.currentActorIndex
-                    )
-                };
-            }
-        }
-
-        if (placementFrame.contentBand) {
-            this.recordProfile('exclusionLaneApplications', 1);
-        }
-
-        availableWidth = placementFrame.availableWidth;
-        const context: PackagerContext = {
-            ...input.contextBase,
-            pageIndex: input.currentPageIndex,
-            cursorY: currentY,
-            margins: {
-                ...input.margins,
-                left: placementFrame.margins.left,
-                right: placementFrame.margins.right
-            }
-        };
-        const availableHeightAdjusted = constraintField.effectiveAvailableHeight;
-        const effectiveAvailableHeight = layoutDelta + availableHeightAdjusted;
-
-        return {
-            action: 'ready',
-            currentY,
-            availableWidth,
-            availableHeight,
-            isAtPageTop,
-            layoutBefore,
-            layoutDelta,
-            constraintField,
-            placementFrame,
-            context,
-            availableHeightAdjusted,
-            effectiveAvailableHeight,
-            resolveDeferredCursorY: (candidate: PackagerUnit): number | null => {
-                if (!placementFrame.contentBand) return null;
-
-                const placementPreference = resolvePackagerPlacementPreference(
-                    candidate,
-                    constraintField.availableWidth,
-                    context
-                );
-                const minimumPlacementWidth = placementPreference?.minimumWidth;
-                if (
-                    minimumPlacementWidth !== null &&
-                    minimumPlacementWidth !== undefined &&
-                    placementFrame.availableWidth + LAYOUT_DEFAULTS.wrapTolerance < minimumPlacementWidth
-                ) {
-                    return placementFrame.activeBand?.bottom ?? placementFrame.cursorY;
-                }
-
-                if (
-                    rejectsPlacementFrame(
-                        candidate,
-                        placementFrame.availableWidth,
-                        constraintField.availableWidth,
-                        context
-                    )
-                ) {
-                    return placementFrame.activeBand?.bottom ?? placementFrame.cursorY;
-                }
-
-                return null;
-            }
-        };
+        return this.physicsRuntime.preparePaginationPlacement(input);
     }
 
     applyPaginationLoopAction(
@@ -1269,13 +1132,12 @@ export class LayoutSession {
     }
 
     finalizePages(pages: Page[]): Page[] {
-        this.finalizedPages = pages;
+        this.lifecycleRuntime.setFinalizedPages(pages);
+        return this.simulationReportBridge.finalizePages(pages);
+    }
 
-        this.collaboratorDispatcher.onSimulationComplete(this);
-
-        this.setSimulationReport(this.buildSimulationReport());
-
-        return pages;
+    onSimulationComplete(): void {
+        this.eventDispatcher.onSimulationComplete(this);
     }
 
     // Collaborator-facing artifact publication. Downstream consumers should prefer
@@ -1289,56 +1151,31 @@ export class LayoutSession {
     // Report assembly helper. The raw artifact registry remains internal;
     // downstream consumers should read the consolidated simulation report.
     buildSimulationArtifacts(): SimulationArtifacts {
-        const publishedArtifacts = this.kernel.getPublishedArtifacts();
-        const artifacts: SimulationArtifacts = {
-            fragmentationSummary: publishedArtifacts.get(simulationArtifactKeys.fragmentationSummary) as SimulationArtifactMap['fragmentationSummary'],
-            transformCapabilitySummary: publishedArtifacts.get(simulationArtifactKeys.transformCapabilitySummary) as SimulationArtifactMap['transformCapabilitySummary'],
-            transformSummary: publishedArtifacts.get(simulationArtifactKeys.transformSummary) as SimulationArtifactMap['transformSummary'],
-            pageNumberSummary: publishedArtifacts.get(simulationArtifactKeys.pageNumberSummary) as SimulationArtifactMap['pageNumberSummary'],
-            pageOverrideSummary: publishedArtifacts.get(simulationArtifactKeys.pageOverrideSummary) as SimulationArtifactMap['pageOverrideSummary'],
-            pageExclusionSummary: publishedArtifacts.get(simulationArtifactKeys.pageExclusionSummary) as SimulationArtifactMap['pageExclusionSummary'],
-            pageReservationSummary: publishedArtifacts.get(simulationArtifactKeys.pageReservationSummary) as SimulationArtifactMap['pageReservationSummary'],
-            pageSpatialConstraintSummary: publishedArtifacts.get(simulationArtifactKeys.pageSpatialConstraintSummary) as SimulationArtifactMap['pageSpatialConstraintSummary'],
-            pageRegionSummary: publishedArtifacts.get(simulationArtifactKeys.pageRegionSummary) as SimulationArtifactMap['pageRegionSummary'],
-            sourcePositionMap: publishedArtifacts.get(simulationArtifactKeys.sourcePositionMap) as SimulationArtifactMap['sourcePositionMap'],
-            headingTelemetry: publishedArtifacts.get(simulationArtifactKeys.headingTelemetry) as SimulationArtifactMap['headingTelemetry']
-        };
-
-        for (const [key, value] of publishedArtifacts.entries()) {
-            if (key in artifacts && artifacts[key] !== undefined) continue;
-            artifacts[key] = value;
-        }
-
-        return artifacts;
+        return this.simulationReportBridge.buildSimulationArtifacts();
     }
 
     getFinalizedPages(): readonly Page[] {
-        return this.finalizedPages;
+        return this.lifecycleRuntime.getFinalizedPages();
     }
 
     recordPageFinalization(state: PageFinalizationState): void {
-        this.pageFinalizationStates.set(state.pageIndex, state);
+        this.lifecycleRuntime.recordPageFinalization(state);
     }
 
     resetLogicalPageNumbering(startAt: number): void {
-        const normalized = Number.isFinite(startAt) ? Math.floor(Number(startAt)) : 1;
-        this.logicalPageNumberCursor = Math.max(0, normalized - 1);
+        this.lifecycleRuntime.resetLogicalPageNumbering(startAt);
     }
 
     allocateLogicalPageNumber(usesLogicalNumbering: boolean): number | null {
-        if (!usesLogicalNumbering) {
-            return null;
-        }
-        this.logicalPageNumberCursor += 1;
-        return this.logicalPageNumberCursor;
+        return this.lifecycleRuntime.allocateLogicalPageNumber(usesLogicalNumbering);
     }
 
     getPageFinalizationState(pageIndex: number): PageFinalizationState | undefined {
-        return this.pageFinalizationStates.get(pageIndex);
+        return this.lifecycleRuntime.getPageFinalizationState(pageIndex);
     }
 
     getPageFinalizationStates(): readonly PageFinalizationState[] {
-        return Array.from(this.pageFinalizationStates.values()).sort((a, b) => a.pageIndex - b.pageIndex);
+        return this.lifecycleRuntime.getPageFinalizationStates();
     }
 
     reservePageSpace(reservation: PageReservationIntent, pageIndex: number = this.currentPageIndex): void {
@@ -1425,37 +1262,27 @@ export class LayoutSession {
     }
 
     buildSimulationReport(): SimulationReport {
-        const pages = this.finalizedPages;
-        const generatedBoxCount = pages.reduce((sum, page) => {
-            return sum + (page.boxes || []).reduce((pageSum, box) => {
-                return pageSum + (box.meta?.generated === true ? 1 : 0);
-            }, 0);
-        }, 0);
-
-        return {
-            pageCount: pages.length,
-            actorCount: this.kernel.actorRegistry.length,
-            splitTransitionCount: this.getFragmentTransitions().length,
-            generatedBoxCount,
-            profile: {
-                ...this.profile,
-                keepWithNextPrepareByKind: { ...this.profile.keepWithNextPrepareByKind }
-            },
-            artifacts: this.buildSimulationArtifacts()
-        };
+        return this.simulationReportBridge.buildSimulationReport();
     }
 
     setSimulationReport(report: SimulationReport): void {
-        this.simulationReport = report;
-        this.simulationReportReader = createSimulationReportReader(report);
+        this.simulationReportBridge.setSimulationReport(report);
     }
 
     getSimulationReport(): SimulationReport | undefined {
-        return this.simulationReport;
+        return this.simulationReportBridge.getSimulationReport();
     }
 
     getSimulationReportReader(): SimulationReportReader {
-        return this.simulationReportReader;
+        return this.simulationReportBridge.getSimulationReportReader();
+    }
+
+    getProfileSnapshot(): LayoutProfileMetrics {
+        return this.profile;
+    }
+
+    getPublishedArtifacts(): ReadonlyMap<string, unknown> {
+        return this.kernel.getPublishedArtifacts();
     }
 
     setContinuationArtifacts(actorId: string, artifacts: ContinuationArtifacts): void {
@@ -1467,26 +1294,11 @@ export class LayoutSession {
     }
 
     ensureContinuationArtifacts(actor: PackagerUnit): ContinuationArtifacts | undefined {
-        const cached = this.getContinuationArtifacts(actor.actorId);
-        if (cached) return cached;
-
-        const resolved = this.resolveContinuationArtifacts(actor);
-        if (resolved) {
-            this.setContinuationArtifacts(actor.actorId, resolved);
-        }
-        return resolved;
+        return this.transitionsRuntime.ensureContinuationArtifacts(actor);
     }
 
     getSplitMarkerReserve(actor: PackagerUnit): number {
-        const artifacts = this.ensureContinuationArtifacts(actor);
-        const marker = artifacts?.markerAfterSplit;
-        if (!marker) return 0;
-
-        return (
-            Math.max(0, marker.measuredContentHeight || 0) +
-            Math.max(0, marker.marginTop || 0) +
-            Math.max(0, marker.marginBottom || 0)
-        );
+        return this.transitionsRuntime.getSplitMarkerReserve(actor);
     }
 
     stageActorsBeforeContinuation(continuationActorId: string, actors: PackagerUnit[]): void {
@@ -1825,7 +1637,7 @@ export class LayoutSession {
     }
 
     getAcceptedSplitQueueHandling(preview: ContinuationQueueOutcome): AcceptedSplitQueueHandling {
-        return this.splitContinuationRuntime.getAcceptedSplitQueueHandling(preview);
+        return this.transitionsRuntime.getAcceptedSplitQueueHandling(preview);
     }
 
     previewAcceptedSplitSettlement(
@@ -1841,7 +1653,7 @@ export class LayoutSession {
         state: SplitFragmentAftermathState,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): { queuePreview: ContinuationQueueOutcome; queueHandling: AcceptedSplitQueueHandling } {
-        return this.splitContinuationRuntime.previewAcceptedSplitSettlement(
+        return this.transitionsRuntime.previewAcceptedSplitSettlement(
             pageBoxes,
             actorQueue,
             startIndex,
@@ -1869,7 +1681,7 @@ export class LayoutSession {
         state: SplitFragmentAftermathState,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): TailSplitFormationOutcome {
-        return this.splitContinuationRuntime.finalizeTailSplitFormation(
+        return this.transitionsRuntime.finalizeTailSplitFormation(
             pageBoxes,
             actorQueue,
             startIndex,
@@ -1894,7 +1706,7 @@ export class LayoutSession {
         currentActorIndex: number,
         outcome: TailSplitFormationOutcome
     ): TailSplitFormationSettlementOutcome {
-        return this.splitContinuationRuntime.settleTailSplitFormation(
+        return this.transitionsRuntime.settleTailSplitFormation(
             pages,
             currentPageBoxes,
             currentPageIndex,
@@ -1918,7 +1730,7 @@ export class LayoutSession {
         checkpoint: ReturnType<LayoutSession['captureLocalBranchSnapshot']>,
         shouldAdvancePage: boolean
     ): TailSplitFailureSettlementOutcome {
-        return this.splitContinuationRuntime.settleTailSplitFailure(
+        return this.transitionsRuntime.settleTailSplitFailure(
             pages,
             currentPageBoxes,
             currentPageIndex,
@@ -1963,7 +1775,7 @@ export class LayoutSession {
             pageIndex: number
         ) => Box | Box[]
     ): TailSplitFormationSettlementOutcome | TailSplitFailureSettlementOutcome {
-        return this.splitContinuationRuntime.executeTailSplitFormationBranch(
+        return this.transitionsRuntime.executeTailSplitFormationBranch(
             pages,
             currentPageBoxes,
             currentPageIndex,
@@ -1989,54 +1801,22 @@ export class LayoutSession {
         pageHeight: number,
         nextPageTop: number
     ): WholeFormationOverflowEntryOutcome {
-        if (handling.tailSplitExecution) {
-            return {
-                action: 'continue-tail-split',
-                tailSplitExecution: handling.tailSplitExecution
-            };
-        }
-
-        if (handling.fallbackHandling === 'advance-page') {
-            const advanced = this.advancePage(
-                pages,
-                currentPageBoxes,
-                currentPageIndex,
-                pageWidth,
-                pageHeight,
-                nextPageTop
-            );
-            return {
-                action: 'advance-page',
-                nextPageIndex: advanced.nextPageIndex,
-                nextPageBoxes: advanced.nextPageBoxes,
-                nextCurrentY: advanced.nextCurrentY,
-                nextLastSpacingAfter: advanced.nextLastSpacingAfter
-            };
-        }
-
-        return { action: 'fallthrough-local-overflow' };
+        return this.aiRuntime.handleWholeFormationOverflowEntry(
+            handling,
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight,
+            nextPageTop
+        );
     }
 
     settleWholeFormationOverflowEntry(
         currentActorIndex: number,
         outcome: WholeFormationOverflowEntryOutcome
     ): WholeFormationOverflowEntrySettlementOutcome {
-        if (outcome.action === 'advance-page') {
-            return {
-                action: 'advance-page',
-                nextPageIndex: outcome.nextPageIndex,
-                nextPageBoxes: outcome.nextPageBoxes,
-                nextCurrentY: outcome.nextCurrentY,
-                nextLastSpacingAfter: outcome.nextLastSpacingAfter,
-                nextActorIndex: currentActorIndex
-            };
-        }
-
-        if (outcome.action === 'continue-tail-split') {
-            return outcome;
-        }
-
-        return outcome;
+        return this.aiRuntime.settleWholeFormationOverflowEntry(currentActorIndex, outcome);
     }
 
     resolveWholeFormationOverflow(input: {
@@ -2049,74 +1829,11 @@ export class LayoutSession {
         pageHeight: number;
         nextPageTop: number;
     }): WholeFormationOverflowResolution {
-        if (!input.handling) {
-            return {
-                handling: null,
-                fallbackOutcome: null,
-                action: null,
-                tailSplitExecution: null
-            };
-        }
-
-        const settled = this.settleWholeFormationOverflowEntry(
-            input.currentActorIndex,
-            this.handleWholeFormationOverflowEntry(
-                input.handling,
-                input.pages,
-                input.currentPageBoxes,
-                input.currentPageIndex,
-                input.pageWidth,
-                input.pageHeight,
-                input.nextPageTop
-            )
-        );
-        const action = this.toPaginationLoopAction(settled);
-
-        return {
-            handling: input.handling,
-            fallbackOutcome: input.handling.fallbackHandling ?? null,
-            action,
-            tailSplitExecution: action.action === 'continue-tail-split'
-                ? action.tailSplitExecution
-                : (input.handling.tailSplitExecution ?? null)
-        };
+        return this.aiRuntime.resolveWholeFormationOverflow(input);
     }
 
     resolveKeepWithNextOverflowAction(input: KeepWithNextOverflowActionInput): PaginationLoopAction | null {
-        const overflowsCurrentPlacement = input.planning?.plan
-            ? input.wholeFormationOverflow.handling !== null
-            : ((input.effectiveHeight - input.marginBottom) > input.effectiveAvailableHeight);
-        if (!overflowsCurrentPlacement) {
-            return null;
-        }
-
-        if (input.planning?.plan && input.wholeFormationOverflow.tailSplitExecution) {
-            const keepBranchStart = performance.now();
-            const settlement = this.executeTailSplitFormationBranch(
-                input.pages,
-                input.currentPageBoxes,
-                input.currentPageIndex,
-                input.pageWidth,
-                input.pageHeight,
-                input.nextPageTopY,
-                input.currentActorIndex,
-                input.actorQueue,
-                input.wholeFormationOverflow.tailSplitExecution,
-                input.state,
-                input.contextBase,
-                input.planning.tailSplitFailureOutcome === 'advance-page',
-                input.positionMarker
-            );
-            this.recordProfile('keepWithNextBranchCalls', 1);
-            this.recordProfile('keepWithNextBranchMs', performance.now() - keepBranchStart);
-            return this.toPaginationLoopAction(settlement);
-        }
-
-        if (input.wholeFormationOverflow.action?.action === 'continue-loop') {
-            return input.wholeFormationOverflow.action;
-        }
-
-        return null;
+        return this.aiRuntime.resolveKeepWithNextOverflowAction(input);
     }
 
     toPaginationLoopAction(outcome: TailSplitFormationSettlementOutcome): PaginationLoopAction;
@@ -2194,7 +1911,7 @@ export class LayoutSession {
         state: SplitFragmentAftermathState,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): GenericSplitOutcome {
-        return this.splitContinuationRuntime.finalizeGenericAcceptedSplit(
+        return this.transitionsRuntime.finalizeGenericAcceptedSplit(
             pageBoxes,
             actorQueue,
             startIndex,
@@ -2225,20 +1942,7 @@ export class LayoutSession {
         boxes: readonly Box[] | null,
         state: FragmentCommitState
     ): ActorOverflowPreSplitHandlingOutcome {
-        if (outcome === 'advance-page-before-split') {
-            return {
-                committed: null,
-                shouldAdvancePage: true,
-                shouldAdvanceIndex: false
-            };
-        }
-
-        const forced = this.finalizeForcedOverflowCommit(actor, boxes ?? [], state);
-        return {
-            committed: forced.committed,
-            shouldAdvancePage: forced.shouldAdvancePage,
-            shouldAdvanceIndex: true
-        };
+        return this.collisionRuntime.handleActorOverflowPreSplit(outcome, actor, boxes, state);
     }
 
     handleActorOverflowSplitEntry(
@@ -2248,17 +1952,13 @@ export class LayoutSession {
         availableHeight: number,
         context: PackagerContext
     ): ActorOverflowSplitEntryHandlingOutcome {
-        if (outcome === 'advance-page-for-top-split') {
-            return {
-                splitExecution: null,
-                shouldAdvancePage: true
-            };
-        }
-
-        return {
-            splitExecution: this.executeSplitAttempt(actor, availableWidth, availableHeight, context),
-            shouldAdvancePage: false
-        };
+        return this.collisionRuntime.handleActorOverflowSplitEntry(
+            outcome,
+            actor,
+            availableWidth,
+            availableHeight,
+            context
+        );
     }
 
     handleActorOverflowEntry(
@@ -2272,44 +1972,17 @@ export class LayoutSession {
         currentY: number,
         lastSpacingAfter: number
     ): ActorOverflowEntryHandlingOutcome {
-        if (overflowHandling.preSplitOutcome !== 'continue-to-split-phase') {
-            const outcome = this.handleActorOverflowPreSplit(
-                overflowHandling.preSplitOutcome,
-                actor,
-                boxes,
-                state
-            );
-            return {
-                action: 'handled',
-                nextCurrentY: outcome.committed?.currentY ?? currentY,
-                nextLastSpacingAfter: outcome.committed?.lastSpacingAfter ?? lastSpacingAfter,
-                shouldAdvancePage: outcome.shouldAdvancePage,
-                shouldAdvanceIndex: outcome.shouldAdvanceIndex
-            };
-        }
-
-        const splitEntry = this.handleActorOverflowSplitEntry(
-            overflowHandling.splitEntryOutcome!,
+        return this.collisionRuntime.handleActorOverflowEntry(
+            overflowHandling,
             actor,
+            boxes,
+            state,
             availableWidth,
             availableHeight,
-            context
+            context,
+            currentY,
+            lastSpacingAfter
         );
-
-        if (splitEntry.shouldAdvancePage || !splitEntry.splitExecution) {
-            return {
-                action: 'handled',
-                nextCurrentY: currentY,
-                nextLastSpacingAfter: lastSpacingAfter,
-                shouldAdvancePage: true,
-                shouldAdvanceIndex: false
-            };
-        }
-
-        return {
-            action: 'continue-to-split',
-            splitExecution: splitEntry.splitExecution
-        };
     }
 
     settleActorOverflowEntry(
@@ -2322,37 +1995,16 @@ export class LayoutSession {
         currentActorIndex: number,
         overflowEntry: ActorOverflowEntryHandlingOutcome
     ): ActorOverflowEntrySettlementOutcome {
-        if (overflowEntry.action === 'continue-to-split') {
-            return overflowEntry;
-        }
-
-        if (!overflowEntry.shouldAdvancePage) {
-            return {
-                action: 'handled',
-                nextPageIndex: currentPageIndex,
-                nextPageBoxes: currentPageBoxes,
-                nextCurrentY: overflowEntry.nextCurrentY,
-                nextLastSpacingAfter: overflowEntry.nextLastSpacingAfter,
-                nextActorIndex: this.resolveNextActorIndex(currentActorIndex, overflowEntry.shouldAdvanceIndex)
-            };
-        }
-
-        const advanced = this.advancePage(
+        return this.collisionRuntime.settleActorOverflowEntry(
             pages,
             currentPageBoxes,
             currentPageIndex,
             pageWidth,
             pageHeight,
-            nextPageTopY
+            nextPageTopY,
+            currentActorIndex,
+            overflowEntry
         );
-        return {
-            action: 'handled',
-            nextPageIndex: advanced.nextPageIndex,
-            nextPageBoxes: advanced.nextPageBoxes,
-            nextCurrentY: advanced.nextCurrentY,
-            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
-            nextActorIndex: this.resolveNextActorIndex(currentActorIndex, overflowEntry.shouldAdvanceIndex)
-        };
     }
 
     resolveActorOverflow(input: {
@@ -2378,61 +2030,7 @@ export class LayoutSession {
         lastSpacingAfter: number;
         state: FragmentCommitState;
     }): ActorOverflowResolution {
-        const overflowHandling = this.resolveActorOverflowHandling({
-            actor: input.actor,
-            isAtPageTop: input.isAtPageTop,
-            effectiveAvailableHeight: input.effectiveAvailableHeight,
-            availableWidth: input.availableWidth,
-            availableHeightAdjusted: input.availableHeightAdjusted,
-            context: input.context,
-            contentHeight: input.contentHeight,
-            marginTop: input.marginTop,
-            marginBottom: input.marginBottom,
-            pageLimit: input.pageLimit,
-            pageTop: input.pageTop
-        });
-        const markerReserve = this.getSplitMarkerReserve(input.actor);
-        const splitAvailableHeight = input.availableHeightAdjusted - markerReserve;
-        const preSplitBoxes = overflowHandling.preSplitOutcome === 'force-commit-at-top'
-            ? (input.actor.emitBoxes(input.availableWidth, input.availableHeightAdjusted, input.context) || [])
-            : null;
-        const overflowEntry = this.handleActorOverflowEntry(
-            overflowHandling,
-            input.actor,
-            preSplitBoxes,
-            input.state,
-            input.availableWidth,
-            splitAvailableHeight,
-            input.context,
-            input.currentY,
-            input.lastSpacingAfter
-        );
-
-        if (overflowEntry.action === 'continue-to-split') {
-            return {
-                action: 'continue-to-split',
-                splitExecution: overflowEntry.splitExecution
-            };
-        }
-
-        const settlement = this.settleActorOverflowEntry(
-            input.pages,
-            input.currentPageBoxes,
-            input.currentPageIndex,
-            input.pageWidth,
-            input.pageHeight,
-            input.nextPageTopY,
-            input.currentActorIndex,
-            overflowEntry
-        );
-        if (settlement.action !== 'handled') {
-            throw new Error('Expected handled overflow settlement.');
-        }
-
-        return {
-            action: 'handled',
-            loopAction: this.toPaginationLoopAction(settlement)
-        };
+        return this.collisionRuntime.resolveActorOverflow(input);
     }
 
     resolveActorOverflowHandling(input: {
@@ -2448,24 +2046,7 @@ export class LayoutSession {
         pageLimit: number;
         pageTop: number;
     }): ActorOverflowHandling {
-        const overflowIsUnbreakable = input.actor.isUnbreakable(input.effectiveAvailableHeight);
-        const overflowPreviewBoxes = input.isAtPageTop
-            ? true
-            : !!input.actor.emitBoxes(input.availableWidth, input.availableHeightAdjusted, input.context);
-        const isTablePackager = !!(input.actor as any).flowBox?.properties?._tableModel;
-        const isStoryPackager = !!(input.actor as any).storyElement;
-        const allowsMidPageSplit = isTablePackager || isStoryPackager;
-        const emptyLayoutBefore = input.marginTop;
-        const emptyAvailable = input.pageLimit - input.pageTop;
-        const requiredOnEmpty = input.contentHeight + emptyLayoutBefore + input.marginBottom;
-
-        return getActorOverflowHandling({
-            isAtPageTop: input.isAtPageTop,
-            isUnbreakable: overflowIsUnbreakable,
-            hasPreviewBoxes: overflowPreviewBoxes,
-            allowsMidPageSplit,
-            overflowsEmptyPage: requiredOnEmpty > emptyAvailable + LAYOUT_DEFAULTS.wrapTolerance
-        });
+        return this.collisionRuntime.resolveActorOverflowHandling(input);
     }
 
     handleActorSplitFailure(
@@ -2517,7 +2098,7 @@ export class LayoutSession {
         currentActorIndex: number,
         resolution: ActorSplitFailureResolution
     ): ActorSplitFailureSettlementOutcome {
-        return this.splitContinuationRuntime.settleActorSplitFailure(
+        return this.transitionsRuntime.settleActorSplitFailure(
             pages,
             currentPageBoxes,
             currentPageIndex,
@@ -2536,7 +2117,7 @@ export class LayoutSession {
         pageLimit: number,
         pageTop: number
     ): DeferredSplitPlacementOutcome {
-        return this.splitContinuationRuntime.resolveDeferredSplitPlacement(
+        return this.transitionsRuntime.resolveDeferredSplitPlacement(
             currentY,
             nextCursorY,
             layoutBefore,
@@ -2556,7 +2137,7 @@ export class LayoutSession {
         lastSpacingAfter: number,
         outcome: DeferredSplitPlacementOutcome
     ): DeferredSplitPlacementSettlementOutcome {
-        return this.splitContinuationRuntime.settleDeferredSplitPlacement(
+        return this.transitionsRuntime.settleDeferredSplitPlacement(
             pages,
             currentPageBoxes,
             currentPageIndex,
@@ -2586,7 +2167,7 @@ export class LayoutSession {
         pageTop: number,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): GenericSplitSuccessHandlingOutcome {
-        return this.splitContinuationRuntime.handleGenericSplitSuccess(
+        return this.transitionsRuntime.handleGenericSplitSuccess(
             currentPageBoxes,
             actorQueue,
             startIndex,
@@ -2615,7 +2196,7 @@ export class LayoutSession {
         currentActorIndex: number,
         handling: GenericSplitSuccessHandlingOutcome
     ): GenericSplitSuccessSettlementOutcome {
-        return this.splitContinuationRuntime.settleGenericSplitSuccess(
+        return this.transitionsRuntime.settleGenericSplitSuccess(
             pages,
             currentPageBoxes,
             currentPageIndex,
@@ -2659,7 +2240,7 @@ export class LayoutSession {
             pageIndex: number
         ) => Box | Box[]
     ): ActorSplitFailureSettlementOutcome | DeferredSplitPlacementSettlementOutcome | GenericSplitSuccessSettlementOutcome {
-        return this.splitContinuationRuntime.executeGenericSplitBranch(
+        return this.transitionsRuntime.executeGenericSplitBranch(
             pages,
             currentPageBoxes,
             currentPageIndex,
@@ -2708,106 +2289,15 @@ export class LayoutSession {
         pageTop: number,
         context: PackagerContext
     ): DeferredSplitPlacementOutcome | null {
-        if (!placementFrame.contentBand) {
-            return null;
-        }
-
-        const placementPreference = resolvePackagerPlacementPreference(
+        return this.physicsRuntime.resolveDeferredActorPlacement(
             actor,
-            constraintField.availableWidth,
-            context
-        );
-        const minimumPlacementWidth = placementPreference?.minimumWidth;
-        if (
-            minimumPlacementWidth !== null &&
-            minimumPlacementWidth !== undefined &&
-            placementFrame.availableWidth + LAYOUT_DEFAULTS.wrapTolerance < minimumPlacementWidth
-        ) {
-            return this.resolveDeferredSplitPlacement(
-                currentY,
-                placementFrame.activeBand?.bottom ?? placementFrame.cursorY,
-                layoutBefore,
-                pageLimit,
-                pageTop
-            );
-        }
-
-        if (
-            rejectsPlacementFrame(
-                actor,
-                placementFrame.availableWidth,
-                constraintField.availableWidth,
-                context
-            )
-        ) {
-            return this.resolveDeferredSplitPlacement(
-                currentY,
-                placementFrame.activeBand?.bottom ?? placementFrame.cursorY,
-                layoutBefore,
-                pageLimit,
-                pageTop
-            );
-        }
-
-        return null;
-    }
-
-    finalizeActorPlacementCommit(
-        actor: PackagerUnit,
-        boxes: readonly Box[],
-        state: FragmentCommitState,
-        constraintField: ConstraintField,
-        layoutBefore: number,
-        pageLimit: number,
-        pageTop: number
-    ): ActorPlacementCommitOutcome {
-        const hasLaneConstraint = !!constraintField.resolveActiveContentBand(state.currentY + layoutBefore);
-        if (hasLaneConstraint) {
-            const absoluteBoxes = boxes.map((box) => ({
-                ...box,
-                y: (box.y || 0) + state.currentY + state.layoutDelta
-            }));
-            const placementDecision = constraintField.evaluatePlacement(absoluteBoxes, state.currentY + layoutBefore);
-            if (placementDecision.action === 'defer') {
-                const nextCurrentY = Math.max(state.currentY, placementDecision.nextCursorY - layoutBefore);
-                return {
-                    action: 'defer',
-                    nextCurrentY,
-                    shouldAdvancePage: (pageLimit - nextCurrentY) <= 0 && nextCurrentY > pageTop
-                };
-            }
-        }
-
-        return {
-            action: 'commit',
-            committed: this.commitFragmentBoxes(actor, boxes, state)
-        };
-    }
-
-    executeActorPlacement(
-        actor: PackagerUnit,
-        availableWidth: number,
-        availableHeight: number,
-        context: PackagerContext,
-        state: FragmentCommitState,
-        constraintField: ConstraintField,
-        layoutBefore: number,
-        pageLimit: number,
-        pageTop: number
-    ): ActorPlacementExecutionOutcome {
-        const boxes = actor.emitBoxes(availableWidth, availableHeight, context);
-        if (!boxes) {
-            return { action: 'retry-next-page' };
-        }
-
-        return this.finalizeActorPlacementCommit(
-            actor,
-            boxes,
-            state,
+            placementFrame,
             constraintField,
+            currentY,
             layoutBefore,
             pageLimit,
-            pageTop
+            pageTop,
+            context
         );
     }
 
@@ -2823,26 +2313,9 @@ export class LayoutSession {
         pageLimit: number,
         pageTop: number
     ): ActorPlacementAttemptOutcome {
-        const deferred = this.resolveDeferredActorPlacement(
+        return this.physicsRuntime.attemptActorPlacement(
             actor,
             placementFrame,
-            constraintField,
-            state.currentY,
-            layoutBefore,
-            pageLimit,
-            pageTop,
-            context
-        );
-        if (deferred) {
-            return {
-                action: 'defer',
-                nextCurrentY: deferred.nextCurrentY,
-                shouldAdvancePage: deferred.shouldAdvancePage
-            };
-        }
-
-        return this.executeActorPlacement(
-            actor,
             availableWidth,
             availableHeight,
             context,
@@ -2860,31 +2333,12 @@ export class LayoutSession {
         currentY: number,
         lastSpacingAfter: number
     ): ActorPlacementHandlingOutcome {
-        if (outcome.action === 'retry-next-page') {
-            return {
-                nextCurrentY: currentY,
-                nextLastSpacingAfter: lastSpacingAfter,
-                shouldAdvancePage: true,
-                shouldAdvanceIndex: false
-            };
-        }
-
-        if (outcome.action === 'defer') {
-            return {
-                nextCurrentY: outcome.nextCurrentY,
-                nextLastSpacingAfter: lastSpacingAfter,
-                shouldAdvancePage: outcome.shouldAdvancePage,
-                shouldAdvanceIndex: false
-            };
-        }
-
-        currentPageBoxes.push(...outcome.committed.boxes);
-        return {
-            nextCurrentY: outcome.committed.currentY,
-            nextLastSpacingAfter: outcome.committed.lastSpacingAfter,
-            shouldAdvancePage: false,
-            shouldAdvanceIndex: true
-        };
+        return this.physicsRuntime.handleActorPlacementAttempt(
+            currentPageBoxes,
+            outcome,
+            currentY,
+            lastSpacingAfter
+        );
     }
 
     settleActorPlacementAttempt(
@@ -2899,74 +2353,30 @@ export class LayoutSession {
         currentY: number,
         lastSpacingAfter: number
     ): ActorPlacementSettlementOutcome {
-        const handling = this.handleActorPlacementAttempt(
-            currentPageBoxes,
-            outcome,
-            currentY,
-            lastSpacingAfter
-        );
-
-        if (!handling.shouldAdvancePage) {
-            return {
-                nextPageIndex: currentPageIndex,
-                nextPageBoxes: currentPageBoxes,
-                nextCurrentY: handling.nextCurrentY,
-                nextLastSpacingAfter: handling.nextLastSpacingAfter,
-                nextActorIndex: this.resolveNextActorIndex(currentActorIndex, handling.shouldAdvanceIndex)
-            };
-        }
-
-        const advanced = this.advancePage(
+        return this.physicsRuntime.settleActorPlacementAttempt(
             pages,
             currentPageBoxes,
             currentPageIndex,
             pageWidth,
             pageHeight,
-            nextPageTopY
+            nextPageTopY,
+            currentActorIndex,
+            outcome,
+            currentY,
+            lastSpacingAfter
         );
-        return {
-            nextPageIndex: advanced.nextPageIndex,
-            nextPageBoxes: advanced.nextPageBoxes,
-            nextCurrentY: advanced.nextCurrentY,
-            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
-            nextActorIndex: this.resolveNextActorIndex(currentActorIndex, handling.shouldAdvanceIndex)
-        };
     }
 
     resolveActorPlacementAction(input: ActorPlacementActionInput): PaginationLoopAction {
-        return this.toPaginationLoopAction(
-            this.settleActorPlacementAttempt(
-                input.pages,
-                input.currentPageBoxes,
-                input.currentPageIndex,
-                input.pageWidth,
-                input.pageHeight,
-                input.nextPageTopY,
-                input.currentActorIndex,
-                this.attemptActorPlacement(
-                    input.actor,
-                    input.placementFrame,
-                    input.availableWidth,
-                    input.availableHeight,
-                    input.context,
-                    input.state,
-                    input.constraintField,
-                    input.layoutBefore,
-                    input.pageLimit,
-                    input.pageTop
-                ),
-                input.currentY,
-                input.lastSpacingAfter
-            )
-        );
+        return this.physicsRuntime.resolveActorPlacementAction(input);
     }
 
     setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan): void {
-        this.keepWithNextPlans.set(actorId, plan);
+        this.aiRuntime.setKeepWithNextPlan(actorId, plan);
     }
 
     getKeepWithNextPlan(actorId: string): KeepWithNextFormationPlan | undefined {
-        return this.keepWithNextPlans.get(actorId);
+        return this.aiRuntime.getKeepWithNextPlan(actorId);
     }
 
     resolveKeepWithNextOverflow(
@@ -2982,25 +2392,7 @@ export class LayoutSession {
             context: PackagerContext;
         }
     ): KeepWithNextPlanningResolution | null {
-        const plan = this.getKeepWithNextPlan(input.actorId) ?? computeKeepWithNextPlan({
-            actorQueue: input.actorQueue,
-            actorIndex: input.actorIndex,
-            paginationState: input.paginationState,
-            availableWidth: input.availableWidth,
-            availableHeight: input.availableHeight,
-            lastSpacingAfter: input.lastSpacingAfter,
-            isAtPageTop: input.isAtPageTop,
-            context: input.context
-        });
-        if (!plan) return null;
-
-        const handling = getWholeFormationOverflowHandling(plan, input.isAtPageTop);
-        return {
-            plan,
-            handling,
-            tailSplitSuccessOutcome: getTailSplitPostAttemptOutcome(plan, true, input.isAtPageTop),
-            tailSplitFailureOutcome: getTailSplitPostAttemptOutcome(plan, false, input.isAtPageTop)
-        };
+        return this.aiRuntime.resolveKeepWithNextOverflow(input);
     }
 
     setPaginationLoopState(state: PaginationLoopState): void {
@@ -3038,21 +2430,13 @@ export class LayoutSession {
         layoutBefore: number,
         context: PackagerContext
     ): ActorMeasurement {
-        preparePackagerForPhase(actor, 'commit', availableWidth, availableHeight, context);
-        this.notifyActorPrepared(actor);
-
-        const marginTop = actor.getMarginTop();
-        const marginBottom = actor.getMarginBottom();
-        const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
-        const requiredHeight = contentHeight + layoutBefore + marginBottom;
-
-        return {
-            marginTop,
-            marginBottom,
-            contentHeight,
-            requiredHeight,
-            effectiveHeight: Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight)
-        };
+        return this.physicsRuntime.measurePreparedActor(
+            actor,
+            availableWidth,
+            availableHeight,
+            layoutBefore,
+            context
+        );
     }
 
     recordProfile(metric: keyof LayoutProfileMetrics, delta: number): void {
@@ -3070,19 +2454,4 @@ export class LayoutSession {
         this.profile.keepWithNextPrepareByKind[normalizedKind] = entry;
     }
 
-    private resolveContinuationArtifacts(actor: PackagerUnit): ContinuationArtifacts | undefined {
-        const flowBox = (actor as any).flowBox as FlowBox | undefined;
-        if (!flowBox) return undefined;
-
-        const continuationSpec =
-            flowBox.properties?.paginationContinuation ??
-            flowBox._sourceElement?.properties?.paginationContinuation;
-        if (!continuationSpec) return undefined;
-
-        if (flowBox.properties && flowBox.properties.paginationContinuation === undefined) {
-            flowBox.properties.paginationContinuation = continuationSpec;
-        }
-
-        return ((actor as any).processor as any)?.getContinuationArtifacts?.(flowBox) as ContinuationArtifacts | undefined;
-    }
 }

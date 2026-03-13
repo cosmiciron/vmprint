@@ -2,7 +2,7 @@ import type { Box } from '../types';
 import type { PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
 import type { ConstraintField, LayoutCollaborator, LayoutSession, PageSurface, SplitAttempt } from './layout-session';
 
-export class LayoutCollaboratorDispatcher {
+export class EventDispatcher {
     constructor(
         private readonly collaborators: readonly LayoutCollaborator[]
     ) { }

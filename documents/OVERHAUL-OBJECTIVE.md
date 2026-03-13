@@ -86,9 +86,16 @@ It should not own document-specific meaning such as:
 In practice, VMPrint should be understood as layered:
 
 1. simulation kernel
-2. layout runtime
+2. engine systems
+   physics, AI, transitions, lifecycle, and event dispatch
 3. document semantics
 4. print / composition handoff
+
+At the engine-systems layer, preferred names should describe system category rather than local layout tactics. That means categories like `Physics`, `AI`, `Transitions`, `Lifecycle`, and `Event Dispatch` are preferred over names that merely reflect pagination-local mechanisms. This is an explicit guard against reintroducing layout-engine thinking into a system whose core has already evolved into a broader stateful runtime.
+
+One important future consequence of this architecture is that `AI` can eventually become speculative rather than purely heuristic. With a protected `Kernel` underneath it, the engine can snapshot world state, try a placement path, inspect the resulting collisions and state transitions, and roll the world back if that path is rejected. That is effectively pathfinding over pagination space, and it is a capability the overhaul should preserve even if it is implemented later.
+
+Another important future consequence is that dependent document regions do not need to be thought of only as batch rerender problems. A growing TOC, outline panel, or similar companion structure can instead be modeled as a live adjacent region whose footprint expands inside the same world. In that model, `Event Dispatch` announces new structure, `Physics` resolves overlap by displacement, `Transitions` handle page-boundary crossings, and the system keeps ticking until it settles. This is a major conceptual difference from legacy tree-rebuild engines and should be preserved as a strategic capability of VMPrint.
 
 This is how the overhaul avoids replacing paginator-centric design with a new `LayoutSession` god object.
 

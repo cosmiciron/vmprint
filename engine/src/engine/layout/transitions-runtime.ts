@@ -1,5 +1,5 @@
 import type { Box, Page } from '../types';
-import type { FlowBox } from './layout-core-types';
+import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import { LAYOUT_DEFAULTS } from './defaults';
 import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
@@ -32,7 +32,9 @@ type SplitMarkerPositioner = (
     pageIndex: number
 ) => Box | Box[];
 
-export type SplitContinuationRuntimeHost = {
+export type TransitionsRuntimeHost = {
+    getContinuationArtifacts(actorId: string): ContinuationArtifacts | undefined;
+    setContinuationArtifacts(actorId: string, artifacts: ContinuationArtifacts): void;
     captureLocalBranchSnapshot(
         pageBoxes: readonly Box[],
         actorQueue: readonly PackagerUnit[],
@@ -128,15 +130,38 @@ export type SplitContinuationRuntimeHost = {
     ): ActorSplitFailureResolution;
 };
 
-export class SplitContinuationRuntime {
+export class TransitionsRuntime {
     constructor(
-        private readonly host: SplitContinuationRuntimeHost
+        private readonly host: TransitionsRuntimeHost
     ) { }
 
     getAcceptedSplitQueueHandling(preview: ContinuationQueueOutcome): AcceptedSplitQueueHandling {
         return {
             shouldAdvanceIndex: !preview.continuationInstalled
         };
+    }
+
+    ensureContinuationArtifacts(actor: PackagerUnit): ContinuationArtifacts | undefined {
+        const cached = this.host.getContinuationArtifacts(actor.actorId);
+        if (cached) return cached;
+
+        const resolved = this.resolveContinuationArtifacts(actor);
+        if (resolved) {
+            this.host.setContinuationArtifacts(actor.actorId, resolved);
+        }
+        return resolved;
+    }
+
+    getSplitMarkerReserve(actor: PackagerUnit): number {
+        const artifacts = this.ensureContinuationArtifacts(actor);
+        const marker = artifacts?.markerAfterSplit;
+        if (!marker) return 0;
+
+        return (
+            Math.max(0, marker.measuredContentHeight || 0) +
+            Math.max(0, marker.marginTop || 0) +
+            Math.max(0, marker.marginBottom || 0)
+        );
     }
 
     previewAcceptedSplitSettlement(
@@ -798,5 +823,21 @@ export class SplitContinuationRuntime {
             currentActorIndex,
             handling
         );
+    }
+
+    private resolveContinuationArtifacts(actor: PackagerUnit): ContinuationArtifacts | undefined {
+        const flowBox = (actor as any).flowBox as FlowBox | undefined;
+        if (!flowBox) return undefined;
+
+        const continuationSpec =
+            flowBox.properties?.paginationContinuation ??
+            flowBox._sourceElement?.properties?.paginationContinuation;
+        if (!continuationSpec) return undefined;
+
+        if (flowBox.properties && flowBox.properties.paginationContinuation === undefined) {
+            flowBox.properties.paginationContinuation = continuationSpec;
+        }
+
+        return ((actor as any).processor as any)?.getContinuationArtifacts?.(flowBox) as ContinuationArtifacts | undefined;
     }
 }

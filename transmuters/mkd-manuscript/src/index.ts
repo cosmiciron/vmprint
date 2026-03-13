@@ -14,11 +14,17 @@ import {
   type ResolvedImage
 } from '@vmprint/markdown-core';
 import type { Transmuter, TransmuterOptions } from '@vmprint/contracts';
-import { ManuscriptFormat } from './format';
+import {
+  ManuscriptFormat,
+  type ManuscriptExpandingProbeAst,
+  type ManuscriptTocAst,
+  type ManuscriptTocEntry
+} from './format';
 import { validateManuscriptCompliance } from './validator';
 
 export type { DocumentInput, Element, ElementStyle, DocumentLayout, ResolvedImage };
 export type { Transmuter, TransmuterOptions } from '@vmprint/contracts';
+export type { ManuscriptExpandingProbeAst, ManuscriptTocAst, ManuscriptTocEntry } from './format';
 
 export const DEFAULT_MANUSCRIPT_CONFIG_YAML = `
 manuscript:
@@ -257,7 +263,21 @@ export type ManuscriptTransmuteOptions = TransmuterOptions & {
   resolveImage?: (src: string) => ResolvedImage | null;
 };
 
+export type ManuscriptTransmuteArtifacts = {
+  tocAst: ManuscriptTocAst;
+  expandingProbeAst: ManuscriptExpandingProbeAst;
+};
+
+export type ManuscriptTransmuteResult = {
+  document: DocumentInput;
+  artifacts: ManuscriptTransmuteArtifacts;
+};
+
 export function transmute(markdown: string, options?: ManuscriptTransmuteOptions): DocumentInput {
+  return transmuteWithArtifacts(markdown, options).document;
+}
+
+export function transmuteWithArtifacts(markdown: string, options?: ManuscriptTransmuteOptions): ManuscriptTransmuteResult {
   const { frontmatter, body } = extractFrontmatter(markdown);
   const ast = parseMarkdownAst(body);
   const semantic = normalizeToSemantic(ast);
@@ -277,7 +297,7 @@ export function transmute(markdown: string, options?: ManuscriptTransmuteOptions
   handler.flush(ctx);
 
   const built = buildLayout(theme.layout);
-  const ir: DocumentInput = {
+  const document: DocumentInput = {
     documentVersion: '1.0',
     layout: built.layout,
     styles: theme.styles,
@@ -286,8 +306,14 @@ export function transmute(markdown: string, options?: ManuscriptTransmuteOptions
     ...(theme.footer ? { footer: theme.footer } : (built.footer ? { footer: built.footer } : {}))
   };
 
-  validateManuscriptCompliance(ir, config);
-  return ir;
+  validateManuscriptCompliance(document, config);
+  return {
+    document,
+    artifacts: {
+      tocAst: handler.getTocAst(),
+      expandingProbeAst: handler.getExpandingProbeAst()
+    }
+  };
 }
 
 export type ManuscriptTransmuter = Transmuter<string, DocumentInput, ManuscriptTransmuteOptions>;
@@ -307,6 +333,11 @@ export const transmuter: ManuscriptTransmuter = {
       '#     pageBreakBefore: true',
       '#   sceneBreak:',
       '#     symbol: "#"',
+      '#   experimental:',
+      '#     expandingProbe:',
+      '#       enabled: true',
+      '#       initialHeight: 72',
+      '#       growthPerChapter: 12',
       '#   footnotes:',
       '#     heading: Notes',
       '#',

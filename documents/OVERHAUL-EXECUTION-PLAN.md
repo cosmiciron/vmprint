@@ -133,37 +133,90 @@ The next risk is that the remaining `LayoutSession` continues to collapse too ma
 The current working interpretation should therefore be:
 
 * `Kernel` is the protected bottom substrate
-* `LayoutSession` is now best understood as a temporary **layout runtime aggregator**
+* `LayoutSession` is now best understood as a temporary **engine-system aggregator**
 * the next extraction work should mostly create sibling runtime modules on the same plane, not enlarge the kernel
 
 Current `LayoutSession` responsibilities now cluster like this:
 
-### Runtime Module Candidates
+### Engine-System Categories
 
-1. **Placement Runtime**
+1. **Physics**
    * constraint negotiation handoff
    * placement-frame preparation
    * deferred placement / retry-next-page logic
    * actor placement settlement
+   * local fit / local collision response
 
-2. **Split / Continuation Runtime**
+2. **AI**
+   * keep-with-next continuity policy
+   * whole-formation preservation
+   * multi-actor cohesion decisions across seams
+   * branch-vs-advance choices made to preserve continuity
+
+3. **Transitions**
    * split attempt execution
    * split aftermath settlement
    * accepted-split branch handling
-   * keep-with-next tail-split flow
    * generic split flow
 
-3. **Page Lifecycle Runtime**
+4. **Lifecycle**
    * page start / page advance / page close
    * page finalization state
    * logical page numbering
    * page-scoped runtime coordination above the kernel
 
-4. **Simulation Report Bridge**
+5. **Event Dispatch**
+   * collaborator fan-out
+   * runtime event transport
+
+6. **Simulation Report Bridge**
    * report assembly
    * typed artifact readout
    * finalized page exposure
    * simulation-complete handoff into report state
+
+### Naming Rule
+
+At the engine-systems layer, names should describe **system category**, not local layout tactics.
+
+Prefer:
+
+* `Physics`
+* `AI`
+* `Transitions`
+* `Lifecycle`
+* `Event Dispatch`
+
+Avoid hardening upper-layer module names around temporary layout-local mechanisms like `placement`, `overflow`, `keep-with-next`, or `formation` unless the concept is truly the stable architectural category.
+
+The purpose of this rule is to keep the runtime layer conceptually pure and prevent the old layout-engine vocabulary from re-contaminating the system after the structure has already evolved beyond it.
+
+### Future Capability: Speculative AI
+
+Because the engine now has a protected `Kernel` underneath the engine-systems layer, the future `AI` system does not need to rely only on static heuristics. It can potentially:
+
+* snapshot the world state
+* attempt a speculative placement or continuity path
+* inspect the resulting collisions, splits, and state transitions
+* score the outcome
+* roll the world back if the path is rejected
+
+This is effectively speculative pathfinding over pagination space. It is one of the major architectural advantages of the kernel-plus-AI design over legacy linear layout engines, and it should be remembered as a future capability even if we do not implement it immediately.
+
+### Future Capability: Continuous Dependent Regions
+
+TOC work should also be remembered as a proving ground for a different future capability: not batch post-processing, but continuously updated dependent regions inside the same world.
+
+The important mental model is not "front matter that must be rebuilt," but "an adjacent map whose spatial footprint evolves while the main map is still alive." In that model:
+
+* `Event Dispatch` announces heading/chapter emergence
+* a TOC or navigation region grows as live structure
+* its footprint becomes a reservation or exclusion in the shared world
+* `Physics` resolves overlap by displacing downstream actors along the constraint field
+* `Transitions` handle page-boundary crossings caused by that displacement
+* navigation state updates continue to propagate until the system settles
+
+Legacy layout engines usually treat this as an Ouroboros problem that forces a full restart of the universe. VMPrint should preserve the possibility of treating it instead as continuous collision response across coupled regions. Even if this first appears through TOC experiments, the broader value is much larger: writing surfaces, live outlines, adjacent structural panels, and eventually generative UI all benefit from the same mechanism.
 
 ### Things That Should Stay Out Of The Kernel
 
@@ -181,9 +234,11 @@ These are now explicitly runtime-layer concerns, not kernel concerns:
 Before any further extraction, classify the target as one of:
 
 * `kernel`
-* `placement runtime`
-* `split/continuation runtime`
-* `page lifecycle runtime`
+* `physics`
+* `AI`
+* `transitions`
+* `lifecycle`
+* `event dispatch`
 * `simulation report bridge`
 * `document semantics`
 * `print/composition handoff`
@@ -195,8 +250,8 @@ Prefer creating or strengthening a sibling runtime module instead.
 
 The next good extraction is likely **lateral**, not downward:
 
-* either split placement/runtime concerns away from the remainder of `LayoutSession`
-* or split accepted-split / continuation runtime away from placement and page lifecycle concerns
+* either strengthen `physics` by consolidating spatial placement and local collision concerns
+* or extract `AI` concerns so continuity/cohesion policy stops living inside `LayoutSession`
 
 Do not continue kernel extraction unless a seam is unmistakably substrate-level.
 
