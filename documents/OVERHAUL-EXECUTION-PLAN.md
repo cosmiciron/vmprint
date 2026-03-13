@@ -123,6 +123,85 @@ If it only makes sense because we are paginating authored documents, it belongs 
 
 ---
 
+## Runtime Layer Reassessment
+
+The kernel pass is now materially underway.
+That means the next architectural risk is no longer "what else can be pushed downward?"
+
+The next risk is that the remaining `LayoutSession` continues to collapse too many **same-plane runtime responsibilities** into one object.
+
+The current working interpretation should therefore be:
+
+* `Kernel` is the protected bottom substrate
+* `LayoutSession` is now best understood as a temporary **layout runtime aggregator**
+* the next extraction work should mostly create sibling runtime modules on the same plane, not enlarge the kernel
+
+Current `LayoutSession` responsibilities now cluster like this:
+
+### Runtime Module Candidates
+
+1. **Placement Runtime**
+   * constraint negotiation handoff
+   * placement-frame preparation
+   * deferred placement / retry-next-page logic
+   * actor placement settlement
+
+2. **Split / Continuation Runtime**
+   * split attempt execution
+   * split aftermath settlement
+   * accepted-split branch handling
+   * keep-with-next tail-split flow
+   * generic split flow
+
+3. **Page Lifecycle Runtime**
+   * page start / page advance / page close
+   * page finalization state
+   * logical page numbering
+   * page-scoped runtime coordination above the kernel
+
+4. **Simulation Report Bridge**
+   * report assembly
+   * typed artifact readout
+   * finalized page exposure
+   * simulation-complete handoff into report state
+
+### Things That Should Stay Out Of The Kernel
+
+These are now explicitly runtime-layer concerns, not kernel concerns:
+
+* placement preparation
+* page semantics
+* overflow handling policy
+* split settlement policy
+* actor measurement / packager phase prep
+* page finalization and report composition
+
+### Next-Step Rule
+
+Before any further extraction, classify the target as one of:
+
+* `kernel`
+* `placement runtime`
+* `split/continuation runtime`
+* `page lifecycle runtime`
+* `simulation report bridge`
+* `document semantics`
+* `print/composition handoff`
+
+If the target is not clearly `kernel`, do not push it downward.
+Prefer creating or strengthening a sibling runtime module instead.
+
+### Immediate Implication
+
+The next good extraction is likely **lateral**, not downward:
+
+* either split placement/runtime concerns away from the remainder of `LayoutSession`
+* or split accepted-split / continuation runtime away from placement and page lifecycle concerns
+
+Do not continue kernel extraction unless a seam is unmistakably substrate-level.
+
+---
+
 ### Phase A: Thin The Coordinator
 
 Objective:

@@ -12,6 +12,7 @@ import { LAYOUT_DEFAULTS } from './defaults';
 import { computeKeepWithNextPlan } from './keep-with-next-collaborator';
 import { LayoutCollaboratorDispatcher } from './layout-collaborator-dispatcher';
 import { Kernel } from './kernel';
+import { SplitContinuationRuntime } from './split-continuation-runtime';
 import { preparePackagerForPhase, rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
 import type {
     SimulationArtifactKey,
@@ -860,6 +861,7 @@ export class LayoutSession {
     readonly collaborators: readonly LayoutCollaborator[];
     readonly collaboratorDispatcher: LayoutCollaboratorDispatcher;
     readonly kernel = new Kernel();
+    readonly splitContinuationRuntime: SplitContinuationRuntime;
     readonly profile: LayoutProfileMetrics = {
         keepWithNextPlanCalls: 0,
         keepWithNextPlanMs: 0,
@@ -898,6 +900,7 @@ export class LayoutSession {
         this.runtime = options.runtime;
         this.collaborators = options.collaborators ?? [];
         this.collaboratorDispatcher = new LayoutCollaboratorDispatcher(this.collaborators);
+        this.splitContinuationRuntime = new SplitContinuationRuntime(this);
     }
 
     notifySimulationStart(): void {
@@ -1822,9 +1825,7 @@ export class LayoutSession {
     }
 
     getAcceptedSplitQueueHandling(preview: ContinuationQueueOutcome): AcceptedSplitQueueHandling {
-        return {
-            shouldAdvanceIndex: !preview.continuationInstalled
-        };
+        return this.splitContinuationRuntime.getAcceptedSplitQueueHandling(preview);
     }
 
     previewAcceptedSplitSettlement(
@@ -1840,34 +1841,19 @@ export class LayoutSession {
         state: SplitFragmentAftermathState,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): { queuePreview: ContinuationQueueOutcome; queueHandling: AcceptedSplitQueueHandling } {
-        const snapshot = this.captureLocalBranchSnapshot(
+        return this.splitContinuationRuntime.previewAcceptedSplitSettlement(
             pageBoxes,
             actorQueue,
-            state.currentY,
-            state.lastSpacingAfter
-        );
-
-        this.acceptAndCommitSplitFragment(
+            startIndex,
+            replaceCount,
+            predecessor,
+            continuation,
             attempt,
             result,
             boxes,
             state,
             positionMarker
         );
-        const queuePreview = this.settleContinuationQueue(
-            actorQueue,
-            startIndex,
-            replaceCount,
-            predecessor,
-            continuation,
-            { notify: false }
-        );
-        this.rollbackAcceptedSplitBranch(pageBoxes as Box[], actorQueue, snapshot);
-
-        return {
-            queuePreview,
-            queueHandling: this.getAcceptedSplitQueueHandling(queuePreview)
-        };
     }
 
     finalizeTailSplitFormation(
@@ -1883,20 +1869,7 @@ export class LayoutSession {
         state: SplitFragmentAftermathState,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): TailSplitFormationOutcome {
-        const snapshot = this.captureLocalBranchSnapshot(
-            pageBoxes,
-            actorQueue,
-            state.currentY,
-            state.lastSpacingAfter
-        );
-        const committed = this.acceptAndCommitSplitFragment(
-            attempt,
-            result,
-            boxes,
-            state,
-            positionMarker
-        );
-        const preview = this.previewAcceptedSplitSettlement(
+        return this.splitContinuationRuntime.finalizeTailSplitFormation(
             pageBoxes,
             actorQueue,
             startIndex,
@@ -1909,20 +1882,6 @@ export class LayoutSession {
             state,
             positionMarker
         );
-        this.settleContinuationQueue(
-            actorQueue,
-            startIndex,
-            replaceCount,
-            predecessor,
-            continuation
-        );
-
-        return {
-            branchSnapshot: snapshot,
-            committed,
-            queuePreview: preview.queuePreview,
-            queueHandling: preview.queueHandling
-        };
     }
 
     settleTailSplitFormation(
@@ -1935,22 +1894,16 @@ export class LayoutSession {
         currentActorIndex: number,
         outcome: TailSplitFormationOutcome
     ): TailSplitFormationSettlementOutcome {
-        currentPageBoxes.push(...outcome.committed.boxes);
-        const advanced = this.advancePage(
+        return this.splitContinuationRuntime.settleTailSplitFormation(
             pages,
             currentPageBoxes,
             currentPageIndex,
             pageWidth,
             pageHeight,
-            nextPageTopY
+            nextPageTopY,
+            currentActorIndex,
+            outcome
         );
-        return {
-            nextPageIndex: advanced.nextPageIndex,
-            nextPageBoxes: advanced.nextPageBoxes,
-            nextCurrentY: advanced.nextCurrentY,
-            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
-            nextActorIndex: this.resolveNextActorIndex(currentActorIndex, outcome.queueHandling.shouldAdvanceIndex)
-        };
     }
 
     settleTailSplitFailure(
@@ -1965,32 +1918,18 @@ export class LayoutSession {
         checkpoint: ReturnType<LayoutSession['captureLocalBranchSnapshot']>,
         shouldAdvancePage: boolean
     ): TailSplitFailureSettlementOutcome {
-        const rolledBack = this.restoreLocalBranchSnapshot(currentPageBoxes, actorQueue, checkpoint);
-        if (!shouldAdvancePage) {
-            return {
-                nextPageIndex: currentPageIndex,
-                nextPageBoxes: currentPageBoxes,
-                nextCurrentY: rolledBack.currentY,
-                nextLastSpacingAfter: rolledBack.lastSpacingAfter,
-                nextActorIndex: currentActorIndex
-            };
-        }
-
-        const advanced = this.advancePage(
+        return this.splitContinuationRuntime.settleTailSplitFailure(
             pages,
             currentPageBoxes,
             currentPageIndex,
             pageWidth,
             pageHeight,
-            nextPageTop
+            nextPageTop,
+            currentActorIndex,
+            actorQueue,
+            checkpoint,
+            shouldAdvancePage
         );
-        return {
-            nextPageIndex: advanced.nextPageIndex,
-            nextPageBoxes: advanced.nextPageBoxes,
-            nextCurrentY: advanced.nextCurrentY,
-            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
-            nextActorIndex: currentActorIndex
-        };
     }
 
     executeTailSplitFormationBranch(
@@ -2024,83 +1963,7 @@ export class LayoutSession {
             pageIndex: number
         ) => Box | Box[]
     ): TailSplitFormationSettlementOutcome | TailSplitFailureSettlementOutcome {
-        const { prefix, splitCandidate, replaceCount, splitMarkerReserve } = tailSplitExecution;
-        const checkpoint = this.captureLocalBranchSnapshot(
-            currentPageBoxes,
-            actorQueue,
-            state.currentY,
-            state.lastSpacingAfter
-        );
-
-        const placedPrefix = this.placeActorSequence(prefix, {
-            currentY: state.currentY,
-            lastSpacingAfter: state.lastSpacingAfter,
-            pageIndex: currentPageIndex,
-            pageLimit: state.pageLimit,
-            availableWidth: state.availableWidth
-        }, contextBase);
-        currentPageBoxes.push(...placedPrefix.boxes);
-
-        const splitExecution = this.executePositionedSplitAttempt(
-            splitCandidate,
-            state.availableWidth,
-            placedPrefix.currentY,
-            placedPrefix.lastSpacingAfter,
-            state.pageLimit,
-            currentPageIndex,
-            splitMarkerReserve,
-            contextBase
-        );
-        const splitAttempt = splitExecution.execution.attempt;
-        const { currentFragment: partA, continuationFragment: partB } = splitExecution.execution.result;
-
-        if (partA && partB) {
-            const partAContext = {
-                ...contextBase,
-                pageIndex: currentPageIndex,
-                cursorY: placedPrefix.currentY
-            };
-            const partABoxes = partA.emitBoxes(
-                state.availableWidth,
-                splitExecution.emitAvailableHeight,
-                partAContext
-            ) || [];
-            const outcome = this.finalizeTailSplitFormation(
-                currentPageBoxes,
-                actorQueue,
-                currentActorIndex,
-                replaceCount,
-                splitCandidate,
-                partB,
-                splitAttempt,
-                {
-                    currentFragment: partA,
-                    continuationFragment: partB
-                },
-                partABoxes,
-                this.createSplitFragmentAftermathState(partA, {
-                    currentY: placedPrefix.currentY,
-                    layoutDelta: splitExecution.layoutDelta,
-                    lastSpacingAfter: placedPrefix.lastSpacingAfter,
-                    pageLimit: state.pageLimit,
-                    availableWidth: state.availableWidth,
-                    pageIndex: currentPageIndex
-                }),
-                positionMarker
-            );
-            return this.settleTailSplitFormation(
-                pages,
-                currentPageBoxes,
-                currentPageIndex,
-                pageWidth,
-                pageHeight,
-                nextPageTopY,
-                currentActorIndex,
-                outcome
-            );
-        }
-
-        return this.settleTailSplitFailure(
+        return this.splitContinuationRuntime.executeTailSplitFormationBranch(
             pages,
             currentPageBoxes,
             currentPageIndex,
@@ -2109,8 +1972,11 @@ export class LayoutSession {
             nextPageTopY,
             currentActorIndex,
             actorQueue,
-            checkpoint,
-            shouldAdvancePageOnFailure
+            tailSplitExecution,
+            state,
+            contextBase,
+            shouldAdvancePageOnFailure,
+            positionMarker
         );
     }
 
@@ -2328,25 +2194,10 @@ export class LayoutSession {
         state: SplitFragmentAftermathState,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): GenericSplitOutcome {
-        const snapshot = this.captureLocalBranchSnapshot(
-            pageBoxes,
-            actorQueue,
-            state.currentY,
-            state.lastSpacingAfter
-        );
-        const committed = this.acceptAndCommitSplitFragment(
-            attempt,
-            result,
-            boxes,
-            state,
-            positionMarker
-        );
-
-        const preview = this.previewAcceptedSplitSettlement(
+        return this.splitContinuationRuntime.finalizeGenericAcceptedSplit(
             pageBoxes,
             actorQueue,
             startIndex,
-            1,
             predecessor,
             continuation,
             attempt,
@@ -2355,20 +2206,6 @@ export class LayoutSession {
             state,
             positionMarker
         );
-        this.settleContinuationQueue(
-            actorQueue,
-            startIndex,
-            1,
-            predecessor,
-            continuation
-        );
-
-        return {
-            branchSnapshot: snapshot,
-            committed,
-            queuePreview: preview.queuePreview,
-            queueHandling: preview.queueHandling
-        };
     }
 
     finalizeForcedOverflowCommit(
@@ -2680,33 +2517,16 @@ export class LayoutSession {
         currentActorIndex: number,
         resolution: ActorSplitFailureResolution
     ): ActorSplitFailureSettlementOutcome {
-        currentPageBoxes.push(...resolution.committedBoxes);
-
-        if (!resolution.shouldAdvancePage) {
-            return {
-                nextPageIndex: currentPageIndex,
-                nextPageBoxes: currentPageBoxes,
-                nextCurrentY: resolution.nextCurrentY,
-                nextLastSpacingAfter: resolution.nextLastSpacingAfter,
-                nextActorIndex: this.resolveNextActorIndex(currentActorIndex, resolution.shouldAdvanceIndex)
-            };
-        }
-
-        const advanced = this.advancePage(
+        return this.splitContinuationRuntime.settleActorSplitFailure(
             pages,
             currentPageBoxes,
             currentPageIndex,
             pageWidth,
             pageHeight,
-            nextPageTopY
+            nextPageTopY,
+            currentActorIndex,
+            resolution
         );
-        return {
-            nextPageIndex: advanced.nextPageIndex,
-            nextPageBoxes: advanced.nextPageBoxes,
-            nextCurrentY: advanced.nextCurrentY,
-            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
-            nextActorIndex: this.resolveNextActorIndex(currentActorIndex, resolution.shouldAdvanceIndex)
-        };
     }
 
     resolveDeferredSplitPlacement(
@@ -2716,19 +2536,13 @@ export class LayoutSession {
         pageLimit: number,
         pageTop: number
     ): DeferredSplitPlacementOutcome {
-        if (nextCursorY <= currentY + layoutBefore + LAYOUT_DEFAULTS.wrapTolerance) {
-            return {
-                shouldAdvancePage: true,
-                nextCurrentY: currentY
-            };
-        }
-
-        const nextCurrentY = Math.max(currentY, nextCursorY - layoutBefore);
-        const remainingHeight = pageLimit - nextCurrentY;
-        return {
-            shouldAdvancePage: remainingHeight <= 0 && nextCurrentY > pageTop,
-            nextCurrentY
-        };
+        return this.splitContinuationRuntime.resolveDeferredSplitPlacement(
+            currentY,
+            nextCursorY,
+            layoutBefore,
+            pageLimit,
+            pageTop
+        );
     }
 
     settleDeferredSplitPlacement(
@@ -2742,31 +2556,17 @@ export class LayoutSession {
         lastSpacingAfter: number,
         outcome: DeferredSplitPlacementOutcome
     ): DeferredSplitPlacementSettlementOutcome {
-        if (!outcome.shouldAdvancePage) {
-            return {
-                nextPageIndex: currentPageIndex,
-                nextPageBoxes: currentPageBoxes,
-                nextCurrentY: outcome.nextCurrentY,
-                nextLastSpacingAfter: lastSpacingAfter,
-                nextActorIndex: currentActorIndex
-            };
-        }
-
-        const advanced = this.advancePage(
+        return this.splitContinuationRuntime.settleDeferredSplitPlacement(
             pages,
             currentPageBoxes,
             currentPageIndex,
             pageWidth,
             pageHeight,
-            nextPageTopY
+            nextPageTopY,
+            currentActorIndex,
+            lastSpacingAfter,
+            outcome
         );
-        return {
-            nextPageIndex: advanced.nextPageIndex,
-            nextPageBoxes: advanced.nextPageBoxes,
-            nextCurrentY: advanced.nextCurrentY,
-            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
-            nextActorIndex: currentActorIndex
-        };
     }
 
     handleGenericSplitSuccess(
@@ -2786,24 +2586,7 @@ export class LayoutSession {
         pageTop: number,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): GenericSplitSuccessHandlingOutcome {
-        if (deferredSplitCursorY !== null) {
-            const deferred = this.resolveDeferredSplitPlacement(
-                state.currentY,
-                deferredSplitCursorY,
-                layoutBefore,
-                pageLimit,
-                pageTop
-            );
-            return {
-                nextCurrentY: deferred.nextCurrentY,
-                nextLastSpacingAfter: state.lastSpacingAfter,
-                shouldAdvancePage: deferred.shouldAdvancePage,
-                shouldAdvanceIndex: false,
-                committedBoxes: []
-            };
-        }
-
-        const outcome = this.finalizeGenericAcceptedSplit(
+        return this.splitContinuationRuntime.handleGenericSplitSuccess(
             currentPageBoxes,
             actorQueue,
             startIndex,
@@ -2811,18 +2594,15 @@ export class LayoutSession {
             continuation,
             attempt,
             result,
+            currentFragment,
             currentBoxes,
             state,
+            deferredSplitCursorY,
+            layoutBefore,
+            pageLimit,
+            pageTop,
             positionMarker
         );
-
-        return {
-            nextCurrentY: outcome.committed.currentY,
-            nextLastSpacingAfter: outcome.committed.lastSpacingAfter,
-            shouldAdvancePage: true,
-            shouldAdvanceIndex: outcome.queueHandling.shouldAdvanceIndex,
-            committedBoxes: outcome.committed.boxes
-        };
     }
 
     settleGenericSplitSuccess(
@@ -2835,33 +2615,16 @@ export class LayoutSession {
         currentActorIndex: number,
         handling: GenericSplitSuccessHandlingOutcome
     ): GenericSplitSuccessSettlementOutcome {
-        currentPageBoxes.push(...handling.committedBoxes);
-
-        if (!handling.shouldAdvancePage) {
-            return {
-                nextPageIndex: currentPageIndex,
-                nextPageBoxes: currentPageBoxes,
-                nextCurrentY: handling.nextCurrentY,
-                nextLastSpacingAfter: handling.nextLastSpacingAfter,
-                nextActorIndex: this.resolveNextActorIndex(currentActorIndex, handling.shouldAdvanceIndex)
-            };
-        }
-
-        const advanced = this.advancePage(
+        return this.splitContinuationRuntime.settleGenericSplitSuccess(
             pages,
             currentPageBoxes,
             currentPageIndex,
             pageWidth,
             pageHeight,
-            nextPageTopY
+            nextPageTopY,
+            currentActorIndex,
+            handling
         );
-        return {
-            nextPageIndex: advanced.nextPageIndex,
-            nextPageBoxes: advanced.nextPageBoxes,
-            nextCurrentY: advanced.nextCurrentY,
-            nextLastSpacingAfter: advanced.nextLastSpacingAfter,
-            nextActorIndex: this.resolveNextActorIndex(currentActorIndex, handling.shouldAdvanceIndex)
-        };
     }
 
     executeGenericSplitBranch(
@@ -2896,100 +2659,7 @@ export class LayoutSession {
             pageIndex: number
         ) => Box | Box[]
     ): ActorSplitFailureSettlementOutcome | DeferredSplitPlacementSettlementOutcome | GenericSplitSuccessSettlementOutcome {
-        const { currentFragment: fitsCurrent, continuationFragment: pushedNext } = splitExecution.result;
-
-        if (!fitsCurrent) {
-            const boxes = state.currentY === state.pageTop
-                ? (packager.emitBoxes(state.availableWidth, state.availableHeightAdjusted, {
-                    ...contextBase,
-                    pageIndex: currentPageIndex,
-                    cursorY: state.currentY
-                }) || [])
-                : null;
-            const outcome = this.resolveActorSplitFailure(
-                packager,
-                boxes,
-                {
-                    currentY: state.currentY,
-                    layoutDelta: 0,
-                    effectiveHeight: state.effectiveHeight,
-                    marginBottom: state.marginBottom,
-                    pageIndex: currentPageIndex
-                },
-                state.currentY === state.pageTop,
-                state.currentY,
-                state.lastSpacingAfter
-            );
-            return this.settleActorSplitFailure(
-                pages,
-                currentPageBoxes,
-                currentPageIndex,
-                pageWidth,
-                pageHeight,
-                nextPageTopY,
-                currentActorIndex,
-                outcome
-            );
-        }
-
-        const splitContext: PackagerContext = {
-            ...contextBase,
-            pageIndex: currentPageIndex,
-            cursorY: state.currentY
-        };
-        const fitsMarginBottom = fitsCurrent.getMarginBottom();
-        const fitsMarginTop = fitsCurrent.getMarginTop();
-        const fitsLayoutBefore = state.lastSpacingAfter + fitsMarginTop;
-        const fitsLayoutDelta = fitsLayoutBefore - fitsMarginTop;
-        const deferredSplitCursorY = resolveDeferredCursorY(fitsCurrent);
-        if (deferredSplitCursorY !== null) {
-            const outcome = this.resolveDeferredSplitPlacement(
-                state.currentY,
-                deferredSplitCursorY,
-                fitsLayoutBefore,
-                state.pageLimit,
-                state.pageTop
-            );
-            return this.settleDeferredSplitPlacement(
-                pages,
-                currentPageBoxes,
-                currentPageIndex,
-                pageWidth,
-                pageHeight,
-                nextPageTopY,
-                currentActorIndex,
-                state.lastSpacingAfter,
-                outcome
-            );
-        }
-
-        const fitsAvailableHeightAdjusted = (state.pageLimit - state.currentY) - fitsLayoutDelta;
-        const currentBoxes = fitsCurrent.emitBoxes(state.availableWidth, fitsAvailableHeightAdjusted, splitContext) || [];
-        const handling = this.handleGenericSplitSuccess(
-            currentPageBoxes,
-            actorQueue,
-            currentActorIndex,
-            packager,
-            pushedNext,
-            splitExecution.attempt,
-            splitExecution.result,
-            fitsCurrent,
-            currentBoxes,
-            this.createSplitFragmentAftermathState(fitsCurrent, {
-                currentY: state.currentY,
-                layoutDelta: fitsLayoutDelta,
-                lastSpacingAfter: state.lastSpacingAfter,
-                pageLimit: state.pageLimit,
-                availableWidth: state.availableWidth,
-                pageIndex: currentPageIndex
-            }),
-            deferredSplitCursorY,
-            fitsLayoutBefore,
-            state.pageLimit,
-            state.pageTop,
-            positionMarker
-        );
-        return this.settleGenericSplitSuccess(
+        return this.splitContinuationRuntime.executeGenericSplitBranch(
             pages,
             currentPageBoxes,
             currentPageIndex,
@@ -2997,7 +2667,13 @@ export class LayoutSession {
             pageHeight,
             nextPageTopY,
             currentActorIndex,
-            handling
+            actorQueue,
+            packager,
+            splitExecution,
+            state,
+            contextBase,
+            resolveDeferredCursorY,
+            positionMarker
         );
     }
 
