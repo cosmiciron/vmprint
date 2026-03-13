@@ -17,6 +17,7 @@ export class ExpandingProbePackager implements PackagerUnit {
     private readonly fragmentHeightOverride?: number;
     private readonly totalContentHeight: number;
     private readonly fragmentMarginBottom: number;
+    private readonly fragmentOffsetY: number;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -34,7 +35,8 @@ export class ExpandingProbePackager implements PackagerUnit {
         flowBox: FlowBox,
         identity: PackagerIdentity,
         fragmentHeightOverride?: number,
-        fragmentMarginBottom?: number
+        fragmentMarginBottom?: number,
+        fragmentOffsetY: number = 0
     ) {
         this.base = new FlowBoxPackager(processor, flowBox, identity);
         this.identity = identity;
@@ -44,6 +46,7 @@ export class ExpandingProbePackager implements PackagerUnit {
             ? configuredHeight
             : 0;
         this.fragmentMarginBottom = fragmentMarginBottom ?? flowBox.marginBottom;
+        this.fragmentOffsetY = fragmentOffsetY;
         this.actorId = this.base.actorId;
         this.sourceId = this.base.sourceId;
         this.actorKind = this.base.actorKind;
@@ -75,7 +78,7 @@ export class ExpandingProbePackager implements PackagerUnit {
         const boxes = this.base.emitBoxes(availableWidth, availableHeight, context);
         if (!boxes || boxes.length === 0) return boxes;
 
-        const fragmentHeight = this.getFragmentContentHeight(availableHeight);
+        const fragmentHeight = this.getRenderedFragmentHeight(availableHeight);
         const regionBoxes = boxes.map((box) => {
             const cloned: Box = {
                 ...box,
@@ -107,7 +110,7 @@ export class ExpandingProbePackager implements PackagerUnit {
     }
 
     split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
-        const contentHeight = this.getFragmentContentHeight(availableHeight);
+        const contentHeight = this.getFragmentContentHeight();
         if (contentHeight <= availableHeight) {
             return { currentFragment: this, continuationFragment: null };
         }
@@ -119,8 +122,14 @@ export class ExpandingProbePackager implements PackagerUnit {
         }
 
         return {
-            currentFragment: this.wrap(currentHeight, this.fragmentIndex, this.continuationOf, 0),
-            continuationFragment: this.wrap(remainingHeight, this.fragmentIndex + 1, this.actorId, this.fragmentMarginBottom)
+            currentFragment: this.wrap(currentHeight, this.fragmentIndex, this.continuationOf, 0, this.fragmentOffsetY),
+            continuationFragment: this.wrap(
+                remainingHeight,
+                this.fragmentIndex + 1,
+                this.actorId,
+                this.fragmentMarginBottom,
+                this.fragmentOffsetY + currentHeight
+            )
         };
     }
 
@@ -148,17 +157,23 @@ export class ExpandingProbePackager implements PackagerUnit {
         if (!Number.isFinite(rawHeight) || rawHeight <= 0) {
             return this.base.getRequiredHeight() - this.base.getMarginTop() - this.base.getMarginBottom();
         }
-        if (availableHeight !== undefined && this.fragmentHeightOverride === undefined) {
-            return Math.min(rawHeight, Math.max(0, availableHeight));
-        }
         return rawHeight;
+    }
+
+    private getRenderedFragmentHeight(availableHeight?: number): number {
+        const contentHeight = this.getFragmentContentHeight();
+        if (availableHeight === undefined) {
+            return contentHeight;
+        }
+        return Math.min(contentHeight, Math.max(0, availableHeight));
     }
 
     private wrap(
         fragmentHeight: number,
         fragmentIndex: number,
         continuationOf: string | undefined,
-        fragmentMarginBottom: number
+        fragmentMarginBottom: number,
+        fragmentOffsetY: number
     ): PackagerUnit | null {
         const flowBox = (this.base as any).flowBox as FlowBox | undefined;
         if (!flowBox) return null;
@@ -175,7 +190,8 @@ export class ExpandingProbePackager implements PackagerUnit {
                     continuationOf
                 },
             fragmentHeight,
-            fragmentMarginBottom
+            fragmentMarginBottom,
+            fragmentOffsetY
         );
     }
 
@@ -196,6 +212,8 @@ export class ExpandingProbePackager implements PackagerUnit {
             : [];
         if (currentHeight <= 0) return [];
 
+        const fragmentStart = this.fragmentOffsetY;
+        const fragmentEnd = fragmentStart + baseBox.h;
         const insetLeft = 16;
         const insetRight = 16;
         const lineX = baseBox.x + insetLeft;
@@ -224,28 +242,34 @@ export class ExpandingProbePackager implements PackagerUnit {
             }
         });
 
-        const initialY = baseBox.y + Math.max(0, Math.min(baseBox.h - 2, initialHeight - 2));
-        decorations.push({
-            type: 'expanding-probe-decoration',
-            x: lineX,
-            y: initialY,
-            w: lineW,
-            h: 2,
-            style: {
-                backgroundColor: '#111827',
-                zIndex: 1
-            },
-            properties: {
-                sourceId: `${baseBox.properties?.sourceId || 'probe:expanding-box'}:initial-marker`
-            },
-            meta: {
-                ...(baseBox.meta || {}),
-                generated: true
-            }
-        });
+        if (initialHeight >= fragmentStart && initialHeight <= fragmentEnd) {
+            const initialY = baseBox.y + Math.max(0, Math.min(baseBox.h - 2, initialHeight - fragmentStart - 2));
+            decorations.push({
+                type: 'expanding-probe-decoration',
+                x: lineX,
+                y: initialY,
+                w: lineW,
+                h: 2,
+                style: {
+                    backgroundColor: '#111827',
+                    zIndex: 1
+                },
+                properties: {
+                    sourceId: `${baseBox.properties?.sourceId || 'probe:expanding-box'}:initial-marker`
+                },
+                meta: {
+                    ...(baseBox.meta || {}),
+                    generated: true
+                }
+            });
+        }
 
         snapshots.forEach((heightAfter, index) => {
-            const clampedY = baseBox.y + Math.max(0, Math.min(baseBox.h - 1, Number(heightAfter) - 1));
+            const globalHeight = Number(heightAfter);
+            if (globalHeight < fragmentStart || globalHeight > fragmentEnd) {
+                return;
+            }
+            const clampedY = baseBox.y + Math.max(0, Math.min(baseBox.h - 1, globalHeight - fragmentStart - 1));
             const isMajor = (index + 1) % 5 === 0 || index === snapshots.length - 1;
             decorations.push({
                 type: 'expanding-probe-decoration',
@@ -267,7 +291,7 @@ export class ExpandingProbePackager implements PackagerUnit {
             });
         });
 
-        if (chapterCount > 0) {
+        if (chapterCount > 0 && this.fragmentOffsetY === 0) {
             const barHeight = 18;
             decorations.push({
                 type: 'expanding-probe-decoration',
