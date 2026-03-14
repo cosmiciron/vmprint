@@ -43,6 +43,14 @@ type SignalFollowSpec = {
     indentPerSignal?: number;
 };
 
+type ReplayMarkerSpec = {
+    title?: string;
+    backgroundColor?: string;
+    borderColor?: string;
+    color?: string;
+    height?: number;
+};
+
 export class TestSignalPublisherPackager implements PackagerUnit {
     private readonly base: FlowBoxPackager;
     private readonly flowBox: FlowBox;
@@ -470,6 +478,117 @@ export class TestSignalFollowerPackager implements PackagerUnit {
                     lineHeight: 1.25,
                     height: Math.max(0, Number(spec.baseHeight) || 0),
                     marginLeft: indent
+                }
+            }
+        };
+
+        this.renderedFlowBox = (this.processor as any).shapeElement(syntheticElement, {
+            sourceId: this.sourceId,
+            sourceType: syntheticElement.type,
+            fragmentIndex: this.fragmentIndex,
+            isContinuation: !!this.continuationOf
+        });
+        this.base = new FlowBoxPackager(this.processor, this.renderedFlowBox, this.identity);
+        return this.base;
+    }
+}
+
+export class TestReplayMarkerPackager implements PackagerUnit {
+    private base: FlowBoxPackager | null = null;
+    private renderedFlowBox: FlowBox | null = null;
+    private committedRenderCount = 0;
+    private preparedRenderCount = 1;
+
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
+    constructor(
+        private readonly processor: LayoutProcessor,
+        private readonly flowBox: FlowBox,
+        private readonly identity: PackagerIdentity
+    ) {
+        this.actorId = identity.actorId;
+        this.sourceId = identity.sourceId;
+        this.actorKind = identity.actorKind;
+        this.fragmentIndex = identity.fragmentIndex;
+        this.continuationOf = identity.continuationOf;
+    }
+
+    get pageBreakBefore(): boolean | undefined { return this.renderedFlowBox?.pageBreakBefore ?? this.flowBox.pageBreakBefore; }
+    get keepWithNext(): boolean | undefined { return this.renderedFlowBox?.keepWithNext ?? this.flowBox.keepWithNext; }
+
+    prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
+        this.preparedRenderCount = this.committedRenderCount + 1;
+        this.base = this.createDynamicPackager(this.preparedRenderCount);
+        this.base.prepare(availableWidth, availableHeight, context);
+    }
+
+    getPlacementPreference(fullAvailableWidth: number, context: PackagerContext): PackagerPlacementPreference | null {
+        const packager = this.base ?? this.createDynamicPackager(this.preparedRenderCount);
+        return packager.getPlacementPreference?.(fullAvailableWidth, context) ?? null;
+    }
+
+    getTransformProfile(): PackagerTransformProfile {
+        return {
+            capabilities: [
+                {
+                    kind: 'split',
+                    preservesIdentity: true,
+                    producesContinuation: true
+                }
+            ]
+        };
+    }
+
+    emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): Box[] {
+        const packager = this.base ?? this.createDynamicPackager(this.preparedRenderCount);
+        this.committedRenderCount = this.preparedRenderCount;
+        return packager.emitBoxes(availableWidth, availableHeight, context);
+    }
+
+    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+        const packager = this.base ?? this.createDynamicPackager(this.preparedRenderCount);
+        return packager.split(availableHeight, context);
+    }
+
+    getRequiredHeight(): number { return this.base?.getRequiredHeight() ?? 0; }
+    isUnbreakable(availableHeight: number): boolean { return this.base?.isUnbreakable(availableHeight) ?? false; }
+    getMarginTop(): number { return this.base?.getMarginTop() ?? this.flowBox.marginTop; }
+    getMarginBottom(): number { return this.base?.getMarginBottom() ?? this.flowBox.marginBottom; }
+
+    private createDynamicPackager(renderCount: number): FlowBoxPackager {
+        const spec = (this.flowBox.properties?._testReplayMarker || {}) as ReplayMarkerSpec;
+        const title = spec.title || 'Replay Marker';
+        const content = `${title}\nRender Count: ${renderCount}`;
+        const sourceElement = (this.flowBox._sourceElement || this.flowBox._unresolvedElement || {
+            type: this.flowBox.type,
+            content: ''
+        }) as Element;
+
+        const syntheticElement: Element = {
+            ...sourceElement,
+            content,
+            children: undefined,
+            properties: {
+                ...(sourceElement.properties || {}),
+                sourceId: this.sourceId,
+                style: {
+                    ...((sourceElement.properties?.style as Record<string, unknown>) || {}),
+                    backgroundColor: spec.backgroundColor || '#fee2e2',
+                    borderColor: spec.borderColor || '#dc2626',
+                    borderWidth: 2,
+                    paddingTop: 10,
+                    paddingRight: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    color: spec.color || '#7f1d1d',
+                    fontSize: 12,
+                    lineHeight: 1.2,
+                    fontWeight: 700,
+                    ...(spec.height ? { height: spec.height } : {})
                 }
             }
         };

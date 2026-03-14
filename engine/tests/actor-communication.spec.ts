@@ -697,6 +697,129 @@ async function testSamePageCollectorSettlesAtActorBoundary() {
     );
 }
 
+async function testAnchoredCheckpointAvoidsReplayingLockedPrelude() {
+    logStep('Scenario: anchored checkpoint restore avoids replaying a locked prelude actor before the collector frontier');
+    const config = buildConfig();
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const elements: Element[] = [
+        {
+            type: 'test-replay-marker',
+            content: '',
+            properties: {
+                sourceId: 'locked-prelude-marker',
+                style: { marginTop: 6, marginBottom: 8 },
+                _testReplayMarker: {
+                    title: 'Locked Prelude',
+                    backgroundColor: '#fee2e2',
+                    borderColor: '#dc2626',
+                    color: '#7f1d1d',
+                    height: 56
+                }
+            }
+        },
+        {
+            type: 'test-signal-observer',
+            content: '',
+            properties: {
+                sourceId: 'locked-prelude-collector',
+                style: { marginTop: 8, marginBottom: 8 },
+                _actorSignalObserve: {
+                    topic: 'locked-prelude-entry',
+                    title: 'Precision Collector',
+                    renderMode: 'collector-list',
+                    backgroundColor: '#f8fafc',
+                    borderColor: '#475569',
+                    color: '#0f172a',
+                    baseHeight: 54,
+                    growthPerSignal: 28
+                }
+            }
+        },
+        {
+            type: 'p',
+            content: repeatedParagraph('Early aftermath should remain below the collector while the locked prelude stays untouched if restore precision is correct.', 7),
+            properties: { sourceId: 'locked-prelude-aftermath-1' }
+        },
+        {
+            type: 'test-signal-publisher',
+            content: 'Heading Publisher\nAnchored Entry',
+            properties: {
+                sourceId: 'locked-prelude-publisher',
+                style: {
+                    height: 64,
+                    marginBottom: 8,
+                    paddingTop: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    paddingBottom: 10,
+                    backgroundColor: '#dbeafe',
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
+                    color: '#1e3a8a',
+                    fontWeight: 700
+                },
+                _actorSignalPublish: {
+                    topic: 'locked-prelude-entry',
+                    signalKey: 'locked-prelude-entry:1',
+                    payload: { label: 'Anchored Entry' }
+                }
+            }
+        },
+        {
+            type: 'p',
+            content: repeatedParagraph('Late aftermath proves the world resumed after the collector learned the later mature signal.', 5),
+            properties: { sourceId: 'locked-prelude-aftermath-2' }
+        }
+    ];
+
+    const pages = engine.paginate(elements);
+    const snapshot = engine.getLastPrintPipelineSnapshot();
+    const profile = snapshot.report?.profile;
+    const markerBoxes = pages.flatMap((page, pageIndex) =>
+        page.boxes
+            .filter((box) => box.type === 'test-replay-marker')
+            .map((box) => ({ pageIndex, box, text: getBoxText(box) }))
+    );
+    const collectorBoxes = pages.flatMap((page, pageIndex) =>
+        page.boxes
+            .filter((box) => box.type === 'test-signal-observer')
+            .map((box) => ({ pageIndex, box, text: getBoxText(box) }))
+    );
+
+    check(
+        'locked prelude marker is not replayed when settling from a later frontier',
+        'marker should still show a single committed render after the collector settles',
+        () => {
+            assert.ok(markerBoxes.length > 0, 'expected locked prelude marker');
+            const markerText = markerBoxes.map(({ text }) => text).join('\n');
+            assert.match(markerText, /Locked Prelude/, 'expected locked prelude title');
+            assert.match(markerText, /Render Count:\s*1/, 'expected marker to remain at render count 1');
+        }
+    );
+
+    check(
+        'collector still learns the later mature signal',
+        'collector includes the anchored entry while staying after the locked prelude marker',
+        () => {
+            assert.ok(collectorBoxes.length > 0, 'expected collector boxes');
+            const collectorText = collectorBoxes.map(({ text }) => text).join('\n');
+            assert.match(collectorText, /1\.\s+Anchored Entry/, 'expected collector to include the later entry');
+            assert.ok(markerBoxes[0].box.y < collectorBoxes[0].box.y, 'expected marker above collector');
+        }
+    );
+
+    check(
+        'anchored restore path still performs a settle',
+        'profile records at least one observer settle while preserving the locked prelude marker',
+        () => {
+            assert.ok(profile, 'expected simulation profile');
+            assert.ok(profile.observerSettleCalls > 0, 'expected at least one settle');
+        }
+    );
+}
+
 async function testDualInFlowCollectorsResettleFromInterleavedSignals() {
     logStep('Scenario: two in-flow collectors near the front resettle from interleaved later signals');
     const config = buildConfig();
@@ -1120,6 +1243,7 @@ async function run() {
     await testSyntheticCollectorListDrivesTrailingFlow();
     await testInFlowCollectorResettlesFromLaterSignals();
     await testSamePageCollectorSettlesAtActorBoundary();
+    await testAnchoredCheckpointAvoidsReplayingLockedPrelude();
     await testDualInFlowCollectorsResettleFromInterleavedSignals();
     await testActorEventBusRollback();
     console.log('[actor-communication.spec] OK');

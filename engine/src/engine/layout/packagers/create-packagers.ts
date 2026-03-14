@@ -6,7 +6,12 @@ import { DropCapPackager } from './dropcap-packager';
 import { TablePackager } from './table-packager';
 import { StoryPackager } from './story-packager';
 import { ExpandingProbePackager } from './expanding-probe-packager';
-import { TestSignalFollowerPackager, TestSignalObserverPackager, TestSignalPublisherPackager } from './test-signal-packagers';
+import {
+    TestReplayMarkerPackager,
+    TestSignalFollowerPackager,
+    TestSignalObserverPackager,
+    TestSignalPublisherPackager
+} from './test-signal-packagers';
 import { isTableElement } from '../layout-table';
 import { createElementPackagerIdentity } from './packager-identity';
 
@@ -24,6 +29,9 @@ export function buildPackagerForElement(item: Element, index: number, processor:
     }
     if (item.type === 'test-signal-follower') {
         return new TestSignalFollowerPackager(processor, flowBox, identity);
+    }
+    if (item.type === 'test-replay-marker') {
+        return new TestReplayMarkerPackager(processor, flowBox, identity);
     }
     if (isTableElement(item)) {
         return new TablePackager(processor, flowBox, identity);

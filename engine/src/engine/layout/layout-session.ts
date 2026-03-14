@@ -813,6 +813,8 @@ export type SafeCheckpoint = {
     kind: 'page' | 'actor';
     pageIndex: number;
     actorIndex: number;
+    anchorActorId?: string;
+    anchorSourceId?: string;
     frontier: SpatialFrontier;
     pagesPrefix: Page[];
     snapshot: SafeCheckpointSnapshot & SafeCheckpointPageState;
@@ -1127,15 +1129,20 @@ export class LayoutSession {
         lastSpacingAfter: number,
         kind: 'page' | 'actor'
     ): SafeCheckpoint {
+        const anchorActor = actorQueue[actorIndex];
         const checkpoint: SafeCheckpoint = {
             id: `checkpoint:${++this.safeCheckpointSequence}`,
             snapshotToken: `checkpoint:${this.safeCheckpointSequence}`,
             kind,
             pageIndex: currentPageIndex,
             actorIndex,
+            anchorActorId: anchorActor?.actorId,
+            anchorSourceId: anchorActor?.sourceId,
             frontier: {
                 pageIndex: currentPageIndex,
-                actorIndex
+                actorIndex,
+                actorId: anchorActor?.actorId,
+                sourceId: anchorActor?.sourceId
             },
             pagesPrefix: pagesPrefix.map((page) => ({
                 ...page,
@@ -1216,6 +1223,23 @@ export class LayoutSession {
     }
 
     resolveSafeCheckpoint(frontier: SpatialFrontier): SafeCheckpoint | null {
+        const anchoredCandidates = this.safeCheckpoints
+            .filter((checkpoint) =>
+                checkpoint.pageIndex === frontier.pageIndex
+                && (
+                    (frontier.sourceId && checkpoint.anchorSourceId === frontier.sourceId)
+                    || (frontier.actorId && checkpoint.anchorActorId === frontier.actorId)
+                )
+            )
+            .sort((a, b) => {
+                if (a.pageIndex !== b.pageIndex) return b.pageIndex - a.pageIndex;
+                if (a.actorIndex !== b.actorIndex) return b.actorIndex - a.actorIndex;
+                return b.id.localeCompare(a.id);
+            });
+        if (anchoredCandidates.length > 0) {
+            return anchoredCandidates[0];
+        }
+
         const frontierActorIndex =
             frontier.actorIndex
             ?? (frontier.sourceId ? this.actorIndexBySourceId.get(frontier.sourceId) : undefined)

@@ -933,6 +933,25 @@ It should think in terms of:
 
 That is the general and future-proof rule.
 
+The next refinement is to make these checkpoints **anchored**, not merely
+page-indexed.
+
+That means a safe checkpoint may also carry:
+
+* actor identity
+* source identity
+* actor index within the current slice
+
+Why this matters:
+
+* page-aligned checkpoints are enough to prove coarse settling
+* but they do not prove finer restore precision
+* an anchored checkpoint lets the session preserve already-committed earlier
+  actors while restoring only from the true frontier onward
+
+This is the point where restore precision becomes visible, not merely
+architectural.
+
 ---
 
 ## 26. Refined Checkpoint Execution Flow
@@ -960,3 +979,72 @@ like this:
     logic repeats.
 
 This is the concrete execution model for the first in-flow collector test.
+
+---
+
+## 27. Locked Prelude Precision Proof
+
+The first in-flow and same-page fixtures proved that:
+
+* settling can happen before EOF
+* settling can happen before a page turn
+* earlier geometry can be invalidated by later mature signals
+
+But they still left one subtle question open:
+
+* are we really restoring from a finer checkpoint
+* or merely getting the same visible result from a blurrier replay path?
+
+So we introduced a stronger synthetic proof in the `Test...` lane:
+
+* a **locked prelude** actor appears before the collector frontier
+* it is a replay marker that visibly reports its own render count
+* the collector appears after it
+* a later publisher matures a signal for the collector
+
+The important invariant is:
+
+* the collector should grow
+* the downstream flow should move
+* the locked prelude should **not** be replayed
+
+Visually, this appears as:
+
+* `Locked Prelude`
+* `Render Count: 1`
+* `Precision Collector`
+* `1. Anchored Entry`
+
+If settling were restoring from an earlier blurrier checkpoint, the locked
+prelude would visibly re-emit and its marker would increment.
+
+Instead, the proof stays at:
+
+* `Render Count: 1`
+
+while the collector still learns the later mature signal.
+
+That makes this the first proof where finer restore precision is visible on the
+page rather than only inferred from tests or code inspection.
+
+---
+
+## 28. What This New Proof Establishes
+
+The locked-prelude proof gives us a stronger statement than the earlier
+fixtures:
+
+* not only can VMPrint settle intra-page
+* not only can it reevaluate observers at generalized checkpoints
+* it can also preserve a committed earlier region while resettling a later
+  frontier on the same page
+
+That is the practical meaning of anchored safe checkpoints.
+
+It shows that VMPrint is no longer limited to:
+
+* page-start replay
+* or visually equivalent but coarser restore behavior
+
+Instead, it can preserve earlier committed state and replay only from the
+meaningful frontier forward.
