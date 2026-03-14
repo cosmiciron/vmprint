@@ -16,7 +16,7 @@ import {
     type PaginationLoopAction,
     type PaginationPlacementPreparation,
     type ResolvedPlacementFrame
-} from './layout-session';
+} from './layout-session-types';
 import { rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
 import { preparePackagerForPhase, type PackagerContext, type PackagerUnit } from './packagers/packager-types';
 

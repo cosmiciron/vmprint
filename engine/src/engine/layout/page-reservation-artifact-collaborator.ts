@@ -1,4 +1,5 @@
-import { LayoutCollaborator, LayoutSession } from './layout-session';
+import type { LayoutCollaborator } from './layout-session-types';
+import { LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 
 export type PageReservationSummary = {

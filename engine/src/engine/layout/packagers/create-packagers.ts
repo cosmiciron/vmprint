@@ -6,32 +6,22 @@ import { DropCapPackager } from './dropcap-packager';
 import { TablePackager } from './table-packager';
 import { StoryPackager } from './story-packager';
 import { ExpandingProbePackager } from './expanding-probe-packager';
-import {
-    TestReplayMarkerPackager,
-    TestSignalFollowerPackager,
-    TestSignalObserverPackager,
-    TestSignalPublisherPackager
-} from './test-signal-packagers';
 import { isTableElement } from '../layout-table';
+import type { FlowBox } from '../layout-core-types';
 import { createElementPackagerIdentity } from './packager-identity';
+
+type ElementShaper = {
+    shapeElement(element: Element, options: { path: number[] }): FlowBox;
+};
 
 export function buildPackagerForElement(item: Element, index: number, processor: LayoutProcessor): PackagerUnit {
     const identity = createElementPackagerIdentity(item, [index]);
     if (item.type === 'story') {
         return new StoryPackager(item, processor, index, undefined, undefined, identity);
     }
-    const flowBox = (processor as any).shapeElement(item, { path: [index] });
+    const flowBox = (processor as unknown as ElementShaper).shapeElement(item, { path: [index] });
     if (item.type === 'expanding-probe-region') {
         return new ExpandingProbePackager(processor, flowBox, identity);
-    }
-    if (item.type === 'test-signal-observer') {
-        return new TestSignalObserverPackager(processor, flowBox, identity);
-    }
-    if (item.type === 'test-signal-follower') {
-        return new TestSignalFollowerPackager(processor, flowBox, identity);
-    }
-    if (item.type === 'test-replay-marker') {
-        return new TestReplayMarkerPackager(processor, flowBox, identity);
     }
     if (isTableElement(item)) {
         return new TablePackager(processor, flowBox, identity);
@@ -39,9 +29,6 @@ export function buildPackagerForElement(item: Element, index: number, processor:
     const dropCap = item.properties?.dropCap;
     if (dropCap && dropCap.enabled) {
         return new DropCapPackager(processor, item, index, dropCap, identity);
-    }
-    if (item.type === 'test-signal-publisher' || item.properties?._actorSignalPublish) {
-        return new TestSignalPublisherPackager(processor, flowBox, identity);
     }
     return new FlowBoxPackager(processor, flowBox, identity);
 }

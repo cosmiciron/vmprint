@@ -1,4 +1,4 @@
-import type { Box } from '../../types';
+import type { Box, BoxMeta } from '../../types';
 import type { FlowBox } from '../layout-core-types';
 import type { LayoutProcessor } from '../layout-core';
 import { createContinuationIdentity, type PackagerIdentity } from './packager-identity';
@@ -96,7 +96,7 @@ export class ExpandingProbePackager implements PackagerUnit {
                     }
                 },
                 meta: {
-                    ...(box.meta || {}),
+                    ...this.buildBoxMeta(box.meta),
                     fragmentIndex: this.fragmentIndex,
                     isContinuation: !!this.continuationOf
                 }
@@ -236,10 +236,7 @@ export class ExpandingProbePackager implements PackagerUnit {
             properties: {
                 sourceId: `${baseBox.properties?.sourceId || 'probe:expanding-box'}:spine`
             },
-            meta: {
-                ...(baseBox.meta || {}),
-                generated: true
-            }
+            meta: this.buildGeneratedMeta(baseBox)
         });
 
         if (initialHeight >= fragmentStart && initialHeight <= fragmentEnd) {
@@ -257,10 +254,7 @@ export class ExpandingProbePackager implements PackagerUnit {
                 properties: {
                     sourceId: `${baseBox.properties?.sourceId || 'probe:expanding-box'}:initial-marker`
                 },
-                meta: {
-                    ...(baseBox.meta || {}),
-                    generated: true
-                }
+                meta: this.buildGeneratedMeta(baseBox)
             });
         }
 
@@ -284,10 +278,7 @@ export class ExpandingProbePackager implements PackagerUnit {
                 properties: {
                     sourceId: `${baseBox.properties?.sourceId || 'probe:expanding-box'}:growth:${index + 1}`
                 },
-                meta: {
-                    ...(baseBox.meta || {}),
-                    generated: true
-                }
+                meta: this.buildGeneratedMeta(baseBox)
             });
         });
 
@@ -306,13 +297,28 @@ export class ExpandingProbePackager implements PackagerUnit {
                 properties: {
                     sourceId: `${baseBox.properties?.sourceId || 'probe:expanding-box'}:chapter-band`
                 },
-                meta: {
-                    ...(baseBox.meta || {}),
-                    generated: true
-                }
+                meta: this.buildGeneratedMeta(baseBox)
             });
         }
 
         return decorations;
+    }
+
+    private buildBoxMeta(meta: BoxMeta | undefined): BoxMeta {
+        return {
+            sourceId: meta?.sourceId ?? this.sourceId,
+            engineKey: meta?.engineKey ?? this.actorId,
+            sourceType: meta?.sourceType ?? this.actorKind,
+            fragmentIndex: meta?.fragmentIndex ?? this.fragmentIndex,
+            isContinuation: meta?.isContinuation ?? !!this.continuationOf,
+            ...(meta || {})
+        };
+    }
+
+    private buildGeneratedMeta(baseBox: Box): BoxMeta {
+        return {
+            ...this.buildBoxMeta(baseBox.meta),
+            generated: true
+        };
     }
 }

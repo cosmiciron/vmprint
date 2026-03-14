@@ -6,11 +6,24 @@ import {
     type ActorOverflowResolution,
     type ActorOverflowSplitEntryHandlingOutcome,
     type FragmentCommitState,
-    type PaginationLoopAction
-} from './layout-session';
+    type PaginationLoopAction,
+    type SplitExecution
+} from './layout-session-types';
 import type { Box, Page } from '../types';
 import { getActorOverflowHandling, type ActorOverflowHandling } from './actor-overflow';
-import type { PackagerContext, PackagerUnit, PackagerSplitResult } from './packagers/packager-types';
+import type { PackagerContext, PackagerUnit } from './packagers/packager-types';
+
+type PackagerWithFlowBox = PackagerUnit & {
+    flowBox?: {
+        properties?: {
+            _tableModel?: unknown;
+        };
+    };
+};
+
+type PackagerWithStoryElement = PackagerUnit & {
+    storyElement?: unknown;
+};
 
 export type CollisionRuntimeHost = {
     commitFragmentBoxes(
@@ -23,7 +36,7 @@ export type CollisionRuntimeHost = {
         availableWidth: number,
         availableHeight: number,
         context: PackagerContext
-    ): PackagerSplitResult | null;
+    ): SplitExecution | null;
     advancePage(
         pages: Page[],
         currentPageBoxes: Box[],
@@ -123,7 +136,8 @@ export class CollisionRuntime {
                 nextCurrentY: outcome.committed?.currentY ?? currentY,
                 nextLastSpacingAfter: outcome.committed?.lastSpacingAfter ?? lastSpacingAfter,
                 shouldAdvancePage: outcome.shouldAdvancePage,
-                shouldAdvanceIndex: outcome.shouldAdvanceIndex
+                shouldAdvanceIndex: outcome.shouldAdvanceIndex,
+                committedBoxes: outcome.committed?.boxes ?? []
             };
         }
 
@@ -141,7 +155,8 @@ export class CollisionRuntime {
                 nextCurrentY: currentY,
                 nextLastSpacingAfter: lastSpacingAfter,
                 shouldAdvancePage: true,
-                shouldAdvanceIndex: false
+                shouldAdvanceIndex: false,
+                committedBoxes: []
             };
         }
 
@@ -164,6 +179,8 @@ export class CollisionRuntime {
         if (overflowEntry.action === 'continue-to-split') {
             return overflowEntry;
         }
+
+        currentPageBoxes.push(...overflowEntry.committedBoxes);
 
         if (!overflowEntry.shouldAdvancePage) {
             return {
@@ -291,8 +308,8 @@ export class CollisionRuntime {
         const overflowPreviewBoxes = input.isAtPageTop
             ? true
             : !!input.actor.emitBoxes(input.availableWidth, input.availableHeightAdjusted, input.context);
-        const isTablePackager = !!(input.actor as any).flowBox?.properties?._tableModel;
-        const isStoryPackager = !!(input.actor as any).storyElement;
+        const isTablePackager = this.hasTableFlowBox(input.actor);
+        const isStoryPackager = this.hasStoryElement(input.actor);
         const allowsMidPageSplit = isTablePackager || isStoryPackager;
         const emptyLayoutBefore = input.marginTop;
         const emptyAvailable = input.pageLimit - input.pageTop;
@@ -305,5 +322,13 @@ export class CollisionRuntime {
             allowsMidPageSplit,
             overflowsEmptyPage: requiredOnEmpty > emptyAvailable + LAYOUT_DEFAULTS.wrapTolerance
         });
+    }
+
+    private hasTableFlowBox(actor: PackagerUnit): actor is PackagerWithFlowBox {
+        return !!(actor as PackagerWithFlowBox).flowBox?.properties?._tableModel;
+    }
+
+    private hasStoryElement(actor: PackagerUnit): actor is PackagerWithStoryElement {
+        return !!(actor as PackagerWithStoryElement).storyElement;
     }
 }

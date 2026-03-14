@@ -1,7 +1,7 @@
 import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
-import { FlowBox } from '../layout-core-types';
-import { materializeTableFlowBox, splitTableFlowBox } from '../layout-table';
+import { FlowBox, type FlowMaterializationContext } from '../layout-core-types';
+import { materializeTableFlowBox, splitTableFlowBox, type TableLayoutContext } from '../layout-table';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
 import {
     PackagerContext,
@@ -10,6 +10,26 @@ import {
     PackagerTransformProfile,
     PackagerUnit
 } from './packager-types';
+
+type TablePackagerProcessor = {
+    createFlowMaterializationContext(pageIndex: number, cursorY: number, availableWidth: number): FlowMaterializationContext;
+    materializeFlowBox(flowBox: FlowBox): void;
+    positionFlowBox(
+        flowBox: FlowBox,
+        currentY: number,
+        layoutBefore: number,
+        margins: PackagerContext['margins'],
+        availableWidth: number,
+        pageIndex: number
+    ): Box | Box[];
+    getTableLayoutContext(): TableLayoutContext;
+    config: {
+        layout: {
+            fontSize: number;
+            lineHeight: number;
+        };
+    };
+};
 
 /**
  * Dedicated packager for table flow boxes.
@@ -43,25 +63,26 @@ export class TablePackager implements PackagerUnit {
     }
 
     private materialize(availableWidth: number) {
+        const processor = this.processor as unknown as TablePackagerProcessor;
         if (this.isMaterialized && this.lastAvailableWidth === availableWidth) return;
 
         const element = this.flowBox._unresolvedElement || this.flowBox._sourceElement;
         if (element) {
-            const context = (this.processor as any).createFlowMaterializationContext(0, 0, availableWidth);
+            const context = processor.createFlowMaterializationContext(0, 0, availableWidth);
             const style = this.flowBox.style;
-            const fontSize = Number(style.fontSize || (this.processor as any).config.layout.fontSize);
-            const lineHeight = Number(style.lineHeight || (this.processor as any).config.layout.lineHeight);
+            const fontSize = Number(style.fontSize || processor.config.layout.fontSize);
+            const lineHeight = Number(style.lineHeight || processor.config.layout.lineHeight);
             materializeTableFlowBox(
                 this.flowBox,
                 element,
                 context,
                 fontSize,
                 lineHeight,
-                (this.processor as any).getTableLayoutContext()
+                processor.getTableLayoutContext()
             );
             this.flowBox._unresolvedElement = undefined;
         } else {
-            (this.processor as any).materializeFlowBox(this.flowBox);
+            processor.materializeFlowBox(this.flowBox);
         }
 
         this.lastAvailableWidth = availableWidth;
@@ -108,9 +129,10 @@ export class TablePackager implements PackagerUnit {
     }
 
     emitBoxes(availableWidth: number, _availableHeight: number, context: PackagerContext): Box[] {
+        const processor = this.processor as unknown as TablePackagerProcessor;
         this.prepare(availableWidth, _availableHeight, context);
 
-        const positioned = (this.processor as any).positionFlowBox(
+        const positioned = processor.positionFlowBox(
             this.flowBox,
             0,
             this.flowBox.marginTop,
@@ -121,10 +143,6 @@ export class TablePackager implements PackagerUnit {
 
         const boxes = Array.isArray(positioned) ? positioned : [positioned];
         this.cachedBoxes = boxes;
-
-        for (const box of boxes) {
-            box.meta = { ...box.meta };
-        }
 
         return boxes;
     }

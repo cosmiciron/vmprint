@@ -1,5 +1,6 @@
 import { FlowBox } from './layout-core-types';
-import { LayoutCollaborator, LayoutSession } from './layout-session';
+import type { LayoutCollaborator } from './layout-session-types';
+import { LayoutSession } from './layout-session';
 import { PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
 import { FlowBoxPackager } from './packagers/flow-box-packager';
 

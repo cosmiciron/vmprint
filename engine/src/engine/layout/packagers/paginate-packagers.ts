@@ -1,7 +1,20 @@
 import { Box, Element, Page } from '../../types';
 import { LayoutProcessor } from '../layout-core';
-import { LayoutSession, PaginationState } from '../layout-session';
+import type { FlowBox } from '../layout-core-types';
+import { LayoutSession } from '../layout-session';
+import type { PaginationLoopAction, PaginationState } from '../layout-session-types';
 import { PackagerContext, PackagerUnit, LayoutBox } from './packager-types';
+
+type FlowBoxPositioner = LayoutProcessor & {
+    positionFlowBox(
+        flowBox: FlowBox,
+        currentY: number,
+        layoutBefore: number,
+        margins: PackagerContext['margins'],
+        availableWidth: number,
+        pageIndex: number
+    ): Box | Box[];
+};
 
 export function paginatePackagers(
     processor: LayoutProcessor,
@@ -9,6 +22,7 @@ export function paginatePackagers(
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
     session: LayoutSession
 ): Page[] {
+    const positionFlowBox = (processor as FlowBoxPositioner).positionFlowBox.bind(processor);
     const pages: Page[] = [];
     let currentPageBoxes: LayoutBox[] = [];
     let currentPageIndex = 0;
@@ -30,7 +44,7 @@ export function paginatePackagers(
         currentY = paginationState.currentY;
         lastSpacingAfter = paginationState.lastSpacingAfter;
     };
-    const applySessionLoopAction = (action: ReturnType<LayoutSession['toPaginationLoopAction']>) => {
+    const applySessionLoopAction = (action: PaginationLoopAction) => {
         i = session.applyPaginationLoopAction(paginationState, action);
         currentPageIndex = paginationState.currentPageIndex;
         currentPageBoxes = paginationState.currentPageBoxes as LayoutBox[];
@@ -211,7 +225,7 @@ export function paginatePackagers(
                 },
                 contextBase,
                 positionMarker: (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
-                    (processor as any).positionFlowBox(
+                    positionFlowBox(
                         marker,
                         markerCurrentY,
                         markerLayoutBefore,
@@ -231,7 +245,7 @@ export function paginatePackagers(
 
             if (requiredHeight <= effectiveAvailableHeight) {
                 const previousPageIndex = currentPageIndex;
-                applySessionLoopAction(session.resolveActorPlacementAction({
+                applySessionLoopAction(session.placementSessionRuntime.resolveActorPlacementAction({
                     actor: packager,
                     placementFrame,
                     availableWidth,
@@ -264,7 +278,7 @@ export function paginatePackagers(
                 continue;
             }
 
-            const overflowResolution = session.resolveActorOverflow({
+            const overflowResolution = session.placementSessionRuntime.resolveActorOverflow({
                 actor: packager,
                 isAtPageTop,
                 effectiveAvailableHeight,
@@ -302,7 +316,7 @@ export function paginatePackagers(
                 continue;
             }
             const previousPageIndex = currentPageIndex;
-            applySessionLoopAction(session.resolveGenericSplitAction({
+            applySessionLoopAction(session.placementSessionRuntime.resolveGenericSplitAction({
                 pages,
                 currentPageBoxes,
                 currentPageIndex,
@@ -327,7 +341,7 @@ export function paginatePackagers(
                 contextBase,
                 resolveDeferredCursorY,
                 positionMarker: (marker, markerCurrentY, markerLayoutBefore, markerAvailableWidth, markerPageIndex) =>
-                    (processor as any).positionFlowBox(
+                    positionFlowBox(
                         marker,
                         markerCurrentY,
                         markerLayoutBefore,

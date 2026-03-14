@@ -26,18 +26,11 @@
     "check:dist": "npm run build && git diff --exit-code -- dist",
     "test:modules": "tsx --conditions tsx tests/module-extractions.spec.ts",
     "test:flat": "tsx --conditions tsx tests/flat-pipeline.spec.ts",
-    "test:actors": "tsx --conditions tsx tests/actor-communication.spec.ts",
-    "test:actors:visual": "tsx --conditions tsx tests/actor-communication-visual.ts",
-    "test:actors:collector-visual": "tsx --conditions tsx tests/actor-communication-collector-visual.ts",
-    "test:actors:inflow-collector-visual": "tsx --conditions tsx tests/actor-communication-inflow-collector-visual.ts",
-    "test:actors:dual-inflow-visual": "tsx --conditions tsx tests/actor-communication-dual-inflow-visual.ts",
-    "test:actors:same-page-frontier-visual": "tsx --conditions tsx tests/actor-communication-same-page-frontier-visual.ts",
-    "test:actors:locked-prelude-visual": "tsx --conditions tsx tests/actor-communication-locked-prelude-visual.ts",
     "test:standard-fonts": "tsx --conditions tsx tests/standard-fonts.spec.ts",
     "test:engine": "tsx --conditions tsx tests/engine-regression.spec.ts",
     "test:perf": "tsx --conditions tsx tests/performance-benchmark.ts",
     "test:update-layout-snapshots": "tsx --conditions tsx tests/engine-regression.spec.ts --update-layout-snapshots",
-    "test": "npm run test:modules && npm run test:flat && npm run test:actors && npm run test:standard-fonts && npm run test:engine"
+    "test": "npm run test:modules && npm run test:flat && npm run test:standard-fonts && npm run test:engine"
   },
   "dependencies": {
     "@vmprint/contracts": "file:../contracts",

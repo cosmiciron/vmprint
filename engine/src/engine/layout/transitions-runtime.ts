@@ -22,7 +22,7 @@ import type {
     TailSplitFormationOutcome
     ,
     TailSplitFormationSettlementOutcome
-} from './layout-session';
+} from './layout-session-types';
 
 type SplitMarkerPositioner = (
     marker: FlowBox,
@@ -31,6 +31,18 @@ type SplitMarkerPositioner = (
     availableWidth: number,
     pageIndex: number
 ) => Box | Box[];
+
+type ContinuationArtifactProvider = {
+    getContinuationArtifacts?(box: FlowBox): ContinuationArtifacts | undefined;
+};
+
+type PackagerWithFlowBox = PackagerUnit & {
+    flowBox?: FlowBox;
+};
+
+type PackagerWithProcessor = PackagerUnit & {
+    processor?: ContinuationArtifactProvider;
+};
 
 export type TransitionsRuntimeHost = {
     getContinuationArtifacts(actorId: string): ContinuationArtifacts | undefined;
@@ -826,7 +838,7 @@ export class TransitionsRuntime {
     }
 
     private resolveContinuationArtifacts(actor: PackagerUnit): ContinuationArtifacts | undefined {
-        const flowBox = (actor as any).flowBox as FlowBox | undefined;
+        const flowBox = this.getActorFlowBox(actor);
         if (!flowBox) return undefined;
 
         const continuationSpec =
@@ -838,6 +850,14 @@ export class TransitionsRuntime {
             flowBox.properties.paginationContinuation = continuationSpec;
         }
 
-        return ((actor as any).processor as any)?.getContinuationArtifacts?.(flowBox) as ContinuationArtifacts | undefined;
+        return this.getContinuationArtifactProvider(actor)?.getContinuationArtifacts?.(flowBox);
+    }
+
+    private getActorFlowBox(actor: PackagerUnit): FlowBox | undefined {
+        return (actor as PackagerWithFlowBox).flowBox;
+    }
+
+    private getContinuationArtifactProvider(actor: PackagerUnit): ContinuationArtifactProvider | undefined {
+        return (actor as PackagerWithProcessor).processor;
     }
 }

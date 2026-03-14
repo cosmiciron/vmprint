@@ -1,11 +1,9 @@
 import { Box, LayoutConfig, Page, PageRegionContent, PageRegionDefinition } from '../types';
 import { LayoutUtils } from './layout-utils';
 import {
-    LayoutCollaborator,
     LayoutSession,
-    PageOverrideState,
-    PageSurface
 } from './layout-session';
+import type { LayoutCollaborator, PageOverrideState, PageSurface } from './layout-session-types';
 
 type RegionRect = {
     x: number;

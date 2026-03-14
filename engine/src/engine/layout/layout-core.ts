@@ -27,7 +27,8 @@ import { PageExclusionArtifactCollaborator } from './page-exclusion-artifact-col
 import { PageReservationArtifactCollaborator } from './page-reservation-artifact-collaborator';
 import { PageSpatialConstraintArtifactCollaborator } from './page-spatial-constraint-artifact-collaborator';
 import { PageRegionArtifactCollaborator } from './page-region-artifact-collaborator';
-import { LayoutCollaborator, LayoutSession } from './layout-session';
+import type { LayoutCollaborator } from './layout-session-types';
+import { LayoutSession } from './layout-session';
 import {
     createPrintPipelineSnapshot,
     createSimulationReportReader,
@@ -49,6 +50,7 @@ import {
 import { DropCapPackager } from './packagers/dropcap-packager';
 import { createPackagers } from './packagers/create-packagers';
 import { paginatePackagers } from './packagers/paginate-packagers';
+import type { PackagerContext } from './packagers/packager-types';
 
 
 export class LayoutProcessor extends TextProcessor {
@@ -151,19 +153,23 @@ export class LayoutProcessor extends TextProcessor {
                 if (!spec || spec.enabled === false) return null;
                 const packager = new DropCapPackager(this, element, tableDropCapIndex++, spec);
                 const pageDims = this.getPageDimensions();
-                const packagerContext = {
+                const packagerContext: PackagerContext = {
                     processor: this,
                     pageIndex: context?.pageIndex ?? 0,
                     cursorY: context?.cursorY ?? 0,
                     margins: { top: 0, right: 0, bottom: 0, left: 0 },
                     pageWidth: Number.isFinite(width) ? Math.max(0, Number(width)) : pageDims.width,
-                    pageHeight: pageDims.height
+                    pageHeight: pageDims.height,
+                    publishActorSignal: () => {
+                        throw new Error('[LayoutProcessor] Region-only drop-cap materialization cannot publish actor signals.');
+                    },
+                    readActorSignals: () => []
                 };
                 return packager.emitBoxes(
                     Number.isFinite(width) ? Math.max(0, Number(width)) : pageDims.width,
                     Number.POSITIVE_INFINITY,
                     packagerContext
-                ) as any;
+                );
             }
         };
     }

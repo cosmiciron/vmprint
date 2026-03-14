@@ -7,7 +7,7 @@ import type {
     SimulationReportReader
 } from './simulation-report';
 import { createSimulationReportReader, simulationArtifactKeys } from './simulation-report';
-import type { LayoutProfileMetrics, PageFinalizationState } from './layout-session';
+import type { LayoutProfileMetrics, PageFinalizationState } from './layout-session-types';
 
 export type SimulationReportBridgeHost = {
     getFinalizedPages(): readonly Page[];

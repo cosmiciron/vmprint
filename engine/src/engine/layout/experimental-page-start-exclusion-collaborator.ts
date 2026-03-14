@@ -1,5 +1,6 @@
 import { LayoutConfig, PageReservationSelector } from '../types';
-import { LayoutCollaborator, LayoutSession } from './layout-session';
+import type { LayoutCollaborator } from './layout-session-types';
+import { LayoutSession } from './layout-session';
 
 function resolvePageStartExclusionTop(config: LayoutConfig): number {
     const value = config.layout._experimentalPageStartExclusionTop;

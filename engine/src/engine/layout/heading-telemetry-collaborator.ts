@@ -1,5 +1,6 @@
 import type { Box } from '../types';
-import { LayoutCollaborator, LayoutSession, PageSurface } from './layout-session';
+import type { LayoutCollaborator, PageSurface } from './layout-session-types';
+import { LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 import type { PackagerUnit } from './packagers/packager-types';
 

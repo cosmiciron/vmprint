@@ -2,7 +2,7 @@ import type { PackagerUnit } from './packagers/packager-types';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
 import type {
-    LocalBranchStateSnapshot,
+    KernelBranchStateSnapshot,
     ContinuationQueueOutcome,
     FragmentTransition,
     LocalQueueSnapshot,
@@ -10,7 +10,7 @@ import type {
     RegionReservation,
     SpatialExclusion,
     SplitAttempt
-} from './layout-session';
+} from './layout-session-types';
 
 export class Kernel {
     readonly actorRegistry: PackagerUnit[] = [];
@@ -243,7 +243,7 @@ export class Kernel {
         }
     }
 
-    captureLocalBranchStateSnapshot(actorQueue: readonly PackagerUnit[]): LocalBranchStateSnapshot {
+    captureLocalBranchStateSnapshot(actorQueue: readonly PackagerUnit[]): KernelBranchStateSnapshot {
         return {
             ...this.captureLocalQueueSnapshot(actorQueue),
             ...this.captureLocalSplitStateSnapshot()
@@ -252,7 +252,7 @@ export class Kernel {
 
     restoreLocalBranchStateSnapshot(
         actorQueue: PackagerUnit[],
-        snapshot: LocalBranchStateSnapshot
+        snapshot: KernelBranchStateSnapshot
     ): void {
         this.rollbackContinuationQueue(actorQueue, snapshot);
         this.restoreLocalSplitStateSnapshot(snapshot);

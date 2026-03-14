@@ -1,6 +1,6 @@
 import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
-import { FlowBox } from '../layout-core-types';
+import { FlowBox, type FlowMaterializationContext } from '../layout-core-types';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
 import {
     PackagerContext,
@@ -9,6 +9,24 @@ import {
     PackagerTransformProfile,
     PackagerUnit
 } from './packager-types';
+
+type FlowBoxProcessor = {
+    createFlowMaterializationContext(pageIndex: number, cursorY: number, availableWidth: number): FlowMaterializationContext;
+    materializeFlowBox(flowBox: FlowBox, context?: FlowMaterializationContext): void;
+    positionFlowBox(
+        flowBox: FlowBox,
+        currentY: number,
+        layoutBefore: number,
+        margins: PackagerContext['margins'],
+        availableWidth: number,
+        pageIndex: number
+    ): Box | Box[];
+    splitFlowBox(
+        flowBox: FlowBox,
+        availableHeight: number,
+        layoutBefore: number
+    ): { partA: FlowBox; partB: FlowBox } | null;
+};
 
 /**
  * A basic packager for standard reflowable layout boxes (e.g. paragraph, header, normal image).
@@ -43,11 +61,12 @@ export class FlowBoxPackager implements PackagerUnit {
     }
 
     private materialize(availableWidth: number) {
+        const processor = this.processor as unknown as FlowBoxProcessor;
         if (this.isMaterialized && this.lastAvailableWidth === availableWidth) return;
 
         // Use a dummy pageIndex=0 and cursorY=0 for materialization measurements
-        const context = (this.processor as any).createFlowMaterializationContext(0, 0, availableWidth);
-        (this.processor as any).materializeFlowBox(this.flowBox, context);
+        const context = processor.createFlowMaterializationContext(0, 0, availableWidth);
+        processor.materializeFlowBox(this.flowBox, context);
 
         this.lastAvailableWidth = availableWidth;
         this.cachedBoxes = null;
@@ -93,12 +112,13 @@ export class FlowBoxPackager implements PackagerUnit {
     }
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): Box[] {
+        const processor = this.processor as unknown as FlowBoxProcessor;
         this.prepare(availableWidth, availableHeight, context);
 
         // Position at y=0, with layoutBefore matching marginTop
         // The orchestration loop will shift box's .y by the current page Y.
         // We pretend page index is 0 and we are positioning at (margins.left, 0).
-        const positioned = (this.processor as any).positionFlowBox(
+        const positioned = processor.positionFlowBox(
             this.flowBox,
             0, // currentY
             this.flowBox.marginTop, // layoutBefore
@@ -109,14 +129,6 @@ export class FlowBoxPackager implements PackagerUnit {
 
         const boxes = Array.isArray(positioned) ? positioned : [positioned];
         this.cachedBoxes = boxes;
-
-        // Reset absolute coordinates for the paginator to shift properly
-        // positionFlowBox adds padding left/top. We keep the relative X, but normalize Y.
-        for (const box of boxes) {
-            // keep box.y relative to the packager's bounds
-            // box.y includes marginTop (layoutBefore).
-            box.meta = { ...box.meta };
-        }
 
         return boxes;
     }
@@ -145,13 +157,14 @@ export class FlowBoxPackager implements PackagerUnit {
     }
 
     split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+        const processor = this.processor as unknown as FlowBoxProcessor;
         this.materialize(this.lastAvailableWidth);
         if (this.isUnbreakable(availableHeight)) {
             return { currentFragment: null, continuationFragment: this };
         }
 
         // Defer to LayoutProcessor's split logic
-        const splitResult = (this.processor as any).splitFlowBox(
+        const splitResult = processor.splitFlowBox(
             this.flowBox,
             availableHeight,
             this.flowBox.marginTop // layoutBefore

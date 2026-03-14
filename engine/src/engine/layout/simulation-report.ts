@@ -9,7 +9,7 @@ import type { PageSpatialConstraintSummary } from './page-spatial-constraint-art
 import type { PageRegionSummary } from './page-region-artifact-collaborator';
 import type { SourcePositionSummary } from './source-position-artifact-collaborator';
 import type { HeadingTelemetrySummary } from './heading-telemetry-collaborator';
-import type { LayoutProfileMetrics } from './layout-session';
+import type { LayoutProfileMetrics } from './layout-session-types';
 import type { Element, Page } from '../types';
 
 export type SimulationArtifactMap = {

@@ -1,10 +1,14 @@
 import { performance } from 'node:perf_hooks';
 import type { Box, Page } from '../types';
 import type { FlowBox } from './layout-core-types';
-import { getTailSplitPostAttemptOutcome, getWholeFormationOverflowHandling, type WholeFormationOverflowHandling } from './actor-formation';
+import {
+    getTailSplitPostAttemptOutcome,
+    getWholeFormationOverflowHandling,
+    type KeepWithNextFormationPlan,
+    type WholeFormationOverflowHandling
+} from './actor-formation';
 import { computeKeepWithNextPlan } from './keep-with-next-collaborator';
 import {
-    type KeepWithNextFormationPlan,
     type KeepWithNextOverflowActionInput,
     type KeepWithNextPlanningResolution,
     type PaginationLoopAction,
@@ -13,7 +17,7 @@ import {
     type WholeFormationOverflowEntryOutcome,
     type WholeFormationOverflowEntrySettlementOutcome,
     type WholeFormationOverflowResolution
-} from './layout-session';
+} from './layout-session-types';
 import type { PackagerContext, PackagerUnit } from './packagers/packager-types';
 
 export type AIRuntimeHost = {

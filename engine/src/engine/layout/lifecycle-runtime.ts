@@ -4,7 +4,7 @@ import type {
     PageFinalizationState,
     PaginationLoopAction,
     PaginationState
-} from './layout-session';
+} from './layout-session-types';
 
 export type LifecycleRuntimeHost = {
     finalizeCommittedPage(
