@@ -460,3 +460,503 @@ That likely means:
 The experimental actor should look more like the yellow expanding probe than like a polished publishing feature.
 
 That keeps us testing engine capability, not feature polish.
+
+---
+
+## 14. The Domain Problem, Seen Clearly
+
+The next communication problem is not merely "actors can talk."
+It is:
+
+* an actor discovered later in layout can affect an actor placed earlier
+* that earlier actor can change geometry
+* that changed geometry can invalidate downstream layout
+* the document world must then settle again without throwing away the entire run
+
+This is the real document-layout version of the problem.
+
+In ordinary formatter terms, this often gets flattened into:
+
+* "do another pass"
+* "rerun from the start"
+* "keep looping until the references stabilize"
+
+That language is too blunt for VMPrint.
+
+Because VMPrint has:
+
+* a protected `Kernel`
+* speculative branches
+* rollback
+* actor identity
+* a branch-aware event bus
+
+we do not need to restart the whole universe the way traditional systems often do.
+
+We need a more precise model.
+
+---
+
+## 15. Why The Game-Engine Mapping Helps
+
+This problem becomes easier to reason about when mapped to game engines,
+especially a 2D open-world RPG.
+
+Equivalent game-engine situations include:
+
+* a world-state update discovered later invalidates an earlier region
+* navigation in one region changes because something happened elsewhere
+* streamed world chunks must be reloaded after a newly discovered dependency
+* speculative simulation branches publish events that must be discarded on rollback
+
+The document-layout version is structurally similar:
+
+* a later heading/publisher/anchor signal reaches an earlier collector
+* that collector changes size
+* that size change affects earlier pages
+* and therefore changes downstream world geometry
+
+Seen this way, the problem is not "multi-pass typesetting" in the old sense.
+It is much closer to:
+
+* dirty-region invalidation
+* checkpointed world resimulation
+* bounded settling of a stateful simulation
+
+That framing is important because it gives us better tools and better instincts.
+
+---
+
+## 16. The Optimized VMPrint Direction
+
+The game-engine mapping suggests a better solution than either:
+
+* rerunning the whole document from Page 1 after the end
+* or instantly panicking and micro-rolling back the moment a backward-affecting signal appears
+
+The better direction is:
+
+* let the session run forward normally
+* classify signals by spatial consequence
+* mark the earliest invalid spatial frontier as dirty
+* continue until a safe checkpoint
+* then resimulate only from that frontier forward
+* repeat until the world settles, or hit a bounded iteration limit
+
+This gives us a more VMPrint-native model:
+
+* not full-document restart
+* not twitchy immediate rewind
+* but targeted reflow driven by world invalidation
+
+In current language, this means:
+
+* the session owns the dirty frontier
+* the event bus carries normalized truth without leaking discarded branches
+* checkpoints define safe moments to settle
+* settling means "rerun only what became invalid"
+
+This is a stronger model than "pass management" alone.
+It turns the problem from generic repagination into targeted world resimulation.
+
+---
+
+## 17. New Planning Rule
+
+When we start the first true co-evolving layout experiment, we should not ask:
+
+* "how many passes does this need?"
+
+We should ask:
+
+* what signal changed the world?
+* what spatial consequence category does it belong to?
+* what is the earliest dirty frontier?
+* what is the next safe checkpoint?
+* what downstream region must be resimulated?
+* when do we declare the world settled?
+
+That is the architecture-correct way to think about the next phase of VMPrint.
+
+---
+
+## 18. From Spatial Layout To Spatiotemporal Simulation
+
+There is a deeper shift happening underneath the checkpoint discussion.
+
+Traditional typesetters are mostly linear.
+They may have multiple passes, but they do not usually treat time as a
+first-class simulation dimension.
+
+VMPrint already crossed one important threshold by introducing **spatiality**:
+
+* actors occupy space
+* actors collide
+* actors displace one another
+* regions can grow
+* geometry can invalidate geometry
+
+That was the first major break from the old model.
+
+The checkpoint question reveals the next threshold:
+
+* not only where is something?
+* but when did this become true?
+* when is it safe to trust?
+* when should it be reconsidered?
+* what timeline did this signal come from?
+* what simulation moment should trigger resettling?
+
+That is temporality.
+
+Once temporality enters the model, "pass management" stops being a sufficient
+description.
+Passes are bookkeeping.
+Time is a simulation dimension.
+
+This is why rollback, speculative branches, committed truth, checkpoints, and
+settling all feel connected.
+They are not separate tricks.
+They are signs that VMPrint is beginning to behave like a spatiotemporal
+simulation engine for documents.
+
+---
+
+## 19. Why This Matters
+
+Thinking temporally opens options that traditional typesetting does not really
+have as first-class tools.
+
+Examples:
+
+* different kinds of checkpoints
+* staged truth versus committed truth
+* delayed reactions instead of immediate panic rewinds
+* bounded settling windows
+* event maturity
+* timeline-aware invalidation
+
+This does not mean VMPrint should become a time simulator for its own sake.
+
+It means that once actors can:
+
+* publish signals
+* react later
+* invalidate earlier geometry
+* and survive rollback
+
+then time has already entered the architecture whether we name it or not.
+
+Naming it is useful because it helps us design the right next abstractions.
+
+---
+
+## 20. New Design Lens
+
+Going forward, we should treat VMPrint as:
+
+* spatial, because layout is about geometry
+* temporal, because document truth emerges, mutates, stabilizes, and sometimes rolls back
+
+So the design lens becomes:
+
+* not just page composition
+* not just pass orchestration
+* but the controlled simulation of a document world across space and time
+
+That is the more accurate description of what the engine is becoming.
+
+---
+
+## 21. Blueprint For The First In-Flow Collector Test
+
+The first true co-evolving layout experiment should stay entirely in the
+`Test...` lane.
+
+It should not use:
+
+* real TOC
+* real transmuters
+* real document semantics
+
+It should use a synthetic in-flow collector actor that lives near the front of
+the document, while labeled publishers appear later.
+
+The purpose is to prove:
+
+* mature signals discovered later can change earlier geometry
+* that earlier geometry can invalidate downstream layout
+* the session can resettle the world without restarting the whole document
+
+### 21.1 Initial Forward March
+
+The synthetic collector appears near the front of the document with minimal
+geometry.
+
+At this moment it has observed no mature signals, so its bounding box is small.
+
+The session then marches forward normally, placing ordinary trailing flow after
+it.
+
+### 21.2 Signal Maturation
+
+Later in the document, a publisher actor appears and publishes a signal.
+
+That signal is initially speculative.
+
+If the branch succeeds and commits, the signal becomes mature.
+
+The important rule is:
+
+* maturity belongs to committed world truth
+* immature speculative signals must not drive stable geometry
+
+### 21.3 Collector Observation
+
+The event bus does not "push-mutate" the collector in an eager callback sense.
+
+Instead:
+
+* the mature signal becomes visible on the bulletin board
+* on its next evaluation, the collector observes the new mature state
+* the collector recomputes its required geometry
+
+If the required geometry has grown, the collector does **not** immediately force
+world rewind.
+
+It reports:
+
+* my geometry is now invalid relative to committed layout
+* mark my earliest committed spatial frontier as dirty
+
+### 21.4 Slice Checkpoint
+
+The session continues forward until it reaches the current provisional slice
+boundary.
+
+For the first implementation, this slice boundary may be aligned with the end of
+the current page.
+
+That does **not** mean pages are metaphysically final.
+It only means page boundaries are serving as the first practical safe
+resimulation checkpoints.
+
+### 21.5 Settling Cycle
+
+When the session reaches the checkpoint, it inspects its state.
+
+If a dirty frontier has been recorded, it:
+
+* locates the nearest safe snapshot preceding that frontier
+* restores that snapshot
+* replays the world forward from there
+
+Now the collector enters the world again with its expanded geometry, and
+downstream flow is displaced accordingly.
+
+### 21.6 Resume Or Repeat
+
+If replay from the dirty frontier produces no new invalidation, the world is
+settled and forward march resumes.
+
+If replay produces another backward-affecting geometry change, a new dirty
+frontier is recorded and the session repeats the same checkpointed resettling
+logic.
+
+This process must be bounded:
+
+* stop when no new invalidation appears
+* or stop at a controlled iteration limit and surface instability
+
+---
+
+## 22. Important Implementation Guardrails
+
+For this first in-flow collector experiment:
+
+* do not let the event bus behave like an eager callback system
+* do not make "Page 1" the true internal frontier concept
+* do not hardcode restart-from-document-start behavior
+* do not wait until EOF unless used only as a later fallback policy
+
+Instead:
+
+* mature signals become visible
+* actors observe them during ordinary evaluation
+* dirty state is tracked as an earliest spatial frontier
+* settling restores the nearest safe snapshot before that frontier
+
+This keeps the experiment aligned with the spatiotemporal simulation model
+rather than slipping back into old pass-based habits.
+
+---
+
+## 23. How Observers Wake Up
+
+The collector on Page 1 is not continuously running while the session is busy
+packing Page 3.
+
+So the question is:
+
+* how does an earlier observer get its "next evaluation"?
+
+The answer should **not** be a continuous `tick()` on every actor.
+
+Why not:
+
+* it would waste CPU on the overwhelming majority of actors that are static
+* it would make control flow noisier and harder to reason about
+* it would be a poor fit for VMPrint's deterministic layout runtime
+
+Instead, `LayoutSession` should own an **observer registry**.
+
+Only actors that explicitly depend on committed bulletin-board state should be
+registered there.
+
+Then, at slice checkpoints, the session performs a controlled reevaluation
+phase:
+
+* iterate registered observers
+* let each observer inspect committed bus state
+* ask whether its derived state changed
+* ask whether that changed state affects geometry
+
+This keeps the engine efficient:
+
+* 10,000 actors may exist in the world
+* perhaps only 10 are state observers
+* only those 10 need reevaluation at checkpoint time
+
+That is the correct wake-up model for the first co-evolving experiment.
+
+---
+
+## 24. Observation Result
+
+The observer hook should return an explicit result object rather than mutating
+the world implicitly.
+
+Conceptually:
+
+```ts
+type ObservationResult = {
+  changed: boolean;
+  geometryChanged: boolean;
+  earliestAffectedFrontier?: SpatialFrontier;
+};
+```
+
+The most important distinction is:
+
+* `changed`
+* `geometryChanged`
+
+These are not the same thing.
+
+Examples:
+
+* a collector updates internal text or page labels, but its required bounding box
+  stays identical
+* in that case:
+  * `changed = true`
+  * `geometryChanged = false`
+
+This is a major optimization because it lets the session avoid needless
+resimulation.
+
+Only geometry-changing observations should invalidate the spatial frontier and
+trigger settling.
+
+So the checkpoint logic becomes:
+
+1. physical placement runs forward for the slice
+2. speculative signals from that slice are promoted to mature committed truth
+3. observer registry is reevaluated
+4. if any observer reports `geometryChanged: true`, the session marks the
+   earliest affected frontier dirty
+5. if no geometry changed, the session simply continues marching forward
+
+This bypasses the wasteful behavior typical of legacy DOM-style systems where
+any semantic change tends to dirty layout indiscriminately.
+
+---
+
+## 25. Safe Checkpoint Registry
+
+Once an observer reports an `earliestAffectedFrontier`, the session must map
+that frontier back to a restore point the kernel can actually understand.
+
+The kernel understands snapshots, not document semantics.
+
+So `LayoutSession` should maintain a **safe checkpoint registry** during forward
+march.
+
+Each checkpoint entry should include at least:
+
+* a snapshot token
+* the page index at that checkpoint
+* the spatial frontier represented by that checkpoint
+* enough session metadata to restore the bus and replay deterministically
+
+Conceptually:
+
+```ts
+type SafeCheckpoint = {
+  id: string;
+  snapshotToken: string;
+  pageIndex: number;
+  frontier: SpatialFrontier;
+};
+```
+
+For the first implementation, these checkpoints may be page-aligned.
+
+That means the first practical registry will often behave like:
+
+* page boundary -> snapshot token
+
+But the abstraction should remain broader than raw page indexing.
+
+Why:
+
+* page boundaries are only the first convenient checkpoint type
+* later, VMPrint may want finer slice checkpoints inside a page
+* or other frontier-aligned restore points
+
+So the session should not think in terms of:
+
+* "restore Page 1"
+
+It should think in terms of:
+
+* "restore the nearest safe checkpoint preceding the dirty frontier"
+
+That is the general and future-proof rule.
+
+---
+
+## 26. Refined Checkpoint Execution Flow
+
+Putting the pieces together, the first co-evolving experiment should execute
+like this:
+
+1. The session performs ordinary physical placement for the current slice.
+2. Signals produced during the slice remain speculative until the branch is committed.
+3. When the branch commits, those signals mature on the bulletin board.
+4. At the slice checkpoint, `LayoutSession` reevaluates the observer registry.
+5. If an observer returns:
+   * `changed = true`
+   * `geometryChanged = false`
+   then the session keeps marching forward with no spatial invalidation.
+6. If an observer returns:
+   * `geometryChanged = true`
+   * `earliestAffectedFrontier = ...`
+   then the session records the dirty frontier.
+7. The session consults the safe checkpoint registry and restores the nearest
+   safe snapshot preceding that frontier.
+8. The world is replayed from there.
+9. If replay produces no further invalidation, the simulation is settled.
+10. If replay produces another dirty frontier, the same bounded resettling
+    logic repeats.
+
+This is the concrete execution model for the first in-flow collector test.

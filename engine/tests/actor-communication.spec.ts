@@ -306,6 +306,133 @@ async function testObserverSummaryDrivesFollowerLayout() {
     );
 }
 
+async function testSyntheticCollectorListDrivesTrailingFlow() {
+    logStep('Scenario: synthetic TOC-like collector list grows from many labels and pushes trailing flow');
+    const config = buildConfig();
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const publisherStyle = {
+        height: 64,
+        marginBottom: 10,
+        paddingTop: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 10,
+        backgroundColor: '#e0f2fe',
+        borderColor: '#0891b2',
+        borderWidth: 1
+    };
+
+    const labels = [
+        'Chapter 1: Signal Fire',
+        'Chapter 2: Echo Valley',
+        'Chapter 3: Lantern Shore',
+        'Chapter 4: Ridge of Glass',
+        'Chapter 5: Hollow Drum',
+        'Chapter 6: Cedar Crossing',
+        'Chapter 7: The Quiet Port',
+        'Chapter 8: Ember Rain'
+    ];
+
+    const elements: Element[] = [];
+    labels.forEach((label, index) => {
+        elements.push({
+            type: 'test-signal-publisher',
+            content: `Heading Publisher ${index + 1}\n${label}`,
+            properties: {
+                sourceId: `collector-publisher-${index + 1}`,
+                style: publisherStyle,
+                _actorSignalPublish: {
+                    topic: 'collector-entry',
+                    payload: { label }
+                }
+            }
+        });
+        elements.push({
+            type: 'p',
+            content: longParagraph(`Collector proof filler ${index + 1}.`),
+            properties: { sourceId: `collector-filler-${index + 1}` }
+        });
+    });
+
+    elements.push({
+        type: 'test-signal-observer',
+        content: '',
+        properties: {
+            sourceId: 'synthetic-collector',
+            style: {
+                marginTop: 10,
+                marginBottom: 12
+            },
+            _actorSignalObserve: {
+                topic: 'collector-entry',
+                title: 'Synthetic Collector',
+                renderMode: 'collector-list',
+                backgroundColor: '#f8fafc',
+                borderColor: '#475569',
+                color: '#0f172a',
+                baseHeight: 96,
+                growthPerSignal: 34
+            }
+        }
+    });
+
+    elements.push({
+        type: 'p',
+        content: longParagraph('Trailing aftermath proof text should be displaced by the collector list and appear after its final fragment.'),
+        properties: { sourceId: 'collector-aftermath' }
+    });
+
+    const pages = engine.paginate(elements);
+    const collectorBoxes = pages.flatMap((page, pageIndex) =>
+        page.boxes.filter((box) => box.type === 'test-signal-observer').map((box) => ({ pageIndex, box }))
+    );
+    const aftermathBoxes = pages.flatMap((page, pageIndex) =>
+        page.boxes
+            .filter((box) => box.type === 'p')
+            .map((box) => ({ pageIndex, box, text: getBoxText(box) }))
+            .filter(({ text }) => /Trailing aftermath proof text/.test(text))
+    );
+
+    check(
+        'collector renders a TOC-like numbered list from aggregate labels',
+        'collector text includes numbered entries from 1 through 8',
+        () => {
+            assert.ok(collectorBoxes.length > 0, 'expected collector boxes');
+            const collectorText = collectorBoxes.map(({ box }) => getBoxText(box)).join('\n');
+            assert.match(collectorText, /Synthetic Collector/, 'expected collector title');
+            assert.match(collectorText, /1\.\s+Chapter 1: Signal Fire/, 'expected first numbered entry');
+            assert.match(collectorText, /8\.\s+Chapter 8: Ember Rain/, 'expected last numbered entry');
+        }
+    );
+
+    check(
+        'collector grows enough to span multiple pages',
+        'collector list should produce more than one fragment under aggregate label load',
+        () => {
+            assert.ok(collectorBoxes.length >= 2, 'expected collector to span multiple fragments');
+        }
+    );
+
+    check(
+        'collector causes spatial consequence for trailing flow',
+        'aftermath paragraph should begin after the collector finishes, not before it',
+        () => {
+            assert.ok(aftermathBoxes.length > 0, 'expected aftermath boxes');
+            const firstAftermathPage = aftermathBoxes[0].pageIndex;
+            const lastCollectorPage = collectorBoxes[collectorBoxes.length - 1].pageIndex;
+            assert.ok(firstAftermathPage >= lastCollectorPage, `expected aftermath to start on or after collector page ${lastCollectorPage}, got ${firstAftermathPage}`);
+            if (firstAftermathPage === lastCollectorPage) {
+                assert.ok(
+                    aftermathBoxes[0].box.y > collectorBoxes[collectorBoxes.length - 1].box.y,
+                    'expected aftermath to sit below the collector when sharing a page'
+                );
+            }
+        }
+    );
+}
+
 async function testActorBulletinBoardAcrossPages() {
     logStep('Scenario: many publishers route normalized signals into one observer that changes geometry');
     const config = buildConfig();
@@ -475,6 +602,7 @@ async function run() {
     await testActorBulletinBoardAcrossPages();
     await testLabeledHeadingPublishersDriveObserverGeometry();
     await testObserverSummaryDrivesFollowerLayout();
+    await testSyntheticCollectorListDrivesTrailingFlow();
     await testActorEventBusRollback();
     console.log('[actor-communication.spec] OK');
 }
