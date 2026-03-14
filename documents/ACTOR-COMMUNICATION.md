@@ -13,6 +13,35 @@ That is now the missing engine primitive.
 
 ---
 
+## Status
+
+The first bulletin-board primitive is now proven in the engine.
+
+What is already working:
+
+* session-owned actor event bus
+* deterministic publish/read behavior
+* many-publisher -> one-observer routing
+* observer geometry changing from aggregate signal count
+* observer -> follower summary chaining
+* page-boundary-safe routing
+* rollback cleanup for discarded speculative timelines
+
+This matters because it proves actor communication is no longer theoretical.
+Actors can now affect other actors through a normalized engine-system channel
+without pushing communication into the `Kernel`.
+
+Methodology is now part of the contract too:
+
+* automated regression proof is required
+* generated visual PDF proof is also required for engine-behavior experiments
+
+For communication work, "tests pass" is not enough.
+We should be able to see the behavior on the page the same way we did with the
+yellow-box experiment.
+
+---
+
 ## 1. Core Principle
 
 Actors should not need to:
@@ -256,6 +285,50 @@ The engine should **not** provide:
 
 And the engine should not solve this by hiding communication inside the `Kernel`.
 It should be a dedicated engine-system primitive above the kernel, not a new kernel responsibility.
+
+---
+
+## 8. Proven Interaction Pattern
+
+The first successful pattern is:
+
+* many publishers
+* one observer
+* observer changes its own geometry from the aggregate signal count
+
+The next successful pattern is:
+
+* many publishers
+* one observer
+* one downstream follower
+* observer publishes a normalized summary
+* follower changes its own layout from that summary
+
+This is a stronger proof than text-only signaling because it demonstrates that:
+
+* actor communication can change spatial behavior
+* routing still works when publishers span across pages
+* chained actor interactions are possible without special-case engine orchestration
+* speculative signals do not leak after rollback
+
+This is the pattern we should keep using as we move from synthetic probe actors
+to real document-domain actors.
+
+---
+
+## 9. Next Step
+
+The next step should be to route **real labeled domain actors** into the
+bulletin board without forcing them to become fake communication-only types.
+
+That means:
+
+* consumer attaches normalized labels/intent
+* ordinary actors publish through the runtime contract
+* observer actors react through the bus
+
+The goal is to prove that actor communication works for real domain
+interactions, not only for dedicated dummy probe actors.
 
 ---
 

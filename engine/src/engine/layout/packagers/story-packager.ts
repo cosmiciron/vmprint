@@ -1005,7 +1005,22 @@ export class StoryPackager implements PackagerUnit {
                         cursorY,
                         margins: { ...margins, left: margins.left + region.x },
                         pageWidth: margins.left + availableWidth + margins.right,
-                        pageHeight: availableHeight
+                        pageHeight: availableHeight,
+                        publishActorSignal: (signal) => {
+                            const session = this.processor.getCurrentLayoutSession();
+                            if (!session) {
+                                return {
+                                    ...signal,
+                                    pageIndex: signal.pageIndex ?? 0,
+                                    sequence: -1
+                                } as any;
+                            }
+                            return session.publishActorSignal(signal);
+                        },
+                        readActorSignals: (topic?: string) => {
+                            const session = this.processor.getCurrentLayoutSession();
+                            return session ? session.getActorSignals(topic) : [];
+                        }
                     };
                     const boxes = (pkg.emitBoxes(region.w, region.h - cursorY, colContext) || []) as Box[];
                     for (const b of boxes) b.y = (b.y || 0) + cursorY;

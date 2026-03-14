@@ -112,6 +112,13 @@ function collectMeasuredSegments(pages: Page[]) {
     return segments;
 }
 
+function getBoxText(box: any): string {
+    if (!Array.isArray(box.lines)) return '';
+    return box.lines
+        .map((line: any[]) => line.map((seg: any) => seg.text || '').join(''))
+        .join('\n');
+}
+
 function assertMatrixOnlyMeasurements(pages: Page[]) {
     const segments = collectMeasuredSegments(pages);
     assert.ok(segments.length > 0, 'expected measured text segments');

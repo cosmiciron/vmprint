@@ -9,6 +9,7 @@ import type { PackagerContext } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
 import { getTailSplitPostAttemptOutcome } from './actor-formation';
 import { AIRuntime } from './ai-runtime';
+import { ActorEventBus, type ActorEventBusSnapshot, type ActorSignal, type ActorSignalDraft } from './actor-event-bus';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { EventDispatcher } from './event-dispatcher';
 import { Kernel } from './kernel';
@@ -791,9 +792,11 @@ export type LocalSplitStateSnapshot = {
     fragmentTransitionsBySource: Map<string, FragmentTransition[]>;
 };
 
-export type LocalBranchStateSnapshot = LocalQueueSnapshot & LocalSplitStateSnapshot;
+export type LocalActorSignalSnapshot = ActorEventBusSnapshot;
 
-export type LocalBranchSnapshot = LocalTransitionSnapshot & LocalQueueSnapshot & LocalSplitStateSnapshot;
+export type LocalBranchStateSnapshot = LocalQueueSnapshot & LocalSplitStateSnapshot & LocalActorSignalSnapshot;
+
+export type LocalBranchSnapshot = LocalTransitionSnapshot & LocalQueueSnapshot & LocalSplitStateSnapshot & LocalActorSignalSnapshot;
 
 export type FragmentTransition = {
     predecessorActorId: string;
@@ -863,6 +866,7 @@ export class LayoutSession {
     readonly collaborators: readonly LayoutCollaborator[];
     readonly eventDispatcher: EventDispatcher;
     readonly kernel = new Kernel();
+    readonly actorEventBus = new ActorEventBus();
     readonly aiRuntime: AIRuntime;
     readonly lifecycleRuntime: LifecycleRuntime;
     readonly collisionRuntime: CollisionRuntime;
@@ -911,8 +915,17 @@ export class LayoutSession {
 
     notifySimulationStart(): void {
         this.kernel.resetForSimulation();
+        this.actorEventBus.resetForSimulation();
         this.lifecycleRuntime.resetForSimulation();
         this.eventDispatcher.onSimulationStart(this);
+    }
+
+    publishActorSignal(signal: ActorSignalDraft): ActorSignal {
+        return this.actorEventBus.publish(signal);
+    }
+
+    getActorSignals(topic?: string): readonly ActorSignal[] {
+        return this.actorEventBus.read(topic);
     }
 
     notifyActorSpawn(actor: PackagerUnit): void {
@@ -1425,7 +1438,8 @@ export class LayoutSession {
     ): LocalBranchSnapshot {
         return {
             ...this.captureLocalTransitionSnapshot(pageBoxes, currentY, lastSpacingAfter),
-            ...this.kernel.captureLocalBranchStateSnapshot(actorQueue)
+            ...this.kernel.captureLocalBranchStateSnapshot(actorQueue),
+            ...this.captureLocalActorSignalSnapshot()
         };
     }
 
@@ -1437,6 +1451,10 @@ export class LayoutSession {
 
     captureLocalSplitStateSnapshot(): LocalSplitStateSnapshot {
         return this.kernel.captureLocalSplitStateSnapshot();
+    }
+
+    captureLocalActorSignalSnapshot(): LocalActorSignalSnapshot {
+        return this.actorEventBus.captureSnapshot();
     }
 
     restoreLocalTransitionSnapshot(
@@ -1456,6 +1474,7 @@ export class LayoutSession {
         snapshot: LocalBranchSnapshot
     ): { currentY: number; lastSpacingAfter: number } {
         this.kernel.restoreLocalBranchStateSnapshot(actorQueue, snapshot);
+        this.actorEventBus.restoreSnapshot(snapshot);
         return this.restoreLocalTransitionSnapshot(pageBoxes, snapshot);
     }
 

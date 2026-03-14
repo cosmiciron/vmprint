@@ -1,6 +1,7 @@
 import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
+import type { ActorSignal, ActorSignalDraft } from '../actor-event-bus';
 
 export interface LayoutBox extends Box { }
 
@@ -11,6 +12,8 @@ export interface PackagerContext {
     margins: { top: number; right: number; bottom: number; left: number };
     pageWidth: number;
     pageHeight: number;
+    publishActorSignal(signal: ActorSignalDraft): ActorSignal;
+    readActorSignals(topic?: string): readonly ActorSignal[];
 }
 
 export type PackagerSplitResult = {

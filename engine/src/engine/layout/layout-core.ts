@@ -393,7 +393,9 @@ export class LayoutProcessor extends TextProcessor {
             processor: this,
             pageWidth,
             pageHeight,
-            margins: this.config.layout.margins
+            margins: this.config.layout.margins,
+            publishActorSignal: (signal: any) => session.publishActorSignal(signal),
+            readActorSignals: (topic?: string) => session.getActorSignals(topic)
         };
         const pages = paginatePackagers(this, packagers, contextBase, session);
         return session.finalizePages(pages);
@@ -412,6 +414,10 @@ export class LayoutProcessor extends TextProcessor {
         const pages = this.lastLayoutSession?.getFinalizedPages() ?? [];
         const report = this.lastLayoutSession?.getSimulationReport();
         return createPrintPipelineSnapshot(pages, report);
+    }
+
+    getCurrentLayoutSession(): LayoutSession | null {
+        return this.lastLayoutSession;
     }
 
     private shapeTableElement(element: Element, identitySeed?: FlowIdentitySeed): FlowBox {
