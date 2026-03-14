@@ -1,14 +1,21 @@
-﻿# VMPrint Architecture Overview
+# VMPrint Architecture Overview
 
 This document is aimed at developers who want to contribute to, extend, or embed VMPrint. It covers how the system is structured, why key decisions were made, and what distinguishes it from more conventional layout approaches.
 
 ---
 
-## 1. What VMPrint Is
+## 1. Core Philosophy: The Four-Layer Architecture
 
-VMPrint is a deterministic document layout engine. You feed it a JSON document description and a rendering context, and it produces a paginated collection of positioned boxes. Those boxes are then painted—by a renderer—into whatever output format the context supports (currently PDF via PDFKit).
+VMPrint is a deterministic spatiotemporal document layout simulation engine. You feed it a JSON document description and a rendering context, and it produces a paginated collection of positioned boxes. 
 
-It is not a headless browser. It does not parse HTML or CSS. It is not a port of a web engine. The design is closer to a print composition VM: inputs are immutable, the layout process is a pure function from document to pages, and the output is identical on every run.
+It is **not** a headless browser. It does not parse HTML or CSS, nor does it rely on a recursive DOM traversal to "paint" text. Instead, it functions as a programmatic Desktop Publishing Virtual Machine operating on spatial physics. Pages are bounded spatial arenas, document elements are autonomous transformable actors navigating a constraint field, and layout is the process of reaching spatial equilibrium.
+
+To achieve this cleanly, the engine enforces a strict four-layer architecture separating mathematics from typographic semantics:
+
+- **Layer 1 — Simulation Kernel (The Substrate)**: Built purely on physical foundations (`kernel.ts`), this layer is deliberately devoid of typographic awareness. It exclusively controls mutable world state, stable actor identity, spatial boundaries, and bit-for-bit deterministic state snapshot and rollback primitives.
+- **Layer 2 — Engine Systems (The Runtime)**: The lateral execution plane operating above the Kernel. It governs physical constraint resolution (`physics-runtime.ts`), check-pointing, multi-actor transitions across boundaries, and the transactional inter-actor communication bus.
+- **Layer 3 — Document Semantics**: The translation layer that shapes text, parses fonts, and maps user-authored JSON Abstract Syntax Trees into executable "Simulation Actors" with explicit geometries and padding.
+- **Layer 4 — Print/Composition Handoff**: The output layer (`renderer.ts`) converting the final, settled flat spatial coordinates into renderable composition targets like PDF streams or WebGL buffers.
 
 ---
 
@@ -16,407 +23,138 @@ It is not a headless browser. It does not parse HTML or CSS. It is not a port of
 
 ```
 VMPrintStack/
-├── contracts/          VMPrint-level interface definitions (Context, FontManager, OverlayProvider).
-│   └── src/
-│       ├── context.ts          Rendering context interface (addPage, font, rect, text, …)
-│       ├── font-manager.ts     Font resolution interface
-│       └── overlay.ts          Overlay hook interfaces (backdrop / overlay per page)
-│
-├── engine/             Core layout and rendering logic.
+├── contracts/          VMPrint-level interfaces (Context, FontManager, OverlayProvider).
+├── engine/             Core layout and physics logic.
 │   └── src/engine/
-│       ├── types.ts            All shared types: Element, Box, Page, ElementStyle, …
-│       ├── document.ts         Input validation and normalization
-│       ├── layout-engine.ts    Public entry point (LayoutEngine extends LayoutProcessor)
-│       ├── renderer.ts         Renderer: consumes flat pages, paints boxes
-│       ├── runtime.ts          EngineRuntime factory (font cache, measurement cache)
+│       ├── types.ts            All shared data structures (DocumentInput, Box, Page, …)
+│       ├── layout-engine.ts    Public orchestration entry point
+│       ├── renderer.ts         Layer 4: Consumes flat pages, paints boxes
 │       └── layout/
-│           ├── layout-core.ts          LayoutProcessor: element shaping, materialization
-│           ├── layout-core-types.ts    FlowBox, FlowMaterializationContext, etc.
-│           ├── layout-flow-splitting.ts  Paragraph splitting at page breaks
-│           ├── layout-page-finalization.ts  Page number injection
-│           ├── text-processor.ts       Line breaking, hyphenation, justification
-│           ├── font-processor.ts       Font loading tree
+│           ├── kernel.ts                   Layer 1: Simulation Kernel (Substrate)
+│           ├── layout-session.ts           Layer 2: Engine Systems orchestrator
+│           ├── physics-runtime.ts          Layer 2: Constraint field collision physics
+│           ├── ai-runtime.ts               Layer 2: Speculative pathfinding
+│           ├── actor-event-bus.ts          Layer 2: Transactional telemetry communication
+│           ├── layout-core.ts              Layer 3: Element shaping and text resolution
 │           └── packagers/
-│               ├── packager-types.ts   PackagerUnit interface
-│               ├── create-packagers.ts Factory: element → PackagerUnit
-│               ├── paginate-packagers.ts  Pagination loop over PackagerUnits
-│               ├── flow-box-packager.ts   Standard paragraph/image unit
-│               ├── dropcap-packager.ts    Drop-cap composed unit
-│               ├── story-packager.ts      Float/wrap DTP text flow unit
-│               ├── table-packager.ts      Table layout unit
-│               └── spatial-map.ts        Obstacle registry for text-wrap
+│               ├── execute-simulation-march.ts  The main physical simulation loop
+│               ├── story-packager.ts       Actor: DTP text flow (resolves float/wrap)
+│               ├── table-packager.ts       Actor: Multi-column Table layout
+│               └── spatial-map.ts          Collision geometry mapping
 │
-├── contexts/pdf/       PDF rendering context (wraps PDFKit)
-├── font-managers/local/  Font discovery from the local filesystem
-├── transmuters/        Source -> DocumentInput transmuters (mkd-mkd, mkd-academic, mkd-literature, mkd-manuscript, mkd-screenplay)
-├── draft2final/       Thin transmuter-first draft2final orchestration
-└── cli/                vmprint JSON -> PDF CLI
+├── contexts/pdf/       PDF rendering context implementation (wraps PDFKit)
+├── transmuters/        Source-to-AST translation (Markdown -> JSON IR)
+├── draft2final/        CLI orchestration (Transmuter -> Engine -> Output)
+└── cli/                Standard `vmprint` CLI
 ```
 
 ---
 
-## 3. The Three-Stage Pipeline
+## 3. Data Flow & Shaping
 
-```
-   [Source]          [IR]               [Layout Stream]     [Output]
-Markdown / JSON  →  DocumentInput  →   Page[] of Box[]  →  PDF / other
-      │                  │                    │
-  draft2final        engine/document.ts    LayoutEngine
-  (optional)         (validation)           +Renderer
-```
+The journey from user input to physical layout requires translating continuous streams of heavily formatted text into discrete geometric actors.
 
-### Stage 1 — Source to IR
+### The Document IR (`DocumentInput`)
+`DocumentInput` is the vmprint-native input format. It is a plain, schema-enforced JSON object containing style dictionaries, font declarations, and an array of raw element data blocks (headings, paragraphs, tables). There is no native code AST class hierarchy at this stage; it is pure, serializable data.
 
-`draft2final` is an optional, thin front-end that delegates source semantics to transmuters and then routes output to PDF or AST JSON.
+### Typographic Shaping & Font Management
+Font loading is handled via a `FontManager` interface. The `TextProcessor` natively performs grapheme cluster segmentation, optical scaling, Arabic bidirectional string slicing, and hyphenation utilizing `fontkit`. 
 
-1. **Source text -> `DocumentInput`** via a selected transmuter (for example `mkd-mkd`, `mkd-screenplay`, or `mkd-manuscript`).
-2. **`DocumentInput` -> Output** via orchestration choices (`--out *.pdf` for render, `--out *.json` for AST emission).
+### Microscopic Flat-Boxing (`RichLine` Segments)
+A core strength of the engine is that formatting complexity does not bleed up into the layout physics. The `TextProcessor` intelligently slices raw paragraph strings into discrete, entirely independent semantic arrays called `RichLines`. 
+- **Mixed Scripts**: Foreign texts (e.g., Arabic or CJK inside Latin text) are automatically segmented, scaled optically, and assigned appropriate fallback fonts natively.
+- **Inline Elements**: Inline images or specifically styled spans (`<code>`, `<strong>`) become independent bounding boxes sitting natively on the baseline.
 
-Frontmatter can select the transmuter (`using`, `transmuter`, or `format`). Config and theme files are loaded by the orchestrator, while semantic logic and regression-heavy behavior stay in transmuter packages.
+### Explicit Glyph-Level Precision
+Because VMPrint implements its own shaping layer, it computes and retains the absolute `X/Y` coordinate data for every single printable character (including contextual forms for complex scripts like Arabic via `ShapedGlyph` arrays). This microscopic data is embedded directly into the layout fragments, ensuring that character positioning is never lazily pushed down to the rendering backend for interpretation.
 
-You do not have to use this layer at all. VMPrint accepts `DocumentInput` JSON directly, which is also how engine regression tests are driven.
-
-### Stage 2 — Layout (the engine core)
-
-This is where the interesting work happens. See sections 4–8.
-
-### Stage 3 — Rendering
-
-The `Renderer` takes `Page[]` (each page being a flat array of `Box` objects with absolute coordinates) and paints them into a `Context`. It does not do layout. It does not reflow anything. It resolves z-index ordering, then calls the context's drawing primitives for each box: background, borders, image bytes, and pre-measured rich text lines. Font registration happens once, before the first page is drawn.
+### The Engine IR (`FlowBox`)
+Before elements are submitted to the spatial simulator, they are converted into `FlowBoxes`. This constitutes the fully shaped but not-yet-positioned state. A `FlowBox` contains the unrolled `RichLine` sequences, total measured required height, orphans/widows rules, and margin directives. The heavy lifting of text layout has concluded; going forward, the engine only cares about navigating these rigid bounding blocks.
 
 ---
 
-## 4. The Document IR (DocumentInput)
+## 4. Layout Mechanics: The Spatial Simulator
 
-`DocumentInput` is the vmprint-native document format. It is a plain JSON object:
+Classic engines use a recursive single pass to lay out a document. VMPrint instead fields "Actors" into a "Constraint Field." 
 
+### Simulator & Actor Mechanics
+Every conceptual block is wrapped into a programmatic `PackagerUnit` (an Actor) which enforces a rigorous physical contract (`emitBoxes()`, `split()`, `getRequiredHeight()`). 
+
+The core loop (`executeSimulationMarch()`) executes a continuous physics tick:
+1. It requests the Physics Runtime to measure the actor's vertical requirements.
+2. It tests spatial bounds against `ConstraintField` geometries (accounting for "floating" image exclusions acting as physical blockers).
+3. If it fits, it successfully yields `emitBoxes()`.
+4. If it collides or overflows, it forces the actor to `split()`, generating a continuation fragment for the next available geometric boundary (e.g., the next page).
+
+The march loop is type-agnostic. Adding new layout structures (like mathematical equation blocks) merely involves writing a new Actor `PackagerUnit` that respects the overarching physical collision contract.
+
+### Speculative Branching & Determinism
+To resolve layout decisions that require foresight (like keeping a caption "with next", or balancing multi-column run-offs), VMPrint utilizes deterministic heuristic lookaheads via the `AIRuntime`.
+It commands the Kernel to take O(1) shallow memory snapshots, provisionally marches the actor into a virtual future state, grades the collision outcomes, and if the layout logic is unsound, it triggers an instantaneous stateless rollback safely.
+
+### Transactional Inter-Actor Communication
+Actors often need to coordinate across vast page divides (e.g., a Table of Contents requiring downstream chapter numbers). Instead of brittle 2-pass AST rewrites, VMPrint utilizes a transactional **Actor Event Bus**.
+- Downstream actors publish immutable telemetry snapshots.
+- If an upstream **Committed Observer** (like the TOC) receives new telemetry that breaks its geometric boundaries, the engine issues a **Targeted Dirty-Frontier Resimulation**, safely winding back physical time to the specific upstream checkpoint without requiring a full document restart.
+
+### Continuation Markers
+When an actor splits across a page boundary (e.g., a massive table), the Transitions Runtime intelligently weaves synthetic, fully-shaped formatting fragments ("(continued on next page)") squarely into the actor queue, forcing them to run the identical collision gauntlets as normal user structures.
+
+---
+
+## 5. Output Mechanics & Provenance
+
+When the simulator reaches equilibrium, it settles into an output state optimized explicitly for rigid graphics environments rather than flowing web renderers.
+
+### The All-Flat Box Model
+Every element in the simulation, regardless of semantic nesting, is ultimately flattened into a 1-dimensional array of `Box` objects mapped to a specific `Page`. There are no hierarchies, flexboxes, or containing containers emitted. The renderer simply loops over `page.boxes[]`, sorts them by their Z-index, and blindly paints geometry directly onto the graphics context at absolute canvas coordinates.
+
+### Semantic Provenance (`BoxMeta`)
+A fatal flaw of traditional PDF engines is the loss of structured data upon vectorization. VMPrint solves this via rigorous physical traceability.
+Every flat output `Box` carries a `BoxMeta` object:
 ```typescript
-interface DocumentInput {
-    documentVersion: '1.0';
-    layout: { pageSize, margins, fontFamily, fontSize, lineHeight, … };
-    fonts: { regular, bold, italic, bolditalic, [key]: path };
-    styles: { [elementType]: ElementStyle };
-    elements: Element[];
-}
+{ sourceId: 'ast-node-10', fragmentIndex: 2, transformKind: 'split', isContinuation: true }
 ```
+A consumer can sequentially stitch the absolute visual bounds back together across multiple physical pages to perfectly recreate the underlying interactive semantic tree.
 
-An `Element` looks like:
+### The Context Abstraction & Rendering
+The output vectors communicate to endpoints via a rigorous, graphics-agnostic `Context` interface. The engine produces identical output artifacts—regardless of whether they are routed through the `contexts/pdf/` Node.js pipeline printing physically to CMYK bytes, or mapped onto an HTML5 canvas layer running in chrome.
 
-```typescript
-interface Element {
-    type: string;           // 'paragraph', 'heading', 'image', 'table', 'story', …
-    content: string;        // Flat text content (leaf nodes)
-    children?: Element[];   // For rich-text inline nodes and container elements
-    properties?: {
-        style?: ElementStyle;     // Per-element style overrides
-        image?: { data, mimeType, fit };
-        dropCap?: { enabled, lines, characters, gap };
-        layout?: StoryLayoutDirective;  // For children of 'story' elements
-        keepWithNext?: boolean;
-        paginationContinuation?: { markerAfterSplit, markerBeforeContinuation };
-        …
-    };
-}
-```
-
-The `type` field is a plain string. The engine reserves a short list of structural types (`table`, `tableRow`, `tableCell`, `story`), but everything else—`paragraph`, `h1`, `blockquote`, `code`, whatever—is just a label used to look up a base style from the `styles` map. There is no separate AST node class hierarchy; elements are data.
-
----
-
-## 5. The All-Flat Box Model
-
-Every element in the document, regardless of nesting, is eventually reduced to a flat list of `Box` objects per page. A `Box` is:
-
-```typescript
-interface Box {
-    type: string;       // inherited from source element type
-    x: number;          // absolute position in points from page top-left
-    y: number;
-    w: number;
-    h: number;
-    image?: BoxImagePayload;
-    lines?: RichLine[];     // pre-shaped text lines (glyphs measured)
-    style: ElementStyle;
-    meta?: BoxMeta;         // source tracking: sourceId, engineKey, fragmentIndex
-}
-
-interface Page {
-    index: number;
-    boxes: Box[];
-    width: number;
-    height: number;
-}
-```
-
-There are no nested box trees, no parent-child relationships in the output, no wrapping containers. A table is a set of flat boxes. A drop-cap paragraph is two flat boxes side by side (cap glyph box + wrapped text box). A story with floats is a flat list of text boxes and image boxes with absolute coordinates.
-
-The renderer iterates `page.boxes`, sorts by `zIndex`, and paints each one. It never needs to recurse or resolve containment.
-
-This makes the renderer trivially correct. It also makes the overlay system (see section 9) trivially simple: overlays receive the same flat `OverlayBox[]` representation and don't need to understand the element tree.
-
----
-
-## 6. FlowBox: The Internal Intermediate Representation
-
-Between the `Element` input tree and the flat `Box` output, the engine uses `FlowBox` as its working IR:
-
-```typescript
-type FlowBox = {
-    type: string;
-    style: ElementStyle;           // fully resolved + normalized style
-    lines?: RichLine[];            // shaped text lines (after text-processor)
-    image?: BoxImagePayload;
-    measuredContentHeight: number; // height of content area, set after materialization
-    marginTop: number;
-    marginBottom: number;
-    keepWithNext: boolean;
-    pageBreakBefore: boolean;
-    allowLineSplit: boolean;
-    overflowPolicy: OverflowPolicy;
-    orphans: number;
-    widows: number;
-    _materializationMode: 'reflowable' | 'frozen';
-    _sourceElement?: Element;      // reference back to original input
-    …
-};
-```
-
-A `FlowBox` is the shaped but not yet positioned form of an element. It carries:
-- Resolved text lines (words measured, wrapped, hyphenated, justified)
-- Height computed from those lines
-- Pagination hints (margins, keepWithNext, orphans/widows)
-
-FlowBoxes are created by `shapeElement()` in `LayoutProcessor`. They are not yet placed on a page. Placement is deferred to the packager layer.
-
----
-
-## 7. The Packager Architecture
-
-This is the heart of the pagination design. Rather than a single monolithic pagination loop that walks the element tree and dispatches to type-specific handlers mid-loop, VMPrint uses an object-oriented **Packager** model.
-
-Every element (or small cluster of elements) is converted to a `PackagerUnit` before pagination begins:
-
-```
-elements[] → createPackagers() → PackagerUnit[] → paginatePackagers() → Page[]
-```
-
-The `PackagerUnit` interface is small:
-
-```typescript
-interface PackagerUnit {
-    emitBoxes(availableWidth, availableHeight, context): LayoutBox[] | null;
-    split(availableHeight, context): [PackagerUnit | null, PackagerUnit | null];
-    getRequiredHeight(): number;
-    isUnbreakable(availableHeight): boolean;
-    getMarginTop(): number;
-    getMarginBottom(): number;
-    readonly pageBreakBefore?: boolean;
-    readonly keepWithNext?: boolean;
-}
-```
-
-The four concrete implementations are:
-
-| Packager | Handles |
-|---|---|
-| `FlowBoxPackager` | Standard paragraphs, headings, standalone images |
-| `DropCapPackager` | Drop-cap paragraphs (cap glyph box + wrapped body) |
-| `StoryPackager` | DTP "story" zones with float/wrap image placement |
-| `TablePackager` | Multi-column tables with header repeat and row pagination |
-
-`paginatePackagers()` is then a compact loop that:
-1. Asks each packager for its required height
-2. If it fits on the current page, calls `emitBoxes()` and stamps absolute Y coordinates
-3. If it doesn't fit, tries `split()` to get a first part that does
-4. Advances the cursor and opens new pages as needed
-
-```
-Page 1:                     Page 2:
-┌──────────────────────┐    ┌──────────────────────┐
-│  [cursor: top margin]│    │  [cursor: top margin]│
-│                      │    │                      │
-│  packager[0].emit()  │    │  packager[2].emit()  │
-│  packager[1].emit()  │    │  packager[3]         │
-│  packager[2].split() │    │    (continuation)    │
-│    → partA.emit()    │    │  …                   │
-│  ─ ─ ─ page end ─ ─ │    │                      │
-└──────────────────────┘    └──────────────────────┘
-```
-
-The key property: **the pagination loop itself is type-agnostic**. It knows nothing about paragraphs vs. tables vs. stories vs. drop caps. All layout-specific logic is encapsulated inside the packager objects. Adding a new element type that needs custom layout behavior means adding a new `PackagerUnit` implementation and a branch in `createPackagers()`. The pagination loop does not change.
-
-Each packager is also **self-splitting**. When `paginatePackagers` determines a packager needs to cross a page boundary, it calls `split(availableHeight)`. The packager returns a `[partA, partB]` pair. Both parts implement `PackagerUnit`; the loop handles them identically to any other unit. A paragraph splits at line boundaries (respecting orphan/widow rules). A story freezes its first-page boxes into a `FrozenStoryPackager` and carries the remainder forward. A table splits at row boundaries.
-
-### Mutable Internal State and "Morphable" Boxes
-
-One nuance: packagers cache their last measured height. `FlowBoxPackager.materialize()` is only re-run when `availableWidth` changes. This allows the paginator to query `getRequiredHeight()` cheaply without re-running text shaping. The packager effectively pre-materializes itself for the available column width, then later emits positioned boxes when placement is confirmed. This is what makes the system fast for reflow: font measurement is expensive; if the column width doesn't change, you pay it once.
-
-The `StoryPackager` goes further. It runs a two-pass pour: first it registers any `story-absolute` image obstacles into a `SpatialMap`, then it pours children top-to-bottom, querying the spatial map per text line to get the available horizontal interval(s) at that Y slice. The resulting boxes carry per-line offset and width arrays (`_lineOffsets`, `_lineWidths`, `_lineYOffsets`) that the renderer already knows how to use—no special renderer path required.
-
----
-
-## 8. Determinism as a Design Constraint
-
-The ROADMAP states it explicitly: _"deterministic pagination and layout on repeated runs."_ This is not just a feature; it shapes a number of implementation choices.
-
-**No randomness or time-dependent state.** The engine takes a `DocumentInput`, a font registry snapshot, and an optional measurement cache. Given the same inputs, it always produces the same `Page[]` output.
-
-**Input immutability.** The engine does not mutate the source document tree. FlowBoxes are shaping results that reference back to source elements (`_sourceElement`), but they don't modify them. The same `DocumentInput` can be safely passed to multiple engine instances.
-
-**Measurement caching is keyed, not assumed.** The `EngineRuntime` carries a `measurementCache` (a `Map`) and a `fontCache`. The cache key for a materialized box includes page index, cursor Y, element type, and content width (`"0:72.000:paragraph:468.000"`). This means the cache is content-addressed; cache hits are safe to reuse without re-checking context.
-
-**No stateful pagination side effects.** The packager states exist only during the `paginate()` call. Nothing is written back to the `DocumentInput`. The `AnnotatedLayoutStream` type (`{ config, pages }`) represents the complete, frozen output—it can be serialized, compared, and diffed.
-
-### Regression Testing
-
-The engine has a fixtures-based regression suite. Each fixture is a `DocumentInput` JSON file with a corresponding `snapshot.layout.json` that is the expected `AnnotatedLayoutStream` output (or just a PDF comparison). Tests re-run layout and diff the output. Because layout is deterministic, a snapshot mismatch is always a real regression.
-
----
-
-## 9. The Context Abstraction
-
-The `Context` interface (from `@vmprint/contracts`) is what the renderer talks to:
-
-```typescript
-interface Context {
-    addPage(): void;
-    end(): void;
-    pipe(stream: VmprintOutputStream): void;   // no-op if context manages its own output
-    registerFont(id: string, buffer: Uint8Array, options?: { standardFontPostScriptName?: string }): Promise<void>;
-    font(family: string, size?: number): this;
-    fontSize(size: number): this;
-    text(str: string, x: number, y: number, options?: ContextTextOptions): this;
-    image(source: string | Uint8Array, x: number, y: number, options?: ContextImageOptions): this;
-    rect(x: number, y: number, w: number, h: number): this;
-    fill(rule?: 'nonzero' | 'evenodd'): this;
-    stroke(): this;
-    opacity(v: number): this;
-    save(): void;
-    restore(): void;
-    // … full interface in @vmprint/contracts
-}
-```
-
-`pipe(stream: VmprintOutputStream)` wires the context's output to a caller-supplied stream. `VmprintOutputStream` is a minimal portable interface (`write` / `end` / `waitForFinish`) that the caller implements against its own I/O mechanism — a Node.js `fs.WriteStream`, an in-memory buffer, a web response, etc. The context owns rendering; the caller owns I/O. No Node.js types appear in the contract.
-
-This is a strict, narrow vector-drawing interface. It intentionally covers the minimal surface needed to paint boxes and text. There is exactly one implementation today (`PdfContext` in `contexts/pdf`, which wraps PDFKit), but the contract and the engine are fully decoupled. A canvas context, an SVG context, a server-side image renderer, or a test-spy all implement the same interface.
-
-The goal stated in the roadmap is **identical output on all contexts**. Meaning: the `Page[]` produced by the layout engine is context-independent. The PDF context and any hypothetical SVG context receive the same absolute-coordinate boxes. Any rendering differences are bugs in the context implementation, not in layout.
-
-### Overlay API
-
-The overlay system is an optional hook that lets callers inject drawing before or after the engine paints each page:
-
+### Scriptable Overlay Architecture
+Because pages are guaranteed pure arrays of bounded geometry, developers can seamlessly inject highly complex custom logic into the engine via the **Overlay Provider Hook**:
 ```typescript
 interface OverlayProvider {
     backdrop?(page: OverlayPage, context: OverlayContext): void;
     overlay?(page: OverlayPage, context: OverlayContext): void;
 }
 ```
-
-`OverlayPage` gives the overlay a read-only view of the flat `OverlayBox[]` for that page. This is how debug grids, cut marks, watermarks, and highlight passes are implemented (see `documents/ideas/overlay-samples/`). The overlay receives the same coordinate space as the renderer; no transformation is needed.
-
----
-
-## 10. Font Management
-
-Font loading is extracted into a `FontManager` interface (`@vmprint/contracts`) with two concrete implementations: `LocalFontManager` (`font-managers/local`) for filesystem-backed use, and `StandardFontManager` (`font-managers/standard`) for zero-asset deployments. The engine only interacts with fonts through the runtime's `fontRegistry` and `fontCache`—it never touches the filesystem directly.
-
-`StandardFontManager` covers all 14 PDF standard fonts without requiring any font files on disk. Instead of returning real font buffers, it returns 5-byte sentinel values that the engine detects in the font cache loader. On a sentinel hit, the engine substitutes an `AfmFontProxy` — a fontkit-compatible object backed by static AFM metric tables (one per standard font, keyed by Unicode codepoint). The PDF context suppresses font embedding for these fonts and passes the PostScript name directly to PDFKit. The result is a valid PDF with no embedded binary font data, relying on the viewer's guaranteed standard-font support.
-
-```
-EngineRuntime {
-    fontManager: FontManager       // resolves name → buffer
-    fontRegistry: FontRegistry     // snapshot of registered families
-    fontCache: {}                  // loaded fontkit objects
-    measurementCache: Map          // text measurement results
-    bufferCache: {}                // raw font buffers
-}
-```
-
-Font measurement (text width, ascent, descent, glyph metrics) is done via fontkit. Results are cached in `measurementCache`. The cache is part of the runtime and survives across multiple `paginate()` calls on the same engine instance—important for interactive use where the same document may be re-laid-out after a config change.
-
-The `TextProcessor` layer handles the full complexity of multilingual text: grapheme cluster segmentation via `Intl.Segmenter`, per-script optical scaling, Arabic/Hebrew right-to-left detection, soft hyphenation dictionary lookup, greedy line wrapping with overflow fallback, and two justification engines (legacy space-padding and advanced inter-character).
+Diagnostic logic can parse the `OverlayBox[]` arrays and draw analytical highlight layers, grid tracking lines, crop marks, and source-code alignment mappings instantly using the native `Context` drawing commands.
 
 ---
 
-## 11. Rich Text Lines
+## 6. System Properties Enabled by Architecture
 
-The internal representation of a shaped line is `RichLine`, which is `TextSegment[]`:
+By discarding DOM paradigms in favor of deterministic spatial physics arrays, the system yields several powerful emergent invariants:
 
-```typescript
-type TextSegment = {
-    text: string;
-    fontFamily?: string;
-    style?: Record<string, any>;    // per-run style overrides
-    width?: number;                 // measured width in points
-    ascent?: number;
-    descent?: number;
-    justifyAfter?: number;          // inter-word space to add for justification
-    forcedBreakAfter?: boolean;
-    inlineObject?: InlineObjectSegment;  // inline image or box
-    inlineMetrics?: InlineObjectMetrics;
-    glyphs?: { char, x, y }[];     // optional glyph-level positioning
-};
-```
-
-A single paragraph may span many `RichLine[]` entries. Each line is a run of segments that may have different fonts and styles but share a common baseline. The renderer draws each segment independently, advancing x by `segment.width`. Baseline alignment is handled by the renderer using the per-line ascent.
-
-This structure is emitted by `TextProcessor` during the shaping phase and is embedded directly in the `FlowBox`. By the time pagination happens, all text has been measured and wrapped. There is no re-wrapping during pagination.
+1. **Pre-Compiled JSON Streaming:** Because the core output object (`AnnotatedLayoutStream`) is pure JSON encapsulating absolute spatial physics and font shaping, cloud backends can "pre-compile" heavy documents. Lightweight web viewers or mobile endpoints can simply download the final JSON arrays and execute blazing fast text rendering with literally zero computation algorithms required client-side.
+2. **GPU-Optimized Scene Graphs:** A `Page[]` of purely absolute bounding boxes containing explicit `X/Y` mapped character glyphs translates natively into 1:1 textured 2D quad arrays. Native graphics solutions (WebGL/WebGPU) can swallow the layout output directly, delivering millions of perfectly set typographical polygons at 60 fps devoid of UI thread layout lockups.
+3. **Snapshot Regression Testing:** VMPrint does not require fuzzy, error-prone visual image diff algorithms to prove stability. The regression framework (`engine-regression.spec.ts`) strictly asserts exact JSON data structures. A sub-pixel deviation in a font-width update triggers a surgical string-diff failure, highlighting the precise actor ID that deviated.
+4. **Identical Output Across Surfaces:** By separating mathematical layout completely from graphics rendering pipelines, the classic "rendered differently on Windows vs Mac" problem is entirely eradicated.
 
 ---
 
-## 12. Continuation Markers
+## 7. Summary of Key Design Properties
 
-When a paginator splits a flow box across a page break, the document can declare optional continuation markers: a "continued…" note appended to the first fragment, or a "(continued from previous page)" note prepended to the second. This is declared in the element's `properties.paginationContinuation`:
-
-```json
-{
-    "paginationContinuation": {
-        "markerAfterSplit": { "type": "paragraph", "content": "(continued)", "style": { "textAlign": "right" } },
-        "markerBeforeContinuation": { "type": "paragraph", "content": "(continued from previous page)" }
-    }
-}
-```
-
-The `layout-flow-splitting.ts` module generates these as synthetic `FlowBox` objects injected by the split logic. The markers are fully shaped (text-processed) and treated as ordinary boxes by the paginator. No special rendering path is needed.
-
----
-
-## 13. draft2final: Transmuter-First Orchestrator
-
-`draft2final` is now the highest-level optional layer with a deliberately small surface area.
-
-```
-Source text
-    ↓  transmuter (selected by CLI/frontmatter)
-DocumentInput (vmprint IR)
-    ↓  draft2final orchestration
-PDF file or AST JSON
-```
-
-Responsibilities are split clearly:
-
-- **Transmuters** own source semantics, default conventions, and most behavioral regression coverage.
-- **draft2final orchestration** owns file loading, frontmatter-driven transmuter selection, config/theme resolution, and output routing.
-- **Engine + Context** own deterministic layout and rendering.
-
-This implementation lives under `draft2final/` and serves as the canonical draft2final CLI.
-
----
-
-## 14. Summary of Key Design Properties
-
-| Property | How it's achieved |
+| Property | Implementation Foundation |
 |---|---|
-| Flat box output | All packagers reduce to `Box[]` before pagination; no nesting in the output |
-| No monolithic pagination loop | Packager interface encapsulates element-specific logic; loop is type-agnostic |
-| Deterministic layout | No side effects, immutable input, keyed measurement cache |
-| Context independence | Renderer only calls `Context` interface primitives; layout is pre-computed |
-| Extensible element types | New type = new `PackagerUnit` class + one branch in `createPackagers()` |
-| DTP float/wrap layout | `StoryPackager` + `SpatialMap`; no special renderer path needed |
-| Source traceability | Every `Box` carries `BoxMeta` with `sourceId`, `engineKey`, `fragmentIndex` |
-| Inline richness | `RichLine[]` / `TextSegment[]` carry per-run font, style, and glyph data |
-| Overlay/debug extensibility | `OverlayProvider` hook; overlays get same flat box representation as renderer |
-
-
+| Four-Layer Boundary | Hardware-like Kernel isolated from typography heuristics |
+| Spatiotemporal Physics | Physics runtime tests autonomous actors against continuous `ConstraintField`s |
+| Speculative Lookahead | Deterministic state snapshots enable 0-penalty rollback for complex block cohesion |
+| Single-Pass Tooling | Transactional Event Bus assemblies downstream telemetry targets inline |
+| Flat Spatial Output | Deep hierarchies reduce perfectly to absolute, 1-dimensional `Box[]` boundaries |
+| Semantic Provenance | Object `BoxMeta` traces absolute visual bounds securely back to source AST nodes |
+| Glyph-Level Precision | Render targets are fed raw `{ char, x, y }` coordinates sidestepping external bugs |
+| GPU-Ready Format | `Page[]` is a pre-calculated vector scene graph requiring zero display-thread blocking |
+| Pre-Compiled Caching | Deterministic JSON layouts provide massively accelerated client-side streaming |
+| Identical Cross-Surface | Strict segregation of spatial layout vs independent graphics rendering contexts |
+| Scriptable Overlays | Hook architecture enables drawing custom analytics precisely onto settled layout arrays |
