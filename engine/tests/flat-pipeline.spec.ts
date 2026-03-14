@@ -144,7 +144,7 @@ async function testFlatPipeline() {
         { type: 'body', content: longText, properties: { sourceId: 'body-main' } }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     check(
         'paginate returns a pages array',
         'an array with at least two pages',
@@ -283,7 +283,7 @@ async function testEmbeddedImageFlowAndRender() {
         }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const imageBoxes = pages.flatMap((p) => p.boxes.filter((b) => b.type === 'image'));
     check(
         'embedded image flow layout',
@@ -366,7 +366,7 @@ async function testInlineObjectsInsideRichTextFlow() {
         }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const firstPara = pages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     const segments = (firstPara?.lines || []).flat();
 
@@ -421,8 +421,8 @@ async function testMultilingualMatrixOnlyRegression() {
     const mixed = 'Latin words wrapping with Ã¤Â¸Â­Ã¦â€“â€¡Ã¥Â­â€”Ã§Â¬Â¦ and Ã¯Â¿Â½ Ã Â¸Â²Ã Â¸Â©Ã Â¸Â²Ã Â¹â€žÃ Â¸â€”Ã Â¸Â¢ plus Ã­â€¢Å“ÃªÂµÂ­Ã¬â€“Â´ Ã«Â¬Â¸Ã¬Å¾Â¥ for matrix-only measurement stability. '.repeat(8);
     const elements: Element[] = [{ type: 'p', content: mixed }];
 
-    const pagesA = engine.paginate(elements);
-    const pagesB = engine.paginate(elements);
+    const pagesA = engine.simulate(elements);
+    const pagesB = engine.simulate(elements);
 
     check(
         'multilingual pagination emits pages with measured segments',
@@ -471,8 +471,8 @@ async function testWidowOrphanEnforcement() {
         }
     ];
 
-    const pagesAllowed = engine.paginate(splitAllowed);
-    const pagesBlocked = engine.paginate(splitBlocked);
+    const pagesAllowed = engine.simulate(splitAllowed);
+    const pagesBlocked = engine.simulate(splitBlocked);
 
     const allowedBoxes = pagesAllowed.flatMap((p) => p.boxes.filter((b) => b.type === 'p'));
     const blockedBoxes = pagesBlocked.flatMap((p) => p.boxes.filter((b) => b.type === 'p'));
@@ -515,7 +515,7 @@ async function testWidowOrphanBackletterSpacingAndMultilingual() {
         properties: { style: { allowLineSplit: true, orphans, widows } }
     };
 
-    const paraPages = engine.paginate([element]);
+    const paraPages = engine.simulate([element]);
     const paraBoxes = paraPages.flatMap((p) => p.boxes.filter((b) => b.type === 'p'));
 
     check(
@@ -559,7 +559,7 @@ async function testWidowOrphanBackletterSpacingAndMultilingual() {
         properties: { style: { allowLineSplit: true, orphans: 3, widows: 3 } }
     }];
 
-    const multiPages = engine.paginate(multilingual);
+    const multiPages = engine.simulate(multilingual);
     const multiBoxes = multiPages.flatMap((p) => p.boxes.filter((b) => b.type === 'p'));
 
     check(
@@ -584,13 +584,13 @@ async function testPerBoxOverflowPolicy() {
 
     const text = 'Overflow policy paragraph designed to exceed one page and trigger split or clipping behavior. '.repeat(34);
 
-    const defaultPolicyPages = engine.paginate([{
+    const defaultPolicyPages = engine.simulate([{
         type: 'p',
         content: text,
         properties: { style: { allowLineSplit: true, orphans: 2, widows: 2 } }
     }]);
 
-    const moveWholePages = engine.paginate([{
+    const moveWholePages = engine.simulate([{
         type: 'p',
         content: text,
         properties: { style: { allowLineSplit: true, orphans: 2, widows: 2, overflowPolicy: 'move-whole' } }
@@ -624,7 +624,7 @@ async function testPerBoxOverflowPolicy() {
         async () => {
             assert.throws(
                 () => {
-                    engine.paginate([{
+                    engine.simulate([{
                         type: 'p',
                         content: 'bad overflowPolicy',
                         properties: { style: { overflowPolicy: 'invalid-policy' } }
@@ -673,7 +673,7 @@ async function testPaginationContinuationMarkers() {
         }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const allTypes = pages.flatMap((p) => p.boxes.map((b) => b.type));
 
     check(
@@ -752,7 +752,7 @@ async function testKeepWithNextChainMidPageSplitsTailUnit() {
         { type: 'body', content: longText }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const firstPageTypes = pages[0].boxes.map((b) => b.type);
     const bodyBoxes = pages.flatMap((p) => p.boxes.filter((b) => b.type === 'body'));
 
@@ -794,7 +794,7 @@ async function testKeepWithNextChainAtPageTopDoesNotStrandPrefixes() {
         }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const nonPageTypesByPage = pages.map((page) => page.boxes.filter((b) => b.type !== 'page_number').map((b) => b.type));
 
     check(
@@ -831,7 +831,7 @@ async function testAdvancedJustifyAndHyphenation() {
         }
     }];
 
-    const justifyPages = engine.paginate(justifyElements);
+    const justifyPages = engine.simulate(justifyElements);
     const justifyBox = justifyPages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     assert.ok(justifyBox?.lines && justifyBox.lines.length > 1, 'expected wrapped lines for advanced justification test');
 
@@ -860,7 +860,7 @@ async function testAdvancedJustifyAndHyphenation() {
         }
     }];
 
-    const hardBreakPages = engine.paginate(hardBreakElements);
+    const hardBreakPages = engine.simulate(hardBreakElements);
     const hardBreakBox = hardBreakPages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     assert.ok(hardBreakBox?.lines && hardBreakBox.lines.length >= 2, 'expected multiple lines for hard break test');
 
@@ -889,7 +889,7 @@ async function testAdvancedJustifyAndHyphenation() {
         }
     }];
 
-    const hyphenPages = engine.paginate(hyphenElements);
+    const hyphenPages = engine.simulate(hyphenElements);
     const hyphenBox = hyphenPages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     assert.ok(hyphenBox?.lines && hyphenBox.lines.length > 1, 'expected wrapped lines for hyphenation test');
 
@@ -915,7 +915,7 @@ async function testAdvancedJustifyAndHyphenation() {
         }
     }];
 
-    const softPages = engine.paginate(softHyphenElements);
+    const softPages = engine.simulate(softHyphenElements);
     const softBox = softPages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     assert.ok(softBox?.lines && softBox.lines.length > 1, 'expected wrapped lines for soft hyphen test');
     const softLineTexts = softBox!.lines!.map((line) => line.map((seg) => seg.text).join(''));
@@ -989,7 +989,7 @@ async function testOrientationPageDimensions() {
     const engine = new LayoutEngine(config);
     await engine.waitForFonts();
 
-    const pages = engine.paginate([{ type: 'p', content: 'orientation test paragraph' }]);
+    const pages = engine.simulate([{ type: 'p', content: 'orientation test paragraph' }]);
 
     check(
         'landscape orientation swaps letter dimensions',
@@ -1017,7 +1017,7 @@ async function testHyphenatedContinuationPreservesBoundaryWord() {
     await engine.waitForFonts();
 
     const flowText = 'This demo forces a continuation onto page two while testing hyphenation boundaries across the split. '.repeat(12);
-    const pages = engine.paginate([{ type: 'p', content: flowText }]);
+    const pages = engine.simulate([{ type: 'p', content: flowText }]);
 
     const pageTwoFlow = pages.find((page) => page.index === 1)?.boxes.find((box) => box.type === 'p');
     const firstLine = pageTwoFlow?.lines?.[0]?.map((seg) => seg.text || '').join('') || '';
@@ -1151,7 +1151,7 @@ async function testTablePaginationRepeatsHeaderRows() {
         children: rows
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const headerRowIndex = 0;
     const rowIndexesByPage = pages.map((page) =>
         page.boxes
@@ -1238,7 +1238,7 @@ async function testTableColSpanMaterializesSpanWidth() {
         ]
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const spanCell = pages
         .flatMap((page) => page.boxes)
         .find((box) =>
@@ -1307,7 +1307,7 @@ async function testTableRowSpanStacksAcrossRows() {
         ]
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const cells = pages.flatMap((page) => page.boxes).filter((box) => box.type === 'table_cell');
     const rowSpanCell = cells.find((box) =>
         Number(box.properties?._tableRowIndex) === 0
@@ -1378,7 +1378,7 @@ async function testTableCellSourceIdIntegrity() {
         }]
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const cells = pages.flatMap((page) => page.boxes).filter((box) => box.type === 'table_cell');
     const cellA = cells.find((box) => Number(box.properties?._tableColStart) === 0);
     const cellB = cells.find((box) => Number(box.properties?._tableColStart) === 1);
@@ -1454,7 +1454,7 @@ async function testPageOverridesSuppressHeaderAndLogicalNumbersSkipSuppressedPag
         }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const headerBoxes = pages.map((page) =>
         page.boxes.find((box) => box.meta?.sourceType === 'header' && box.type === 'paragraph')
     );
@@ -1501,7 +1501,7 @@ async function testInlineObjectJustificationIsolation() {
         ]
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const paraBox = pages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     const allSegs = (paraBox?.lines || []).flat() as any[];
 
@@ -1551,7 +1551,7 @@ async function testWidowOrphanKeepWithNextComposition() {
         { type: 'body', content: 'Body text for keep-with-next and widow/orphan composition test. '.repeat(30) }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const sectionEntries = pages.flatMap((p, pi) => p.boxes.filter((b) => b.type === 'section').map((b) => ({ b, pi })));
     const bodyEntries = pages.flatMap((p, pi) => p.boxes.filter((b) => b.type === 'body').map((b) => ({ b, pi })));
 
@@ -1613,9 +1613,9 @@ async function testGlobalStateIsolation() {
         { type: 'p', content: 'Document B isolation verification paragraph text. '.repeat(25) }
     ];
 
-    engineA.paginate(elementsA);
-    const pagesB_afterA = engineB1.paginate(elementsB);
-    const pagesB_isolated = engineB2.paginate(elementsB);
+    engineA.simulate(elementsA);
+    const pagesB_afterA = engineB1.simulate(elementsB);
+    const pagesB_isolated = engineB2.simulate(elementsB);
 
     check(
         'no residual state leaks between engine instances',
@@ -1694,7 +1694,7 @@ async function testBackgroundFillPaintersOrder() {
         ]
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const renderer = new Renderer(config, false, engine.getRuntime());
     const context = new PaintOrderContext();
     await renderer.render(pages, context);

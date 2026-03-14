@@ -167,7 +167,7 @@ interface ElementProperties {
     marginTop?: number;
     marginBottom?: number;
 
-    paginationContinuation?: PaginationContinuationSpec;
+    simulationContinuation?: SimulationContinuationSpec;
     pageOverrides?: {
         header?: PageRegionContent | null;
         footer?: PageRegionContent | null;
@@ -196,7 +196,7 @@ interface ElementProperties {
 | `keepWithNext` | any | Keep this element on the same page as the one after it. |
 | `marginTop` | any | Top margin shorthand override (points). |
 | `marginBottom` | any | Bottom margin shorthand override (points). |
-| `paginationContinuation` | any | Cross-page split markers — see §13. |
+| `simulationContinuation` | any | Cross-page split markers — see §14. |
 | `pageOverrides` | any | Override or suppress the header/footer for this element's pages. Set to `null` to suppress. |
 | `language` | code blocks | Language hint (e.g. `"typescript"`). |
 
@@ -284,7 +284,7 @@ These apply to inline images and `inline-box` elements:
 | `inlineOpticalInsetBottom` | `number` | Optical correction — bottom. |
 | `inlineOpticalInsetLeft` | `number` | Optical correction — left. |
 
-### Pagination Control
+### simulation Control
 
 | Property | Type | Description |
 |---|---|---|
@@ -442,12 +442,12 @@ interface StoryLayoutDirective {
 
 ---
 
-## 14. Pagination Continuation (`properties.paginationContinuation`)
+## 14. Simulation Continuation (`properties.simulationContinuation`)
 
 Controls marker elements inserted automatically around page-split points.
 
 ```typescript
-interface PaginationContinuationSpec {
+interface SimulationContinuationSpec {
     enabled?: boolean;
     markerAfterSplit?: {
         type: string;

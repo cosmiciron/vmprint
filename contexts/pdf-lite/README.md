@@ -26,7 +26,7 @@ const config = toLayoutConfig(documentInput);
 const engine = new LayoutEngine(config, runtime);
 
 await engine.waitForFonts();
-const pages = engine.paginate(documentInput.elements);
+const pages = engine.simulate(documentInput.elements);
 
 // Setup lightweight context
 const context = new PdfLiteContext({

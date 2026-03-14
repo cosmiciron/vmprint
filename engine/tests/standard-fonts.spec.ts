@@ -130,7 +130,7 @@ async function run() {
         }
     );
 
-    const pages = engine.paginate(fixture.elements);
+    const pages = engine.simulate(fixture.elements);
     check(
         'fixture paginates under StandardFontManager',
         'flat-pipeline invariants hold for the standard font specimen document',

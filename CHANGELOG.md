@@ -239,7 +239,7 @@ Margin behaviour changed from **collapsing** to **additive** across the engine a
 - Adjacent block margins now sum rather than collapse, matching standard typesetting conventions
 - All `draft2final` format themes (academic, literature, markdown, screenplay) updated with recalibrated margin values
 - All layout snapshot fixtures regenerated to reflect the new behaviour
-- Engine: `paginate-packagers.ts` updated with the new margin accumulation logic
+- Engine: `execute-simulation-march.ts` updated with the new margin accumulation logic
 
 #### Removed Variable Font Support
 Variable font (`.wdf` / `wght`-axis) support has been removed from the engine and context to simplify font handling and make writing new contexts easier.

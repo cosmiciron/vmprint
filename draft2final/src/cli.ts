@@ -587,7 +587,7 @@ async function renderPdf(ir: unknown, inputPath: string, outputPath: string): Pr
 
   process.stdout.write(`[draft2final] Loading fonts and paginating...\n`);
   await engine.waitForFonts();
-  const pages = engine.paginate(documentIR.elements);
+  const pages = engine.simulate(documentIR.elements);
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 

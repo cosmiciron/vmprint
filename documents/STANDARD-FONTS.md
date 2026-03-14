@@ -19,7 +19,7 @@ However, it creates an implicit requirement: every font used in a document must 
 ## 2. Design Goals
 
 1. **No changes to the FontManager contract.** Standard fonts are expressed entirely within the existing `loadFontBuffer()` mechanism.
-2. **No changes to the layout pipeline.** Text measurement, line breaking, pagination — all existing code paths remain untouched.
+2. **No changes to the layout pipeline.** Text measurement, line breaking, simulation — all existing code paths remain untouched.
 3. **Fail-fast is preserved.** If a font is unknown, the engine still throws immediately.
 4. **The concept is not limited to PDF's 14.** The architecture is defined in terms of VMPrint's own notion of "standard fonts." The PDF-14 are the first instantiation; the set can grow.
 5. **Swappable via font manager.** Callers opt in by using `StandardFontManager` instead of `LocalFontManager`. No engine flags, no output-format switches.

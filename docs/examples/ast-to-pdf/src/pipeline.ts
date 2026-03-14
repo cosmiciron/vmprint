@@ -9,7 +9,7 @@ type FixturePreset = {
 type EngineBundle = {
     LayoutEngine: new (config: any, runtime: any) => {
         waitForFonts(): Promise<void>;
-        paginate(elements: any[]): any[];
+        simulate(elements: any[]): any[];
     };
     Renderer: new (config: any, debug: boolean, runtime: any) => {
         render(pages: any[], context: any): Promise<void>;
@@ -218,7 +218,7 @@ async function renderDocumentToPdfBytes(documentInput: VmprintDocument): Promise
 
     const engine = new engineApi.LayoutEngine(config, runtime);
     await engine.waitForFonts();
-    const pages = engine.paginate(documentIr.elements);
+    const pages = engine.simulate(documentIr.elements);
 
     const { width, height } = engineApi.LayoutUtils.getPageDimensions(config);
     const context = new contextApi.PdfLiteContext({

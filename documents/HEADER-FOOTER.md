@@ -20,10 +20,10 @@ A header or footer is a clipped rectangle. Inside it, the engine reuses the same
 
 Headers and footers are intended for lightweight, non-paginating content: paragraphs, rules, small images, and similar fixed-height compositions. Region content does not participate in page breaking. If content exceeds the region box, it is clipped.
 
-To keep the engine fast and the mental model simple, pagination-sensitive behavior is disabled inside page regions:
+To keep the engine fast and the mental model simple, simulation-sensitive behavior is disabled inside page regions:
 - `pageBreakBefore` is ignored.
 - `keepWithNext` is ignored.
-- continuation and pagination markers are ignored.
+- continuation and simulation markers are ignored.
 - content does not split across pages.
 
 Practical use will almost always be a single line of text or a rule. The model stays creator-friendly without promising full document-flow semantics inside a margin-sized box.
@@ -123,7 +123,7 @@ type FooterContent = HeaderContent;
 ```
 
 `elements` uses the same IR as the main flow, but region content is laid out with region-safe semantics:
-- no pagination
+- no simulation
 - no page splitting
 - clipping on overflow
 
@@ -137,7 +137,7 @@ interface ElementProperties {
 
     /**
      * Overrides the document-level header/footer on the page this element
-     * lands on during pagination.
+     * lands on during simulation.
      *
      * `null` suppresses the region entirely on that page.
      * An object replaces the region's content on that page.
@@ -208,7 +208,7 @@ If all inset fields are omitted, the entire top margin is the header region and 
 
 ### 4.1 Baseline region resolution
 
-Before the pagination loop processes page `N`, a cheap selector-resolution step determines the baseline region content for that page:
+Before the simulation loop processes page `N`, a cheap selector-resolution step determines the baseline region content for that page:
 
 1. Resolve which `HeaderContent` applies to this page using selector precedence.
 2. Resolve which `FooterContent` applies to this page.
@@ -222,17 +222,17 @@ If a header or footer is present on a page, its bounding rect may be pre-declare
 
 ### 4.3 Finalization phase
 
-After all pages are paginated, a second pass over `Page[]`, extending the existing `finalizePagesWithCallbacks` pattern, processes headers and footers:
+After all pages are simulated, a second pass over `Page[]`, extending the existing `finalizePagesWithCallbacks` pattern, processes headers and footers:
 
 1. For each page, resolve any per-page override from the page's laid-out boxes.
 2. Run `layoutRegion(content, regionRect, config)` using the existing shaping and materialization pipeline under a region-local layout context:
    - content width is `regionRect.w`
    - origin is `(regionRect.x, regionRect.y)`
    - region content is clipped to `regionRect`
-   - no pagination or splitting occurs inside the region
+   - no simulation or splitting occurs inside the region
 3. Append those boxes to `page.boxes` with a distinct `meta.sourceType` (`'header'` / `'footer'`).
 
-This keeps headers and footers outside the main pagination loop, avoids cursor interaction, and limits additional cost to one lightweight post-pass per page.
+This keeps headers and footers outside the main simulation loop, avoids cursor interaction, and limits additional cost to one lightweight post-pass per page.
 
 ### 4.4 Override precedence on a page
 
@@ -297,4 +297,4 @@ The `suppressPageNumber` field on `ElementLayoutDirectives` is removed. Per-page
 - Headers/footers that paginate internally. The region is sized to its margin budget; content that overflows is clipped.
 - Per-section header changes driven by section elements. A future `SectionDefinition` concept would address this. For now, `firstPage`/`odd`/`even`/`default` covers the overwhelming majority of real documents.
 - A general rich templating language for page metadata. Only a small reserved token set is supported.
-- Running expensive region layout during the main pagination loop. Region rendering happens only in finalization.
+- Running expensive region layout during the main simulation loop. Region rendering happens only in finalization.

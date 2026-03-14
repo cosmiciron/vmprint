@@ -231,7 +231,7 @@ async function run() {
         const t0 = options.profileLayout ? performance.now() : 0;
         await engine.waitForFonts();
         const t1 = options.profileLayout ? performance.now() : 0;
-        pages = engine.paginate(document.elements);
+        pages = engine.simulate(document.elements);
         if (options.profileLayout) {
             const t2 = performance.now();
             const coldFontMs = t1 - t0;
@@ -244,7 +244,7 @@ async function run() {
                 const wt0 = performance.now();
                 await warmEngine.waitForFonts();
                 const wt1 = performance.now();
-                warmEngine.paginate(document.elements);
+                warmEngine.simulate(document.elements);
                 const wt2 = performance.now();
                 warmFontSum += wt1 - wt0;
                 warmLayoutSum += wt2 - wt1;

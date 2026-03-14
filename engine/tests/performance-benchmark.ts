@@ -152,7 +152,7 @@ async function run(): Promise<void> {
             const t0 = performance.now();
             await engineInstance.waitForFonts();
             const t1 = performance.now();
-            const pages = engineInstance.paginate(document.elements);
+            const pages = engineInstance.simulate(document.elements);
             const t2 = performance.now();
             const reportReader = engineInstance.getLastSimulationReportReader?.() || { report: undefined };
             const profile = reportReader.report?.profile || {

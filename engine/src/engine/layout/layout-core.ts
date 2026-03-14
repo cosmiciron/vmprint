@@ -49,7 +49,7 @@ import {
 } from './layout-table';
 import { DropCapPackager } from './packagers/dropcap-packager';
 import { createPackagers } from './packagers/create-packagers';
-import { paginatePackagers } from './packagers/paginate-packagers';
+import { executeSimulationMarch } from './packagers/execute-simulation-march';
 import type { PackagerContext } from './packagers/packager-types';
 
 
@@ -383,7 +383,7 @@ export class LayoutProcessor extends TextProcessor {
      * Canonical flat pipeline:
      * input elements -> flow boxes -> paginated flow boxes -> positioned page boxes.
      */
-    paginate(elements: Element[]): Page[] {
+    simulate(elements: Element[]): Page[] {
         const { height: pageHeight, width: pageWidth } = this.getPageDimensions();
         const session = new LayoutSession({
             runtime: this.getRuntime(),
@@ -403,7 +403,7 @@ export class LayoutProcessor extends TextProcessor {
             publishActorSignal: (signal: any) => session.publishActorSignal(signal),
             readActorSignals: (topic?: string) => session.getActorSignals(topic)
         };
-        const pages = paginatePackagers(this, packagers, contextBase, session);
+        const pages = executeSimulationMarch(this, packagers, contextBase, session);
         return session.finalizePages(pages);
     }
 
@@ -858,7 +858,7 @@ export class LayoutProcessor extends TextProcessor {
         };
 
         const regionProcessor = new LayoutProcessor(regionConfig, this.runtime);
-        const regionPages = regionProcessor.paginate(regionElements);
+        const regionPages = regionProcessor.simulate(regionElements);
         const firstRegionPage = regionPages[0];
         const contentBoxes = (firstRegionPage?.boxes || [])
             .filter((box) => (box.y + box.h) > 0 && box.y < innerHeight)

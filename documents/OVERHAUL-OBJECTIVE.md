@@ -15,7 +15,7 @@ It is intentionally shorter and more operational than the main architecture docu
 
 ## 1. Primary Objective
 
-Turn VMPrint into a true simulation engine for layout, not a traditional paginator with plugins.
+Turn VMPrint into a true simulation engine for layout, not a traditional simulator with plugins.
 
 That means the real ontology of the engine should be:
 
@@ -29,7 +29,7 @@ That means the real ontology of the engine should be:
 * snapshots for ambiguous transitions
 * a thin coordinator
 
-The engine must solve layout problems in these terms, not by adding feature-specific paginator exceptions.
+The engine must solve layout problems in these terms, not by adding feature-specific simulator exceptions.
 
 ---
 
@@ -38,9 +38,9 @@ The engine must solve layout problems in these terms, not by adding feature-spec
 The overhaul is successful when:
 
 * current regression fixtures are explainable in simulation terms
-* hard layout seams are absorbed by engine primitives, not hidden paginator logic
+* hard layout seams are absorbed by engine primitives, not hidden simulator logic
 * actor intelligence remains the heart of local behavior
-* the paginator becomes a coordinator rather than the domain brain
+* the simulator becomes a coordinator rather than the domain brain
 * new capabilities emerge honestly from the runtime model
 
 The target is not "clean code" in the abstract.
@@ -60,7 +60,7 @@ VMPrint should continue moving toward this shape:
 | Feature behavior | collaborators / systems |
 | Group movement / local orchestration | formations |
 | Ambiguous transition seams | local snapshot branching |
-| Progression / tick control | thin paginator coordinator |
+| Progression / tick control | thin simulator coordinator |
 
 Packager has not been diminished by this shift. It has been correctly placed inside a larger and stronger simulation system.
 
@@ -80,7 +80,7 @@ It should not own document-specific meaning such as:
 
 * AST interpretation
 * pages as publishing concepts
-* pagination policy
+* simulation policy
 * print-feature behavior
 
 In practice, VMPrint should be understood as layered:
@@ -91,13 +91,13 @@ In practice, VMPrint should be understood as layered:
 3. document semantics
 4. print / composition handoff
 
-At the engine-systems layer, preferred names should describe system category rather than local layout tactics. That means categories like `Physics`, `AI`, `Transitions`, `Lifecycle`, and `Event Dispatch` are preferred over names that merely reflect pagination-local mechanisms. This is an explicit guard against reintroducing layout-engine thinking into a system whose core has already evolved into a broader stateful runtime.
+At the engine-systems layer, preferred names should describe system category rather than local layout tactics. That means categories like `Physics`, `AI`, `Transitions`, `Lifecycle`, and `Event Dispatch` are preferred over names that merely reflect simulation-local mechanisms. This is an explicit guard against reintroducing layout-engine thinking into a system whose core has already evolved into a broader stateful runtime.
 
-One important future consequence of this architecture is that `AI` can eventually become speculative rather than purely heuristic. With a protected `Kernel` underneath it, the engine can snapshot world state, try a placement path, inspect the resulting collisions and state transitions, and roll the world back if that path is rejected. That is effectively pathfinding over pagination space, and it is a capability the overhaul should preserve even if it is implemented later.
+One important future consequence of this architecture is that `AI` can eventually become speculative rather than purely heuristic. With a protected `Kernel` underneath it, the engine can snapshot world state, try a placement path, inspect the resulting collisions and state transitions, and roll the world back if that path is rejected. That is effectively pathfinding over simulation space, and it is a capability the overhaul should preserve even if it is implemented later.
 
 Another important future consequence is that dependent document regions do not need to be thought of only as batch rerender problems. A growing TOC, outline panel, or similar companion structure can instead be modeled as a live adjacent region whose footprint expands inside the same world. In that model, `Event Dispatch` announces new structure, `Physics` resolves overlap by displacement, `Transitions` handle page-boundary crossings, and the system keeps ticking until it settles. This is a major conceptual difference from legacy tree-rebuild engines and should be preserved as a strategic capability of VMPrint.
 
-This is how the overhaul avoids replacing paginator-centric design with a new `LayoutSession` god object.
+This is how the overhaul avoids replacing simulator-centric design with a new `LayoutSession` god object.
 
 ---
 
@@ -110,7 +110,7 @@ Use current regression fixtures as architectural forcing functions.
 A fixture should count as "covered" only if:
 
 * its behavior is honestly explained by the new model
-* the solution does not secretly rely on old paginator ownership
+* the solution does not secretly rely on old simulator ownership
 * the engine primitive introduced for it looks reusable beyond that one fixture
 
 ### 4.2 Narrow Probes Before Broad Generalization
@@ -146,7 +146,7 @@ Visual showcases are useful only after that.
 
 Continue a refactor when it:
 
-* removes real domain ownership from the paginator
+* removes real domain ownership from the simulator
 * turns implicit behavior into a runtime primitive
 * makes a seam understandable in simulation terms
 * improves testability without lying about behavior
@@ -170,7 +170,7 @@ Every meaningful refactor slice should be paired with isolated, warmed perf chec
 
 Default benchmark set:
 
-* `09-tables-spans-pagination`
+* `09-tables-spans-simulation`
 * `10-packager-split-scenarios`
 * `00-all-capabilities`
 

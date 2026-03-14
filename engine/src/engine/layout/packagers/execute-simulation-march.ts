@@ -16,7 +16,7 @@ type FlowBoxPositioner = LayoutProcessor & {
     ): Box | Box[];
 };
 
-export function paginatePackagers(
+export function executeSimulationMarch(
     processor: LayoutProcessor,
     packagers: PackagerUnit[],
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,

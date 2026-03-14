@@ -57,9 +57,9 @@ This is the simulation ontology. No redesign of this layer is needed.
 
 Four concrete implementations exist and are correct: `FlowBoxPackager`, `StoryPackager`, `TablePackager`, `DropCapPackager`. These are not to be replaced or restructured.
 
-**The pagination loop is already type-agnostic.**
+**The simulation loop is already type-agnostic.**
 
-`paginate-packagers.ts` already treats all packagers uniformly. It does not know about paragraphs, tables, or drop caps. All layout logic lives inside packagers. This is the right design.
+`execute-simulation-march.ts` already treats all packagers uniformly. It does not know about paragraphs, tables, or drop caps. All layout logic lives inside packagers. This is the right design.
 
 **Artifact identity is already tracked.**
 
@@ -91,22 +91,22 @@ A spatial collision and exclusion system is already in production use inside `St
 
 **Header/footer injection is already separated.**
 
-`layout-page-finalization.ts` already runs headers and footers as a post-pass over committed pages, layouting region content in a sub-engine. It is already isolated from the main pagination loop. The remaining work is to route it through the collaborator interface rather than as a direct call.
+`layout-page-finalization.ts` already runs headers and footers as a post-pass over committed pages, layouting region content in a sub-engine. It is already isolated from the main simulation loop. The remaining work is to route it through the collaborator interface rather than as a direct call.
 
 ### What Is Not Yet Built
 
 Only three structural pieces are missing from the simulation model:
 
-1.  **`LayoutSession`**: Pagination state lives as local variables in the `paginatePackagers` while-loop. It needs to become a formal object.
+1.  **`LayoutSession`**: simulation state lives as local variables in the `executeSimulationMarch` while-loop. It needs to become a formal object.
 
 2.  **`ConstraintField`**: Available space is passed as raw numbers. There is no object that aggregates margins, reservations, and exclusions into a negotiable surface.
 
 3.  **`LayoutCollaborator` interface and phase hooks**: There is no system registration, no phase notification, and no structured way for cross-cutting behaviors to participate in the simulation.
 
-Additionally, two behaviors that belong in collaborator systems are currently embedded directly in the paginator:
+Additionally, two behaviors that belong in collaborator systems are currently embedded directly in the simulator:
 
-*   `keepWithNext` sequencing logic — inline in `paginate-packagers.ts`
-*   Continuation marker injection — inline in `paginate-packagers.ts`
+*   `keepWithNext` sequencing logic — inline in `execute-simulation-march.ts`
+*   Continuation marker injection — inline in `execute-simulation-march.ts`
 
 These are the target of extraction in Phase 5.
 
@@ -125,7 +125,7 @@ The source of truth is:
 *   the actor continuations that move forward across frames (`PackagerUnit[]`)
 *   the committed artifact stream (`Box[]` per page)
 
-This distinction matters. If the page is treated as the primary abstraction, the architecture collapses back into a traditional paginator with plugin hooks. If the page is treated as a bounded output surface inside a simulation, the engine remains extensible.
+This distinction matters. If the page is treated as the primary abstraction, the architecture collapses back into a traditional simulator with plugin hooks. If the page is treated as a bounded output surface inside a simulation, the engine remains extensible.
 
 ---
 
@@ -196,7 +196,7 @@ This is especially relevant to:
 
 The important architectural rule is:
 
-> Do not encode cloning, morphing, or continuation-preservation as packager-specific paginator exceptions.
+> Do not encode cloning, morphing, or continuation-preservation as packager-specific simulator exceptions.
 > Treat them as actor transformation capabilities expressed through the simulation model.
 
 What has now been proven in the engine is:
@@ -249,7 +249,7 @@ What has now been proven in the engine is:
 *   local branch snapshots can capture page-local placement state, queue state, split staging state, reservations, exclusions, and fragment-transition state
 *   an accepted split can be fully previewed against that snapshot, then rolled back cleanly
 *   queue/continuation handling can be derived from the preview branch and then committed deterministically
-*   this works not only for the original troublesome pagination-fragment fixture, but also for a second purpose-built accepted-split branching probe designed to expose leaked marker, queue, or reservation state
+*   this works not only for the original troublesome simulation-fragment fixture, but also for a second purpose-built accepted-split branching probe designed to expose leaked marker, queue, or reservation state
 
 In other words, snapshot branching is no longer a speculative design note. It is now a validated engine primitive for ambiguous transition seams.
 
@@ -264,7 +264,7 @@ The architectural rule is:
 
 A `LayoutCollaborator` should not be thought of as a bag of callbacks. It is a **simulation system**.
 
-Its purpose is to participate in the layout run without breaking the type-agnostic nature of the pagination core.
+Its purpose is to participate in the layout run without breaking the type-agnostic nature of the simulation core.
 
 | Category | Examples |
 |---|---|
@@ -285,7 +285,7 @@ The phases described below are **already implicit** in the engine. The work is t
 
 1.  **Simulation Start**
     Initialize session state, counters, lookup tables, and system-local state.
-    *(Currently: implicit at the start of `LayoutProcessor.paginate()`)*
+    *(Currently: implicit at the start of `LayoutProcessor.simulate()`)*
 
 2.  **Actor Spawn**
     Materialize authored elements into runtime actors via `createPackagers()`. Assign stable `actorId` to each packager.
@@ -335,12 +335,12 @@ The existing `measurementCache` in `EngineRuntime` already respects this — tex
 ### Law 2: World State is First-Class
 Reservations, exclusions, anchors, counters, references, and telemetry must live in structured simulation state (`LayoutSession`).
 
-They must not be scattered across local variables, caches, or ad hoc side channels. This is the primary violation in the current code: pagination state lives as local variables in `paginatePackagers`. Extracting these into `LayoutSession` is the primary structural work.
+They must not be scattered across local variables, caches, or ad hoc side channels. This is the primary violation in the current code: simulation state lives as local variables in `executeSimulationMarch`. Extracting these into `LayoutSession` is the primary structural work.
 
 ### Law 3: Features are Systems
 Document features must be expressible as systems over the simulation loop.
 
-If a feature requires special-case logic directly in the paginator, that is a design smell. The current violations are `keepWithNext` sequencing and continuation marker injection, both embedded in `paginate-packagers.ts`. These must be extracted into collaborators.
+If a feature requires special-case logic directly in the simulator, that is a design smell. The current violations are `keepWithNext` sequencing and continuation marker injection, both embedded in `execute-simulation-march.ts`. These must be extracted into collaborators.
 
 Headers and footers are already nearly correct: `layout-page-finalization.ts` is separate, but invoked directly rather than through a phase hook. This is a routing fix, not a redesign.
 
@@ -420,7 +420,7 @@ The engine has now demonstrated this distinction with a concrete reservation sub
 *   **Multiple production phases**: reservations can be produced both after actor commitment and at page start.
 *   **Shared selector logic**: page targeting (`first`, `odd`, `even`, `all`) belongs to session-owned world-state logic, not to individual collaborator policy.
 
-This matters because it is the first proof that unusual layout behavior can be expressed as a shared simulation subsystem rather than as paginator-local special cases.
+This matters because it is the first proof that unusual layout behavior can be expressed as a shared simulation subsystem rather than as simulator-local special cases.
 
 The engine has also now validated a second kind of shared runtime tool:
 
@@ -548,7 +548,7 @@ Three objects need to be introduced. Their scope is minimal — they formalize w
 
 ### `LayoutSession`
 
-Owns one deterministic simulation run. Replaces the local variables in `paginatePackagers`.
+Owns one deterministic simulation run. Replaces the local variables in `executeSimulationMarch`.
 
 ```typescript
 interface LayoutSession {
@@ -564,7 +564,7 @@ interface LayoutSession {
     // System registry — execution order is explicit and fixed at session start
     readonly collaborators: readonly LayoutCollaborator[];
 
-    // Phase notification methods — called by the pagination loop
+    // Phase notification methods — called by the simulation loop
     notifySimulationStart(): void;
     notifyActorSpawn(actor: PackagerUnit): void;
     notifyPageStart(): void;
@@ -643,23 +643,23 @@ Currently `currentPageBoxes` is a local `Box[]` array. `PageSurface` gives it an
 
 ## 13. Re-Architecture Strategy
 
-The goal is to structurally align the pagination loop with the simulation architecture. This must be done in the most minimalistic, high-impact way without breaking established contracts or resorting to superficial renaming.
+The goal is to structurally align the simulation loop with the simulation architecture. This must be done in the most minimalistic, high-impact way without breaking established contracts or resorting to superficial renaming.
 
 ### Invariants Throughout the Transition
 
-*   `LayoutProcessor.paginate(elements: Element[]): Page[]` does not change signature.
+*   `LayoutProcessor.simulate(elements: Element[]): Page[]` does not change signature.
 *   Existing regression tests and layout snapshots pass without modification throughout.
 *   No non-deterministic collaborator ordering. System registration order at session construction is execution order.
 *   No collaborator writes to `EngineRuntime` caches. `EngineRuntime` is read-only to collaborators.
-*   No feature-specific exceptions added to the paginator core. Exceptions that already exist are the target of extraction, not a model for new code.
+*   No feature-specific exceptions added to the simulator core. Exceptions that already exist are the target of extraction, not a model for new code.
 
 ### Phase 1: Preserve the Outer Boundaries *(already satisfied)*
 
-`LayoutProcessor.paginate(elements)` is the public contract. The existing regression tests are the oracle. Any change that causes snapshot failures has violated the contract. These tests need not be modified; they will serve as the continuous correctness signal throughout the transition.
+`LayoutProcessor.simulate(elements)` is the public contract. The existing regression tests are the oracle. Any change that causes snapshot failures has violated the contract. These tests need not be modified; they will serve as the continuous correctness signal throughout the transition.
 
 ### Phase 2: Introduce `LayoutSession`
 
-Extract `currentPageIndex`, `currentY`, `currentPageBoxes`, `margins`, and page-break state from local variables in `paginatePackagers` into a `LayoutSession` object instantiated at the start of `paginate()`.
+Extract `currentPageIndex`, `currentY`, `currentPageBoxes`, `margins`, and page-break state from local variables in `executeSimulationMarch` into a `LayoutSession` object instantiated at the start of `simulate()`.
 
 At this stage, `LayoutSession` has no collaborators and no phase notifications. It is purely a state container. The loop behavior is identical to today. All tests must still pass.
 
@@ -681,7 +681,7 @@ Confirm that `BoxMeta` on emitted boxes reflects these values correctly. No beha
 
 ### Phase 5: Wire the Collaborator Interface
 
-Add the `LayoutCollaborator` interface and the notification methods to `LayoutSession`. The pagination loop calls `session.notify*()` at each phase boundary.
+Add the `LayoutCollaborator` interface and the notification methods to `LayoutSession`. The simulation loop calls `session.notify*()` at each phase boundary.
 
 At this stage, no collaborators are registered. The notification calls are no-ops. All tests must still pass. The collaborator system now exists structurally and can be proven with the next step.
 
@@ -695,19 +695,19 @@ Listens on `onActorCommitted`. If the committed actor's `actorKind` is a heading
 
 **System B — Reservation (Influence):** `PageFooterRegionCollaborator`
 
-Refactor `layout-page-finalization.ts` so that header/footer injection happens through `onPageFinalized` on this collaborator rather than as a direct call after `paginate()` returns. This is routing, not redesign — the sub-engine layout logic does not change.
+Refactor `layout-page-finalization.ts` so that header/footer injection happens through `onPageFinalized` on this collaborator rather than as a direct call after `simulate()` returns. This is routing, not redesign — the sub-engine layout logic does not change.
 
-If both systems work correctly and all tests pass, the architecture is proven. Features now have a clean path into the engine without touching the paginator core.
+If both systems work correctly and all tests pass, the architecture is proven. Features now have a clean path into the engine without touching the simulator core.
 
-### Phase 7: Extract Embedded Paginator Logic
+### Phase 7: Extract Embedded simulator Logic
 
 With the substrate proven, extract the two existing violations of Law 3:
 
-**`keepWithNext` sequencing** — currently inline in `paginatePackagers`. Move to a `KeepWithNextCollaborator` that participates in constraint negotiation to defer placement when the sequence cannot fit.
+**`keepWithNext` sequencing** — currently inline in `executeSimulationMarch`. Move to a `KeepWithNextCollaborator` that participates in constraint negotiation to defer placement when the sequence cannot fit.
 
-**Continuation markers** — currently inline in `paginatePackagers`. Move to a `ContinuationMarkerCollaborator` that listens on `onContinuationProduced` and injects synthetic marker packagers into the session's actor queue.
+**Continuation markers** — currently inline in `executeSimulationMarch`. Move to a `ContinuationMarkerCollaborator` that listens on `onContinuationProduced` and injects synthetic marker packagers into the session's actor queue.
 
-After this phase, the paginator core should contain only the fundamental loop: iterate actors, negotiate constraints, prepare, commit, continue. All cross-cutting logic lives in collaborators.
+After this phase, the simulator core should contain only the fundamental loop: iterate actors, negotiate constraints, prepare, commit, continue. All cross-cutting logic lives in collaborators.
 
 ---
 

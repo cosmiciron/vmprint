@@ -816,8 +816,8 @@ async function run() {
         await engine.waitForFonts();
 
         const elements = fixture.document.elements;
-        const pagesA = engine.paginate(elements);
-        const pagesB = engine.paginate(elements);
+        const pagesA = engine.simulate(elements);
+        const pagesB = engine.simulate(elements);
 
         check(
             `${fixture.name} flat pipeline invariants`,
@@ -839,7 +839,7 @@ async function run() {
         );
         check(
             `${fixture.name} simulation report contract`,
-            'paginate() produces a simulation report whose top-level counts and typed artifact sections are available',
+            'simulate() produces a simulation report whose top-level counts and typed artifact sections are available',
             () => {
                 assertSimulationReportSignals(engine, pagesA, fixture.name);
             }
@@ -1125,7 +1125,7 @@ async function run() {
                 }
             ];
 
-            const pages = engine.paginate(elements as any);
+            const pages = engine.simulate(elements as any);
             assert.ok(pages.length >= 1, 'heading telemetry probe should paginate successfully');
 
             const reader = engine.getLastSimulationReportReader();
@@ -1222,7 +1222,7 @@ async function run() {
 
             const tocEngine = new LayoutEngine(config);
             await tocEngine.waitForFonts();
-            const tocPages = tocEngine.paginate(tocElements as any);
+            const tocPages = tocEngine.simulate(tocElements as any);
             const flattenBoxText = (box: any): string => {
                 if (typeof box?.text === 'string' && box.text.length > 0) return box.text;
                 if (typeof box?.content === 'string' && box.content.length > 0) return box.content;
@@ -1272,7 +1272,7 @@ async function run() {
                 }
             });
             await configuredEngine.waitForFonts();
-            configuredEngine.paginate(elements as any);
+            configuredEngine.simulate(elements as any);
             const configuredPlan = await configuredEngine.planConfiguredTableOfContents();
             assert.ok(configuredPlan, 'configured TOC planner should activate when the document declares tableOfContents');
             assert.equal(configuredPlan?.reservedPageCount, 1, 'configured TOC planner should use the declared reservation size');
@@ -1539,7 +1539,7 @@ async function run() {
                 }
             });
             await overflowingConfiguredEngine.waitForFonts();
-            overflowingConfiguredEngine.paginate(elements as any);
+            overflowingConfiguredEngine.simulate(elements as any);
             const overflowingBundle = await overflowingConfiguredEngine.buildPrintPipelineArtifacts();
             assert.equal(overflowingBundle.tableOfContents.declared, true, 'overflow bundle should still report TOC declaration');
             assert.equal(overflowingBundle.tableOfContents.status, 'overflow', 'overflow bundle should report TOC overflow clearly');
@@ -1608,7 +1608,7 @@ async function run() {
 
             const noTocEngine = new LayoutEngine(config);
             await noTocEngine.waitForFonts();
-            noTocEngine.paginate(elements as any);
+            noTocEngine.simulate(elements as any);
             const noTocBundle = await noTocEngine.buildPrintPipelineArtifacts();
             assert.equal(noTocBundle.tableOfContents.declared, false, 'print artifact bundle should report no TOC declaration when absent');
             assert.equal(noTocBundle.tableOfContents.status, 'not-configured', 'print artifact bundle should distinguish the unconfigured case');
@@ -1717,8 +1717,8 @@ async function run() {
                 { type: 'p', content: sharedText, properties: { sourceId: 'probe-second' } }
             ];
 
-            const baselinePages = engine.paginate(baselineElements as any);
-            const reservedPages = engine.paginate(reservedElements as any);
+            const baselinePages = engine.simulate(baselineElements as any);
+            const reservedPages = engine.simulate(reservedElements as any);
 
             const findFirstPageIndexForSource = (pages: any[], sourceId: string): number => {
                 for (const page of pages) {
@@ -1758,7 +1758,7 @@ async function run() {
             } as any);
             await pageStartReservationEngine.waitForFonts();
 
-            const pageStartReservedPages = pageStartReservationEngine.paginate(baselineElements as any);
+            const pageStartReservedPages = pageStartReservationEngine.simulate(baselineElements as any);
             assert.equal(pageStartReservedPages.length, 2, 'page-start reservation should also push the second actor to a new page');
             assert.equal(findFirstPageIndexForSource(pageStartReservedPages, 'probe-second'), 1, 'page-start reservation should move the second actor to page 1');
 
@@ -1784,7 +1784,7 @@ async function run() {
             } as any);
             await oddSelectorEngine.waitForFonts();
 
-            const oddSelectorPages = oddSelectorEngine.paginate(multiPageElements as any);
+            const oddSelectorPages = oddSelectorEngine.simulate(multiPageElements as any);
             assert.ok(oddSelectorPages.length >= 3, 'odd-selector reservation probe should produce at least three pages');
 
             const oddSelectorSession = oddSelectorEngine.getLastSimulationReportReader();
@@ -1806,7 +1806,7 @@ async function run() {
             } as any);
             await exclusionEngine.waitForFonts();
 
-            const exclusionPages = exclusionEngine.paginate(baselineElements as any);
+            const exclusionPages = exclusionEngine.simulate(baselineElements as any);
             assert.equal(exclusionPages.length, 1, 'page-start exclusion probe should stay on one page');
 
             const findFirstBoxYForSource = (pages: any[], sourceId: string): number => {
@@ -1847,7 +1847,7 @@ async function run() {
             } as any);
             await laneExclusionEngine.waitForFonts();
 
-            const laneExclusionPages = laneExclusionEngine.paginate(baselineElements as any);
+            const laneExclusionPages = laneExclusionEngine.simulate(baselineElements as any);
             assert.equal(laneExclusionPages.length, 1, 'lane exclusion probe should stay on one page');
 
             const findFirstBoxForSource = (pages: any[], sourceId: string): any => {
@@ -1890,7 +1890,7 @@ async function run() {
             } as any);
             await centeredLaneExclusionEngine.waitForFonts();
 
-            const centeredLanePages = centeredLaneExclusionEngine.paginate(baselineElements as any);
+            const centeredLanePages = centeredLaneExclusionEngine.simulate(baselineElements as any);
             assert.equal(centeredLanePages.length, 2, 'centered lane exclusion probe should defer full-width actors below the constrained band');
 
             const centeredLaneFirstBox = findFirstBoxForSource(centeredLanePages, 'probe-first');
@@ -1926,7 +1926,7 @@ async function run() {
             } as any);
             await interiorExclusionEngine.waitForFonts();
 
-            const interiorExclusionPages = interiorExclusionEngine.paginate(baselineElements as any);
+            const interiorExclusionPages = interiorExclusionEngine.simulate(baselineElements as any);
             assert.equal(interiorExclusionPages.length, 1, 'interior exclusion probe should negotiate a same-page lane');
 
             const interiorFirstBox = findFirstBoxForSource(interiorExclusionPages, 'probe-first');
@@ -1975,7 +1975,7 @@ async function run() {
                     properties: { sourceId: 'probe-second' }
                 }
             ];
-            const multiInteriorPages = multiInteriorExclusionEngine.paginate(multiInteriorElements as any);
+            const multiInteriorPages = multiInteriorExclusionEngine.simulate(multiInteriorElements as any);
             assert.equal(multiInteriorPages.length, 1, 'multi-interior exclusion probe should negotiate a same-page lane');
 
             const multiInteriorFirstBox = findFirstBoxForSource(multiInteriorPages, 'probe-first');
@@ -2030,7 +2030,7 @@ async function run() {
                 }
             ];
 
-            const narrowLanePages = narrowLaneProbeEngine.paginate(narrowLaneElements as any);
+            const narrowLanePages = narrowLaneProbeEngine.simulate(narrowLaneElements as any);
             assert.equal(narrowLanePages.length, 1, 'narrow multi-interior probe should stay on one page');
 
             const narrowLaneFirstBox = findFirstBoxForSource(narrowLanePages, 'probe-narrow');
@@ -2091,7 +2091,7 @@ async function run() {
                 }
             ];
 
-            const dropcapLanePages = dropcapLaneEngine.paginate(dropcapElements as any);
+            const dropcapLanePages = dropcapLaneEngine.simulate(dropcapElements as any);
             assert.equal(dropcapLanePages.length, 2, 'dropcap lane probe should defer below the constrained band rather than force the drop cap through it');
 
             const dropcapLaneFirstBox = findFirstBoxForSource(dropcapLanePages, 'dropcap-lane-probe');
@@ -2138,8 +2138,8 @@ async function run() {
             } as any);
             await centeredLaneStoryEngine.waitForFonts();
 
-            const baselineStoryPages = baselineStoryEngine.paginate(baselineStoryElements as any);
-            const centeredLaneStoryPages = centeredLaneStoryEngine.paginate(baselineStoryElements as any);
+            const baselineStoryPages = baselineStoryEngine.simulate(baselineStoryElements as any);
+            const centeredLaneStoryPages = centeredLaneStoryEngine.simulate(baselineStoryElements as any);
 
             const baselineStoryFirstBox = findFirstBoxForSource(baselineStoryPages, 'story-lane-first');
             const centeredLaneStoryFirstBox = findFirstBoxForSource(centeredLaneStoryPages, 'story-lane-first');
@@ -2183,7 +2183,7 @@ async function run() {
                 }
             ];
 
-            const pages = engine.paginate(elements as any);
+            const pages = engine.simulate(elements as any);
             assert.ok(pages.length >= 4, 'clone probe should span several pages');
 
             const allBoxes = pages.flatMap((page: any) => page.boxes || []);

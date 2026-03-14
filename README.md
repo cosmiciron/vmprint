@@ -1,4 +1,4 @@
-﻿# VMPrint
+# VMPrint
 :: A deterministic, zero-DOM typesetting engine/VM in pure TypeScript.
 
 **VMPrint is not another HTML-to-PDF wrapper.** Instead, it is the crucial missing primitive you might need if you want to build one on your own -- from scratch.
@@ -24,7 +24,7 @@ To see what this engine can build, view the beautifully typeset PDF version of t
 - **True Glyph-Based Measurement**: Reads intrinsic OpenType advance widths and kerning pairs from font files. Layout relies on absolute typographic math, not browser approximations.
 - **Fast Performance**: Renders complex, multi-page layouts in milliseconds. Global caches for glyph metrics and text segmentation ensure high throughput for batch pipelines.
 - **Multi-Column & Mixed Layouts**: Native support for DTP-style multi-column story regions. Seamlessly mix single-column headers, three-column articles, and pull-quotes on the same page. Floating obstacles naturally shape text across multiple column boundaries.
-- **Advanced Pagination & Features**: Floating elements, drop caps, widow/orphan control, and cross-page continuation markers.
+- **Advanced Simulation & Features**: Floating elements, drop caps, widow/orphan control, and cross-page continuation markers.
 - **Header and Footer Regions**: Top-level `header` / `footer` document regions with page-selector support (`default`, `firstPage`, `odd`, `even`). Per-page suppression via element `pageOverrides`. Region content automatically clipped to margin bounds. See [Header and Footer Architecture](documents/HEADER-FOOTER.md) for full specification.
 - **Complex Table Support**: First-class handling for tables that span multiple pages, including smart row splitting, `colspan`, `rowspan`, and automatically repeated headers.
 - **Publishing-Grade Typography**: Grapheme-accurate line breaking using `Intl.Segmenter`, language-aware hyphenation, and mixed-script text runs with perfect baseline alignment.
@@ -44,7 +44,7 @@ To see what this engine can build, view the beautifully typeset PDF version of t
 
 In the 1980s and 90s, serious software thought seriously about pages. TeX got hyphenation and justification right. Display PostScript gave NeXT workstations a real imaging model — every application had access to typographically precise, device-independent layout at the OS level. Desktop publishing software understood widows, orphans, and the subtle difference between a line break and a paragraph break.
 
-Then the web happened. Mostly great. But somewhere along the way, "generate a PDF" became either "run a headless Chromium instance" or "write your own pagination loop against a low-level drawing API." Neither of these is good. The thinking that went into document composition — the kind that made TeX and PostScript genuinely good — largely disappeared from the toolkit of the working developer.
+Then the web happened. Mostly great. But somewhere along the way, "generate a PDF" became either "run a headless Chromium instance" or "write your own simulation loop against a low-level drawing API." Neither of these is good. The thinking that went into document composition — the kind that made TeX and PostScript genuinely good — largely disappeared from the toolkit of the working developer.
 
 VMPrint is an attempt to recover some of what was lost.
 
@@ -52,7 +52,7 @@ VMPrint is an attempt to recover some of what was lost.
 
 VMPrint works in two stages, and keeping them separate is the whole point.
 
-**Stage 1 — Layout.** You give it a document: structured JSON, or source text via `draft2final` (through transmuters producing `DocumentInput`). It measures glyphs, wraps lines, handles hyphenation, paginates tables, controls orphans and widows, places floats. It produces a `Page[]` stream — an array of pages, each containing a flat list of absolutely-positioned boxes.
+**Stage 1 — Layout.** You give it a document: structured JSON, or source text via `draft2final` (through transmuters producing `DocumentInput`). It measures glyphs, wraps lines, handles hyphenation, simulates tables, controls orphans and widows, places floats. It produces a `Page[]` stream — an array of pages, each containing a flat list of absolutely-positioned boxes.
 
 **Stage 2 — Rendering.** A renderer walks those boxes and paints them to a context. Today that context is a PDF. Tomorrow it could be canvas, SVG, or a test spy.
 
@@ -65,7 +65,7 @@ const engine = new LayoutEngine(config, runtime);
 await engine.waitForFonts();
 
 // pages is a plain Page[] — inspect it, snapshot it, diff it
-const pages = engine.paginate(document.elements);
+const pages = engine.simulate(document.elements);
 
 const renderer = new Renderer(config, false, runtime);
 await renderer.render(pages, context);
@@ -83,17 +83,17 @@ This is not a promise about "should work in theory." It's an architectural const
 
 **Headless Chrome / Puppeteer**: Works great until it doesn't. Cold starts are slow. Output drifts across browser versions. Edge runtimes typically can't run it at all. You're maintaining a Chromium dependency to produce text in a box — and Chromium is ~170 MB on disk. VMPrint's full dependency tree, including the font engine that makes real glyph measurement possible, is ~2 MiB packed and ~8.7 MiB unpacked.
 
-**PDFKit / pdf-lib / react-pdf**: You're writing pagination. "If this paragraph doesn't fit, cut here, carry the rest to the next page" — by hand, for every element type, including tables that span pages and headings that must stay with what follows them.
+**PDFKit / pdf-lib / react-pdf**: You're writing simulation. "If this paragraph doesn't fit, cut here, carry the rest to the next page" — by hand, for every element type, including tables that span pages and headings that must stay with what follows them.
 
 **LaTeX**: Genuinely excellent at what it does. Also requires a TeX installation, a 1970s input format, and an afternoon of fighting package conflicts.
 
-VMPrint handles the pagination. You describe your document. It figures out where things break.
+VMPrint handles the simulation. You describe your document. It figures out where things break.
 
 ## How It Started
 
 > I'm a film director. I hated writing in screenplay software, so I started writing in plain text. Then I wrote a book in Markdown and wanted industry-standard manuscript output — and found no tool I trusted to get there without pain.
 >
-> Low-level PDF libraries made me implement my own pagination. Headless browser pipelines were heavy and unpredictable. So I took a detour and built a layout engine first.
+> Low-level PDF libraries made me implement my own simulation. Headless browser pipelines were heavy and unpredictable. So I took a detour and built a layout engine first.
 >
 > The manuscript is still waiting. The engine shipped instead.
 
@@ -132,7 +132,7 @@ const config = toLayoutConfig(documentInput);
 const engine = new LayoutEngine(config, runtime);
 
 await engine.waitForFonts();
-const pages = engine.paginate(documentInput.elements);
+const pages = engine.simulate(documentInput.elements);
 
 const context = new PdfContext({
   size: [612, 792],
@@ -171,7 +171,7 @@ The rest of the pipeline is identical. The engine detects the sentinel buffers t
 
 ## What It Can Do
 
-**Pagination & Layout**
+**Simulation & Layout**
 - Desktop Publishing (DTP) style multi-column story regions with adjustable gutters
 - Seamless mixed-layout pages (e.g., full-width headers flowing directly into 3-column articles)
 - `keepWithNext`, `pageBreakBefore`, orphan and widow controls
@@ -217,7 +217,7 @@ On a 9-watt low-power i7, the engine's most complex regression fixture — 8 pag
 | **Warm** (shared runtime, batch pipeline) | ~10 ms | ~66 ms | ~87 ms |
 | **Cold** (fresh process, first invocation) | ~53 ms | ~239 ms | ~292 ms |
 
-The warm figure is what batch PDF generation looks like after the first document has been processed: fonts are already parsed, text measurements are cached, and `paginate()` spends its time on composition rather than measurement. The cold figure is what a fresh CLI invocation sees — fonts parsed from disk, measurement cache empty, JIT compilation running through the hot paths for the first time.
+The warm figure is what batch PDF generation looks like after the first document has been processed: fonts are already parsed, text measurements are cached, and `simulate()` spends its time on composition rather than measurement. The cold figure is what a fresh CLI invocation sees — fonts parsed from disk, measurement cache empty, JIT compilation running through the hot paths for the first time.
 
 Run the full benchmark suite yourself:
 
@@ -294,7 +294,7 @@ Additionally, the standalone Markdown Transmuter can similarly run in the browse
 |---|---:|---:|---:|
 | `index.html` + `styles.css` + `assets/*.js` | 727,383 B (~710 KiB) | 227,878 B (~223 KiB) | 186,547 B (~182 KiB) |
 
-This mode uses PDF standard fonts (PDF-14), but the capability is still full VMPrint layout + pagination, not a toy export path. You get the same deterministic engine primitives (flow composition, pagination rules, multi-column behavior, table pagination, inline objects) in a tiny static bundle that runs with no backend.
+This mode uses PDF standard fonts (PDF-14), but the capability is still full VMPrint layout + simulation, not a toy export path. You get the same deterministic engine primitives (flow composition, simulation rules, multi-column behavior, table simulation, inline objects) in a tiny static bundle that runs with no backend.
 
 For many product surfaces, this opens a practical alternative to heavyweight client PDF stacks or hand-authored jsPDF logic: fully client-side PDF generation with predictable output and a small transfer/runtime footprint. It is especially useful for offline-first apps, embedded webviews, hybrid mobile apps, kiosk software, and constrained environments where shipping a browser server/runtime is not realistic.
 
@@ -304,7 +304,7 @@ Tradeoff: you are constrained to PDF-14 coverage. If you need custom fonts, wide
 
 The monorepo is layered so that getting involved at any depth is straightforward.
 
-**Engine** (`engine/`): Layout algorithms, pagination, text shaping, the packager system. This is where the hard problems live — and where a well-placed contribution has the most leverage. Regression snapshot tests make it possible to verify that changes haven't broken existing behavior.
+**Engine** (`engine/`): Layout algorithms, simulation, text shaping, the packager system. This is where the hard problems live — and where a well-placed contribution has the most leverage. Regression snapshot tests make it possible to verify that changes haven't broken existing behavior.
 
 **Contexts and Font Managers** (`contexts/`, `font-managers/`): Concrete implementations of well-defined interfaces. A new context for canvas or SVG output. A font manager that loads from a CDN or a bundled asset. The contracts are clear, the surface area is contained, and a working implementation is immediately useful to anyone on that platform.
 

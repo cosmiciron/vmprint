@@ -19,10 +19,10 @@ That estimate means:
 
 * the simulation substrate is mostly in place
 * the engine already has session state, collaborator hooks, actor identity, transform metadata, reservation/exclusion primitives, and snapshot branching
-* the remaining work is mainly about **ownership transfer** out of the paginator and into simulation primitives, collaborators, and the print pipeline
+* the remaining work is mainly about **ownership transfer** out of the simulator and into simulation primitives, collaborators, and the print pipeline
 
 The main risk is no longer missing terminology or missing scaffolding.
-The main risk is that too much domain intelligence still lives in the pagination coordinator.
+The main risk is that too much domain intelligence still lives in the simulation coordinator.
 
 ---
 
@@ -30,9 +30,9 @@ The main risk is that too much domain intelligence still lives in the pagination
 
 The overhaul should be considered complete when these conditions are all true:
 
-* the paginator is a thin coordinator rather than the domain brain
+* the simulator is a thin coordinator rather than the domain brain
 * keep-with-next, continuation aftermath, reservations, exclusions, and similar cross-cutting behaviors are expressed as systems over shared world state
-* hard pagination seams are explained by engine primitives, not paginator-local exceptions
+* hard simulation seams are explained by engine primitives, not simulator-local exceptions
 * the print-domain handoff exists cleanly for post-processing features such as heading telemetry and future TOC generation
 * new fixtures are explainable in simulation terms without backsliding into special-case loop logic
 * performance remains stable under warmed isolated checks
@@ -45,7 +45,7 @@ Every overhaul slice should follow these rules:
 
 1. Start from a real seam in the current engine or fixture suite.
 2. Prefer extracting ownership over inventing new abstractions.
-3. Do not add new feature-specific branches to `paginate-packagers.ts` unless they are temporary transition glue with a clear removal target.
+3. Do not add new feature-specific branches to `execute-simulation-march.ts` unless they are temporary transition glue with a clear removal target.
 4. Pair meaningful refactors with warmed perf checks.
 5. A slice is not complete until correctness, architectural ownership, and perf have all been checked.
 
@@ -55,7 +55,7 @@ Every overhaul slice should follow these rules:
 
 Work should be taken in this order unless an urgent fixture forces a different sequence:
 
-1. Thin the paginator coordinator.
+1. Thin the simulator coordinator.
 2. Strengthen system-to-system interaction through `LayoutSession`.
 3. Make spatial negotiation richer and more honestly shared.
 4. Harden transformable actor contracts.
@@ -63,7 +63,7 @@ Work should be taken in this order unless an urgent fixture forces a different s
 6. Add multi-pass / fixpoint semantics.
 7. Defer real-time / incremental semantics until the above are stable.
 
-This is the shortest path to meaningful completion because it removes the highest architectural risk first: hidden paginator ownership.
+This is the shortest path to meaningful completion because it removes the highest architectural risk first: hidden simulator ownership.
 
 ---
 
@@ -74,12 +74,12 @@ This is the shortest path to meaningful completion because it removes the highes
 The engine is no longer well-described as a linear layout pipeline.
 It is increasingly a stateful simulation runtime whose current layer boundaries are still too soft.
 
-That means the next architectural risk is not only paginator thickness.
+That means the next architectural risk is not only simulator thickness.
 It is also **responsibility bloat inside `LayoutSession`** caused by mixing multiple layers in one object.
 
 The intended direction is therefore a **microkernel-style bottom layer**, not a larger god object with a better name.
 
-The lowest layer should own only substrate concerns that could plausibly exist even outside document pagination:
+The lowest layer should own only substrate concerns that could plausibly exist even outside document simulation:
 
 * actor / entity identity
 * mutable world state
@@ -95,14 +95,14 @@ The lowest layer should explicitly not own:
 * pages as publishing concepts
 * TOC / bookmark / print-domain behavior
 * packager-specific policy
-* pagination-specific overflow and split rules
+* simulation-specific overflow and split rules
 
 Use this layer model when judging future extractions:
 
 1. **Simulation Kernel**
    state, identity, branching, interaction state, events, artifact channels
 2. **Layout Runtime**
-   pagination semantics, page/region meaning, placement, split/continuation policy
+   simulation semantics, page/region meaning, placement, split/continuation policy
 3. **Document Semantics**
    AST interpretation, document actor meaning, authored structure to actor graph mapping
 4. **Print / Composition Handoff**
@@ -116,7 +116,7 @@ Current extraction guidance:
 * first extract state / transaction / event responsibilities downward toward the kernel
 * do not start by extracting cosmetic helper methods
 * do not move print-feature behavior downward
-* keep page semantics and pagination policy above the kernel
+* keep page semantics and simulation policy above the kernel
 
 If a responsibility could make sense in a non-document simulation, it is a candidate for the kernel.
 If it only makes sense because we are paginating authored documents, it belongs above the kernel.
@@ -201,7 +201,7 @@ Because the engine now has a protected `Kernel` underneath the engine-systems la
 * score the outcome
 * roll the world back if the path is rejected
 
-This is effectively speculative pathfinding over pagination space. It is one of the major architectural advantages of the kernel-plus-AI design over legacy linear layout engines, and it should be remembered as a future capability even if we do not implement it immediately.
+This is effectively speculative pathfinding over simulation space. It is one of the major architectural advantages of the kernel-plus-AI design over legacy linear layout engines, and it should be remembered as a future capability even if we do not implement it immediately.
 
 ### Future Capability: Continuous Dependent Regions
 
@@ -260,7 +260,7 @@ Do not continue kernel extraction unless a seam is unmistakably substrate-level.
 ### Phase A: Thin The Coordinator
 
 Objective:
-Move remaining cross-cutting orchestration out of `paginate-packagers.ts`.
+Move remaining cross-cutting orchestration out of `execute-simulation-march.ts`.
 
 Primary targets:
 
@@ -271,18 +271,18 @@ Primary targets:
 
 Definition of done:
 
-* `paginate-packagers.ts` is materially smaller
+* `execute-simulation-march.ts` is materially smaller
 * it reads as a coordinator loop rather than a domain-specific procedure
-* keep-with-next and continuation behaviors are explained by collaborators plus session primitives, not inline pagination policy
+* keep-with-next and continuation behaviors are explained by collaborators plus session primitives, not inline simulation policy
 
 Concrete steps:
 
-1. Identify every branch in `paginate-packagers.ts` that exists only for keep-with-next or continuation aftermath.
+1. Identify every branch in `execute-simulation-march.ts` that exists only for keep-with-next or continuation aftermath.
 2. Classify each branch as one of:
    `collaborator concern`, `session primitive`, `actor concern`, or `true coordinator concern`.
 3. Move reusable state transitions into `LayoutSession`.
 4. Move policy decisions into collaborators.
-5. Leave only sequencing glue in the paginator.
+5. Leave only sequencing glue in the simulator.
 6. Re-run regression and perf checks.
 
 Priority:
@@ -305,12 +305,12 @@ Primary targets:
 Definition of done:
 
 * collaborators do not reinvent selector or targeting logic
-* session APIs describe durable world-state concepts rather than paginator accidents
-* new systems can coordinate through session-owned state without touching the paginator
+* session APIs describe durable world-state concepts rather than simulator accidents
+* new systems can coordinate through session-owned state without touching the simulator
 
 Concrete steps:
 
-1. Audit current `LayoutSession` APIs for accidental paginator-shape leakage.
+1. Audit current `LayoutSession` APIs for accidental simulator-shape leakage.
 2. Consolidate selector and targeting logic behind session-owned helpers.
 3. Normalize reservation and exclusion lifecycle naming around page-start, negotiation, commit, and finalization.
 4. Add or refine simulation artifacts only where they prove shared runtime state, not just diagnostics.
@@ -338,7 +338,7 @@ Definition of done:
 
 Concrete steps:
 
-1. Audit where spatial rules are still packager-private or paginator-private.
+1. Audit where spatial rules are still packager-private or simulator-private.
 2. Promote reusable terrain logic into shared constraint/session mechanisms.
 3. Add narrow probes when a spatial seam resists generalization.
 4. Keep `StoryPackager` internals intact unless a shared mechanism can replace duplication honestly.
@@ -395,7 +395,7 @@ Boundary reminder:
 Definition of done:
 
 * heading landing data is available as simulation output
-* a print-domain consumer can build post-processed artifacts without touching the paginator
+* a print-domain consumer can build post-processed artifacts without touching the simulator
 * TOC work has a clean substrate even if full TOC generation is not yet built
 
 Concrete steps:
@@ -453,13 +453,13 @@ Priority:
 
 These are the next best slices to do now:
 
-1. Audit and annotate the remaining non-coordinator logic in [`paginate-packagers.ts`](/c:/Users/cosmic/Projects/vmprint/engine/src/engine/layout/packagers/paginate-packagers.ts).
-2. Extract another concrete keep-with-next ownership slice out of the paginator.
-3. Extract another continuation-aftermath slice out of the paginator.
+1. Audit and annotate the remaining non-coordinator logic in [`execute-simulation-march.ts`](/c:/Users/cosmic/Projects/vmprint/engine/src/engine/layout/packagers/execute-simulation-march.ts).
+2. Extract another concrete keep-with-next ownership slice out of the simulator.
+3. Extract another continuation-aftermath slice out of the simulator.
 4. Add `HeadingTelemetryCollaborator` and report output.
 5. Add at least one probe fixture for a print-pipeline telemetry consumer.
 
-If there is uncertainty between two tasks, choose the one that removes more logic from the paginator.
+If there is uncertainty between two tasks, choose the one that removes more logic from the simulator.
 
 ---
 
@@ -472,13 +472,13 @@ For every overhaul change:
 3. Implement the smallest honest transfer of ownership.
 4. Run targeted regression checks.
 5. Run warmed hotspot perf checks:
-   `09-tables-spans-pagination`
+   `09-tables-spans-simulation`
    `10-packager-split-scenarios`
    `00-all-capabilities`
 6. If the slice is substantial, run a warmed broader perf pass.
-7. Record whether the paginator became thinner, unchanged, or thicker.
+7. Record whether the simulator became thinner, unchanged, or thicker.
 
-If the paginator gets thicker, assume the slice needs another pass or should be reconsidered.
+If the simulator gets thicker, assume the slice needs another pass or should be reconsidered.
 
 ---
 
@@ -506,7 +506,7 @@ Do not spend overhaul time on:
 * generalized abstractions that only mirror current code
 * showcase-first work without substrate value
 * speculative incremental architecture before print/batch completion
-* adding fresh paginator exceptions to solve local feature needs
+* adding fresh simulator exceptions to solve local feature needs
 
 ---
 
@@ -517,7 +517,7 @@ This document should be the default reference for future overhaul work.
 When choosing the next task:
 
 1. Prefer the highest-priority incomplete phase.
-2. Prefer the slice that removes the most non-coordinator ownership from the paginator.
+2. Prefer the slice that removes the most non-coordinator ownership from the simulator.
 3. Use fixtures and probes to prove new primitives before broadening them.
 4. Re-estimate progress only after meaningful ownership transfer, not after cosmetic refactors.
 

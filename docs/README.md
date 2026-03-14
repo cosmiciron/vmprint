@@ -19,7 +19,7 @@ Documentation and static examples live under this directory.
 These are not toy demos. They show a full VMPrint pipeline running entirely client-side:
 
 - `StandardFontManager + Engine + PdfLiteContext`
-- deterministic layout + pagination
+- deterministic layout + simulation
 - no backend runtime at usage time
 - runnable from `file://` and GitHub Pages
 
@@ -43,6 +43,6 @@ If you download these files into a local folder, you can open `index.html` and r
 - Why runtime stays small:
   standard-font mode avoids bundling custom font binaries and avoids runtime font download.
 - Why it feels instant:
-  these examples still execute the full pipeline (AST parse -> pagination -> render -> PDF bytes) on every click, including computationally heavy layout cases. **Nothing is hardcoded or pre-baked at click time; if it feels instant, that is real runtime performance measured in milliseconds**.
+  these examples still execute the full pipeline (AST parse -> simulation -> render -> PDF bytes) on every click, including computationally heavy layout cases. **Nothing is hardcoded or pre-baked at click time; if it feels instant, that is real runtime performance measured in milliseconds**.
 - What you trade off:
   PDF-14 font coverage only in this mode. For custom fonts and broader multilingual shaping, use a font-binary workflow (`LocalFontManager` or another font manager).

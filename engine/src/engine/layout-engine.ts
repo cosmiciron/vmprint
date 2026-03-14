@@ -36,7 +36,7 @@ export class LayoutEngine extends LayoutProcessor {
         const tocElements = buildTableOfContentsElements(source, options);
         const tocEngine = new LayoutEngine(this.config);
         await tocEngine.waitForFonts();
-        const tocPages = tocEngine.paginate(tocElements as Element[]);
+        const tocPages = tocEngine.simulate(tocElements as Element[]);
         const tocSnapshot = tocEngine.getLastPrintPipelineSnapshot();
         const overflowPageCount = Math.max(0, tocPages.length - normalizedReservation);
 
