@@ -5,10 +5,24 @@ import type { ActorSignal, ActorSignalDraft } from '../actor-event-bus';
 
 export interface LayoutBox extends Box { }
 
+export type SpatialFrontier = {
+    pageIndex: number;
+    actorIndex?: number;
+    actorId?: string;
+    sourceId?: string;
+};
+
+export type ObservationResult = {
+    changed: boolean;
+    geometryChanged: boolean;
+    earliestAffectedFrontier?: SpatialFrontier;
+};
+
 export interface PackagerContext {
     processor: any; // We'll cast to LayoutProcessor
     pageIndex: number;
     cursorY: number;
+    actorIndex?: number;
     margins: { top: number; right: number; bottom: number; left: number };
     pageWidth: number;
     pageHeight: number;
@@ -93,6 +107,12 @@ export interface PackagerUnit {
      * Must be deterministic for the same availableWidth/context; avoid height-dependent layout.
      */
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] | null;
+
+    /**
+     * Allows stateful observers to reevaluate committed bulletin-board state at
+     * controlled session checkpoints.
+     */
+    observeCommittedSignals?(context: PackagerContext): ObservationResult | null | undefined;
 
     /**
      * Splits this unit.

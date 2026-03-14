@@ -4,6 +4,7 @@ import type { FlowBox } from '../layout-core-types';
 import type { PackagerIdentity } from './packager-identity';
 import { FlowBoxPackager } from './flow-box-packager';
 import type {
+    ObservationResult,
     PackagerContext,
     PackagerPlacementPreference,
     PackagerSplitResult,
@@ -121,6 +122,10 @@ export class TestSignalPublisherPackager implements PackagerUnit {
 export class TestSignalObserverPackager implements PackagerUnit {
     private base: FlowBoxPackager | null = null;
     private renderedFlowBox: FlowBox | null = null;
+    private observationSignature: string | null = null;
+    private geometrySignature: string | null = null;
+    private firstCommittedPageIndex: number | null = null;
+    private firstCommittedActorIndex: number | null = null;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -170,6 +175,15 @@ export class TestSignalObserverPackager implements PackagerUnit {
         const observedSignals = this.readSignals(context);
         const observedCount = observedSignals.length;
         const observedHeight = this.renderedFlowBox?.properties?.style?.height;
+        if (this.firstCommittedPageIndex === null) {
+            this.firstCommittedPageIndex = context.pageIndex;
+        }
+        if (this.firstCommittedActorIndex === null) {
+            this.firstCommittedActorIndex =
+                typeof context.actorIndex === 'number'
+                    ? context.actorIndex
+                    : null;
+        }
         this.publishSummarySignal(context, observedSignals);
         const boxes = packager.emitBoxes(availableWidth, availableHeight, context);
         return boxes.map((box) => ({
@@ -192,6 +206,49 @@ export class TestSignalObserverPackager implements PackagerUnit {
     getMarginTop(): number { return this.base?.getMarginTop() ?? this.flowBox.marginTop; }
     getMarginBottom(): number { return this.base?.getMarginBottom() ?? this.flowBox.marginBottom; }
 
+    observeCommittedSignals(context: PackagerContext): ObservationResult {
+        const spec = (this.flowBox.properties?._actorSignalObserve || {}) as SignalObserveSpec;
+        const observed = this.readSignals(context);
+        const labels = observed
+            .map((signal) => signal.payload?.label)
+            .filter((label): label is string => typeof label === 'string' && label.trim().length > 0);
+        const uniquePages = Array.from(new Set(observed.map((signal) => signal.pageIndex))).sort((a, b) => a - b);
+        const baseTitle = spec.title || 'Observed Signals';
+        const title = this.fragmentIndex > 0 || this.continuationOf
+            ? `${baseTitle} (continued)`
+            : baseTitle;
+        const baseHeight = Math.max(0, Number(spec.baseHeight) || 0);
+        const growthPerSignal = Math.max(0, Number(spec.growthPerSignal) || 0);
+        const resolvedHeight = baseHeight + observed.length * growthPerSignal;
+        const content = this.buildObservedContent(spec, title, observed.length, uniquePages, labels);
+        const nextObservationSignature = JSON.stringify({
+            topic: spec.topic || 'probe',
+            content
+        });
+        const nextGeometrySignature = JSON.stringify({
+            height: resolvedHeight
+        });
+
+        const changed = this.observationSignature !== nextObservationSignature;
+        const geometryChanged = this.geometrySignature !== nextGeometrySignature;
+
+        this.observationSignature = nextObservationSignature;
+        this.geometrySignature = nextGeometrySignature;
+
+        return {
+            changed,
+            geometryChanged,
+            earliestAffectedFrontier: geometryChanged
+                ? {
+                    pageIndex: this.firstCommittedPageIndex ?? 0,
+                    actorIndex: this.firstCommittedActorIndex ?? undefined,
+                    actorId: this.actorId,
+                    sourceId: this.sourceId
+                }
+                : undefined
+        };
+    }
+
     private readSignals(context: PackagerContext) {
         const spec = (this.flowBox.properties?._actorSignalObserve || {}) as SignalObserveSpec;
         return context.readActorSignals(spec.topic || 'probe');
@@ -212,6 +269,13 @@ export class TestSignalObserverPackager implements PackagerUnit {
         const growthPerSignal = Math.max(0, Number(spec.growthPerSignal) || 0);
         const resolvedHeight = baseHeight + observed.length * growthPerSignal;
         const content = this.buildObservedContent(spec, title, observed.length, uniquePages, labels);
+        this.observationSignature = JSON.stringify({
+            topic: spec.topic || 'probe',
+            content
+        });
+        this.geometrySignature = JSON.stringify({
+            height: resolvedHeight
+        });
 
         const sourceElement = (this.flowBox._sourceElement || this.flowBox._unresolvedElement || {
             type: this.flowBox.type,

@@ -5,7 +5,7 @@ import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import { getActorOverflowHandling, type ActorOverflowHandling } from './actor-overflow';
 import type { PackagerUnit } from './packagers/packager-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
-import type { PackagerContext } from './packagers/packager-types';
+import type { ObservationResult, PackagerContext, SpatialFrontier } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
 import { getTailSplitPostAttemptOutcome } from './actor-formation';
 import { AIRuntime } from './ai-runtime';
@@ -46,6 +46,10 @@ export type LayoutProfileMetrics = {
     exclusionBandResolutionCalls: number;
     exclusionBandResolutionMs: number;
     exclusionLaneApplications: number;
+    observerCheckpointSweepCalls: number;
+    observerSettleCalls: number;
+    observerActorBoundarySettles: number;
+    observerPageBoundarySettles: number;
 };
 
 export type RegionReservation = {
@@ -798,6 +802,28 @@ export type LocalBranchStateSnapshot = LocalQueueSnapshot & LocalSplitStateSnaps
 
 export type LocalBranchSnapshot = LocalTransitionSnapshot & LocalQueueSnapshot & LocalSplitStateSnapshot & LocalActorSignalSnapshot;
 
+export type SafeCheckpointSnapshot = LocalTransitionSnapshot & LocalQueueSnapshot & LocalSplitStateSnapshot;
+export type SafeCheckpointPageState = {
+    pageBoxes: Box[];
+};
+
+export type SafeCheckpoint = {
+    id: string;
+    snapshotToken: string;
+    kind: 'page' | 'actor';
+    pageIndex: number;
+    actorIndex: number;
+    frontier: SpatialFrontier;
+    pagesPrefix: Page[];
+    snapshot: SafeCheckpointSnapshot & SafeCheckpointPageState;
+};
+
+export type ObserverSweepResult = {
+    changed: boolean;
+    geometryChanged: boolean;
+    earliestAffectedFrontier?: SpatialFrontier;
+};
+
 export type FragmentTransition = {
     predecessorActorId: string;
     currentFragmentActorId: string | null;
@@ -892,9 +918,18 @@ export class LayoutSession {
         exclusionBlockedCursorMs: 0,
         exclusionBandResolutionCalls: 0,
         exclusionBandResolutionMs: 0,
-        exclusionLaneApplications: 0
+        exclusionLaneApplications: 0,
+        observerCheckpointSweepCalls: 0,
+        observerSettleCalls: 0,
+        observerActorBoundarySettles: 0,
+        observerPageBoundarySettles: 0
     };
     private paginationLoopState: PaginationLoopState | null = null;
+    private readonly observerRegistry = new Map<string, PackagerUnit>();
+    private readonly actorIndexByActorId = new Map<string, number>();
+    private readonly actorIndexBySourceId = new Map<string, number>();
+    private safeCheckpoints: SafeCheckpoint[] = [];
+    private safeCheckpointSequence = 0;
 
     currentPageIndex = 0;
     currentY = 0;
@@ -917,6 +952,11 @@ export class LayoutSession {
         this.kernel.resetForSimulation();
         this.actorEventBus.resetForSimulation();
         this.lifecycleRuntime.resetForSimulation();
+        this.observerRegistry.clear();
+        this.actorIndexByActorId.clear();
+        this.actorIndexBySourceId.clear();
+        this.safeCheckpoints = [];
+        this.safeCheckpointSequence = 0;
         this.eventDispatcher.onSimulationStart(this);
     }
 
@@ -930,6 +970,9 @@ export class LayoutSession {
 
     notifyActorSpawn(actor: PackagerUnit): void {
         this.kernel.registerActor(actor);
+        if (typeof actor.observeCommittedSignals === 'function') {
+            this.observerRegistry.set(actor.actorId, actor);
+        }
         this.eventDispatcher.onActorSpawn(actor, this);
     }
 
@@ -1072,6 +1115,150 @@ export class LayoutSession {
             pageWidth,
             pageHeight
         );
+    }
+
+    recordSafeCheckpoint(
+        actorQueue: readonly PackagerUnit[],
+        actorIndex: number,
+        pagesPrefix: readonly Page[],
+        currentPageBoxes: readonly Box[],
+        currentPageIndex: number,
+        currentY: number,
+        lastSpacingAfter: number,
+        kind: 'page' | 'actor'
+    ): SafeCheckpoint {
+        const checkpoint: SafeCheckpoint = {
+            id: `checkpoint:${++this.safeCheckpointSequence}`,
+            snapshotToken: `checkpoint:${this.safeCheckpointSequence}`,
+            kind,
+            pageIndex: currentPageIndex,
+            actorIndex,
+            frontier: {
+                pageIndex: currentPageIndex,
+                actorIndex
+            },
+            pagesPrefix: pagesPrefix.map((page) => ({
+                ...page,
+                boxes: page.boxes.map((box) => ({
+                    ...box,
+                    properties: box.properties ? { ...box.properties } : box.properties,
+                    meta: box.meta ? { ...box.meta } : box.meta
+                }))
+            })),
+            snapshot: {
+                pageBoxes: currentPageBoxes.map((box) => ({
+                    ...box,
+                    properties: box.properties ? { ...box.properties } : box.properties,
+                    meta: box.meta ? { ...box.meta } : box.meta
+                })),
+                ...this.captureLocalTransitionSnapshot(currentPageBoxes, currentY, lastSpacingAfter),
+                ...this.kernel.captureLocalBranchStateSnapshot(actorQueue)
+            }
+        };
+
+        const existingIndex = this.safeCheckpoints.findIndex((entry) =>
+            entry.pageIndex === currentPageIndex
+            && entry.actorIndex === actorIndex
+            && entry.kind === kind
+        );
+        if (existingIndex >= 0) {
+            this.safeCheckpoints.splice(existingIndex, 1, checkpoint);
+        } else {
+            this.safeCheckpoints.push(checkpoint);
+            this.safeCheckpoints.sort((a, b) => {
+                if (a.pageIndex !== b.pageIndex) return a.pageIndex - b.pageIndex;
+                if (a.actorIndex !== b.actorIndex) return a.actorIndex - b.actorIndex;
+                return a.id.localeCompare(b.id);
+            });
+        }
+
+        return checkpoint;
+    }
+
+    evaluateObserverRegistry(
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
+        pageIndex: number,
+        cursorY: number
+    ): ObserverSweepResult {
+        this.recordProfile('observerCheckpointSweepCalls', 1);
+        let changed = false;
+        let geometryChanged = false;
+        let earliestAffectedFrontier: SpatialFrontier | undefined;
+
+        const context: PackagerContext = {
+            ...contextBase,
+            pageIndex,
+            cursorY
+        };
+
+        for (const observer of this.observerRegistry.values()) {
+            const result = observer.observeCommittedSignals?.(context);
+            if (!result || !result.changed) continue;
+            changed = true;
+            if (!result.geometryChanged) continue;
+            geometryChanged = true;
+            if (
+                result.earliestAffectedFrontier
+                && (
+                    !earliestAffectedFrontier
+                    || result.earliestAffectedFrontier.pageIndex < earliestAffectedFrontier.pageIndex
+                )
+            ) {
+                earliestAffectedFrontier = result.earliestAffectedFrontier;
+            }
+        }
+
+        return {
+            changed,
+            geometryChanged,
+            earliestAffectedFrontier
+        };
+    }
+
+    resolveSafeCheckpoint(frontier: SpatialFrontier): SafeCheckpoint | null {
+        const frontierActorIndex =
+            frontier.actorIndex
+            ?? (frontier.sourceId ? this.actorIndexBySourceId.get(frontier.sourceId) : undefined)
+            ?? (frontier.actorId ? this.actorIndexByActorId.get(frontier.actorId) : undefined)
+            ?? Number.POSITIVE_INFINITY;
+        const candidates = this.safeCheckpoints
+            .filter((checkpoint) =>
+                checkpoint.pageIndex < frontier.pageIndex
+                || (checkpoint.pageIndex === frontier.pageIndex && checkpoint.actorIndex <= frontierActorIndex)
+            )
+            .sort((a, b) => {
+                if (a.pageIndex !== b.pageIndex) return b.pageIndex - a.pageIndex;
+                if (a.actorIndex !== b.actorIndex) return b.actorIndex - a.actorIndex;
+                return b.id.localeCompare(a.id);
+            });
+        return candidates[0] ?? null;
+    }
+
+    restoreSafeCheckpoint(
+        pages: Page[],
+        actorQueue: PackagerUnit[],
+        checkpoint: SafeCheckpoint
+    ): { currentPageBoxes: Box[]; currentY: number; lastSpacingAfter: number } {
+        pages.splice(0, pages.length, ...checkpoint.pagesPrefix.map((page) => ({
+            ...page,
+            boxes: page.boxes.map((box) => ({
+                ...box,
+                properties: box.properties ? { ...box.properties } : box.properties,
+                meta: box.meta ? { ...box.meta } : box.meta
+            }))
+        })));
+
+        this.kernel.restoreLocalBranchStateSnapshot(actorQueue, checkpoint.snapshot);
+        const currentPageBoxes: Box[] = checkpoint.snapshot.pageBoxes.map((box) => ({
+            ...box,
+            properties: box.properties ? { ...box.properties } : box.properties,
+            meta: box.meta ? { ...box.meta } : box.meta
+        }));
+        return {
+            currentPageBoxes,
+            currentY: checkpoint.snapshot.currentY,
+            lastSpacingAfter: checkpoint.snapshot.lastSpacingAfter
+        };
     }
 
     resolveNextActorIndex(currentIndex: number, shouldAdvanceIndex: boolean): number {
@@ -2416,6 +2603,18 @@ export class LayoutSession {
 
     setPaginationLoopState(state: PaginationLoopState): void {
         this.paginationLoopState = state;
+        const currentActor = state.actorQueue[state.actorIndex];
+        if (!currentActor) return;
+
+        const actorIndex = this.actorIndexByActorId.get(currentActor.actorId);
+        if (actorIndex === undefined || state.actorIndex < actorIndex) {
+            this.actorIndexByActorId.set(currentActor.actorId, state.actorIndex);
+        }
+
+        const sourceActorIndex = this.actorIndexBySourceId.get(currentActor.sourceId);
+        if (sourceActorIndex === undefined || state.actorIndex < sourceActorIndex) {
+            this.actorIndexBySourceId.set(currentActor.sourceId, state.actorIndex);
+        }
     }
 
     getPaginationLoopState(): PaginationLoopState | null {
