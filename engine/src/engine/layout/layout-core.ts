@@ -1,6 +1,6 @@
 import { TextProcessor } from './text-processor';
 import { LayoutUtils } from './layout-utils';
-import { Box, BoxImagePayload, BoxMeta, Element, ElementStyle, OverflowPolicy, Page, PageRegionContent, RichLine } from '../types';
+import { Box, BoxImagePayload, BoxMeta, Element, ElementStyle, OverflowPolicy, Page, PageRegionContent, RichLine, TextSegment } from '../types';
 import { getCachedFont } from '../../font-management/font-cache-loader';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
@@ -84,6 +84,46 @@ export class LayoutProcessor extends TextProcessor {
         const top = Number(context.cursorY).toFixed(3);
         const widthKey = Number.isFinite(context.contentWidth) ? Number(context.contentWidth).toFixed(3) : 'auto';
         return `${context.pageIndex}:${top}:${unit.type}:${widthKey}`;
+    }
+
+    private buildFlowResolveSignature(
+        unit: FlowBox,
+        element: Element,
+        style: ElementStyle,
+        fontSize: number,
+        lineHeight: number,
+        context?: FlowMaterializationContext
+    ): string {
+        const width = this.getContextualContentWidth(style, context, fontSize, lineHeight);
+        const widthKey = Number.isFinite(width) ? Number(width).toFixed(3) : 'auto';
+        const fontFamily = String(style.fontFamily || this.config.layout.fontFamily || '');
+        const fontWeight = String(style.fontWeight ?? 400);
+        const fontStyle = String(style.fontStyle || 'normal');
+        const letterSpacing = Number(style.letterSpacing || 0).toFixed(3);
+        const textIndent = Number(style.textIndent || 0).toFixed(3);
+        const lang = String(style.lang || this.config.layout.lang || '');
+        const direction = String(style.direction || this.config.layout.direction || '');
+        const hyphenation = String(style.hyphenation || this.config.layout.hyphenation || '');
+        const justifyEngine = String(style.justifyEngine || this.config.layout.justifyEngine || '');
+        const reflowKey = unit.meta?.reflowKey || unit.meta?.sourceId || unit.meta?.engineKey || '';
+        const textLength = this.getElementText(element).length;
+        return [
+            reflowKey,
+            unit.type,
+            widthKey,
+            fontFamily,
+            fontWeight,
+            fontStyle,
+            Number(fontSize).toFixed(3),
+            Number(lineHeight).toFixed(3),
+            letterSpacing,
+            textIndent,
+            lang,
+            direction,
+            hyphenation,
+            justifyEngine,
+            String(textLength)
+        ].join('|');
     }
 
     private getContextualContentWidth(
@@ -230,6 +270,45 @@ export class LayoutProcessor extends TextProcessor {
 
     private getJoinedLineText(lines: RichLine[]): string {
         return lines.map((line) => line.map((seg) => seg.text || '').join('')).join('');
+    }
+
+    private classifySimpleProseEligibility(richSegments: TextSegment[], text: string): keyof import('./layout-session-types').LayoutProfileMetrics {
+        if (richSegments.length === 0) {
+            return 'simpleProseEligibleCalls';
+        }
+
+        let baseStyleSignature: string | null = null;
+        for (const segment of richSegments) {
+            if (segment.inlineObject) {
+                return 'simpleProseIneligibleInlineObjectCalls';
+            }
+            if (segment.linkTarget) {
+                return 'simpleProseIneligibleRichStructureCalls';
+            }
+            const style = segment.style || {};
+            const signature = [
+                String(segment.fontFamily || ''),
+                String(style.fontFamily || ''),
+                String(style.fontWeight ?? ''),
+                String(style.fontStyle || ''),
+                String(style.textAlign || ''),
+                String(style.direction || ''),
+                String(style.lang || ''),
+                Number(style.letterSpacing || 0).toFixed(3),
+                Number(style.textIndent || 0).toFixed(3)
+            ].join('|');
+            if (baseStyleSignature === null) {
+                baseStyleSignature = signature;
+            } else if (baseStyleSignature !== signature) {
+                return 'simpleProseIneligibleMixedStyleCalls';
+            }
+        }
+
+        if (!/^[\u0009\u000A\u000D\u0020-\u007E\u00A0-\u00FF\u2010-\u201F\u2026]*$/u.test(text)) {
+            return 'simpleProseIneligibleComplexScriptCalls';
+        }
+
+        return 'simpleProseEligibleCalls';
     }
 
     private trimLeadingContinuationWhitespace(element: Element): Element {
@@ -581,9 +660,15 @@ export class LayoutProcessor extends TextProcessor {
     }
 
     protected materializeFlowBox(unit: FlowBox, context?: FlowMaterializationContext): FlowBox {
+        const session = this.lastLayoutSession;
+        const materializeStartedAt = performance.now();
+        session?.recordProfile('flowMaterializeCalls', 1);
         const contextKey = this.getMaterializationContextKey(unit, context);
         const canRematerialize = unit._materializationMode === 'reflowable' && !!unit._sourceElement;
-        if (!unit._unresolvedElement && (!canRematerialize || unit._materializationContextKey === contextKey)) return unit;
+        if (!unit._unresolvedElement && (!canRematerialize || unit._materializationContextKey === contextKey)) {
+            session?.recordProfile('flowMaterializeMs', performance.now() - materializeStartedAt);
+            return unit;
+        }
 
         const previousContextKey = unit._materializationContextKey;
         const isMorphTransition =
@@ -603,6 +688,7 @@ export class LayoutProcessor extends TextProcessor {
             if (isMorphTransition) unit.meta = createMorphedBoxMeta(unit.meta);
             unit._materializationContextKey = contextKey;
             unit._unresolvedElement = undefined;
+            session?.recordProfile('flowMaterializeMs', performance.now() - materializeStartedAt);
             return unit;
         }
 
@@ -613,12 +699,15 @@ export class LayoutProcessor extends TextProcessor {
             if (isMorphTransition) unit.meta = createMorphedBoxMeta(unit.meta);
             unit._materializationContextKey = contextKey;
             unit._unresolvedElement = undefined;
+            session?.recordProfile('flowMaterializeMs', performance.now() - materializeStartedAt);
             return unit;
         }
 
         unit.image = undefined;
         unit.measuredWidth = undefined;
 
+        const resolveSignature = this.buildFlowResolveSignature(unit, element, style, fontSize, lineHeight, context);
+        session?.recordFlowResolveSignature(resolveSignature, !!(unit.meta?.isContinuation || (unit.meta?.fragmentIndex || 0) > 0));
         const resolved = this.resolveLines(element, style, fontSize, context);
         const lines = resolved.lines;
         let contentHeight = lines.length > 0
@@ -653,6 +742,7 @@ export class LayoutProcessor extends TextProcessor {
         if (isMorphTransition) unit.meta = createMorphedBoxMeta(unit.meta);
         unit._materializationContextKey = contextKey;
         unit._unresolvedElement = undefined; // Mark as resolved
+        session?.recordProfile('flowMaterializeMs', performance.now() - materializeStartedAt);
 
         return unit;
     }
@@ -663,8 +753,14 @@ export class LayoutProcessor extends TextProcessor {
         fontSize: number,
         context?: FlowMaterializationContext
     ): ResolvedLinesResult {
+        const session = this.lastLayoutSession;
+        const resolveStartedAt = performance.now();
+        session?.recordProfile('flowResolveLinesCalls', 1);
         const text = this.getElementText(element);
-        if (!text) return { lines: [] };
+        if (!text) {
+            session?.recordProfile('flowResolveLinesMs', performance.now() - resolveStartedAt);
+            return { lines: [] };
+        }
 
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
         const baseWidth = this.getContextualContentWidth(style, context, Number(fontSize), lineHeight);
@@ -693,6 +789,7 @@ export class LayoutProcessor extends TextProcessor {
         const textIndent = Number(style.textIndent || 0);
         const letterSpacing = Number(style.letterSpacing || 0);
         const richSegments = this.getRichSegments(element, style);
+        session?.recordProfile(this.classifySimpleProseEligibility(richSegments, text), 1);
         const wrapped = this.wrapRichSegments(
             richSegments,
             baseWidth,
@@ -703,6 +800,7 @@ export class LayoutProcessor extends TextProcessor {
             undefined,
             undefined
         );
+        session?.recordProfile('flowResolveLinesMs', performance.now() - resolveStartedAt);
         return { lines: wrapped };
     }
 

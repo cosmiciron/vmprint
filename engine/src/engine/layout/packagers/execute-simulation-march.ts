@@ -1,3 +1,4 @@
+import { performance } from 'node:perf_hooks';
 import { Box, Element, Page } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import type { FlowBox } from '../layout-core-types';
@@ -22,6 +23,8 @@ export function executeSimulationMarch(
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
     session: LayoutSession
 ): Page[] {
+    const snapshotsEnabled = process.env.VMPRINT_DISABLE_SAFE_CHECKPOINTS !== '1';
+    const observerCheckpointsEnabled = snapshotsEnabled && session.hasCommittedSignalObservers();
     const positionFlowBox = (processor as FlowBoxPositioner).positionFlowBox.bind(processor);
     const pages: Page[] = [];
     let currentPageBoxes: LayoutBox[] = [];
@@ -57,9 +60,14 @@ export function executeSimulationMarch(
         prevAfter + marginTop;
 
     session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
-    session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, 'page');
+    if (observerCheckpointsEnabled) {
+        session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, 'page');
+    }
 
     const maybeSettleAtCheckpoint = (): boolean => {
+        if (!observerCheckpointsEnabled) {
+            return false;
+        }
         const observation = session.evaluateObserverRegistry(contextBase, currentPageIndex, currentY);
         if (!observation.geometryChanged || !observation.earliestAffectedFrontier) {
             return false;
@@ -100,14 +108,29 @@ export function executeSimulationMarch(
         if (!checkpointKind) {
             return false;
         }
+        if (!observerCheckpointsEnabled) {
+            return false;
+        }
+        const boundaryStart = performance.now();
+        session.recordProfile('boundaryCheckpointCalls', 1);
+        const checkpointRecordStart = performance.now();
+        session.recordProfile('checkpointRecordCalls', 1);
         session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, checkpointKind);
-        return maybeSettleAtCheckpoint();
+        session.recordProfile('checkpointRecordMs', performance.now() - checkpointRecordStart);
+        const observerBoundaryStart = performance.now();
+        session.recordProfile('observerBoundaryCheckCalls', 1);
+        const settled = maybeSettleAtCheckpoint();
+        session.recordProfile('observerBoundaryCheckMs', performance.now() - observerBoundaryStart);
+        session.recordProfile('boundaryCheckpointMs', performance.now() - boundaryStart);
+        return settled;
     };
 
     while (true) {
         while (i < packagers.length) {
             const actorIndexBeforeAction = i;
             const packager = packagers[i];
+            const placementPrepStart = performance.now();
+            session.recordProfile('paginationPlacementPrepCalls', 1);
             const placementPreparation = session.preparePaginationPlacement({
                 actor: packager,
                 currentActorIndex: i,
@@ -122,6 +145,7 @@ export function executeSimulationMarch(
                 margins,
                 contextBase
             });
+            session.recordProfile('paginationPlacementPrepMs', performance.now() - placementPrepStart);
             if (placementPreparation.action === 'continue-loop') {
                 const previousPageIndex = currentPageIndex;
                 applySessionLoopAction(placementPreparation.loopAction);
@@ -162,6 +186,8 @@ export function executeSimulationMarch(
                 isAtPageTop,
                 context
             });
+            const measurementStart = performance.now();
+            session.recordProfile('actorMeasurementCalls', 1);
             const measurement = session.measurePreparedActor(
                 packager,
                 availableWidth,
@@ -169,12 +195,16 @@ export function executeSimulationMarch(
                 layoutBefore,
                 context
             );
+            session.recordProfile('actorMeasurementMs', performance.now() - measurementStart);
             const contentHeight = measurement.contentHeight;
             const requiredHeight = measurement.requiredHeight;
             const effectiveHeight = measurement.effectiveHeight;
 
             const keepWithNextOverflow = packager.keepWithNext
-                ? session.resolveKeepWithNextOverflow({
+                ? (() => {
+                    const keepResolutionStart = performance.now();
+                    session.recordProfile('keepWithNextResolutionCalls', 1);
+                    const resolution = session.resolveKeepWithNextOverflow({
                     actorId: packager.actorId,
                     isAtPageTop,
                     actorQueue: packagers,
@@ -189,9 +219,14 @@ export function executeSimulationMarch(
                     availableHeight: effectiveAvailableHeight,
                     lastSpacingAfter,
                     context
-                })
+                    });
+                    session.recordProfile('keepWithNextResolutionMs', performance.now() - keepResolutionStart);
+                    return resolution;
+                })()
                 : null;
             const wholeFormationOverflowHandling = keepWithNextOverflow?.handling ?? null;
+            const wholeFormationStart = performance.now();
+            session.recordProfile('wholeFormationOverflowCalls', 1);
             const wholeFormationOverflowResolution = session.resolveWholeFormationOverflow({
                 currentActorIndex: i,
                 handling: wholeFormationOverflowHandling,
@@ -202,6 +237,9 @@ export function executeSimulationMarch(
                 pageHeight: contextBase.pageHeight,
                 nextPageTop: margins.top
             });
+            session.recordProfile('wholeFormationOverflowMs', performance.now() - wholeFormationStart);
+            const keepActionStart = performance.now();
+            session.recordProfile('keepWithNextActionCalls', 1);
             const keepWithNextAction = session.resolveKeepWithNextOverflowAction({
                 planning: keepWithNextOverflow,
                 wholeFormationOverflow: wholeFormationOverflowResolution,
@@ -234,6 +272,7 @@ export function executeSimulationMarch(
                         markerPageIndex
                     )
             });
+            session.recordProfile('keepWithNextActionMs', performance.now() - keepActionStart);
             if (keepWithNextAction) {
                 const previousPageIndex = currentPageIndex;
                 applySessionLoopAction(keepWithNextAction);
@@ -245,6 +284,8 @@ export function executeSimulationMarch(
 
             if (requiredHeight <= effectiveAvailableHeight) {
                 const previousPageIndex = currentPageIndex;
+                const placementStart = performance.now();
+                session.recordProfile('actorPlacementCalls', 1);
                 applySessionLoopAction(session.placementSessionRuntime.resolveActorPlacementAction({
                     actor: packager,
                     placementFrame,
@@ -272,12 +313,15 @@ export function executeSimulationMarch(
                     currentY,
                     lastSpacingAfter
                 }));
+                session.recordProfile('actorPlacementMs', performance.now() - placementStart);
                 if (afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction)) {
                     continue;
                 }
                 continue;
             }
 
+            const overflowStart = performance.now();
+            session.recordProfile('actorOverflowCalls', 1);
             const overflowResolution = session.placementSessionRuntime.resolveActorOverflow({
                 actor: packager,
                 isAtPageTop,
@@ -307,6 +351,7 @@ export function executeSimulationMarch(
                     pageIndex: currentPageIndex
                 }
             });
+            session.recordProfile('actorOverflowMs', performance.now() - overflowStart);
             if (overflowResolution.action === 'handled') {
                 const previousPageIndex = currentPageIndex;
                 applySessionLoopAction(overflowResolution.loopAction);
@@ -316,6 +361,8 @@ export function executeSimulationMarch(
                 continue;
             }
             const previousPageIndex = currentPageIndex;
+            const genericSplitStart = performance.now();
+            session.recordProfile('genericSplitCalls', 1);
             applySessionLoopAction(session.placementSessionRuntime.resolveGenericSplitAction({
                 pages,
                 currentPageBoxes,
@@ -350,6 +397,7 @@ export function executeSimulationMarch(
                         markerPageIndex
                     )
             }));
+            session.recordProfile('genericSplitMs', performance.now() - genericSplitStart);
             if (afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction)) {
                 continue;
             }

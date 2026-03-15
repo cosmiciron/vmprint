@@ -55,6 +55,8 @@ import {
     type ContinuationQueueOutcome,
     type DeferredSplitPlacementOutcome,
     type DeferredSplitPlacementSettlementOutcome,
+    type ExecuteSpeculativeBranchInput,
+    type ExecuteSpeculativeBranchResult,
     type ForcedOverflowCommitOutcome,
     type FragmentCommitState,
     type FragmentTransition,
@@ -89,6 +91,8 @@ import {
     type SplitAttempt,
     type SplitExecution,
     type SplitMarkerPlacementState,
+    type SpeculativeBranchContext,
+    type SpeculativeBranchReason,
     type SplitFragmentAftermathInput,
     type SplitFragmentAftermathState,
     type TailSplitFailureSettlementOutcome,
@@ -126,6 +130,8 @@ export type {
     ContinuationQueueOutcome,
     DeferredSplitPlacementOutcome,
     DeferredSplitPlacementSettlementOutcome,
+    ExecuteSpeculativeBranchInput,
+    ExecuteSpeculativeBranchResult,
     ForcedOverflowCommitOutcome,
     FragmentCommitState,
     FragmentTransition,
@@ -169,6 +175,8 @@ export type {
     SplitFragmentAftermathInput,
     SplitFragmentAftermathState,
     SplitMarkerPlacementState,
+    SpeculativeBranchContext,
+    SpeculativeBranchReason,
     TailSplitFailureSettlementOutcome,
     TailSplitFormationOutcome,
     TailSplitFormationSettlementOutcome,
@@ -200,8 +208,72 @@ export class LayoutSession {
     readonly simulationReportBridge: SimulationReportBridge;
     readonly transitionsRuntime: TransitionsRuntime;
     readonly profile: LayoutProfileMetrics = {
-        keepWithNextPlanCalls: 0,
-        keepWithNextPlanMs: 0,
+        speculativeBranchCalls: 0,
+        speculativeBranchMs: 0,
+        speculativeBranchAcceptedCalls: 0,
+        speculativeBranchRollbackCalls: 0,
+        speculativeBranchByReason: {},
+        paginationPlacementPrepCalls: 0,
+        paginationPlacementPrepMs: 0,
+        actorMeasurementCalls: 0,
+        actorMeasurementMs: 0,
+        keepWithNextResolutionCalls: 0,
+        keepWithNextResolutionMs: 0,
+        wholeFormationOverflowCalls: 0,
+        wholeFormationOverflowMs: 0,
+        keepWithNextActionCalls: 0,
+        keepWithNextActionMs: 0,
+        actorPlacementCalls: 0,
+        actorPlacementMs: 0,
+        actorOverflowCalls: 0,
+        actorOverflowMs: 0,
+        genericSplitCalls: 0,
+        genericSplitMs: 0,
+        boundaryCheckpointCalls: 0,
+        boundaryCheckpointMs: 0,
+        checkpointRecordCalls: 0,
+        checkpointRecordMs: 0,
+        observerBoundaryCheckCalls: 0,
+        observerBoundaryCheckMs: 0,
+        actorMeasurementByKind: {},
+                actorPreparedDispatchCalls: 0,
+                actorPreparedDispatchMs: 0,
+                flowMaterializeCalls: 0,
+                flowMaterializeMs: 0,
+                flowResolveLinesCalls: 0,
+                flowResolveLinesMs: 0,
+                flowBuildTokensCalls: 0,
+                flowBuildTokensMs: 0,
+                flowWrapStreamCalls: 0,
+                flowWrapStreamMs: 0,
+                flowBidiSplitCalls: 0,
+                flowBidiSplitMs: 0,
+                flowScriptSplitCalls: 0,
+                flowScriptSplitMs: 0,
+                flowWordSegmentCalls: 0,
+                flowWordSegmentMs: 0,
+                wrapOverflowTokenCalls: 0,
+                wrapOverflowTokenMs: 0,
+                wrapHyphenationAttemptCalls: 0,
+                wrapHyphenationAttemptMs: 0,
+                wrapHyphenationSuccessCalls: 0,
+                wrapGraphemeFallbackCalls: 0,
+                wrapGraphemeFallbackMs: 0,
+                wrapGraphemeFallbackSegments: 0,
+                textMeasurementCacheHits: 0,
+                textMeasurementCacheMisses: 0,
+                flowResolveSignatureCalls: 0,
+                flowResolveSignatureUniqueCalls: 0,
+                flowResolveSignatureRepeatedCalls: 0,
+                flowResolveSignatureContinuationCalls: 0,
+                flowResolveSignatureRepeatedContinuationCalls: 0,
+                simpleProseEligibleCalls: 0,
+                simpleProseIneligibleInlineObjectCalls: 0,
+                simpleProseIneligibleMixedStyleCalls: 0,
+                simpleProseIneligibleComplexScriptCalls: 0,
+                simpleProseIneligibleRichStructureCalls: 0,
+                keepWithNextPlanCalls: 0,
+                keepWithNextPlanMs: 0,
         keepWithNextBranchCalls: 0,
         keepWithNextBranchMs: 0,
         keepWithNextPreparedActors: 0,
@@ -225,6 +297,8 @@ export class LayoutSession {
         observerPageBoundarySettles: 0
     };
     private paginationLoopState: PaginationLoopState | null = null;
+    private speculativeBranchSequence = 0;
+    private readonly flowResolveSignaturesSeen = new Set<string>();
 
     currentPageIndex = 0;
     currentY = 0;
@@ -267,6 +341,7 @@ export class LayoutSession {
                 this.fragmentSessionRuntime.rollbackAcceptedSplitBranch(pageBoxes, actorQueue, snapshot),
             restoreLocalBranchSnapshot: (pageBoxes, actorQueue, snapshot) =>
                 this.fragmentSessionRuntime.restoreLocalBranchSnapshot(pageBoxes, actorQueue, snapshot),
+            executeSpeculativeBranch: (input) => this.executeSpeculativeBranch(input),
             placeActorSequence: (actors, state, contextBase) =>
                 this.fragmentSessionRuntime.placeActorSequence(actors, state, contextBase),
             executePositionedSplitAttempt: (actor, availableWidth, currentY, lastSpacingAfter, pageLimit, pageIndex, markerReserve, contextBase) =>
@@ -294,6 +369,7 @@ export class LayoutSession {
         this.physicsRuntime = new PhysicsRuntime({
             notifyConstraintNegotiation: (actor, constraints) => this.notifyConstraintNegotiation(actor, constraints),
             notifyActorPrepared: (actor) => this.notifyActorPrepared(actor),
+            recordActorMeasurementByKind: (actorKind, durationMs) => this.recordActorMeasurementByKind(actorKind, durationMs),
             restartCurrentActorOnNextPage: (pages, currentPageBoxes, currentPageIndex, pageWidth, pageHeight, nextPageTopY, actorIndex) =>
                 this.lifecycleRuntime.restartCurrentActorOnNextPage(pages, currentPageBoxes, currentPageIndex, pageWidth, pageHeight, nextPageTopY, actorIndex),
             recordProfile: (metric, delta) => this.recordProfile(metric, delta),
@@ -342,6 +418,7 @@ export class LayoutSession {
                 actorQueue,
                 tailSplitExecution,
                 state,
+                speculativeReason,
                 contextBase,
                 shouldAdvancePageOnFailure,
                 positionMarker
@@ -356,6 +433,7 @@ export class LayoutSession {
                 actorQueue,
                 tailSplitExecution,
                 state,
+                speculativeReason,
                 contextBase,
                 shouldAdvancePageOnFailure,
                 positionMarker
@@ -385,6 +463,10 @@ export class LayoutSession {
         this.eventDispatcher.onActorSpawn(actor, this);
     }
 
+    hasCommittedSignalObservers(): boolean {
+        return this.actorCommunicationRuntime.hasCommittedSignalObservers();
+    }
+
     notifyPageStart(pageIndex: number, width: number, height: number, boxes: Box[]): void {
         this.currentPageIndex = pageIndex;
         this.currentSurface = new PageSurface(pageIndex, width, height, boxes);
@@ -408,7 +490,10 @@ export class LayoutSession {
     }
 
     notifyActorPrepared(actor: PackagerUnit): void {
+        const startedAt = performance.now();
+        this.recordProfile('actorPreparedDispatchCalls', 1);
         this.eventDispatcher.onActorPrepared(actor, this);
+        this.recordProfile('actorPreparedDispatchMs', performance.now() - startedAt);
     }
 
     notifySplitAttempt(attempt: SplitAttempt): void {
@@ -545,6 +630,68 @@ export class LayoutSession {
             checkpoint,
             (restoredQueue, snapshot) => this.kernel.restoreLocalBranchStateSnapshot(restoredQueue, snapshot)
         );
+    }
+
+    executeSpeculativeBranch<T>(
+        input: ExecuteSpeculativeBranchInput<T>
+    ): ExecuteSpeculativeBranchResult<T> {
+        const startedAt = performance.now();
+        const snapshot = this.fragmentSessionRuntime.captureLocalBranchSnapshot(
+            input.pageBoxes,
+            input.actorQueue,
+            input.currentY,
+            input.lastSpacingAfter
+        );
+        const branchId = `speculative:${++this.speculativeBranchSequence}`;
+        this.recordProfile('speculativeBranchCalls', 1);
+
+        const context: SpeculativeBranchContext = {
+            reason: input.reason,
+            branchId,
+            frontier: input.frontier,
+            getCurrentY: () => input.currentY,
+            getLastSpacingAfter: () => input.lastSpacingAfter,
+            getCurrentPageIndex: () => input.currentPageIndex,
+            captureNote: () => { }
+        };
+
+        try {
+            const resolution = input.run(context);
+            const durationMs = performance.now() - startedAt;
+            this.recordSpeculativeBranchByReason(input.reason, durationMs, resolution.accept === true);
+            if (resolution.accept) {
+                this.recordProfile('speculativeBranchAcceptedCalls', 1);
+                return {
+                    accepted: true,
+                    value: resolution.value,
+                    currentY: input.currentY,
+                    lastSpacingAfter: input.lastSpacingAfter
+                };
+            }
+
+            const restored = this.fragmentSessionRuntime.restoreLocalBranchSnapshot(
+                input.pageBoxes,
+                input.actorQueue,
+                snapshot
+            );
+            this.recordProfile('speculativeBranchRollbackCalls', 1);
+            return {
+                accepted: false,
+                value: resolution.value,
+                currentY: restored.currentY,
+                lastSpacingAfter: restored.lastSpacingAfter
+            };
+        } catch (error) {
+            const durationMs = performance.now() - startedAt;
+            this.fragmentSessionRuntime.restoreLocalBranchSnapshot(
+                input.pageBoxes,
+                input.actorQueue,
+                snapshot
+            );
+            this.recordSpeculativeBranchByReason(input.reason, durationMs, false);
+            this.recordProfile('speculativeBranchRollbackCalls', 1);
+            throw error;
+        }
     }
 
     applyPaginationState(target: PaginationState, next: PaginationState): void {
@@ -826,12 +973,59 @@ export class LayoutSession {
         }
     }
 
+    recordSpeculativeBranchByReason(reason: SpeculativeBranchReason, durationMs: number, accepted: boolean): void {
+        const normalizedReason = reason || 'other';
+        const duration = Number.isFinite(durationMs) ? Number(durationMs) : 0;
+        const entry = this.profile.speculativeBranchByReason[normalizedReason] ?? {
+            calls: 0,
+            ms: 0,
+            acceptedCalls: 0,
+            rollbackCalls: 0
+        };
+        entry.calls += 1;
+        entry.ms += duration;
+        if (accepted) {
+            entry.acceptedCalls += 1;
+        } else {
+            entry.rollbackCalls += 1;
+        }
+        this.profile.speculativeBranchByReason[normalizedReason] = entry;
+        this.recordProfile('speculativeBranchMs', duration);
+    }
+
+    recordActorMeasurementByKind(actorKind: string, durationMs: number): void {
+        const normalizedKind = actorKind || 'unknown';
+        const duration = Number.isFinite(durationMs) ? Number(durationMs) : 0;
+        const entry = this.profile.actorMeasurementByKind[normalizedKind] ?? { calls: 0, ms: 0 };
+        entry.calls += 1;
+        entry.ms += duration;
+        this.profile.actorMeasurementByKind[normalizedKind] = entry;
+    }
+
     recordKeepWithNextPrepare(actorKind: string, durationMs: number): void {
         const normalizedKind = actorKind || 'unknown';
         const entry = this.profile.keepWithNextPrepareByKind[normalizedKind] ?? { calls: 0, ms: 0 };
         entry.calls += 1;
         entry.ms += Number.isFinite(durationMs) ? Number(durationMs) : 0;
         this.profile.keepWithNextPrepareByKind[normalizedKind] = entry;
+    }
+
+    recordFlowResolveSignature(signature: string, isContinuation: boolean): void {
+        if (!signature) return;
+        this.recordProfile('flowResolveSignatureCalls', 1);
+        if (isContinuation) {
+            this.recordProfile('flowResolveSignatureContinuationCalls', 1);
+        }
+        if (this.flowResolveSignaturesSeen.has(signature)) {
+            this.recordProfile('flowResolveSignatureRepeatedCalls', 1);
+            if (isContinuation) {
+                this.recordProfile('flowResolveSignatureRepeatedContinuationCalls', 1);
+            }
+            return;
+        }
+
+        this.flowResolveSignaturesSeen.add(signature);
+        this.recordProfile('flowResolveSignatureUniqueCalls', 1);
     }
 
 }

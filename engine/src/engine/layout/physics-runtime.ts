@@ -23,6 +23,7 @@ import { preparePackagerForPhase, type PackagerContext, type PackagerUnit } from
 export type PhysicsRuntimeHost = {
     notifyConstraintNegotiation(actor: PackagerUnit, constraints: ConstraintField): void;
     notifyActorPrepared(actor: PackagerUnit): void;
+    recordActorMeasurementByKind(actorKind: string, durationMs: number): void;
     restartCurrentActorOnNextPage(
         pages: Page[],
         currentPageBoxes: Box[],
@@ -486,6 +487,7 @@ export class PhysicsRuntime {
         layoutBefore: number,
         context: PackagerContext
     ): ActorMeasurement {
+        const startedAt = performance.now();
         preparePackagerForPhase(actor, 'commit', availableWidth, availableHeight, context);
         this.host.notifyActorPrepared(actor);
 
@@ -494,12 +496,14 @@ export class PhysicsRuntime {
         const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
         const requiredHeight = contentHeight + layoutBefore + marginBottom;
 
-        return {
+        const measurement = {
             marginTop,
             marginBottom,
             contentHeight,
             requiredHeight,
             effectiveHeight: Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight)
         };
+        this.host.recordActorMeasurementByKind(actor.actorKind, performance.now() - startedAt);
+        return measurement;
     }
 }

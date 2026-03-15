@@ -952,6 +952,34 @@ Why this matters:
 This is the point where restore precision becomes visible, not merely
 architectural.
 
+One scope rule should now be made explicit.
+
+Safe checkpoints in this document are tools for speculative or invalidatable
+flows. They are not meant to be recorded continuously across the entire layout
+march as a general insurance policy.
+
+That distinction matters because the engine has now demonstrated the failure
+mode of over-broad checkpointing on long manuscripts:
+
+* rollback-capable infrastructure was being paid for continuously
+* but the actual rollback path was rarely or never used
+
+So the correct interpretation is:
+
+* observer registries, dirty frontiers, and safe checkpoints are activated when
+  mature committed truth can invalidate already-committed geometry
+* speculative branch seams may also justify checkpoints
+* ordinary committed progression should remain forward-only unless a real
+  communication-driven ambiguity is active
+
+In short:
+
+> communication-aware rollback should be activated by real uncertainty, not
+> treated as the default execution mode of the entire document.
+
+The concrete transaction API for speculative branches is defined in
+`documents/SPECULATIVE-TRANSACTIONS.md`.
+
 ---
 
 ## 26. Refined Checkpoint Execution Flow

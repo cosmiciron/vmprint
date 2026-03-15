@@ -92,6 +92,44 @@ The march loop is type-agnostic. Adding new layout structures (like mathematical
 To resolve layout decisions that require foresight (like keeping a caption "with next", or balancing multi-column run-offs), VMPrint utilizes deterministic heuristic lookaheads via the `AIRuntime`.
 It commands the Kernel to take O(1) shallow memory snapshots, provisionally marches the actor into a virtual future state, grades the collision outcomes, and if the layout logic is unsound, it triggers an instantaneous stateless rollback safely.
 
+This needs one hard clarification.
+
+Snapshots belong to the speculative lane, not to ordinary forward layout.
+
+What justified snapshots originally was the Schrodinger-style case: the engine was
+about to enter a genuinely ambiguous seam, could not know the right outcome
+without partial execution, and therefore needed a reversible trial branch.
+
+That is valid.
+
+What is not valid is broadening the same mechanism into an ambient insurance
+policy recorded at routine actor/page boundaries "just in case" something later
+might want a rollback. Long-document profiling has now shown the failure mode of
+that broadening clearly: deterministic progression begins paying speculative
+costs continuously even when the rollback path is never used.
+
+So the architectural rule is now explicit:
+
+* committed forward layout is the default mode
+* speculative layout must be entered intentionally
+* snapshots are justified only for speculative mutation whose correctness cannot
+  be known without trial execution and whose failure would require restoration
+* routine paragraph flow, routine page advance, and normal actor commitment
+  must not pay ambient checkpoint costs
+
+VMPrint should follow the same discipline used in mature simulation and game
+engines:
+
+* normal world update runs forward
+* rollback exists, but only inside explicit prediction / speculative subsystems
+* the engine does not deep-clone world state at every routine boundary
+
+If snapshots appear to be required everywhere, then the architecture has likely
+failed to distinguish deterministic progression from speculative branching.
+
+The concrete transaction model for this lane is defined in
+`documents/SPECULATIVE-TRANSACTIONS.md`.
+
 ### Transactional Inter-Actor Communication
 Actors often need to coordinate across vast page divides (e.g., a Table of Contents requiring downstream chapter numbers). Instead of brittle 2-pass AST rewrites, VMPrint utilizes a transactional **Actor Event Bus**.
 - Downstream actors publish immutable telemetry snapshots.
@@ -149,7 +187,7 @@ By discarding DOM paradigms in favor of deterministic spatial physics arrays, th
 |---|---|
 | Four-Layer Boundary | Hardware-like Kernel isolated from typography heuristics |
 | Spatiotemporal Physics | Physics runtime tests autonomous actors against continuous `ConstraintField`s |
-| Speculative Lookahead | Deterministic state snapshots enable 0-penalty rollback for complex block cohesion |
+| Speculative Lookahead | Deterministic snapshots are reserved for explicit speculative branches, not ambient progression |
 | Single-Pass Tooling | Transactional Event Bus assemblies downstream telemetry targets inline |
 | Flat Spatial Output | Deep hierarchies reduce perfectly to absolute, 1-dimensional `Box[]` boundaries |
 | Semantic Provenance | Object `BoxMeta` traces absolute visual bounds securely back to source AST nodes |

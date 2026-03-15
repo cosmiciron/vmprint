@@ -46,6 +46,7 @@
     "build": "tsup",
     "postbuild": "node bundle-assets.mjs",
     "dev": "tsx --conditions tsx src/cli.ts",
+    "profile:document": "tsx --conditions tsx scripts/profile-document.ts",
     "clean": "rimraf dist"
   },
   "devDependencies": {

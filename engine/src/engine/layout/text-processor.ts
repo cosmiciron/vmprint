@@ -286,6 +286,7 @@ export class TextProcessor extends FontProcessor {
     protected measureText(text: string, font?: any, fontSize?: number, letterSpacing: number = 0, populateSegment?: TextSegment): number {
         const measurementFont = font || this.font;
         const measurementFontSize = fontSize || this.config.layout.fontSize;
+        const session = (this as any).getCurrentLayoutSession?.() || null;
 
         if (populateSegment?.inlineObject) {
             return this.measureInlineObject(populateSegment, measurementFont, measurementFontSize);
@@ -305,6 +306,7 @@ export class TextProcessor extends FontProcessor {
 
         const cached = this.runtime.measurementCache.get(cacheKey);
         if (cached) {
+            session?.recordProfile?.('textMeasurementCacheHits', 1);
             if (populateSegment) {
                 populateSegment.glyphs = this.cloneGlyphs(cached.glyphs);
                 if (cached.shapedGlyphs) populateSegment.shapedGlyphs = cached.shapedGlyphs;
@@ -314,6 +316,7 @@ export class TextProcessor extends FontProcessor {
             }
             return cached.width;
         }
+        session?.recordProfile?.('textMeasurementCacheMisses', 1);
 
         const upm = measurementFont.unitsPerEm;
         if (!upm || !Number.isFinite(upm)) {
@@ -705,6 +708,8 @@ export class TextProcessor extends FontProcessor {
             resolvedLineLayout.set(lineIndex, normalized);
             return normalized;
         };
+        const session = (this as any).getCurrentLayoutSession?.() || null;
+        const buildTokensStartedAt = performance.now();
         const tokens = buildRichWrapTokens({
             flattenedSegments,
             defaultFontSize: fontSize,
@@ -727,8 +732,23 @@ export class TextProcessor extends FontProcessor {
             resolveRichFontInfo: (seg, defaultSize) =>
                 resolveRichFontInfo(seg, defaultSize, this.config.layout.fontFamily, (familyName, weight) =>
                     this.resolveLoadedFamilyFont(familyName, weight)
-                )
+                ),
+            onBidiSplit: (durationMs) => {
+                session?.recordProfile?.('flowBidiSplitCalls', 1);
+                session?.recordProfile?.('flowBidiSplitMs', durationMs);
+            },
+            onScriptSplit: (durationMs) => {
+                session?.recordProfile?.('flowScriptSplitCalls', 1);
+                session?.recordProfile?.('flowScriptSplitMs', durationMs);
+            },
+            onWordSegment: (durationMs) => {
+                session?.recordProfile?.('flowWordSegmentCalls', 1);
+                session?.recordProfile?.('flowWordSegmentMs', durationMs);
+            }
         });
+        session?.recordProfile?.('flowBuildTokensCalls', 1);
+        session?.recordProfile?.('flowBuildTokensMs', performance.now() - buildTokensStartedAt);
+        const wrapStreamStartedAt = performance.now();
         const wrapped = wrapTokenStream({
             tokens,
             maxWidth,
@@ -758,8 +778,26 @@ export class TextProcessor extends FontProcessor {
             resolveRichFontInfo: (seg, defaultSize) =>
                 resolveRichFontInfo(seg, defaultSize, this.config.layout.fontFamily, (familyName, weight) =>
                     this.resolveLoadedFamilyFont(familyName, weight)
-                )
+                ),
+            onOverflowToken: (durationMs) => {
+                session?.recordProfile?.('wrapOverflowTokenCalls', 1);
+                session?.recordProfile?.('wrapOverflowTokenMs', durationMs);
+            },
+            onHyphenationAttempt: (durationMs, succeeded) => {
+                session?.recordProfile?.('wrapHyphenationAttemptCalls', 1);
+                session?.recordProfile?.('wrapHyphenationAttemptMs', durationMs);
+                if (succeeded) {
+                    session?.recordProfile?.('wrapHyphenationSuccessCalls', 1);
+                }
+            },
+            onGraphemeFallback: (durationMs, graphemeCount) => {
+                session?.recordProfile?.('wrapGraphemeFallbackCalls', 1);
+                session?.recordProfile?.('wrapGraphemeFallbackMs', durationMs);
+                session?.recordProfile?.('wrapGraphemeFallbackSegments', graphemeCount);
+            }
         });
+        session?.recordProfile?.('flowWrapStreamCalls', 1);
+        session?.recordProfile?.('flowWrapStreamMs', performance.now() - wrapStreamStartedAt);
 
         if (lineLayoutOut) {
             lineLayoutOut.widths = [];

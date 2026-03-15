@@ -9,6 +9,75 @@ import type { ObservationResult, PackagerContext, PackagerSplitResult, SpatialFr
 import type { PackagerUnit } from './packagers/packager-types';
 
 export type LayoutProfileMetrics = {
+    speculativeBranchCalls: number;
+    speculativeBranchMs: number;
+    speculativeBranchAcceptedCalls: number;
+    speculativeBranchRollbackCalls: number;
+    speculativeBranchByReason: Record<string, {
+        calls: number;
+        ms: number;
+        acceptedCalls: number;
+        rollbackCalls: number;
+    }>;
+    paginationPlacementPrepCalls: number;
+    paginationPlacementPrepMs: number;
+    actorMeasurementCalls: number;
+    actorMeasurementMs: number;
+    keepWithNextResolutionCalls: number;
+    keepWithNextResolutionMs: number;
+    wholeFormationOverflowCalls: number;
+    wholeFormationOverflowMs: number;
+    keepWithNextActionCalls: number;
+    keepWithNextActionMs: number;
+    actorPlacementCalls: number;
+    actorPlacementMs: number;
+    actorOverflowCalls: number;
+    actorOverflowMs: number;
+    genericSplitCalls: number;
+    genericSplitMs: number;
+    boundaryCheckpointCalls: number;
+    boundaryCheckpointMs: number;
+    checkpointRecordCalls: number;
+    checkpointRecordMs: number;
+    observerBoundaryCheckCalls: number;
+    observerBoundaryCheckMs: number;
+    actorMeasurementByKind: Record<string, { calls: number; ms: number }>;
+    actorPreparedDispatchCalls: number;
+    actorPreparedDispatchMs: number;
+    flowMaterializeCalls: number;
+    flowMaterializeMs: number;
+    flowResolveLinesCalls: number;
+    flowResolveLinesMs: number;
+    flowBuildTokensCalls: number;
+    flowBuildTokensMs: number;
+    flowWrapStreamCalls: number;
+    flowWrapStreamMs: number;
+    flowBidiSplitCalls: number;
+    flowBidiSplitMs: number;
+    flowScriptSplitCalls: number;
+    flowScriptSplitMs: number;
+    flowWordSegmentCalls: number;
+    flowWordSegmentMs: number;
+    wrapOverflowTokenCalls: number;
+    wrapOverflowTokenMs: number;
+    wrapHyphenationAttemptCalls: number;
+    wrapHyphenationAttemptMs: number;
+    wrapHyphenationSuccessCalls: number;
+    wrapGraphemeFallbackCalls: number;
+    wrapGraphemeFallbackMs: number;
+    wrapGraphemeFallbackSegments: number;
+    textMeasurementCacheHits: number;
+    textMeasurementCacheMisses: number;
+    flowResolveSignatureCalls: number;
+    flowResolveSignatureUniqueCalls: number;
+    flowResolveSignatureRepeatedCalls: number;
+    flowResolveSignatureContinuationCalls: number;
+    flowResolveSignatureRepeatedContinuationCalls: number;
+    simpleProseEligibleCalls: number;
+    simpleProseIneligibleInlineObjectCalls: number;
+    simpleProseIneligibleMixedStyleCalls: number;
+    simpleProseIneligibleComplexScriptCalls: number;
+    simpleProseIneligibleRichStructureCalls: number;
     keepWithNextPlanCalls: number;
     keepWithNextPlanMs: number;
     keepWithNextBranchCalls: number;
@@ -422,8 +491,47 @@ export type ContinuationQueueOutcome = {
     snapshot: LocalQueueSnapshot;
 };
 
+export type SpeculativeBranchReason =
+    | 'accepted-split'
+    | 'continuation-queue-preview'
+    | 'keep-with-next'
+    | 'observer-resettle'
+    | 'tail-split-formation'
+    | 'other';
+
+export type SpeculativeBranchContext = {
+    readonly reason: SpeculativeBranchReason;
+    readonly branchId: string;
+    readonly frontier?: SpatialFrontier;
+    getCurrentY(): number;
+    getLastSpacingAfter(): number;
+    getCurrentPageIndex(): number;
+    captureNote(label: string, payload?: Record<string, unknown>): void;
+};
+
+export type SpeculativeBranchResolution<T> =
+    | { accept: true; value: T }
+    | { accept: false; value?: T };
+
+export type ExecuteSpeculativeBranchInput<T> = {
+    reason: SpeculativeBranchReason;
+    frontier?: SpatialFrontier;
+    pageBoxes: Box[];
+    actorQueue: PackagerUnit[];
+    currentY: number;
+    lastSpacingAfter: number;
+    currentPageIndex: number;
+    run: (branch: SpeculativeBranchContext) => SpeculativeBranchResolution<T>;
+};
+
+export type ExecuteSpeculativeBranchResult<T> = {
+    accepted: boolean;
+    value?: T;
+    currentY: number;
+    lastSpacingAfter: number;
+};
+
 export type TailSplitFormationOutcome = {
-    branchSnapshot: LocalBranchSnapshot;
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
     queuePreview: ContinuationQueueOutcome;
     queueHandling: AcceptedSplitQueueHandling;
@@ -503,7 +611,6 @@ export type KeepWithNextPlanningResolution = {
 };
 
 export type GenericSplitOutcome = {
-    branchSnapshot: LocalBranchSnapshot;
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
     queuePreview: ContinuationQueueOutcome;
     queueHandling: AcceptedSplitQueueHandling;

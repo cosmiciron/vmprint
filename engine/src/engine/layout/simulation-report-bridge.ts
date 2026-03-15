@@ -72,7 +72,8 @@ export class SimulationReportBridge {
             generatedBoxCount,
             profile: {
                 ...profile,
-                keepWithNextPrepareByKind: { ...profile.keepWithNextPrepareByKind }
+                keepWithNextPrepareByKind: { ...profile.keepWithNextPrepareByKind },
+                speculativeBranchByReason: { ...profile.speculativeBranchByReason }
             },
             artifacts: this.buildSimulationArtifacts()
         };

@@ -10,11 +10,13 @@ import type {
     ContinuationQueueOutcome,
     DeferredSplitPlacementOutcome,
     DeferredSplitPlacementSettlementOutcome,
+    ExecuteSpeculativeBranchInput,
     GenericSplitOutcome,
     GenericSplitSuccessHandlingOutcome,
     GenericSplitSuccessSettlementOutcome,
     LocalBranchSnapshot,
     PageAdvanceOutcome,
+    SpeculativeBranchReason,
     SplitExecution,
     SplitAttempt,
     SplitFragmentAftermathState,
@@ -47,6 +49,12 @@ type PackagerWithProcessor = PackagerUnit & {
 export type TransitionsRuntimeHost = {
     getContinuationArtifacts(actorId: string): ContinuationArtifacts | undefined;
     setContinuationArtifacts(actorId: string, artifacts: ContinuationArtifacts): void;
+    executeSpeculativeBranch<T>(input: ExecuteSpeculativeBranchInput<T>): {
+        accepted: boolean;
+        value?: T;
+        currentY: number;
+        lastSpacingAfter: number;
+    };
     captureLocalBranchSnapshot(
         pageBoxes: readonly Box[],
         actorQueue: readonly PackagerUnit[],
@@ -189,34 +197,40 @@ export class TransitionsRuntime {
         state: SplitFragmentAftermathState,
         positionMarker: SplitMarkerPositioner
     ): { queuePreview: ContinuationQueueOutcome; queueHandling: AcceptedSplitQueueHandling } {
-        const snapshot = this.host.captureLocalBranchSnapshot(
-            pageBoxes,
+        const transaction = this.host.executeSpeculativeBranch({
+            reason: 'continuation-queue-preview',
+            pageBoxes: pageBoxes as Box[],
             actorQueue,
-            state.currentY,
-            state.lastSpacingAfter
-        );
+            currentY: state.currentY,
+            lastSpacingAfter: state.lastSpacingAfter,
+            currentPageIndex: state.pageIndex,
+            run: () => {
+                this.host.acceptAndCommitSplitFragment(
+                    attempt,
+                    result,
+                    boxes,
+                    state,
+                    positionMarker
+                );
+                const queuePreview = this.host.settleContinuationQueue(
+                    actorQueue,
+                    startIndex,
+                    replaceCount,
+                    predecessor,
+                    continuation,
+                    { notify: false }
+                );
+                return {
+                    accept: false,
+                    value: {
+                        queuePreview,
+                        queueHandling: this.getAcceptedSplitQueueHandling(queuePreview)
+                    }
+                };
+            }
+        });
 
-        this.host.acceptAndCommitSplitFragment(
-            attempt,
-            result,
-            boxes,
-            state,
-            positionMarker
-        );
-        const queuePreview = this.host.settleContinuationQueue(
-            actorQueue,
-            startIndex,
-            replaceCount,
-            predecessor,
-            continuation,
-            { notify: false }
-        );
-        this.host.rollbackAcceptedSplitBranch(pageBoxes as Box[], actorQueue, snapshot);
-
-        return {
-            queuePreview,
-            queueHandling: this.getAcceptedSplitQueueHandling(queuePreview)
-        };
+        return transaction.value!;
     }
 
     finalizeTailSplitFormation(
@@ -232,12 +246,6 @@ export class TransitionsRuntime {
         state: SplitFragmentAftermathState,
         positionMarker: SplitMarkerPositioner
     ): TailSplitFormationOutcome {
-        const snapshot = this.host.captureLocalBranchSnapshot(
-            pageBoxes,
-            actorQueue,
-            state.currentY,
-            state.lastSpacingAfter
-        );
         const committed = this.host.acceptAndCommitSplitFragment(
             attempt,
             result,
@@ -267,7 +275,6 @@ export class TransitionsRuntime {
         );
 
         return {
-            branchSnapshot: snapshot,
             committed,
             queuePreview: preview.queuePreview,
             queueHandling: preview.queueHandling
@@ -286,12 +293,6 @@ export class TransitionsRuntime {
         state: SplitFragmentAftermathState,
         positionMarker: SplitMarkerPositioner
     ): GenericSplitOutcome {
-        const snapshot = this.host.captureLocalBranchSnapshot(
-            pageBoxes,
-            actorQueue,
-            state.currentY,
-            state.lastSpacingAfter
-        );
         const committed = this.host.acceptAndCommitSplitFragment(
             attempt,
             result,
@@ -322,7 +323,6 @@ export class TransitionsRuntime {
         );
 
         return {
-            branchSnapshot: snapshot,
             committed,
             queuePreview: preview.queuePreview,
             queueHandling: preview.queueHandling
@@ -365,17 +365,15 @@ export class TransitionsRuntime {
         pageHeight: number,
         nextPageTop: number,
         currentActorIndex: number,
-        actorQueue: PackagerUnit[],
-        checkpoint: LocalBranchSnapshot,
+        restored: { currentY: number; lastSpacingAfter: number },
         shouldAdvancePage: boolean
     ): TailSplitFailureSettlementOutcome {
-        const rolledBack = this.host.restoreLocalBranchSnapshot(currentPageBoxes, actorQueue, checkpoint);
         if (!shouldAdvancePage) {
             return {
                 nextPageIndex: currentPageIndex,
                 nextPageBoxes: currentPageBoxes,
-                nextCurrentY: rolledBack.currentY,
-                nextLastSpacingAfter: rolledBack.lastSpacingAfter,
+                nextCurrentY: restored.currentY,
+                nextLastSpacingAfter: restored.lastSpacingAfter,
                 nextActorIndex: currentActorIndex
             };
         }
@@ -418,74 +416,87 @@ export class TransitionsRuntime {
             pageLimit: number;
             availableWidth: number;
         },
+        speculativeReason: SpeculativeBranchReason,
         contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
         shouldAdvancePageOnFailure: boolean,
         positionMarker: SplitMarkerPositioner
     ): TailSplitFormationSettlementOutcome | TailSplitFailureSettlementOutcome {
         const { prefix, splitCandidate, replaceCount, splitMarkerReserve } = tailSplitExecution;
-        const checkpoint = this.host.captureLocalBranchSnapshot(
-            currentPageBoxes,
+        const transaction = this.host.executeSpeculativeBranch({
+            reason: speculativeReason,
+            pageBoxes: currentPageBoxes,
             actorQueue,
-            state.currentY,
-            state.lastSpacingAfter
-        );
-
-        const placedPrefix = this.host.placeActorSequence(prefix, {
             currentY: state.currentY,
             lastSpacingAfter: state.lastSpacingAfter,
-            pageIndex: currentPageIndex,
-            pageLimit: state.pageLimit,
-            availableWidth: state.availableWidth
-        }, contextBase);
-        currentPageBoxes.push(...placedPrefix.boxes);
-
-        const splitExecution = this.host.executePositionedSplitAttempt(
-            splitCandidate,
-            state.availableWidth,
-            placedPrefix.currentY,
-            placedPrefix.lastSpacingAfter,
-            state.pageLimit,
             currentPageIndex,
-            splitMarkerReserve,
-            contextBase
-        );
-        const splitAttempt = splitExecution.execution.attempt;
-        const { currentFragment: partA, continuationFragment: partB } = splitExecution.execution.result;
-
-        if (partA && partB) {
-            const partAContext = {
-                ...contextBase,
-                pageIndex: currentPageIndex,
-                cursorY: placedPrefix.currentY
-            };
-            const partABoxes = partA.emitBoxes(
-                state.availableWidth,
-                splitExecution.emitAvailableHeight,
-                partAContext
-            ) || [];
-            const outcome = this.finalizeTailSplitFormation(
-                currentPageBoxes,
-                actorQueue,
-                currentActorIndex,
-                replaceCount,
-                splitCandidate,
-                partB,
-                splitAttempt,
-                {
-                    currentFragment: partA,
-                    continuationFragment: partB
-                },
-                partABoxes,
-                this.host.createSplitFragmentAftermathState(partA, {
-                    currentY: placedPrefix.currentY,
-                    layoutDelta: splitExecution.layoutDelta,
-                    lastSpacingAfter: placedPrefix.lastSpacingAfter,
+            run: () => {
+                const placedPrefix = this.host.placeActorSequence(prefix, {
+                    currentY: state.currentY,
+                    lastSpacingAfter: state.lastSpacingAfter,
+                    pageIndex: currentPageIndex,
                     pageLimit: state.pageLimit,
-                    availableWidth: state.availableWidth,
-                    pageIndex: currentPageIndex
-                }),
-                positionMarker
-            );
+                    availableWidth: state.availableWidth
+                }, contextBase);
+                currentPageBoxes.push(...placedPrefix.boxes);
+
+                const splitExecution = this.host.executePositionedSplitAttempt(
+                    splitCandidate,
+                    state.availableWidth,
+                    placedPrefix.currentY,
+                    placedPrefix.lastSpacingAfter,
+                    state.pageLimit,
+                    currentPageIndex,
+                    splitMarkerReserve,
+                    contextBase
+                );
+                const splitAttempt = splitExecution.execution.attempt;
+                const { currentFragment: partA, continuationFragment: partB } = splitExecution.execution.result;
+
+                if (!(partA && partB)) {
+                    return { accept: false };
+                }
+
+                const partAContext = {
+                    ...contextBase,
+                    pageIndex: currentPageIndex,
+                    cursorY: placedPrefix.currentY
+                };
+                const partABoxes = partA.emitBoxes(
+                    state.availableWidth,
+                    splitExecution.emitAvailableHeight,
+                    partAContext
+                ) || [];
+                const outcome = this.finalizeTailSplitFormation(
+                    currentPageBoxes,
+                    actorQueue,
+                    currentActorIndex,
+                    replaceCount,
+                    splitCandidate,
+                    partB,
+                    splitAttempt,
+                    {
+                        currentFragment: partA,
+                        continuationFragment: partB
+                    },
+                    partABoxes,
+                    this.host.createSplitFragmentAftermathState(partA, {
+                        currentY: placedPrefix.currentY,
+                        layoutDelta: splitExecution.layoutDelta,
+                        lastSpacingAfter: placedPrefix.lastSpacingAfter,
+                        pageLimit: state.pageLimit,
+                        availableWidth: state.availableWidth,
+                        pageIndex: currentPageIndex
+                    }),
+                    positionMarker
+                );
+                return {
+                    accept: true,
+                    value: outcome
+                };
+            }
+        });
+
+        if (transaction.accepted && transaction.value) {
             return this.settleTailSplitFormation(
                 pages,
                 currentPageBoxes,
@@ -494,7 +505,7 @@ export class TransitionsRuntime {
                 pageHeight,
                 nextPageTopY,
                 currentActorIndex,
-                outcome
+                transaction.value
             );
         }
 
@@ -506,8 +517,10 @@ export class TransitionsRuntime {
             pageHeight,
             nextPageTopY,
             currentActorIndex,
-            actorQueue,
-            checkpoint,
+            {
+                currentY: transaction.currentY,
+                lastSpacingAfter: transaction.lastSpacingAfter
+            },
             shouldAdvancePageOnFailure
         );
     }

@@ -13,6 +13,7 @@ import {
     type KeepWithNextPlanningResolution,
     type PaginationLoopAction,
     type PaginationState,
+    type SpeculativeBranchReason,
     type TailSplitFormationSettlementOutcome,
     type WholeFormationOverflowEntryOutcome,
     type WholeFormationOverflowEntrySettlementOutcome,
@@ -58,6 +59,7 @@ export type AIRuntimeHost = {
             pageLimit: number;
             availableWidth: number;
         },
+        speculativeReason: SpeculativeBranchReason,
         contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
         shouldAdvancePageOnFailure: boolean,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
@@ -203,6 +205,7 @@ export class AIRuntime {
                 input.actorQueue,
                 input.wholeFormationOverflow.tailSplitExecution,
                 input.state,
+                'keep-with-next',
                 input.contextBase,
                 input.planning.tailSplitFailureOutcome === 'advance-page',
                 input.positionMarker

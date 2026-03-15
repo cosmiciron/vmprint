@@ -83,6 +83,10 @@ export class ActorCommunicationRuntime<
         }
     }
 
+    hasCommittedSignalObservers(): boolean {
+        return this.observerRegistry.size > 0;
+    }
+
     noteActorIndex(actor: PackagerUnit | undefined, actorIndex: number): void {
         if (!actor) return;
 
