@@ -1713,7 +1713,7 @@ async function run() {
                 { type: 'p', content: sharedText, properties: { sourceId: 'probe-second' } }
             ];
             const reservedElements = [
-                { type: 'p', content: sharedText, properties: { sourceId: 'probe-first', _experimentalPageReservationAfter: 100 } },
+                { type: 'p', content: sharedText, properties: { sourceId: 'probe-first', pageReservationAfter: 100 } },
                 { type: 'p', content: sharedText, properties: { sourceId: 'probe-second' } }
             ];
 
@@ -1753,7 +1753,7 @@ async function run() {
                 ...config,
                 layout: {
                     ...config.layout,
-                    _experimentalPageReservationOnFirstPageStart: 120
+                    pageReservationOnFirstPageStart: 120
                 }
             } as any);
             await pageStartReservationEngine.waitForFonts();
@@ -1778,8 +1778,8 @@ async function run() {
                 ...config,
                 layout: {
                     ...config.layout,
-                    _experimentalPageReservationOnFirstPageStart: 20,
-                    _experimentalPageStartReservationSelector: 'odd'
+                    pageReservationOnFirstPageStart: 20,
+                    pageStartReservationSelector: 'odd'
                 }
             } as any);
             await oddSelectorEngine.waitForFonts();
@@ -1799,9 +1799,9 @@ async function run() {
                 ...config,
                 layout: {
                     ...config.layout,
-                    _experimentalPageStartExclusionTop: 20,
-                    _experimentalPageStartExclusionHeight: 35,
-                    _experimentalPageStartExclusionSelector: 'first'
+                    pageStartExclusionTop: 20,
+                    pageStartExclusionHeight: 35,
+                    pageStartExclusionSelector: 'first'
                 }
             } as any);
             await exclusionEngine.waitForFonts();
@@ -1839,10 +1839,10 @@ async function run() {
                 ...config,
                 layout: {
                     ...config.layout,
-                    _experimentalPageStartExclusionTop: 20,
-                    _experimentalPageStartExclusionHeight: 45,
-                    _experimentalPageStartExclusionLeftWidth: 80,
-                    _experimentalPageStartExclusionSelector: 'first'
+                    pageStartExclusionTop: 20,
+                    pageStartExclusionHeight: 45,
+                    pageStartExclusionLeftWidth: 80,
+                    pageStartExclusionSelector: 'first'
                 }
             } as any);
             await laneExclusionEngine.waitForFonts();
@@ -1881,11 +1881,11 @@ async function run() {
                 ...config,
                 layout: {
                     ...config.layout,
-                    _experimentalPageStartExclusionTop: 20,
-                    _experimentalPageStartExclusionHeight: 45,
-                    _experimentalPageStartExclusionLeftWidth: 70,
-                    _experimentalPageStartExclusionRightWidth: 70,
-                    _experimentalPageStartExclusionSelector: 'first'
+                    pageStartExclusionTop: 20,
+                    pageStartExclusionHeight: 45,
+                    pageStartExclusionLeftWidth: 70,
+                    pageStartExclusionRightWidth: 70,
+                    pageStartExclusionSelector: 'first'
                 }
             } as any);
             await centeredLaneExclusionEngine.waitForFonts();
@@ -1917,11 +1917,11 @@ async function run() {
                 ...config,
                 layout: {
                     ...config.layout,
-                    _experimentalPageStartExclusionTop: 20,
-                    _experimentalPageStartExclusionHeight: 45,
-                    _experimentalPageStartExclusionX: 90,
-                    _experimentalPageStartExclusionWidth: 80,
-                    _experimentalPageStartExclusionSelector: 'first'
+                    pageStartExclusionTop: 20,
+                    pageStartExclusionHeight: 45,
+                    pageStartExclusionX: 90,
+                    pageStartExclusionWidth: 80,
+                    pageStartExclusionSelector: 'first'
                 }
             } as any);
             await interiorExclusionEngine.waitForFonts();
@@ -1949,13 +1949,13 @@ async function run() {
                 ...config,
                 layout: {
                     ...config.layout,
-                    _experimentalPageStartExclusionTop: 20,
-                    _experimentalPageStartExclusionHeight: 45,
-                    _experimentalPageStartExclusionX: 30,
-                    _experimentalPageStartExclusionWidth: 40,
-                    _experimentalPageStartExclusionX2: 220,
-                    _experimentalPageStartExclusionWidth2: 40,
-                    _experimentalPageStartExclusionSelector: 'first'
+                    pageStartExclusionTop: 20,
+                    pageStartExclusionHeight: 45,
+                    pageStartExclusionX: 30,
+                    pageStartExclusionWidth: 40,
+                    pageStartExclusionX2: 220,
+                    pageStartExclusionWidth2: 40,
+                    pageStartExclusionSelector: 'first'
                 }
             } as any);
             await multiInteriorExclusionEngine.waitForFonts();
@@ -2003,13 +2003,13 @@ async function run() {
                 ...config,
                 layout: {
                     ...config.layout,
-                    _experimentalPageStartExclusionTop: 20,
-                    _experimentalPageStartExclusionHeight: 45,
-                    _experimentalPageStartExclusionX: 60,
-                    _experimentalPageStartExclusionWidth: 40,
-                    _experimentalPageStartExclusionX2: 210,
-                    _experimentalPageStartExclusionWidth2: 40,
-                    _experimentalPageStartExclusionSelector: 'first'
+                    pageStartExclusionTop: 20,
+                    pageStartExclusionHeight: 45,
+                    pageStartExclusionX: 60,
+                    pageStartExclusionWidth: 40,
+                    pageStartExclusionX2: 210,
+                    pageStartExclusionWidth2: 40,
+                    pageStartExclusionSelector: 'first'
                 }
             } as any);
             await narrowLaneProbeEngine.waitForFonts();
@@ -2057,11 +2057,11 @@ async function run() {
                 ...config,
                 layout: {
                     ...config.layout,
-                    _experimentalPageStartExclusionTop: 20,
-                    _experimentalPageStartExclusionHeight: 45,
-                    _experimentalPageStartExclusionLeftWidth: 70,
-                    _experimentalPageStartExclusionRightWidth: 70,
-                    _experimentalPageStartExclusionSelector: 'first'
+                    pageStartExclusionTop: 20,
+                    pageStartExclusionHeight: 45,
+                    pageStartExclusionLeftWidth: 70,
+                    pageStartExclusionRightWidth: 70,
+                    pageStartExclusionSelector: 'first'
                 }
             } as any);
             await dropcapLaneEngine.waitForFonts();
@@ -2129,11 +2129,11 @@ async function run() {
                 ...config,
                 layout: {
                     ...config.layout,
-                    _experimentalPageStartExclusionTop: 20,
-                    _experimentalPageStartExclusionHeight: 45,
-                    _experimentalPageStartExclusionLeftWidth: 70,
-                    _experimentalPageStartExclusionRightWidth: 70,
-                    _experimentalPageStartExclusionSelector: 'first'
+                    pageStartExclusionTop: 20,
+                    pageStartExclusionHeight: 45,
+                    pageStartExclusionLeftWidth: 70,
+                    pageStartExclusionRightWidth: 70,
+                    pageStartExclusionSelector: 'first'
                 }
             } as any);
             await centeredLaneStoryEngine.waitForFonts();

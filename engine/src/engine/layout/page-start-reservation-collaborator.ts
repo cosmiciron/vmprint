@@ -3,16 +3,16 @@ import type { LayoutCollaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 
 function resolvePageStartReservationHeight(config: LayoutConfig): number {
-    const value = config.layout._experimentalPageReservationOnFirstPageStart;
+    const value = config.layout.pageReservationOnFirstPageStart;
     return Number.isFinite(value) ? Math.max(0, Number(value)) : 0;
 }
 
 function resolvePageStartReservationSelector(config: LayoutConfig): PageReservationSelector {
-    const value = config.layout._experimentalPageStartReservationSelector;
+    const value = config.layout.pageStartReservationSelector;
     return value === 'all' || value === 'odd' || value === 'even' ? value : 'first';
 }
 
-export class ExperimentalPageStartReservationCollaborator implements LayoutCollaborator {
+export class PageStartReservationCollaborator implements LayoutCollaborator {
     private readonly reservationHeight: number;
     private readonly selector: PageReservationSelector;
 

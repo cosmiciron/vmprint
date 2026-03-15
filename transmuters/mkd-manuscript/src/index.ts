@@ -333,7 +333,7 @@ export const transmuter: ManuscriptTransmuter = {
       '#     pageBreakBefore: true',
       '#   sceneBreak:',
       '#     symbol: "#"',
-      '#   experimental:',
+      '#   dynamic:',
       '#     expandingProbe:',
       '#       enabled: true',
       '#       initialHeight: 72',

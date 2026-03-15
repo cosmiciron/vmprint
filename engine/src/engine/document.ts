@@ -22,17 +22,17 @@ const LAYOUT_KEYS = new Set([
     'headerInsetBottom',
     'footerInsetTop',
     'footerInsetBottom',
-    '_experimentalPageReservationOnFirstPageStart',
-    '_experimentalPageStartReservationSelector',
-    '_experimentalPageStartExclusionTop',
-    '_experimentalPageStartExclusionHeight',
-    '_experimentalPageStartExclusionX',
-    '_experimentalPageStartExclusionWidth',
-    '_experimentalPageStartExclusionX2',
-    '_experimentalPageStartExclusionWidth2',
-    '_experimentalPageStartExclusionLeftWidth',
-    '_experimentalPageStartExclusionRightWidth',
-    '_experimentalPageStartExclusionSelector',
+    'pageReservationOnFirstPageStart',
+    'pageStartReservationSelector',
+    'pageStartExclusionTop',
+    'pageStartExclusionHeight',
+    'pageStartExclusionX',
+    'pageStartExclusionWidth',
+    'pageStartExclusionX2',
+    'pageStartExclusionWidth2',
+    'pageStartExclusionLeftWidth',
+    'pageStartExclusionRightWidth',
+    'pageStartExclusionSelector',
     'pageNumberStart',
     'lang',
     'direction',
@@ -67,7 +67,8 @@ const ELEMENT_PROPERTIES_KEYS = new Set([
     'pageOverrides',
     'sourceRange',
     'sourceSyntax',
-    'language'
+    'language',
+    'pageReservationAfter'
 ]);
 const PAGINATION_CONTINUATION_KEYS = new Set(['enabled', 'markerAfterSplit', 'markerBeforeContinuation', 'markersBeforeContinuation']);
 const CONTINUATION_MARKER_KEYS = new Set(['type', 'content', 'style', 'properties']);
@@ -249,49 +250,49 @@ function validateLayout(layout: unknown, documentPath: string): void {
     if (obj.headerInsetBottom !== undefined) assertFiniteNumberAt(obj.headerInsetBottom, 'layout.headerInsetBottom', documentPath);
     if (obj.footerInsetTop !== undefined) assertFiniteNumberAt(obj.footerInsetTop, 'layout.footerInsetTop', documentPath);
     if (obj.footerInsetBottom !== undefined) assertFiniteNumberAt(obj.footerInsetBottom, 'layout.footerInsetBottom', documentPath);
-    if (obj._experimentalPageReservationOnFirstPageStart !== undefined) {
-        assertFiniteNumberAt(obj._experimentalPageReservationOnFirstPageStart, 'layout._experimentalPageReservationOnFirstPageStart', documentPath);
+    if (obj.pageReservationOnFirstPageStart !== undefined) {
+        assertFiniteNumberAt(obj.pageReservationOnFirstPageStart, 'layout.pageReservationOnFirstPageStart', documentPath);
     }
-    if (obj._experimentalPageStartReservationSelector !== undefined) {
-        assertStringAt(obj._experimentalPageStartReservationSelector, 'layout._experimentalPageStartReservationSelector', documentPath);
-        if (!PAGE_RESERVATION_SELECTOR_VALUES.has(String(obj._experimentalPageStartReservationSelector))) {
+    if (obj.pageStartReservationSelector !== undefined) {
+        assertStringAt(obj.pageStartReservationSelector, 'layout.pageStartReservationSelector', documentPath);
+        if (!PAGE_RESERVATION_SELECTOR_VALUES.has(String(obj.pageStartReservationSelector))) {
             contractError(
                 documentPath,
-                'layout._experimentalPageStartReservationSelector',
+                'layout.pageStartReservationSelector',
                 'expected one of "first", "odd", "even", or "all".'
             );
         }
     }
-    if (obj._experimentalPageStartExclusionTop !== undefined) {
-        assertFiniteNumberAt(obj._experimentalPageStartExclusionTop, 'layout._experimentalPageStartExclusionTop', documentPath);
+    if (obj.pageStartExclusionTop !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionTop, 'layout.pageStartExclusionTop', documentPath);
     }
-    if (obj._experimentalPageStartExclusionHeight !== undefined) {
-        assertFiniteNumberAt(obj._experimentalPageStartExclusionHeight, 'layout._experimentalPageStartExclusionHeight', documentPath);
+    if (obj.pageStartExclusionHeight !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionHeight, 'layout.pageStartExclusionHeight', documentPath);
     }
-    if (obj._experimentalPageStartExclusionX !== undefined) {
-        assertFiniteNumberAt(obj._experimentalPageStartExclusionX, 'layout._experimentalPageStartExclusionX', documentPath);
+    if (obj.pageStartExclusionX !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionX, 'layout.pageStartExclusionX', documentPath);
     }
-    if (obj._experimentalPageStartExclusionWidth !== undefined) {
-        assertFiniteNumberAt(obj._experimentalPageStartExclusionWidth, 'layout._experimentalPageStartExclusionWidth', documentPath);
+    if (obj.pageStartExclusionWidth !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionWidth, 'layout.pageStartExclusionWidth', documentPath);
     }
-    if (obj._experimentalPageStartExclusionX2 !== undefined) {
-        assertFiniteNumberAt(obj._experimentalPageStartExclusionX2, 'layout._experimentalPageStartExclusionX2', documentPath);
+    if (obj.pageStartExclusionX2 !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionX2, 'layout.pageStartExclusionX2', documentPath);
     }
-    if (obj._experimentalPageStartExclusionWidth2 !== undefined) {
-        assertFiniteNumberAt(obj._experimentalPageStartExclusionWidth2, 'layout._experimentalPageStartExclusionWidth2', documentPath);
+    if (obj.pageStartExclusionWidth2 !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionWidth2, 'layout.pageStartExclusionWidth2', documentPath);
     }
-    if (obj._experimentalPageStartExclusionLeftWidth !== undefined) {
-        assertFiniteNumberAt(obj._experimentalPageStartExclusionLeftWidth, 'layout._experimentalPageStartExclusionLeftWidth', documentPath);
+    if (obj.pageStartExclusionLeftWidth !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionLeftWidth, 'layout.pageStartExclusionLeftWidth', documentPath);
     }
-    if (obj._experimentalPageStartExclusionRightWidth !== undefined) {
-        assertFiniteNumberAt(obj._experimentalPageStartExclusionRightWidth, 'layout._experimentalPageStartExclusionRightWidth', documentPath);
+    if (obj.pageStartExclusionRightWidth !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionRightWidth, 'layout.pageStartExclusionRightWidth', documentPath);
     }
-    if (obj._experimentalPageStartExclusionSelector !== undefined) {
-        assertStringAt(obj._experimentalPageStartExclusionSelector, 'layout._experimentalPageStartExclusionSelector', documentPath);
-        if (!PAGE_RESERVATION_SELECTOR_VALUES.has(String(obj._experimentalPageStartExclusionSelector))) {
+    if (obj.pageStartExclusionSelector !== undefined) {
+        assertStringAt(obj.pageStartExclusionSelector, 'layout.pageStartExclusionSelector', documentPath);
+        if (!PAGE_RESERVATION_SELECTOR_VALUES.has(String(obj.pageStartExclusionSelector))) {
             contractError(
                 documentPath,
-                'layout._experimentalPageStartExclusionSelector',
+                'layout.pageStartExclusionSelector',
                 'expected one of "first", "odd", "even", or "all".'
             );
         }

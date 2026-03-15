@@ -13,9 +13,9 @@ import {
 } from './layout-core-types';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
 import { ContinuationMarkerCollaborator } from './continuation-marker-collaborator';
-import { ExperimentalPageReservationCollaborator } from './experimental-page-reservation-collaborator';
-import { ExperimentalPageStartExclusionCollaborator } from './experimental-page-start-exclusion-collaborator';
-import { ExperimentalPageStartReservationCollaborator } from './experimental-page-start-reservation-collaborator';
+import { PageReservationCollaborator } from './page-reservation-collaborator';
+import { PageStartExclusionCollaborator } from './page-start-exclusion-collaborator';
+import { PageStartReservationCollaborator } from './page-start-reservation-collaborator';
 import { FragmentTransitionArtifactCollaborator } from './fragment-transition-artifact-collaborator';
 import { createMorphedBoxMeta, freezeFlowFragment } from './flow-fragment-state';
 import { HeadingTelemetryCollaborator } from './heading-telemetry-collaborator';
@@ -899,9 +899,9 @@ export class LayoutProcessor extends TextProcessor {
         return [
             new KeepWithNextCollaborator(),
             new ContinuationMarkerCollaborator(),
-            new ExperimentalPageStartExclusionCollaborator(this.config),
-            new ExperimentalPageStartReservationCollaborator(this.config),
-            new ExperimentalPageReservationCollaborator(),
+            new PageStartExclusionCollaborator(this.config),
+            new PageStartReservationCollaborator(this.config),
+            new PageReservationCollaborator(),
             new FragmentTransitionArtifactCollaborator(),
             new TransformCapabilityArtifactCollaborator(),
             new TransformArtifactCollaborator(),

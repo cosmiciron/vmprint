@@ -5,12 +5,12 @@ import { PackagerUnit } from './packagers/packager-types';
 function resolveReservationHeight(actor: PackagerUnit): number {
     const flowBox = (actor as any).flowBox;
     const value =
-        flowBox?.properties?._experimentalPageReservationAfter ??
-        flowBox?._sourceElement?.properties?._experimentalPageReservationAfter;
+        flowBox?.properties?.pageReservationAfter ??
+        flowBox?._sourceElement?.properties?.pageReservationAfter;
     return Number.isFinite(value) ? Math.max(0, Number(value)) : 0;
 }
 
-export class ExperimentalPageReservationCollaborator implements LayoutCollaborator {
+export class PageReservationCollaborator implements LayoutCollaborator {
     onActorCommitted(actor: PackagerUnit, _committed: unknown, _surface: unknown, session: LayoutSession): void {
         const startedAt = performance.now();
         session.recordProfile('reservationCommitProbeCalls', 1);

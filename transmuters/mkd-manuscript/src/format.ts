@@ -90,7 +90,7 @@ export class ManuscriptFormat {
   private readonly coverConfig: Record<string, unknown>;
   private readonly chapterConfig: Record<string, unknown>;
   private readonly sceneBreakConfig: Record<string, unknown>;
-  private readonly experimentalConfig: Record<string, unknown>;
+  private readonly dynamicConfig: Record<string, unknown>;
   private readonly expandingProbeConfig: Record<string, unknown>;
   private readonly staticProbeConfig: Record<string, unknown>;
   private readonly coverMode: 'first-page-cover' | 'separate-cover-page' | 'none';
@@ -122,9 +122,9 @@ export class ManuscriptFormat {
     this.coverConfig = asRecord(this.manuscriptConfig.coverPage);
     this.chapterConfig = asRecord(this.manuscriptConfig.chapter);
     this.sceneBreakConfig = asRecord(this.manuscriptConfig.sceneBreak);
-    this.experimentalConfig = asRecord(this.manuscriptConfig.experimental);
-    this.expandingProbeConfig = asRecord(this.experimentalConfig.expandingProbe);
-    this.staticProbeConfig = asRecord(this.experimentalConfig.staticProbe);
+    this.dynamicConfig = asRecord(this.manuscriptConfig.dynamic);
+    this.expandingProbeConfig = asRecord(this.dynamicConfig.expandingProbe);
+    this.staticProbeConfig = asRecord(this.dynamicConfig.staticProbe);
     this.coverMode = asString(this.coverConfig.mode, 'first-page-cover') as 'first-page-cover' | 'separate-cover-page' | 'none';
     this.footnoteHeading = asString(asRecord(this.manuscriptConfig.footnotes).heading, 'Notes');
     this.sceneBreakSymbol = asString(this.sceneBreakConfig.symbol, '#');

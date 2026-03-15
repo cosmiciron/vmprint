@@ -161,7 +161,7 @@ export interface ElementProperties extends Record<string, any> {
     marginTop?: number;
     marginBottom?: number;
     paginationContinuation?: Record<string, any>;
-    _experimentalPageReservationAfter?: number;
+    pageReservationAfter?: number;
     pageOverrides?: {
         header?: PageRegionContent | null;
         footer?: PageRegionContent | null;
@@ -291,17 +291,17 @@ export interface LayoutConfig {
         headerInsetBottom?: number;
         footerInsetTop?: number;
         footerInsetBottom?: number;
-        _experimentalPageReservationOnFirstPageStart?: number;
-        _experimentalPageStartReservationSelector?: PageReservationSelector;
-        _experimentalPageStartExclusionTop?: number;
-        _experimentalPageStartExclusionHeight?: number;
-        _experimentalPageStartExclusionX?: number;
-        _experimentalPageStartExclusionWidth?: number;
-        _experimentalPageStartExclusionX2?: number;
-        _experimentalPageStartExclusionWidth2?: number;
-        _experimentalPageStartExclusionLeftWidth?: number;
-        _experimentalPageStartExclusionRightWidth?: number;
-        _experimentalPageStartExclusionSelector?: PageReservationSelector;
+        pageReservationOnFirstPageStart?: number;
+        pageStartReservationSelector?: PageReservationSelector;
+        pageStartExclusionTop?: number;
+        pageStartExclusionHeight?: number;
+        pageStartExclusionX?: number;
+        pageStartExclusionWidth?: number;
+        pageStartExclusionX2?: number;
+        pageStartExclusionWidth2?: number;
+        pageStartExclusionLeftWidth?: number;
+        pageStartExclusionRightWidth?: number;
+        pageStartExclusionSelector?: PageReservationSelector;
         pageNumberStart?: number;
         lang?: string;
         direction?: TextDirection;

@@ -109,7 +109,7 @@
       "content": "Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened.",
       "properties": {
         "sourceId": "accepted-branch-a",
-        "_experimentalPageReservationAfter": 18,
+        "pageReservationAfter": 18,
         "style": {
           "width": 230
         },
@@ -173,7 +173,7 @@
       "content": "Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions.",
       "properties": {
         "sourceId": "accepted-branch-b",
-        "_experimentalPageReservationAfter": 18,
+        "pageReservationAfter": 18,
         "style": {
           "width": 230
         },

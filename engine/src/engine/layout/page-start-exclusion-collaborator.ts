@@ -3,21 +3,21 @@ import type { LayoutCollaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 
 function resolvePageStartExclusionTop(config: LayoutConfig): number {
-    const value = config.layout._experimentalPageStartExclusionTop;
+    const value = config.layout.pageStartExclusionTop;
     return Number.isFinite(value) ? Math.max(0, Number(value)) : 0;
 }
 
 function resolvePageStartExclusionHeight(config: LayoutConfig): number {
-    const value = config.layout._experimentalPageStartExclusionHeight;
+    const value = config.layout.pageStartExclusionHeight;
     return Number.isFinite(value) ? Math.max(0, Number(value)) : 0;
 }
 
 function resolvePageStartExclusionSelector(config: LayoutConfig): PageReservationSelector {
-    const value = config.layout._experimentalPageStartExclusionSelector;
+    const value = config.layout.pageStartExclusionSelector;
     return value === 'all' || value === 'odd' || value === 'even' ? value : 'first';
 }
 
-export class ExperimentalPageStartExclusionCollaborator implements LayoutCollaborator {
+export class PageStartExclusionCollaborator implements LayoutCollaborator {
     private readonly top: number;
     private readonly height: number;
     private readonly explicitRectangles: Array<{ x: number; width: number }>;
@@ -29,26 +29,26 @@ export class ExperimentalPageStartExclusionCollaborator implements LayoutCollabo
         this.top = resolvePageStartExclusionTop(config);
         this.height = resolvePageStartExclusionHeight(config);
         this.explicitRectangles = [
-            Number.isFinite(config.layout._experimentalPageStartExclusionX)
-            && Number.isFinite(config.layout._experimentalPageStartExclusionWidth)
+            Number.isFinite(config.layout.pageStartExclusionX)
+            && Number.isFinite(config.layout.pageStartExclusionWidth)
                 ? {
-                    x: Number(config.layout._experimentalPageStartExclusionX),
-                    width: Math.max(0, Number(config.layout._experimentalPageStartExclusionWidth))
+                    x: Number(config.layout.pageStartExclusionX),
+                    width: Math.max(0, Number(config.layout.pageStartExclusionWidth))
                 }
                 : null,
-            Number.isFinite(config.layout._experimentalPageStartExclusionX2)
-            && Number.isFinite(config.layout._experimentalPageStartExclusionWidth2)
+            Number.isFinite(config.layout.pageStartExclusionX2)
+            && Number.isFinite(config.layout.pageStartExclusionWidth2)
                 ? {
-                    x: Number(config.layout._experimentalPageStartExclusionX2),
-                    width: Math.max(0, Number(config.layout._experimentalPageStartExclusionWidth2))
+                    x: Number(config.layout.pageStartExclusionX2),
+                    width: Math.max(0, Number(config.layout.pageStartExclusionWidth2))
                 }
                 : null
         ].filter((value): value is { x: number; width: number } => value !== null && value.width > 0);
-        this.leftWidth = Number.isFinite(config.layout._experimentalPageStartExclusionLeftWidth)
-            ? Math.max(0, Number(config.layout._experimentalPageStartExclusionLeftWidth))
+        this.leftWidth = Number.isFinite(config.layout.pageStartExclusionLeftWidth)
+            ? Math.max(0, Number(config.layout.pageStartExclusionLeftWidth))
             : 0;
-        this.rightWidth = Number.isFinite(config.layout._experimentalPageStartExclusionRightWidth)
-            ? Math.max(0, Number(config.layout._experimentalPageStartExclusionRightWidth))
+        this.rightWidth = Number.isFinite(config.layout.pageStartExclusionRightWidth)
+            ? Math.max(0, Number(config.layout.pageStartExclusionRightWidth))
             : 0;
         this.selector = resolvePageStartExclusionSelector(config);
     }
