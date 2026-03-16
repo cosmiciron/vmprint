@@ -14,6 +14,12 @@ VMPrint is what happens when you stop treating text as text and start treating i
 
 ---
 
+![VMPrint Specimen Blueprint — Actor-Based Spatial Simulation Engine](documents/readme-assets/blueprint-1.png)
+
+> Every element arrived through collision — geometry negotiated in a single deterministic pass. Each block, glyph, and inline span is an actor reporting its own origin and extent. Box positions are committed in that forward sweep; no downstream process revisits what the simulation resolved. The engine labels its own geometry because the engine knows its own geometry.
+
+---
+
 ## A different kind of engine
 
 VMPrint is a deterministic spatial simulation engine. Pages are bounded arenas. Document elements are autonomous actors with physical geometries. Layout is the process of reaching equilibrium.
@@ -32,11 +38,21 @@ VMPrint doesn't build those things for you. It gives you the substrate they requ
 
 ---
 
+![VMPrint Simulation Report — Actor States, Mixed Script, Baseline Stability](documents/readme-assets/blueprint-2.png)
+
+> Actors by name, origin, size, font, and settled state. Five writing systems on a shared computed baseline. Optical scaling factors labeled per script. A naïve engine drifts; this one does not.
+
+---
+
 ## Anti-blackbox by architecture
 
 Every layout system you have used before is a black box. Not because the source isn't published. Because the architecture doesn't give you meaningful points of entry. You hand it input. It gives you back output. What happened in between is not your concern.
 
 VMPrint was deliberately architected to be the opposite.
+
+![VMPrint Quarterly — debug overlay showing every actor, boundary, and measurement](documents/readme-assets/newsletter-debug.png)
+
+> The same document, rendered with `--debug`. Every actor named. Every boundary measured. Every origin, extent, and margin labeled in the margins. The engine shows its work because the architecture requires it to know its work.
 
 The actor contract means you can introduce your own actors into the simulation. They run the same physics, the same lifecycle, the same collision detection as every native actor. They are not guests. They are citizens of the same world.
 
@@ -45,6 +61,10 @@ The event bus means your code can publish signals and observe committed signals 
 The overlay provider means you can see exactly what the engine sees at any moment — every box, every boundary, every collision — and draw on top of it, instrument it, or redirect it.
 
 The snapshot and rollback mechanism means world state is inspectable and reproducible at every checkpoint. Layout bugs become reproducible facts. "It looked different on Windows" becomes impossible by construction.
+
+![VMPrint Quarterly — clean render, no debug overlay](documents/readme-assets/newsletter.png)
+
+> The same document, clean. What the reader sees. The machinery is gone. The precision is not.
 
 The output is a flat array of absolute coordinates — every character, every box, every fragment — with full semantic provenance attached:
 

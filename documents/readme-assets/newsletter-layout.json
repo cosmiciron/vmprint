@@ -1,0 +1,449 @@
+{
+  "documentVersion": "1.0",
+
+  "layout": {
+    "pageSize": "A4",
+    "orientation": "portrait",
+    "margins": { "top": 36, "right": 45, "bottom": 48, "left": 45 },
+    "fontFamily": "Arimo",
+    "fontSize": 9,
+    "lineHeight": 1.42,
+    "pageBackground": "#fafaf8",
+    "hyphenation": "auto",
+    "justifyEngine": "advanced",
+    "justifyStrategy": "auto"
+  },
+
+  "styles": {
+
+    "rule-navy-thick": {
+      "borderTopWidth": 4,
+      "borderTopColor": "#0d2040",
+      "marginBottom": 6
+    },
+    "rule-navy-thin": {
+      "borderTopWidth": 1,
+      "borderTopColor": "#0d2040",
+      "marginBottom": 2
+    },
+    "rule-navy-mid": {
+      "borderTopWidth": 3,
+      "borderTopColor": "#0d2040",
+      "marginBottom": 0
+    },
+    "rule-hairline": {
+      "borderTopWidth": 0.5,
+      "borderTopColor": "#9aacbf",
+      "marginBottom": 8
+    },
+    "col-rule": {
+      "borderTopWidth": 0.5,
+      "borderTopColor": "#9aacbf",
+      "marginTop": 10,
+      "marginBottom": 8
+    },
+
+    "masthead-pub": {
+      "fontFamily": "Tinos",
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "color": "#0d2040",
+      "letterSpacing": 6,
+      "textAlign": "center",
+      "hyphenation": "off",
+      "marginBottom": 4
+    },
+    "masthead-tagline": {
+      "fontFamily": "Cousine",
+      "fontSize": 5.5,
+      "color": "#9aacbf",
+      "letterSpacing": 1.5,
+      "textAlign": "center",
+      "marginBottom": 4
+    },
+
+    "kicker": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "letterSpacing": 1.8,
+      "color": "#1a3a5c",
+      "marginTop": 8,
+      "marginBottom": 6,
+      "hyphenation": "off"
+    },
+    "main-headline": {
+      "fontFamily": "Tinos",
+      "fontSize": 42,
+      "fontWeight": "bold",
+      "color": "#0d2040",
+      "lineHeight": 1.06,
+      "marginBottom": 8,
+      "hyphenation": "off"
+    },
+    "deck": {
+      "fontFamily": "Tinos",
+      "fontSize": 10.5,
+      "fontStyle": "italic",
+      "color": "#2c3e50",
+      "lineHeight": 1.45,
+      "marginBottom": 4
+    },
+
+    "body": {
+      "fontFamily": "Arimo",
+      "fontSize": 9,
+      "lineHeight": 1.42,
+      "marginBottom": 8,
+      "textAlign": "justify",
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2,
+      "hyphenation": "auto",
+      "hyphenMinWordLength": 6,
+      "hyphenMinPrefix": 3,
+      "hyphenMinSuffix": 3
+    },
+    "pull-quote": {
+      "fontFamily": "Tinos",
+      "fontSize": 10,
+      "fontStyle": "italic",
+      "color": "#1a3a5c",
+      "lineHeight": 1.5,
+      "borderLeftWidth": 2.5,
+      "borderLeftColor": "#1a3a5c",
+      "paddingLeft": 8,
+      "marginTop": 8,
+      "marginBottom": 8
+    },
+    "caption": {
+      "fontFamily": "Arimo",
+      "fontSize": 7,
+      "fontStyle": "italic",
+      "color": "#888",
+      "lineHeight": 1.3,
+      "borderTopWidth": 0.5,
+      "borderTopColor": "#ccc",
+      "paddingTop": 3,
+      "marginTop": 3,
+      "marginBottom": 6
+    },
+
+    "section-label": {
+      "fontFamily": "Cousine",
+      "fontSize": 7,
+      "fontWeight": "bold",
+      "letterSpacing": 2.5,
+      "color": "#0d2040",
+      "marginTop": 2,
+      "marginBottom": 4,
+      "hyphenation": "off"
+    },
+    "secondary-kicker": {
+      "fontFamily": "Cousine",
+      "fontSize": 6,
+      "letterSpacing": 1.5,
+      "color": "#1a3a5c",
+      "marginBottom": 4,
+      "hyphenation": "off"
+    },
+    "secondary-headline": {
+      "fontFamily": "Tinos",
+      "fontSize": 13,
+      "fontWeight": "bold",
+      "color": "#0d2040",
+      "lineHeight": 1.15,
+      "marginBottom": 4,
+      "keepWithNext": true,
+      "hyphenation": "off"
+    },
+    "secondary-deck": {
+      "fontFamily": "Tinos",
+      "fontSize": 8.5,
+      "fontStyle": "italic",
+      "color": "#444",
+      "lineHeight": 1.4,
+      "marginBottom": 6,
+      "keepWithNext": true
+    }
+  },
+
+  "elements": [
+
+    { "type": "rule-navy-thick", "content": "" },
+    {
+      "type": "masthead-pub",
+      "content": "VMPRINT  QUARTERLY",
+      "properties": { "keepWithNext": true }
+    },
+    {
+      "type": "masthead-tagline",
+      "content": "The Journal of Precision Document Layout  \u00b7  Issue 12  \u00b7  March 2026",
+      "properties": { "keepWithNext": true }
+    },
+    { "type": "rule-navy-thin", "content": "", "properties": { "keepWithNext": true } },
+    { "type": "rule-navy-mid",  "content": "", "properties": { "keepWithNext": true } },
+
+    {
+      "type": "kicker",
+      "content": "COVER STORY  \u00b7  LAYOUT SYSTEMS  \u00b7  COLUMNS & TYPOGRAPHY",
+      "properties": { "keepWithNext": true }
+    },
+    {
+      "type": "main-headline",
+      "content": "The Layout Engine",
+      "properties": { "keepWithNext": true }
+    },
+    {
+      "type": "deck",
+      "content": "How VMPrint transforms a structured JSON document tree into publication-quality PDFs \u2014 multi-column stories, float obstacles, drop caps, and multilingual scripts, all computed to the point.",
+      "properties": { "keepWithNext": true }
+    },
+
+    {
+      "type": "table",
+      "content": "",
+      "properties": {
+        "style": { "marginBottom": 3 },
+        "table": {
+          "columnGap": 0,
+          "columns": [ { "mode": "flex", "fr": 1 }, { "mode": "flex", "fr": 1 } ]
+        }
+      },
+      "children": [{
+        "type": "table-row",
+        "content": "",
+        "children": [
+          {
+            "type": "table-cell",
+            "content": "By Uzo Z.T. (aka cosmiciron)",
+            "properties": { "style": {
+              "fontFamily": "Cousine", "fontSize": 6.5, "color": "#555", "letterSpacing": 0.3,
+              "paddingTop": 0, "paddingBottom": 0, "paddingLeft": 0, "paddingRight": 0
+            }}
+          },
+          {
+            "type": "table-cell",
+            "content": "MARCH 2026  \u00b7  ENGINE V2.4",
+            "properties": { "style": {
+              "fontFamily": "Cousine", "fontSize": 6.5, "color": "#555", "letterSpacing": 0.8,
+              "textAlign": "right",
+              "paddingTop": 0, "paddingBottom": 0, "paddingLeft": 0, "paddingRight": 0
+            }}
+          }
+        ]
+      }]
+    },
+
+    { "type": "rule-hairline", "content": "" },
+
+    {
+      "type": "story",
+      "content": "",
+      "columns": 3,
+      "gutter": 12,
+      "balance": false,
+      "children": [
+
+        {
+          "type": "body",
+          "content": "Every element in a VMPrint document is measured with sub-point precision \u2014 the same standard professional typesetters have relied on for centuries. From page margins to glyph advance widths, the engine processes a recursive flow model: block elements accumulate vertically; inline runs compose into lines via a dynamic programming pass that considers hyphenation, inter-word spacing, and optical fit simultaneously. The result is typographic quality indistinguishable from dedicated desktop publishing software, produced entirely from structured JSON.",
+          "properties": {
+            "dropCap": {
+              "enabled": true,
+              "lines": 3,
+              "gap": 5,
+              "characterStyle": {
+                "fontFamily": "Tinos",
+                "fontWeight": "bold",
+                "color": "#1a3a5c"
+              }
+            }
+          }
+        },
+
+        {
+          "type": "obstacleImg",
+          "content": "",
+          "properties": {
+            "image": {
+              "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP48OQMAAVoAqEPT7KoAAAAAElFTkSuQmCC",
+              "mimeType": "image/png",
+              "fit": "fill"
+            },
+            "style": { "width": 60, "height": 48 },
+            "layout": { "mode": "float", "align": "right", "wrap": "around", "gap": 8 }
+          }
+        },
+
+        {
+          "type": "body",
+          "content": "Stories \u2014 the engine\u2019s multi-column containers \u2014 direct text flow column by column, left to right. Float elements anchor to the flow at their declared position and carve exclusion zones; subsequent lines navigate around the obstacle until its vertical extent is cleared. Drop caps descend through a configurable number of lines with independent character styling, their visual weight set against the column grid."
+        },
+
+        {
+          "type": "caption",
+          "content": "Fig. 1 \u2014 Float obstacle with wrap: around in a 3-column story. Exclusion zone computed to sub-point precision."
+        },
+
+        {
+          "type": "body",
+          "content": "Pagination is fully automatic. Paragraphs respect orphan and widow constraints at the line level. keepWithNext chains prevent headings from stranding at a page boundary without their first paragraph. Tables carry repeat-header rules across page breaks; indivisible rows are moved as a complete unit to the following column. The engine handles all of this without intervention from the document author."
+        },
+
+        {
+          "type": "body",
+          "content": "Typography is a first-class concern. Font weight, style, size, leading, tracking, and colour are controllable at the inline span level \u2014 no cascade, no inheritance surprises. Inline boxes such as badges, code spans, and pills are atomic objects in the line-breaking pass, carrying their own padding, border radius, and background colour. Inline images positioned with verticalAlign and baselineShift are treated identically."
+        },
+
+        {
+          "type": "pull-quote",
+          "content": "\u201cThe justification engine supports greedy, balanced, and optical strategies \u2014 each a distinct trade-off between speed and typographic quality.\u201d"
+        },
+
+        {
+          "type": "body",
+          "content": "The justification engine offers three strategies. The greedy pass fits as many words as possible per line \u2014 fast and adequate for routine body text. The balanced mode performs a paragraph-wide optimisation that distributes spacing slack evenly across all lines. The advanced optical mode adjusts letter-spacing within narrow tolerances, guided by a dynamic programming algorithm that evaluates all candidate line-break sequences simultaneously."
+        },
+
+        {
+          "type": "body",
+          "content": "Multilingual support spans nine writing systems. Arabic and Hebrew apply the Unicode Bidirectional Algorithm with full HarfBuzz glyph shaping. Thai and Devanagari use cluster-aware break-point detection that respects syllable boundaries. CJK characters carry optical scaling factors \u2014 typically between 0.88 and 0.95 \u2014 that harmonise their visual weight with adjacent Latin glyphs on the same baseline."
+        },
+
+        {
+          "type": "body",
+          "content": "",
+          "children": [
+            { "type": "text", "content": "Every inline feature is first-class: " },
+            { "type": "text", "content": "bold weight", "properties": { "style": { "fontWeight": "bold" } } },
+            { "type": "text", "content": ", " },
+            { "type": "text", "content": "italic style", "properties": { "style": { "fontStyle": "italic" } } },
+            { "type": "text", "content": ", " },
+            {
+              "type": "text",
+              "content": "monospace code",
+              "properties": { "style": {
+                "fontFamily": "Cousine", "fontSize": 7.5,
+                "backgroundColor": "#e8edf4", "color": "#1a3a5c",
+                "paddingLeft": 2, "paddingRight": 2
+              }}
+            },
+            { "type": "text", "content": ", and " },
+            {
+              "type": "inline-box",
+              "content": "BADGE",
+              "properties": { "style": {
+                "fontSize": 5.5, "fontFamily": "Cousine",
+                "backgroundColor": "#1a3a5c", "color": "#fafaf8",
+                "padding": 2, "borderRadius": 2,
+                "verticalAlign": "baseline", "baselineShift": 0,
+                "inlineMarginLeft": 2, "inlineMarginRight": 2
+              }}
+            },
+            { "type": "text", "content": " elements \u2014 all atomic objects in the paragraph-wide line-breaking pass." }
+          ]
+        },
+
+        { "type": "col-rule", "content": "" },
+        {
+          "type": "section-label",
+          "content": "ALSO IN THIS ISSUE",
+          "properties": { "keepWithNext": true }
+        },
+        { "type": "rule-hairline", "content": "", "properties": { "keepWithNext": true } },
+
+        {
+          "type": "secondary-kicker",
+          "content": "MULTI-COLUMN LAYOUT",
+          "properties": { "keepWithNext": true }
+        },
+        {
+          "type": "secondary-headline",
+          "content": "Three Columns, One Engine: The Story Container"
+        },
+        {
+          "type": "secondary-deck",
+          "content": "VMPrint\u2019s most powerful layout primitive \u2014 configurable columns, gutters, and float obstacles."
+        },
+        {
+          "type": "secondary-img",
+          "content": "",
+          "properties": {
+            "image": {
+              "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP48OQMAAVoAqEPT7KoAAAAAElFTkSuQmCC",
+              "mimeType": "image/png",
+              "fit": "fill"
+            },
+            "style": { "width": 155, "height": 42 }
+          }
+        },
+        {
+          "type": "caption",
+          "content": "A three-column story with drop cap, float, and pull quote \u2014 all from a single JSON document."
+        },
+        {
+          "type": "body",
+          "content": "The story element accepts any number of columns with configurable gutters. Content flows column-by-column from left to right. Float obstacles carve exclusion fields; balance mode redistributes content for equal column heights."
+        },
+        {
+          "type": "body",
+          "content": "A story may contain tables, and tables may contain rich inline text \u2014 grid-within-grid layouts of considerable complexity, all composited by the same engine."
+        }
+
+      ]
+    }
+
+  ],
+
+  "footer": {
+    "default": {
+      "elements": [{
+        "type": "table",
+        "content": "",
+        "properties": {
+          "style": { "borderTopWidth": 0.5, "borderTopColor": "#9aacbf" },
+          "table": {
+            "columnGap": 0,
+            "columns": [
+              { "mode": "flex", "fr": 1 },
+              { "mode": "fixed", "value": 36 },
+              { "mode": "flex", "fr": 1 }
+            ]
+          }
+        },
+        "children": [{
+          "type": "table-row",
+          "content": "",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "VMPRINT QUARTERLY  \u00b7  LAYOUT SHOWCASE",
+              "properties": { "style": {
+                "fontFamily": "Cousine", "fontSize": 5.5, "color": "#9aacbf", "letterSpacing": 0.5,
+                "paddingTop": 5, "paddingBottom": 0, "paddingLeft": 0, "paddingRight": 0
+              }}
+            },
+            {
+              "type": "table-cell",
+              "content": "{pageNumber}",
+              "properties": { "style": {
+                "fontFamily": "Tinos", "fontSize": 8, "fontWeight": "bold", "color": "#0d2040",
+                "textAlign": "center",
+                "paddingTop": 4, "paddingBottom": 0, "paddingLeft": 0, "paddingRight": 0
+              }}
+            },
+            {
+              "type": "table-cell",
+              "content": "ENGINE V2.4  \u00b7  vmprint.dev",
+              "properties": { "style": {
+                "fontFamily": "Cousine", "fontSize": 5.5, "color": "#9aacbf", "letterSpacing": 0.5,
+                "textAlign": "right",
+                "paddingTop": 5, "paddingBottom": 0, "paddingLeft": 0, "paddingRight": 0
+              }}
+            }
+          ]
+        }]
+      }]
+    }
+  }
+}
