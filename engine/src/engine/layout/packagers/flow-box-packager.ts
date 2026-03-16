@@ -35,6 +35,7 @@ export class FlowBoxPackager implements PackagerUnit {
     private processor: LayoutProcessor;
     private flowBox: FlowBox;
     private lastAvailableWidth: number = -1;
+    private lastContentWidth: number = -1;
     private lastAvailableHeight: number = -1;
     private cachedBoxes: Box[] | null = null;
     private requiredHeight: number = 0;
@@ -60,15 +61,18 @@ export class FlowBoxPackager implements PackagerUnit {
         this.continuationOf = resolvedIdentity.continuationOf;
     }
 
-    private materialize(availableWidth: number) {
+    private materialize(availableWidth: number, contentWidth: number = -1) {
         const processor = this.processor as unknown as FlowBoxProcessor;
-        if (this.isMaterialized && this.lastAvailableWidth === availableWidth) return;
+        if (this.isMaterialized && this.lastAvailableWidth === availableWidth && this.lastContentWidth === contentWidth) return;
 
-        // Use a dummy pageIndex=0 and cursorY=0 for materialization measurements
-        const context = processor.createFlowMaterializationContext(0, 0, availableWidth);
+        // Use a dummy pageIndex=0 and cursorY=0 for materialization measurements.
+        // Pass contentWidth (derived from the packer context) for correct line-wrapping
+        // width in zone sub-sessions and story columns.
+        const context = processor.createFlowMaterializationContext(0, 0, contentWidth);
         processor.materializeFlowBox(this.flowBox, context);
 
         this.lastAvailableWidth = availableWidth;
+        this.lastContentWidth = contentWidth;
         this.cachedBoxes = null;
         this.isMaterialized = true;
 
@@ -78,8 +82,13 @@ export class FlowBoxPackager implements PackagerUnit {
         this.requiredHeight = top + height + bottom;
     }
 
-    prepare(availableWidth: number, availableHeight: number, _context: PackagerContext): void {
-        this.materialize(availableWidth);
+    prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
+        // Use context.contentWidthOverride (set by zone sub-sessions) when present.
+        // Falls back to -1 so createFlowMaterializationContext skips contentWidth,
+        // causing getContextualContentWidth to use the style-based default width
+        // (pageContentWidth) rather than the narrowed lane/available width.
+        const contentWidth = context.contentWidthOverride ?? -1;
+        this.materialize(availableWidth, contentWidth);
         this.lastAvailableHeight = availableHeight;
     }
 
@@ -158,7 +167,7 @@ export class FlowBoxPackager implements PackagerUnit {
 
     split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
         const processor = this.processor as unknown as FlowBoxProcessor;
-        this.materialize(this.lastAvailableWidth);
+        this.materialize(this.lastAvailableWidth, this.lastContentWidth);
         if (this.isUnbreakable(availableHeight)) {
             return { currentFragment: null, continuationFragment: this };
         }

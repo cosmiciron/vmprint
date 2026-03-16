@@ -77,6 +77,23 @@ export interface InlineObjectMetrics {
 
 export type OverflowPolicy = 'clip' | 'move-whole' | 'error';
 
+/**
+ * A spatial region on a `zone-map` element.
+ *
+ * A ZoneDefinition is NOT an Element — it is a region descriptor. It has no
+ * `type`, no `children`, and no DOM-style nesting semantics. It describes a
+ * bounded area on the page map and the actors (`elements`) assigned to inhabit
+ * that area. Each zone runs an independent, non-paginating layout pass.
+ */
+export interface ZoneDefinition {
+    /** Optional identifier for the zone (for debugging and future linked-frame support). */
+    id?: string;
+    /** Block-level elements assigned to this zone. Laid out independently of all other zones. */
+    elements: Element[];
+    /** Per-zone style overrides (e.g. backgroundColor for the zone cell background). */
+    style?: Record<string, any>;
+}
+
 export interface Element {
     type: ElementType;
     content: string;
@@ -92,6 +109,12 @@ export interface Element {
      * Only meaningful for `type: "story"` with `columns > 1`.
      */
     balance?: boolean;
+    /**
+     * Zone-map spatial regions. Each entry is an independent layout context
+     * (a room on the map). Only meaningful for `type: "zone-map"`.
+     * Column widths and gap are declared in `properties.zones`.
+     */
+    zones?: ZoneDefinition[];
     properties?: ElementProperties;
 }
 
@@ -144,10 +167,23 @@ export interface TableLayoutOptions {
     headerCellStyle?: Record<string, any>;
 }
 
+/**
+ * Layout options for a `zone-map` element.
+ * Column widths are resolved via `solveTrackSizing` (same solver as tables).
+ */
+export interface ZoneLayoutOptions {
+    /** Column track definitions. Reuses `TableColumnSizing` (fixed/auto/flex modes). */
+    columns?: TableColumnSizing[];
+    /** Gap between columns in points. Defaults to 0. */
+    gap?: number;
+}
+
 export interface ElementProperties extends Record<string, any> {
     style?: Record<string, any>;
     image?: EmbeddedImagePayload;
     table?: TableLayoutOptions;
+    /** Zone-map layout options. Declared on `zone-map` elements. */
+    zones?: ZoneLayoutOptions;
     colSpan?: number;
     rowSpan?: number;
     sourceId?: string;

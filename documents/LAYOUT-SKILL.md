@@ -144,6 +144,7 @@ Special structural types handled by the engine:
 | `"table"` | Table container; must have `properties.table` |
 | `"table-row"` | Row inside a table |
 | `"table-cell"` | Cell inside a row; supports `colSpan`, `rowSpan` |
+| `"zone-map"` | Independent-region layout; column widths in `properties.zones`, content regions in `zones[]` |
 
 All other type strings are user-defined and look up styles only.
 
@@ -464,6 +465,70 @@ Key details:
   ]
 }
 ```
+
+---
+
+## 10a. Zone Map: Independent Layout Regions
+
+A `zone-map` divides a horizontal strip of the page into independent layout columns. Each zone runs its own non-paginating layout pass — content in zone A has no knowledge of zone B. The `zone-map` always moves to the next page as a unit if it does not fit.
+
+### Two-column sidebar
+
+```json
+{
+  "type": "zone-map",
+  "properties": {
+    "zones": {
+      "columns": [
+        { "mode": "flex", "fr": 2 },
+        { "mode": "flex", "fr": 1 }
+      ],
+      "gap": 16
+    },
+    "style": { "marginTop": 12, "marginBottom": 12 }
+  },
+  "zones": [
+    {
+      "id": "main",
+      "elements": [
+        { "type": "h2", "content": "Main Content" },
+        { "type": "p",  "content": "Body text." }
+      ]
+    },
+    {
+      "id": "sidebar",
+      "elements": [
+        { "type": "sidebar-label", "content": "KEY FACT" },
+        { "type": "sidebar-body",  "content": "Sidebar note." }
+      ]
+    }
+  ]
+}
+```
+
+- `properties.zones.columns` — track sizing array (same `mode`/`fr`/`value` as tables). Omit for equal-width columns.
+- `properties.zones.gap` — gap between columns in points (default `0`).
+- `zones[]` — region descriptors, **not** DOM children. Each carries `id` (optional) and `elements[]`.
+- Zone height: the tallest zone determines the `zone-map`'s height in the document flow.
+- The `zone-map` is always `move-whole` (V1): if it does not fit, it moves to the next page rather than splitting across pages.
+
+### Equal three-column strip
+
+```json
+{
+  "type": "zone-map",
+  "properties": { "zones": { "gap": 12 } },
+  "zones": [
+    { "id": "a", "elements": [ { "type": "p", "content": "Col 1" } ] },
+    { "id": "b", "elements": [ { "type": "p", "content": "Col 2" } ] },
+    { "id": "c", "elements": [ { "type": "p", "content": "Col 3" } ] }
+  ]
+}
+```
+
+When `columns` is omitted, all zones receive equal width.
+
+**Fixture**: `21-zone-map-sidebar.json` — two-column and three-column examples.
 
 ---
 
@@ -906,5 +971,7 @@ layout.pages[0].boxes.map(b => ({ type: b.type, y: b.y, h: b.h }));
 | `17-header-footer-test` | `firstPage/odd/even/default`, `pageOverrides`, `{pageNumber}` |
 | `18-multilingual-arabic` | Full Arabic document, RTL, bidirectional |
 | `19-accepted-split-branching` | `paginationContinuation`, split markers |
+| `20-block-floats-and-column-span` | Block floats (non-image), column span in 3-column story |
+| `21-zone-map-sidebar` | Zone map: 70/30 flex split and equal three-column strip |
 
 When in doubt, find the closest fixture to your task and study its JSON directly.

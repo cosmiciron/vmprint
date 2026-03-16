@@ -309,6 +309,7 @@ The engine treats these type strings specially:
 | `"table"` | Table container. Children must be `"table-row"`. Requires `properties.table`. |
 | `"table-row"` | Table row. Children must be `"table-cell"`. Set `properties.semanticRole: "header"` for header rows. |
 | `"table-cell"` | Table cell. Either `content` (leaf) or `children` (inline runs). Supports `properties.colSpan` and `properties.rowSpan`. |
+| `"zone-map"` | Independent-region layout. Each entry in `zones[]` is a bounded column that runs its own non-paginating layout pass. Column widths and gap are set via `properties.zones`. |
 
 All other `type` strings are user-defined and are used solely for style lookup.
 
@@ -387,6 +388,77 @@ interface TableColumnSizing {
 | `"fixed"` | Column is exactly `value` points wide. |
 | `"auto"` | Column sizes to its content. |
 | `"flex"` | Column takes a share of remaining space proportional to `fr`. |
+
+---
+
+## 11a. Zone Map (`type: "zone-map"`)
+
+A `zone-map` element divides a horizontal strip of the page into independent layout regions (zones). Each zone runs its own non-paginating layout pass — content placed inside a zone flows independently, with no knowledge of adjacent zones. The `zone-map` as a whole always moves to the next page if it cannot fit on the current one (V1: move-whole semantics).
+
+### Element structure
+
+```json
+{
+  "type": "zone-map",
+  "properties": {
+    "zones": {
+      "columns": [
+        { "mode": "flex", "fr": 2 },
+        { "mode": "flex", "fr": 1 }
+      ],
+      "gap": 16
+    },
+    "style": {
+      "marginTop": 12,
+      "marginBottom": 12
+    }
+  },
+  "zones": [
+    {
+      "id": "main",
+      "elements": [
+        { "type": "h2", "content": "Main Area" },
+        { "type": "p",  "content": "Body text in the left zone." }
+      ]
+    },
+    {
+      "id": "sidebar",
+      "elements": [
+        { "type": "sidebar-label", "content": "SIDEBAR" },
+        { "type": "sidebar-body",  "content": "Sidebar content." }
+      ]
+    }
+  ]
+}
+```
+
+### `properties.zones` — `ZoneLayoutOptions`
+
+```typescript
+interface ZoneLayoutOptions {
+    columns?: TableColumnSizing[];   // Per-column track definitions (same as tables)
+    gap?: number;                    // Gap between columns in points (default 0)
+}
+```
+
+Column widths accept the same `TableColumnSizing` modes as tables (`fixed`, `auto`, `flex`). When `columns` is omitted, all zones receive equal widths.
+
+### `zones[]` — `ZoneDefinition`
+
+```typescript
+interface ZoneDefinition {
+    id?: string;           // Optional identifier for debugging
+    elements: Element[];   // Block-level elements for this zone
+    style?: Record<string, any>; // Reserved for future per-zone style overrides
+}
+```
+
+- `zones[]` entries are **not** DOM children. They are region descriptors — each carries a list of `elements` that the engine lays out independently inside the zone's bounded column.
+- The height of the `zone-map` in the document flow equals the tallest zone (max of all zone heights).
+
+### Margin support
+
+`properties.style.marginTop` and `properties.style.marginBottom` are respected and apply to the `zone-map` as a block. Other style fields (e.g. `backgroundColor`) are reserved for future releases.
 
 ---
 

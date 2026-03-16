@@ -47,11 +47,13 @@ const LAYOUT_KEYS = new Set([
 ]);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
-const ELEMENT_KEYS = new Set(['type', 'content', 'children', 'columns', 'gutter', 'balance', 'properties']);
+const ELEMENT_KEYS = new Set(['type', 'content', 'children', 'columns', 'gutter', 'balance', 'zones', 'properties']);
+const ZONE_DEFINITION_KEYS = new Set(['id', 'elements', 'style']);
 const ELEMENT_PROPERTIES_KEYS = new Set([
     'style',
     'image',
     'table',
+    'zones',
     'colSpan',
     'rowSpan',
     'sourceId',
@@ -76,6 +78,7 @@ const CONTINUATION_MARKER_KEYS = new Set(['type', 'content', 'style', 'propertie
 const SOURCE_RANGE_KEYS = new Set(['lineStart', 'colStart', 'lineEnd', 'colEnd']);
 const IMAGE_PAYLOAD_KEYS = new Set(['data', 'mimeType', 'fit']);
 const TABLE_LAYOUT_KEYS = new Set(['headerRows', 'repeatHeader', 'columnGap', 'rowGap', 'columns', 'cellStyle', 'headerCellStyle']);
+const ZONE_LAYOUT_KEYS = new Set(['columns', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
 const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap']);
@@ -542,6 +545,38 @@ function validateTableLayoutOptions(value: unknown, path: string, documentPath: 
     }
 }
 
+function validateZoneDefinition(value: unknown, path: string, documentPath: string): void {
+    const zone = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(zone, ZONE_DEFINITION_KEYS, path, documentPath);
+
+    if (zone.id !== undefined) assertStringAt(zone.id, `${path}.id`, documentPath);
+    if (zone.style !== undefined) validateStyleObject(zone.style, `${path}.style`, documentPath);
+
+    if (zone.elements === undefined || !Array.isArray(zone.elements)) {
+        contractError(documentPath, `${path}.elements`, 'expected an array of block elements.');
+    } else {
+        zone.elements.forEach((child: unknown, index: number) =>
+            validateElementNode(child, `${path}.elements[${index}]`, documentPath)
+        );
+    }
+}
+
+function validateZoneLayoutOptions(value: unknown, path: string, documentPath: string): void {
+    const options = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(options, ZONE_LAYOUT_KEYS, path, documentPath);
+
+    if (options.gap !== undefined) assertFiniteNumberAt(options.gap, `${path}.gap`, documentPath);
+
+    if (options.columns !== undefined) {
+        if (!Array.isArray(options.columns)) {
+            contractError(documentPath, `${path}.columns`, 'expected an array.');
+        }
+        options.columns.forEach((entry, index) => {
+            validateTableColumnDefinition(entry, `${path}.columns[${index}]`, documentPath);
+        });
+    }
+}
+
 function validateElementProperties(properties: unknown, path: string, documentPath: string): void {
     const props = assertPlainObjectAt(properties, path, documentPath);
     assertAllowedKeys(props, ELEMENT_PROPERTIES_KEYS, path, documentPath, { allowUnderscore: true });
@@ -549,6 +584,7 @@ function validateElementProperties(properties: unknown, path: string, documentPa
     if (props.style !== undefined) validateStyleObject(props.style, `${path}.style`, documentPath);
     if (props.image !== undefined) validateEmbeddedImagePayload(props.image, `${path}.image`, documentPath);
     if (props.table !== undefined) validateTableLayoutOptions(props.table, `${path}.table`, documentPath);
+    if (props.zones !== undefined) validateZoneLayoutOptions(props.zones, `${path}.zones`, documentPath);
     if (props.paginationContinuation !== undefined) validatePaginationContinuation(props.paginationContinuation, `${path}.paginationContinuation`, documentPath);
     if (props.pageOverrides !== undefined) validatePageOverrides(props.pageOverrides, `${path}.pageOverrides`, documentPath);
     if (props.colSpan !== undefined) assertFiniteNumberAt(props.colSpan, `${path}.colSpan`, documentPath);
@@ -610,6 +646,16 @@ function validateElementNode(node: unknown, path: string, documentPath: string):
         }
         if (element.gutter !== undefined && Number(element.gutter) < 0) {
             contractError(documentPath, `${path}.gutter`, 'must be >= 0 for story elements.');
+        }
+    }
+
+    if (element.zones !== undefined) {
+        if (!Array.isArray(element.zones)) {
+            contractError(documentPath, `${path}.zones`, 'expected an array of zone definitions.');
+        } else {
+            element.zones.forEach((zone: unknown, index: number) =>
+                validateZoneDefinition(zone, `${path}.zones[${index}]`, documentPath)
+            );
         }
     }
 
@@ -712,6 +758,15 @@ function normalizeElementNode(element: Element): Element {
 
     if (normalizedChildren && normalizedChildren.length > 0) {
         normalized.children = normalizedChildren;
+    }
+    if (Array.isArray(element.zones)) {
+        normalized.zones = element.zones.map((zone) => ({
+            id: zone.id !== undefined ? String(zone.id) : undefined,
+            elements: Array.isArray(zone.elements)
+                ? zone.elements.map((e) => normalizeElementNode(e))
+                : [],
+            style: zone.style
+        }));
     }
     if (normalizedProperties) {
         normalized.properties = normalizedProperties;

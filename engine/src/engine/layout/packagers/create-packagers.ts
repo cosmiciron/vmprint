@@ -6,6 +6,7 @@ import { DropCapPackager } from './dropcap-packager';
 import { TablePackager } from './table-packager';
 import { StoryPackager } from './story-packager';
 import { ExpandingProbePackager } from './expanding-probe-packager';
+import { ZonePackager, isZoneMapElement } from './zone-packager';
 import { isTableElement } from '../layout-table';
 import type { FlowBox } from '../layout-core-types';
 import { createElementPackagerIdentity } from './packager-identity';
@@ -18,6 +19,9 @@ export function buildPackagerForElement(item: Element, index: number, processor:
     const identity = createElementPackagerIdentity(item, [index]);
     if (item.type === 'story') {
         return new StoryPackager(item, processor, index, undefined, undefined, identity);
+    }
+    if (isZoneMapElement(item)) {
+        return new ZonePackager(item, processor, identity);
     }
     const flowBox = (processor as unknown as ElementShaper).shapeElement(item, { path: [index] });
     if (item.type === 'expanding-probe-region') {

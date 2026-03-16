@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.3] - 2026-03-16
+
+### Added
+
+#### Zone Map (`type: "zone-map"`)
+- New block element type `zone-map` that divides a horizontal strip of the page into independent layout regions (zones).
+- Each zone runs its own non-paginating layout pass ("stripped march"): content flows top-to-bottom within the zone's bounded column without pagination or split negotiation.
+- Column widths are configured via `properties.zones.columns` using the same `TableColumnSizing` track definitions (`fixed`, `auto`, `flex`/`fr`) already used by tables.
+- `properties.zones.gap` controls the gap between columns in points.
+- Zone regions are declared in `element.zones[]` (`ZoneDefinition[]`): each entry carries an optional `id` and an `elements[]` array.
+- The `zone-map` height in the document flow equals the tallest zone (max of all zone heights).
+- V1 semantics: the `zone-map` always moves as a unit to the next page if it cannot fit — it is always `isUnbreakable = true`.
+- Text inside zones correctly wraps at the zone column width, not the full page width.
+- New fixture: `engine/tests/fixtures/regression/21-zone-map-sidebar.json` — demonstrates a 70/30 flex split and an equal three-column strip.
+
+### Documentation
+- `documents/AST-REFERENCE.md`: added §11a (Zone Map) with full API reference; added `"zone-map"` to the reserved structural type table.
+- `documents/LAYOUT-SKILL.md`: added §10a (Zone Map) with examples and guidance; added `"zone-map"` to the structural type table in §5.
+
+---
+
 ## [0.3.2] - 2026-03-16
 
 ### Added

@@ -26,6 +26,14 @@ export interface PackagerContext {
     margins: { top: number; right: number; bottom: number; left: number };
     pageWidth: number;
     pageHeight: number;
+    /**
+     * Optional override for the text line-wrapping width.
+     * Set by zone sub-sessions (zone-map packager) so that flow-box packagers
+     * wrap text at the zone column width rather than the page content width.
+     * NOT set by the main layout loop or exclusion-lane logic, so that those
+     * actors continue to wrap at their natural style-based content width.
+     */
+    contentWidthOverride?: number;
     publishActorSignal(signal: ActorSignalDraft): ActorSignal;
     readActorSignals(topic?: string): readonly ActorSignal[];
 }

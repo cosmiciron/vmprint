@@ -380,7 +380,11 @@ function materializeTableCell(
         }
     }
 
-    const resolved = tableContext.resolveLines(cell, mergedStyle, fontSize, context);
+    // Strip contentWidth from context: table cells use mergedStyle.width (= cellWidth)
+    // as the authoritative width. The table-level context.contentWidth is the full
+    // table available width and must not override the per-cell width here.
+    const cellContext = context ? { pageIndex: context.pageIndex, cursorY: context.cursorY } : undefined;
+    const resolved = tableContext.resolveLines(cell, mergedStyle, fontSize, cellContext);
     let measuredHeight = 0;
     if (resolved.lines.length > 0) {
         measuredHeight = tableContext.calculateLineBlockHeight(resolved.lines, mergedStyle, resolved.lineYOffsets);

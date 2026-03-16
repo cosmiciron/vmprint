@@ -71,12 +71,16 @@ export class LayoutProcessor extends TextProcessor {
     private createFlowMaterializationContext(
         pageIndex: number,
         cursorY: number,
-        _pageWidth: number
+        contentWidth: number
     ): FlowMaterializationContext {
-        return {
-            pageIndex,
-            cursorY
-        };
+        // Only propagate contentWidth when it is a valid non-negative finite number.
+        // Negative sentinel values (e.g. -1 = "unset") must not be propagated
+        // because getContextualContentWidth treats any finite value as authoritative.
+        const ctx: FlowMaterializationContext = { pageIndex, cursorY };
+        if (Number.isFinite(contentWidth) && contentWidth >= 0) {
+            ctx.contentWidth = contentWidth;
+        }
+        return ctx;
     }
 
     private getMaterializationContextKey(unit: FlowBox, context?: FlowMaterializationContext): string {
@@ -132,10 +136,32 @@ export class LayoutProcessor extends TextProcessor {
         _fontSize: number,
         _lineHeight: number
     ): number {
-        if (_context && Number.isFinite(_context.contentWidth)) {
-            return Math.max(0, Number(_context.contentWidth));
+        // style-based width: uses style.width when explicitly set, else falls back to
+        // page content width minus margins and insets.
+        const styleBasedWidth = this.getContentWidth(style);
+
+        if (!(_context && Number.isFinite(_context.contentWidth))) {
+            return styleBasedWidth;
         }
-        return this.getContentWidth(style);
+
+        // context.contentWidth is the available outer width from the surrounding
+        // context (zone column, story column, etc.). Subtract element margins and
+        // horizontal insets to derive the line-wrapping width.
+        const marginLeft = LayoutUtils.validateUnit((style as any).marginLeft ?? 0);
+        const marginRight = LayoutUtils.validateUnit((style as any).marginRight ?? 0);
+        const insets = LayoutUtils.getHorizontalInsets(style);
+        const contextWidth = Math.max(0, Number(_context.contentWidth) - marginLeft - marginRight - insets);
+
+        // When style.width is set explicitly, the element declares its desired box
+        // width. Use the more restrictive (smaller) of the two: this respects the
+        // element's declared width in normal flow while allowing a narrower context
+        // (e.g., drop-cap wrap) to constrain it further.
+        if (style.width !== undefined) {
+            return Math.min(styleBasedWidth, contextWidth);
+        }
+
+        // No explicit style.width: context is authoritative (zone/column layout).
+        return contextWidth;
     }
 
     private normalizeElementStyle(
@@ -868,7 +894,16 @@ export class LayoutProcessor extends TextProcessor {
         const glueOffset = LayoutUtils.validateUnit(unit.properties?._glueOffsetX ?? 0);
         const x = margins.left + LayoutUtils.validateUnit(style.marginLeft || 0) + glueOffset;
         const y = currentY + layoutBefore;
-        const w = Number.isFinite(unit.measuredWidth) ? Math.max(0, Number(unit.measuredWidth)) : LayoutUtils.getBoxWidth(this.config, style);
+        // Use measuredWidth when explicitly set (images, floats, fixed-width elements).
+        // For fluid text boxes (measuredWidth === undefined), derive width from the
+        // actual available width passed in — not from the page-level config — so that
+        // elements inside zone sub-sessions are sized to their zone column, not the
+        // full page content area.
+        const w = Number.isFinite(unit.measuredWidth)
+            ? Math.max(0, Number(unit.measuredWidth))
+            : style.width !== undefined
+                ? LayoutUtils.validateUnit(style.width)
+                : Math.max(0, _pageWidth - LayoutUtils.validateUnit(style.marginLeft || 0) - LayoutUtils.validateUnit(style.marginRight || 0));
         const h = Math.max(0, unit.measuredContentHeight);
 
         if (unit.properties?._tableModel) {
