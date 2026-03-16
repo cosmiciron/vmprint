@@ -266,7 +266,24 @@ When a paragraph has mixed styling, use `children` instead of `content`. Set `"c
 
 ## 8. Floats and Obstacles
 
-Float elements must be **image elements** (must have `properties.image`). Use a 1×1 placeholder PNG if you want an info box obstacle:
+Any block element inside a `story` can be floated by adding `properties.layout: { mode: "float" }`. There are two kinds:
+
+**Image floats** — elements with `properties.image`. Width/height can be omitted and the engine derives them from intrinsic image dimensions.
+
+**Block floats** — any other element (pull-quote, sidebar, table, nested story, …). Both `properties.style.width` **and** `properties.style.height` are required; if either is missing the element renders as a normal block instead.
+
+```json
+{
+  "type": "pull-quote",
+  "content": "Any block can float — not just images.",
+  "properties": {
+    "style": { "width": 120, "height": 60 },
+    "layout": { "mode": "float", "align": "left", "wrap": "around", "gap": 8 }
+  }
+}
+```
+
+For an image-based obstacle box (the older approach, still valid):
 
 ```
 data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP48OQMAAVoAqEPT7KoAAAAAElFTkSuQmCC
@@ -310,6 +327,35 @@ The float element goes in `story.children`. Exclusion field = `style.width + gap
   "layout": { "mode": "story-absolute", "x": 120, "y": 45, "wrap": "none" }
 }
 ```
+
+---
+
+## 8a. Column Spans
+
+A child of a multi-column `story` can break the column flow and span the full story width by setting `properties.columnSpan`:
+
+```json
+{
+  "type": "section-heading",
+  "content": "Part Two",
+  "properties": {
+    "columnSpan": "all"
+  }
+}
+```
+
+**What happens:**
+1. All content above the span element is laid out normally in columns.
+2. The spanning element is placed at full story width at the current cursor position.
+3. Column flow resets to column 1 at the bottom edge of the span. Subsequent children resume as a fresh N-column arrangement.
+
+`columnSpan` accepts:
+- `"all"` — spans every column (recommended).
+- A number ≥ 2 — treated as full-width in the current implementation.
+
+The value is ignored in single-column stories. Any block element type can carry `columnSpan`: headings, tables, nested stories, styled boxes.
+
+> **NOTE**: `columnSpan` interacts with `balance: true`. The balance pre-probe runs before span elements are identified and may produce a slightly inaccurate column height target when spans are present. Use `balance: false` (the default) in stories that contain spanning elements.
 
 ---
 
@@ -771,8 +817,10 @@ Add `"split-marker"` to your styles table:
 
 These are hard-won lessons — mistakes that cost hours:
 
-### Float elements must be image elements
-Only elements with `properties.image` can be floated (`mode: "float"` or `mode: "story-absolute"`). You cannot float a plain text/body element. Use a 1×1 placeholder PNG if you want a non-image obstacle box.
+### Block floats require explicit `style.width` and `style.height`
+Any block element can be floated with `layout.mode: "float"` — image elements are no longer the only option. However, non-image block floats **must** declare both `properties.style.width` and `properties.style.height`. If either is missing, the element silently falls through to normal block layout instead of floating. Image floats are unaffected and still derive dimensions from intrinsic image size when those properties are omitted.
+
+`mode: "story-absolute"` remains restricted to image elements.
 
 ### Drop cap MUST precede float obstacle
 In story children, the drop-cap paragraph must come **before** the float obstacle. If you reverse the order, both elements anchor at the same y position (the story origin), causing visual overlap.

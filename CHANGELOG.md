@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.2] - 2026-03-16
+
+### Added
+
+#### Block-Level Floats
+- Any block element inside a `story` can now be floated with `properties.layout: { mode: "float" }` — not just image elements.
+- Non-image block floats require explicit `properties.style.width` and `properties.style.height`. If either is absent the element falls through to normal block layout (safe degradation).
+- The 1×1 placeholder PNG workaround for pull-quote / sidebar obstacles is no longer necessary.
+
+#### Column Spans in Multi-Column Stories
+- Any child of a multi-column `story` can span the full story width by setting `properties.columnSpan: "all"` (or a number ≥ 2).
+- The spanning element is laid out at full story width; column flow resets to column 1 below it.
+- Works with any block element type: headings, tables, nested stories, styled boxes.
+
+#### Regression Coverage
+- New fixture `engine/tests/fixtures/regression/20-block-floats-and-column-span.json` exercises both features in a 3-column LETTER layout with left/right block floats and a full-width column span.
+
+### Documentation
+- `documents/AST-REFERENCE.md`: added `columnSpan` to `ElementProperties` reference; expanded §13 (Story Layout Directives) with block float eligibility rules; added §13a (Column Span).
+- `documents/LAYOUT-SKILL.md`: updated §8 (Floats) to document block floats alongside image floats; added §8a (Column Spans); updated §15 gotcha to replace the obsolete "float requires image" restriction.
+- `documents/ADVANCED-LAYOUT-ROADMAP.md`: Features 2 and 3 marked as completed with implementation notes.
+
+---
+
 ## [0.3.1] - 2026-03-12
 
 ### Fixed

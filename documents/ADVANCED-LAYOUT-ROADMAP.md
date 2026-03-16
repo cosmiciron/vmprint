@@ -21,23 +21,29 @@ The standard method for side-by-side content arrangement in VMPrint is either th
 
 ## 2. Universal Block-Level Floats
 
-### Current Limitation
-The engine currently supports floating elements and text wrapping via `properties.layout: { mode: 'float' }`, but this feature is explicitly restricted to `image` elements. To wrap text around an information box, developers must use a transparent 1x1 placeholder image and absolutely position the text over it. Real text blocks, such as pull-quotes, cannot be natively floated.
+**Status: Completed** — shipped in engine v0.3.2.
 
-### Proposed Feature: Float Support for All Blocks
-* **Enhancement:** Expand the `layout.mode: 'float'` capability to apply to any block-level element, including `paragraph`, `inline-box`, and even nested `story` objects.
-* **Benefit:** Enables true pull-quotes, dynamic text-based sidebars, and complex structural obstacles that body text can wrap around naturally, eliminating the need for base64 image hacks.
+### ~~Current Limitation~~
+~~The engine currently supports floating elements and text wrapping via `properties.layout: { mode: 'float' }`, but this feature is explicitly restricted to `image` elements. To wrap text around an information box, developers must use a transparent 1x1 placeholder image and absolutely position the text over it. Real text blocks, such as pull-quotes, cannot be natively floated.~~
+
+### Implementation
+`layout.mode: 'float'` now works on any block-level element. Non-image block floats require explicit `properties.style.width` and `properties.style.height`; if either is absent the element falls through to normal block layout. The 1×1 placeholder PNG workaround is no longer necessary.
+
+See `documents/LAYOUT-SKILL.md` §8 and `documents/AST-REFERENCE.md` §13 for usage, and regression fixture `20-block-floats-and-column-span.json`.
 
 ---
 
 ## 3. Column Spanning Within Stories
 
-### Current Limitation
-In a multi-column `story`, content flows linearly. If a heading or a large image needs to span across multiple columns, it must be placed completely outside (above or below) the `story` container. It is currently impossible to have an element span across columns *in the middle* of a continuous flow without breaking the flow into two separate `story` blocks.
+**Status: Completed** — shipped in engine v0.3.2.
 
-### Proposed Feature: `columnSpan` for Story Children
-* **Enhancement:** Introduce a `columnSpan: number | "all"` property for block elements nested inside a `story`.
-* **Benefit:** Allows sub-headlines, large pull-quotes, or full-width diagrams to cleanly break the multi-column grid while maintaining the continuous text flow of the article above and below the spanning element.
+### ~~Current Limitation~~
+~~In a multi-column `story`, content flows linearly. If a heading or a large image needs to span across multiple columns, it must be placed completely outside (above or below) the `story` container. It is currently impossible to have an element span across columns *in the middle* of a continuous flow without breaking the flow into two separate `story` blocks.~~
+
+### Implementation
+`properties.columnSpan: "all"` (or a number ≥ 2) can be set on any child of a multi-column `story`. The element is laid out at full story width, then column flow resets to column 1 below it.
+
+See `documents/LAYOUT-SKILL.md` §8a and `documents/AST-REFERENCE.md` §13a for usage, and regression fixture `20-block-floats-and-column-span.json`.
 
 ---
 

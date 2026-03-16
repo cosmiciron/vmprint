@@ -161,6 +161,7 @@ interface ElementProperties {
     semanticRole?: string;
     dropCap?: DropCapSpec;
     layout?: StoryLayoutDirective;
+    columnSpan?: 'all' | number;
     reflowKey?: string;
 
     keepWithNext?: boolean;
@@ -192,6 +193,7 @@ interface ElementProperties {
 | `semanticRole` | `"table-row"` | `"header"` marks the row as a header row. |
 | `dropCap` | paragraph-like | Drop-cap configuration — see §11. |
 | `layout` | children of `"story"` | Float / absolute positioning — see §12. |
+| `columnSpan` | children of multi-column `"story"` | `"all"` or a number ≥ 2 — element spans the full story width, breaking column flow above and resuming from column 1 below. |
 | `reflowKey` | any | Explicit cache key for the reflow cache. |
 | `keepWithNext` | any | Keep this element on the same page as the one after it. |
 | `marginTop` | any | Top margin shorthand override (points). |
@@ -439,6 +441,53 @@ interface StoryLayoutDirective {
 | `align` | Which margin to anchor the float to: `"left"`, `"right"`, or `"center"`. `float` only. |
 | `wrap` | How flowing text responds to the obstacle: `"around"` (both sides), `"top-bottom"` (no side wrap), `"none"` (no wrap at all). |
 | `gap` | Clearance in points around the obstacle's bounding box. |
+
+### Float eligibility
+
+**Image elements** (`properties.image` present) use the image's intrinsic dimensions as the obstacle size when `style.width`/`style.height` are omitted.
+
+**Any other block element** can also be floated by setting `layout.mode: "float"`. In this case `properties.style.width` **and** `properties.style.height` are required — there are no intrinsic dimensions to fall back on. If either is missing the element falls through to normal block layout.
+
+```json
+{
+  "type": "pull-quote",
+  "content": "Text wraps around any block — not just images.",
+  "properties": {
+    "style": { "width": 120, "height": 60 },
+    "layout": { "mode": "float", "align": "left", "wrap": "around", "gap": 8 }
+  }
+}
+```
+
+### `story-absolute` eligibility
+
+`mode: "story-absolute"` is currently restricted to image elements.
+
+---
+
+## 13a. Column Span (`properties.columnSpan`)
+
+Declared on **children of a multi-column `"story"` element**. An element with `columnSpan` set breaks the column flow, is laid out at the full story width, then column flow resumes from column 1 below it.
+
+```typescript
+columnSpan?: 'all' | number   // 'all' or any integer ≥ 2
+```
+
+- `"all"` — spans every column (recommended).
+- A number ≥ 2 — treated as full-span in the current implementation (partial column spans are not yet supported).
+- Ignored in single-column stories.
+
+```json
+{
+  "type": "section-break",
+  "content": "Mid-Story Section Title",
+  "properties": {
+    "columnSpan": "all"
+  }
+}
+```
+
+Any block element type can carry `columnSpan` — headings, tables, nested stories, plain paragraphs. The element is laid out at the full story width using the same packager dispatch as non-float blocks.
 
 ---
 
