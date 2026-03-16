@@ -16,7 +16,8 @@ VMPrint is what happens when you stop treating text as text and start treating i
 
 ![VMPrint Specimen Blueprint — Actor-Based Spatial Simulation Engine](documents/readme-assets/blueprint-1.png)
 
-> Every element arrived through collision — geometry negotiated in a single deterministic pass. Each block, glyph, and inline span is an actor reporting its own origin and extent. Box positions are committed in that forward sweep; no downstream process revisits what the simulation resolved. The engine labels its own geometry because the engine knows its own geometry.
+> Every element arrived through collision — geometry negotiated in a single deterministic pass. Each block, glyph, and inline span is an actor reporting its own origin and extent. Box positions are committed in that forward sweep; no downstream process revisits what the simulation resolved. The engine labels its own geometry because the engine knows its own geometry.  
+> *All images in this document — including annotations, measurement guides, debug overlays, and script direction markers — are rendered entirely by VMPrint.*
 
 ---
 
@@ -78,50 +79,49 @@ You can trace any pixel in the final output back to its source. You can snapshot
 
 ## In practice
 
-<!-- [IMAGE: Terminal screenshot — npx draft2final "Thus_Spoke_the_Khan's_Grand_Advisor.md" showing 325 pages, 2.36s] -->
+![Draft2Final - converting markdown source to 325 pages of manuscript](documents/readme-assets/console.jpg)
 
-**325 pages. 80,000 words. Markdown to publication-standard PDF. 2.36 seconds. Surface Pro 11 tablet. Running on battery.**
+![Draft2Final - first chapter of Thus Spoke the Khan's Grand Advisor](documents/readme-assets/manuscript.jpg)
 
-No browser. No second pass. No auxiliary files.
+> 325 pages. 80,000 words. Markdown to publication-standard PDF. 2.32 seconds. Surface Pro 11 tablet. Running on battery.
+> **No browser. No second pass. No auxiliary files.**
 
-<!-- [IMAGE: The two-page manuscript spread — Chapter 1, Pang Ban on the boulder] -->
+![Writing systems of the world](documents/readme-assets/languages.jpg)
 
-<!-- [IMAGE: The mixed-script paragraph — Latin, Chinese, Arabic, Sanskrit, Thai — one paragraph, perfect vertical rhythm] -->
+> Full bidirectional text. Five writing systems. No HarfBuzz. No external shaping engine. Every script at its native baseline. Every line at the same distance from the next.
 
-Full bidirectional text. Five writing systems. No HarfBuzz. No external shaping engine. Every script at its native baseline. Every line at the same distance from the next.
+## Full torture suite — 20 regression fixtures, 100+ complex pages:
 
-<!-- [IMAGE: The multilingual two-page spread with debug overlay — Writing Systems of the World] -->
+| Scenario                | Layout   | Render  | Total   |
+|-------------------------|----------|---------|---------|
+| Warmed (shared runtime) | ~410 ms  | ~29 ms  | ~439 ms |
 
-<!-- [IMAGE: Multi-column layout page if available] -->
-
-**Full torture suite — 19 regression fixtures, 120 complex pages:**
-
-| Scenario | Layout | Render | Total |
-|---|---|---|---|
-| Warmed (shared runtime) | ~420 ms | ~32 ms | ~452 ms |
-
-**Footprint:**
-
-| | |
-|---|---|
-| VMPrint full dependency tree | ~2 MiB packed |
-| Headless Chromium | ~170 MB |
+Because the pipeline is synchronous and the footprint is minimal, VMPrint can run directly in edge environments (Cloudflare Workers, Vercel Edge, AWS Lambda) where other solutions often exceed memory or cold-start limits. It is fast enough to serve PDFs synchronously in response to user requests, without background job queues.
 
 The engine runs identically in Cloudflare Workers, AWS Lambda, Bun, Deno, Node.js, and directly in the browser. Same input. Same fonts. Same config. Identical output — down to the sub-point position of every glyph.
 
 ---
+draft2final
+draft2final is a complete manuscript and screenplay compiler built entirely on the VMPrint API. It is also what VMPrint was originally built to produce — a tool that takes a Markdown file and returns publication-standard output without pain.
+The full story is on Substack.
+bashnpx draft2final "manuscript.md"
+npx draft2final "screenplay.md" --as screenplay
+npx draft2final "paper.md" --as academic --style minimal
+Supports --as manuscript / screenplay / academic / literature and --style classic / modern / minimal.
 
 ## draft2final
 
-`draft2final` is a thin CLI built entirely on the VMPrint API. One command from source to publication-ready PDF:
+`draft2final` is a complete manuscript and screenplay compiler built entirely on the VMPrint API. It is also what VMPrint was originally built to produce — a tool that takes a Markdown file and returns publication-standard output without pain.
+
+The full story is on Substack.
 
 ```bash
 npx draft2final "manuscript.md"
 npx draft2final "screenplay.md" --as screenplay
-npx draft2final "paper.md" --as academic --style minimal
+npx draft2final "paper.md" --as markdown --style novel
 ```
 
-Supports `--as manuscript / screenplay / academic / literature` and `--style classic / modern / minimal`.
+Supports `--as manuscript / screenplay / markdown` and various styles within each format.
 
 ---
 
@@ -252,15 +252,28 @@ const runtime = createEngineRuntime({ fontManager: new StandardFontManager() });
 
 ## Footprint
 
+The headline number is the browser bundle with standard fonts: engine core plus the BiDi algorithm, no fontkit, no binary font assets — a fully functional layout engine that can typeset real documents across five writing systems, delivered in **~85 KiB over the wire**.
+
+**Browser bundles (minified, Brotli-compressed):**
+
+| Bundle | What's included | Raw | Brotli |
+|---|---|---:|---:|
+| Engine + BiDi, standard fonts | Engine core + bidi-js. Pairs with `@vmprint/standard-fonts` (the 14 standard PDF fonts; no embedded font binaries). Full layout, full bidirectional text, grapheme-accurate line breaking. | 398,671 B (~390 KiB) | 87,264 B (~85 KiB) |
+| Engine + BiDi + fontkit | Adds fontkit for parsing any TTF/OTF file. Required for custom embedded fonts. | 764,677 B (~747 KiB) | 219,806 B (~215 KiB) |
+
+The difference between the two is entirely fontkit — the OpenType parser. fontkit is the price of reading real glyph metrics from arbitrary font files rather than relying on pre-baked AFM tables. For environments where the 14 standard PDF fonts are sufficient, it is not needed.
+
+**npm package sizes:**
+
 | Package | Tarball | Unpacked |
 |---|---:|---:|
-| `@vmprint/engine` | 136,449 B (~133 KiB) | 713,077 B (~697 KiB) |
-| `@vmprint/context-pdf-lite` | 5,101 B | 20,001 B |
-| `@vmprint/standard-fonts` | 3,553 B | 11,232 B |
+| `@vmprint/engine` | 206,699 B (~202 KiB) | 1,109,042 B (~1.08 MiB) |
+| `@vmprint/context-pdf-lite` | 7,209 B (~7.0 KiB) | 26,102 B (~25.5 KiB) |
+| `@vmprint/standard-fonts` | 3,546 B (~3.5 KiB) | 11,126 B (~10.9 KiB) |
+| `@vmprint/context-pdf` | 4,741 B (~4.6 KiB) | 16,072 B (~15.7 KiB) |
+| `@vmprint/local-fonts` | 6,025,162 B (~5.75 MiB) | 12,125,265 B (~11.6 MiB) |
 
-Full dependency tree including fontkit: **~2 MiB packed / ~8.7 MiB unpacked.**
-
-Static standard-font browser bundle: **~710 KiB raw / ~182 KiB brotli.**
+The `@vmprint/local-fonts` size is almost entirely the bundled font binaries. Full dependency tree including fontkit: **~2 MiB packed / ~8.7 MiB unpacked** — versus Chromium's ~170 MB.
 
 ---
 
