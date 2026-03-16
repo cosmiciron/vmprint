@@ -102,7 +102,15 @@ type PlacedImageElement = {
     isAbsolute: boolean;
 };
 
-type PlacedElement = PlacedTextElement | PlacedImageElement;
+type PlacedFloatBlock = {
+    kind: 'float-block';
+    childIndex: number;
+    allBoxes: Box[];
+    topY: number;
+    bottomY: number;
+};
+
+type PlacedElement = PlacedTextElement | PlacedImageElement | PlacedFloatBlock;
 
 type FullPourResult = {
     placedElements: PlacedElement[];
@@ -483,6 +491,58 @@ export class StoryPackager implements PackagerUnit {
                 });
                 // Floats do NOT advance cursorY — text flows alongside them.
                 continue;
+            }
+
+            // ---- float block (non-image element with layout.mode === 'float') ---
+            if (layout?.mode === 'float' && !child.properties?.image) {
+                const dims = this.measureFloatBox(child, availableWidth);
+                if (dims) {
+                    cursorY = storyMap.topBottomClearY(cursorY);
+
+                    const align: StoryFloatAlign = layout.align ?? 'left';
+                    const floatX = resolveFloatX(align, dims.w, availableWidth);
+                    const wrap: StoryWrapMode = layout.wrap ?? 'around';
+                    const gap = Math.max(0, Number(layout.gap ?? 0));
+
+                    if (wrap !== 'none') {
+                        const rect: OccupiedRect = { x: floatX, y: cursorY, w: dims.w, h: dims.h, wrap, gap };
+                        storyMap.register(rect);
+                        registeredObstacles.push(rect);
+                    }
+
+                    const pkg = buildPackagerForElement(child, i, this.processor);
+                    const floatContext: PackagerContext = {
+                        processor: this.processor,
+                        pageIndex: 0,
+                        cursorY,
+                        margins: { ...margins, left: margins.left + floatX },
+                        pageWidth: margins.left + availableWidth + margins.right,
+                        pageHeight: Number.POSITIVE_INFINITY,
+                        publishActorSignal: (signal) => {
+                            const session = this.processor.getCurrentLayoutSession();
+                            if (!session) return { ...signal, pageIndex: signal.pageIndex ?? 0, sequence: -1 } as any;
+                            return session.publishActorSignal(signal);
+                        },
+                        readActorSignals: (topic?: string) => {
+                            const session = this.processor.getCurrentLayoutSession();
+                            return session ? session.getActorSignals(topic) : [];
+                        }
+                    };
+                    pkg.prepare(dims.w, dims.h, floatContext);
+                    const emitted = (pkg.emitBoxes(dims.w, dims.h, floatContext) || []) as Box[];
+                    for (const b of emitted) b.y = (b.y || 0) + cursorY;
+                    for (const b of emitted) allBoxes.push(b);
+                    placedElements.push({
+                        kind: 'float-block',
+                        childIndex: i,
+                        allBoxes: emitted,
+                        topY: cursorY,
+                        bottomY: cursorY + dims.h
+                    });
+                    // Float blocks do NOT advance cursorY — text flows alongside them.
+                    continue;
+                }
+                // dims is null (missing style.width/height) → fall through to pourTextChild
             }
 
             // ---- block image (no layout directive, or unrecognised mode) ---
@@ -921,6 +981,50 @@ export class StoryPackager implements PackagerUnit {
                 continue;
             }
 
+            // ---- column-spanning element ------------------------------------
+            // An element with columnSpan: 'all' (or any number ≥ 2) breaks
+            // the column flow, is laid out at full story width, then column
+            // flow resumes from column 0 below the spanning element.
+            if (isColumnSpanElement(child)) {
+                const spanTopY = cursorY;
+                const spanContext: PackagerContext = {
+                    processor: this.processor,
+                    pageIndex: 0,
+                    cursorY: spanTopY,
+                    margins: { ...margins },
+                    pageWidth: margins.left + availableWidth + margins.right,
+                    pageHeight: availableHeight,
+                    publishActorSignal: (signal) => {
+                        const session = this.processor.getCurrentLayoutSession();
+                        if (!session) return { ...signal, pageIndex: signal.pageIndex ?? 0, sequence: -1 } as any;
+                        return session.publishActorSignal(signal);
+                    },
+                    readActorSignals: (topic?: string) => {
+                        const session = this.processor.getCurrentLayoutSession();
+                        return session ? session.getActorSignals(topic) : [];
+                    }
+                };
+                const pkg = buildPackagerForElement(child, i, this.processor);
+                pkg.prepare(availableWidth, availableHeight - spanTopY, spanContext);
+                const spanH = pkg.getRequiredHeight();
+
+                if (spanTopY + spanH > availableHeight + 0.1) {
+                    // Span does not fit on this page → overflow.
+                    hasOverflow = true;
+                    nextChildIndex = i;
+                    break outer;
+                }
+
+                const emitted = (pkg.emitBoxes(availableWidth, availableHeight - spanTopY, spanContext) || []) as Box[];
+                for (const b of emitted) b.y = (b.y || 0) + spanTopY;
+                for (const b of emitted) allBoxes.push(b);
+
+                // Reset column flow: restart at column 0, cursor below the span.
+                regionIndex = 0;
+                cursorY = spanTopY + spanH;
+                continue;
+            }
+
             if (layout?.mode === 'float' && child.properties?.image) {
                 const metrics = resolveImageMetrics(child, i);
                 if (!metrics) continue;
@@ -954,6 +1058,64 @@ export class StoryPackager implements PackagerUnit {
                     break;
                 }
                 continue;
+            }
+
+            // ---- float block (non-image element with layout.mode === 'float') ---
+            if (layout?.mode === 'float' && !child.properties?.image) {
+                const dims = this.measureFloatBox(child, maxRegionWidth);
+                if (dims) {
+                    while (true) {
+                        const region = regions[regionIndex];
+                        const regionMap = this.createRegionMap(region, allObstacles);
+                        const anchorY = regionMap.topBottomClearY(cursorY);
+                        if (anchorY > region.h + 0.1) {
+                            if (goNextRegion()) continue;
+                            hasOverflow = true;
+                            nextChildIndex = i;
+                            break outer;
+                        }
+
+                        const align: StoryFloatAlign = layout.align ?? 'left';
+                        const effectiveW = Math.min(dims.w, region.w);
+                        const localX = resolveFloatX(align, effectiveW, region.w);
+                        const x = region.x + localX;
+                        const wrap: StoryWrapMode = layout.wrap ?? 'around';
+                        const gap = Math.max(0, Number(layout.gap ?? 0));
+
+                        if (wrap !== 'none') {
+                            const rect: OccupiedRect = { x, y: anchorY, w: effectiveW, h: dims.h, wrap, gap };
+                            allObstacles.push(rect);
+                            registeredObstacles.push(rect);
+                        }
+
+                        const pkg = buildPackagerForElement(child, i, this.processor);
+                        const floatContext: PackagerContext = {
+                            processor: this.processor,
+                            pageIndex: 0,
+                            cursorY: anchorY,
+                            margins: { ...margins, left: margins.left + x },
+                            pageWidth: margins.left + availableWidth + margins.right,
+                            pageHeight: Number.POSITIVE_INFINITY,
+                            publishActorSignal: (signal) => {
+                                const session = this.processor.getCurrentLayoutSession();
+                                if (!session) return { ...signal, pageIndex: signal.pageIndex ?? 0, sequence: -1 } as any;
+                                return session.publishActorSignal(signal);
+                            },
+                            readActorSignals: (topic?: string) => {
+                                const session = this.processor.getCurrentLayoutSession();
+                                return session ? session.getActorSignals(topic) : [];
+                            }
+                        };
+                        pkg.prepare(effectiveW, dims.h, floatContext);
+                        const emitted = (pkg.emitBoxes(effectiveW, dims.h, floatContext) || []) as Box[];
+                        for (const b of emitted) b.y = (b.y || 0) + anchorY;
+                        for (const b of emitted) allBoxes.push(b);
+                        cursorY = anchorY; // float block does NOT advance cursorY
+                        break;
+                    }
+                    continue;
+                }
+                // dims is null (missing style.width/height) → fall through to FlowBoxPackager path
             }
 
             if (child.properties?.image && !layout?.mode) {
@@ -1235,6 +1397,17 @@ export class StoryPackager implements PackagerUnit {
                 continue;
             }
 
+            // ---- float block -----------------------------------------------
+            if (elem.kind === 'float-block') {
+                // Same split policy as float images: include in partA if
+                // the float's anchor is within the split zone.
+                if (elem.topY <= splitH) {
+                    for (const b of elem.allBoxes) partABoxes.push({ ...b });
+                    recordPartAHeight(elem.bottomY);
+                }
+                continue;
+            }
+
             // ---- text element ----------------------------------------------
             const textEnd = elem.cursorAfter; // includes marginBottom
 
@@ -1397,6 +1570,25 @@ export class StoryPackager implements PackagerUnit {
         return { w: boxW, h: boxH };
     }
 
+    /**
+     * Resolves explicit dimensions for a non-image float block.
+     * Both `style.width` and `style.height` must be present and positive.
+     * Returns null if either is missing or invalid — the element falls through
+     * to normal block layout instead.
+     */
+    private measureFloatBox(
+        element: Element,
+        availableWidth: number
+    ): { w: number; h: number } | null {
+        const style = (element.properties?.style || {}) as ElementStyle;
+        if (style.width === undefined || style.height === undefined) return null;
+        const w = Math.max(0, LayoutUtils.validateUnit(style.width));
+        const h = Math.max(0, LayoutUtils.validateUnit(style.height));
+        if (!Number.isFinite(w) || w <= 0) return null;
+        if (!Number.isFinite(h) || h <= 0) return null;
+        return { w: Math.min(w, availableWidth), h };
+    }
+
     private buildImageBox(
         element: Element,
         absX: number,
@@ -1471,6 +1663,11 @@ export class StoryPackager implements PackagerUnit {
 // ---------------------------------------------------------------------------
 // Module-level helpers
 // ---------------------------------------------------------------------------
+
+function isColumnSpanElement(element: Element): boolean {
+    const span = element.properties?.columnSpan;
+    return span === 'all' || (typeof span === 'number' && span > 1);
+}
 
 function resolveFloatX(
     align: StoryFloatAlign,

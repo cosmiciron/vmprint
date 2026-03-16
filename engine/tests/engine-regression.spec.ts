@@ -342,6 +342,104 @@ function assertTransformCapabilityDetails(
     }
 }
 
+function assertBlockFloatsAndColumnSpanSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '20-block-floats-and-column-span.json') return;
+
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    const matchesSourceId = (box: any, id: string): boolean => {
+        const sourceId = String(box.meta?.sourceId || '');
+        return sourceId === id || sourceId.endsWith(`:${id}`);
+    };
+
+    // -- Block float: left-aligned -------------------------------------------
+    const leftFloatBoxes = allBoxes.filter((box: any) => matchesSourceId(box, 'pull-quote-float'));
+    assert.ok(leftFloatBoxes.length > 0, `${fixtureName}: expected pull-quote-float box`);
+    const leftFloat = leftFloatBoxes[0];
+    // Left-aligned float in column 1 (region.x=0) → box.x = margins.left = 50
+    assert.ok(
+        Math.abs(Number(leftFloat.x) - 50) < 2,
+        `${fixtureName}: expected left block float x ≈ 50, got ${leftFloat.x}`
+    );
+    assert.ok(
+        Math.abs(Number(leftFloat.w) - 108) < 4,
+        `${fixtureName}: expected left block float width ≈ 108, got ${leftFloat.w}`
+    );
+
+    // -- Block float: right-aligned ------------------------------------------
+    const rightFloatBoxes = allBoxes.filter((box: any) => matchesSourceId(box, 'pull-quote-float-right'));
+    assert.ok(rightFloatBoxes.length > 0, `${fixtureName}: expected pull-quote-float-right box`);
+    const rightFloat = rightFloatBoxes[0];
+    assert.ok(
+        Math.abs(Number(rightFloat.w) - 108) < 4,
+        `${fixtureName}: expected right block float width ≈ 108, got ${rightFloat.w}`
+    );
+    // Right-anchored float is always offset to the right of left-anchored float
+    assert.ok(
+        Number(rightFloat.x) > Number(leftFloat.x),
+        `${fixtureName}: expected right float x (${rightFloat.x}) > left float x (${leftFloat.x})`
+    );
+
+    // -- Text wraps around block floats (non-uniform _lineWidths) ------------
+    const wrappedTextBoxes = allBoxes.filter((box: any) => {
+        const lw = box.properties?._lineWidths;
+        if (!Array.isArray(lw) || lw.length < 2) return false;
+        const nums = lw.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n));
+        return (Math.max(...nums) - Math.min(...nums)) > 6;
+    });
+    assert.ok(
+        wrappedTextBoxes.length > 0,
+        `${fixtureName}: expected at least one text box with non-uniform line widths (text wrapping around block float)`
+    );
+
+    // -- Column span: full story width at left content edge ------------------
+    const spanBoxes = allBoxes.filter((box: any) => matchesSourceId(box, 'section-span'));
+    assert.ok(spanBoxes.length > 0, `${fixtureName}: expected section-span box`);
+    const spanBox = spanBoxes[0];
+    // Content width = 612 - 50 - 50 = 512; span should be at least 480
+    assert.ok(
+        Number(spanBox.w) > 480,
+        `${fixtureName}: expected section-span width > 480 (full story width), got ${spanBox.w}`
+    );
+    assert.ok(
+        Math.abs(Number(spanBox.x) - 50) < 2,
+        `${fixtureName}: expected section-span x ≈ 50 (content left edge), got ${spanBox.x}`
+    );
+
+    // -- Three-column layout: at least 3 distinct column X anchors -----------
+    const storyTextBoxes = allBoxes.filter((box: any) =>
+        Array.isArray(box.lines) && box.lines.length > 0 &&
+        box.meta?.sourceType !== 'header' && box.meta?.sourceType !== 'footer'
+    );
+    const xBuckets = Array.from(new Set(
+        storyTextBoxes.map((box: any) => Math.round(Number(box.x || 0) / 5) * 5)
+    ));
+    assert.ok(
+        xBuckets.length >= 3,
+        `${fixtureName}: expected at least 3 distinct X positions for 3-column layout, got ${xBuckets.length} (${xBuckets.join(', ')})`
+    );
+
+    // -- Post-span content exists and appears on the same or later page as the span
+    const spanPageIndex = pages.findIndex((page: any) =>
+        (page.boxes || []).some((box: any) => matchesSourceId(box, 'section-span'))
+    );
+    assert.ok(spanPageIndex >= 0, `${fixtureName}: expected section-span to be on a page`);
+
+    const postSpanBoxes = pages.flatMap((page: any, pageIndex: number) =>
+        (page.boxes || [])
+            .filter((box: any) => matchesSourceId(box, 'post-span-para-1') || matchesSourceId(box, 'post-span-para-2'))
+            .map((box: any) => ({ box, pageIndex }))
+    );
+    assert.ok(
+        postSpanBoxes.length > 0,
+        `${fixtureName}: expected post-span paragraph boxes`
+    );
+    const allPostSpanOnOrAfterSpanPage = postSpanBoxes.every((entry: any) => entry.pageIndex >= spanPageIndex);
+    assert.ok(
+        allPostSpanOnOrAfterSpanPage,
+        `${fixtureName}: expected all post-span boxes to appear on the same or later page as the span`
+    );
+}
+
 function assertStoryPackagerShowcaseSignals(pages: any[], fixtureName: string): void {
     // Must produce multiple pages (story is long enough to paginate).
     assert.ok(pages.length >= 2, `${fixtureName}: expected at least two pages`);
@@ -1009,6 +1107,15 @@ async function run() {
                 'firstPage suppression, odd/even selectors, per-page override replacement and null-suppression, physicalPageNumber token, and logical counter skipping all behave deterministically',
                 () => {
                     assertHeaderFooterTestSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '20-block-floats-and-column-span.json') {
+            check(
+                `${fixture.name} block float and column span signals`,
+                'block floats are positioned correctly, text wraps around them, column span is full-width, and post-span content flows in columns',
+                () => {
+                    assertBlockFloatsAndColumnSpanSignals(pagesA, fixture.name);
                 }
             );
         }

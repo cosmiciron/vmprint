@@ -59,6 +59,7 @@ const ELEMENT_PROPERTIES_KEYS = new Set([
     'semanticRole',
     'dropCap',
     'layout',
+    'columnSpan',
     'reflowKey',
     'keepWithNext',
     'marginTop',
@@ -558,6 +559,12 @@ function validateElementProperties(properties: unknown, path: string, documentPa
     if (props.semanticRole !== undefined) assertStringAt(props.semanticRole, `${path}.semanticRole`, documentPath);
     if (props.dropCap !== undefined) validateDropCapSpec(props.dropCap, `${path}.dropCap`, documentPath);
     if (props.layout !== undefined) validateStoryLayoutDirective(props.layout, `${path}.layout`, documentPath);
+    if (props.columnSpan !== undefined) {
+        const v = props.columnSpan;
+        if (v !== 'all' && (typeof v !== 'number' || !Number.isFinite(v) || v < 2)) {
+            contractError(documentPath, `${path}.columnSpan`, "expected 'all' or a finite number >= 2.");
+        }
+    }
     if (props.reflowKey !== undefined) assertStringAt(props.reflowKey, `${path}.reflowKey`, documentPath);
     if (props.sourceSyntax !== undefined) assertStringAt(props.sourceSyntax, `${path}.sourceSyntax`, documentPath);
     if (props.language !== undefined) assertStringAt(props.language, `${path}.language`, documentPath);

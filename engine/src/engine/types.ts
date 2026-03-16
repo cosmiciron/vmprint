@@ -156,6 +156,12 @@ export interface ElementProperties extends Record<string, any> {
     dropCap?: DropCapSpec;
     /** Story layout directive: declared on children of a `story` element. */
     layout?: StoryLayoutDirective;
+    /**
+     * Column span for children of a multi-column `story`.
+     * `'all'` or any number ≥ 2 causes the element to span the full story
+     * width, breaking column flow above and resuming column flow below.
+     */
+    columnSpan?: 'all' | number;
     reflowKey?: string;
     keepWithNext?: boolean;
     marginTop?: number;
