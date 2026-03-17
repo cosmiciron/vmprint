@@ -163,10 +163,18 @@ function hasLogicalPageNumberTokenInText(text: string): boolean {
     return text.includes('{logicalPageNumber}') || text.includes('{pageNumber}');
 }
 
-function elementContainsLogicalPageNumber(element: { content?: string; children?: any[] }): boolean {
+function elementContainsLogicalPageNumber(element: { content?: string; children?: any[]; slots?: Array<{ elements?: any[] }>; zones?: Array<{ elements?: any[] }> }): boolean {
     if (typeof element.content === 'string' && hasLogicalPageNumberTokenInText(element.content)) return true;
-    if (!Array.isArray(element.children)) return false;
-    return element.children.some((child) => elementContainsLogicalPageNumber(child));
+    if (Array.isArray(element.children) && element.children.some((child) => elementContainsLogicalPageNumber(child))) {
+        return true;
+    }
+    if (Array.isArray(element.slots) && element.slots.some((slot) => Array.isArray(slot.elements) && slot.elements.some((child) => elementContainsLogicalPageNumber(child)))) {
+        return true;
+    }
+    if (Array.isArray(element.zones) && element.zones.some((zone) => Array.isArray(zone.elements) && zone.elements.some((child) => elementContainsLogicalPageNumber(child)))) {
+        return true;
+    }
+    return false;
 }
 
 export function regionContainsLogicalPageNumber(content: PageRegionContent | null): boolean {
@@ -186,7 +194,7 @@ function replacePageTokens(text: string, physicalPageNumber: number, logicalPage
     return out;
 }
 
-function cloneElementWithPageTokens<T extends { content?: string; children?: T[] }>(
+function cloneElementWithPageTokens<T extends { content?: string; children?: T[]; slots?: Array<{ elements?: T[] }>; zones?: Array<{ elements?: T[] }> }>(
     element: T,
     physicalPageNumber: number,
     logicalPageNumber: number | null
@@ -201,6 +209,34 @@ function cloneElementWithPageTokens<T extends { content?: string; children?: T[]
                 children: element.children.map((child) =>
                     cloneElementWithPageTokens(child, physicalPageNumber, logicalPageNumber)
                 )
+            }
+            : {}),
+        ...(Array.isArray(element.slots)
+            ? {
+                slots: element.slots.map((slot) => ({
+                    ...slot,
+                    ...(Array.isArray(slot.elements)
+                        ? {
+                            elements: slot.elements.map((child) =>
+                                cloneElementWithPageTokens(child, physicalPageNumber, logicalPageNumber)
+                            )
+                        }
+                        : {})
+                }))
+            }
+            : {}),
+        ...(Array.isArray(element.zones)
+            ? {
+                zones: element.zones.map((zone) => ({
+                    ...zone,
+                    ...(Array.isArray(zone.elements)
+                        ? {
+                            elements: zone.elements.map((child) =>
+                                cloneElementWithPageTokens(child, physicalPageNumber, logicalPageNumber)
+                            )
+                        }
+                        : {})
+                }))
             }
             : {})
     };

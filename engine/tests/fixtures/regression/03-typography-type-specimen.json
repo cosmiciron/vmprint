@@ -1,5 +1,5 @@
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": {
     "pageSize": "LETTER",
     "margins": {
@@ -237,107 +237,282 @@
     {
       "type": "weightLine",
       "content": "100 -> nearest static 400 (normal)",
-      "properties": { "style": { "fontWeight": 100 } }
+      "properties": {
+        "style": {
+          "fontWeight": 100
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "300 -> nearest static 400 (normal)",
-      "properties": { "style": { "fontWeight": 300 } }
+      "properties": {
+        "style": {
+          "fontWeight": 300
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "400 -> static 400 (normal)",
-      "properties": { "style": { "fontWeight": 400 } }
+      "properties": {
+        "style": {
+          "fontWeight": 400
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "500 -> nearest static 700 (normal)",
-      "properties": { "style": { "fontWeight": 500 } }
+      "properties": {
+        "style": {
+          "fontWeight": 500
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "600 -> nearest static 700 (normal)",
-      "properties": { "style": { "fontWeight": 600 } }
+      "properties": {
+        "style": {
+          "fontWeight": 600
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "700 -> static 700 (normal)",
-      "properties": { "style": { "fontWeight": 700 } }
+      "properties": {
+        "style": {
+          "fontWeight": 700
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "900 -> nearest static 700 (normal)",
-      "properties": { "style": { "fontWeight": 900 } }
+      "properties": {
+        "style": {
+          "fontWeight": 900
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "300 italic -> nearest static 400 (italic)",
-      "properties": { "style": { "fontWeight": 300, "fontStyle": "italic" } }
+      "properties": {
+        "style": {
+          "fontWeight": 300,
+          "fontStyle": "italic"
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "500 italic -> nearest static 700 (italic)",
-      "properties": { "style": { "fontWeight": 500, "fontStyle": "italic" } }
+      "properties": {
+        "style": {
+          "fontWeight": 500,
+          "fontStyle": "italic"
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "700 italic -> static 700 (italic)",
-      "properties": { "style": { "fontWeight": 700, "fontStyle": "italic" } }
+      "properties": {
+        "style": {
+          "fontWeight": 700,
+          "fontStyle": "italic"
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "900 italic -> nearest static 700 (italic)",
-      "properties": { "style": { "fontWeight": 900, "fontStyle": "italic" } }
+      "properties": {
+        "style": {
+          "fontWeight": 900,
+          "fontStyle": "italic"
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "keyword: normal",
-      "properties": { "style": { "fontWeight": "normal" } }
+      "properties": {
+        "style": {
+          "fontWeight": "normal"
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "keyword: bold",
-      "properties": { "style": { "fontWeight": "bold" } }
+      "properties": {
+        "style": {
+          "fontWeight": "bold"
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "keyword: lighter",
-      "properties": { "style": { "fontWeight": "lighter" } }
+      "properties": {
+        "style": {
+          "fontWeight": "lighter"
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "keyword: bolder",
-      "properties": { "style": { "fontWeight": "bolder" } }
+      "properties": {
+        "style": {
+          "fontWeight": "bolder"
+        }
+      }
     },
     {
       "type": "weightLine",
       "content": "string numeric \"650\" → stepped to 700",
-      "properties": { "style": { "fontWeight": "650" } }
+      "properties": {
+        "style": {
+          "fontWeight": "650"
+        }
+      }
     },
     {
       "type": "p",
       "content": "",
       "children": [
-        { "type": "text", "content": "Inline normal sweep: " },
-        { "type": "text", "content": "[100] ", "properties": { "style": { "fontWeight": 100 } } },
-        { "type": "text", "content": "[300] ", "properties": { "style": { "fontWeight": 300 } } },
-        { "type": "text", "content": "[400] ", "properties": { "style": { "fontWeight": 400 } } },
-        { "type": "text", "content": "[500] ", "properties": { "style": { "fontWeight": 500 } } },
-        { "type": "text", "content": "[600] ", "properties": { "style": { "fontWeight": 600 } } },
-        { "type": "text", "content": "[700] ", "properties": { "style": { "fontWeight": 700 } } },
-        { "type": "text", "content": "[900]",  "properties": { "style": { "fontWeight": 900 } } }
+        {
+          "type": "text",
+          "content": "Inline normal sweep: "
+        },
+        {
+          "type": "text",
+          "content": "[100] ",
+          "properties": {
+            "style": {
+              "fontWeight": 100
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "[300] ",
+          "properties": {
+            "style": {
+              "fontWeight": 300
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "[400] ",
+          "properties": {
+            "style": {
+              "fontWeight": 400
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "[500] ",
+          "properties": {
+            "style": {
+              "fontWeight": 500
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "[600] ",
+          "properties": {
+            "style": {
+              "fontWeight": 600
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "[700] ",
+          "properties": {
+            "style": {
+              "fontWeight": 700
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "[900]",
+          "properties": {
+            "style": {
+              "fontWeight": 900
+            }
+          }
+        }
       ]
     },
     {
       "type": "p",
       "content": "",
       "children": [
-        { "type": "text", "content": "Inline italic sweep: " },
-        { "type": "text", "content": "[100] ", "properties": { "style": { "fontWeight": 100, "fontStyle": "italic" } } },
-        { "type": "text", "content": "[300] ", "properties": { "style": { "fontWeight": 300, "fontStyle": "italic" } } },
-        { "type": "text", "content": "[500] ", "properties": { "style": { "fontWeight": 500, "fontStyle": "italic" } } },
-        { "type": "text", "content": "[700] ", "properties": { "style": { "fontWeight": 700, "fontStyle": "italic" } } },
-        { "type": "text", "content": "[900]",  "properties": { "style": { "fontWeight": 900, "fontStyle": "italic" } } }
+        {
+          "type": "text",
+          "content": "Inline italic sweep: "
+        },
+        {
+          "type": "text",
+          "content": "[100] ",
+          "properties": {
+            "style": {
+              "fontWeight": 100,
+              "fontStyle": "italic"
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "[300] ",
+          "properties": {
+            "style": {
+              "fontWeight": 300,
+              "fontStyle": "italic"
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "[500] ",
+          "properties": {
+            "style": {
+              "fontWeight": 500,
+              "fontStyle": "italic"
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "[700] ",
+          "properties": {
+            "style": {
+              "fontWeight": 700,
+              "fontStyle": "italic"
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "[900]",
+          "properties": {
+            "style": {
+              "fontWeight": 900,
+              "fontStyle": "italic"
+            }
+          }
+        }
       ]
     },
     {
@@ -352,13 +527,51 @@
       "type": "p",
       "content": "",
       "children": [
-        { "type": "text", "content": "Base Arimo 12pt, then " },
-        { "type": "text", "content": "Courier Prime 11pt", "properties": { "style": { "fontFamily": "Courier Prime", "fontSize": 11 } } },
-        { "type": "text", "content": ", then " },
-        { "type": "text", "content": "Arimo Bold 15pt", "properties": { "style": { "fontWeight": "bold", "fontSize": 15 } } },
-        { "type": "text", "content": ", then " },
-        { "type": "text", "content": "Arimo Italic 12pt", "properties": { "style": { "fontStyle": "italic" } } },
-        { "type": "text", "content": "." }
+        {
+          "type": "text",
+          "content": "Base Arimo 12pt, then "
+        },
+        {
+          "type": "text",
+          "content": "Courier Prime 11pt",
+          "properties": {
+            "style": {
+              "fontFamily": "Courier Prime",
+              "fontSize": 11
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": ", then "
+        },
+        {
+          "type": "text",
+          "content": "Arimo Bold 15pt",
+          "properties": {
+            "style": {
+              "fontWeight": "bold",
+              "fontSize": 15
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": ", then "
+        },
+        {
+          "type": "text",
+          "content": "Arimo Italic 12pt",
+          "properties": {
+            "style": {
+              "fontStyle": "italic"
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": "."
+        }
       ]
     },
     {
@@ -377,13 +590,53 @@
       "type": "p",
       "content": "",
       "children": [
-        { "type": "text", "content": "Mixed-script inline: " },
-        { "type": "text", "content": "日本語", "properties": { "style": { "fontFamily": "Noto Sans JP", "fontSize": 13 } } },
-        { "type": "text", "content": " + " },
-        { "type": "text", "content": "العربية", "properties": { "style": { "fontFamily": "Noto Sans Arabic", "fontSize": 13 } } },
-        { "type": "text", "content": " + " },
-        { "type": "text", "content": "Courier", "properties": { "style": { "fontFamily": "Courier Prime", "fontSize": 11, "fontWeight": "bold" } } },
-        { "type": "text", "content": " in one unbroken paragraph." }
+        {
+          "type": "text",
+          "content": "Mixed-script inline: "
+        },
+        {
+          "type": "text",
+          "content": "日本語",
+          "properties": {
+            "style": {
+              "fontFamily": "Noto Sans JP",
+              "fontSize": 13
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": " + "
+        },
+        {
+          "type": "text",
+          "content": "العربية",
+          "properties": {
+            "style": {
+              "fontFamily": "Noto Sans Arabic",
+              "fontSize": 13
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": " + "
+        },
+        {
+          "type": "text",
+          "content": "Courier",
+          "properties": {
+            "style": {
+              "fontFamily": "Courier Prime",
+              "fontSize": 11,
+              "fontWeight": "bold"
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": " in one unbroken paragraph."
+        }
       ]
     },
     {
@@ -397,18 +650,29 @@
     {
       "type": "weightLineNoto",
       "content": "Noto Sans requested 200 -> nearest static match",
-      "properties": { "style": { "fontWeight": 200 } }
+      "properties": {
+        "style": {
+          "fontWeight": 200
+        }
+      }
     },
     {
       "type": "weightLineNoto",
       "content": "Noto Sans requested 500 → nearest static match boundary",
-      "properties": { "style": { "fontWeight": 500 } }
+      "properties": {
+        "style": {
+          "fontWeight": 500
+        }
+      }
     },
     {
       "type": "weightLineNoto",
       "content": "Noto Sans requested 800 -> nearest static match",
-      "properties": { "style": { "fontWeight": 800 } }
+      "properties": {
+        "style": {
+          "fontWeight": 800
+        }
+      }
     }
   ]
 }
-

@@ -1,5 +1,5 @@
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": {
     "pageSize": "LETTER",
     "orientation": "landscape",
@@ -73,4 +73,3 @@
     }
   ]
 }
-

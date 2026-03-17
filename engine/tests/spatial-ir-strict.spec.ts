@@ -4,20 +4,13 @@ import path from 'node:path';
 
 import { LayoutEngine } from '../src/engine/layout-engine';
 import { resolveDocumentPaths, toLayoutConfig, type DocumentIR } from '../src';
-import type { SpatialDocument } from '../src/engine/spatial-document';
 import { HARNESS_REGRESSION_CASES_DIR, loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
 import { getAstFixturePath, listAstFixtureNames } from './harness/ast-fixture-harness';
+import { transformAstSource } from './harness/ast-transform';
 
 function logStep(message: string): void {
     console.log(`[spatial-ir-strict.spec] ${message}`);
-}
-
-function resolveSpatialIrPath(fixtureName: string): string {
-    return path.join(
-        HARNESS_REGRESSION_CASES_DIR,
-        fixtureName.slice(0, fixtureName.length - '.json'.length) + '.spatial-ir.json'
-    );
 }
 
 function resolveSnapshotPath(fixtureName: string): string {
@@ -39,14 +32,14 @@ async function run(): Promise<void> {
     for (const fixtureName of fixtureNames) {
         logStep(`Fixture: ${fixtureName}`);
         const fixturePath = getAstFixturePath(fixtureName);
-        const spatialIrPath = resolveSpatialIrPath(fixtureName);
         const snapshotPath = resolveSnapshotPath(fixtureName);
 
+        const rawDocument = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
         const sourceDocument = resolveDocumentPaths(
-            JSON.parse(fs.readFileSync(fixturePath, 'utf8')),
+            rawDocument,
             fixturePath
         ) as DocumentIR;
-        const spatialDocument = JSON.parse(fs.readFileSync(spatialIrPath, 'utf8')) as SpatialDocument;
+        const spatialDocument = transformAstSource(rawDocument, fixturePath).spatialDocument;
         const expected = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
 
         const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });

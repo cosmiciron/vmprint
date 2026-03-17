@@ -433,9 +433,16 @@ Packagers receive an IR node and a `PackagerContext`. Geometry is pre-resolved. 
 
 ---
 
-## 7. The Normalizer
+## 7. Internal Normalization
 
-The normalizer is a pure function:
+Current architecture note:
+
+- `DocumentInput` remains the one canonical public source format
+- the engine owns normalization internally
+- `SpatialDocument` remains an internal normalized form, not a public input API
+
+So the current boundary is a plain internal function, not a public
+transformer/normalizer contract:
 
 ```typescript
 function normalizeDocument(doc: DocumentInput, pageGeometry: PageGeometry): SpatialDocument
@@ -456,7 +463,10 @@ The normalizer, in order:
    - every emitted node → attach `SourceRef` diagnostics
 5. Recursively normalizes nested structures (story inside zone, table inside cell, etc.)
 
-The normalizer has **no side effects**, **no access to the physics runtime**, and **no knowledge of the march**. It is a pure structural transform. It produces a complete, self-contained spatial representation that the engine can run without consulting the original AST.
+This normalization pass has **no side effects**, **no access to the physics
+runtime**, and **no knowledge of the march**. It is a pure structural
+transform. It produces a complete, self-contained spatial representation that
+the engine can run without consulting the original AST.
 
 ---
 
@@ -545,120 +555,36 @@ This is slightly more verbose than the earlier sketch, but it matches the engine
 
 ---
 
-## 12. The Normalizer Contract (Inversion of Control)
+## 12. Historical Note: Why This Is Not A Public Contract
 
-The introduction of the Spatial IR reveals a deeper architectural truth: **the engine does not need to own its input language.**
+An earlier design direction considered promoting normalization into a public
+contract or pluggable interface. That is no longer the intended architecture.
 
-Attempting to design a single universal AST that perfectly serves both semantic, flow-driven documents (novels, screenplays, reports) and purely spatial, coordinate-driven tasks (DTP, visual editors) leads to a schema that is simultaneously too rigid for one domain and too loose for the other. The eventual result is feature bloat, contradictory properties, and normalized workarounds — exactly the `contentWidthOverride` class of problem.
+Current position:
 
-The correct move is to extract the normalization step into an interface contract.
+- `DocumentInput` stays the one public, canonical authored source
+- CLI, `draft2final`, and transmuters continue to target `DocumentInput`
+- the engine internally normalizes AST into `SpatialDocument`
+- `SpatialDocument` improves runtime honesty, but is not the public product
+  boundary
 
-### The Interface
+Why this changed:
 
-```typescript
-interface Normalizer<TInput> {
-    normalize(input: TInput, pageGeometry: PageGeometry): SpatialDocument;
-}
-```
+- VMPrint's strongest public promise is one source with identical output
+- exposing a public normalizer/transformer layer too early weakens that
+  promise and encourages over-design
+- keeping normalization internal forces the AST to remain a serious,
+  well-designed public surface rather than a temporary compatibility format
 
-This establishes a symmetrical boundary around the engine. The engine already has two extension interfaces:
-- `FontManager` — abstracts asset loading (what fonts are available and how to load them)
-- `Context` — abstracts output generation (where the positioned boxes go)
-
-`Normalizer` completes the triad, abstracting input semantics (what the engine's consumer wants to express and how). The full boundary picture:
-
-```
-[TInput] → Normalizer → SpatialDocument → Engine → PositionedBoxes → Context → [TOutput]
-                                            ↑
-                                       FontManager
-```
-
-The engine core is blind to domain-specific formats at both ends. It accepts `SpatialDocument` and produces positioned boxes. Nothing more.
-
-### SpatialDocument Is the Versioned Engine API
-
-`SpatialDocument` is not an implementation detail — it is the stable, versioned contract the engine publishes. Normalizers handle format evolution on the input side. The engine commits to backward compatibility at the IR level only.
-
-This is the LLVM model: Clang, Rust, and Swift all compile to the same IR; the optimizer and backend are IR-in, IR-out. Adding a new frontend language requires no changes to the optimizer. Adding a new optimization requires no changes to any frontend. The IR version is the contract.
-
-For VMPrint: adding a new input domain (visual editor, custom DTP format, programmatic builder) requires a new `Normalizer` implementation, not an engine change. Adding a new physics capability (linked frames, absolute zones) requires an IR extension, with all normalizers updated to emit the new nodes — no engine core rewrites.
-
-### Normalizer Implementations
-
-**SemanticNormalizer** — ingests the current `DocumentInput` AST. This is the normalizer for flow-driven, semantically structured documents: manuscripts, reports, newsletters. `DocumentInput` does not disappear; it becomes the `TInput` type for this specific normalizer. Existing documents and transmuters are unaffected.
-
-**SpatialNormalizer** — ingests absolute bounding box declarations: explicit `(x, y, width, height)` per zone, pre-calculated flex grids, direct coordinate placement. This is the normalizer for visual drag-and-drop editors and DTP tools. The editor's output canvas IS the IR; normalization is a near-trivial coordinate mapping. The engine renders it without semantic interpretation.
-
-Future normalizers could ingest other formats: a Markdown AST directly (bypassing `DocumentInput`), a binary packed format, a builder API's object graph. The engine is indifferent.
-
-### Effect on draft2final
-
-The current pipeline:
+So the practical architecture is:
 
 ```
-Markdown → DocumentInput → Engine (normalizes internally)
+DocumentInput → engine-owned normalize() → SpatialDocument → Engine → PositionedBoxes → Context
 ```
 
-With the Normalizer contract:
-
-```
-Markdown → DocumentInput → Normalizer (chosen by format) → SpatialDocument → Engine
-```
-
-The normalizer is not a pipeline optimization — it is the **format strategy**. When `draft2final` compiles Markdown "as" a newspaper, it injects a `NewspaperNormalizer` that understands newspaper-domain layout: multi-column `ZoneStrip` arrangements, pull-quotes extracted as `BlockObstacle` nodes by convention, headline hierarchy mapped to strip-splitting spans. When it compiles the same Markdown "as" a manuscript, a `ManuscriptNormalizer` produces a single-column flow with different typographic decisions baked into the IR.
-
-The Markdown source and the `DocumentInput` it produces are identical in both cases. The domain knowledge of what "newspaper" or "manuscript" means spatially lives entirely in the normalizer. `draft2final`'s format and theme system already selects behavior per output target — the normalizer becomes the spatial expression of that selection.
-
-This means the normalizer is the natural home for layout conventions that are currently scattered across theme YAML files, format handlers, and hardcoded style defaults. A `NewspaperNormalizer` knows that body text in a newspaper flows in three columns; it does not need to be told this through a configuration file — it produces the corresponding `ZoneStrip` structure directly. The spatial intent is encoded in the normalizer, not approximated through style overrides on top of a generic flow.
-
-### Domain-Optimized Expressions
-
-The deepest consequence of this architecture is not internal — it is user-facing.
-
-Today, a newspaper designer using `draft2final` must learn the generic `DocumentInput` vocabulary and approximate newspaper structure through style overrides and theme YAML. They work against abstractions that were not designed for their domain: `story`, `zone-map`, `table`. These concepts get the job done but do not speak the designer's language.
-
-With a `NewspaperNormalizer`, a newspaper designer works in newspaper terms: masthead, lead article, byline, above-the-fold strip, pull quote. The normalizer knows exactly what those mean spatially — which `ZoneStrip` structures they produce, which `BlockObstacle` nodes they generate, how the column grid is resolved. The user never sees IR vocabulary. That is the runtime's concern.
-
-The same principle applies across every publishing domain. A `ScreenplayNormalizer` speaks in scenes, sluglines, and action blocks. A `LegalBriefNormalizer` speaks in numbered sections, exhibit references, and margin annotations. An `AcademicJournalNormalizer` speaks in abstracts, figures, and citation blocks. Each normalizer translates domain intent into the same spatial physics. The physics engine is indifferent to the domain; the normalizer carries all domain knowledge.
-
-Because `Normalizer<TInput>` is a minimal interface, normalizers are publishable by third parties without touching the engine or `draft2final`. A specialist publisher can ship a normalizer for their house format. The engine becomes an embeddable layout physics runtime; the normalizer ecosystem is the product surface above it.
-
-### The Immediate Beneficiary: Transmuters
-
-The most immediate practical beneficiary of the Normalizer contract is the transmuter layer.
-
-Currently a transmuter does two jobs in one pass:
-1. **Parse** the source format (Markdown, screenplay syntax, etc.) into a semantic structure
-2. **Translate** that semantic structure into `DocumentInput` vocabulary — `story`, `table`, `zone-map`
-
-Job 2 is where transmuters suffer. `DocumentInput` is a generic layout vocabulary, so domain-specific semantic intent gets compressed through it and loses specificity. A Markdown blockquote that a newspaper transmuter *knows* should be a pull-quote in the right column must be expressed as a generic `body` element with style overrides — because `DocumentInput` has no concept of "pull-quote." The domain knowledge is flattened out at the translation boundary.
-
-The Normalizer contract lets transmuters shed job 2 entirely. A transmuter becomes a **pure parser**: it reads the source format and produces a rich domain-specific semantic representation — `LeadArticle`, `Byline`, `PullQuote`, `Masthead` — preserving all intent it currently has to discard. The normalizer then maps that richness directly to spatial IR.
-
-The transmuter and its paired normalizer share a `TInput` type. They form a domain unit:
-
-```
-Markdown → [MkdNewspaperTransmuter] → NewspaperDocument → [NewspaperNormalizer] → SpatialDocument
-Markdown → [MkdManuscriptTransmuter] → ManuscriptDocument → [ManuscriptNormalizer] → SpatialDocument
-```
-
-For domains where parsing and spatial compilation are naturally unified, they collapse into one:
-
-```typescript
-class MkdNewspaperPipeline implements Normalizer<MarkdownAST> {
-    normalize(md: MarkdownAST, geometry: PageGeometry): SpatialDocument { ... }
-}
-```
-
-In this form, `DocumentInput` is not required at all. It was always a compromise — generic enough for the engine to consume, specific enough to be authorable. The Normalizer contract removes the reason for that compromise to exist.
-
-The `@vmprint/markdown-core` extraction already showed the right instinct: separate parsing from layout decisions. What it could not do at the time was complete the separation, because the output was still `DocumentInput`. The Normalizer contract finishes that thought: the transmuter parses; the normalizer compiles; each does exactly one job.
-
-### Prevention of Scope Creep
-
-The most operationally important internal consequence: new domain requirements route to new normalizers, not to engine changes. If a consumer needs a new way of expressing layout intent — absolute coordinates, constraint-based sizing, a grid system, a proprietary DTP format — they implement a `Normalizer`. The physics runtime is protected from feature accumulation that belongs to input semantics.
-
-This is the concrete enforcement of the OVERHAUL-OBJECTIVE rule: *"new capabilities emerge honestly from the runtime model."* Domain-specific input semantics are not runtime capabilities. They are Normalizer concerns.
+This still preserves the most important benefit of the Spatial IR refactor:
+the runtime consumes an explicit spatial form. It simply does so without
+turning that internal boundary into a public extension interface.
 
 ---
 

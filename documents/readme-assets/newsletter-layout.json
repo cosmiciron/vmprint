@@ -1,5 +1,5 @@
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
 
   "layout": {
     "pageSize": "A4",
@@ -87,6 +87,59 @@
       "color": "#2c3e50",
       "lineHeight": 1.45,
       "marginBottom": 4
+    },
+    "byline-left": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "color": "#555",
+      "letterSpacing": 0.3,
+      "paddingTop": 0,
+      "paddingBottom": 0,
+      "paddingLeft": 0,
+      "paddingRight": 0
+    },
+    "byline-right": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "color": "#555",
+      "letterSpacing": 0.8,
+      "textAlign": "right",
+      "paddingTop": 0,
+      "paddingBottom": 0,
+      "paddingLeft": 0,
+      "paddingRight": 0
+    },
+    "footer-left": {
+      "fontFamily": "Cousine",
+      "fontSize": 5.5,
+      "color": "#9aacbf",
+      "letterSpacing": 0.5,
+      "paddingTop": 5,
+      "paddingBottom": 0,
+      "paddingLeft": 0,
+      "paddingRight": 0
+    },
+    "footer-page": {
+      "fontFamily": "Tinos",
+      "fontSize": 8,
+      "fontWeight": "bold",
+      "color": "#0d2040",
+      "textAlign": "center",
+      "paddingTop": 4,
+      "paddingBottom": 0,
+      "paddingLeft": 0,
+      "paddingRight": 0
+    },
+    "footer-right": {
+      "fontFamily": "Cousine",
+      "fontSize": 5.5,
+      "color": "#9aacbf",
+      "letterSpacing": 0.5,
+      "textAlign": "right",
+      "paddingTop": 5,
+      "paddingBottom": 0,
+      "paddingLeft": 0,
+      "paddingRight": 0
     },
 
     "body": {
@@ -200,38 +253,35 @@
     },
 
     {
-      "type": "table",
+      "type": "strip",
       "content": "",
-      "properties": {
-        "style": { "marginBottom": 3 },
-        "table": {
-          "columnGap": 0,
-          "columns": [ { "mode": "flex", "fr": 1 }, { "mode": "flex", "fr": 1 } ]
-        }
+      "stripLayout": {
+        "gap": 0,
+        "tracks": [ { "mode": "flex", "fr": 1 }, { "mode": "flex", "fr": 1 } ]
       },
-      "children": [{
-        "type": "table-row",
-        "content": "",
-        "children": [
-          {
-            "type": "table-cell",
-            "content": "By Uzo Z.T. (aka cosmiciron)",
-            "properties": { "style": {
-              "fontFamily": "Cousine", "fontSize": 6.5, "color": "#555", "letterSpacing": 0.3,
-              "paddingTop": 0, "paddingBottom": 0, "paddingLeft": 0, "paddingRight": 0
-            }}
-          },
-          {
-            "type": "table-cell",
-            "content": "MARCH 2026  \u00b7  ENGINE V2.4",
-            "properties": { "style": {
-              "fontFamily": "Cousine", "fontSize": 6.5, "color": "#555", "letterSpacing": 0.8,
-              "textAlign": "right",
-              "paddingTop": 0, "paddingBottom": 0, "paddingLeft": 0, "paddingRight": 0
-            }}
-          }
-        ]
-      }]
+      "properties": {
+        "style": { "marginBottom": 3 }
+      },
+      "slots": [
+        {
+          "id": "left",
+          "elements": [
+            {
+              "type": "byline-left",
+              "content": "By Uzo Z.T. (aka cosmiciron)"
+            }
+          ]
+        },
+        {
+          "id": "right",
+          "elements": [
+            {
+              "type": "byline-right",
+              "content": "MARCH 2026  \u00b7  ENGINE V2.4"
+            }
+          ]
+        }
+      ]
     },
 
     { "type": "rule-hairline", "content": "" },
@@ -247,16 +297,14 @@
         {
           "type": "body",
           "content": "Every element in a VMPrint document is measured with sub-point precision \u2014 the same standard professional typesetters have relied on for centuries. From page margins to glyph advance widths, the engine processes a recursive flow model: block elements accumulate vertically; inline runs compose into lines via a dynamic programming pass that considers hyphenation, inter-word spacing, and optical fit simultaneously. The result is typographic quality indistinguishable from dedicated desktop publishing software, produced entirely from structured JSON.",
-          "properties": {
-            "dropCap": {
-              "enabled": true,
-              "lines": 3,
-              "gap": 5,
-              "characterStyle": {
-                "fontFamily": "Tinos",
-                "fontWeight": "bold",
-                "color": "#1a3a5c"
-              }
+          "dropCap": {
+            "enabled": true,
+            "lines": 3,
+            "gap": 5,
+            "characterStyle": {
+              "fontFamily": "Tinos",
+              "fontWeight": "bold",
+              "color": "#1a3a5c"
             }
           }
         },
@@ -264,12 +312,12 @@
         {
           "type": "obstacleImg",
           "content": "",
+          "image": {
+            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP48OQMAAVoAqEPT7KoAAAAAElFTkSuQmCC",
+            "mimeType": "image/png",
+            "fit": "fill"
+          },
           "properties": {
-            "image": {
-              "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP48OQMAAVoAqEPT7KoAAAAAElFTkSuQmCC",
-              "mimeType": "image/png",
-              "fit": "fill"
-            },
             "style": { "width": 60, "height": 48 },
             "layout": { "mode": "float", "align": "right", "wrap": "around", "gap": 8 }
           }
@@ -368,12 +416,12 @@
         {
           "type": "secondary-img",
           "content": "",
+          "image": {
+            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP48OQMAAVoAqEPT7KoAAAAAElFTkSuQmCC",
+            "mimeType": "image/png",
+            "fit": "fill"
+          },
           "properties": {
-            "image": {
-              "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP48OQMAAVoAqEPT7KoAAAAAElFTkSuQmCC",
-              "mimeType": "image/png",
-              "fit": "fill"
-            },
             "style": { "width": 155, "height": 42 }
           }
         },
@@ -398,51 +446,48 @@
   "footer": {
     "default": {
       "elements": [{
-        "type": "table",
+        "type": "strip",
         "content": "",
+        "stripLayout": {
+          "gap": 0,
+          "tracks": [
+            { "mode": "flex", "fr": 1 },
+            { "mode": "fixed", "value": 36 },
+            { "mode": "flex", "fr": 1 }
+          ]
+        },
         "properties": {
-          "style": { "borderTopWidth": 0.5, "borderTopColor": "#9aacbf" },
-          "table": {
-            "columnGap": 0,
-            "columns": [
-              { "mode": "flex", "fr": 1 },
-              { "mode": "fixed", "value": 36 },
-              { "mode": "flex", "fr": 1 }
+          "style": { "borderTopWidth": 0.5, "borderTopColor": "#9aacbf" }
+        },
+        "slots": [
+          {
+            "id": "left",
+            "elements": [
+              {
+                "type": "footer-left",
+                "content": "VMPRINT QUARTERLY  \u00b7  LAYOUT SHOWCASE"
+              }
+            ]
+          },
+          {
+            "id": "center",
+            "elements": [
+              {
+                "type": "footer-page",
+                "content": "{pageNumber}"
+              }
+            ]
+          },
+          {
+            "id": "right",
+            "elements": [
+              {
+                "type": "footer-right",
+                "content": "ENGINE V2.4  \u00b7  vmprint.dev"
+              }
             ]
           }
-        },
-        "children": [{
-          "type": "table-row",
-          "content": "",
-          "children": [
-            {
-              "type": "table-cell",
-              "content": "VMPRINT QUARTERLY  \u00b7  LAYOUT SHOWCASE",
-              "properties": { "style": {
-                "fontFamily": "Cousine", "fontSize": 5.5, "color": "#9aacbf", "letterSpacing": 0.5,
-                "paddingTop": 5, "paddingBottom": 0, "paddingLeft": 0, "paddingRight": 0
-              }}
-            },
-            {
-              "type": "table-cell",
-              "content": "{pageNumber}",
-              "properties": { "style": {
-                "fontFamily": "Tinos", "fontSize": 8, "fontWeight": "bold", "color": "#0d2040",
-                "textAlign": "center",
-                "paddingTop": 4, "paddingBottom": 0, "paddingLeft": 0, "paddingRight": 0
-              }}
-            },
-            {
-              "type": "table-cell",
-              "content": "ENGINE V2.4  \u00b7  vmprint.dev",
-              "properties": { "style": {
-                "fontFamily": "Cousine", "fontSize": 5.5, "color": "#9aacbf", "letterSpacing": 0.5,
-                "textAlign": "right",
-                "paddingTop": 5, "paddingBottom": 0, "paddingLeft": 0, "paddingRight": 0
-              }}
-            }
-          ]
-        }]
+        ]
       }]
     }
   }

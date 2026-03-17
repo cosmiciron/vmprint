@@ -1,5 +1,5 @@
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": {
     "pageSize": {
       "width": 420,
@@ -218,17 +218,6 @@
       "content": "",
       "properties": {
         "sourceId": "table-split",
-        "table": {
-          "headerRows": 1,
-          "repeatHeader": true,
-          "columnGap": 4,
-          "rowGap": 2,
-          "columns": [
-            { "mode": "fixed", "value": 70 },
-            { "mode": "flex", "fr": 2, "min": 120 },
-            { "mode": "fixed", "value": 70 }
-          ]
-        },
         "paginationContinuation": {
           "enabled": true,
           "markerAfterSplit": {
@@ -244,104 +233,352 @@
       "children": [
         {
           "type": "table-row",
-          "properties": { "semanticRole": "header" },
+          "properties": {
+            "semanticRole": "header"
+          },
           "children": [
-            { "type": "table-cell", "content": "ID" },
-            { "type": "table-cell", "content": "Milestone" },
-            { "type": "table-cell", "content": "Status" }
+            {
+              "type": "table-cell",
+              "content": "ID"
+            },
+            {
+              "type": "table-cell",
+              "content": "Milestone"
+            },
+            {
+              "type": "table-cell",
+              "content": "Status"
+            }
           ]
         },
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-01" },
-          { "type": "table-cell", "content": "Typographic baseline grid" },
-          { "type": "table-cell", "content": "Done" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-02" },
-          { "type": "table-cell", "content": "Variable font axis resolution" },
-          { "type": "table-cell", "content": "Done" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-03" },
-          { "type": "table-cell", "content": "Advanced justification engine" },
-          { "type": "table-cell", "content": "Active" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-04" },
-          { "type": "table-cell", "content": "Table column sizing" },
-          { "type": "table-cell", "content": "Active" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-05" },
-          { "type": "table-cell", "content": "Header row repetition" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-06" },
-          { "type": "table-cell", "content": "Story float layout" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-07" },
-          { "type": "table-cell", "content": "RTL paragraph shaping" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-08" },
-          { "type": "table-cell", "content": "Inline object baseline" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-09" },
-          { "type": "table-cell", "content": "Drop cap continuation" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-10" },
-          { "type": "table-cell", "content": "Soft-hyphen priority" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-11" },
-          { "type": "table-cell", "content": "Grapheme cluster safety" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-12" },
-          { "type": "table-cell", "content": "Overlay architecture" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-13" },
-          { "type": "table-cell", "content": "Orientation + page size" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-14" },
-          { "type": "table-cell", "content": "span pagination" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-15" },
-          { "type": "table-cell", "content": "CLI integration" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-16" },
-          { "type": "table-cell", "content": "PDF context pass" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-17" },
-          { "type": "table-cell", "content": "Visual regression sign-off" },
-          { "type": "table-cell", "content": "Queued" }
-        ]},
-        { "type": "table-row", "children": [
-          { "type": "table-cell", "content": "M-18" },
-          { "type": "table-cell", "content": "Public release" },
-          { "type": "table-cell", "content": "Queued" }
-        ]}
-      ]
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-01"
+            },
+            {
+              "type": "table-cell",
+              "content": "Typographic baseline grid"
+            },
+            {
+              "type": "table-cell",
+              "content": "Done"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-02"
+            },
+            {
+              "type": "table-cell",
+              "content": "Variable font axis resolution"
+            },
+            {
+              "type": "table-cell",
+              "content": "Done"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-03"
+            },
+            {
+              "type": "table-cell",
+              "content": "Advanced justification engine"
+            },
+            {
+              "type": "table-cell",
+              "content": "Active"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-04"
+            },
+            {
+              "type": "table-cell",
+              "content": "Table column sizing"
+            },
+            {
+              "type": "table-cell",
+              "content": "Active"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-05"
+            },
+            {
+              "type": "table-cell",
+              "content": "Header row repetition"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-06"
+            },
+            {
+              "type": "table-cell",
+              "content": "Story float layout"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-07"
+            },
+            {
+              "type": "table-cell",
+              "content": "RTL paragraph shaping"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-08"
+            },
+            {
+              "type": "table-cell",
+              "content": "Inline object baseline"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-09"
+            },
+            {
+              "type": "table-cell",
+              "content": "Drop cap continuation"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-10"
+            },
+            {
+              "type": "table-cell",
+              "content": "Soft-hyphen priority"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-11"
+            },
+            {
+              "type": "table-cell",
+              "content": "Grapheme cluster safety"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-12"
+            },
+            {
+              "type": "table-cell",
+              "content": "Overlay architecture"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-13"
+            },
+            {
+              "type": "table-cell",
+              "content": "Orientation + page size"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-14"
+            },
+            {
+              "type": "table-cell",
+              "content": "span pagination"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-15"
+            },
+            {
+              "type": "table-cell",
+              "content": "CLI integration"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-16"
+            },
+            {
+              "type": "table-cell",
+              "content": "PDF context pass"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-17"
+            },
+            {
+              "type": "table-cell",
+              "content": "Visual regression sign-off"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        },
+        {
+          "type": "table-row",
+          "children": [
+            {
+              "type": "table-cell",
+              "content": "M-18"
+            },
+            {
+              "type": "table-cell",
+              "content": "Public release"
+            },
+            {
+              "type": "table-cell",
+              "content": "Queued"
+            }
+          ]
+        }
+      ],
+      "table": {
+        "headerRows": 1,
+        "repeatHeader": true,
+        "columnGap": 4,
+        "rowGap": 2,
+        "columns": [
+          {
+            "mode": "fixed",
+            "value": 70
+          },
+          {
+            "mode": "flex",
+            "fr": 2,
+            "min": 120
+          },
+          {
+            "mode": "fixed",
+            "value": 70
+          }
+        ]
+      }
     },
     {
       "type": "h2",
@@ -407,4 +644,3 @@
     }
   ]
 }
-

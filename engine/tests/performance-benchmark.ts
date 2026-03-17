@@ -1,10 +1,10 @@
 import fs from 'node:fs';
-import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import * as engineModule from '../src/index.ts';
 import * as harnessModule from './harness/engine-harness.ts';
 import { resolveDocumentPaths, toLayoutConfig } from '../src';
 import { getAstFixturePath, listAstFixtureNames } from './harness/ast-fixture-harness';
+import { transformAstSource } from './harness/ast-transform';
 
 type BenchmarkMode = 'ast' | 'spatial-ir';
 
@@ -161,11 +161,11 @@ async function measureFixture(
     mode: BenchmarkMode,
     runtime: any,
     file: string,
-    fixturePath: string,
-    spatialIrPath: string
+    fixturePath: string
 ): Promise<FixtureMetric> {
-    const document = resolveDocumentPaths(JSON.parse(fs.readFileSync(fixturePath, 'utf8')), fixturePath);
-    const spatialDocument = JSON.parse(fs.readFileSync(spatialIrPath, 'utf8'));
+    const rawDocument = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+    const document = resolveDocumentPaths(rawDocument, fixturePath);
+    const spatialDocument = transformAstSource(rawDocument, fixturePath).spatialDocument;
     const config = toLayoutConfig(document, false);
     const engineInstance = new LayoutEngine(config, runtime);
 
@@ -211,7 +211,6 @@ async function run(): Promise<void> {
         .filter((entry): entry is BenchmarkMode => entry === 'ast' || entry === 'spatial-ir');
     const modes = selectedModes.length > 0 ? Array.from(new Set(selectedModes)) : ['ast', 'spatial-ir'];
 
-    const fixturesDir = path.resolve(__dirname, 'fixtures', 'regression');
     const files = listAstFixtureNames()
         .sort((a, b) => a.localeCompare(b))
         .filter((file) => preset === 'watchlist' ? PERF_WATCHLIST.includes(file as typeof PERF_WATCHLIST[number]) : true)
@@ -232,10 +231,9 @@ async function run(): Promise<void> {
         const shouldRecord = runIndex >= warmupCount;
         for (const file of files) {
             const fixturePath = getAstFixturePath(file);
-            const spatialIrPath = path.join(fixturesDir, file.replace(/\.json$/i, '.spatial-ir.json'));
             for (const mode of modes) {
                 const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
-                const metric = await measureFixture(mode, runtime, file, fixturePath, spatialIrPath);
+                const metric = await measureFixture(mode, runtime, file, fixturePath);
                 if (!shouldRecord) continue;
                 rawMetrics.push(metric);
             }

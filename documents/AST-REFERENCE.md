@@ -1,31 +1,36 @@
 # VMPrint AST Reference
 
-This document is the complete reference for the **VMPrint document input format** - the JSON/object tree you construct and hand to the engine-facing VMPrint pipeline. It covers every supported node type, property, style field, and configuration option.
+This document is the reference for the public **VMPrint document input format**: the JSON/object tree you author and hand to the VMPrint pipeline.
+
+The AST is the canonical public source format. The engine internally normalizes it into a spatial runtime form, but callers work with the AST.
+
+For the current design audit and redesign notes, see [AST-SPATIAL-ALIGNMENT.md](c:\Users\cosmic\Projects\vmprint\documents\AST-SPATIAL-ALIGNMENT.md).
 
 ---
 
 ## 1. Pipeline Overview
 
-```
+```text
 Markdown string
   -> [remark / semantic.ts]
 SemanticDocument                (draft2final intermediate layer)
   -> [FormatHandler / FormatContext]
-DocumentInput / Element tree    <- you work here
+DocumentInput / Element tree    <- public authored source
   -> [normalize()]
 SpatialDocument / runtime config
   -> [LayoutEngine]
-Page[] of Box[]                 (flat, positioned output - not authored)
+Page[] of Box[]                 (flat, positioned output)
 ```
 
-Direct callers usually construct **`DocumentInput`**. The engine normalizes that canonical AST into its internal runtime form. The `SemanticDocument` layer is only relevant when using `draft2final`.
+Direct callers usually construct **`DocumentInput`**. The `SemanticDocument` layer is only relevant when using `draft2final`.
+
 ---
 
-## 2. `DocumentInput` — Root Object
+## 2. `DocumentInput`
 
 ```typescript
 interface DocumentInput {
-    documentVersion: '1.0';
+    documentVersion: '1.0' | '1.1';
     layout: LayoutConfig;
     fonts?: FontSources;
     styles: Partial<Record<string, ElementStyle>>;
@@ -38,20 +43,20 @@ interface DocumentInput {
 
 | Field | Required | Description |
 |---|---|---|
-| `documentVersion` | yes | Always `"1.0"` |
-| `layout` | yes | Page geometry, default typography — see §3 |
-| `fonts` | no | Font file sources keyed by weight/style — see §4 |
-| `styles` | yes | Named style table; keys are element `type` strings |
-| `elements` | yes | Top-level content elements |
-| `header` | no | Running page header — see §12 |
-| `footer` | no | Running page footer — see §12 |
-| `debug` | no | Enable engine debug output |
+| `documentVersion` | yes | `"1.1"` is the current authored surface. `"1.0"` remains supported for compatibility. |
+| `layout` | yes | Page geometry and default typography. |
+| `fonts` | no | Font file sources keyed by weight/style. |
+| `styles` | yes | Named style table; keys are element `type` strings. |
+| `elements` | yes | Top-level content elements. |
+| `header` | no | Running page header; see §15. |
+| `footer` | no | Running page footer; see §15. |
+| `debug` | no | Enable engine debug output. |
 
 ---
 
-## 3. `LayoutConfig` — Page Layout Settings
+## 3. `LayoutConfig`
 
-All numeric values are in **points** unless noted.
+All numeric values are in points unless noted.
 
 ```typescript
 interface LayoutConfig {
@@ -64,7 +69,6 @@ interface LayoutConfig {
 
     pageBackground?: string;
 
-    // Header/footer inset distances from the page edge
     headerInsetTop?: number;
     headerInsetBottom?: number;
     footerInsetTop?: number;
@@ -72,7 +76,6 @@ interface LayoutConfig {
 
     pageNumberStart?: number;
 
-    // Internationalisation defaults
     lang?: string;
     direction?: 'ltr' | 'rtl' | 'auto';
     hyphenation?: 'off' | 'auto' | 'soft';
@@ -83,7 +86,6 @@ interface LayoutConfig {
     justifyEngine?: 'legacy' | 'advanced';
     justifyStrategy?: 'auto' | 'space' | 'inter-character';
 
-    // Per-script optical scaling (multiplier, e.g. 0.88 for CJK)
     opticalScaling?: {
         enabled?: boolean;
         cjk?: number;
@@ -114,39 +116,59 @@ interface FontSources {
 }
 ```
 
-Values are file paths or embedded data URLs. The engine maps `fontWeight`/`fontStyle` combinations to the correct key at render time.
+Values are file paths or embedded data URLs.
 
 ---
 
-## 5. `Element` — Core AST Node
+## 5. `Element`
 
 ```typescript
 interface Element {
     type: string;
     content: string;
     children?: Element[];
+
+    image?: EmbeddedImagePayload;
+    table?: TableLayoutOptions;
+
+    slots?: StripSlot[];
     columns?: number;
     gutter?: number;
     balance?: boolean;
+    zones?: ZoneDefinition[];
+
+    zoneLayout?: ZoneLayoutOptions;
+    stripLayout?: StripLayoutOptions;
+    dropCap?: DropCapSpec;
+    columnSpan?: 'all' | number;
+
     properties?: ElementProperties;
 }
 ```
 
 | Field | Description |
 |---|---|
-| `type` | Identifies the element. Used to look up the base style from `styles`. Open string — not an enum. |
-| `content` | Flat text for leaf nodes. Use an empty string `""` for containers. |
-| `children` | Sub-elements (structural children) or inline runs. Mutually exclusive with a populated `content`. |
-| `columns` | **`story` only.** Number of columns (default `1`). |
-| `gutter` | **`story` only.** Inter-column gap in points. |
-| `balance` | **`story` only.** Balance column heights (CSS `column-fill: balance` semantics). |
-| `properties` | Per-element overrides — see §6. |
+| `type` | Identifies the element. Used to look up the base style from `styles`. |
+| `content` | Flat text for leaf nodes. Use `""` for containers. |
+| `children` | Structural children or inline runs. |
+| `image` | Preferred on AST `1.1+` for image-bearing nodes. |
+| `table` | Preferred on AST `1.1+` on `type: "table"` elements. |
+| `slots` | `strip` only. One-row horizontal composition slots. |
+| `columns` | `story` only. Number of columns. |
+| `gutter` | `story` only. Inter-column gap in points. |
+| `balance` | `story` only. Balance column heights. |
+| `zones` | `zone-map` only. Independent authored regions. |
+| `zoneLayout` | Preferred on AST `1.1+` on `type: "zone-map"` elements. |
+| `stripLayout` | Preferred on AST `1.1+` on `type: "strip"` elements. |
+| `dropCap` | Preferred on AST `1.1+` for paragraph-like elements. |
+| `columnSpan` | Preferred on AST `1.1+` for children of multi-column `story` elements. |
+| `properties` | Per-element overrides; see §6. |
 
-**Style resolution order:** `styles[element.type]` (base) → `properties.style` (override).
+Style resolution order: `styles[element.type]` -> `properties.style`.
 
 ---
 
-## 6. `ElementProperties` — Per-Element Properties
+## 6. `ElementProperties`
 
 ```typescript
 interface ElementProperties {
@@ -154,6 +176,8 @@ interface ElementProperties {
 
     image?: EmbeddedImagePayload;
     table?: TableLayoutOptions;
+    zones?: ZoneLayoutOptions;
+    strip?: StripLayoutOptions;
     colSpan?: number;
     rowSpan?: number;
 
@@ -175,175 +199,95 @@ interface ElementProperties {
         footer?: PageRegionContent | null;
     };
 
-    // Provenance (set by draft2final, ignored by engine)
     sourceRange?: { lineStart: number; colStart: number; lineEnd: number; colEnd: number };
     sourceSyntax?: string;
     language?: string;
 }
 ```
 
+AST `1.1` keeps `properties` for overrides, metadata, and cross-cutting controls, but promotes structural payloads onto the element itself. Legacy AST `1.0` placements such as `properties.image`, `properties.table`, `properties.zones`, `properties.strip`, `properties.dropCap`, and `properties.columnSpan` are still accepted for compatibility.
+
 | Property | Applies to | Description |
 |---|---|---|
-| `style` | any | Inline style overrides (§7). |
-| `image` | `"image"`, block images | Image payload — see §9. |
-| `table` | `"table"` | Table layout options — see §10. |
-| `colSpan` | `"table-cell"` | Number of columns this cell spans. |
-| `rowSpan` | `"table-cell"` | Number of rows this cell spans. |
+| `style` | any | Inline style overrides. |
+| `image` | legacy `1.0` image-bearing nodes | Legacy image payload placement; prefer `element.image` in `1.1`. |
+| `table` | legacy `1.0` `table` | Legacy table layout placement; prefer `element.table` in `1.1`. |
+| `zones` | legacy `1.0` `zone-map` | Legacy zone-map layout placement; prefer `element.zoneLayout` in `1.1`. |
+| `strip` | legacy `1.0` `strip` | Legacy strip layout placement; prefer `element.stripLayout` in `1.1`. |
+| `colSpan` | `table-cell` | Number of columns this cell spans. |
+| `rowSpan` | `table-cell` | Number of rows this cell spans. |
 | `sourceId` | any | Caller-assigned stable ID surfaced in `BoxMeta`. |
-| `linkTarget` | inline `"text"`, `"inline"` | Hyperlink URL. |
-| `semanticRole` | `"table-row"` | `"header"` marks the row as a header row. |
-| `dropCap` | paragraph-like | Drop-cap configuration — see §11. |
-| `layout` | children of `"story"` | Float / absolute positioning — see §12. |
-| `columnSpan` | children of multi-column `"story"` | `"all"` or a number ≥ 2 — element spans the full story width, breaking column flow above and resuming from column 1 below. |
+| `linkTarget` | inline `text`, `inline` | Hyperlink URL. |
+| `semanticRole` | `table-row` | `"header"` marks the row as a header row. |
+| `dropCap` | legacy `1.0` paragraph-like | Legacy drop-cap placement; prefer `element.dropCap` in `1.1`. |
+| `layout` | children of `story` | Float / absolute positioning; see §13. |
+| `columnSpan` | legacy `1.0` children of multi-column `story` | Legacy column-span placement; prefer `element.columnSpan` in `1.1`. |
 | `reflowKey` | any | Explicit cache key for the reflow cache. |
 | `keepWithNext` | any | Keep this element on the same page as the one after it. |
-| `marginTop` | any | Top margin shorthand override (points). |
-| `marginBottom` | any | Bottom margin shorthand override (points). |
-| `simulationContinuation` | any | Cross-page split markers — see §14. |
-| `pageOverrides` | any | Override or suppress the header/footer for this element's pages. Set to `null` to suppress. |
-| `language` | code blocks | Language hint (e.g. `"typescript"`). |
+| `marginTop` | any | Top margin shorthand override. |
+| `marginBottom` | any | Bottom margin shorthand override. |
+| `simulationContinuation` | any | Cross-page split markers; see §14. |
+| `pageOverrides` | any | Override or suppress the header/footer for this element's pages. |
+| `language` | code blocks | Language hint such as `"typescript"`. |
 
 ---
 
-## 7. `ElementStyle` — Complete Style Properties
+## 7. `ElementStyle`
 
-All numeric values are in **points** unless noted. All fields are optional.
+All fields are optional. Common fields include:
 
-### Typography
+- typography: `fontFamily`, `fontSize`, `fontWeight`, `fontStyle`, `textAlign`, `letterSpacing`, `lineHeight`, `textIndent`, `color`, `opacity`
+- internationalisation: `lang`, `direction`, `hyphenation`, `hyphenateCaps`, `hyphenMinWordLength`, `hyphenMinPrefix`, `hyphenMinSuffix`, `justifyEngine`, `justifyStrategy`
+- box model: `marginTop`, `marginBottom`, `marginLeft`, `marginRight`, `padding*`, `width`, `height`, `backgroundColor`, `zIndex`
+- borders: `borderWidth`, `borderColor`, `borderRadius`, `borderTopWidth`, `borderBottomWidth`, `borderLeftWidth`, `borderRightWidth`, `borderTopColor`, `borderBottomColor`, `borderLeftColor`, `borderRightColor`
+- inline object alignment: `verticalAlign`, `baselineShift`, `inlineMarginLeft`, `inlineMarginRight`, `inlineOpticalInsetTop`, `inlineOpticalInsetRight`, `inlineOpticalInsetBottom`, `inlineOpticalInsetLeft`
+- pagination control: `pageBreakBefore`, `keepWithNext`, `allowLineSplit`, `orphans`, `widows`, `overflowPolicy`
 
-| Property | Type | Description |
-|---|---|---|
-| `fontFamily` | `string` | Font family name. |
-| `fontSize` | `number` | Font size in points. |
-| `fontWeight` | `number \| string` | e.g. `400`, `700`, `"bold"`. |
-| `fontStyle` | `string` | `"normal"` or `"italic"`. |
-| `textAlign` | `'left' \| 'right' \| 'center' \| 'justify'` | Horizontal alignment. |
-| `letterSpacing` | `number` | Extra space between characters in points. |
-| `lineHeight` | `number` | Line-height multiplier (e.g. `1.5`). |
-| `textIndent` | `number` | First-line indent in points. |
-| `color` | `string` | Text color (CSS hex or named). |
-| `opacity` | `number` | Opacity `0`–`1`. |
-
-### Internationalisation
-
-| Property | Type | Description |
-|---|---|---|
-| `lang` | `string` | BCP 47 language tag (e.g. `"en"`, `"ar"`, `"ja"`). |
-| `direction` | `'ltr' \| 'rtl' \| 'auto'` | Text direction. |
-| `hyphenation` | `'off' \| 'auto' \| 'soft'` | Hyphenation mode. `"soft"` respects only soft-hyphen characters. |
-| `hyphenateCaps` | `boolean` | Allow hyphenation of all-caps words. |
-| `hyphenMinWordLength` | `number` | Minimum word length to hyphenate. |
-| `hyphenMinPrefix` | `number` | Minimum characters before hyphenation point. |
-| `hyphenMinSuffix` | `number` | Minimum characters after hyphenation point. |
-| `justifyEngine` | `'legacy' \| 'advanced'` | Justification algorithm. |
-| `justifyStrategy` | `'auto' \| 'space' \| 'inter-character'` | Where extra space is distributed when justifying. |
-
-### Box Model
-
-| Property | Type | Description |
-|---|---|---|
-| `marginTop` | `number` | Top margin. |
-| `marginBottom` | `number` | Bottom margin. |
-| `marginLeft` | `number` | Left margin. |
-| `marginRight` | `number` | Right margin. |
-| `padding` | `number` | Uniform padding (shorthand). |
-| `paddingTop` | `number` | Top padding. |
-| `paddingBottom` | `number` | Bottom padding. |
-| `paddingLeft` | `number` | Left padding. |
-| `paddingRight` | `number` | Right padding. |
-| `width` | `number` | Explicit width override. |
-| `height` | `number` | Explicit height override. |
-| `backgroundColor` | `string` | Background fill color. |
-| `zIndex` | `number` | Paint order for overlapping boxes. |
-
-### Borders
-
-| Property | Type | Description |
-|---|---|---|
-| `borderWidth` | `number` | Uniform border width (shorthand). |
-| `borderColor` | `string` | Uniform border color (shorthand). |
-| `borderRadius` | `number` | Corner radius. |
-| `borderTopWidth` | `number` | Top border width. |
-| `borderBottomWidth` | `number` | Bottom border width. |
-| `borderLeftWidth` | `number` | Left border width. |
-| `borderRightWidth` | `number` | Right border width. |
-| `borderTopColor` | `string` | Top border color. |
-| `borderBottomColor` | `string` | Bottom border color. |
-| `borderLeftColor` | `string` | Left border color. |
-| `borderRightColor` | `string` | Right border color. |
-
-### Inline Object Alignment
-
-These apply to inline images and `inline-box` elements:
-
-| Property | Type | Description |
-|---|---|---|
-| `verticalAlign` | `'baseline' \| 'text-top' \| 'middle' \| 'text-bottom' \| 'bottom'` | Vertical alignment relative to the text line. |
-| `baselineShift` | `number` | Shift up (positive) or down (negative) from baseline. |
-| `inlineMarginLeft` | `number` | Left margin when used inline. |
-| `inlineMarginRight` | `number` | Right margin when used inline. |
-| `inlineOpticalInsetTop` | `number` | Optical correction — shrink the top hit-area inward. |
-| `inlineOpticalInsetRight` | `number` | Optical correction — right. |
-| `inlineOpticalInsetBottom` | `number` | Optical correction — bottom. |
-| `inlineOpticalInsetLeft` | `number` | Optical correction — left. |
-
-### simulation Control
-
-| Property | Type | Description |
-|---|---|---|
-| `pageBreakBefore` | `boolean` | Force a page break before this element. |
-| `keepWithNext` | `boolean` | Keep this element on the same page as the next one. |
-| `allowLineSplit` | `boolean` | Allow a paragraph to be split across pages at a line boundary. |
-| `orphans` | `number` | Minimum lines to leave at the bottom of a page before a split. |
-| `widows` | `number` | Minimum lines to carry to the top of the continuation page. |
-| `overflowPolicy` | `'clip' \| 'move-whole' \| 'error'` | What to do when a box overflows the page. |
+See [engine/src/engine/types.ts](c:\Users\cosmic\Projects\vmprint\engine\src\engine\types.ts) for the complete shape.
 
 ---
 
 ## 8. Reserved Structural `type` Values
 
-The engine treats these type strings specially:
-
 | `type` | Purpose |
 |---|---|
-| `"story"` | Multi-column DTP float zone. Uses `columns`, `gutter`, `balance`. Children may carry `properties.layout`. |
-| `"table"` | Table container. Children must be `"table-row"`. Requires `properties.table`. |
-| `"table-row"` | Table row. Children must be `"table-cell"`. Set `properties.semanticRole: "header"` for header rows. |
-| `"table-cell"` | Table cell. Either `content` (leaf) or `children` (inline runs). Supports `properties.colSpan` and `properties.rowSpan`. |
-| `"zone-map"` | Independent-region layout. Each entry in `zones[]` is a bounded column that runs its own non-paginating layout pass. Column widths and gap are set via `properties.zones`. |
+| `story` | Multi-column flowing content area. Uses `columns`, `gutter`, `balance`. Children may carry `properties.layout`. |
+| `table` | Table container. Children must be `table-row`. Uses `element.table` in `1.1` and legacy `properties.table` in `1.0`. |
+| `table-row` | Table row. Children must be `table-cell`. |
+| `table-cell` | Table cell. Supports `properties.colSpan` and `properties.rowSpan`. |
+| `strip` | One-row horizontal composition band. Uses `slots[]` plus `element.stripLayout` in `1.1` and legacy `properties.strip` in `1.0`. |
+| `zone-map` | Independent-region layout. Uses `zones[]` plus `element.zoneLayout` in `1.1` and legacy `properties.zones` in `1.0`. |
 
-All other `type` strings are user-defined and are used solely for style lookup.
+All other `type` strings are user-defined and are used for style lookup.
 
 ---
 
 ## 9. Inline Element Types
 
-These types are used as `children` of paragraph-like elements:
-
 | `type` | Description |
 |---|---|
-| `"text"` | Plain text run. `content` holds the string. Apply `properties.style` for run-level styling. |
-| `"inline"` | Styled wrapper. `children` holds nested inline elements. `properties.style` is applied to all descendants. |
-| `"image"` | Inline image. `properties.image` holds the payload. Use `properties.style.{width, height, verticalAlign, baselineShift, inlineMarginLeft, inlineMarginRight}` to control sizing and alignment. |
-| `"inline-box"` | Inline bordered widget. `content` is the label text. `properties.style` controls padding, borders, and colors. |
+| `text` | Plain text run. |
+| `inline` | Styled inline wrapper. |
+| `image` | Inline image. Prefer `element.image` in AST `1.1`; `properties.image` remains valid in `1.0`. |
+| `inline-box` | Inline bordered widget. |
 
 ---
 
-## 10. Image Payload (`properties.image`)
-
-Used for both block and inline images:
+## 10. Image Payload (`element.image`)
 
 ```typescript
 interface EmbeddedImagePayload {
-    data: string;           // Base-64 encoded image bytes
-    mimeType?: string;      // "image/png" | "image/jpeg"
+    data: string;
+    mimeType?: string;
     fit?: 'contain' | 'fill';
 }
 ```
 
+Used for both block and inline images.
+
 ---
 
-## 11. Table Configuration (`properties.table`)
+## 11. Table Configuration (`element.table`)
 
 ```typescript
 interface TableLayoutOptions {
@@ -357,23 +301,13 @@ interface TableLayoutOptions {
 }
 ```
 
-| Field | Description |
-|---|---|
-| `headerRows` | Number of header rows (default `0`). |
-| `repeatHeader` | Repeat header rows when the table spans multiple pages. |
-| `columnGap` | Gap between columns in points. |
-| `rowGap` | Gap between rows in points. |
-| `columns` | Per-column sizing specs — see below. |
-| `cellStyle` | Style applied to all body cells. |
-| `headerCellStyle` | Style applied to header cells. |
-
 ### `TableColumnSizing`
 
 ```typescript
 interface TableColumnSizing {
     mode?: 'fixed' | 'auto' | 'flex';
-    value?: number;     // fixed: width in points
-    fr?: number;        // flex: fractional unit weight
+    value?: number;
+    fr?: number;
     min?: number;
     max?: number;
     basis?: number;
@@ -384,31 +318,63 @@ interface TableColumnSizing {
 }
 ```
 
-| `mode` | Behaviour |
-|---|---|
-| `"fixed"` | Column is exactly `value` points wide. |
-| `"auto"` | Column sizes to its content. |
-| `"flex"` | Column takes a share of remaining space proportional to `fr`. |
+---
+
+## 11a. Strip (`type: "strip"`)
+
+A `strip` is a compact one-row horizontal composition band for bylines, folio lines, masthead sub-rows, and similar left/center/right compositions.
+
+```json
+{
+  "type": "strip",
+  "stripLayout": {
+    "tracks": [
+      { "mode": "flex", "fr": 1 },
+      { "mode": "fixed", "value": 32 },
+      { "mode": "flex", "fr": 1 }
+    ],
+    "gap": 8
+  },
+  "slots": [
+    { "id": "left", "elements": [{ "type": "folio-left", "content": "Work Title" }] },
+    { "id": "center", "elements": [{ "type": "folio-center", "content": "{pageNumber}" }] },
+    { "id": "right", "elements": [{ "type": "folio-right", "content": "Chapter Title" }] }
+  ]
+}
+```
+
+```typescript
+interface StripLayoutOptions {
+    tracks?: TableColumnSizing[];
+    gap?: number;
+}
+
+interface StripSlot {
+    id?: string;
+    elements: Element[];
+    style?: Record<string, any>;
+}
+```
+
+Use `strip` for lightweight composition, not tabular data.
 
 ---
 
-## 11a. Zone Map (`type: "zone-map"`)
+## 11b. Zone Map (`type: "zone-map"`)
 
-A `zone-map` element divides a horizontal strip of the page into independent layout regions (zones). Each zone runs its own non-paginating layout pass — content placed inside a zone flows independently, with no knowledge of adjacent zones. The `zone-map` as a whole always moves to the next page if it cannot fit on the current one (V1: move-whole semantics).
-
-### Element structure
+A `zone-map` divides a horizontal strip of the page into independent layout regions.
 
 ```json
 {
   "type": "zone-map",
+  "zoneLayout": {
+    "columns": [
+      { "mode": "flex", "fr": 2 },
+      { "mode": "flex", "fr": 1 }
+    ],
+    "gap": 16
+  },
   "properties": {
-    "zones": {
-      "columns": [
-        { "mode": "flex", "fr": 2 },
-        { "mode": "flex", "fr": 1 }
-      ],
-      "gap": 16
-    },
     "style": {
       "marginTop": 12,
       "marginBottom": 12
@@ -419,51 +385,38 @@ A `zone-map` element divides a horizontal strip of the page into independent lay
       "id": "main",
       "elements": [
         { "type": "h2", "content": "Main Area" },
-        { "type": "p",  "content": "Body text in the left zone." }
+        { "type": "p", "content": "Body text in the left zone." }
       ]
     },
     {
       "id": "sidebar",
       "elements": [
         { "type": "sidebar-label", "content": "SIDEBAR" },
-        { "type": "sidebar-body",  "content": "Sidebar content." }
+        { "type": "sidebar-body", "content": "Sidebar content." }
       ]
     }
   ]
 }
 ```
 
-### `properties.zones` — `ZoneLayoutOptions`
-
 ```typescript
 interface ZoneLayoutOptions {
-    columns?: TableColumnSizing[];   // Per-column track definitions (same as tables)
-    gap?: number;                    // Gap between columns in points (default 0)
+    columns?: TableColumnSizing[];
+    gap?: number;
 }
-```
 
-Column widths accept the same `TableColumnSizing` modes as tables (`fixed`, `auto`, `flex`). When `columns` is omitted, all zones receive equal widths.
-
-### `zones[]` — `ZoneDefinition`
-
-```typescript
 interface ZoneDefinition {
-    id?: string;           // Optional identifier for debugging
-    elements: Element[];   // Block-level elements for this zone
-    style?: Record<string, any>; // Reserved for future per-zone style overrides
+    id?: string;
+    elements: Element[];
+    style?: Record<string, any>;
 }
 ```
 
-- `zones[]` entries are **not** DOM children. They are region descriptors — each carries a list of `elements` that the engine lays out independently inside the zone's bounded column.
-- The height of the `zone-map` in the document flow equals the tallest zone (max of all zone heights).
-
-### Margin support
-
-`properties.style.marginTop` and `properties.style.marginBottom` are respected and apply to the `zone-map` as a block. Other style fields (e.g. `backgroundColor`) are reserved for future releases.
+`zones[]` entries are region descriptors, not DOM children.
 
 ---
 
-## 12. Drop Cap (`properties.dropCap`)
+## 12. Drop Cap (`element.dropCap`)
 
 ```typescript
 interface DropCapSpec {
@@ -475,125 +428,44 @@ interface DropCapSpec {
 }
 ```
 
-| Field | Default | Description |
-|---|---|---|
-| `enabled` | — | Must be `true` to activate. |
-| `lines` | `3` | Number of body-text lines the enlarged character spans. |
-| `characters` | `1` | Number of leading characters to enlarge. |
-| `gap` | — | Horizontal gap in points between the enlarged character and the body text. |
-| `characterStyle` | — | Style overrides applied only to the enlarged character(s). |
-
 ---
 
 ## 13. Story Layout Directives (`properties.layout`)
 
-Declared on **children of a `"story"` element** to float or absolutely position them relative to the story's content area.
+Declared on children of a `story` element to float or absolutely position them relative to the story's content area.
 
 ```typescript
 interface StoryLayoutDirective {
     mode: 'float' | 'story-absolute';
-
-    // story-absolute only
     x?: number;
     y?: number;
-
-    // float only
     align?: 'left' | 'right' | 'center';
-
-    // both modes
     wrap?: 'around' | 'top-bottom' | 'none';
     gap?: number;
 }
 ```
 
-| Field | Description |
-|---|---|
-| `mode` | `"float"` — anchored to a margin; `"story-absolute"` — placed at explicit `x`/`y`. |
-| `x` | Absolute X offset from the story content-area left edge (points). `story-absolute` only. |
-| `y` | Absolute Y offset from the story origin (points). `story-absolute` only. |
-| `align` | Which margin to anchor the float to: `"left"`, `"right"`, or `"center"`. `float` only. |
-| `wrap` | How flowing text responds to the obstacle: `"around"` (both sides), `"top-bottom"` (no side wrap), `"none"` (no wrap at all). |
-| `gap` | Clearance in points around the obstacle's bounding box. |
-
-### Float eligibility
-
-**Image elements** (`properties.image` present) use the image's intrinsic dimensions as the obstacle size when `style.width`/`style.height` are omitted.
-
-**Any other block element** can also be floated by setting `layout.mode: "float"`. In this case `properties.style.width` **and** `properties.style.height` are required — there are no intrinsic dimensions to fall back on. If either is missing the element falls through to normal block layout.
-
-```json
-{
-  "type": "pull-quote",
-  "content": "Text wraps around any block — not just images.",
-  "properties": {
-    "style": { "width": 120, "height": 60 },
-    "layout": { "mode": "float", "align": "left", "wrap": "around", "gap": 8 }
-  }
-}
-```
-
-### `story-absolute` eligibility
-
-`mode: "story-absolute"` is currently restricted to image elements.
+Any block element can float if it carries explicit obstacle size through style width/height. `story-absolute` is currently restricted to image elements.
 
 ---
 
-## 13a. Column Span (`properties.columnSpan`)
+## 13a. Column Span (`element.columnSpan`)
 
-Declared on **children of a multi-column `"story"` element**. An element with `columnSpan` set breaks the column flow, is laid out at the full story width, then column flow resumes from column 1 below it.
+Declared on children of a multi-column `story`. A spanned element breaks the column flow, is laid out at full story width, then flow resumes below.
 
 ```typescript
-columnSpan?: 'all' | number   // 'all' or any integer ≥ 2
+columnSpan?: 'all' | number
 ```
-
-- `"all"` — spans every column (recommended).
-- A number ≥ 2 — treated as full-span in the current implementation (partial column spans are not yet supported).
-- Ignored in single-column stories.
-
-```json
-{
-  "type": "section-break",
-  "content": "Mid-Story Section Title",
-  "properties": {
-    "columnSpan": "all"
-  }
-}
-```
-
-Any block element type can carry `columnSpan` — headings, tables, nested stories, plain paragraphs. The element is laid out at the full story width using the same packager dispatch as non-float blocks.
 
 ---
 
 ## 14. Simulation Continuation (`properties.simulationContinuation`)
 
-Controls marker elements inserted automatically around page-split points.
-
-```typescript
-interface SimulationContinuationSpec {
-    enabled?: boolean;
-    markerAfterSplit?: {
-        type: string;
-        content: string;
-        style?: Partial<ElementStyle>;
-        properties?: Partial<ElementProperties>;
-    };
-    markerBeforeContinuation?: {
-        type: string;
-        content: string;
-        style?: Partial<ElementStyle>;
-        properties?: Partial<ElementProperties>;
-    };
-    markersBeforeContinuation?: Array<{
-        type: string;
-        content: string;
-        properties?: Partial<ElementProperties>;
-    }>;
-}
-```
+Controls marker elements inserted automatically around page splits.
 
 ---
 
-## 15. Page Regions (Headers & Footers)
+## 15. Page Regions
 
 ```typescript
 interface PageRegionDefinition {
@@ -609,8 +481,7 @@ interface PageRegionContent {
 }
 ```
 
-- The string `"{pageNumber}"` anywhere inside a `content` field is substituted with the current page number.
-- Use `properties.pageOverrides: { header: null, footer: null }` on an element to suppress the header/footer on that element's pages.
+`"{pageNumber}"` tokens inside `content` are substituted during finalization.
 
 ---
 
@@ -618,69 +489,20 @@ interface PageRegionContent {
 
 | Parent `type` | Valid children |
 |---|---|
-| `"story"` | Any block `Element`. Children may carry `properties.layout`. |
-| `"table"` | `"table-row"` elements only. |
-| `"table-row"` | `"table-cell"` elements only. |
-| `"table-cell"` | Either `content` (leaf text) or inline `children` (`"text"`, `"inline"`, `"image"`, `"inline-box"`). |
-| Any paragraph-like | Inline `children`: `"text"`, `"inline"`, `"image"`, `"inline-box"`. |
-| Page region | Any `Element` (same rules as body elements). |
+| `story` | Any block `Element`. Children may carry `properties.layout`. |
+| `table` | `table-row` only. |
+| `table-row` | `table-cell` only. |
+| `table-cell` | Either `content` or inline `children`. |
+| paragraph-like | Inline `children`: `text`, `inline`, `image`, `inline-box`. |
+| page region | Any `Element`. |
 
 ---
 
-## 17. Transmuter-Emitted Type Names (`draft2final`)
-
-When using `draft2final`, transmuters emit elements with these `type` strings into `DocumentInput.elements`. These are the keys you target in your `styles` table when theming a transmuter output.
-
-### Markdown / Academic / Literature / Novel
-
-| `type` | Source |
-|---|---|
-| `heading-1` … `heading-6` | `<h1>`–`<h6>` |
-| `subheading` | Paragraph starting with `::` following an `h1` |
-| `paragraph` | `<p>` |
-| `blockquote` | `<blockquote>` |
-| `code-block` | Fenced code block |
-| `thematic-break` | `<hr>` |
-| `definition-term`, `definition-desc` | `<dl>/<dt>/<dd>` |
-| `list-item-unordered-0`, `list-item-ordered-0`, `list-item-continuation-1` | Lists |
-| `table` → `table-row` → `table-cell` | `<table>` |
-| `image` | Standalone block image |
-| `references-heading` | Auto-generated references section heading |
-| `footnotes-heading` | Auto-generated footnotes section heading |
-
-### Manuscript Format
-
-| `type` | Description |
-|---|---|
-| `cover-title`, `cover-line` | Cover page elements |
-| `chapter-heading` | From `<h2>` |
-| `scene-break` | From `<h3>`–`<h6>` or `<hr>` |
-| `paragraph`, `paragraph-first` | Body paragraphs |
-| `blockquote`, `poem`, `lyrics`, `literary-quote`, `epigraph`, `epigraph-attribution` | Quoted material variants |
-| `thematic-break` | Scene separator |
-| `notes-heading`, `notes-item` | Notes section |
-
-### Screenplay Format
-
-| `type` | Description |
-|---|---|
-| `title`, `title-meta`, `title-contact` | Title page elements |
-| `scene-heading` | `INT.`/`EXT.` sluglines |
-| `character`, `parenthetical`, `dialogue` | Standard speech block |
-| `character-dual-left`, `parenthetical-dual-left`, `dialogue-dual-left` | Left column of dual dialogue |
-| `character-dual-right`, `parenthetical-dual-right`, `dialogue-dual-right` | Right column of dual dialogue |
-| `more` | Page-turn continuation marker (`(MORE)`) |
-| `transition` | e.g. `CUT TO:` |
-| `action` | Standard action lines |
-| `beat` | From `<hr>` |
-
----
-
-## 18. Minimal Complete Example
+## 17. Minimal Example
 
 ```json
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": {
     "pageSize": "LETTER",
     "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
@@ -689,7 +511,7 @@ When using `draft2final`, transmuters emit elements with these `type` strings in
     "lineHeight": 1.4
   },
   "styles": {
-    "h1":        { "fontSize": 24, "fontWeight": "bold", "marginBottom": 12, "keepWithNext": true },
+    "h1": { "fontSize": 24, "fontWeight": "bold", "marginBottom": 12, "keepWithNext": true },
     "paragraph": { "marginBottom": 10, "allowLineSplit": true, "orphans": 2, "widows": 2 }
   },
   "elements": [
@@ -720,16 +542,14 @@ When using `draft2final`, transmuters emit elements with these `type` strings in
 {
   "type": "table",
   "content": "",
-  "properties": {
-    "table": {
-      "headerRows": 1,
-      "repeatHeader": true,
-      "columns": [
-        { "mode": "flex", "fr": 2 },
-        { "mode": "flex", "fr": 1 },
-        { "mode": "fixed", "value": 60 }
-      ]
-    }
+  "table": {
+    "headerRows": 1,
+    "repeatHeader": true,
+    "columns": [
+      { "mode": "flex", "fr": 2 },
+      { "mode": "flex", "fr": 1 },
+      { "mode": "fixed", "value": 60 }
+    ]
   },
   "children": [
     {
@@ -740,15 +560,6 @@ When using `draft2final`, transmuters emit elements with these `type` strings in
         { "type": "table-cell", "content": "Name" },
         { "type": "table-cell", "content": "Status" },
         { "type": "table-cell", "content": "Score" }
-      ]
-    },
-    {
-      "type": "table-row",
-      "content": "",
-      "children": [
-        { "type": "table-cell", "content": "Alice" },
-        { "type": "table-cell", "content": "Active" },
-        { "type": "table-cell", "content": "98" }
       ]
     }
   ]
@@ -766,10 +577,10 @@ When using `draft2final`, transmuters emit elements with these `type` strings in
     {
       "type": "image",
       "content": "",
+      "image": { "data": "<base64>", "mimeType": "image/png", "fit": "contain" },
       "properties": {
         "layout": { "mode": "float", "align": "right", "wrap": "around", "gap": 8 },
-        "style": { "width": 120, "height": 90 },
-        "image": { "data": "<base64>", "mimeType": "image/png", "fit": "contain" }
+        "style": { "width": 120, "height": 90 }
       }
     },
     { "type": "paragraph", "content": "Text flows around the floated image." }
@@ -779,18 +590,17 @@ When using `draft2final`, transmuters emit elements with these `type` strings in
 
 ---
 
-## 19. Key Source Files
+## 18. Key Source Files
 
 | What | Where |
 |---|---|
-| All type definitions | [engine/src/engine/types.ts](../engine/src/engine/types.ts) |
-| AST normalization | [engine/src/engine/document.ts](../engine/src/engine/document.ts) |
-| AST -> Spatial IR fixture normalization | [engine/tests/harness/spatialize.ts](../engine/tests/harness/spatialize.ts) |
-| Architecture narrative | [documents/ARCHITECTURE.md](ARCHITECTURE.md) |
-| Header/footer details | [documents/HEADER-FOOTER.md](HEADER-FOOTER.md) |
-| Overlay system | [documents/OVERLAY.md](OVERLAY.md) |
-| Standard fonts | [documents/STANDARD-FONTS.md](STANDARD-FONTS.md) |
-| Markdown compilation core | [markdown-core/src/index.ts](../markdown-core/src/index.ts) |
-| Transmuter implementations | [transmuters/](../transmuters/) |
-| Source transformer implementations | [source-transformers/](../source-transformers/) |
-| Regression fixtures | [engine/tests/fixtures/](../engine/tests/fixtures/) |
+| Type definitions | [engine/src/engine/types.ts](c:\Users\cosmic\Projects\vmprint\engine\src\engine\types.ts) |
+| AST normalization | [engine/src/engine/document.ts](c:\Users\cosmic\Projects\vmprint\engine\src\engine\document.ts) |
+| Spatial fixture normalization helper | [engine/tests/harness/spatialize.ts](c:\Users\cosmic\Projects\vmprint\engine\tests\harness\spatialize.ts) |
+| Architecture narrative | [documents/ARCHITECTURE.md](c:\Users\cosmic\Projects\vmprint\documents\ARCHITECTURE.md) |
+| Header/footer details | [documents/HEADER-FOOTER.md](c:\Users\cosmic\Projects\vmprint\documents\HEADER-FOOTER.md) |
+| Overlay system | [documents/OVERLAY.md](c:\Users\cosmic\Projects\vmprint\documents\OVERLAY.md) |
+| Standard fonts | [documents/STANDARD-FONTS.md](c:\Users\cosmic\Projects\vmprint\documents\STANDARD-FONTS.md) |
+| Markdown compilation core | [markdown-core/src/index.ts](c:\Users\cosmic\Projects\vmprint\markdown-core\src\index.ts) |
+| Transmuters | [transmuters](c:\Users\cosmic\Projects\vmprint\transmuters) |
+| Regression fixtures | [engine/tests/fixtures](c:\Users\cosmic\Projects\vmprint\engine\tests\fixtures) |

@@ -1,5 +1,5 @@
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": {
     "pageSize": "LETTER",
     "margins": {
@@ -132,7 +132,7 @@
     },
     {
       "type": "p",
-      "content": "This justified paragraph mixes English, \u4e2d\u6587\u7247\u6bb5, \u65e5\u672c\u8a9e, \ud55c\uad6d\uc5b4, \u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22, and \u0627\u0644\u0639\u0631\u0628\u064a\u0629 with punctuation to validate spacing expansion boundaries in advanced justify mode.",
+      "content": "This justified paragraph mixes English, 中文片段, 日本語, 한국어, ภาษาไทย, and العربية with punctuation to validate spacing expansion boundaries in advanced justify mode.",
       "properties": {
         "style": {
           "width": 340,
@@ -164,7 +164,7 @@
     },
     {
       "type": "p",
-      "content": "extra\u00ADordinaryarchitectures extra\u00ADordinaryarchitectures",
+      "content": "extra­ordinaryarchitectures extra­ordinaryarchitectures",
       "properties": {
         "style": {
           "width": 120,
@@ -180,7 +180,7 @@
     },
     {
       "type": "p",
-      "content": "\u0647\u0630\u0647 \u0641\u0642\u0631\u0629 \u0628\u0627\u062A\u062C\u0627\u0647 \u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 \u0625\u0644\u0649 \u0627\u0644\u064A\u0633\u0627\u0631 \u0644\u0627\u062E\u062A\u0628\u0627\u0631 \u062A\u062F\u0641\u0642 \u0627\u0644\u0639\u0631\u0636 2026 \u0645\u0639 English tokens \u0641\u064A \u0627\u0644\u0633\u0637\u0631 \u0646\u0641\u0633\u0647.",
+      "content": "هذه فقرة باتجاه من اليمين إلى اليسار لاختبار تدفق العرض 2026 مع English tokens في السطر نفسه.",
       "properties": {
         "style": {
           "width": 260,
@@ -198,7 +198,7 @@
     },
     {
       "type": "p",
-      "content": "English prefix 123 then \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0645\u0631\u062d\u0628\u0627 \u0628\u0627\u0644\u0639\u0627\u0644\u0645 then back to English suffix for auto direction verification.",
+      "content": "English prefix 123 then العربية مرحبا بالعالم then back to English suffix for auto direction verification.",
       "properties": {
         "style": {
           "width": 320,
@@ -211,4 +211,3 @@
     }
   ]
 }
-

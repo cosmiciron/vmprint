@@ -346,7 +346,7 @@ function testDocumentContractNormalization(): void {
                     styles: {},
                     elements: []
                 } as any, 'inline-doc'),
-                /must set "documentVersion" to "1\.0"/
+                /must set "documentVersion" to one of: 1\.0, 1\.1/
             );
         }
     );
@@ -619,10 +619,46 @@ function testEmbeddedImageContract(): void {
 
     check(
         'embedded image contract acceptance',
-        'type=image with properties.image payload is accepted by strict contract validation',
+        'type=image with top-level image payload is accepted by strict contract validation in AST 1.1',
         () => {
             const resolved = resolveDocumentPaths({
                 documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: 'A4',
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                },
+                styles: {
+                    image: { width: 40 }
+                },
+                elements: [
+                    {
+                        type: 'image',
+                        content: '',
+                        image: {
+                            data: onePixelPng,
+                            mimeType: 'image/png',
+                            fit: 'contain'
+                        }
+                    }
+                ]
+            } as any, 'inline-doc');
+
+            const image = resolved.elements[0].properties?.image as any;
+            assert.equal(typeof image?.data, 'string');
+            assert.equal(image?.mimeType, 'image/png');
+            assert.equal(image?.fit, 'contain');
+        }
+    );
+
+    check(
+        'embedded image contract legacy compatibility',
+        'type=image with legacy properties.image payload remains accepted in AST 1.0',
+        () => {
+            const resolved = resolveDocumentPaths({
+                documentVersion: '1.0',
                 layout: {
                     pageSize: 'A4',
                     margins: { top: 20, right: 20, bottom: 20, left: 20 },
@@ -657,7 +693,7 @@ function testEmbeddedImageContract(): void {
 
     check(
         'embedded image required for image element',
-        'type=image without properties.image is rejected',
+        'type=image without top-level image is rejected in AST 1.1',
         () => {
             assert.throws(
                 () => resolveDocumentPaths({
@@ -674,7 +710,40 @@ function testEmbeddedImageContract(): void {
                         { type: 'image', content: '' }
                     ]
                 } as any, 'inline-doc'),
-                /properties\.image/
+                /elements\[0\]\.image/
+            );
+        }
+    );
+
+    check(
+        'embedded image legacy field rejection in 1.1',
+        'AST 1.1 rejects legacy properties.image payload placement',
+        () => {
+            assert.throws(
+                () => resolveDocumentPaths({
+                    documentVersion: CURRENT_DOCUMENT_VERSION,
+                    layout: {
+                        pageSize: 'A4',
+                        margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                        fontFamily: 'Arimo',
+                        fontSize: 12,
+                        lineHeight: 1.2
+                    },
+                    styles: {},
+                    elements: [
+                        {
+                            type: 'image',
+                            content: '',
+                            properties: {
+                                image: {
+                                    data: onePixelPng,
+                                    mimeType: 'image/png'
+                                }
+                            }
+                        }
+                    ]
+                } as any, 'inline-doc'),
+                /legacy structural field\(s\) image/
             );
         }
     );
@@ -698,12 +767,10 @@ function testEmbeddedImageContract(): void {
                         {
                             type: 'image',
                             content: '',
-                            properties: {
-                                image: {
-                                    data: onePixelPng,
-                                    mimeType: 'image/png',
-                                    fit: 'cover' as any
-                                }
+                            image: {
+                                data: onePixelPng,
+                                mimeType: 'image/png',
+                                fit: 'cover' as any
                             }
                         }
                     ]
@@ -717,7 +784,7 @@ function testEmbeddedImageContract(): void {
 function testTableLayoutContract(): void {
     check(
         'table layout contract acceptance',
-        'element.properties.table with track definitions is accepted by strict contract validation',
+        'top-level element.table with track definitions is accepted by strict contract validation in AST 1.1',
         () => {
             const resolved = resolveDocumentPaths({
                 documentVersion: CURRENT_DOCUMENT_VERSION,
@@ -733,17 +800,15 @@ function testTableLayoutContract(): void {
                     {
                         type: 'table',
                         content: '',
-                        properties: {
-                            table: {
-                                headerRows: 1,
-                                repeatHeader: true,
-                                columnGap: 2,
-                                rowGap: 1,
-                                columns: [
-                                    { mode: 'fixed', value: 120 },
-                                    { mode: 'flex', fr: 1, min: 80 }
-                                ]
-                            }
+                        table: {
+                            headerRows: 1,
+                            repeatHeader: true,
+                            columnGap: 2,
+                            rowGap: 1,
+                            columns: [
+                                { mode: 'fixed', value: 120 },
+                                { mode: 'flex', fr: 1, min: 80 }
+                            ]
                         },
                         children: [
                             {
@@ -769,8 +834,56 @@ function testTableLayoutContract(): void {
     );
 
     check(
-        'table layout contract validation',
-        'invalid table column mode is rejected with a precise error',
+        'table layout contract legacy compatibility',
+        'legacy element.properties.table remains accepted in AST 1.0',
+        () => {
+            const resolved = resolveDocumentPaths({
+                documentVersion: '1.0',
+                layout: {
+                    pageSize: 'A4',
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                },
+                styles: {},
+                elements: [
+                    {
+                        type: 'table',
+                        content: '',
+                        properties: {
+                            table: {
+                                headerRows: 1,
+                                repeatHeader: true,
+                                columns: [
+                                    { mode: 'fixed', value: 120 },
+                                    { mode: 'flex', fr: 1, min: 80 }
+                                ]
+                            }
+                        },
+                        children: [
+                            {
+                                type: 'table-row',
+                                content: '',
+                                children: [
+                                    { type: 'table-cell', content: 'A' },
+                                    { type: 'table-cell', content: 'B' }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            } as any, 'inline-doc');
+
+            const table = resolved.elements[0].properties?.table as any;
+            assert.equal(table.headerRows, 1);
+            assert.equal(table.columns.length, 2);
+        }
+    );
+
+    check(
+        'table layout legacy field rejection in 1.1',
+        'AST 1.1 rejects legacy properties.table placement',
         () => {
             assert.throws(
                 () => resolveDocumentPaths({
@@ -790,15 +903,150 @@ function testTableLayoutContract(): void {
                             properties: {
                                 table: {
                                     columns: [
-                                        { mode: 'elastic' as any, value: 100 }
+                                        { mode: 'fixed', value: 100 }
                                     ]
                                 }
                             }
                         }
                     ]
                 } as any, 'inline-doc'),
+                /legacy structural field\(s\) table/
+            );
+        }
+    );
+
+    check(
+        'table layout contract validation',
+        'invalid table column mode is rejected with a precise error',
+        () => {
+            assert.throws(
+                () => resolveDocumentPaths({
+                    documentVersion: CURRENT_DOCUMENT_VERSION,
+                    layout: {
+                        pageSize: 'A4',
+                        margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                        fontFamily: 'Arimo',
+                        fontSize: 12,
+                        lineHeight: 1.2
+                    },
+                    styles: {},
+                    elements: [
+                        {
+                            type: 'table',
+                            content: '',
+                            table: {
+                                columns: [
+                                    { mode: 'elastic' as any, value: 100 }
+                                ]
+                            }
+                        }
+                    ]
+                } as any, 'inline-doc'),
                 /expected one of: fixed, auto, flex/
             );
+        }
+    );
+}
+
+function testAst11PromotedFieldsContract(): void {
+    const onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO9Wl9kAAAAASUVORK5CYII=';
+
+    check(
+        'AST 1.1 promoted fields acceptance',
+        'zoneLayout, stripLayout, dropCap, columnSpan, and top-level image payload normalize cleanly in AST 1.1',
+        () => {
+            const resolved = resolveDocumentPaths({
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: 'A4',
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                },
+                styles: {},
+                elements: [
+                    {
+                        type: 'zone-map',
+                        content: '',
+                        zoneLayout: {
+                            columns: [
+                                { mode: 'flex', fr: 2 },
+                                { mode: 'flex', fr: 1 }
+                            ],
+                            gap: 12
+                        },
+                        zones: [
+                            {
+                                id: 'main',
+                                elements: [
+                                    {
+                                        type: 'story',
+                                        content: '',
+                                        columns: 2,
+                                        gutter: 10,
+                                        children: [
+                                            {
+                                                type: 'p',
+                                                content: 'Lead paragraph',
+                                                dropCap: { enabled: true, lines: 3, gap: 4 }
+                                            },
+                                            {
+                                                type: 'image',
+                                                content: '',
+                                                image: {
+                                                    data: onePixelPng,
+                                                    mimeType: 'image/png',
+                                                    fit: 'contain'
+                                                },
+                                                properties: {
+                                                    layout: { mode: 'float', align: 'right', wrap: 'around', gap: 8 },
+                                                    style: { width: 40, height: 40 }
+                                                }
+                                            },
+                                            {
+                                                type: 'h2',
+                                                content: 'Span heading',
+                                                columnSpan: 'all'
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                id: 'side',
+                                elements: [
+                                    {
+                                        type: 'strip',
+                                        content: '',
+                                        stripLayout: {
+                                            tracks: [
+                                                { mode: 'flex', fr: 1 },
+                                                { mode: 'fixed', value: 32 }
+                                            ],
+                                            gap: 6
+                                        },
+                                        slots: [
+                                            { id: 'left', elements: [{ type: 'label', content: 'Info' }] },
+                                            { id: 'right', elements: [{ type: 'folio', content: '{pageNumber}' }] }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            } as any, 'inline-doc');
+
+            const zoneMap = resolved.elements[0] as any;
+            assert.equal(zoneMap.properties?.zones?.gap, 12);
+            const story = zoneMap.zones?.[0]?.elements?.[0] as any;
+            assert.equal(story.children?.[0]?.properties?.dropCap?.lines, 3);
+            assert.equal(story.children?.[1]?.properties?.image?.mimeType, 'image/png');
+            assert.equal(story.children?.[2]?.properties?.columnSpan, 'all');
+            const stripAsZoneMap = zoneMap.zones?.[1]?.elements?.[0] as any;
+            assert.equal(stripAsZoneMap.type, 'zone-map');
+            assert.equal(stripAsZoneMap.properties?.zones?.gap, 6);
         }
     );
 }
@@ -992,6 +1240,7 @@ async function run() {
     testDocumentContractNormalization();
     testEmbeddedImageContract();
     testTableLayoutContract();
+    testAst11PromotedFieldsContract();
     testOrientationDimensions();
     testTrackSizingFoundation();
     testFontWeightMatching();

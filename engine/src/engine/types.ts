@@ -5,7 +5,7 @@ export type JustifyEngineMode = 'legacy' | 'advanced';
 export type JustifyStrategy = 'auto' | 'space' | 'inter-character';
 export type ImageFitMode = 'contain' | 'fill';
 export type PageReservationSelector = 'first' | 'odd' | 'even' | 'all';
-export type VmprintDocumentVersion = '1.0';
+export type VmprintDocumentVersion = '1.0' | '1.1';
 export type VmprintIRVersion = '1.0';
 
 export type ShapedGlyph = {
@@ -94,10 +94,37 @@ export interface ZoneDefinition {
     style?: Record<string, any>;
 }
 
+/**
+ * A compact horizontal slot on a `strip` element.
+ *
+ * A StripSlot is not a DOM child node. It is a bounded authored region used
+ * for one-row horizontal composition.
+ */
+export interface StripSlot {
+    id?: string;
+    elements: Element[];
+    style?: Record<string, any>;
+}
+
 export interface Element {
     type: ElementType;
     content: string;
     children?: Element[];
+    /**
+     * Embedded image payload. Preferred on AST 1.1+ for image-bearing nodes.
+     * AST 1.0 may still supply this through properties.image.
+     */
+    image?: EmbeddedImagePayload;
+    /**
+     * Table layout model. Preferred on AST 1.1+ for type: "table".
+     * AST 1.0 may still supply this through properties.table.
+     */
+    table?: TableLayoutOptions;
+    /**
+     * Strip slots. Each entry is an independent compact region in a one-row
+     * horizontal composition band. Only meaningful for `type: "strip"`.
+     */
+    slots?: StripSlot[];
     /** Story-level multi-column count (only meaningful for `type: "story"`). */
     columns?: number;
     /** Story-level inter-column gap in points (only for `type: "story"`). */
@@ -112,9 +139,18 @@ export interface Element {
     /**
      * Zone-map spatial regions. Each entry is an independent layout context
      * (a room on the map). Only meaningful for `type: "zone-map"`.
-     * Column widths and gap are declared in `properties.zones`.
+     * Column widths and gap are declared in `zoneLayout` on AST 1.1+ and
+     * legacy `properties.zones` on AST 1.0.
      */
     zones?: ZoneDefinition[];
+    /** Zone-map layout model. Preferred on AST 1.1+. */
+    zoneLayout?: ZoneLayoutOptions;
+    /** Strip track model. Preferred on AST 1.1+. */
+    stripLayout?: StripLayoutOptions;
+    /** Drop-cap configuration. Preferred on AST 1.1+. */
+    dropCap?: DropCapSpec;
+    /** Story-local full-width span directive. Preferred on AST 1.1+. */
+    columnSpan?: 'all' | number;
     properties?: ElementProperties;
 }
 
@@ -178,12 +214,23 @@ export interface ZoneLayoutOptions {
     gap?: number;
 }
 
+/**
+ * Layout options for a `strip` element.
+ * Track sizing reuses the same vocabulary as tables and zone maps.
+ */
+export interface StripLayoutOptions {
+    tracks?: TableColumnSizing[];
+    gap?: number;
+}
+
 export interface ElementProperties extends Record<string, any> {
     style?: Record<string, any>;
     image?: EmbeddedImagePayload;
     table?: TableLayoutOptions;
     /** Zone-map layout options. Declared on `zone-map` elements. */
     zones?: ZoneLayoutOptions;
+    /** Strip layout options. Declared on `strip` elements. */
+    strip?: StripLayoutOptions;
     colSpan?: number;
     rowSpan?: number;
     sourceId?: string;

@@ -1,5 +1,5 @@
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": {
     "pageSize": {
       "width": 600,
@@ -69,16 +69,16 @@
           "type": "p",
           "content": "The magazine's equipo editorial verifies every proof before publication, ensuring typographic fidelity is maintained across all scripts, locales, and output formats throughout the production cycle.",
           "properties": {
-            "sourceId": "mc2-lang-spanish",
-            "dropCap": {
-              "enabled": true,
-              "lines": 3,
-              "gap": 6,
-              "characterStyle": {
-                "fontFamily": "Times New Roman",
-                "fontWeight": 700,
-                "color": "#1e3a5f"
-              }
+            "sourceId": "mc2-lang-spanish"
+          },
+          "dropCap": {
+            "enabled": true,
+            "lines": 3,
+            "gap": 6,
+            "characterStyle": {
+              "fontFamily": "Times New Roman",
+              "fontWeight": 700,
+              "color": "#1e3a5f"
             }
           }
         },
@@ -111,12 +111,12 @@
               "width": 140,
               "height": 130,
               "backgroundColor": "#cbd5e1"
-            },
-            "image": {
-              "mimeType": "image/png",
-              "fit": "fill",
-              "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
             }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
           }
         },
         {
@@ -199,12 +199,12 @@
               "width": 80,
               "height": 80,
               "backgroundColor": "#94a3b8"
-            },
-            "image": {
-              "mimeType": "image/png",
-              "fit": "fill",
-              "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
             }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
           }
         },
         {
@@ -236,12 +236,12 @@
               "width": 60,
               "height": 90,
               "backgroundColor": "#f87171"
-            },
-            "image": {
-              "mimeType": "image/png",
-              "fit": "fill",
-              "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
             }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
           }
         },
         {
@@ -317,4 +317,3 @@
     }
   ]
 }
-

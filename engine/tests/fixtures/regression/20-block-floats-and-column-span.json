@@ -1,39 +1,65 @@
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": {
     "pageSize": "LETTER",
-    "margins": { "top": 50, "right": 50, "bottom": 50, "left": 50 },
+    "margins": {
+      "top": 50,
+      "right": 50,
+      "bottom": 50,
+      "left": 50
+    },
     "fontFamily": "Arimo",
     "fontSize": 10,
     "lineHeight": 1.4,
     "storyWrapOpticalUnderhang": true
   },
-  "fonts": { "regular": "Arimo" },
+  "fonts": {
+    "regular": "Arimo"
+  },
   "styles": {
     "kicker": {
-      "fontSize": 7, "letterSpacing": 1.5, "textAlign": "center",
-      "marginBottom": 8, "keepWithNext": true
+      "fontSize": 7,
+      "letterSpacing": 1.5,
+      "textAlign": "center",
+      "marginBottom": 8,
+      "keepWithNext": true
     },
     "heading": {
-      "fontSize": 22, "fontWeight": "bold",
-      "marginBottom": 12, "keepWithNext": true
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true
     },
     "body": {
-      "marginBottom": 10, "allowLineSplit": true,
-      "orphans": 2, "widows": 2, "textAlign": "justify"
+      "marginBottom": 10,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2,
+      "textAlign": "justify"
     },
     "pull-quote": {
-      "fontSize": 9.5, "fontStyle": "italic",
-      "borderLeftWidth": 2, "borderLeftColor": "#3a7bd5",
-      "paddingLeft": 8, "paddingTop": 5, "paddingBottom": 5, "paddingRight": 4,
-      "backgroundColor": "#eef4ff", "color": "#1a3a6e",
+      "fontSize": 9.5,
+      "fontStyle": "italic",
+      "borderLeftWidth": 2,
+      "borderLeftColor": "#3a7bd5",
+      "paddingLeft": 8,
+      "paddingTop": 5,
+      "paddingBottom": 5,
+      "paddingRight": 4,
+      "backgroundColor": "#eef4ff",
+      "color": "#1a3a6e",
       "allowLineSplit": true
     },
     "section-break": {
-      "fontSize": 11, "fontWeight": "bold", "textAlign": "center",
-      "color": "#ffffff", "backgroundColor": "#2c3e50",
-      "paddingTop": 7, "paddingBottom": 7,
-      "marginTop": 4, "marginBottom": 4
+      "fontSize": 11,
+      "fontWeight": "bold",
+      "textAlign": "center",
+      "color": "#ffffff",
+      "backgroundColor": "#2c3e50",
+      "paddingTop": 7,
+      "paddingBottom": 7,
+      "marginTop": 4,
+      "marginBottom": 4
     }
   },
   "elements": [
@@ -53,63 +79,93 @@
         {
           "type": "body",
           "content": "The layout engine now supports floating any block element within a story, not just images. A pull-quote, call-out, or sidebar can anchor at the current text cursor and let surrounding body copy wrap around it naturally. Obstacle registration works identically to image floats: the block's bounding box is recorded in the SpatialMap, and the per-line interval resolver carves out the appropriate horizontal space for every line that overlaps the float vertically.",
-          "properties": { "sourceId": "intro-para" }
+          "properties": {
+            "sourceId": "intro-para"
+          }
         },
         {
           "type": "pull-quote",
           "content": "Text wraps around any block element, not just images.",
           "properties": {
             "sourceId": "pull-quote-float",
-            "style": { "width": 108, "height": 58 },
-            "layout": { "mode": "float", "align": "left", "wrap": "around", "gap": 8 }
+            "style": {
+              "width": 108,
+              "height": 58
+            },
+            "layout": {
+              "mode": "float",
+              "align": "left",
+              "wrap": "around",
+              "gap": 8
+            }
           }
         },
         {
           "type": "body",
           "content": "Once the text cursor clears the bottom of the float, the full column width is restored and the layout continues as normal. The line-width variance visible in the wrapped lines versus the lines below the float confirms that the SpatialMap is correctly reporting a narrowed interval only for the lines that coexist vertically with the obstacle. No element boundary coincides with the float boundary: the same text box holds both narrow and full-width lines, distinguished only by per-line data in the _lineWidths array.",
-          "properties": { "sourceId": "wrap-para" }
+          "properties": {
+            "sourceId": "wrap-para"
+          }
         },
         {
           "type": "body",
           "content": "A second paragraph confirms the spatial state is cleanly reset after the float clears and the subsequent content sees no residual narrowing.",
-          "properties": { "sourceId": "post-float-para" }
+          "properties": {
+            "sourceId": "post-float-para"
+          }
         },
         {
           "type": "section-break",
           "content": "Column Span",
           "properties": {
-            "sourceId": "section-span",
-            "columnSpan": "all"
-          }
+            "sourceId": "section-span"
+          },
+          "columnSpan": "all"
         },
         {
           "type": "body",
           "content": "This paragraph appears after the full-width column-span element above. Column flow resets to column one below the span: content begins a fresh three-column arrangement whose top edge aligns with the bottom of the section-break banner. The story packager emits the spanning element at the full story width and then resumes the per-column layout loop from column zero, using the span bottom as the new cursor origin.",
-          "properties": { "sourceId": "post-span-para-1" }
+          "properties": {
+            "sourceId": "post-span-para-1"
+          }
         },
         {
           "type": "body",
           "content": "A second paragraph after the span confirms that multi-paragraph flow continues correctly across all three columns. The spanning element does not discard or restart any column state beyond advancing the cursor: obstacles registered before the span remain correctly projected to their columns, and the column count is unchanged.",
-          "properties": { "sourceId": "post-span-para-2" }
+          "properties": {
+            "sourceId": "post-span-para-2"
+          }
         },
         {
           "type": "body",
           "content": "Block floats also work on the right margin, as shown below.",
-          "properties": { "sourceId": "pre-right-float-para" }
+          "properties": {
+            "sourceId": "pre-right-float-para"
+          }
         },
         {
           "type": "pull-quote",
           "content": "Right-margin block floats behave symmetrically to left-margin ones.",
           "properties": {
             "sourceId": "pull-quote-float-right",
-            "style": { "width": 108, "height": 60 },
-            "layout": { "mode": "float", "align": "right", "wrap": "around", "gap": 8 }
+            "style": {
+              "width": 108,
+              "height": 60
+            },
+            "layout": {
+              "mode": "float",
+              "align": "right",
+              "wrap": "around",
+              "gap": 8
+            }
           }
         },
         {
           "type": "body",
           "content": "Text fills the left portion of this column as it wraps around the right-anchored pull-quote. The float alignment system works symmetrically for non-image content just as it does for images: resolveFloatX produces the correct column-local X for left, right, and center alignment modes without any special-casing for the element type.",
-          "properties": { "sourceId": "right-wrap-para" }
+          "properties": {
+            "sourceId": "right-wrap-para"
+          }
         }
       ]
     }

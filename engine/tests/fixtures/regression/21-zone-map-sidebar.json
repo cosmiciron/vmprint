@@ -1,5 +1,5 @@
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": {
     "pageSize": {
       "width": 600,
@@ -59,13 +59,6 @@
     {
       "type": "zone-map",
       "properties": {
-        "zones": {
-          "columns": [
-            { "mode": "flex", "fr": 2 },
-            { "mode": "flex", "fr": 1 }
-          ],
-          "gap": 16
-        },
         "style": {
           "marginTop": 12,
           "marginBottom": 12
@@ -118,7 +111,20 @@
             }
           ]
         }
-      ]
+      ],
+      "zoneLayout": {
+        "columns": [
+          {
+            "mode": "flex",
+            "fr": 2
+          },
+          {
+            "mode": "flex",
+            "fr": 1
+          }
+        ],
+        "gap": 16
+      }
     },
     {
       "type": "p",
@@ -135,9 +141,6 @@
     {
       "type": "zone-map",
       "properties": {
-        "zones": {
-          "gap": 12
-        },
         "style": {
           "marginTop": 8,
           "marginBottom": 8
@@ -183,7 +186,10 @@
             }
           ]
         }
-      ]
+      ],
+      "zoneLayout": {
+        "gap": 12
+      }
     },
     {
       "type": "p",
