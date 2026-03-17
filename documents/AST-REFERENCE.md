@@ -372,7 +372,9 @@ A `zone-map` divides a horizontal strip of the page into independent layout regi
       { "mode": "flex", "fr": 2 },
       { "mode": "flex", "fr": 1 }
     ],
-    "gap": 16
+    "gap": 16,
+    "frameOverflow": "move-whole",
+    "worldBehavior": "fixed"
   },
   "properties": {
     "style": {
@@ -403,6 +405,8 @@ A `zone-map` divides a horizontal strip of the page into independent layout regi
 interface ZoneLayoutOptions {
     columns?: TableColumnSizing[];
     gap?: number;
+    frameOverflow?: 'move-whole' | 'continue';
+    worldBehavior?: 'fixed' | 'spanning' | 'expandable';
 }
 
 interface ZoneDefinition {
@@ -413,6 +417,25 @@ interface ZoneDefinition {
 ```
 
 `zones[]` entries are region descriptors, not DOM children.
+
+`frameOverflow` makes the zone field lifecycle explicit:
+
+- `move-whole`: current shipped behavior; the whole zone-map moves if it does not fit
+- `continue`: opt into paged-field lifecycle, but only authored world behaviors that support continuation currently activate it at runtime
+
+`worldBehavior` makes the authored world rule explicit:
+
+- `fixed`: conservative default; the authored region topology is non-expandable
+- `spanning`: the same authored region may continue across later local maps
+- `expandable`: reserved for future authored procedural extension across the world map
+
+`frameOverflow` and `worldBehavior` are related but not the same thing.
+
+For now:
+
+- omitting `frameOverflow` keeps the old `move-whole` behavior
+- omitting `worldBehavior` defaults to `fixed`
+- `frameOverflow: "continue"` only gains live page-to-page regional continuation when paired with `worldBehavior: "spanning"`
 
 ---
 

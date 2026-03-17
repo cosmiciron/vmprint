@@ -953,7 +953,7 @@ function testAst11PromotedFieldsContract(): void {
 
     check(
         'AST 1.1 promoted fields acceptance',
-        'zoneLayout, stripLayout, dropCap, columnSpan, and top-level image payload normalize cleanly in AST 1.1',
+        'zoneLayout, zone frame overflow, zone world behavior, stripLayout, dropCap, columnSpan, and top-level image payload normalize cleanly in AST 1.1',
         () => {
             const resolved = resolveDocumentPaths({
                 documentVersion: CURRENT_DOCUMENT_VERSION,
@@ -974,7 +974,9 @@ function testAst11PromotedFieldsContract(): void {
                                 { mode: 'flex', fr: 2 },
                                 { mode: 'flex', fr: 1 }
                             ],
-                            gap: 12
+                            gap: 12,
+                            frameOverflow: 'continue',
+                            worldBehavior: 'spanning'
                         },
                         zones: [
                             {
@@ -1040,6 +1042,8 @@ function testAst11PromotedFieldsContract(): void {
 
             const zoneMap = resolved.elements[0] as any;
             assert.equal(zoneMap.properties?.zones?.gap, 12);
+            assert.equal(zoneMap.properties?.zones?.frameOverflow, 'continue');
+            assert.equal(zoneMap.properties?.zones?.worldBehavior, 'spanning');
             const story = zoneMap.zones?.[0]?.elements?.[0] as any;
             assert.equal(story.children?.[0]?.properties?.dropCap?.lines, 3);
             assert.equal(story.children?.[1]?.properties?.image?.mimeType, 'image/png');
@@ -1047,6 +1051,8 @@ function testAst11PromotedFieldsContract(): void {
             const stripAsZoneMap = zoneMap.zones?.[1]?.elements?.[0] as any;
             assert.equal(stripAsZoneMap.type, 'zone-map');
             assert.equal(stripAsZoneMap.properties?.zones?.gap, 6);
+            assert.equal(stripAsZoneMap.properties?.zones?.frameOverflow, undefined);
+            assert.equal(stripAsZoneMap.properties?.zones?.worldBehavior, 'fixed');
         }
     );
 }

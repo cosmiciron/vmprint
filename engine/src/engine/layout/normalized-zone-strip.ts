@@ -1,4 +1,4 @@
-import type { Element, ElementStyle } from '../types';
+import type { Element, ElementStyle, ZoneFrameOverflow, ZoneWorldBehavior } from '../types';
 
 export interface NormalizedIndependentZone {
     id?: string;
@@ -12,6 +12,8 @@ export interface NormalizedIndependentZoneStrip {
     kind: 'zone-strip';
     overflow: 'independent';
     sourceKind: 'zone-map';
+    frameOverflow: ZoneFrameOverflow;
+    worldBehavior: ZoneWorldBehavior;
     marginTop: number;
     marginBottom: number;
     gap: number;

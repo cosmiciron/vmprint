@@ -831,6 +831,27 @@ export class StoryPackager implements PackagerUnit {
         return map;
     }
 
+    private resolveColumnFrontierY(
+        currentCursorY: number,
+        boxes: Box[],
+        obstacles: OccupiedRect[]
+    ): number {
+        let frontierY = Math.max(0, currentCursorY);
+
+        for (const box of boxes) {
+            frontierY = Math.max(frontierY, Number(box.y || 0) + Number(box.h || 0));
+        }
+
+        for (const obstacle of obstacles) {
+            frontierY = Math.max(
+                frontierY,
+                Number(obstacle.y || 0) + Number(obstacle.h || 0) + Number(obstacle.gapBottom ?? obstacle.gap ?? 0)
+            );
+        }
+
+        return frontierY;
+    }
+
     private pourColumns(
         availableWidth: number,
         availableHeight: number,
@@ -985,7 +1006,7 @@ export class StoryPackager implements PackagerUnit {
             // the column flow, is laid out at full story width, then column
             // flow resumes from column 0 below the spanning element.
             if (child.kind === 'column-span') {
-                const spanTopY = cursorY;
+                const spanTopY = this.resolveColumnFrontierY(cursorY, allBoxes, registeredObstacles);
                 const spanContext: PackagerContext = {
                     processor: this.processor,
                     pageIndex: 0,

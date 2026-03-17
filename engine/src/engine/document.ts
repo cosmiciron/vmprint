@@ -89,7 +89,7 @@ const CONTINUATION_MARKER_KEYS = new Set(['type', 'content', 'style', 'propertie
 const SOURCE_RANGE_KEYS = new Set(['lineStart', 'colStart', 'lineEnd', 'colEnd']);
 const IMAGE_PAYLOAD_KEYS = new Set(['data', 'mimeType', 'fit']);
 const TABLE_LAYOUT_KEYS = new Set(['headerRows', 'repeatHeader', 'columnGap', 'rowGap', 'columns', 'cellStyle', 'headerCellStyle']);
-const ZONE_LAYOUT_KEYS = new Set(['columns', 'gap']);
+const ZONE_LAYOUT_KEYS = new Set(['columns', 'gap', 'frameOverflow', 'worldBehavior']);
 const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
@@ -578,6 +578,12 @@ function validateZoneLayoutOptions(value: unknown, path: string, documentPath: s
     assertAllowedKeys(options, ZONE_LAYOUT_KEYS, path, documentPath);
 
     if (options.gap !== undefined) assertFiniteNumberAt(options.gap, `${path}.gap`, documentPath);
+    if (options.frameOverflow !== undefined) {
+        assertEnumAt(options.frameOverflow, ['move-whole', 'continue'], `${path}.frameOverflow`, documentPath);
+    }
+    if (options.worldBehavior !== undefined) {
+        assertEnumAt(options.worldBehavior, ['fixed', 'spanning', 'expandable'], `${path}.worldBehavior`, documentPath);
+    }
 
     if (options.columns !== undefined) {
         if (!Array.isArray(options.columns)) {
@@ -916,7 +922,11 @@ function normalizeElementNode(element: Element): Element {
         normalized.table = deepSortObject((element.table ?? legacyTable) as any);
     }
     if (element.zoneLayout !== undefined || legacyZoneLayout !== undefined) {
-        normalized.zoneLayout = deepSortObject((element.zoneLayout ?? legacyZoneLayout) as any);
+        const normalizedZoneLayout = deepSortObject((element.zoneLayout ?? legacyZoneLayout) as any) as Record<string, unknown>;
+        if (normalizedZoneLayout.worldBehavior === undefined) {
+            normalizedZoneLayout.worldBehavior = 'fixed';
+        }
+        normalized.zoneLayout = normalizedZoneLayout as any;
     }
     if (element.stripLayout !== undefined || legacyStripLayout !== undefined) {
         normalized.stripLayout = deepSortObject((element.stripLayout ?? legacyStripLayout) as any);
@@ -979,7 +989,8 @@ function normalizeElementNode(element: Element): Element {
         };
         loweredProperties.zones = {
             columns: Array.isArray(stripOptions.tracks) ? stripOptions.tracks as any[] : [],
-            gap: stripOptions.gap !== undefined ? stripOptions.gap as number : 0
+            gap: stripOptions.gap !== undefined ? stripOptions.gap as number : 0,
+            worldBehavior: 'fixed'
         };
         return {
             type: 'zone-map',

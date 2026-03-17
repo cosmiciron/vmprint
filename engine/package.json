@@ -28,6 +28,7 @@
     "test:ast-compat": "tsx --conditions tsx tests/ast-compatibility.spec.ts",
     "test:flat": "tsx --conditions tsx tests/flat-pipeline.spec.ts",
     "test:strip": "tsx --conditions tsx tests/strip-layout.spec.ts",
+    "test:zone-continue": "tsx --conditions tsx tests/zone-map-continue.spec.ts",
     "test:standard-fonts": "tsx --conditions tsx tests/standard-fonts.spec.ts",
     "test:engine": "tsx --conditions tsx tests/engine-regression.spec.ts",
     "test:spatial-ir": "tsx --conditions tsx tests/spatial-ir-regression.spec.ts",

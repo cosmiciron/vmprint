@@ -50,6 +50,14 @@ Why:
 - normalizes cleanly to Spatial IR
 - directly solves a real previously-hacky layout problem
 
+But this should not be read as "done forever."
+
+The authored surface is strong. The remaining gap is deeper in the runtime
+behavior: `zone-map` still behaves too much like a move-whole block when it
+meets page flow. The next meaningful work here is not an AST replacement, but
+completing the game-engine lifecycle of zones across page frames. See
+[LAYOUT-ZONES.md](c:\Users\cosmic\Projects\vmprint\documents\LAYOUT-ZONES.md).
+
 ### `story`
 
 Keep as a distinct public concept.

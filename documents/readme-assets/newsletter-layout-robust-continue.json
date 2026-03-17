@@ -1,0 +1,506 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "A4",
+    "orientation": "portrait",
+    "margins": { "top": 36, "right": 45, "bottom": 48, "left": 45 },
+    "fontFamily": "Arimo",
+    "fontSize": 9,
+    "lineHeight": 1.42,
+    "pageBackground": "#fafaf8",
+    "hyphenation": "auto",
+    "justifyEngine": "advanced",
+    "justifyStrategy": "auto"
+  },
+  "styles": {
+    "rule-navy-thick": {
+      "borderTopWidth": 4,
+      "borderTopColor": "#0d2040",
+      "marginBottom": 6
+    },
+    "rule-navy-thin": {
+      "borderTopWidth": 1,
+      "borderTopColor": "#0d2040",
+      "marginBottom": 2
+    },
+    "rule-navy-mid": {
+      "borderTopWidth": 3,
+      "borderTopColor": "#0d2040",
+      "marginBottom": 0
+    },
+    "rule-hairline": {
+      "borderTopWidth": 0.5,
+      "borderTopColor": "#9aacbf",
+      "marginBottom": 8
+    },
+    "col-rule": {
+      "borderTopWidth": 0.5,
+      "borderTopColor": "#9aacbf",
+      "marginTop": 10,
+      "marginBottom": 8
+    },
+    "masthead-pub": {
+      "fontFamily": "Tinos",
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "color": "#0d2040",
+      "letterSpacing": 6,
+      "textAlign": "center",
+      "hyphenation": "off",
+      "marginBottom": 4
+    },
+    "masthead-tagline": {
+      "fontFamily": "Cousine",
+      "fontSize": 5.5,
+      "color": "#9aacbf",
+      "letterSpacing": 1.5,
+      "textAlign": "center",
+      "marginBottom": 4
+    },
+    "kicker": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "letterSpacing": 1.8,
+      "color": "#1a3a5c",
+      "marginTop": 8,
+      "marginBottom": 6,
+      "hyphenation": "off"
+    },
+    "main-headline": {
+      "fontFamily": "Tinos",
+      "fontSize": 40,
+      "fontWeight": "bold",
+      "color": "#0d2040",
+      "lineHeight": 1.05,
+      "marginBottom": 8,
+      "hyphenation": "off"
+    },
+    "deck": {
+      "fontFamily": "Tinos",
+      "fontSize": 10.5,
+      "fontStyle": "italic",
+      "color": "#2c3e50",
+      "lineHeight": 1.45,
+      "marginBottom": 4
+    },
+    "byline-left": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "color": "#555",
+      "letterSpacing": 0.3
+    },
+    "byline-right": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "color": "#555",
+      "letterSpacing": 0.8,
+      "textAlign": "right"
+    },
+    "footer-left": {
+      "fontFamily": "Cousine",
+      "fontSize": 5.5,
+      "color": "#9aacbf",
+      "letterSpacing": 0.5,
+      "paddingTop": 5
+    },
+    "footer-page": {
+      "fontFamily": "Tinos",
+      "fontSize": 8,
+      "fontWeight": "bold",
+      "color": "#0d2040",
+      "textAlign": "center",
+      "paddingTop": 4
+    },
+    "footer-right": {
+      "fontFamily": "Cousine",
+      "fontSize": 5.5,
+      "color": "#9aacbf",
+      "letterSpacing": 0.5,
+      "textAlign": "right",
+      "paddingTop": 5
+    },
+    "body": {
+      "fontFamily": "Arimo",
+      "fontSize": 9,
+      "lineHeight": 1.42,
+      "marginBottom": 8,
+      "textAlign": "justify",
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2,
+      "hyphenation": "auto",
+      "hyphenMinWordLength": 6,
+      "hyphenMinPrefix": 3,
+      "hyphenMinSuffix": 3
+    },
+    "body-lead": {
+      "fontFamily": "Arimo",
+      "fontSize": 9,
+      "lineHeight": 1.42,
+      "marginBottom": 8,
+      "textAlign": "justify",
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "pull-quote": {
+      "fontFamily": "Tinos",
+      "fontSize": 10,
+      "fontStyle": "italic",
+      "color": "#1a3a5c",
+      "lineHeight": 1.5,
+      "borderLeftWidth": 2.5,
+      "borderLeftColor": "#1a3a5c",
+      "paddingLeft": 8,
+      "marginTop": 8,
+      "marginBottom": 8
+    },
+    "caption": {
+      "fontFamily": "Arimo",
+      "fontSize": 7,
+      "fontStyle": "italic",
+      "color": "#888",
+      "lineHeight": 1.3,
+      "borderTopWidth": 0.5,
+      "borderTopColor": "#ccc",
+      "paddingTop": 3,
+      "marginTop": 3,
+      "marginBottom": 6
+    },
+    "section-label": {
+      "fontFamily": "Cousine",
+      "fontSize": 7,
+      "fontWeight": "bold",
+      "letterSpacing": 2.5,
+      "color": "#0d2040",
+      "marginTop": 2,
+      "marginBottom": 4,
+      "hyphenation": "off"
+    },
+    "secondary-kicker": {
+      "fontFamily": "Cousine",
+      "fontSize": 6,
+      "letterSpacing": 1.5,
+      "color": "#1a3a5c",
+      "marginBottom": 4,
+      "hyphenation": "off"
+    },
+    "secondary-headline": {
+      "fontFamily": "Tinos",
+      "fontSize": 13,
+      "fontWeight": "bold",
+      "color": "#0d2040",
+      "lineHeight": 1.15,
+      "marginBottom": 4,
+      "keepWithNext": true,
+      "hyphenation": "off"
+    },
+    "secondary-deck": {
+      "fontFamily": "Tinos",
+      "fontSize": 8.5,
+      "fontStyle": "italic",
+      "color": "#444",
+      "lineHeight": 1.4,
+      "marginBottom": 6,
+      "keepWithNext": true
+    },
+    "sidebar-label": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "fontWeight": "bold",
+      "letterSpacing": 2.1,
+      "color": "#0d2040",
+      "marginBottom": 4,
+      "hyphenation": "off"
+    },
+    "sidebar-headline": {
+      "fontFamily": "Tinos",
+      "fontSize": 12.5,
+      "fontWeight": "bold",
+      "color": "#0d2040",
+      "lineHeight": 1.15,
+      "marginBottom": 3,
+      "keepWithNext": true
+    },
+    "sidebar-body": {
+      "fontFamily": "Arimo",
+      "fontSize": 8,
+      "lineHeight": 1.45,
+      "color": "#2f3a45",
+      "marginBottom": 6,
+      "textAlign": "justify",
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "sidebar-note": {
+      "fontFamily": "Tinos",
+      "fontSize": 8,
+      "fontStyle": "italic",
+      "color": "#666",
+      "lineHeight": 1.35,
+      "marginBottom": 6
+    }
+  },
+  "elements": [
+    { "type": "rule-navy-thick", "content": "" },
+    {
+      "type": "masthead-pub",
+      "content": "VMPRINT  QUARTERLY",
+      "properties": { "keepWithNext": true }
+    },
+    {
+      "type": "masthead-tagline",
+      "content": "The Journal of Precision Document Layout  ·  Robust Layout Study  ·  March 2026",
+      "properties": { "keepWithNext": true }
+    },
+    { "type": "rule-navy-thin", "content": "", "properties": { "keepWithNext": true } },
+    { "type": "rule-navy-mid", "content": "", "properties": { "keepWithNext": true } },
+    {
+      "type": "kicker",
+      "content": "FIELD TEST  ·  AST 1.1  ·  ROBUST COMPOSITION",
+      "properties": { "keepWithNext": true }
+    },
+    {
+      "type": "main-headline",
+      "content": "Can The Newsletter Survive Real Copy?",
+      "properties": { "keepWithNext": true }
+    },
+    {
+      "type": "deck",
+      "content": "A stress-test specimen that keeps the original editorial voice but rebuilds the page with the cleaner AST surface, less tuned copy, and more honest spatial structure.",
+      "properties": { "keepWithNext": true }
+    },
+    {
+      "type": "strip",
+      "content": "",
+      "stripLayout": {
+        "gap": 0,
+        "tracks": [
+          { "mode": "flex", "fr": 1 },
+          { "mode": "flex", "fr": 1 }
+        ]
+      },
+      "properties": {
+        "style": { "marginBottom": 3 }
+      },
+      "slots": [
+        {
+          "id": "left",
+          "elements": [
+            { "type": "byline-left", "content": "By Uzo Z.T. · layout systems notebook" }
+          ]
+        },
+        {
+          "id": "right",
+          "elements": [
+            { "type": "byline-right", "content": "MARCH 2026  ·  ROBUSTNESS PASS" }
+          ]
+        }
+      ]
+    },
+    { "type": "rule-hairline", "content": "" },
+    {
+      "type": "zone-map",
+      "content": "",
+      "zoneLayout": {
+        "columns": [
+          { "mode": "flex", "fr": 2.2 },
+          { "mode": "flex", "fr": 1.05 }
+        ],
+        "gap": 18,
+        "frameOverflow": "continue",
+        "worldBehavior": "spanning"
+      },
+      "properties": {
+        "style": { "marginBottom": 6 }
+      },
+      "zones": [
+        {
+          "id": "main",
+          "elements": [
+            {
+              "type": "story",
+              "content": "",
+              "columns": 2,
+              "gutter": 12,
+              "balance": false,
+              "children": [
+                {
+                  "type": "body-lead",
+                  "content": "Every element in a VMPrint document is measured with sub-point precision, but that promise matters only if the authored surface remains honest when the copy stops behaving. The original newsletter demo looked polished because its paragraphs, captions, and side material were tuned to fit a single page almost perfectly. This specimen asks a less flattering question: can the same language stay composed when the story grows denser, the sidebar gets longer, and the visual hierarchy still has to hold together?",
+                  "dropCap": {
+                    "enabled": true,
+                    "lines": 3,
+                    "gap": 5,
+                    "characterStyle": {
+                      "fontFamily": "Tinos",
+                      "fontWeight": "bold",
+                      "color": "#1a3a5c"
+                    }
+                  }
+                },
+                {
+                  "type": "obstacleImg",
+                  "content": "",
+                  "image": {
+                    "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP48OQMAAVoAqEPT7KoAAAAAElFTkSuQmCC",
+                    "mimeType": "image/png",
+                    "fit": "fill"
+                  },
+                  "properties": {
+                    "style": { "width": 74, "height": 54, "backgroundColor": "#ebe1cb" },
+                    "layout": { "mode": "float", "align": "right", "wrap": "around", "gap": 8 }
+                  }
+                },
+                {
+                  "type": "body",
+                  "content": "The encouraging part is that the newer AST tools already remove some of the old strain. The byline and footer no longer masquerade as tiny tables. The main body and the right rail are no longer forced to pretend they are columns of the same flowing story. A zone-map can state, plainly, that there is a principal editorial area and an independent secondary region beside it. That one change turns a visually impressive demo into something closer to a document someone could actually keep editing."
+                },
+                {
+                  "type": "body",
+                  "content": "Inside the main region, story still does the work it was meant to do: linked columns, real float obstacles, full-width interruptions, and line-level pagination controls. That combination feels strong precisely because it is not trying to solve every spatial problem at once. Story is for linked flow. Zone-map is for parallel regions. Strip is for a compact row of aligned slots. Once those intentions stop collapsing into one overburdened container shape, the authored file becomes easier to read and much less likely to become a museum piece that can only survive with hand-tuned copy."
+                },
+                {
+                  "type": "pull-quote",
+                  "content": "“A layout demo becomes a document system only when the copy can grow, shift, and become inconvenient without the whole page turning brittle.”"
+                },
+                {
+                  "type": "body",
+                  "content": "The remaining pressure points are revealing. Placement semantics are still somewhat hidden inside a general properties bag, which means floats and story-local obstacles feel more magical than they should. The model works, but it still asks authors to know too much about engine intent. That is acceptable in a specimen, less so in a long-lived authoring format. The point of this exercise is not to paper that over. It is to make the friction visible while keeping the visual result strong."
+                },
+                {
+                  "type": "section-label",
+                  "content": "WHAT THIS PAGE IS TESTING",
+                  "columnSpan": "all",
+                  "properties": { "keepWithNext": true }
+                },
+                { "type": "rule-hairline", "content": "" },
+                {
+                  "type": "body",
+                  "content": "First, whether the two-column story in the main zone can absorb substantially more narrative without blowing apart the composition. Second, whether the right rail can carry enough genuine sidebar material to feel useful rather than decorative. Third, whether the overall page still reads like a designed artifact instead of a defensive layout demo whose every paragraph has been cut to the bone. If the page keeps its voice while becoming harder to satisfy, that is a stronger argument for the AST than any isolated regression fixture."
+                },
+                {
+                  "type": "body",
+                  "content": "There is also a practical benefit to this more honest structure: if the sidebar grows longer than the main region, zone-map lets that fact exist without pretending the extra copy belongs to the same flow. If the main article grows beyond a page, story can continue naturally while the footer and running composition remain stable. Those are not hypothetical improvements. They are the difference between an attractive sample and a layout someone can continue editing a month later."
+                },
+                {
+                  "type": "caption",
+                  "content": "Fig. 1 — The main article is now a two-column story inside the main zone, while the sidebar is its own independent region. The visual idea stays similar; the authored structure is much more truthful."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sidebar",
+          "elements": [
+            { "type": "section-label", "content": "ALSO IN THIS ISSUE" },
+            { "type": "rule-hairline", "content": "" },
+            { "type": "secondary-kicker", "content": "LAYOUT ROBUSTNESS" },
+            {
+              "type": "secondary-headline",
+              "content": "When A Demo Stops Being Fragile"
+            },
+            {
+              "type": "secondary-deck",
+              "content": "The goal is not merely that the page still fits. The goal is that the authored structure still makes sense when the copy changes."
+            },
+            {
+              "type": "secondary-img",
+              "content": "",
+              "image": {
+                "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP48OQMAAVoAqEPT7KoAAAAAElFTkSuQmCC",
+                "mimeType": "image/png",
+                "fit": "fill"
+              },
+              "properties": {
+                "style": { "width": 160, "height": 54, "backgroundColor": "#efe5cf" }
+              }
+            },
+            {
+              "type": "caption",
+              "content": "A neutral placeholder image in the sidebar, kept as a simple block instead of pretending to share the main story flow."
+            },
+            { "type": "col-rule", "content": "" },
+            { "type": "sidebar-label", "content": "OBSERVATION 01" },
+            {
+              "type": "sidebar-body",
+              "content": "Strip solved a real problem because it made authored intent clearer without needing a visual compromise. The page looks essentially the same, but the file no longer uses a table as an alignment crutch."
+            },
+            { "type": "sidebar-label", "content": "OBSERVATION 02" },
+            {
+              "type": "sidebar-body",
+              "content": "Zone-map is doing equally important work here. The right rail has become its own region with its own rhythm, rather than the third lane of a larger story that was never really meant to be one story in the first place."
+            },
+            {
+              "type": "sidebar-note",
+              "content": "Independent region composition is less glamorous than a new visual effect, but it is the sort of structural honesty that makes later editing survivable."
+            },
+            { "type": "sidebar-label", "content": "OBSERVATION 03" },
+            {
+              "type": "sidebar-body",
+              "content": "The remaining awkwardness now concentrates in the placement surface, not in the broad page composition. That is a good sign. It means the next likely AST improvement is narrower and easier to justify."
+            },
+            { "type": "rule-hairline", "content": "" },
+            { "type": "sidebar-label", "content": "ROBUSTNESS NOTE" },
+            {
+              "type": "sidebar-body",
+              "content": "This specimen intentionally carries more copy than the original README page and stops trimming each paragraph to fit one exact silhouette. The point is not to keep the silhouette perfect. The point is to see whether the layout language still feels correct when the text behaves like real editorial material."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "default": {
+      "elements": [
+        {
+          "type": "strip",
+          "content": "",
+          "stripLayout": {
+            "gap": 0,
+            "tracks": [
+              { "mode": "flex", "fr": 1 },
+              { "mode": "fixed", "value": 36 },
+              { "mode": "flex", "fr": 1 }
+            ]
+          },
+          "properties": {
+            "style": { "borderTopWidth": 0.5, "borderTopColor": "#9aacbf" }
+          },
+          "slots": [
+            {
+              "id": "left",
+              "elements": [
+                {
+                  "type": "footer-left",
+                  "content": "VMPRINT QUARTERLY  ·  ROBUST SPECIMEN"
+                }
+              ]
+            },
+            {
+              "id": "center",
+              "elements": [
+                {
+                  "type": "footer-page",
+                  "content": "{pageNumber}"
+                }
+              ]
+            },
+            {
+              "id": "right",
+              "elements": [
+                {
+                  "type": "footer-right",
+                  "content": "AST 1.1  ·  vmprint.dev"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

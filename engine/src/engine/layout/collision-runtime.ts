@@ -25,6 +25,11 @@ type PackagerWithStoryElement = PackagerUnit & {
     storyElement?: unknown;
 };
 
+type PackagerWithZoneContinuation = PackagerUnit & {
+    frameOverflowMode?: string;
+    worldBehaviorMode?: string;
+};
+
 export type CollisionRuntimeHost = {
     commitFragmentBoxes(
         actor: PackagerUnit,
@@ -310,7 +315,8 @@ export class CollisionRuntime {
             : !!input.actor.emitBoxes(input.availableWidth, input.availableHeightAdjusted, input.context);
         const isSpatialGridPackager = this.hasSpatialGridFlowBox(input.actor);
         const isStoryPackager = this.hasStoryElement(input.actor);
-        const allowsMidPageSplit = isSpatialGridPackager || isStoryPackager;
+        const isContinuingZonePackager = this.hasContinuingZoneField(input.actor);
+        const allowsMidPageSplit = isSpatialGridPackager || isStoryPackager || isContinuingZonePackager;
         const emptyLayoutBefore = input.marginTop;
         const emptyAvailable = input.pageLimit - input.pageTop;
         const requiredOnEmpty = input.contentHeight + emptyLayoutBefore + input.marginBottom;
@@ -330,5 +336,10 @@ export class CollisionRuntime {
 
     private hasStoryElement(actor: PackagerUnit): actor is PackagerWithStoryElement {
         return !!(actor as PackagerWithStoryElement).storyElement;
+    }
+
+    private hasContinuingZoneField(actor: PackagerUnit): actor is PackagerWithZoneContinuation {
+        const zoneActor = actor as PackagerWithZoneContinuation;
+        return zoneActor.frameOverflowMode === 'continue' && zoneActor.worldBehaviorMode === 'spanning';
     }
 }

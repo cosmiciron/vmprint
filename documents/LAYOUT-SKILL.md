@@ -10,7 +10,7 @@ Every document is a single JSON object:
 
 ```json
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": { ... },
   "fonts":  { ... },
   "styles": { "myType": { ... } },
@@ -20,7 +20,7 @@ Every document is a single JSON object:
 }
 ```
 
-- `documentVersion` — always `"1.0"`
+- `documentVersion` — prefer `"1.1"` for new authored documents
 - `layout` — page geometry and typographic defaults
 - `fonts` — optional; only needed for custom font files
 - `styles` — maps element `type` strings to base styles; anything not here defaults to layout values
@@ -144,7 +144,7 @@ Special structural types handled by the engine:
 | `"table"` | Table container; must have `properties.table` |
 | `"table-row"` | Row inside a table |
 | `"table-cell"` | Cell inside a row; supports `colSpan`, `rowSpan` |
-| `"zone-map"` | Independent-region layout; column widths in `properties.zones`, content regions in `zones[]` |
+| `"zone-map"` | Independent-region layout; use `zoneLayout` for field options and `zones[]` for authored regions |
 
 All other type strings are user-defined and look up styles only.
 
@@ -470,21 +470,22 @@ Key details:
 
 ## 10a. Zone Map: Independent Layout Regions
 
-A `zone-map` divides a horizontal strip of the page into independent layout columns. Each zone runs its own non-paginating layout pass — content in zone A has no knowledge of zone B. The `zone-map` always moves to the next page as a unit if it does not fit.
+A `zone-map` divides a horizontal strip of the page into independent layout columns. Each zone runs its own non-paginating layout pass — content in zone A has no knowledge of zone B. The currently shipped runtime behavior is still `move-whole`: if the zone-map does not fit, it moves to the next page as a unit.
 
 ### Two-column sidebar
 
 ```json
 {
   "type": "zone-map",
+  "zoneLayout": {
+    "columns": [
+      { "mode": "flex", "fr": 2 },
+      { "mode": "flex", "fr": 1 }
+    ],
+    "gap": 16,
+    "frameOverflow": "move-whole"
+  },
   "properties": {
-    "zones": {
-      "columns": [
-        { "mode": "flex", "fr": 2 },
-        { "mode": "flex", "fr": 1 }
-      ],
-      "gap": 16
-    },
     "style": { "marginTop": 12, "marginBottom": 12 }
   },
   "zones": [
@@ -506,18 +507,19 @@ A `zone-map` divides a horizontal strip of the page into independent layout colu
 }
 ```
 
-- `properties.zones.columns` — track sizing array (same `mode`/`fr`/`value` as tables). Omit for equal-width columns.
-- `properties.zones.gap` — gap between columns in points (default `0`).
+- `zoneLayout.columns` — track sizing array (same `mode`/`fr`/`value` as tables). Omit for equal-width columns.
+- `zoneLayout.gap` — gap between columns in points (default `0`).
+- `zoneLayout.frameOverflow` — explicit page-boundary lifecycle. `move-whole` is the current shipped behavior; `continue` is reserved for future paged zone continuation.
 - `zones[]` — region descriptors, **not** DOM children. Each carries `id` (optional) and `elements[]`.
 - Zone height: the tallest zone determines the `zone-map`'s height in the document flow.
-- The `zone-map` is always `move-whole` (V1): if it does not fit, it moves to the next page rather than splitting across pages.
+- Legacy AST `1.0` still allows `properties.zones` instead of `zoneLayout`.
 
 ### Equal three-column strip
 
 ```json
 {
   "type": "zone-map",
-  "properties": { "zones": { "gap": 12 } },
+  "zoneLayout": { "gap": 12, "frameOverflow": "move-whole" },
   "zones": [
     { "id": "a", "elements": [ { "type": "p", "content": "Col 1" } ] },
     { "id": "b", "elements": [ { "type": "p", "content": "Col 2" } ] },

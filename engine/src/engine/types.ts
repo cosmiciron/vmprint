@@ -76,6 +76,8 @@ export interface InlineObjectMetrics {
 }
 
 export type OverflowPolicy = 'clip' | 'move-whole' | 'error';
+export type ZoneFrameOverflow = 'move-whole' | 'continue';
+export type ZoneWorldBehavior = 'fixed' | 'spanning' | 'expandable';
 
 /**
  * A spatial region on a `zone-map` element.
@@ -212,6 +214,17 @@ export interface ZoneLayoutOptions {
     columns?: TableColumnSizing[];
     /** Gap between columns in points. Defaults to 0. */
     gap?: number;
+    /**
+     * How the zone field behaves at page boundaries.
+     * `move-whole` preserves the shipped V1 behavior.
+     * `continue` is reserved for future page-framed zone continuation.
+     */
+    frameOverflow?: ZoneFrameOverflow;
+    /**
+     * Authored world behavior for this zone field.
+     * `fixed` is the conservative default.
+     */
+    worldBehavior?: ZoneWorldBehavior;
 }
 
 /**

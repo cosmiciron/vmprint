@@ -113,6 +113,21 @@ Decision:
 - do **not** collapse it with `story` in the public AST
 - treat it as a model for future spatial AST features
 
+Important clarification:
+
+- the authored shape of `zone-map` is strong
+- the currently shipped runtime behavior is still only the first slice of the
+  underlying idea
+
+In particular, the robust newsletter specimen and
+[LAYOUT-ZONES.md](c:\Users\cosmic\Projects\vmprint\documents\LAYOUT-ZONES.md)
+make clear that `zone-map` has become spatial in **partitioning**, but not yet
+fully spatial in **lifecycle**. It still behaves too much like a move-whole
+block at the page boundary.
+
+That does **not** weaken the AST design. It means the runtime still needs to
+finish the philosophy that inspired the construct.
+
 #### `columnSpan`
 
 `columnSpan` is also healthy as a public AST concept.
