@@ -26,7 +26,7 @@ The module is loaded with `import()` at runtime. You can develop and iterate on 
 
 ## Reference design
 
-The CLI is approximately 225 lines of TypeScript. It demonstrates the complete, correct pattern for integrating vmprint: load a source document, run it through a `SourceTransformer`, configure the engine runtime, wait for fonts, paginate, render, handle the output stream. If you're embedding vmprint into a larger application, the CLI source is the clearest available example of how to do it.
+The CLI is approximately 225 lines of TypeScript. It demonstrates the complete, correct pattern for integrating vmprint: load a source document, normalize the authored AST into the engine-ready form, configure the engine runtime, wait for fonts, paginate, render, handle the output stream. If you're embedding vmprint into a larger application, the CLI source is the clearest available example of how to do it.
 
 ## Production batch processing
 

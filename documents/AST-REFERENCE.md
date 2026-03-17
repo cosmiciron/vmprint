@@ -1,6 +1,6 @@
 # VMPrint AST Reference
 
-This document is the complete reference for the **VMPrint document input format** - the JSON/object tree you construct and hand to a `SourceTransformer`. It covers every supported node type, property, style field, and configuration option.
+This document is the complete reference for the **VMPrint document input format** - the JSON/object tree you construct and hand to the engine-facing VMPrint pipeline. It covers every supported node type, property, style field, and configuration option.
 
 ---
 
@@ -12,13 +12,13 @@ Markdown string
 SemanticDocument                (draft2final intermediate layer)
   -> [FormatHandler / FormatContext]
 DocumentInput / Element tree    <- you work here
-  -> [SourceTransformer]
+  -> [normalize()]
 SpatialDocument / runtime config
   -> [LayoutEngine]
 Page[] of Box[]                 (flat, positioned output - not authored)
 ```
 
-Direct callers usually construct **`DocumentInput`**. The compatibility path that turns it into engine-ready runtime input now lives in `@vmprint/source-transformer-ast`. The `SemanticDocument` layer is only relevant when using `draft2final`.
+Direct callers usually construct **`DocumentInput`**. The engine normalizes that canonical AST into its internal runtime form. The `SemanticDocument` layer is only relevant when using `draft2final`.
 ---
 
 ## 2. `DocumentInput` — Root Object
@@ -784,8 +784,8 @@ When using `draft2final`, transmuters emit elements with these `type` strings in
 | What | Where |
 |---|---|
 | All type definitions | [engine/src/engine/types.ts](../engine/src/engine/types.ts) |
-| AST compatibility transformer | [source-transformers/ast/src/document.ts](../source-transformers/ast/src/document.ts) |
-| AST -> Spatial IR fixture normalization | [source-transformers/ast/src/spatialize.ts](../source-transformers/ast/src/spatialize.ts) |
+| AST normalization | [engine/src/engine/document.ts](../engine/src/engine/document.ts) |
+| AST -> Spatial IR fixture normalization | [engine/tests/harness/spatialize.ts](../engine/tests/harness/spatialize.ts) |
 | Architecture narrative | [documents/ARCHITECTURE.md](ARCHITECTURE.md) |
 | Header/footer details | [documents/HEADER-FOOTER.md](HEADER-FOOTER.md) |
 | Overlay system | [documents/OVERLAY.md](OVERLAY.md) |

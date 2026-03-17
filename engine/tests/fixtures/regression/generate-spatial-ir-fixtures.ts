@@ -8,12 +8,12 @@ import {
     transformAstSource,
     type DocumentInput,
     type SpatialDocumentFixture
-} from '@vmprint/source-transformer-ast';
+} from '../../harness/ast-transform';
 import {
     AST_FIXTURES_DIR,
     getAstFixturePath,
     listAstFixtureNames
-} from '../../../../source-transformers/ast/tests/harness/ast-fixture-harness';
+} from '../../harness/ast-fixture-harness';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

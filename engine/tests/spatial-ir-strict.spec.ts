@@ -3,11 +3,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { LayoutEngine } from '../src/engine/layout-engine';
-import { resolveDocumentPaths, toLayoutConfig, type DocumentIR } from '@vmprint/source-transformer-ast';
+import { resolveDocumentPaths, toLayoutConfig, type DocumentIR } from '../src';
 import type { SpatialDocument } from '../src/engine/spatial-document';
 import { HARNESS_REGRESSION_CASES_DIR, loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
-import { getAstFixturePath, listAstFixtureNames } from '../../source-transformers/ast/tests/harness/ast-fixture-harness';
+import { getAstFixturePath, listAstFixtureNames } from './harness/ast-fixture-harness';
 
 function logStep(message: string): void {
     console.log(`[spatial-ir-strict.spec] ${message}`);

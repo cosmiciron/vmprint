@@ -1,4 +1,4 @@
-import { parseEmbeddedImagePayloadCached, LayoutUtils, solveTrackSizing } from '@vmprint/engine';
+import { parseEmbeddedImagePayloadCached, LayoutUtils, solveTrackSizing } from '../../src';
 import type {
   DocumentIR,
   Element,
@@ -10,7 +10,7 @@ import type {
   SpatialDocument,
   TableColumnSizing,
   ZoneDefinition
-} from '@vmprint/engine';
+} from '../../src';
 
 interface SourceRef {
   path: string;

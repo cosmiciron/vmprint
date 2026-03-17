@@ -3,8 +3,8 @@ import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import * as engineModule from '../src/index.ts';
 import * as harnessModule from './harness/engine-harness.ts';
-import { resolveDocumentPaths, toLayoutConfig } from '@vmprint/source-transformer-ast';
-import { getAstFixturePath, listAstFixtureNames } from '../../source-transformers/ast/tests/harness/ast-fixture-harness';
+import { resolveDocumentPaths, toLayoutConfig } from '../src';
+import { getAstFixturePath, listAstFixtureNames } from './harness/ast-fixture-harness';
 
 type BenchmarkMode = 'ast' | 'spatial-ir';
 

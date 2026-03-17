@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { transformAstSource } from '@vmprint/source-transformer-ast';
+import { transformAstSource } from './harness/ast-transform';
 import { HARNESS_REGRESSION_CASES_DIR } from './harness/engine-harness';
-import { loadAstJsonDocumentFixtures } from '../../source-transformers/ast/tests/harness/ast-fixture-harness';
+import { loadAstJsonDocumentFixtures } from './harness/ast-fixture-harness';
 
 const UPDATE_SPATIAL_IR_SNAPSHOTS =
     process.argv.includes('--update-spatial-ir-snapshots') || process.env.VMPRINT_UPDATE_SPATIAL_IR_SNAPSHOTS === '1';

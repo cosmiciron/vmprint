@@ -1,6 +1,6 @@
 # Spatial IR Fixtures
 
-`generate-spatial-ir-fixtures.ts` converts the AST compatibility fixtures from `source-transformers/ast/tests/fixtures/regression/` into sibling `.spatial-ir.json` files here.
+`generate-spatial-ir-fixtures.ts` converts the AST regression fixtures in this directory into sibling `.spatial-ir.json` files here.
 
 The generated files are intentionally provisional:
 

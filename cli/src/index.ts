@@ -7,8 +7,7 @@ import { LayoutEngine } from '@vmprint/engine';
 import { Renderer } from '@vmprint/engine';
 import { LayoutUtils } from '@vmprint/engine';
 import { createEngineRuntime } from '@vmprint/engine';
-import { AnnotatedLayoutStream, LayoutConfig, Page } from '@vmprint/engine';
-import { AstSourceTransformer } from '@vmprint/source-transformer-ast';
+import { AnnotatedLayoutStream, LayoutConfig, Page, resolveDocumentPaths, toLayoutConfig, type DocumentIR } from '@vmprint/engine';
 import { performance } from 'perf_hooks';
 import PdfContext from '@vmprint/context-pdf';
 
@@ -152,6 +151,7 @@ async function run() {
 
     let config: LayoutConfig;
     let pages: Page[];
+    let document: DocumentIR | undefined;
     let overlayPath: string | undefined;
 
     if (options.renderFromLayout) {
@@ -173,14 +173,15 @@ async function run() {
         }
         const inputRaw = fs.readFileSync(inputPath, 'utf-8');
         const sourceDocument = JSON.parse(inputRaw);
-        const transformer = new AstSourceTransformer();
-        const engine = new LayoutEngine({ sourceTransformer: transformer }, runtime);
-        const t0 = options.profileLayout ? performance.now() : 0;
-        pages = await engine.page({ document: sourceDocument, documentPath: inputPath });
+        document = resolveDocumentPaths(sourceDocument, inputPath);
         config = {
-            ...engine.getLastResolvedConfig(),
+            ...toLayoutConfig(document, false),
             debug: !!options.debug
         };
+        const engine = new LayoutEngine(config, runtime);
+        const t0 = options.profileLayout ? performance.now() : 0;
+        await engine.waitForFonts();
+        pages = engine.simulate(document.elements);
         if (options.profileLayout) {
             const t1 = performance.now();
             const coldPageMs = t1 - t0;
@@ -188,9 +189,10 @@ async function run() {
             const WARM_REPEATS = 2;
             let warmPageSum = 0;
             for (let i = 0; i < WARM_REPEATS; i++) {
-                const warmEngine = new LayoutEngine({ sourceTransformer: transformer }, runtime);
+                const warmEngine = new LayoutEngine(config, runtime);
                 const wt0 = performance.now();
-                await warmEngine.page({ document: sourceDocument, documentPath: inputPath });
+                await warmEngine.waitForFonts();
+                warmEngine.simulate(document.elements);
                 const wt1 = performance.now();
                 warmPageSum += wt1 - wt0;
             }

@@ -3,10 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { LayoutEngine } from '../src/engine/layout-engine';
-import { resolveDocumentPaths, toLayoutConfig } from '@vmprint/source-transformer-ast';
+import { resolveDocumentPaths, toLayoutConfig } from '../src';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
 import { loadLocalFontManager, snapshotPages } from './harness/engine-harness';
-import { getAstFixturePath } from '../../source-transformers/ast/tests/harness/ast-fixture-harness';
+import { getAstFixturePath } from './harness/ast-fixture-harness';
 
 function logStep(message: string): void {
     console.log(`[shared-runtime-font-leak.spec] ${message}`);

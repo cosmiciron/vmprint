@@ -6,7 +6,7 @@ import type {
     LayoutConfig,
     VmprintDocumentVersion,
     VmprintIRVersion
-} from '@vmprint/engine';
+} from './types';
 
 export const CURRENT_DOCUMENT_VERSION: VmprintDocumentVersion = '1.0';
 export const CURRENT_IR_VERSION: VmprintIRVersion = '1.0';

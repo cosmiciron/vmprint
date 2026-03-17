@@ -1,4 +1,5 @@
 export * from './engine/types';
+export * from './engine/document';
 export * from './engine/layout-engine';
 export * from './engine/renderer';
 export * from './font-management';

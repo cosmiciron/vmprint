@@ -12,8 +12,8 @@ import {
     snapshotPages,
     loadLocalFontManager
 } from './harness/engine-harness';
-import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '@vmprint/source-transformer-ast';
-import { loadAstJsonDocumentFixtures } from '../../source-transformers/ast/tests/harness/ast-fixture-harness';
+import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src';
+import { loadAstJsonDocumentFixtures } from './harness/ast-fixture-harness';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import {
     buildAssembledTableOfContentsElements,
@@ -889,9 +889,9 @@ async function run() {
     const fixtures = loadAstJsonDocumentFixtures();
     check(
         'fixture discovery',
-        'at least one AST fixture is present in source-transformers/ast/tests/fixtures/regression',
+        'at least one AST fixture is present in engine/tests/fixtures/regression',
         () => {
-            assert.ok(fixtures.length > 0, 'no AST fixtures found in source-transformers/ast/tests/fixtures/regression');
+            assert.ok(fixtures.length > 0, 'no AST fixtures found in engine/tests/fixtures/regression');
         }
     );
 

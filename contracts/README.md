@@ -158,23 +158,6 @@ interface Transmuter<Input = string, Output = unknown, Options = TransmuterOptio
 
 This decoupling allows tools like `draft2final` to orchestrate multiple input formats and default configurations without being coupled to the internal logic of any specific format.
 
-### `SourceTransformer`
-
-The contract for engine-facing source preparation. Implement this to take a source model such as `DocumentInput` and transform it into the engine-ready representation used by a particular runtime path.
-
-```ts
-interface SourceTransformer<Input = unknown, Output = unknown> {
-  transform(input: Input): Output;
-}
-```
-
-This sits downstream of transmuters:
-
-- transmuters are author-facing and choose how source is expressed
-- source transformers are engine-facing and choose how that source is prepared for a runtime
-
-In the current workspace, `@vmprint/source-transformer-ast` is the compatibility implementation that takes the legacy AST-shaped `DocumentInput` and produces the normalized document/config/Spatial IR artifacts used by the refactor path.
-
 ## Usage
 
 ```bash
@@ -182,7 +165,7 @@ npm install @vmprint/contracts
 ```
 
 ```ts
-import type { FontManager, Context, OverlayProvider, SourceTransformer } from '@vmprint/contracts';
+import type { FontManager, Context, OverlayProvider, Transmuter } from '@vmprint/contracts';
 ```
 
 Because all exports are TypeScript interfaces, the import adds no runtime weight — types are fully erased at compile time. Importing `@vmprint/contracts` in a production build costs exactly zero bytes.

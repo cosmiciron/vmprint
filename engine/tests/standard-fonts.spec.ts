@@ -4,12 +4,12 @@ import path from 'node:path';
 import { ContextFontRegistrationOptions } from '@vmprint/contracts';
 import { LayoutEngine } from '../src/engine/layout-engine';
 import { Renderer } from '../src/engine/renderer';
-import { toLayoutConfig, resolveDocumentPaths } from '@vmprint/source-transformer-ast';
+import { toLayoutConfig, resolveDocumentPaths } from '../src';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { createEngineRuntime } from '../src/engine/runtime';
 import { encodeStandardFontText } from '../src/font-management/standard-font-encoding';
 import { getStandardFontMetadata, parseStandardFontSentinelBuffer } from '../src/font-management/sentinel';
-import { getAstFixturePath } from '../../source-transformers/ast/tests/harness/ast-fixture-harness';
+import { getAstFixturePath } from './harness/ast-fixture-harness';
 import {
     assertFlatPipelineInvariants,
     loadStandardFontManager,

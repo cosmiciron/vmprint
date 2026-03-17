@@ -2,14 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { resolveDocumentPaths, type DocumentIR } from '../../src';
+import { HARNESS_REGRESSION_CASES_DIR } from './engine-harness';
 
-const PACKAGE_ROOT = path.resolve(__dirname, '..', '..');
-
-export const AST_FIXTURES_DIR = path.join(PACKAGE_ROOT, 'tests', 'fixtures', 'regression');
+export const AST_FIXTURES_DIR = HARNESS_REGRESSION_CASES_DIR;
 
 export function listAstFixtureNames(casesDir: string = AST_FIXTURES_DIR): string[] {
     return fs.readdirSync(casesDir)
         .filter((file) => file.toLowerCase().endsWith('.json'))
+        .filter((file) => !file.endsWith('.snapshot.layout.json'))
+        .filter((file) => !file.endsWith('.spatial-ir.json'))
         .sort((a, b) => a.localeCompare(b));
 }
 
