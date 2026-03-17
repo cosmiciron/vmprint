@@ -19,16 +19,6 @@ export interface SpatialSourceRef {
     sourceRange?: Record<string, unknown>;
 }
 
-export class SpatialSourceRecoveryError extends Error {
-    readonly sourcePath: string;
-
-    constructor(message: string, sourcePath: string) {
-        super(message);
-        this.name = 'SpatialSourceRecoveryError';
-        this.sourcePath = sourcePath;
-    }
-}
-
 export interface SpatialDocument {
     spatialIrVersion?: string;
     pageTemplate?: {
@@ -80,7 +70,7 @@ export interface SpatialFlowBlock {
         mimeType: string;
         intrinsicWidth: number;
         intrinsicHeight: number;
-        fit: string;
+        fit: 'contain' | 'fill';
     };
     pageOverrides?: {
         header?: SpatialCompiledPageRegion | null;
@@ -167,8 +157,6 @@ export type SpatialZoneContentItem =
     | SpatialGrid;
 
 type SpatialAdaptOptions = {
-    sourceDocument?: DocumentInput | DocumentIR;
-    strictSourceRecovery?: boolean;
 };
 
 function cloneElement(element: Element): Element {
@@ -186,105 +174,6 @@ function clonePageRegionContent(content: PageRegionContent | null | undefined): 
 function stripPathSuffix(path: string): string {
     const suffixIndex = path.indexOf('#');
     return suffixIndex >= 0 ? path.slice(0, suffixIndex) : path;
-}
-
-function buildStorySegments(children: Element[] | undefined): Element[][] {
-    const sourceChildren = Array.isArray(children) ? children : [];
-    const segments: Element[][] = [];
-    let cursor = 0;
-    while (cursor < sourceChildren.length) {
-        const child = sourceChildren[cursor];
-        const span = child?.properties?.columnSpan;
-        const isSpan = span === 'all' || (typeof span === 'number' && Number.isFinite(span) && span >= 2);
-        if (isSpan) {
-            cursor += 1;
-            continue;
-        }
-
-        const segment: Element[] = [];
-        while (cursor < sourceChildren.length) {
-            const segmentChild = sourceChildren[cursor];
-            const segmentSpan = segmentChild?.properties?.columnSpan;
-            const hitsSpan = segmentSpan === 'all' || (typeof segmentSpan === 'number' && Number.isFinite(segmentSpan) && segmentSpan >= 2);
-            if (hitsSpan) break;
-            segment.push(segmentChild);
-            cursor += 1;
-        }
-        if (segment.length > 0) segments.push(segment);
-    }
-    return segments;
-}
-
-function resolveSyntheticSegmentPath(sourceDocument: DocumentInput | DocumentIR, cleanPath: string): Element | null {
-    const match = cleanPath.match(/^(.*)\.children\.segment\[(\d+)\]\[(\d+)\]$/);
-    if (!match) return null;
-    const [, parentPath, rawSegmentIndex, rawChildIndex] = match;
-    const parent = resolveSourceElement(sourceDocument, { path: parentPath });
-    if (!parent) return null;
-    const segments = buildStorySegments(parent.children);
-    const segment = segments[Number(rawSegmentIndex)];
-    const child = segment?.[Number(rawChildIndex)];
-    return child ? cloneElement(child) : null;
-}
-
-function resolvePathToken(target: any, token: string): any {
-    if (!token) return target;
-    const match = token.match(/^([A-Za-z_][A-Za-z0-9_]*)\[(\d+)\]$/);
-    if (match) {
-        const [, key, rawIndex] = match;
-        const next = target?.[key];
-        return Array.isArray(next) ? next[Number(rawIndex)] : undefined;
-    }
-    return target?.[token];
-}
-
-function resolveRelativeSourceElement(baseElement: Element | null, basePath: string | undefined, targetPath: string | undefined): Element | null {
-    if (!baseElement || !basePath || !targetPath) return null;
-    const cleanBasePath = stripPathSuffix(basePath).trim();
-    const cleanTargetPath = stripPathSuffix(targetPath).trim();
-    if (!cleanBasePath || !cleanTargetPath || !cleanTargetPath.startsWith(`${cleanBasePath}.`)) return null;
-
-    const relativePath = cleanTargetPath.slice(cleanBasePath.length + 1);
-    const tokens = relativePath.split('.').filter((token) => token.length > 0);
-    let current: any = baseElement;
-    for (const token of tokens) {
-        current = resolvePathToken(current, token);
-        if (current === undefined || current === null) return null;
-    }
-    if (!current || typeof current !== 'object' || typeof current.type !== 'string') return null;
-    return cloneElement(current as Element);
-}
-
-function resolveSourceElement(sourceDocument: DocumentInput | DocumentIR | undefined, source: SpatialSourceRef | undefined): Element | null {
-    if (!sourceDocument || !source?.path) return null;
-    const cleanPath = stripPathSuffix(source.path).trim();
-    if (!cleanPath) return null;
-    if (cleanPath.includes('.children.segment[')) {
-        return resolveSyntheticSegmentPath(sourceDocument, cleanPath);
-    }
-    const tokens = cleanPath.split('.').filter((token) => token.length > 0);
-    let current: any = sourceDocument;
-    for (const token of tokens) {
-        current = resolvePathToken(current, token);
-        if (current === undefined || current === null) return null;
-    }
-    if (!current || typeof current !== 'object' || typeof current.type !== 'string') return null;
-    return cloneElement(current as Element);
-}
-
-function resolveSourceElementStrict(
-    options: SpatialAdaptOptions,
-    source: SpatialSourceRef | undefined,
-    context: string
-): Element | null {
-    if (!source?.path) return null;
-    if (options.strictSourceRecovery) {
-        throw new SpatialSourceRecoveryError(
-            `[spatial-document] Strict Spatial IR mode forbids source recovery in ${context} (${source.path}).`,
-            source.path
-        );
-    }
-    return resolveSourceElement(options.sourceDocument, source);
 }
 
 function applySpatialSourceProperties(properties: ElementProperties, source: SpatialSourceRef | undefined): ElementProperties {
@@ -330,20 +219,11 @@ function createBaseElement(type: string, content: string): Element {
 
 function adaptFlowBlock(
     block: SpatialFlowBlock,
-    options: SpatialAdaptOptions,
-    sourceElementOverride?: Element | null
+    options: SpatialAdaptOptions
 ): Element {
-    const element = options.strictSourceRecovery
-        ? createBaseElement(block.sourceType || 'p', block.content || '')
-        : (
-            sourceElementOverride
-            ?? resolveSourceElementStrict(options, block.source, 'adaptFlowBlock')
-            ?? createBaseElement(block.sourceType || 'p', block.content || '')
-        );
+    const element = createBaseElement(block.sourceType || 'p', block.content || '');
     element.type = block.sourceType || element.type || 'p';
-    if ((block.content || '').length > 0 || !Array.isArray(element.children) || element.children.length === 0) {
-        element.content = block.content || '';
-    }
+    element.content = block.content || '';
     if (Array.isArray(block.children) && block.children.length > 0) {
         element.children = JSON.parse(JSON.stringify(block.children));
     }
@@ -408,15 +288,10 @@ function adaptBlockObstacle(obstacle: SpatialBlockObstacle, options: SpatialAdap
         width: obstacle.width,
         height: obstacle.height
     };
-    const sourceElement = options.strictSourceRecovery
-        ? null
-        : resolveSourceElementStrict(options, obstacle.source, 'adaptBlockObstacle');
-    const sourceLayout = sourceElement?.properties?.layout as Record<string, unknown> | undefined;
     element.properties = applySpatialSourceProperties({
         ...(element.properties || {}),
         style: baseStyle,
         layout: {
-            ...(sourceLayout || {}),
             mode: obstacle.mode,
             align: obstacle.align,
             wrap: obstacle.wrap,
@@ -466,21 +341,14 @@ function adaptZoneStrip(strip: SpatialZoneStrip, options: SpatialAdaptOptions): 
 }
 
 function adaptSpatialGridCell(cell: SpatialGridCell, options: SpatialAdaptOptions): Element {
-    const sourceCell = options.strictSourceRecovery
-        ? null
-        : resolveSourceElementStrict(options, cell.source, 'adaptSpatialGridCell');
     const contentItems = cell.content?.items || [];
     const singleFlowBlock = contentItems.length === 1 && contentItems[0]?.kind === 'flow-block'
         ? contentItems[0] as SpatialFlowBlock
         : null;
-    const element = sourceCell ?? createBaseElement('table-cell', '');
+    const element = createBaseElement('table-cell', '');
 
     if (singleFlowBlock) {
-        const resolved = adaptFlowBlock(
-            singleFlowBlock,
-            options,
-            resolveRelativeSourceElement(sourceCell, cell.source?.path, singleFlowBlock.source?.path)
-        );
+        const resolved = adaptFlowBlock(singleFlowBlock, options);
         element.type = element.type || 'table-cell';
         const resolvedHasContent = typeof resolved.content === 'string' && resolved.content.length > 0;
         const resolvedHasChildren = Array.isArray(resolved.children) && resolved.children.length > 0;
@@ -512,9 +380,6 @@ function adaptSpatialGridCell(cell: SpatialGridCell, options: SpatialAdaptOption
 }
 
 function adaptSpatialGrid(grid: SpatialGrid, options: SpatialAdaptOptions): Element {
-    const sourceElement = options.strictSourceRecovery
-        ? null
-        : resolveSourceElementStrict(options, grid.source, 'adaptSpatialGrid');
     const rowsByIndex = new Map<number, SpatialGridCell[]>();
     for (const cell of grid.cells) {
         const existing = rowsByIndex.get(cell.row) ?? [];
@@ -537,9 +402,7 @@ function adaptSpatialGrid(grid: SpatialGrid, options: SpatialAdaptOptions): Elem
             } satisfies Element;
         });
 
-    const baseTable = sourceElement?.type === 'table'
-        ? sourceElement
-        : createBaseElement('table', '');
+    const baseTable = createBaseElement('table', '');
     baseTable.children = rows;
     baseTable.properties = applySpatialSourceProperties({
         ...(baseTable.properties || {}),
@@ -654,18 +517,6 @@ export function spatialItemsToElements(items: SpatialZoneContentItem[], options:
                 linkedStoryItems.push(items[index]);
             }
 
-            if (options.sourceDocument) {
-                const sourceStory = resolveSourceElementStrict(
-                    options,
-                    { path: linkedStoryBasePath },
-                    'spatialItemsToElements(linked-story)'
-                );
-                if (sourceStory?.type === 'story') {
-                    out.push(sourceStory);
-                    continue;
-                }
-            }
-
             const adaptedStory = adaptLinkedStoryFromSpatialItems(linkedStoryItems, linkedStoryBasePath, options);
             if (adaptedStory) {
                 out.push(adaptedStory);
@@ -678,22 +529,21 @@ export function spatialItemsToElements(items: SpatialZoneContentItem[], options:
     return out;
 }
 
-export function spatialDocumentToElements(document: SpatialDocument, sourceDocument?: DocumentInput | DocumentIR): Element[] {
-    return spatialItemsToElements(document.items || [], { sourceDocument });
+export function spatialDocumentToElements(document: SpatialDocument): Element[] {
+    return spatialItemsToElements(document.items || [], {});
 }
 
 export function spatialDocumentToElementsStrict(document: SpatialDocument): Element[] {
-    return spatialItemsToElements(document.items || [], { strictSourceRecovery: true });
+    return spatialItemsToElements(document.items || [], {});
 }
 
 export function applySpatialDocumentPageTemplate(
     document: SpatialDocument,
-    fallback: Pick<DocumentInput | DocumentIR, 'header' | 'footer'>,
-    sourceDocument?: DocumentInput | DocumentIR
+    fallback: Pick<DocumentInput | DocumentIR, 'header' | 'footer'>
 ): Pick<DocumentInput, 'header' | 'footer'> {
     return {
-        header: adaptPageRegionSet(document.pageTemplate?.header, fallback.header, { sourceDocument }),
-        footer: adaptPageRegionSet(document.pageTemplate?.footer, fallback.footer, { sourceDocument })
+        header: adaptPageRegionSet(document.pageTemplate?.header, fallback.header, {}),
+        footer: adaptPageRegionSet(document.pageTemplate?.footer, fallback.footer, {})
     };
 }
 
@@ -702,7 +552,7 @@ export function applySpatialDocumentPageTemplateStrict(
     fallback: Pick<DocumentInput | DocumentIR, 'header' | 'footer'>
 ): Pick<DocumentInput, 'header' | 'footer'> {
     return {
-        header: adaptPageRegionSet(document.pageTemplate?.header, fallback.header, { strictSourceRecovery: true }),
-        footer: adaptPageRegionSet(document.pageTemplate?.footer, fallback.footer, { strictSourceRecovery: true })
+        header: adaptPageRegionSet(document.pageTemplate?.header, fallback.header, {}),
+        footer: adaptPageRegionSet(document.pageTemplate?.footer, fallback.footer, {})
     };
 }

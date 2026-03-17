@@ -3,11 +3,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { LayoutEngine } from '../src/engine/layout-engine';
-import { resolveDocumentPaths, toLayoutConfig } from '../src/engine/document';
-import type { DocumentIR } from '../src/engine/types';
+import { resolveDocumentPaths, toLayoutConfig, type DocumentIR } from '@vmprint/source-transformer-ast';
 import type { SpatialDocument } from '../src/engine/spatial-document';
 import { HARNESS_REGRESSION_CASES_DIR, loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
+import { getAstFixturePath } from '../../source-transformers/ast/tests/harness/ast-fixture-harness';
 
 function logStep(message: string): void {
     console.log(`[spatial-ir-engine.spec] ${message}`);
@@ -59,7 +59,7 @@ async function run(): Promise<void> {
 
     for (const fixtureName of selectedFixtures) {
         logStep(`Fixture: ${fixtureName}`);
-        const fixturePath = path.join(HARNESS_REGRESSION_CASES_DIR, fixtureName);
+        const fixturePath = getAstFixturePath(fixtureName);
         const spatialIrPath = resolveSpatialIrPath(fixtureName);
         const snapshotPath = resolveSnapshotPath(fixtureName);
 
@@ -74,8 +74,7 @@ async function run(): Promise<void> {
         const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
         setDefaultEngineRuntime(runtime);
         const engine = new LayoutEngine(toLayoutConfig(sourceDocument, false), runtime);
-        await engine.waitForFonts();
-        const pages = engine.simulateSpatialDocument(spatialDocument, sourceDocument);
+        const pages = await engine.page(spatialDocument);
 
         assert.deepEqual(
             snapshotPages(pages),

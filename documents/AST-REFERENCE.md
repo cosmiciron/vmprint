@@ -1,6 +1,6 @@
 # VMPrint AST Reference
 
-This document is the complete reference for the **VMPrint document input format** — the JSON/object tree you construct and pass to the layout engine. It covers every supported node type, property, style field, and configuration option.
+This document is the complete reference for the **VMPrint document input format** - the JSON/object tree you construct and hand to a `SourceTransformer`. It covers every supported node type, property, style field, and configuration option.
 
 ---
 
@@ -8,16 +8,17 @@ This document is the complete reference for the **VMPrint document input format*
 
 ```
 Markdown string
-  → [remark / semantic.ts]
+  -> [remark / semantic.ts]
 SemanticDocument                (draft2final intermediate layer)
-  → [FormatHandler / FormatContext]
-DocumentInput / Element tree    ← you work here
-  → [LayoutEngine]
-Page[] of Box[]                 (flat, positioned output — not authored)
+  -> [FormatHandler / FormatContext]
+DocumentInput / Element tree    <- you work here
+  -> [SourceTransformer]
+SpatialDocument / runtime config
+  -> [LayoutEngine]
+Page[] of Box[]                 (flat, positioned output - not authored)
 ```
 
-Direct callers always construct **`DocumentInput`**. The `SemanticDocument` layer is only relevant when using `draft2final`.
-
+Direct callers usually construct **`DocumentInput`**. The compatibility path that turns it into engine-ready runtime input now lives in `@vmprint/source-transformer-ast`. The `SemanticDocument` layer is only relevant when using `draft2final`.
 ---
 
 ## 2. `DocumentInput` — Root Object
@@ -783,11 +784,13 @@ When using `draft2final`, transmuters emit elements with these `type` strings in
 | What | Where |
 |---|---|
 | All type definitions | [engine/src/engine/types.ts](../engine/src/engine/types.ts) |
-| Input validation | [engine/src/engine/document.ts](../engine/src/engine/document.ts) |
+| AST compatibility transformer | [source-transformers/ast/src/document.ts](../source-transformers/ast/src/document.ts) |
+| AST -> Spatial IR fixture normalization | [source-transformers/ast/src/spatialize.ts](../source-transformers/ast/src/spatialize.ts) |
 | Architecture narrative | [documents/ARCHITECTURE.md](ARCHITECTURE.md) |
 | Header/footer details | [documents/HEADER-FOOTER.md](HEADER-FOOTER.md) |
 | Overlay system | [documents/OVERLAY.md](OVERLAY.md) |
 | Standard fonts | [documents/STANDARD-FONTS.md](STANDARD-FONTS.md) |
 | Markdown compilation core | [markdown-core/src/index.ts](../markdown-core/src/index.ts) |
 | Transmuter implementations | [transmuters/](../transmuters/) |
+| Source transformer implementations | [source-transformers/](../source-transformers/) |
 | Regression fixtures | [engine/tests/fixtures/](../engine/tests/fixtures/) |

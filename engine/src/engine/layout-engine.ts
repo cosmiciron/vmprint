@@ -1,3 +1,4 @@
+import type { SourceTransformer } from '@vmprint/contracts';
 import { Element, LayoutConfig } from './types';
 import { LayoutProcessor } from './layout/layout-core';
 import {
@@ -25,25 +26,111 @@ import {
 } from './layout/simulation-report';
 import { EngineRuntime } from './runtime';
 
+export interface TransformedSpatialSource {
+    spatialDocument: SpatialDocument;
+    layoutConfig?: LayoutConfig;
+}
+
+export interface LayoutEngineOptions<TSource = SpatialDocument> {
+    sourceTransformer?: SourceTransformer<TSource, SpatialDocument | TransformedSpatialSource>;
+}
+
+const DEFAULT_ENGINE_LAYOUT_CONFIG: LayoutConfig = {
+    layout: {
+        pageSize: 'LETTER',
+        margins: { top: 72, right: 72, bottom: 72, left: 72 },
+        fontFamily: 'Helvetica',
+        fontSize: 12,
+        lineHeight: 1.2
+    },
+    fonts: {
+        regular: 'Helvetica'
+    },
+    styles: {},
+    preloadFontFamilies: [],
+    debug: false
+};
+
+function isLayoutConfig(value: unknown): value is LayoutConfig {
+    return !!value && typeof value === 'object' && 'layout' in value && 'styles' in value && 'fonts' in value;
+}
+
+function isSpatialDocument(value: unknown): value is SpatialDocument {
+    return !!value && typeof value === 'object' && Array.isArray((value as SpatialDocument).items);
+}
+
+function isTransformedSpatialSource(value: unknown): value is TransformedSpatialSource {
+    return !!value
+        && typeof value === 'object'
+        && 'spatialDocument' in value
+        && isSpatialDocument((value as TransformedSpatialSource).spatialDocument);
+}
+
 /**
  * LayoutEngine shapes elements into flow boxes, paginates them, and returns
  * positioned page boxes for rendering.
  */
 export class LayoutEngine extends LayoutProcessor {
-    constructor(config: LayoutConfig, runtime?: EngineRuntime) {
+    private readonly sourceTransformer?: SourceTransformer<any, SpatialDocument | TransformedSpatialSource>;
+    private lastResolvedConfig: LayoutConfig;
+
+    constructor(config: LayoutConfig, runtime?: EngineRuntime, options?: LayoutEngineOptions<any>);
+    constructor(options: LayoutEngineOptions<any>, runtime?: EngineRuntime);
+    constructor(
+        configOrOptions: LayoutConfig | LayoutEngineOptions<any> = DEFAULT_ENGINE_LAYOUT_CONFIG,
+        runtime?: EngineRuntime,
+        options?: LayoutEngineOptions<any>
+    ) {
+        const config = isLayoutConfig(configOrOptions) ? configOrOptions : DEFAULT_ENGINE_LAYOUT_CONFIG;
+        const resolvedOptions = isLayoutConfig(configOrOptions) ? options : configOrOptions;
         super(config, runtime);
+        this.sourceTransformer = resolvedOptions?.sourceTransformer;
+        this.lastResolvedConfig = config;
     }
 
-    simulateSpatialDocument(document: SpatialDocument, sourceDocument?: { header?: any; footer?: any; elements?: Element[] }): ReturnType<LayoutProcessor['simulate']> {
-        const elements = spatialDocumentToElements(document, sourceDocument as any);
+    getLastResolvedConfig(): LayoutConfig {
+        return this.lastResolvedConfig;
+    }
+
+    private resolveSpatialSource(source: unknown): TransformedSpatialSource {
+        if (this.sourceTransformer) {
+            const transformed = this.sourceTransformer.transform(source);
+            if (isSpatialDocument(transformed)) {
+                return { spatialDocument: transformed };
+            }
+            if (isTransformedSpatialSource(transformed)) {
+                return transformed;
+            }
+            throw new Error('[LayoutEngine] SourceTransformer must return a SpatialDocument or { spatialDocument, layoutConfig? }.');
+        }
+
+        if (isSpatialDocument(source)) {
+            return { spatialDocument: source };
+        }
+
+        throw new Error('[LayoutEngine] No SourceTransformer configured, so page() expects a SpatialDocument.');
+    }
+
+    async page(source: unknown): Promise<ReturnType<LayoutProcessor['simulate']>> {
+        const prepared = this.resolveSpatialSource(source);
+        const config = prepared.layoutConfig ?? this.config;
+        this.lastResolvedConfig = config;
+        const engine = prepared.layoutConfig ? new LayoutEngine(config, this.runtime) : this;
+        engine.lastResolvedConfig = config;
+        await engine.waitForFonts();
+        return engine.simulateSpatialDocument(prepared.spatialDocument);
+    }
+
+    simulateSpatialDocument(document: SpatialDocument): ReturnType<LayoutProcessor['simulate']> {
+        const elements = spatialDocumentToElements(document);
         const hasPageTemplateOverrides = !!(document.pageTemplate?.header || document.pageTemplate?.footer);
         if (!hasPageTemplateOverrides) {
             return this.simulate(elements);
         }
         const pageTemplate = applySpatialDocumentPageTemplate(document, {
-            header: sourceDocument?.header ?? this.config.header,
-            footer: sourceDocument?.footer ?? this.config.footer
-        }, sourceDocument as any);
+            header: this.config.header,
+            footer: this.config.footer
+        });
         const derivedConfig: LayoutConfig = {
             ...this.config,
             header: pageTemplate.header,

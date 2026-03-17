@@ -4,15 +4,16 @@ import path from 'node:path';
 import { LayoutEngine } from '../src/engine/layout-engine';
 import { Renderer } from '../src/engine/renderer';
 import {
+    HARNESS_REGRESSION_CASES_DIR,
     MockContext,
     assertAdvancedLayoutSignals,
     assertAdvancedRenderSignals,
     assertFlatPipelineInvariants,
-    loadJsonDocumentFixtures,
     snapshotPages,
     loadLocalFontManager
 } from './harness/engine-harness';
-import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src/engine/document';
+import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '@vmprint/source-transformer-ast';
+import { loadAstJsonDocumentFixtures } from '../../source-transformers/ast/tests/harness/ast-fixture-harness';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import {
     buildAssembledTableOfContentsElements,
@@ -848,13 +849,15 @@ function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: s
     );
 }
 
-function resolveSnapshotPath(fixturePath: string): string {
-    const ext = path.extname(fixturePath);
-    return fixturePath.slice(0, fixturePath.length - ext.length) + '.snapshot.layout.json';
+function resolveSnapshotPath(fixtureName: string): string {
+    return path.join(
+        HARNESS_REGRESSION_CASES_DIR,
+        fixtureName.slice(0, fixtureName.length - '.json'.length) + '.snapshot.layout.json'
+    );
 }
 
-function assertSnapshot(fixtureName: string, fixturePath: string, pages: any[]): void {
-    const snapshotPath = resolveSnapshotPath(fixturePath);
+function assertSnapshot(fixtureName: string, pages: any[]): void {
+    const snapshotPath = resolveSnapshotPath(fixtureName);
     const actual = snapshotPages(pages);
 
     if (!fs.existsSync(snapshotPath)) {
@@ -883,12 +886,12 @@ async function run() {
     setDefaultEngineRuntime(createEngineRuntime({ fontManager: new LocalFontManager() }));
 
     logStep('Scenario: fixture-driven deterministic pagination and renderer regression checks');
-    const fixtures = loadJsonDocumentFixtures();
+    const fixtures = loadAstJsonDocumentFixtures();
     check(
         'fixture discovery',
-        'at least one JSON fixture is present in src/tests/fixtures/regression',
+        'at least one AST fixture is present in source-transformers/ast/tests/fixtures/regression',
         () => {
-            assert.ok(fixtures.length > 0, 'no JSON fixtures found in src/tests/fixtures/regression');
+            assert.ok(fixtures.length > 0, 'no AST fixtures found in source-transformers/ast/tests/fixtures/regression');
         }
     );
 
@@ -946,7 +949,7 @@ async function run() {
             `${fixture.name} layout snapshot`,
             'matches stored snapshot',
             () => {
-                assertSnapshot(fixture.name, fixturePath, pagesA);
+                assertSnapshot(fixture.name, pagesA);
             }
         );
         if (fixture.name.startsWith('05-page-size-') || fixture.name.startsWith('06-page-size-')) {

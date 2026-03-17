@@ -15,7 +15,7 @@ import { applyAdvancedJustification } from '../src/engine/layout/text-justificat
 import { tryHyphenateSegmentToFit } from '../src/engine/layout/text-hyphenation';
 import { getRichSegments } from '../src/engine/layout/rich-text-extractor';
 import { TextSegment } from '../src/engine/types';
-import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src/engine/document';
+import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '@vmprint/source-transformer-ast';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { solveTrackSizing } from '../src/engine/layout/track-sizing';
 import { createEngineRuntime } from '../src/engine/runtime';

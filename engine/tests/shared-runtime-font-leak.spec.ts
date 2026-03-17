@@ -3,16 +3,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { LayoutEngine } from '../src/engine/layout-engine';
-import { resolveDocumentPaths, toLayoutConfig } from '../src/engine/document';
+import { resolveDocumentPaths, toLayoutConfig } from '@vmprint/source-transformer-ast';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
-import { HARNESS_REGRESSION_CASES_DIR, loadLocalFontManager, snapshotPages } from './harness/engine-harness';
+import { loadLocalFontManager, snapshotPages } from './harness/engine-harness';
+import { getAstFixturePath } from '../../source-transformers/ast/tests/harness/ast-fixture-harness';
 
 function logStep(message: string): void {
     console.log(`[shared-runtime-font-leak.spec] ${message}`);
 }
 
 function loadFixtureDocument(fixtureName: string) {
-    const fixturePath = path.join(HARNESS_REGRESSION_CASES_DIR, fixtureName);
+    const fixturePath = getAstFixturePath(fixtureName);
     return resolveDocumentPaths(
         JSON.parse(fs.readFileSync(fixturePath, 'utf8')),
         fixturePath

@@ -1,4 +1,12 @@
-import { DocumentIR, DocumentInput, Element, ElementProperties, LayoutConfig, VmprintDocumentVersion, VmprintIRVersion } from './types';
+import type {
+    DocumentIR,
+    DocumentInput,
+    Element,
+    ElementProperties,
+    LayoutConfig,
+    VmprintDocumentVersion,
+    VmprintIRVersion
+} from '@vmprint/engine';
 
 export const CURRENT_DOCUMENT_VERSION: VmprintDocumentVersion = '1.0';
 export const CURRENT_IR_VERSION: VmprintIRVersion = '1.0';

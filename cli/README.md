@@ -26,7 +26,7 @@ The module is loaded with `import()` at runtime. You can develop and iterate on 
 
 ## Reference design
 
-The CLI is approximately 225 lines of TypeScript. It demonstrates the complete, correct pattern for integrating vmprint: load a document, resolve paths, configure the engine runtime, wait for fonts, paginate, render, handle the output stream. If you're embedding vmprint into a larger application, the CLI source is the clearest available example of how to do it.
+The CLI is approximately 225 lines of TypeScript. It demonstrates the complete, correct pattern for integrating vmprint: load a source document, run it through a `SourceTransformer`, configure the engine runtime, wait for fonts, paginate, render, handle the output stream. If you're embedding vmprint into a larger application, the CLI source is the clearest available example of how to do it.
 
 ## Production batch processing
 
@@ -39,17 +39,6 @@ The CLI works as a production pipeline. Write a driver script that generates `Do
 ---
 
 ## Key Capabilities
-
-### IR dump — the document before layout
-
-```bash
-vmprint --input document.json --output out.pdf --dump-ir
-# Writes: out.ir.json
-```
-
-`--dump-ir` writes the canonical `DocumentIR` — the resolved, normalized document representation — before any layout occurs. Font references are resolved to actual file paths. Relative image paths are made absolute. Configuration is normalized.
-
-This is the pre-layout checkpoint. If a document renders incorrectly, inspecting the IR is the right first step: verify that the document parsed and resolved the way you expected before the layout engine ever touches it. It is also the right artifact for tooling that needs to inspect or transform documents before layout — the IR is stable, typed, and fully self-contained.
 
 ### Layout stream — the output of layout, before rendering
 

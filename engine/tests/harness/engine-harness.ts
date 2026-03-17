@@ -3,9 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { Context, ContextImageOptions, ContextTextOptions } from '@vmprint/contracts';
-import { DocumentIR, Page } from '../../src/engine/types';
+import { Page } from '../../src/engine/types';
 import { LayoutUtils } from '../../src/engine/layout/layout-utils';
-import { resolveDocumentPaths } from '../../src/engine/document';
 
 const COMBINING_MARK_REGEX = /[\u0300-\u036f]/;
 
@@ -57,19 +56,6 @@ export async function loadStandardFontManager(): Promise<any> {
 
 type TextTraceCall = { str: string; x: number; y: number };
 type ImageTraceCall = { x: number; y: number; width: number; height: number };
-
-export function loadJsonDocumentFixtures(casesDir: string = HARNESS_REGRESSION_CASES_DIR): Array<{ name: string; document: DocumentIR; filePath: string }> {
-    const files = fs.readdirSync(casesDir)
-        .filter((file) => file.toLowerCase().endsWith('.json') && !file.toLowerCase().endsWith('.snapshot.layout.json'))
-        .filter((file) => !file.toLowerCase().endsWith('.spatial-ir.json'))
-        .sort((a, b) => a.localeCompare(b));
-
-    return files.map((name) => ({
-        name,
-        filePath: path.join(casesDir, name),
-        document: resolveDocumentPaths(JSON.parse(fs.readFileSync(path.join(casesDir, name), 'utf-8')), path.join(casesDir, name))
-    }));
-}
 
 export function snapshotPages(pages: Page[]): any {
     // This snapshot shape is intentionally numeric/text-only so deep equality

@@ -51,6 +51,7 @@
   "devDependencies": {
     "@types/node": "^22.13.1",
     "@vmprint/local-fonts": "file:../font-managers/local",
+    "@vmprint/source-transformer-ast": "file:../source-transformers/ast",
     "@vmprint/standard-fonts": "file:../font-managers/standard",
     "rimraf": "^6.1.3",
     "tsx": "^4.21.0",
