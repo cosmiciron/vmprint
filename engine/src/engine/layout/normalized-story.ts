@@ -1,0 +1,81 @@
+import type { Element, StoryFloatAlign, StoryLayoutDirective, StoryWrapMode } from '../types';
+
+export type NormalizedStoryChildKind =
+    | 'flow'
+    | 'column-span'
+    | 'story-absolute-image'
+    | 'float-image'
+    | 'float-block'
+    | 'block-image';
+
+export interface NormalizedStoryLayout {
+    mode?: 'float' | 'story-absolute';
+    x: number;
+    y: number;
+    align: StoryFloatAlign;
+    wrap: StoryWrapMode;
+    gap: number;
+}
+
+export interface NormalizedStoryChild {
+    childIndex: number;
+    element: Element;
+    kind: NormalizedStoryChildKind;
+    layout?: NormalizedStoryLayout;
+}
+
+export interface NormalizedStory {
+    sourceElement: Element;
+    columns: number;
+    gutter: number;
+    balance: boolean;
+    children: NormalizedStoryChild[];
+}
+
+function normalizeLayout(layout?: StoryLayoutDirective): NormalizedStoryLayout | undefined {
+    if (!layout) return undefined;
+    return {
+        mode: layout.mode,
+        x: Math.max(0, Number(layout.x ?? 0)),
+        y: Math.max(0, Number(layout.y ?? 0)),
+        align: (layout.align ?? 'left') as StoryFloatAlign,
+        wrap: (layout.wrap ?? 'around') as StoryWrapMode,
+        gap: Math.max(0, Number(layout.gap ?? 0))
+    };
+}
+
+function classifyChild(element: Element, layout?: NormalizedStoryLayout): NormalizedStoryChildKind {
+    const span = element.properties?.columnSpan;
+    if (span === 'all' || (typeof span === 'number' && Number.isFinite(span) && span > 1)) {
+        return 'column-span';
+    }
+    if (layout?.mode === 'story-absolute' && element.properties?.image) return 'story-absolute-image';
+    if (layout?.mode === 'float' && element.properties?.image) return 'float-image';
+    if (layout?.mode === 'float' && !element.properties?.image) return 'float-block';
+    if (element.properties?.image && !layout?.mode) return 'block-image';
+    return 'flow';
+}
+
+export function normalizeStoryElement(element: Element): NormalizedStory {
+    const rawColumns = Math.max(1, Math.floor(Number(element.columns || 1)));
+    const rawGutter = Math.max(0, Number(element.gutter ?? 0));
+    const rawBalance = (element as any).balance ?? element.properties?.balance;
+    const balance = rawBalance === true || rawBalance === 'true' || rawBalance === 1;
+    const children = (element.children ?? []).map((child, childIndex) => {
+        const layout = normalizeLayout(child.properties?.layout as StoryLayoutDirective | undefined);
+        return {
+            childIndex,
+            element: child,
+            kind: classifyChild(child, layout),
+            layout
+        };
+    });
+
+    return {
+        sourceElement: element,
+        columns: rawColumns,
+        gutter: rawGutter,
+        balance,
+        children
+    };
+}

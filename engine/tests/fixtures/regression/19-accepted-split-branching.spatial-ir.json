@@ -1,0 +1,337 @@
+{
+  "items": [
+    {
+      "allowLineSplit": true,
+      "content": "Accepted Split Branching Probe",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[0]"
+      },
+      "sourceType": "h1",
+      "style": {
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "marginBottom": 10
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "This fixture stresses the accepted-split snapshot/branching seam twice in one run. Each long paragraph emits continuation markers and reserves extra space after its accepted fragment commits. If preview rollback leaks state, the second seam or its markers will be corrupted.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[1]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "§1 — First Accepted Split",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": true,
+      "source": {
+        "path": "elements[2]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "marginBottom": 6,
+        "marginTop": 10,
+        "pageBreakBefore": true
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Expected: the first long paragraph splits mid-page with exactly one A marker pair. The second seam that follows later must remain unaffected by the first seam's preview cycle.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[3]"
+      },
+      "sourceType": "note",
+      "style": {
+        "color": "#444444",
+        "fontSize": 9,
+        "fontStyle": "italic",
+        "marginBottom": 6,
+        "marginTop": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Setup A. This narrow paragraph consumes vertical space before the first accepted split arrives.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[4]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 230
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Setup B. Another narrow paragraph closes the remaining gap so the first split lands mid-page rather than at the top.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[5]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 210
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "pageReservationAfter": 18,
+      "paginationContinuation": {
+        "enabled": true,
+        "markerAfterSplit": {
+          "content": "A continues on next page",
+          "type": "split-marker"
+        },
+        "markerBeforeContinuation": {
+          "content": "A continued from previous page",
+          "type": "split-marker"
+        }
+      },
+      "source": {
+        "path": "elements[6]",
+        "sourceId": "accepted-branch-a"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 230
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Interlude. The document resumes ordinary flow after the first accepted split and before the second one begins.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[7]",
+        "sourceId": "branch-interlude"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "§2 — Second Accepted Split",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": true,
+      "source": {
+        "path": "elements[8]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "marginBottom": 6,
+        "marginTop": 10,
+        "pageBreakBefore": true
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Expected: the second split also emits exactly one B marker pair. If the first preview leaks queue, reservation, or split state, this section is where it should become visible.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[9]"
+      },
+      "sourceType": "note",
+      "style": {
+        "color": "#444444",
+        "fontSize": 9,
+        "fontStyle": "italic",
+        "marginBottom": 6,
+        "marginTop": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Setup C. This paragraph again consumes vertical space before the second seam is reached.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[10]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 230
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Setup D. The second seam must negotiate the same bridge crossing after the first one has already exercised preview and rollback.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[11]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 220
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "pageReservationAfter": 18,
+      "paginationContinuation": {
+        "enabled": true,
+        "markerAfterSplit": {
+          "content": "B continues on next page",
+          "type": "split-marker"
+        },
+        "markerBeforeContinuation": {
+          "content": "B continued from previous page",
+          "type": "split-marker"
+        }
+      },
+      "source": {
+        "path": "elements[12]",
+        "sourceId": "accepted-branch-b"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 230
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Postlude. Normal flow resumes after both accepted-split seams. If the snapshot/branching model generalizes, this closing paragraph should appear exactly once and without displaced continuation artifacts.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[13]",
+        "sourceId": "branch-postlude"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2
+      }
+    }
+  ],
+  "notes": {
+    "coordinateSpace": "zone.x is parent-relative",
+    "provisionalFields": [
+      "ZoneStrip.content for linked strips",
+      "ZoneStrip.balance",
+      "ZoneStrip.blockStyle",
+      "SpatialZone.style",
+      "SpatialGrid.blockStyle",
+      "CompiledPageRegion.kind",
+      "FlowBlock.image",
+      "BlockObstacle.align",
+      "BlockObstacle.mode",
+      "Node.source provenance"
+    ]
+  },
+  "pageGeometry": {
+    "contentHeight": 244,
+    "contentWidth": 364,
+    "contentX": 28,
+    "contentY": 28,
+    "margins": {
+      "bottom": 28,
+      "left": 28,
+      "right": 28,
+      "top": 28
+    },
+    "pageHeight": 300,
+    "pageWidth": 420
+  },
+  "pageTemplate": {},
+  "source": {
+    "documentVersion": "1.0",
+    "fixture": "19-accepted-split-branching.json",
+    "irVersion": "1.0"
+  },
+  "spatialIrVersion": "0.1"
+}

@@ -1,0 +1,744 @@
+{
+  "items": [
+    {
+      "allowLineSplit": true,
+      "content": "Fragment Pagination — BoxV1 Flow",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[0]"
+      },
+      "sourceType": "h1",
+      "style": {
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "marginBottom": 10
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "A shallow page forces fragments. Five scenarios demonstrate how the engine breaks long content across page boundaries without glue metadata — using only normal BoxV1 flow and the inherent geometry of a 420 × 300 pt page.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[1]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "§1 — Mid-Page Split",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": true,
+      "source": {
+        "path": "elements[2]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "marginBottom": 6,
+        "marginTop": 10,
+        "pageBreakBefore": true
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Expected: the long body paragraph below splits mid-page; its continuation opens on the next page.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[3]"
+      },
+      "sourceType": "note",
+      "style": {
+        "color": "#444444",
+        "fontSize": 9,
+        "fontStyle": "italic",
+        "marginBottom": 6,
+        "marginTop": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Section preamble A: positioned at a narrow width to consume vertical space before the target paragraph.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[4]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 230
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Section preamble B: a wider run of text at reduced column width to fill remaining space and trigger the split at the correct position.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[5]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 210
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "The migration of scripts from stone to reed to papyrus to vellum to paper to screen is the story of typography itself. Each substrate imposed constraints on letterform design that its successor inherited: the serif began as a chisel termination, survived as pen habit, and persists in digital font metrics as a unit of optical rhythm. The migration of scripts from stone to reed to papyrus to vellum to paper to screen is the story of typography itself. Each substrate imposed constraints on letterform design that its successor inherited: the serif began as a chisel termination, survived as pen habit, and persists in digital font metrics as a unit of optical rhythm. The migration of scripts from stone to reed to papyrus to vellum to paper to screen is the story of typography itself. Each substrate imposed constraints on letterform design that its successor inherited: the serif began as a chisel termination, survived as pen habit, and persists in digital font metrics as a unit of optical rhythm.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "paginationContinuation": {
+        "enabled": true,
+        "markerAfterSplit": {
+          "content": "Split boundary — continues on next page",
+          "type": "split-marker"
+        },
+        "markerBeforeContinuation": {
+          "content": "Split boundary — continued from previous page",
+          "type": "split-marker"
+        }
+      },
+      "source": {
+        "path": "elements[6]",
+        "sourceId": "midpage-split"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 230
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "§2 — Keep-With-Next Chain",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": true,
+      "source": {
+        "path": "elements[7]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "marginBottom": 6,
+        "marginTop": 10,
+        "pageBreakBefore": true
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Expected: the lead lines are kept with the first fragment of the long paragraph; the continuation flows onto the next page.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[8]"
+      },
+      "sourceType": "note",
+      "style": {
+        "color": "#444444",
+        "fontSize": 9,
+        "fontStyle": "italic",
+        "marginBottom": 6,
+        "marginTop": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Section preamble A: reduced column width to consume vertical space before the keep-with-next chain.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[9]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 220
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Section preamble B: another narrow preamble paragraph to close the remaining space before the chain begins.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[10]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 210
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Keep-chain lead A — must stay with what follows.",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[11]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#0f4c81",
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Keep-chain lead B — still part of the chain.",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[12]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#0f4c81",
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Gutenberg's invention democratised knowledge but also standardised it: every copy of a text became identical, and the hand-correction culture of manuscript scriptoria collapsed overnight. The pace of standardisation was violent — grammars converged, spelling froze, and dialect forms were demoted to error. Gutenberg's invention democratised knowledge but also standardised it: every copy of a text became identical, and the hand-correction culture of manuscript scriptoria collapsed overnight. The pace of standardisation was violent — grammars converged, spelling froze, and dialect forms were demoted to error. Gutenberg's invention democratised knowledge but also standardised it: every copy of a text became identical, and the hand-correction culture of manuscript scriptoria collapsed overnight. The pace of standardisation was violent — grammars converged, spelling froze, and dialect forms were demoted to error. Gutenberg's invention democratised knowledge but also standardised it: every copy of a text became identical, and the hand-correction culture of manuscript scriptoria collapsed overnight.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "paginationContinuation": {
+        "enabled": true,
+        "markerAfterSplit": {
+          "content": "Split boundary — continues on next page",
+          "type": "split-marker"
+        },
+        "markerBeforeContinuation": {
+          "content": "Split boundary — continued from previous page",
+          "type": "split-marker"
+        }
+      },
+      "source": {
+        "path": "elements[13]",
+        "sourceId": "keep-chain-split"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 230
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Flow resumes normally after the keep-with-next chain fragment.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[14]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "§3 — Blockquote Padding Split",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": true,
+      "source": {
+        "path": "elements[15]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "marginBottom": 6,
+        "marginTop": 10,
+        "pageBreakBefore": true
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Expected: the blockquote splits cleanly — padding and borders appear only on the appropriate fragment, without double-stacking.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[16]"
+      },
+      "sourceType": "note",
+      "style": {
+        "color": "#444444",
+        "fontSize": 9,
+        "fontStyle": "italic",
+        "marginBottom": 6,
+        "marginTop": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Section preamble: narrow column to consume space before the blockquote.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[17]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 210
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "The alphabet is not a natural object but an agreement — a compressed treaty between speakers, scribes, and readers that took millennia to negotiate and can be broken by a single generation of neglect. Its stability is social, not physical, and its reproducibility by mechanical means was the condition of modernity. The alphabet is not a natural object but an agreement — a compressed treaty between speakers, scribes, and readers that took millennia to negotiate and can be broken by a single generation of neglect. Its stability is social, not physical, and its reproducibility by mechanical means was the condition of modernity. The alphabet is not a natural object but an agreement — a compressed treaty between speakers, scribes, and readers that took millennia to negotiate and can be broken by a single generation of neglect. Its stability is social, not physical, and its reproducibility by mechanical means was the condition of modernity. The alphabet is not a natural object but an agreement — a compressed treaty between speakers, scribes, and readers that took millennia to negotiate and can be broken by a single generation of neglect. Its stability is social, not physical, and its reproducibility by mechanical means was the condition of modernity.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "paginationContinuation": {
+        "enabled": true,
+        "markerAfterSplit": {
+          "content": "Split boundary — continues on next page",
+          "type": "split-marker"
+        },
+        "markerBeforeContinuation": {
+          "content": "Split boundary — continued from previous page",
+          "type": "split-marker"
+        }
+      },
+      "source": {
+        "path": "elements[18]",
+        "sourceId": "blockquote-split"
+      },
+      "sourceType": "blockquote",
+      "style": {
+        "borderBottomColor": "#999999",
+        "borderBottomWidth": 1,
+        "borderLeftColor": "#1a73e8",
+        "borderLeftWidth": 2,
+        "borderTopColor": "#999999",
+        "borderTopWidth": 1,
+        "marginBottom": 10,
+        "marginTop": 6,
+        "paddingBottom": 6,
+        "paddingLeft": 10,
+        "paddingRight": 6,
+        "paddingTop": 6,
+        "width": 250
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "§4 — Orphan & Widow Control",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": true,
+      "source": {
+        "path": "elements[19]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "marginBottom": 6,
+        "marginTop": 10,
+        "pageBreakBefore": true
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Expected: the split respects a stricter orphan/widow setting of 3, shifting the break point to keep a legitimate minimum on each page side.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[20]"
+      },
+      "sourceType": "note",
+      "style": {
+        "color": "#444444",
+        "fontSize": 9,
+        "fontStyle": "italic",
+        "marginBottom": 6,
+        "marginTop": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Section preamble: narrow column to create vertical pressure.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[21]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 210
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Typographers describe an orphan as the opening line of a paragraph stranded alone at the foot of a page, and a widow as the closing line left alone at the top. Both are considered defects in classical book composition. A minimum of three lines on each side is the stricter editorial standard. Typographers describe an orphan as the opening line of a paragraph stranded alone at the foot of a page, and a widow as the closing line left alone at the top. Both are considered defects in classical book composition. A minimum of three lines on each side is the stricter editorial standard. Typographers describe an orphan as the opening line of a paragraph stranded alone at the foot of a page, and a widow as the closing line left alone at the top. Both are considered defects in classical book composition. A minimum of three lines on each side is the stricter editorial standard. Typographers describe an orphan as the opening line of a paragraph stranded alone at the foot of a page, and a widow as the closing line left alone at the top.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "paginationContinuation": {
+        "enabled": true,
+        "markerAfterSplit": {
+          "content": "Split boundary — continues on next page",
+          "type": "split-marker"
+        },
+        "markerBeforeContinuation": {
+          "content": "Split boundary — continued from previous page",
+          "type": "split-marker"
+        }
+      },
+      "source": {
+        "path": "elements[22]",
+        "sourceId": "orphans-widows"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 3,
+        "widows": 3,
+        "width": 230
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "§5 — Non-Splittable Paragraph",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": true,
+      "source": {
+        "path": "elements[23]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "marginBottom": 6,
+        "marginTop": 10,
+        "pageBreakBefore": true
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Expected: the allowLineSplit=false paragraph moves to the next page as an intact unit rather than fragmenting.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[24]"
+      },
+      "sourceType": "note",
+      "style": {
+        "color": "#444444",
+        "fontSize": 9,
+        "fontStyle": "italic",
+        "marginBottom": 6,
+        "marginTop": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Pressure block A — narrow column consumes vertical space.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[25]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 220
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Pressure block B — additional narrow paragraph to reduce remaining page height.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[26]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 210
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Pressure block C — tight column with longer content to consume more vertical space before the indivisible block.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[27]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 200
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Pressure block D — extra narrow filler paragraph consuming additional page height.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[28]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2,
+        "width": 180
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Pressure block E — spacer with large bottom margin to push the indivisible paragraph over the edge.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[29]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 90,
+        "orphans": 2,
+        "widows": 2,
+        "width": 200
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Pressure block F — final narrow filler to remove the last available space.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[30]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "color": "#2d2d2d",
+        "fontWeight": "bold",
+        "marginBottom": 20,
+        "orphans": 2,
+        "widows": 2,
+        "width": 180
+      }
+    },
+    {
+      "allowLineSplit": false,
+      "content": "This paragraph cannot be split. It will move intact to the next page when it no longer fits in the remaining space. Splitting it across a page boundary is not permitted regardless of how much space is available above. This paragraph cannot be split. It will move intact to the next page when it no longer fits in the remaining space. Splitting it across a page boundary is not permitted regardless of how much space is available above. This paragraph cannot be split. It will move intact to the next page when it no longer fits in the remaining space.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[31]"
+      },
+      "sourceType": "p_nosplit",
+      "style": {
+        "allowLineSplit": false,
+        "marginBottom": 8,
+        "width": 230
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Flow continues normally after the indivisible block has been placed on its own page.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[32]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 8,
+        "orphans": 2,
+        "widows": 2
+      }
+    }
+  ],
+  "notes": {
+    "coordinateSpace": "zone.x is parent-relative",
+    "provisionalFields": [
+      "ZoneStrip.content for linked strips",
+      "ZoneStrip.balance",
+      "ZoneStrip.blockStyle",
+      "SpatialZone.style",
+      "SpatialGrid.blockStyle",
+      "CompiledPageRegion.kind",
+      "FlowBlock.image",
+      "BlockObstacle.align",
+      "BlockObstacle.mode",
+      "Node.source provenance"
+    ]
+  },
+  "pageGeometry": {
+    "contentHeight": 244,
+    "contentWidth": 364,
+    "contentX": 28,
+    "contentY": 28,
+    "margins": {
+      "bottom": 28,
+      "left": 28,
+      "right": 28,
+      "top": 28
+    },
+    "pageHeight": 300,
+    "pageWidth": 420
+  },
+  "pageTemplate": {},
+  "source": {
+    "documentVersion": "1.0",
+    "fixture": "07-pagination-fragments.json",
+    "irVersion": "1.0"
+  },
+  "spatialIrVersion": "0.1"
+}

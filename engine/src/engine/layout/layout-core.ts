@@ -11,6 +11,7 @@ import {
     FlowMaterializationContext,
     ResolvedLinesResult
 } from './layout-core-types';
+import type { NormalizedFlowBlock } from './normalized-flow-block';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
 import { ContinuationMarkerCollaborator } from './continuation-marker-collaborator';
 import { PageReservationCollaborator } from './page-reservation-collaborator';
@@ -42,11 +43,12 @@ import { TransformArtifactCollaborator } from './transform-artifact-collaborator
 import {
     buildTableModel,
     isTableElement,
-    materializeTableFlowBox,
-    positionTableFlowBoxes,
-    splitTableFlowBox,
-    TableLayoutContext
+    materializeSpatialGridFlowBox,
+    positionSpatialGridFlowBoxes,
+    splitSpatialGridFlowBox,
+    SpatialGridLayoutContext
 } from './layout-table';
+import { buildTableModelFromNormalizedTable, normalizeTableElement } from './normalized-table';
 import { DropCapPackager } from './packagers/dropcap-packager';
 import { createPackagers } from './packagers/create-packagers';
 import { executeSimulationMarch } from './packagers/execute-simulation-march';
@@ -198,7 +200,7 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 
-    private getTableLayoutContext(): TableLayoutContext {
+    private getSpatialGridLayoutContext(): SpatialGridLayoutContext {
         let tableDropCapIndex = 0;
         return {
             layoutFontSize: this.config.layout.fontSize,
@@ -538,7 +540,9 @@ export class LayoutProcessor extends TextProcessor {
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
         const marginTop = LayoutUtils.validateUnit(element.properties?.marginTop ?? style.marginTop ?? 0);
         const marginBottom = LayoutUtils.validateUnit(element.properties?.marginBottom ?? style.marginBottom ?? 0);
-        const model = buildTableModel(element);
+        const normalizedTable = (element.properties?._normalizedTable as ReturnType<typeof normalizeTableElement> | undefined)
+            ?? normalizeTableElement(element);
+        const model = buildTableModelFromNormalizedTable(normalizedTable);
         const normalizedStyle = this.normalizeElementStyle(style, {
             fontSize,
             lineHeight
@@ -552,6 +556,7 @@ export class LayoutProcessor extends TextProcessor {
             properties: {
                 ...(element.properties || {}),
                 _tableModel: model,
+                _normalizedTable: normalizedTable,
                 _isFirstLine: true,
                 _isLastLine: true,
                 _isFirstFragmentInLine: true,
@@ -569,7 +574,8 @@ export class LayoutProcessor extends TextProcessor {
             heightOverride: style.height !== undefined ? LayoutUtils.validateUnit(style.height) : undefined,
             _materializationMode: 'reflowable',
             _sourceElement: element,
-            _unresolvedElement: element
+            _unresolvedElement: element,
+            _normalizedTable: normalizedTable
         };
     }
 
@@ -581,11 +587,14 @@ export class LayoutProcessor extends TextProcessor {
             return this.shapeTableElement(element, identitySeed);
         }
 
+        return this.shapeNormalizedFlowBlock(this.normalizeFlowBlock(element, identitySeed));
+    }
+
+    public normalizeFlowBlock(element: Element, identitySeed?: FlowIdentitySeed): NormalizedFlowBlock {
         const style = this.getStyle(element);
         const meta = this.buildFlowBoxMeta(element, identitySeed);
         const fontSize = Number(style.fontSize || this.config.layout.fontSize);
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
-
         const marginTop = LayoutUtils.validateUnit(element.properties?.marginTop ?? style.marginTop ?? 0);
         const marginBottom = LayoutUtils.validateUnit(element.properties?.marginBottom ?? style.marginBottom ?? 0);
         const hasEmbeddedImage = !!element.properties?.image;
@@ -594,34 +603,60 @@ export class LayoutProcessor extends TextProcessor {
             fontSize,
             lineHeight
         });
-
         const heightOverride = style.height !== undefined ? LayoutUtils.validateUnit(style.height) : undefined;
 
         return {
-            type: element.type,
+            kind: 'flow-block',
+            element,
+            sourceType: element.type,
             meta,
             style: normalizedStyle,
-            lines: undefined,
-            properties: {
-                ...(element.properties || {}),
-                _isFirstLine: true,
-                _isLastLine: true,
-                _isFirstFragmentInLine: true,
-                _isLastFragmentInLine: true
-            },
             marginTop,
             marginBottom,
             keepWithNext: !!(element.properties?.keepWithNext || style.keepWithNext),
             pageBreakBefore: !!style.pageBreakBefore,
             allowLineSplit,
             overflowPolicy: this.normalizeOverflowPolicy(style.overflowPolicy),
-            orphans: this.normalizeLineConstraint(LayoutUtils.validateUnit(style.orphans ?? LAYOUT_DEFAULTS.orphans), LAYOUT_DEFAULTS.orphans),
-            widows: this.normalizeLineConstraint(LayoutUtils.validateUnit(style.widows ?? LAYOUT_DEFAULTS.widows), LAYOUT_DEFAULTS.widows),
-            measuredContentHeight: heightOverride ?? 0,
+            orphans: this.normalizeLineConstraint(
+                LayoutUtils.validateUnit(style.orphans ?? LAYOUT_DEFAULTS.orphans),
+                LAYOUT_DEFAULTS.orphans
+            ),
+            widows: this.normalizeLineConstraint(
+                LayoutUtils.validateUnit(style.widows ?? LAYOUT_DEFAULTS.widows),
+                LAYOUT_DEFAULTS.widows
+            ),
             heightOverride,
+            identitySeed
+        };
+    }
+
+    public shapeNormalizedFlowBlock(block: NormalizedFlowBlock): FlowBox {
+        return {
+            type: block.sourceType,
+            meta: block.meta,
+            style: block.style,
+            lines: undefined,
+            properties: {
+                ...(block.element.properties || {}),
+                _isFirstLine: true,
+                _isLastLine: true,
+                _isFirstFragmentInLine: true,
+                _isLastFragmentInLine: true
+            },
+            marginTop: block.marginTop,
+            marginBottom: block.marginBottom,
+            keepWithNext: block.keepWithNext,
+            pageBreakBefore: block.pageBreakBefore,
+            allowLineSplit: block.allowLineSplit,
+            overflowPolicy: block.overflowPolicy,
+            orphans: block.orphans,
+            widows: block.widows,
+            measuredContentHeight: block.heightOverride ?? 0,
+            heightOverride: block.heightOverride,
             _materializationMode: 'reflowable',
-            _sourceElement: element,
-            _unresolvedElement: element
+            _sourceElement: block.element,
+            _unresolvedElement: block.element,
+            _normalizedFlowBlock: block
         };
     }
 
@@ -710,7 +745,7 @@ export class LayoutProcessor extends TextProcessor {
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
 
         if (isTableElement(element)) {
-            materializeTableFlowBox(unit, element, context, fontSize, lineHeight, this.getTableLayoutContext());
+            materializeSpatialGridFlowBox(unit, element, context, fontSize, lineHeight, this.getSpatialGridLayoutContext());
             if (isMorphTransition) unit.meta = createMorphedBoxMeta(unit.meta);
             unit._materializationContextKey = contextKey;
             unit._unresolvedElement = undefined;
@@ -836,7 +871,7 @@ export class LayoutProcessor extends TextProcessor {
         layoutBefore: number
     ): { partA: FlowBox; partB: FlowBox } | null {
         if (box.properties?._tableModel) {
-            return splitTableFlowBox(box, availableHeight, layoutBefore);
+            return splitSpatialGridFlowBox(box, availableHeight, layoutBefore);
         }
 
         return splitFlowBoxWithCallbacks(
@@ -907,7 +942,7 @@ export class LayoutProcessor extends TextProcessor {
         const h = Math.max(0, unit.measuredContentHeight);
 
         if (unit.properties?._tableModel) {
-            return positionTableFlowBoxes(unit, x, y, pageIndex, this.getTableLayoutContext());
+            return positionSpatialGridFlowBoxes(unit, x, y, pageIndex, this.getSpatialGridLayoutContext());
         }
 
         return {

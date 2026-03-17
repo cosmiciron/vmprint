@@ -308,9 +308,9 @@ export class CollisionRuntime {
         const overflowPreviewBoxes = input.isAtPageTop
             ? true
             : !!input.actor.emitBoxes(input.availableWidth, input.availableHeightAdjusted, input.context);
-        const isTablePackager = this.hasTableFlowBox(input.actor);
+        const isSpatialGridPackager = this.hasSpatialGridFlowBox(input.actor);
         const isStoryPackager = this.hasStoryElement(input.actor);
-        const allowsMidPageSplit = isTablePackager || isStoryPackager;
+        const allowsMidPageSplit = isSpatialGridPackager || isStoryPackager;
         const emptyLayoutBefore = input.marginTop;
         const emptyAvailable = input.pageLimit - input.pageTop;
         const requiredOnEmpty = input.contentHeight + emptyLayoutBefore + input.marginBottom;
@@ -324,7 +324,7 @@ export class CollisionRuntime {
         });
     }
 
-    private hasTableFlowBox(actor: PackagerUnit): actor is PackagerWithFlowBox {
+    private hasSpatialGridFlowBox(actor: PackagerUnit): actor is PackagerWithFlowBox {
         return !!(actor as PackagerWithFlowBox).flowBox?.properties?._tableModel;
     }
 

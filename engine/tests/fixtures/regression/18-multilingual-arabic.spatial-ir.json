@@ -1,0 +1,291 @@
+{
+  "items": [
+    {
+      "allowLineSplit": true,
+      "content": "Arabic & Mixed BIDI Layout Tests",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[0]"
+      },
+      "sourceType": "h1",
+      "style": {
+        "fontSize": 32,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 24
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "This fixture specifically tests the visual accuracy, fontkit shaping integration, and Unicode Bidi Algorithm implementation for complex RTL scripts.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[1]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 16
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "1. Pure Arabic Shaping (RTL Mode)",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[2]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 24,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 16,
+        "marginTop": 20
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "مرحبا بك في عالم الطباعة المبرمجة.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[3]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "direction": "rtl",
+        "fontFamily": "Noto Sans Arabic",
+        "fontSize": 36,
+        "lineHeight": 1.5,
+        "marginBottom": 24
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Notice how the letters connect smoothly. This confirms fontkit is receiving the 'arab' script tag and 'rtl' direction correctly.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[4]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 16
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "2. Mixed Script - Arabic inside English (LTR Base)",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[5]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 24,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 16,
+        "marginTop": 20
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "The word للنشر means 'for publishing' and مرحباً means 'welcome' in Arabic.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[6]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "fontSize": 36,
+        "lineHeight": 1.5,
+        "marginBottom": 24
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "The Arabic words should be shaped correctly, written right-to-left internally, but the overall sentence flows left-to-right.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[7]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 16
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "3. Mixed Script - English inside Arabic (RTL Base)",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[8]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 24,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 16,
+        "marginTop": 20
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "تم تصميم VMPrint 0.1.0 لإنتاج مستندات PDF بدقة متناهية.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[9]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "direction": "rtl",
+        "fontSize": 36,
+        "lineHeight": 1.5,
+        "marginBottom": 24
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "The base paragraph direction is RTL. The English product name 'VMPrint 0.1.0' should flow LTR within the RTL stream.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[10]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 16
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "4. Arabic Punctuation and Numbers",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[11]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 24,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 16,
+        "marginTop": 20
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "تتطلب نسبة 100% من المشاريع دقة في الأرقام (مثل 123,456) وعلامات الترقيم؟ نعم، بالتأكيد!",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[12]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "direction": "rtl",
+        "fontFamily": "Noto Sans Arabic",
+        "fontSize": 36,
+        "lineHeight": 1.5,
+        "marginBottom": 24
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "The numbers '100%' and '123,456' must be ordered correctly despite being nested in RTL context.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[13]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 16
+      }
+    }
+  ],
+  "notes": {
+    "coordinateSpace": "zone.x is parent-relative",
+    "provisionalFields": [
+      "ZoneStrip.content for linked strips",
+      "ZoneStrip.balance",
+      "ZoneStrip.blockStyle",
+      "SpatialZone.style",
+      "SpatialGrid.blockStyle",
+      "CompiledPageRegion.kind",
+      "FlowBlock.image",
+      "BlockObstacle.align",
+      "BlockObstacle.mode",
+      "Node.source provenance"
+    ]
+  },
+  "pageGeometry": {
+    "contentHeight": 648,
+    "contentWidth": 468,
+    "contentX": 72,
+    "contentY": 72,
+    "margins": {
+      "bottom": 72,
+      "left": 72,
+      "right": 72,
+      "top": 72
+    },
+    "pageHeight": 792,
+    "pageWidth": 612
+  },
+  "pageTemplate": {},
+  "source": {
+    "documentVersion": "1.0",
+    "fixture": "18-multilingual-arabic.json",
+    "irVersion": "1.0"
+  },
+  "spatialIrVersion": "0.1"
+}

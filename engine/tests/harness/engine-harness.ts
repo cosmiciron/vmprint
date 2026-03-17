@@ -61,6 +61,7 @@ type ImageTraceCall = { x: number; y: number; width: number; height: number };
 export function loadJsonDocumentFixtures(casesDir: string = HARNESS_REGRESSION_CASES_DIR): Array<{ name: string; document: DocumentIR; filePath: string }> {
     const files = fs.readdirSync(casesDir)
         .filter((file) => file.toLowerCase().endsWith('.json') && !file.toLowerCase().endsWith('.snapshot.layout.json'))
+        .filter((file) => !file.toLowerCase().endsWith('.spatial-ir.json'))
         .sort((a, b) => a.localeCompare(b));
 
     return files.map((name) => ({

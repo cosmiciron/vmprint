@@ -1,0 +1,379 @@
+{
+  "items": [
+    {
+      "allowLineSplit": true,
+      "content": "The Typographer's Proof",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[0]"
+      },
+      "sourceType": "h1",
+      "style": {
+        "fontSize": 24,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 18
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Good typography is invisible. Readers should never notice the grid, the rhythm, or the measure — they should only feel the ease with which meaning reaches them. This document exercises the fundamentals of that craft: paragraph flow, inline styling, alignment, borders, and clean pagination.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[1]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 12,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Inline Markup",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[2]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 10,
+        "marginTop": 12
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "children": [
+        {
+          "content": "A sentence may carry ",
+          "type": "text"
+        },
+        {
+          "content": "weight",
+          "properties": {
+            "style": {
+              "fontWeight": "bold"
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": " through emphasis, ",
+          "type": "text"
+        },
+        {
+          "content": "colour",
+          "properties": {
+            "style": {
+              "color": "#0b57d0"
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": " through contrast, and rhythm through repetition — all within a single flowing line.",
+          "type": "text"
+        }
+      ],
+      "content": "",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[3]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 12,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Line Wrapping & Measure",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[4]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 10,
+        "marginTop": 12
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "The measure — the width of a text column — is among the oldest constraints in type setting. Twelve to fifteen words per line is a longstanding ideal: narrow enough that the eye returns to the left margin without effort, wide enough that each line carries a full thought. This paragraph is held at the standard LETTER margin to demonstrate stable wrap positions and consistent baseline spacing.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[5]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 12,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Alignment",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[6]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 10,
+        "marginTop": 12
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Left-aligned — the default for most running text.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[7]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 12,
+        "orphans": 2,
+        "textAlign": "left",
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Centred — used for titles, captions, and display lines.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[8]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 12,
+        "orphans": 2,
+        "textAlign": "center",
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Right-aligned — folios, credits, and pulled-out data.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[9]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 12,
+        "orphans": 2,
+        "textAlign": "right",
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Borders & Insets",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[10]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 10,
+        "marginTop": 12
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "The border-left treatment derives from manuscript annotation practice: marginalia drawn with a vertical rule to distinguish commentary from the main text. All four borders are active here, padding is asymmetric, and the rule widths differ — a deliberate test of boundary geometry.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[11]"
+      },
+      "sourceType": "blockquote",
+      "style": {
+        "borderBottomColor": "#999999",
+        "borderBottomWidth": 1,
+        "borderLeftColor": "#1a73e8",
+        "borderLeftWidth": 3,
+        "borderRightColor": "#8a8a8a",
+        "borderRightWidth": 1,
+        "borderTopColor": "#999999",
+        "borderTopWidth": 1,
+        "marginBottom": 10,
+        "marginTop": 10,
+        "paddingBottom": 6,
+        "paddingLeft": 18,
+        "paddingRight": 6,
+        "paddingTop": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Multi-Page Flow",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[12]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 10,
+        "marginTop": 12
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Long-form documents span many pages. The content that follows begins on a fresh page to confirm that break-before behaviour is handled cleanly — margins reset, baselines re-anchor, and flow continues as if the first page never ended.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[13]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Page two. Paragraph flow, alignment, and line-height remain identical to page one. There are no special cases here — pagination is transparent to the typographic engine.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": true,
+      "source": {
+        "path": "elements[14]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 12,
+        "orphans": 2,
+        "pageBreakBefore": true,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "A closing line confirms that content after the break renders in the correct position and with no residual state from the previous page.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[15]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 12,
+        "orphans": 2,
+        "widows": 2
+      }
+    }
+  ],
+  "notes": {
+    "coordinateSpace": "zone.x is parent-relative",
+    "provisionalFields": [
+      "ZoneStrip.content for linked strips",
+      "ZoneStrip.balance",
+      "ZoneStrip.blockStyle",
+      "SpatialZone.style",
+      "SpatialGrid.blockStyle",
+      "CompiledPageRegion.kind",
+      "FlowBlock.image",
+      "BlockObstacle.align",
+      "BlockObstacle.mode",
+      "Node.source provenance"
+    ]
+  },
+  "pageGeometry": {
+    "contentHeight": 648,
+    "contentWidth": 468,
+    "contentX": 72,
+    "contentY": 72,
+    "margins": {
+      "bottom": 72,
+      "left": 72,
+      "right": 72,
+      "top": 72
+    },
+    "pageHeight": 792,
+    "pageWidth": 612
+  },
+  "pageTemplate": {},
+  "source": {
+    "documentVersion": "1.0",
+    "fixture": "01-text-flow-core.json",
+    "irVersion": "1.0"
+  },
+  "spatialIrVersion": "0.1"
+}

@@ -28,9 +28,16 @@
     "test:flat": "tsx --conditions tsx tests/flat-pipeline.spec.ts",
     "test:standard-fonts": "tsx --conditions tsx tests/standard-fonts.spec.ts",
     "test:engine": "tsx --conditions tsx tests/engine-regression.spec.ts",
+    "test:spatial-ir": "tsx --conditions tsx tests/spatial-ir-regression.spec.ts",
+    "test:spatial-ir-engine": "tsx --conditions tsx tests/spatial-ir-engine.spec.ts",
+    "test:spatial-ir-strict": "tsx --conditions tsx tests/spatial-ir-strict.spec.ts",
+    "test:shared-runtime-font-leak": "tsx --conditions tsx tests/shared-runtime-font-leak.spec.ts",
+    "test:update-spatial-ir-fixtures": "tsx --conditions tsx tests/fixtures/regression/generate-spatial-ir-fixtures.ts",
     "test:perf": "tsx --conditions tsx tests/performance-benchmark.ts",
+    "test:perf-watch": "tsx --conditions tsx tests/performance-benchmark.ts --preset=watchlist --repeat=2 --warmup=1",
     "test:update-layout-snapshots": "tsx --conditions tsx tests/engine-regression.spec.ts --update-layout-snapshots",
-    "test": "npm run test:modules && npm run test:flat && npm run test:standard-fonts && npm run test:engine"
+    "test:update-spatial-ir-snapshots": "tsx --conditions tsx tests/spatial-ir-regression.spec.ts --update-spatial-ir-snapshots",
+    "test": "npm run test:modules && npm run test:flat && npm run test:standard-fonts && npm run test:spatial-ir && npm run test:engine"
   },
   "dependencies": {
     "@vmprint/contracts": "file:../contracts",

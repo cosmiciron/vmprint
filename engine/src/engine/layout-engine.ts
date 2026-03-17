@@ -1,6 +1,13 @@
 import { Element, LayoutConfig } from './types';
 import { LayoutProcessor } from './layout/layout-core';
 import {
+    applySpatialDocumentPageTemplate,
+    applySpatialDocumentPageTemplateStrict,
+    SpatialDocument,
+    spatialDocumentToElements,
+    spatialDocumentToElementsStrict
+} from './spatial-document';
+import {
     buildAssembledBookmarkTree,
     buildBookmarkTree,
     buildSourceAnchorsBySourceId,
@@ -25,6 +32,44 @@ import { EngineRuntime } from './runtime';
 export class LayoutEngine extends LayoutProcessor {
     constructor(config: LayoutConfig, runtime?: EngineRuntime) {
         super(config, runtime);
+    }
+
+    simulateSpatialDocument(document: SpatialDocument, sourceDocument?: { header?: any; footer?: any; elements?: Element[] }): ReturnType<LayoutProcessor['simulate']> {
+        const elements = spatialDocumentToElements(document, sourceDocument as any);
+        const hasPageTemplateOverrides = !!(document.pageTemplate?.header || document.pageTemplate?.footer);
+        if (!hasPageTemplateOverrides) {
+            return this.simulate(elements);
+        }
+        const pageTemplate = applySpatialDocumentPageTemplate(document, {
+            header: sourceDocument?.header ?? this.config.header,
+            footer: sourceDocument?.footer ?? this.config.footer
+        }, sourceDocument as any);
+        const derivedConfig: LayoutConfig = {
+            ...this.config,
+            header: pageTemplate.header,
+            footer: pageTemplate.footer
+        };
+        const engine = new LayoutEngine(derivedConfig, this.runtime);
+        return engine.simulate(elements);
+    }
+
+    simulateSpatialDocumentStrict(document: SpatialDocument): ReturnType<LayoutProcessor['simulate']> {
+        const elements = spatialDocumentToElementsStrict(document);
+        const hasPageTemplateOverrides = !!(document.pageTemplate?.header || document.pageTemplate?.footer);
+        if (!hasPageTemplateOverrides) {
+            return this.simulate(elements);
+        }
+        const pageTemplate = applySpatialDocumentPageTemplateStrict(document, {
+            header: this.config.header,
+            footer: this.config.footer
+        });
+        const derivedConfig: LayoutConfig = {
+            ...this.config,
+            header: pageTemplate.header,
+            footer: pageTemplate.footer
+        };
+        const engine = new LayoutEngine(derivedConfig, this.runtime);
+        return engine.simulate(elements);
     }
 
     async planReservedTableOfContents(

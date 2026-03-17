@@ -36,6 +36,7 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 // ── Collect fixtures ──────────────────────────────────────────────────────────
 const fixtures = fs.readdirSync(REGRESSION_DIR)
     .filter(f => f.endsWith('.json') && !f.endsWith('.snapshot.layout.json'))
+    .filter(f => !f.endsWith('.spatial-ir.json'))
     .sort((a, b) => a.localeCompare(b));
 
 console.log(`[generate-fixture-pdfs] Found ${fixtures.length} fixtures to render.\n`);

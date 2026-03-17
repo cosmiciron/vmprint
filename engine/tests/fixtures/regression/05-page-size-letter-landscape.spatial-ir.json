@@ -1,0 +1,169 @@
+{
+  "items": [
+    {
+      "allowLineSplit": true,
+      "content": "Landscape Layout — LETTER",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[0]"
+      },
+      "sourceType": "h1",
+      "style": {
+        "fontSize": 22,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 16
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Rotating a LETTER page to landscape swaps its 612 × 792 point dimensions to 792 × 612. The wider measure means each line of body text can carry roughly thirty percent more characters before wrapping — useful for tables, timelines, and side-by-side comparisons.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[1]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Measure in Landscape",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[2]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 8,
+        "marginTop": 10
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "At these margins the usable column width is 684 pt — nearly ten inches. This paragraph would wrap considerably earlier on a portrait page. The wider measure also changes optimal font size and line spacing; display work often calls for a slightly larger face to maintain reading rhythm across the longer line.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[3]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Page Numbers",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[4]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 8,
+        "marginTop": 10
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Page numbers are enabled with the format \"Landscape {n}\" and positioned at the bottom of each page. They appear below this text and below the continued content on page two.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": true,
+      "source": {
+        "path": "elements[5]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "pageBreakBefore": true,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Page two in landscape. The dimensions, margins, and page-number position should be identical to page one — confirming that orientation is applied uniformly across all pages in the run.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[6]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    }
+  ],
+  "notes": {
+    "coordinateSpace": "zone.x is parent-relative",
+    "provisionalFields": [
+      "ZoneStrip.content for linked strips",
+      "ZoneStrip.balance",
+      "ZoneStrip.blockStyle",
+      "SpatialZone.style",
+      "SpatialGrid.blockStyle",
+      "CompiledPageRegion.kind",
+      "FlowBlock.image",
+      "BlockObstacle.align",
+      "BlockObstacle.mode",
+      "Node.source provenance"
+    ]
+  },
+  "pageGeometry": {
+    "contentHeight": 504,
+    "contentWidth": 684,
+    "contentX": 54,
+    "contentY": 54,
+    "margins": {
+      "bottom": 54,
+      "left": 54,
+      "right": 54,
+      "top": 54
+    },
+    "pageHeight": 612,
+    "pageWidth": 792
+  },
+  "pageTemplate": {},
+  "source": {
+    "documentVersion": "1.0",
+    "fixture": "05-page-size-letter-landscape.json",
+    "irVersion": "1.0"
+  },
+  "spatialIrVersion": "0.1"
+}

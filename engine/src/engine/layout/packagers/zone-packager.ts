@@ -30,6 +30,7 @@ import { LayoutProcessor } from '../layout-core';
 import { LayoutUtils } from '../layout-utils';
 import { solveTrackSizing, TrackSizingDefinition } from '../track-sizing';
 import type { ActorSignalDraft } from '../actor-event-bus';
+import type { NormalizedIndependentZoneStrip } from '../normalized-zone-strip';
 import {
     PackagerContext,
     PackagerPlacementPreference,
@@ -130,7 +131,7 @@ function resolveTrackWidths(columns: TableColumnSizing[] | undefined, columnCoun
     return Array(columnCount).fill(Math.max(0, colWidth));
 }
 
-function materializeZoneMap(element: Element, availableWidth: number, processor: LayoutProcessor): ZoneMaterialized {
+function normalizeZoneMapElement(element: Element, availableWidth: number): NormalizedIndependentZoneStrip {
     const style = (element.properties?.style ?? {}) as ElementStyle;
     const marginTop = Math.max(0, LayoutUtils.validateUnit(style.marginTop ?? 0));
     const marginBottom = Math.max(0, LayoutUtils.validateUnit(style.marginBottom ?? 0));
@@ -143,7 +144,16 @@ function materializeZoneMap(element: Element, availableWidth: number, processor:
     const columnCount = zoneDefs.length;
 
     if (columnCount === 0) {
-        return { boxes: [], totalHeight: 0, marginTop, marginBottom };
+        return {
+            kind: 'zone-strip',
+            overflow: 'independent',
+            sourceKind: 'zone-map',
+            marginTop,
+            marginBottom,
+            gap,
+            blockStyle: Object.keys(style).length > 0 ? style : undefined,
+            zones: []
+        };
     }
 
     const columnWidths = resolveTrackWidths(options.columns, columnCount, availableWidth, gap);
@@ -156,6 +166,25 @@ function materializeZoneMap(element: Element, availableWidth: number, processor:
         xCursor += (columnWidths[i] ?? 0) + (i < columnCount - 1 ? gap : 0);
     }
 
+    return {
+        kind: 'zone-strip',
+        overflow: 'independent',
+        sourceKind: 'zone-map',
+        marginTop,
+        marginBottom,
+        gap,
+        blockStyle: Object.keys(style).length > 0 ? style : undefined,
+        zones: zoneDefs.map((zone, index) => ({
+            id: zone.id,
+            x: xOffsets[index] ?? 0,
+            width: columnWidths[index] ?? 0,
+            elements: zone.elements ?? [],
+            style: zone.style as ElementStyle | undefined
+        }))
+    };
+}
+
+function materializeZoneStrip(strip: NormalizedIndependentZoneStrip, availableWidth: number, processor: LayoutProcessor): ZoneMaterialized {
     // Stub PackagerContext base — zone sub-sessions do not publish signals
     const stubContextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'> = {
         processor,
@@ -177,11 +206,8 @@ function materializeZoneMap(element: Element, availableWidth: number, processor:
     const allBoxes: Box[] = [];
     let totalHeight = 0;
 
-    for (let i = 0; i < zoneDefs.length; i++) {
-        const zone = zoneDefs[i];
-        const zoneWidth = columnWidths[i] ?? 0;
-        const xOffset = xOffsets[i] ?? 0;
-
+    for (let i = 0; i < strip.zones.length; i++) {
+        const zone = strip.zones[i];
         // Each zone's elements are the actors inhabiting this region.
         const packagers = (zone.elements ?? []).map((actor, j) =>
             buildPackagerForElement(actor, j, processor)
@@ -190,18 +216,18 @@ function materializeZoneMap(element: Element, availableWidth: number, processor:
         // Override contextBase with this zone's width.
         // contentWidthOverride signals FlowBoxPackager to wrap text at zoneWidth
         // rather than the page content width from the surrounding main layout.
-        const zoneContextBase = { ...stubContextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
-        const result = placePackagersInZone(packagers, zoneWidth, zoneContextBase);
+        const zoneContextBase = { ...stubContextBase, pageWidth: zone.width, contentWidthOverride: zone.width };
+        const result = placePackagersInZone(packagers, zone.width, zoneContextBase);
 
         // Offset each box into zone-map-local space (x += column x offset)
         for (const box of result.boxes) {
-            allBoxes.push({ ...box, x: (box.x || 0) + xOffset });
+            allBoxes.push({ ...box, x: (box.x || 0) + zone.x });
         }
 
         totalHeight = Math.max(totalHeight, result.height);
     }
 
-    return { boxes: allBoxes, totalHeight, marginTop, marginBottom };
+    return { boxes: allBoxes, totalHeight, marginTop: strip.marginTop, marginBottom: strip.marginBottom };
 }
 
 // ---------------------------------------------------------------------------
@@ -251,7 +277,8 @@ export class ZonePackager implements PackagerUnit {
 
     private materialize(availableWidth: number): void {
         if (this.materializedBoxes !== null && this.lastAvailableWidth === availableWidth) return;
-        const result = materializeZoneMap(this.element, availableWidth, this.processor);
+        const normalizedStrip = normalizeZoneMapElement(this.element, availableWidth);
+        const result = materializeZoneStrip(normalizedStrip, availableWidth, this.processor);
         this.materializedBoxes = result.boxes;
         this.marginTopVal = result.marginTop;
         this.marginBottomVal = result.marginBottom;

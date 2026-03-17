@@ -1,0 +1,1194 @@
+{
+  "items": [
+    {
+      "allowLineSplit": true,
+      "content": "A Type Specimen",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[0]"
+      },
+      "sourceType": "h1",
+      "style": {
+        "fontSize": 22,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 14
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Typography begins with selection. Before spacing, before measure, before any question of hierarchy, a designer must choose which faces will carry the words — this document shows what is available and how each face behaves at text, display, and code sizes.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[1]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Installed Typefaces",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[2]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 8,
+        "marginTop": 10
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Each line below is set in the named face at 11 pt. The sample string exercises numerals, punctuation, and the full latin alphabet run.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[3]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Arimo: The quick brown fox jumps over 1234567890.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[4]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans: The quick brown fox jumps over 1234567890.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[5]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Noto Sans",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Carlito: The quick brown fox jumps over 1234567890.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[6]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Carlito",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Caladea: The quick brown fox jumps over 1234567890.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[7]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Caladea",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Tinos: The quick brown fox jumps over 1234567890.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[8]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Tinos",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Cousine: The quick brown fox jumps over 1234567890.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[9]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Cousine",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Courier Prime: The quick brown fox jumps over 1234567890.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[10]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Courier Prime",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans SC: 中文预览 字体样式示例 1234567890",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[11]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Noto Sans SC",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans JP: 日本語プレビュー フォントサンプル 1234567890",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[12]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Noto Sans JP",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans KR: 한국어 미리보기 글꼴 샘플 1234567890",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[13]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Noto Sans KR",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans Thai: ตัวอย่างฟอนต์ภาษาไทย 1234567890",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[14]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Noto Sans Thai",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans Arabic: معاينة الخط العربي 1234567890",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[15]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Noto Sans Arabic",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans Devanagari: देवनागरी फ़ॉन्ट पूर्वावलोकन १२३४५६७८९०",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[16]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Noto Sans Devanagari",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans Symbols 2: → ← ↑ ↓ ✓ ✗ ★ ☆ ☑ ⚠ ∑ ∞ ≤ ≥",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[17]"
+      },
+      "sourceType": "fontPreview",
+      "style": {
+        "fontFamily": "Noto Sans Symbols 2",
+        "fontSize": 11,
+        "lineHeight": 1.25,
+        "marginBottom": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Weight Matching - Arimo Static Family",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[18]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 8,
+        "marginTop": 10
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Arimo now ships as static instances. Requested weights resolve to the nearest available static match while preserving style.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[19]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "100 -> nearest static 400 (normal)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[20]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": 100,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "300 -> nearest static 400 (normal)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[21]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": 300,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "400 -> static 400 (normal)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[22]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": 400,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "500 -> nearest static 700 (normal)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[23]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": 500,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "600 -> nearest static 700 (normal)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[24]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": 600,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "700 -> static 700 (normal)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[25]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": 700,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "900 -> nearest static 700 (normal)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[26]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": 900,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "300 italic -> nearest static 400 (italic)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[27]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontStyle": "italic",
+        "fontWeight": 300,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "500 italic -> nearest static 700 (italic)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[28]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontStyle": "italic",
+        "fontWeight": 500,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "700 italic -> static 700 (italic)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[29]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontStyle": "italic",
+        "fontWeight": 700,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "900 italic -> nearest static 700 (italic)",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[30]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontStyle": "italic",
+        "fontWeight": 900,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "keyword: normal",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[31]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": "normal",
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "keyword: bold",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[32]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "keyword: lighter",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[33]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": "lighter",
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "keyword: bolder",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[34]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": "bolder",
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "string numeric \"650\" → stepped to 700",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[35]"
+      },
+      "sourceType": "weightLine",
+      "style": {
+        "fontFamily": "Arimo",
+        "fontSize": 12,
+        "fontWeight": "650",
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "children": [
+        {
+          "content": "Inline normal sweep: ",
+          "type": "text"
+        },
+        {
+          "content": "[100] ",
+          "properties": {
+            "style": {
+              "fontWeight": 100
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": "[300] ",
+          "properties": {
+            "style": {
+              "fontWeight": 300
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": "[400] ",
+          "properties": {
+            "style": {
+              "fontWeight": 400
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": "[500] ",
+          "properties": {
+            "style": {
+              "fontWeight": 500
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": "[600] ",
+          "properties": {
+            "style": {
+              "fontWeight": 600
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": "[700] ",
+          "properties": {
+            "style": {
+              "fontWeight": 700
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": "[900]",
+          "properties": {
+            "style": {
+              "fontWeight": 900
+            }
+          },
+          "type": "text"
+        }
+      ],
+      "content": "",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[36]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "children": [
+        {
+          "content": "Inline italic sweep: ",
+          "type": "text"
+        },
+        {
+          "content": "[100] ",
+          "properties": {
+            "style": {
+              "fontStyle": "italic",
+              "fontWeight": 100
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": "[300] ",
+          "properties": {
+            "style": {
+              "fontStyle": "italic",
+              "fontWeight": 300
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": "[500] ",
+          "properties": {
+            "style": {
+              "fontStyle": "italic",
+              "fontWeight": 500
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": "[700] ",
+          "properties": {
+            "style": {
+              "fontStyle": "italic",
+              "fontWeight": 700
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": "[900]",
+          "properties": {
+            "style": {
+              "fontStyle": "italic",
+              "fontWeight": 900
+            }
+          },
+          "type": "text"
+        }
+      ],
+      "content": "",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[37]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Scripts & Mixed-Family Composition",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[38]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 8,
+        "marginTop": 10
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Type systems that serve international audiences must switch families mid-paragraph without disrupting baseline rhythm or line height. The examples below show style-level family overrides and inline family runs in a single composition.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[39]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "children": [
+        {
+          "content": "Base Arimo 12pt, then ",
+          "type": "text"
+        },
+        {
+          "content": "Courier Prime 11pt",
+          "properties": {
+            "style": {
+              "fontFamily": "Courier Prime",
+              "fontSize": 11
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": ", then ",
+          "type": "text"
+        },
+        {
+          "content": "Arimo Bold 15pt",
+          "properties": {
+            "style": {
+              "fontSize": 15,
+              "fontWeight": "bold"
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": ", then ",
+          "type": "text"
+        },
+        {
+          "content": "Arimo Italic 12pt",
+          "properties": {
+            "style": {
+              "fontStyle": "italic"
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": ".",
+          "type": "text"
+        }
+      ],
+      "content": "",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[40]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "const total = subtotal + tax - discount; // style-level monospace family override",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[41]"
+      },
+      "sourceType": "mono",
+      "style": {
+        "borderLeftColor": "#555555",
+        "borderLeftWidth": 2,
+        "fontFamily": "Courier Prime",
+        "fontSize": 10,
+        "lineHeight": 1.2,
+        "marginBottom": 10,
+        "paddingBottom": 6,
+        "paddingLeft": 8,
+        "paddingRight": 8,
+        "paddingTop": 6
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "日本語サンプル: フォントファミリーを要素単位で切り替えても、改行と計測が安定することを確認します。",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[42]"
+      },
+      "sourceType": "cjk",
+      "style": {
+        "fontFamily": "Noto Sans JP",
+        "fontSize": 13,
+        "lineHeight": 1.3,
+        "marginBottom": 10
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "مثال عربي: هذا السطر يختبر استخدام عائلة خط مختلفة مع حجم مختلف داخل نفس المستند.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[43]"
+      },
+      "sourceType": "arabic",
+      "style": {
+        "fontFamily": "Noto Sans Arabic",
+        "fontSize": 13,
+        "lineHeight": 1.35,
+        "marginBottom": 10
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "children": [
+        {
+          "content": "Mixed-script inline: ",
+          "type": "text"
+        },
+        {
+          "content": "日本語",
+          "properties": {
+            "style": {
+              "fontFamily": "Noto Sans JP",
+              "fontSize": 13
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": " + ",
+          "type": "text"
+        },
+        {
+          "content": "العربية",
+          "properties": {
+            "style": {
+              "fontFamily": "Noto Sans Arabic",
+              "fontSize": 13
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": " + ",
+          "type": "text"
+        },
+        {
+          "content": "Courier",
+          "properties": {
+            "style": {
+              "fontFamily": "Courier Prime",
+              "fontSize": 11,
+              "fontWeight": "bold"
+            }
+          },
+          "type": "text"
+        },
+        {
+          "content": " in one unbroken paragraph.",
+          "type": "text"
+        }
+      ],
+      "content": "",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[44]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Cross-Family Weight Matching — Noto Sans",
+      "keepWithNext": true,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[45]"
+      },
+      "sourceType": "h2",
+      "style": {
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "keepWithNext": true,
+        "marginBottom": 8,
+        "marginTop": 10
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans is a static-instance family. Weight resolution uses nearest-match selection.",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[46]"
+      },
+      "sourceType": "p",
+      "style": {
+        "allowLineSplit": true,
+        "marginBottom": 10,
+        "orphans": 2,
+        "widows": 2
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans requested 200 -> nearest static match",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[47]"
+      },
+      "sourceType": "weightLineNoto",
+      "style": {
+        "fontFamily": "Noto Sans",
+        "fontSize": 12,
+        "fontWeight": 200,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans requested 500 → nearest static match boundary",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[48]"
+      },
+      "sourceType": "weightLineNoto",
+      "style": {
+        "fontFamily": "Noto Sans",
+        "fontSize": 12,
+        "fontWeight": 500,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    },
+    {
+      "allowLineSplit": true,
+      "content": "Noto Sans requested 800 -> nearest static match",
+      "keepWithNext": false,
+      "kind": "flow-block",
+      "overflowPolicy": "clip",
+      "pageBreakBefore": false,
+      "source": {
+        "path": "elements[49]"
+      },
+      "sourceType": "weightLineNoto",
+      "style": {
+        "fontFamily": "Noto Sans",
+        "fontSize": 12,
+        "fontWeight": 800,
+        "lineHeight": 1.2,
+        "marginBottom": 4
+      }
+    }
+  ],
+  "notes": {
+    "coordinateSpace": "zone.x is parent-relative",
+    "provisionalFields": [
+      "ZoneStrip.content for linked strips",
+      "ZoneStrip.balance",
+      "ZoneStrip.blockStyle",
+      "SpatialZone.style",
+      "SpatialGrid.blockStyle",
+      "CompiledPageRegion.kind",
+      "FlowBlock.image",
+      "BlockObstacle.align",
+      "BlockObstacle.mode",
+      "Node.source provenance"
+    ]
+  },
+  "pageGeometry": {
+    "contentHeight": 648,
+    "contentWidth": 468,
+    "contentX": 72,
+    "contentY": 72,
+    "margins": {
+      "bottom": 72,
+      "left": 72,
+      "right": 72,
+      "top": 72
+    },
+    "pageHeight": 792,
+    "pageWidth": 612
+  },
+  "pageTemplate": {},
+  "source": {
+    "documentVersion": "1.0",
+    "fixture": "03-typography-type-specimen.json",
+    "irVersion": "1.0"
+  },
+  "spatialIrVersion": "0.1"
+}

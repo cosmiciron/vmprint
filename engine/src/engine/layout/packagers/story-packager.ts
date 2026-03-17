@@ -46,6 +46,7 @@
 import { Box, BoxImagePayload, Element, ElementStyle, RichLine, StoryFloatAlign, StoryLayoutDirective, StoryWrapMode } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { LayoutUtils } from '../layout-utils';
+import { normalizeStoryElement, type NormalizedStoryChild } from '../normalized-story';
 import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
@@ -218,6 +219,7 @@ class FrozenStoryPackager implements PackagerUnit {
 
 export class StoryPackager implements PackagerUnit {
     private readonly storyElement: Element;
+    private readonly normalizedStory;
     private readonly processor: LayoutProcessor;
     private readonly storyIndex: number;
     /** Obstacles carried over from the preceding page (already started there). */
@@ -251,6 +253,7 @@ export class StoryPackager implements PackagerUnit {
         identity?: PackagerIdentity
     ) {
         this.storyElement = storyElement;
+        this.normalizedStory = normalizeStoryElement(storyElement);
         this.processor = processor;
         this.storyIndex = storyIndex;
         this.initialObstacles = initialObstacles ?? [];
@@ -370,7 +373,7 @@ export class StoryPackager implements PackagerUnit {
         availableWidth: number,
         margins: { left: number; right: number; top: number; bottom: number }
     ): FullPourResult {
-        const children = this.storyElement.children ?? [];
+        const children = this.normalizedStory.children;
         const storyMap = new SpatialMap();
         const registeredObstacles: OccupiedRect[] = [];
         const imageMetricsCache = new Map<number, { img: BoxImagePayload; w: number; h: number } | null>();
@@ -406,24 +409,23 @@ export class StoryPackager implements PackagerUnit {
         // -------------------------------------------------------------------
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            const layout = child.properties?.layout as StoryLayoutDirective | undefined;
-            if (layout?.mode !== 'story-absolute') continue;
-            if (!child.properties?.image) continue;
+            if (child.kind !== 'story-absolute-image') continue;
+            const layout = child.layout!;
             if (layout.wrap === 'none') continue;
 
-            const metrics = resolveImageMetrics(child, i);
+            const metrics = resolveImageMetrics(child.element, child.childIndex);
             if (!metrics) continue;
-            const { img: imgData, w: imgW, h: imgH } = metrics;
-            const localY = Math.max(0, Number(layout.y ?? 0)) - this.storyYOffset;
+            const { w: imgW, h: imgH } = metrics;
+            const localY = layout.y - this.storyYOffset;
             if (localY + imgH < 0) continue; // wholly before this page's origin
 
             const rect: OccupiedRect = {
-                x: Math.max(0, Number(layout.x ?? 0)),
+                x: layout.x,
                 y: Math.max(0, localY),
                 w: imgW,
                 h: imgH,
-                wrap: layout.wrap ?? 'around',
-                gap: Math.max(0, Number(layout.gap ?? 0))
+                wrap: layout.wrap,
+                gap: layout.gap
             };
             storyMap.register(rect);
             registeredObstacles.push(rect);
@@ -438,29 +440,29 @@ export class StoryPackager implements PackagerUnit {
 
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            const layout = child.properties?.layout as StoryLayoutDirective | undefined;
+            const layout = child.layout;
 
             // ---- story-absolute image --------------------------------------
-            if (layout?.mode === 'story-absolute') {
-                const metrics = resolveImageMetrics(child, i);
+            if (child.kind === 'story-absolute-image' && layout) {
+                const metrics = resolveImageMetrics(child.element, child.childIndex);
                 if (!metrics) continue;
                 const { img: imgData, w: imgW, h: imgH } = metrics;
-                const localY = Math.max(0, Number(layout.y ?? 0)) - this.storyYOffset;
+                const localY = layout.y - this.storyYOffset;
                 if (localY + imgH < 0) continue; // wholly before this page's origin
                 const effectiveY = Math.max(0, localY);
-                const x = Math.max(0, Number(layout.x ?? 0));
-                const box = this.buildImageBox(child, margins.left + x, effectiveY, imgW, imgH, imgData, i);
+                const x = layout.x;
+                const box = this.buildImageBox(child.element, margins.left + x, effectiveY, imgW, imgH, imgData, child.childIndex);
                 allBoxes.push(box);
                 placedElements.push({
-                    kind: 'image', childIndex: i, box,
+                    kind: 'image', childIndex: child.childIndex, box,
                     topY: effectiveY, bottomY: effectiveY + imgH, isFloat: false, isAbsolute: true
                 });
                 continue;
             }
 
             // ---- float image -----------------------------------------------
-            if (layout?.mode === 'float' && child.properties?.image) {
-                const metrics = resolveImageMetrics(child, i);
+            if (child.kind === 'float-image' && layout) {
+                const metrics = resolveImageMetrics(child.element, child.childIndex);
                 if (!metrics) continue;
                 const { img: imgData, w: imgW, h: imgH } = metrics;
 
@@ -468,10 +470,10 @@ export class StoryPackager implements PackagerUnit {
                 // top-bottom blocks first so they sit beside readable text.
                 cursorY = storyMap.topBottomClearY(cursorY);
 
-                const align: StoryFloatAlign = layout.align ?? 'left';
+                const align: StoryFloatAlign = layout.align;
                 const floatX = resolveFloatX(align, imgW, availableWidth);
-                const wrap: StoryWrapMode = layout.wrap ?? 'around';
-                const gap = Math.max(0, Number(layout.gap ?? 0));
+                const wrap: StoryWrapMode = layout.wrap;
+                const gap = layout.gap;
 
                 if (wrap !== 'none') {
                     const rect: OccupiedRect = {
@@ -482,11 +484,11 @@ export class StoryPackager implements PackagerUnit {
                 }
 
                 const box = this.buildImageBox(
-                    child, margins.left + floatX, cursorY, imgW, imgH, imgData, i
+                    child.element, margins.left + floatX, cursorY, imgW, imgH, imgData, child.childIndex
                 );
                 allBoxes.push(box);
                 placedElements.push({
-                    kind: 'image', childIndex: i, box,
+                    kind: 'image', childIndex: child.childIndex, box,
                     topY: cursorY, bottomY: cursorY + imgH, isFloat: true, isAbsolute: false
                 });
                 // Floats do NOT advance cursorY — text flows alongside them.
@@ -494,15 +496,15 @@ export class StoryPackager implements PackagerUnit {
             }
 
             // ---- float block (non-image element with layout.mode === 'float') ---
-            if (layout?.mode === 'float' && !child.properties?.image) {
-                const dims = this.measureFloatBox(child, availableWidth);
+            if (child.kind === 'float-block' && layout) {
+                const dims = this.measureFloatBox(child.element, availableWidth);
                 if (dims) {
                     cursorY = storyMap.topBottomClearY(cursorY);
 
-                    const align: StoryFloatAlign = layout.align ?? 'left';
+                    const align: StoryFloatAlign = layout.align;
                     const floatX = resolveFloatX(align, dims.w, availableWidth);
-                    const wrap: StoryWrapMode = layout.wrap ?? 'around';
-                    const gap = Math.max(0, Number(layout.gap ?? 0));
+                    const wrap: StoryWrapMode = layout.wrap;
+                    const gap = layout.gap;
 
                     if (wrap !== 'none') {
                         const rect: OccupiedRect = { x: floatX, y: cursorY, w: dims.w, h: dims.h, wrap, gap };
@@ -510,7 +512,7 @@ export class StoryPackager implements PackagerUnit {
                         registeredObstacles.push(rect);
                     }
 
-                    const pkg = buildPackagerForElement(child, i, this.processor);
+                    const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
                     const floatContext: PackagerContext = {
                         processor: this.processor,
                         pageIndex: 0,
@@ -534,7 +536,7 @@ export class StoryPackager implements PackagerUnit {
                     for (const b of emitted) allBoxes.push(b);
                     placedElements.push({
                         kind: 'float-block',
-                        childIndex: i,
+                        childIndex: child.childIndex,
                         allBoxes: emitted,
                         topY: cursorY,
                         bottomY: cursorY + dims.h
@@ -546,25 +548,25 @@ export class StoryPackager implements PackagerUnit {
             }
 
             // ---- block image (no layout directive, or unrecognised mode) ---
-            if (child.properties?.image && !layout?.mode) {
-                const metrics = resolveImageMetrics(child, i);
+            if (child.kind === 'block-image') {
+                const metrics = resolveImageMetrics(child.element, child.childIndex);
                 if (!metrics) continue;
                 const { img: imgData, w: imgW, h: imgH } = metrics;
 
                 cursorY = storyMap.topBottomClearY(cursorY);
                 const flowBox = (this.processor as any).shapeElement(
-                    child, { path: [this.storyIndex, i] }
+                    child.element, { path: [this.storyIndex, child.childIndex] }
                 );
                 const marginTop = Math.max(0, flowBox.marginTop);
                 const marginBottom = Math.max(0, flowBox.marginBottom);
                 const boxY = cursorY + marginTop;
 
                 const box = this.buildImageBox(
-                    child, margins.left, boxY, imgW, imgH, imgData, i
+                    child.element, margins.left, boxY, imgW, imgH, imgData, child.childIndex
                 );
                 allBoxes.push(box);
                 placedElements.push({
-                    kind: 'image', childIndex: i, box,
+                    kind: 'image', childIndex: child.childIndex, box,
                     topY: boxY, bottomY: boxY + imgH, isFloat: false, isAbsolute: false
                 });
                 cursorY = boxY + imgH + marginBottom;
@@ -573,7 +575,7 @@ export class StoryPackager implements PackagerUnit {
 
             // ---- text / block element --------------------------------------
             const placed = this.pourTextChild(
-                child, i, availableWidth, margins, storyMap, cursorY
+                child.element, child.childIndex, availableWidth, margins, storyMap, cursorY
             );
             if (placed) {
                 allBoxes.push(placed.box);
@@ -769,13 +771,11 @@ export class StoryPackager implements PackagerUnit {
     // -- Split ---------------------------------------------------------------
 
     private getStoryColumnConfig(): { columns: number; gutter: number; balance: boolean } {
-        const rawColumns = (this.storyElement as any).columns ?? this.storyElement.properties?.columns;
-        const rawGutter = (this.storyElement as any).gutter ?? this.storyElement.properties?.gutter;
-        const rawBalance = (this.storyElement as any).balance ?? this.storyElement.properties?.balance;
-        const columns = Math.max(1, Math.floor(Number(rawColumns ?? 1) || 1));
-        const gutter = Math.max(0, Number(rawGutter ?? 0) || 0);
-        const balance = rawBalance === true || rawBalance === 'true' || rawBalance === 1;
-        return { columns, gutter, balance };
+        return {
+            columns: this.normalizedStory.columns,
+            gutter: this.normalizedStory.gutter,
+            balance: this.normalizedStory.balance
+        };
     }
 
     private buildColumnRegions(
@@ -884,24 +884,24 @@ export class StoryPackager implements PackagerUnit {
             };
         }
 
-        const children = this.storyElement.children ?? [];
+        const children = this.normalizedStory.children;
         const registeredObstacles: OccupiedRect[] = [];
         const allObstacles: OccupiedRect[] = [];
         const allBoxes: Box[] = [];
         const imageMetricsCache = new Map<number, { img: BoxImagePayload; w: number; h: number } | null>();
         const maxRegionWidth = Math.max(...regions.map((r) => r.w));
 
-        const resolveImageMetrics = (child: Element, index: number): { img: BoxImagePayload; w: number; h: number } | null => {
-            if (!child.properties?.image) return null;
-            if (imageMetricsCache.has(index)) return imageMetricsCache.get(index)!;
-            const imgData = this.resolveImage(child);
+        const resolveImageMetrics = (child: NormalizedStoryChild): { img: BoxImagePayload; w: number; h: number } | null => {
+            if (!child.element.properties?.image) return null;
+            if (imageMetricsCache.has(child.childIndex)) return imageMetricsCache.get(child.childIndex)!;
+            const imgData = this.resolveImage(child.element);
             if (!imgData) {
-                imageMetricsCache.set(index, null);
+                imageMetricsCache.set(child.childIndex, null);
                 return null;
             }
-            const { w, h } = this.measureImageBox(child, imgData, maxRegionWidth);
+            const { w, h } = this.measureImageBox(child.element, imgData, maxRegionWidth);
             const cached = { img: imgData, w, h };
-            imageMetricsCache.set(index, cached);
+            imageMetricsCache.set(child.childIndex, cached);
             return cached;
         };
 
@@ -922,24 +922,23 @@ export class StoryPackager implements PackagerUnit {
 
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            const layout = child.properties?.layout as StoryLayoutDirective | undefined;
-            if (layout?.mode !== 'story-absolute') continue;
-            if (!child.properties?.image) continue;
+            const layout = child.layout;
+            if (child.kind !== 'story-absolute-image' || !layout) continue;
             if (layout.wrap === 'none') continue;
 
-            const metrics = resolveImageMetrics(child, i);
+            const metrics = resolveImageMetrics(child);
             if (!metrics) continue;
             const { w: imgW, h: imgH } = metrics;
-            const localY = Math.max(0, Number(layout.y ?? 0)) - this.storyYOffset;
+            const localY = layout.y - this.storyYOffset;
             if (localY + imgH < 0 || localY > availableHeight) continue;
 
             const rect: OccupiedRect = {
-                x: Math.max(0, Number(layout.x ?? 0)),
+                x: layout.x,
                 y: Math.max(0, localY),
                 w: imgW,
                 h: imgH,
-                wrap: layout.wrap ?? 'around',
-                gap: Math.max(0, Number(layout.gap ?? 0))
+                wrap: layout.wrap,
+                gap: layout.gap
             };
             allObstacles.push(rect);
             registeredObstacles.push(rect);
@@ -960,22 +959,22 @@ export class StoryPackager implements PackagerUnit {
 
         outer: for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            const layout = child.properties?.layout as StoryLayoutDirective | undefined;
+            const layout = child.layout;
 
-            if (layout?.mode === 'story-absolute') {
-                const metrics = resolveImageMetrics(child, i);
+            if (child.kind === 'story-absolute-image' && layout) {
+                const metrics = resolveImageMetrics(child);
                 if (!metrics) continue;
                 const { img: imgData, w: imgW, h: imgH } = metrics;
-                const localY = Math.max(0, Number(layout.y ?? 0)) - this.storyYOffset;
+                const localY = layout.y - this.storyYOffset;
                 if (localY + imgH < 0 || localY > availableHeight) continue;
                 const box = this.buildImageBox(
-                    child,
-                    margins.left + Math.max(0, Number(layout.x ?? 0)),
+                    child.element,
+                    margins.left + layout.x,
                     Math.max(0, localY),
                     imgW,
                     imgH,
                     imgData,
-                    i
+                    child.childIndex
                 );
                 allBoxes.push(box);
                 continue;
@@ -985,7 +984,7 @@ export class StoryPackager implements PackagerUnit {
             // An element with columnSpan: 'all' (or any number ≥ 2) breaks
             // the column flow, is laid out at full story width, then column
             // flow resumes from column 0 below the spanning element.
-            if (isColumnSpanElement(child)) {
+            if (child.kind === 'column-span') {
                 const spanTopY = cursorY;
                 const spanContext: PackagerContext = {
                     processor: this.processor,
@@ -1004,7 +1003,7 @@ export class StoryPackager implements PackagerUnit {
                         return session ? session.getActorSignals(topic) : [];
                     }
                 };
-                const pkg = buildPackagerForElement(child, i, this.processor);
+                const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
                 pkg.prepare(availableWidth, availableHeight - spanTopY, spanContext);
                 const spanH = pkg.getRequiredHeight();
 
@@ -1025,8 +1024,8 @@ export class StoryPackager implements PackagerUnit {
                 continue;
             }
 
-            if (layout?.mode === 'float' && child.properties?.image) {
-                const metrics = resolveImageMetrics(child, i);
+            if (child.kind === 'float-image' && layout) {
+                const metrics = resolveImageMetrics(child);
                 if (!metrics) continue;
                 const { img: imgData, w: imgW, h: imgH } = metrics;
 
@@ -1041,18 +1040,18 @@ export class StoryPackager implements PackagerUnit {
                         break outer;
                     }
 
-                    const align: StoryFloatAlign = layout.align ?? 'left';
+                    const align: StoryFloatAlign = layout.align;
                     const localX = resolveFloatX(align, Math.min(imgW, region.w), region.w);
                     const x = region.x + localX;
-                    const wrap: StoryWrapMode = layout.wrap ?? 'around';
-                    const gap = Math.max(0, Number(layout.gap ?? 0));
+                    const wrap: StoryWrapMode = layout.wrap;
+                    const gap = layout.gap;
                     if (wrap !== 'none') {
                         const rect: OccupiedRect = { x, y: anchorY, w: Math.min(imgW, region.w), h: imgH, wrap, gap };
                         allObstacles.push(rect);
                         registeredObstacles.push(rect);
                     }
 
-                    const box = this.buildImageBox(child, margins.left + x, anchorY, Math.min(imgW, region.w), imgH, imgData, i);
+                    const box = this.buildImageBox(child.element, margins.left + x, anchorY, Math.min(imgW, region.w), imgH, imgData, child.childIndex);
                     allBoxes.push(box);
                     cursorY = anchorY;
                     break;
@@ -1061,8 +1060,8 @@ export class StoryPackager implements PackagerUnit {
             }
 
             // ---- float block (non-image element with layout.mode === 'float') ---
-            if (layout?.mode === 'float' && !child.properties?.image) {
-                const dims = this.measureFloatBox(child, maxRegionWidth);
+            if (child.kind === 'float-block' && layout) {
+                const dims = this.measureFloatBox(child.element, maxRegionWidth);
                 if (dims) {
                     while (true) {
                         const region = regions[regionIndex];
@@ -1075,12 +1074,12 @@ export class StoryPackager implements PackagerUnit {
                             break outer;
                         }
 
-                        const align: StoryFloatAlign = layout.align ?? 'left';
+                        const align: StoryFloatAlign = layout.align;
                         const effectiveW = Math.min(dims.w, region.w);
                         const localX = resolveFloatX(align, effectiveW, region.w);
                         const x = region.x + localX;
-                        const wrap: StoryWrapMode = layout.wrap ?? 'around';
-                        const gap = Math.max(0, Number(layout.gap ?? 0));
+                        const wrap: StoryWrapMode = layout.wrap;
+                        const gap = layout.gap;
 
                         if (wrap !== 'none') {
                             const rect: OccupiedRect = { x, y: anchorY, w: effectiveW, h: dims.h, wrap, gap };
@@ -1088,7 +1087,7 @@ export class StoryPackager implements PackagerUnit {
                             registeredObstacles.push(rect);
                         }
 
-                        const pkg = buildPackagerForElement(child, i, this.processor);
+                        const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
                         const floatContext: PackagerContext = {
                             processor: this.processor,
                             pageIndex: 0,
@@ -1118,8 +1117,8 @@ export class StoryPackager implements PackagerUnit {
                 // dims is null (missing style.width/height) → fall through to FlowBoxPackager path
             }
 
-            if (child.properties?.image && !layout?.mode) {
-                const metrics = resolveImageMetrics(child, i);
+            if (child.kind === 'block-image') {
+                const metrics = resolveImageMetrics(child);
                 if (!metrics) continue;
                 const { img: imgData, w: imgW, h: imgH } = metrics;
                 while (true) {
@@ -1127,13 +1126,13 @@ export class StoryPackager implements PackagerUnit {
                     const regionMap = this.createRegionMap(region, allObstacles);
                     const top = regionMap.topBottomClearY(cursorY);
                     const flowBox = (this.processor as any).shapeElement(
-                        child, { path: [this.storyIndex, i] }
+                        child.element, { path: [this.storyIndex, child.childIndex] }
                     );
                     const marginTop = Math.max(0, flowBox.marginTop);
                     const marginBottom = Math.max(0, flowBox.marginBottom);
                     const y = top + marginTop;
                     if (y + imgH + marginBottom <= region.h + 0.1) {
-                        const box = this.buildImageBox(child, margins.left + region.x, y, Math.min(imgW, region.w), imgH, imgData, i);
+                        const box = this.buildImageBox(child.element, margins.left + region.x, y, Math.min(imgW, region.w), imgH, imgData, child.childIndex);
                         allBoxes.push(box);
                         cursorY = y + imgH + marginBottom;
                         break;
@@ -1156,7 +1155,7 @@ export class StoryPackager implements PackagerUnit {
             // generic column-adjusted emitBoxes path — no special-casing per
             // element type required.
             // ----------------------------------------------------------
-            const pkg = buildPackagerForElement(child, i, this.processor);
+            const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
 
             if (!(pkg instanceof FlowBoxPackager)) {
                 opaqueLoop: while (true) {
@@ -1200,7 +1199,7 @@ export class StoryPackager implements PackagerUnit {
                 continue;
             }
 
-            let workingElement: Element | null = child;
+            let workingElement: Element | null = child.element;
             while (workingElement) {
                 const region = regions[regionIndex];
                 const regionMap = this.createRegionMap(region, allObstacles);
