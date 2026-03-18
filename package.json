@@ -1,6 +1,6 @@
 {
   "name": "vmprint",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "description": "Deterministic typesetting engine for the programmable web. Pure-JS, zero-browser document composition with bit-perfect PDF output.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
@@ -31,6 +31,7 @@
   "scripts": {
     "clean": "npm run clean --workspaces --if-present",
     "build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=markdown-core && npm run build --workspace=contexts/pdf && npm run build --workspace=contexts/pdf-lite && npm run build --workspace=font-managers/local && npm run build --workspace=font-managers/standard && npm run build --workspace=cli && npm run build --workspace=draft2final && npm run build --workspace=@vmprint/transmuter-mkd-mkd && npm run build --workspace=@vmprint/transmuter-mkd-academic && npm run build --workspace=@vmprint/transmuter-mkd-literature && npm run build --workspace=@vmprint/transmuter-mkd-manuscript && npm run build --workspace=@vmprint/transmuter-mkd-screenplay",
+    "test": "npm run test --prefix engine && npm run docs:build && npm run test:packaged-integration",
     "transmute": "tsx scripts/transmute.ts",
     "docs:build": "node scripts/build-docs-examples.mjs",
     "test:boundary-imports": "npm run build --workspace=draft2final",

@@ -24,6 +24,7 @@ const aliases = {
     '@vmprint/standard-fonts': path.join(repoRoot, 'font-managers', 'standard', 'src', 'index.ts'),
     '@vmprint/context-pdf-lite': path.join(repoRoot, 'contexts', 'pdf-lite', 'src', 'index.ts'),
     fontkit: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'fontkit.ts'),
+    'node:perf_hooks': path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'perf-hooks.ts'),
     html2canvas: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'html2canvas.ts'),
     canvg: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'canvg.ts'),
     dompurify: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'dompurify.ts')

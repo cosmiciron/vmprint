@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/transmuter-mkd-literature",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Markdown -> VMPrint DocumentInput transmuter with literature defaults.",
   "author": "cosmiciron",
   "license": "Apache-2.0",

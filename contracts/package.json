@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/contracts",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Core interfaces for VMPrint engines, contexts, and font managers.",
   "author": "cosmiciron",
   "license": "Apache-2.0",

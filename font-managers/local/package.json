@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/local-fonts",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Local filesystem FontManager for vmprint. Bundles common open-source fonts (Noto, Arimo, Tinos, Cousine, Carlito, Caladea, Courier Prime).",
   "author": "cosmiciron",
   "license": "Apache-2.0",

@@ -1,13 +1,13 @@
-﻿# Quickstart
+# Quickstart
 
-This monorepo contains the **VMPrint** deterministic typesetting engine, the **vmprint CLI** (JSON → bit-perfect PDF), and the **draft2final CLI** (transmuter-first source → bit-perfect PDF or AST JSON).
+This monorepo contains the VMPrint engine, the `vmprint` CLI for JSON-to-PDF workflows, and the `draft2final` CLI for Markdown-first authoring workflows.
 
 ## Prerequisites
 
-- Node.js 18 or later
-- npm 9 or later (bundled with Node.js 18+)
+- Node.js 18+
+- npm 9+
 
-## 1. Clone and install
+## Install
 
 ```bash
 git clone https://github.com/cosmiciron/vmprint.git
@@ -15,168 +15,123 @@ cd vmprint
 npm install
 ```
 
-npm workspaces installs dependencies for all packages in a single pass from the root.
-
-## 2. Build
+## Build Everything
 
 ```bash
 npm run build
 ```
 
-This builds all packages in dependency order. To build a single package: `npm run build --prefix <package-path>`.
+## Run From Source
 
----
+The repo uses `tsx` for source-mode development, so you can run both CLIs without building first.
 
-## Run from source (no build required)
+### `vmprint` CLI
 
-Both CLIs support a `dev` script that runs TypeScript directly via `tsx`. The `--conditions tsx` flag activates a custom export condition defined in every local package, so the engine, contracts, context, and font manager are all loaded from their `src/` source files. No package needs to be built first.
-
-### vmprint CLI — JSON to PDF
+Render a document JSON file to PDF:
 
 ```bash
-# Basic render
 npm run dev --prefix cli -- --input document.json --output output.pdf
+```
 
-# Render from a saved layout stream (skip the layout pass)
+Render from a previously emitted layout stream:
+
+```bash
 npm run dev --prefix cli -- --render-from-layout output.layout.json --output output.pdf
+```
 
-# Dump the canonical document IR
-npm run dev --prefix cli -- --input document.json --output output.pdf --dump-ir
+Emit the annotated layout stream while rendering:
 
-# Emit the annotated layout stream
+```bash
 npm run dev --prefix cli -- --input document.json --output output.pdf --emit-layout
+```
 
-# Enable layout debug boxes
+Enable layout debug boxes:
+
+```bash
 npm run dev --prefix cli -- --input document.json --output output.pdf --debug
-
-# All options
-npm run dev --prefix cli -- --help
 ```
 
-### draft2final CLI — Transmuter-First
+### `draft2final` CLI
+
+Render Markdown using the default Markdown transmuter:
 
 ```bash
-npm run dev --prefix draft2final -- input.md --using mkd-mkd
-
-# Explicit output + transmuter
-npm run dev --prefix draft2final -- input.md --using mkd-screenplay --out screenplay.pdf
-
-# Emit transmuted AST JSON
-npm run dev --prefix draft2final -- input.md --using mkd-screenplay --out screenplay.ast.json
-
-# Optional user override files
-npm run dev --prefix draft2final -- input.md --using mkd-manuscript --config my.manuscript.config.yaml --theme my.theme.yaml
-
-# Frontmatter auto-detection (using/transmuter/format keys)
-npm run dev --prefix draft2final -- input.md --out output.pdf
+npm run dev --prefix draft2final -- input.md
 ```
 
-Follow-along tutorial:
-
-- [draft2final/TUTORIAL.md](draft2final/TUTORIAL.md)
-
-### Browser Examples (No Build Required)
-
-For a browser-based workflow without Node.js overhead, see the static examples:
-
-- Open [docs/examples/ast-to-pdf/index.html](docs/examples/ast-to-pdf/index.html) to render JSON documents to PDF entirely client-side.
-- Open [docs/examples/mkd-to-ast/index.html](docs/examples/mkd-to-ast/index.html) to transmute Markdown to VMPrint's JSON AST in the browser.
-
-### Standalone Transmuter (Markdown → AST)
-
-The transmuter packages can run anywhere (browser, Node.js, edge workers) to convert Markdown into VMPrint's `DocumentInput` without layout or rendering:
+Render with an explicit form:
 
 ```bash
-npm install @vmprint/transmuter-mkd-mkd @vmprint/transmuter-mkd-academic @vmprint/transmuter-mkd-literature @vmprint/transmuter-mkd-manuscript @vmprint/transmuter-mkd-screenplay
+npm run dev --prefix draft2final -- input.md --as manuscript --out output.pdf
+npm run dev --prefix draft2final -- input.md --as screenplay --out screenplay.pdf
 ```
 
-See [transmuters/mkd-mkd/README.md](transmuters/mkd-mkd/README.md), [transmuters/mkd-academic/README.md](transmuters/mkd-academic/README.md), [transmuters/mkd-literature/README.md](transmuters/mkd-literature/README.md), [transmuters/mkd-manuscript/README.md](transmuters/mkd-manuscript/README.md), and [transmuters/mkd-screenplay/README.md](transmuters/mkd-screenplay/README.md) for API documentation.
-
-### Transmuter CLI (Smoke Testing)
-
-Use the repo-level helper CLI to transmute Markdown files into VMPrint AST JSON:
+Emit transmuted AST JSON instead of PDF:
 
 ```bash
-# Write AST JSON to a file
+npm run dev --prefix draft2final -- input.md --as literature --out output.json
+```
+
+Prepare an existing Markdown file with front matter and recommended boilerplate:
+
+```bash
+npm run dev --prefix draft2final -- --prepare story.md --as manuscript
+```
+
+Scaffold a starter file:
+
+```bash
+npm run dev --prefix draft2final -- --new story.md --as manuscript
+```
+
+### Repo Transmute Helper
+
+Use the repo helper when you want raw AST JSON from a transmuter, including direct config/theme overrides:
+
+```bash
 npm run transmute -- input.md --using mkd-academic --out output.ast.json
-
-# Print AST JSON to stdout
-npm run transmute -- input.md --using mkd-literature
-
-# Override defaults with explicit YAML files
 npm run transmute -- input.md --using mkd-mkd --theme my.theme.yaml --config my.config.yaml
 ```
 
----
-
-## Run from a build
-
-After building, the compiled output can be invoked directly or installed globally.
-
-### Node.js directly
+## Run From Built Output
 
 ```bash
 node cli/dist/index.js --input document.json --output output.pdf
-node draft2final/dist/cli.js input.md --using mkd-mkd --out output.pdf
+node draft2final/dist/cli.js input.md --as manuscript --out output.pdf
 ```
 
-### Global install from the local build
+## Browser Examples
+
+Build the static browser examples:
 
 ```bash
-npm install -g ./cli
-npm install -g ./draft2final
+npm run docs:build
 ```
 
-```bash
-vmprint --input document.json --output output.pdf
-draft2final input.md --using mkd-mkd --out output.pdf
-```
+Then open:
 
----
+- `docs/examples/ast-to-pdf/index.html`
+- `docs/examples/mkd-to-ast/index.html`
 
-## Tests
-
-### Engine
+## Verification
 
 ```bash
-# Run all engine tests
+npm run build
 npm run test --prefix engine
-
-# Individual suites
-npm run test:modules --prefix engine
-npm run test:flat    --prefix engine
-npm run test:engine  --prefix engine
-
-# Update layout snapshots after intentional layout changes
-npm run test:update-layout-snapshots --prefix engine
+npm run docs:build
+npm run test:packaged-integration
 ```
 
-### draft2final (thin orchestration)
-
-```bash
-# Heavy regression coverage belongs to transmuters + engine.
-# Keep draft2final tests as smoke/integration checks only.
-npm run build --workspace=draft2final
-```
-
----
-
-## Project structure
+## Project Structure
 
 | Path | Package | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `contracts/` | `@vmprint/contracts` | Shared TypeScript interfaces |
-| `engine/` | `@vmprint/engine` | Deterministic typesetting core |
-| `contexts/pdf/` | `@vmprint/context-pdf` | PDF rendering context |
-| `contexts/pdf-lite/` | `@vmprint/context-pdf-lite` | Lightweight jsPDF PDF context |
+| `engine/` | `@vmprint/engine` | Deterministic layout engine |
+| `contexts/pdf/` | `@vmprint/context-pdf` | PDF output context |
+| `contexts/pdf-lite/` | `@vmprint/context-pdf-lite` | Lightweight PDF output context |
 | `font-managers/local/` | `@vmprint/local-fonts` | Local filesystem font manager |
-| `font-managers/standard/` | `@vmprint/standard-fonts` | Sentinel-based standard font manager |
-| `cli/` | `@vmprint/cli` | `vmprint` CLI — JSON → bit-perfect PDF |
-| `draft2final/` | `@draft2final/cli` | Transmuter-first source → bit-perfect PDF or AST CLI |
-| `transmuters/` | Multi-format transmuters | Source-to-DocumentInput converters |
-| `transmuters/mkd-mkd/` | `@vmprint/transmuter-mkd-mkd` | Markdown → DocumentInput |
-| `transmuters/mkd-academic/` | `@vmprint/transmuter-mkd-academic` | Markdown → DocumentInput (academic defaults) |
-| `transmuters/mkd-literature/` | `@vmprint/transmuter-mkd-literature` | Markdown → DocumentInput (literature defaults) |
-| `transmuters/mkd-manuscript/` | `@vmprint/transmuter-mkd-manuscript` | Markdown → DocumentInput (manuscript defaults) |
-| `transmuters/mkd-screenplay/` | `@vmprint/transmuter-mkd-screenplay` | Markdown → DocumentInput (screenplay defaults) |
-
+| `font-managers/standard/` | `@vmprint/standard-fonts` | Standard PDF font manager |
+| `cli/` | `@vmprint/cli` | `vmprint` CLI |
+| `draft2final/` | `draft2final` | Markdown-first authoring CLI |
+| `transmuters/` | VMPrint transmuters | Source-to-DocumentInput converters |

@@ -94,7 +94,7 @@ async function main() {
 
     const layoutEngine = new engine.LayoutEngine(config, runtime);
     await layoutEngine.waitForFonts();
-    const pages = layoutEngine.paginate(resolved.elements);
+    const pages = layoutEngine.simulate(resolved.elements);
     if (pages.length === 0) {
         throw new Error('Expected at least one page from smoke test document.');
     }
