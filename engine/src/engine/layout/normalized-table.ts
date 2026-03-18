@@ -245,6 +245,20 @@ export function normalizeTableElement(element: Element): NormalizedTableGrid {
 }
 
 export function buildTableModelFromNormalizedTable(table: NormalizedTableGrid): TableModel {
+    const rowSpanBlockedBoundaryIndices = new Set<number>();
+    for (const row of table.rows) {
+        for (const cell of row.cells) {
+            const rowSpan = Math.max(1, Math.floor(cell.rowSpan || 1));
+            if (rowSpan <= 1) continue;
+            const start = row.rowIndex;
+            const end = start + rowSpan - 1;
+            for (let boundary = start + 1; boundary <= end; boundary++) {
+                rowSpanBlockedBoundaryIndices.add(boundary);
+            }
+        }
+    }
+
+    const blockedBoundaryList = Array.from(rowSpanBlockedBoundaryIndices).sort((a, b) => a - b);
     return {
         rows: table.rows.map((row) => ({
             rowIndex: row.rowIndex,
@@ -261,6 +275,8 @@ export function buildTableModelFromNormalizedTable(table: NormalizedTableGrid): 
         rowIndices: table.rowIndices.slice(),
         columnCount: table.columnCount,
         headerRowIndices: table.headerRowIndices.slice(),
+        rowSpanBlockedBoundaryIndices: blockedBoundaryList,
+        rowSpanBlockedBoundaryLookup: new Set<number>(blockedBoundaryList),
         headerRows: table.headerRows,
         hasRowSpan: table.hasRowSpan,
         headerHasRowSpan: table.headerHasRowSpan,

@@ -38,15 +38,26 @@ export class PageRegionCollaborator implements LayoutCollaborator {
 
         const headerContent = materializePageTokens(resolved.header, physicalPageNumber, logicalNumber);
         const footerContent = materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber);
+        const headerRect = getHeaderRect(this.config, page);
+        const footerRect = getFooterRect(this.config, page);
+        const viewport = session.sessionWorldRuntime.createViewportDescriptor({
+            pageIndex: page.index,
+            pageWidth: page.width,
+            pageHeight: page.height,
+            margins: this.config.layout.margins,
+            headerRect,
+            footerRect
+        });
+        const worldSpace = session.sessionWorldRuntime.createWorldSpace(page.index, page.width, page.height);
 
         if (headerContent) {
             surface.boxes.push(
-                ...this.callbacks.layoutRegion(headerContent, getHeaderRect(this.config, page), page.index, 'header')
+                ...this.callbacks.layoutRegion(headerContent, headerRect, page.index, 'header')
             );
         }
         if (footerContent) {
             surface.boxes.push(
-                ...this.callbacks.layoutRegion(footerContent, getFooterRect(this.config, page), page.index, 'footer')
+                ...this.callbacks.layoutRegion(footerContent, footerRect, page.index, 'footer')
             );
         }
 
@@ -60,7 +71,9 @@ export class PageRegionCollaborator implements LayoutCollaborator {
             headerOverride: resolveOverrideState(override?.header),
             footerOverride: resolveOverrideState(override?.footer),
             renderedHeader: !!headerContent,
-            renderedFooter: !!footerContent
+            renderedFooter: !!footerContent,
+            worldSpace,
+            viewport
         });
     }
 

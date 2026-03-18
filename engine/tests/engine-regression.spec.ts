@@ -548,6 +548,131 @@ function assertStoryMultiColumnSignals(pages: any[], fixtureName: string): void 
     assert.equal(hasFrench, true, `${fixtureName}: expected French-language content in layout output`);
 }
 
+function assertStoryNestedTableContinuationSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '22-story-nested-table-continuation.json') return;
+
+    const matchesSourceId = (box: any, id: string): boolean => {
+        const sourceId = String(box.meta?.sourceId || '');
+        return sourceId === id || sourceId.endsWith(`:${id}`);
+    };
+
+    const pageTableCells = pages.map((page: any, pageIndex: number) => ({
+        pageIndex,
+        cells: (page.boxes || []).filter((box: any) => box.type === 'table_cell')
+    })).filter((entry) => entry.cells.length > 0);
+
+    assert.ok(pageTableCells.length >= 2, `${fixtureName}: expected nested table cells on at least two pages`);
+
+    const firstTablePage = pageTableCells[0];
+    const firstViewportOrigins = new Set(
+        firstTablePage.cells
+            .map((cell: any) => Number(cell.properties?._tableViewportWorldY))
+            .filter((value: number) => Number.isFinite(value))
+    );
+    assert.ok(
+        Array.from(firstViewportOrigins).some((value) => value > 0),
+        `${fixtureName}: expected first-page nested table cells to carry a non-zero local viewport origin`
+    );
+
+    const continuationHeaders = pageTableCells
+        .slice(1)
+        .flatMap((entry) => entry.cells)
+        .filter((cell: any) =>
+            Number(cell.properties?._tableRowIndex) === 0
+            && cell.meta?.transformKind === 'clone'
+        );
+    assert.ok(
+        continuationHeaders.length > 0,
+        `${fixtureName}: expected repeated header clones on continuation pages`
+    );
+
+    const firstRowPageIndexes = pageTableCells
+        .filter((entry) => entry.cells.some((cell: any) => matchesSourceId(cell, 'nested-table-r01-id')))
+        .map((entry) => entry.pageIndex);
+    const lateRowPageIndexes = pageTableCells
+        .filter((entry) => entry.cells.some((cell: any) => matchesSourceId(cell, 'nested-table-r12-id')))
+        .map((entry) => entry.pageIndex);
+    assert.ok(firstRowPageIndexes.includes(firstTablePage.pageIndex), `${fixtureName}: expected early table rows on the first table page`);
+    assert.ok(
+        lateRowPageIndexes.some((pageIndex) => pageIndex > firstTablePage.pageIndex),
+        `${fixtureName}: expected late table rows to remain for continuation pages`
+    );
+
+    const tailPages = pages
+        .map((page: any, pageIndex: number) => ({
+            pageIndex,
+            hasTail: (page.boxes || []).some((box: any) => matchesSourceId(box, 'nested-story-tail'))
+        }))
+        .filter((entry) => entry.hasTail)
+        .map((entry) => entry.pageIndex);
+    assert.ok(tailPages.length > 0, `${fixtureName}: expected downstream story tail content`);
+    assert.ok(
+        tailPages[0] >= pageTableCells[pageTableCells.length - 1].pageIndex,
+        `${fixtureName}: expected downstream story tail to remain after nested table continuation`
+    );
+}
+
+function assertStoryNestedStoryContinuationSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '23-story-nested-story-continuation.json') return;
+
+    const matchesSourceId = (box: any, id: string): boolean => {
+        const sourceId = String(box.meta?.sourceId || '');
+        return sourceId === id || sourceId.endsWith(`:${id}`);
+    };
+
+    const nestedPageEntries = pages
+        .map((page: any, pageIndex: number) => ({
+            pageIndex,
+            boxes: (page.boxes || []).filter((box: any) =>
+                matchesSourceId(box, 'nested-story-inner-a')
+                || matchesSourceId(box, 'nested-story-inner-b')
+                || matchesSourceId(box, 'nested-story-inner-c')
+                || matchesSourceId(box, 'nested-story-inner-d')
+                || matchesSourceId(box, 'nested-story-inner-e')
+                || matchesSourceId(box, 'nested-story-inner-f')
+            )
+        }))
+        .filter((entry) => entry.boxes.length > 0);
+
+    assert.ok(nestedPageEntries.length >= 2, `${fixtureName}: expected nested story content on at least two pages`);
+
+    const firstNestedBox = nestedPageEntries[0].boxes[0];
+    assert.ok(
+        Number(firstNestedBox.x || 0) > 150,
+        `${fixtureName}: expected nested story to begin in the outer story's later lane`
+    );
+
+    const firstNestedPageIndexes = nestedPageEntries
+        .filter((entry) => entry.boxes.some((box: any) => matchesSourceId(box, 'nested-story-inner-a')))
+        .map((entry) => entry.pageIndex);
+    const lateNestedPageIndexes = nestedPageEntries
+        .filter((entry) => entry.boxes.some((box: any) => matchesSourceId(box, 'nested-story-inner-f')))
+        .map((entry) => entry.pageIndex);
+
+    assert.ok(
+        firstNestedPageIndexes.includes(nestedPageEntries[0].pageIndex),
+        `${fixtureName}: expected early nested story content on the first nested page`
+    );
+    assert.ok(
+        lateNestedPageIndexes.some((pageIndex) => pageIndex > nestedPageEntries[0].pageIndex),
+        `${fixtureName}: expected late nested story content to remain for continuation pages`
+    );
+
+    const tailPages = pages
+        .map((page: any, pageIndex: number) => ({
+            pageIndex,
+            hasTail: (page.boxes || []).some((box: any) => matchesSourceId(box, 'nested-story-outer-tail'))
+        }))
+        .filter((entry) => entry.hasTail)
+        .map((entry) => entry.pageIndex);
+
+    assert.ok(tailPages.length > 0, `${fixtureName}: expected downstream outer-story tail content`);
+    assert.ok(
+        tailPages[0] >= nestedPageEntries[nestedPageEntries.length - 1].pageIndex,
+        `${fixtureName}: expected downstream outer-story tail to remain after nested story continuation`
+    );
+}
+
 function assertDropCapPaginationSignals(pages: any[], fixtureName: string): void {
     if (fixtureName !== '08-dropcap-pagination.json') return;
 
@@ -1137,6 +1262,26 @@ async function run() {
                 'story emits at least two column anchors on page 1, continues across pages, and declares split+morph capabilities',
                 () => {
                     assertStoryMultiColumnSignals(pagesA, fixture.name);
+                    assertTransformCapabilityActorKindSignals(fixture.name, engine, 'story', ['split', 'morph']);
+                }
+            );
+        }
+        if (fixture.name === '22-story-nested-table-continuation.json') {
+            check(
+                `${fixture.name} nested table continuation signals`,
+                'a nested table starts in a later story lane, continues across pages, repeats headers, and keeps downstream story flow after the continuation',
+                () => {
+                    assertStoryNestedTableContinuationSignals(pagesA, fixture.name);
+                    assertTransformCapabilityActorKindSignals(fixture.name, engine, 'story', ['split', 'morph']);
+                }
+            );
+        }
+        if (fixture.name === '23-story-nested-story-continuation.json') {
+            check(
+                `${fixture.name} nested story continuation signals`,
+                'a nested story starts in a later story lane, continues across pages, and keeps downstream outer-story flow after the continuation',
+                () => {
+                    assertStoryNestedStoryContinuationSignals(pagesA, fixture.name);
                     assertTransformCapabilityActorKindSignals(fixture.name, engine, 'story', ['split', 'morph']);
                 }
             );

@@ -8,6 +8,8 @@ import {
 } from '../src';
 import { createEngineRuntime } from '../src/engine/runtime';
 import { buildPackagerForElement } from '../src/engine/layout/packagers/create-packagers';
+import { StoryPackager } from '../src/engine/layout/packagers/story-packager';
+import type { PackagerContext, PackagerSplitResult, PackagerUnit } from '../src/engine/layout/packagers/packager-types';
 import { loadLocalFontManager } from './harness/engine-harness';
 
 function logStep(message: string): void {
@@ -148,6 +150,7 @@ async function main() {
     const runtime = createEngineRuntime({
         fontManager: new LocalFontManager()
     });
+    const onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO9Wl9kAAAAASUVORK5CYII=';
 
     const moveWholeResolved = resolveDocumentPaths(buildZoneContinuationDoc('move-whole'), 'zone-move-whole.json');
     const fixedContinueResolved = resolveDocumentPaths(buildZoneContinuationDoc('continue', 'fixed'), 'zone-continue-fixed.json');
@@ -319,6 +322,628 @@ async function main() {
                 assert.equal(postSpanPageOne.length, 0, 'post-span content should not appear on page 1 before the span is materialized');
                 assert.ok(spanPages[0] >= 1, 'if the span does not fit page 1, it should be deferred to a later page');
             }
+        }
+    );
+
+    check(
+        'explicit region height constrains a continued regional story like a bounded room',
+        'a story inside a zone with authored region.height should stop at that room boundary and continue later even if the page has more open space',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 420, height: 420 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10, allowLineSplit: true, orphans: 2, widows: 2, textAlign: 'justify' }
+                },
+                elements: [
+                    {
+                        type: 'zone-map',
+                        zoneLayout: {
+                            frameOverflow: 'continue',
+                            worldBehavior: 'expandable'
+                        },
+                        zones: [
+                            {
+                                id: 'main',
+                                region: { x: 0, y: 0, width: 372, height: 120 },
+                                elements: [
+                                    {
+                                        type: 'story',
+                                        columns: 2,
+                                        gutter: 12,
+                                        children: [
+                                            { type: 'body', content: 'Room-bounded story opening '.repeat(110), properties: { sourceId: 'room-story-a' } },
+                                            { type: 'body', content: 'Room-bounded story continuation '.repeat(110), properties: { sourceId: 'room-story-b' } }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        type: 'body',
+                        content: 'Flow after the room-bounded zone field.',
+                        properties: { sourceId: 'room-post-flow' }
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'zone-continue-region-height-story.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+
+            const pageOne = pages[0];
+            const pageOneStoryBoxes = (pageOne.boxes || []).filter((box: any) => {
+                const actual = String(box.meta?.sourceId || '');
+                return actual === 'room-story-a' || actual.endsWith(':room-story-a') ||
+                    actual === 'room-story-b' || actual.endsWith(':room-story-b');
+            });
+            assert.ok(pageOneStoryBoxes.length > 0, 'expected room-bounded story content on page 1');
+
+            const storyBottomOnPageOne = Math.max(...pageOneStoryBoxes.map((box: any) => Number(box.y || 0) + Number(box.h || 0)));
+            const roomBottom = 24 + 120;
+            assert.ok(
+                storyBottomOnPageOne <= roomBottom + 0.5,
+                `expected page-1 story bottom (${storyBottomOnPageOne}) to stay within room bottom (${roomBottom})`
+            );
+
+            assert.ok(
+                findPagesForSource(pages, 'room-story-b').some((pageIndex) => pageIndex >= 1),
+                'expected story continuation beyond page 1 due to authored room height'
+            );
+
+            const postFlowPages = findPagesForSource(pages, 'room-post-flow');
+            assert.ok(postFlowPages.length > 0, 'expected downstream flow after the bounded room field');
+            assert.ok(postFlowPages[0] >= 1, 'expected downstream flow to appear only after the bounded room continuation completes');
+        }
+    );
+
+    check(
+        'multi-column story continuation advances by actual region stack height',
+        'when lane regions differ in height, the continuation storyYOffset should use the real stacked travel distance rather than raw columns times viewport height',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 420, height: 420 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10, allowLineSplit: true, orphans: 2, widows: 2, textAlign: 'justify' }
+                },
+                elements: [
+                    {
+                        type: 'story',
+                        columns: 2,
+                        gutter: 12,
+                        children: [
+                            { type: 'body', content: 'Uneven region travel probe opening '.repeat(90), properties: { sourceId: 'balanced-a' } },
+                            { type: 'body', content: 'Uneven region travel probe continuation '.repeat(90), properties: { sourceId: 'balanced-b' } }
+                        ]
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'story-balanced-continuation-offset.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const packager = buildPackagerForElement(resolved.elements[0], 0, engine) as any;
+            const context = {
+                processor: engine,
+                pageIndex: 0,
+                cursorY: 0,
+                margins: { left: 24, right: 24, top: 24, bottom: 24 },
+                pageWidth: 420,
+                pageHeight: 420,
+                publishActorSignal: () => ({ pageIndex: 0, sequence: -1 }),
+                readActorSignals: () => []
+            };
+
+            const availableWidth = 372;
+            const availableHeight = 300;
+            packager.buildColumnRegions = () => ([
+                { index: 0, x: 0, w: 180, h: 300 },
+                { index: 1, x: 192, w: 180, h: 120 }
+            ]);
+            packager.prepare(availableWidth, availableHeight, context);
+            const split = packager.split(availableHeight, context);
+            const continuation = split.continuationFragment as any;
+
+            assert.ok(split.currentFragment, 'expected a current fragment for the uneven-region story');
+            assert.ok(continuation, 'expected the uneven-region story to overflow into a continuation fragment');
+            assert.equal(continuation.storyYOffset, 420, `expected continuation storyYOffset (${continuation.storyYOffset}) to equal the uneven region stack height (420)`);
+            assert.equal(continuation.storyYOffset < 2 * availableHeight, true, `expected continuation storyYOffset (${continuation.storyYOffset}) to be less than raw lane stack height (${2 * availableHeight})`);
+        }
+    );
+
+    check(
+        'deferred story-absolute images survive into continuation fragments',
+        'an absolute image authored before the overflowing text but positioned after page 1 should still appear on page 2',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 420, height: 420 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10, allowLineSplit: true, orphans: 2, widows: 2, textAlign: 'justify' }
+                },
+                elements: [
+                    {
+                        type: 'story',
+                        children: [
+                            {
+                                type: 'image',
+                                content: '',
+                                properties: {
+                                    sourceId: 'deferred-abs-image',
+                                    layout: {
+                                        mode: 'story-absolute',
+                                        x: 220,
+                                        y: 430,
+                                        wrap: 'around',
+                                        gap: 8
+                                    },
+                                    style: {
+                                        width: 80,
+                                        height: 80
+                                    }
+                                },
+                                image: {
+                                    data: onePixelPng,
+                                    mimeType: 'image/png',
+                                    fit: 'contain'
+                                }
+                            },
+                            {
+                                type: 'body',
+                                content: 'Continuation probe text before the deferred absolute image. '.repeat(180),
+                                properties: { sourceId: 'deferred-abs-body' }
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'story-absolute-deferred-continuation.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+
+            assert.ok(
+                findPagesForSource(pages, 'deferred-abs-body').some((pageIndex) => pageIndex >= 1),
+                'expected the story body to continue beyond page 1'
+            );
+            assert.ok(
+                findPagesForSource(pages, 'deferred-abs-image').some((pageIndex) => pageIndex >= 1),
+                'expected the deferred story-absolute image to appear on a continuation page'
+            );
+        }
+    );
+
+    check(
+        'multi-column story-absolute images project into later lanes',
+        'an absolute image whose story y falls into the second lane should render near the top of that lane rather than at a flat page y far below',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 420, height: 420 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10, allowLineSplit: true, orphans: 2, widows: 2, textAlign: 'justify' }
+                },
+                elements: [
+                    {
+                        type: 'story',
+                        columns: 2,
+                        gutter: 12,
+                        children: [
+                            {
+                                type: 'image',
+                                content: '',
+                                properties: {
+                                    sourceId: 'lane-two-abs-image',
+                                    layout: {
+                                        mode: 'story-absolute',
+                                        x: 206,
+                                        y: 412,
+                                        wrap: 'around',
+                                        gap: 8
+                                    },
+                                    style: {
+                                        width: 80,
+                                        height: 80
+                                    }
+                                },
+                                image: {
+                                    data: onePixelPng,
+                                    mimeType: 'image/png',
+                                    fit: 'contain'
+                                }
+                            },
+                            {
+                                type: 'body',
+                                content: 'Lane-two absolute image probe text. '.repeat(20),
+                                properties: { sourceId: 'lane-two-body' }
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'story-absolute-lane-two.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+            const pageOne = pages[0];
+            const imageBoxes = (pageOne.boxes || []).filter((box: any) => {
+                const actual = String(box.meta?.sourceId || '');
+                return actual === 'lane-two-abs-image' || actual.endsWith(':lane-two-abs-image');
+            });
+
+            assert.ok(imageBoxes.length > 0, 'expected the lane-two absolute image on page 1');
+
+            const imageLeft = Math.min(...imageBoxes.map((box: any) => Number(box.x || 0)));
+            const imageTop = Math.min(...imageBoxes.map((box: any) => Number(box.y || 0)));
+            assert.ok(imageLeft >= 24 + 192 - 0.5, `expected lane-two absolute image x (${imageLeft}) to land in the second lane`);
+            assert.ok(imageTop < 80, `expected lane-two absolute image y (${imageTop}) to project near the top of lane two rather than a flat page y`);
+        }
+    );
+
+    check(
+        'continued story fragments stamp emitted boxes with the real continuation page index',
+        'boxes emitted from a continuation fragment should report the pageIndex supplied at emit time rather than staying pinned to page 0',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 420, height: 420 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10, allowLineSplit: true, orphans: 2, widows: 2, textAlign: 'justify' }
+                },
+                elements: [
+                    {
+                        type: 'story',
+                        children: [
+                            { type: 'body', content: 'Continuation page index probe. '.repeat(180), properties: { sourceId: 'story-page-index-body' } }
+                        ]
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'story-continuation-page-index.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const packager = buildPackagerForElement(resolved.elements[0], 0, engine) as any;
+            const pageOneContext = {
+                processor: engine,
+                pageIndex: 0,
+                cursorY: 0,
+                viewportWorldY: 0,
+                viewportHeight: 420,
+                margins: { left: 24, right: 24, top: 24, bottom: 24 },
+                pageWidth: 420,
+                pageHeight: 420,
+                publishActorSignal: () => ({ pageIndex: 0, sequence: -1 }),
+                readActorSignals: () => []
+            };
+
+            const availableWidth = 372;
+            const availableHeight = 180;
+            packager.prepare(availableWidth, availableHeight, pageOneContext);
+            const split = packager.split(availableHeight, pageOneContext);
+            const continuation = split.continuationFragment as any;
+
+            assert.ok(split.currentFragment, 'expected a current story fragment');
+            assert.ok(continuation, 'expected a continuation story fragment');
+
+            const continuationBoxes = continuation.emitBoxes(availableWidth, 1200, {
+                ...pageOneContext,
+                pageIndex: 1,
+                viewportWorldY: 420
+            });
+            assert.ok(continuationBoxes.length > 0, 'expected boxes on the continuation fragment');
+            assert.ok(
+                continuationBoxes.every((box: any) => Number(box.meta?.pageIndex) === 1),
+                'expected continuation fragment boxes to carry pageIndex 1'
+            );
+        }
+    );
+
+    check(
+        'nested tables inside later story lanes inherit stacked viewport world origins',
+        'a table pushed into lane 2 of a multi-column story should see the second lane world origin rather than the outer page origin',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 420, height: 420 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10, allowLineSplit: true, orphans: 2, widows: 2, textAlign: 'justify' }
+                },
+                elements: [
+                    {
+                        type: 'story',
+                        columns: 2,
+                        gutter: 12,
+                        children: [
+                            {
+                                type: 'image',
+                                content: '',
+                                properties: {
+                                    sourceId: 'lane-anchor-image',
+                                    style: { width: 180, height: 340, marginBottom: 0 }
+                                },
+                                image: {
+                                    data: onePixelPng,
+                                    mimeType: 'image/png',
+                                    fit: 'fill'
+                                }
+                            },
+                            {
+                                type: 'table',
+                                properties: { sourceId: 'lane-two-table' },
+                                children: [
+                                    {
+                                        type: 'table-row',
+                                        children: [
+                                            { type: 'table-cell', content: 'Cell A', properties: { sourceId: 'lane-two-cell-a' } },
+                                            { type: 'table-cell', content: 'Cell B', properties: { sourceId: 'lane-two-cell-b' } }
+                                        ]
+                                    },
+                                    {
+                                        type: 'table-row',
+                                        children: [
+                                            { type: 'table-cell', content: 'Cell C', properties: { sourceId: 'lane-two-cell-c' } },
+                                            { type: 'table-cell', content: 'Cell D', properties: { sourceId: 'lane-two-cell-d' } }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'story-lane-table-viewport.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+            const pageOneCell = (pages[0]?.boxes || []).find((box: any) => {
+                if (box.type !== 'table_cell') return false;
+                const actual = String(box.meta?.sourceId || '');
+                return actual === 'lane-two-cell-a' || actual.endsWith(':lane-two-cell-a');
+            });
+
+            assert.ok(pageOneCell, 'expected the lane-two table to render on page 1');
+            assert.equal(pageOneCell.properties?._tableViewportWorldY, 372, 'expected the nested table viewport origin to start at lane two');
+            assert.equal(pageOneCell.properties?._tableViewportHeight, 372, 'expected the nested table viewport height to match the lane height');
+        }
+    );
+
+    check(
+        'continued multi-column stories can carry deferred nested actors forward as packagers',
+        'when a nested structured actor splits late in a story lane, the continuation story should resume that actor before later children',
+        () => {
+            class MockSplitActor implements PackagerUnit {
+                readonly actorId = 'mock-actor';
+                readonly sourceId = 'mock-actor';
+                readonly actorKind = 'mock';
+                readonly fragmentIndex = 0;
+
+                constructor(
+                    private readonly label: string,
+                    private readonly requiredHeight: number,
+                    private readonly continuation: MockSplitActor | null = null
+                ) { }
+
+                prepare(): void { }
+                emitBoxes(_availableWidth: number, _availableHeight: number, context: PackagerContext) {
+                    return [{
+                        type: 'body',
+                        x: context.margins.left,
+                        y: 0,
+                        w: 40,
+                        h: this.requiredHeight,
+                        content: this.label,
+                        properties: { mockLabel: this.label },
+                        meta: { sourceId: this.label, pageIndex: context.pageIndex }
+                    } as any];
+                }
+                split(availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+                    if (this.continuation && availableHeight < this.requiredHeight) {
+                        return {
+                            currentFragment: new MockSplitActor(`${this.label}-partA`, Math.max(1, availableHeight)),
+                            continuationFragment: this.continuation
+                        };
+                    }
+                    return { currentFragment: null, continuationFragment: this };
+                }
+                getRequiredHeight(): number { return this.requiredHeight; }
+                isUnbreakable(): boolean { return false; }
+                getMarginTop(): number { return 0; }
+                getMarginBottom(): number { return 0; }
+            }
+
+            const storyElement = {
+                type: 'story',
+                columns: 2,
+                gutter: 12,
+                children: [
+                    { type: 'body', content: 'After actor', properties: { sourceId: 'after-actor' } }
+                ]
+            } as any;
+            const continuationActor = new MockSplitActor('mock-continued', 24);
+            const leadingActor = new MockSplitActor('mock-start', 180, continuationActor);
+            const engine = new LayoutEngine({
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 420, height: 420 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10, allowLineSplit: true, orphans: 2, widows: 2 }
+                }
+            } as any, runtime);
+
+            const packager = new StoryPackager(storyElement, engine as any, 0, [], 0, undefined, leadingActor);
+            const context: PackagerContext = {
+                processor: engine,
+                pageIndex: 0,
+                cursorY: 0,
+                viewportWorldY: 0,
+                viewportHeight: 120,
+                margins: { left: 24, right: 24, top: 24, bottom: 24 },
+                pageWidth: 420,
+                pageHeight: 120,
+                publishActorSignal: () => ({ pageIndex: 0, sequence: -1 } as any),
+                readActorSignals: () => []
+            };
+
+            packager.prepare(372, 120, context);
+            const split = packager.split(120, context);
+            assert.ok(split.currentFragment, 'expected a current story fragment');
+            assert.ok(split.continuationFragment, 'expected a continuation story fragment');
+
+            const currentBoxes = split.currentFragment!.emitBoxes(372, 120, context) as any[];
+            const continuationBoxes = split.continuationFragment!.emitBoxes(372, 120, {
+                ...context,
+                pageIndex: 1,
+                viewportWorldY: 120
+            }) as any[];
+
+            assert.ok(currentBoxes.some((box) => box.properties?.mockLabel === 'mock-start-partA'), 'expected page 1 to contain the leading actor fragment');
+            assert.ok(continuationBoxes.some((box) => box.properties?.mockLabel === 'mock-continued'), 'expected page 2 to resume the deferred actor');
+            assert.ok(continuationBoxes.some((box) => String(box.meta?.sourceId || '').includes('after-actor')), 'expected later story children to remain after the resumed actor');
+        }
+    );
+
+    check(
+        'continued multi-column stories preserve deferred nested actors even with no later source children',
+        'a split nested actor by itself should still produce a continuation story fragment instead of being dropped',
+        () => {
+            class MockSplitActorSolo implements PackagerUnit {
+                readonly actorId = 'mock-actor-solo';
+                readonly sourceId = 'mock-actor-solo';
+                readonly actorKind = 'mock';
+                readonly fragmentIndex = 0;
+
+                constructor(
+                    private readonly label: string,
+                    private readonly requiredHeight: number,
+                    private readonly continuation: MockSplitActorSolo | null = null
+                ) { }
+
+                prepare(): void { }
+                emitBoxes(_availableWidth: number, _availableHeight: number, context: PackagerContext) {
+                    return [{
+                        type: 'body',
+                        x: context.margins.left,
+                        y: 0,
+                        w: 40,
+                        h: this.requiredHeight,
+                        content: this.label,
+                        properties: { mockLabel: this.label },
+                        meta: { sourceId: this.label, pageIndex: context.pageIndex }
+                    } as any];
+                }
+                split(availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+                    if (this.continuation && availableHeight < this.requiredHeight) {
+                        return {
+                            currentFragment: new MockSplitActorSolo(`${this.label}-partA`, Math.max(1, availableHeight)),
+                            continuationFragment: this.continuation
+                        };
+                    }
+                    return { currentFragment: null, continuationFragment: this };
+                }
+                getRequiredHeight(): number { return this.requiredHeight; }
+                isUnbreakable(): boolean { return false; }
+                getMarginTop(): number { return 0; }
+                getMarginBottom(): number { return 0; }
+            }
+
+            const storyElement = {
+                type: 'story',
+                columns: 2,
+                gutter: 12,
+                children: []
+            } as any;
+            const continuationActor = new MockSplitActorSolo('mock-solo-continued', 24);
+            const leadingActor = new MockSplitActorSolo('mock-solo-start', 180, continuationActor);
+            const engine = new LayoutEngine({
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 420, height: 420 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10, allowLineSplit: true, orphans: 2, widows: 2 }
+                }
+            } as any, runtime);
+
+            const packager = new StoryPackager(storyElement, engine as any, 0, [], 0, undefined, leadingActor);
+            const context: PackagerContext = {
+                processor: engine,
+                pageIndex: 0,
+                cursorY: 0,
+                viewportWorldY: 0,
+                viewportHeight: 120,
+                margins: { left: 24, right: 24, top: 24, bottom: 24 },
+                pageWidth: 420,
+                pageHeight: 120,
+                publishActorSignal: () => ({ pageIndex: 0, sequence: -1 } as any),
+                readActorSignals: () => []
+            };
+
+            packager.prepare(372, 120, context);
+            const split = packager.split(120, context);
+            assert.ok(split.currentFragment, 'expected a current story fragment');
+            assert.ok(split.continuationFragment, 'expected a continuation fragment even without later source children');
+
+            const continuationBoxes = split.continuationFragment!.emitBoxes(372, 120, {
+                ...context,
+                pageIndex: 1,
+                viewportWorldY: 120
+            }) as any[];
+
+            assert.ok(continuationBoxes.some((box) => box.properties?.mockLabel === 'mock-solo-continued'), 'expected the deferred actor to survive into the continuation story');
         }
     );
 }

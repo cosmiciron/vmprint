@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { CURRENT_DOCUMENT_VERSION, LayoutEngine, resolveDocumentPaths, toLayoutConfig, type DocumentInput } from '../src';
 import { createEngineRuntime } from '../src/engine/runtime';
+import { normalizeZoneMapElement } from '../src/engine/layout/packagers/zone-packager';
 import { loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 
 function logStep(message: string): void {
@@ -161,6 +162,25 @@ async function main() {
         }
     );
 
+    check(
+        'zone-map normalization emits explicit region rectangles',
+        'strip-lowered and authored zone-map structures normalize into region rects with x, y, and width',
+        () => {
+            const normalized = normalizeZoneMapElement(resolvedZoneMap.elements[1], 280);
+            assert.equal(normalized.zones.length, 3);
+            assert.deepEqual(normalized.zones.map((zone) => ({
+                id: zone.id,
+                x: zone.rect.x,
+                y: zone.rect.y,
+                width: zone.rect.width
+            })), [
+                { id: 'left', x: 0, y: 0, width: 110 },
+                { id: 'center', x: 118, y: 0, width: 44 },
+                { id: 'right', x: 170, y: 0, width: 110 }
+            ]);
+        }
+    );
+
     const stripEngine = new LayoutEngine(toLayoutConfig(resolvedStrip, false), runtime);
     const zoneEngine = new LayoutEngine(toLayoutConfig(resolvedZoneMap, false), runtime);
     await stripEngine.waitForFonts();
@@ -174,6 +194,108 @@ async function main() {
         'page snapshots are exactly equal',
         () => {
             assert.deepEqual(snapshotPages(stripPages), snapshotPages(zonePages));
+        }
+    );
+
+    const explicitRegionDoc: DocumentInput = {
+        ...baseDoc,
+        elements: [
+            {
+                type: 'zone-map',
+                content: '',
+                properties: {
+                    style: { marginBottom: 6 }
+                },
+                zones: [
+                    {
+                        id: 'main',
+                        region: { x: 0, y: 0, width: 170 },
+                        elements: [{ type: 'bandLeft', content: 'Main Region', properties: { sourceId: 'main-region' } }]
+                    },
+                    {
+                        id: 'side',
+                        region: { x: 188, y: 26, width: 92 },
+                        elements: [{ type: 'bandRight', content: 'Side Region', properties: { sourceId: 'side-region' } }]
+                    }
+                ]
+            }
+        ]
+    };
+
+    const resolvedExplicitRegion = resolveDocumentPaths(explicitRegionDoc, 'zone-map-explicit-region.json');
+
+    check(
+        'zone-map preserves authored explicit region geometry',
+        'authored region rectangles survive normalization and become the zone field geometry',
+        () => {
+            assert.deepEqual(resolvedExplicitRegion.elements[0].zones?.map((zone: any) => ({
+                id: zone.id,
+                region: zone.region
+            })), [
+                { id: 'main', region: { x: 0, y: 0, width: 170 } },
+                { id: 'side', region: { x: 188, y: 26, width: 92 } }
+            ]);
+
+            const normalized = normalizeZoneMapElement(resolvedExplicitRegion.elements[0], 280);
+            assert.deepEqual(normalized.zones.map((zone) => ({
+                id: zone.id,
+                rect: zone.rect
+            })), [
+                { id: 'main', rect: { x: 0, y: 0, width: 170 } },
+                { id: 'side', rect: { x: 188, y: 26, width: 92 } }
+            ]);
+        }
+    );
+
+    const explicitRegionEngine = new LayoutEngine(toLayoutConfig(resolvedExplicitRegion, false), runtime);
+    await explicitRegionEngine.waitForFonts();
+    const explicitRegionPages = explicitRegionEngine.simulate(resolvedExplicitRegion.elements);
+
+    check(
+        'zone-map explicit regions affect rendered placement',
+        'content in a later region renders to the right and below content in an earlier region when authored that way',
+        () => {
+            const page = explicitRegionPages[0];
+            const mainBoxes = (page.boxes || []).filter((box: any) => {
+                const actual = String(box.meta?.sourceId || '');
+                return actual === 'main-region' || actual.endsWith(':main-region');
+            });
+            const sideBoxes = (page.boxes || []).filter((box: any) => {
+                const actual = String(box.meta?.sourceId || '');
+                return actual === 'side-region' || actual.endsWith(':side-region');
+            });
+
+            assert.ok(mainBoxes.length > 0, 'expected main region boxes');
+            assert.ok(sideBoxes.length > 0, 'expected side region boxes');
+
+            const mainLeft = Math.min(...mainBoxes.map((box: any) => Number(box.x || 0)));
+            const mainTop = Math.min(...mainBoxes.map((box: any) => Number(box.y || 0)));
+            const sideLeft = Math.min(...sideBoxes.map((box: any) => Number(box.x || 0)));
+            const sideTop = Math.min(...sideBoxes.map((box: any) => Number(box.y || 0)));
+
+            assert.ok(sideLeft > mainLeft + 150, `expected side region x (${sideLeft}) to sit right of main region x (${mainLeft})`);
+            assert.ok(sideTop > mainTop + 20, `expected side region y (${sideTop}) to sit below main region y (${mainTop})`);
+        }
+    );
+
+    check(
+        'zone-map publishes page-level debug regions',
+        'finalized pages expose subtle debug overlay geometry for authored zones',
+        () => {
+            const page = explicitRegionPages[0];
+            assert.ok(Array.isArray(page.debugZones), 'expected debugZones on finalized page');
+            assert.deepEqual(
+                page.debugZones?.map((zone: any) => ({
+                    zoneId: zone.zoneId,
+                    x: zone.x,
+                    y: zone.y,
+                    w: zone.w
+                })),
+                [
+                    { zoneId: 'main', x: 20, y: 0, w: 170 },
+                    { zoneId: 'side', x: 208, y: 26, w: 92 }
+                ]
+            );
         }
     );
 }

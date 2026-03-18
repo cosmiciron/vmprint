@@ -66,6 +66,23 @@ export class SpatialGridPackager implements PackagerUnit {
         const processor = this.processor as unknown as SpatialGridPackagerProcessor;
         if (this.isMaterialized && this.lastAvailableWidth === availableWidth) return;
 
+        const hasFrozenResolvedTable =
+            this.flowBox._materializationMode === 'frozen'
+            && !!this.flowBox.properties?._tableModel
+            && !!this.flowBox.properties?._tableResolved
+            && !!this.flowBox.properties?._normalizedTable;
+        if (hasFrozenResolvedTable) {
+            this.lastAvailableWidth = availableWidth;
+            this.cachedBoxes = null;
+            this.isMaterialized = true;
+
+            const top = Math.max(0, this.flowBox.marginTop);
+            const bottom = this.flowBox.marginBottom;
+            const height = this.flowBox.measuredContentHeight;
+            this.requiredHeight = top + height + bottom;
+            return;
+        }
+
         const element = this.flowBox._unresolvedElement || this.flowBox._sourceElement;
         if (element) {
             const context = processor.createFlowMaterializationContext(0, 0, availableWidth);
@@ -138,10 +155,28 @@ export class SpatialGridPackager implements PackagerUnit {
             this.flowBox.marginTop,
             context.margins,
             availableWidth,
-            0
+            context.pageIndex
         );
 
-        const boxes = Array.isArray(positioned) ? positioned : [positioned];
+        const viewportWorldY = Number.isFinite(context.viewportWorldY)
+            ? Math.max(0, Number(context.viewportWorldY))
+            : Math.max(0, Number(context.pageIndex || 0)) * Math.max(0, Number(context.pageHeight || 0));
+        const viewportHeight = Number.isFinite(context.viewportHeight)
+            ? Math.max(0, Number(context.viewportHeight))
+            : Math.max(0, Number(context.pageHeight || 0));
+        const boxes = (Array.isArray(positioned) ? positioned : [positioned]).map((box) => {
+            if (box.type !== 'table_cell') {
+                return box;
+            }
+            return {
+                ...box,
+                properties: {
+                    ...(box.properties || {}),
+                    _tableViewportWorldY: viewportWorldY,
+                    _tableViewportHeight: viewportHeight
+                }
+            };
+        });
         this.cachedBoxes = boxes;
 
         return boxes;
@@ -166,7 +201,7 @@ export class SpatialGridPackager implements PackagerUnit {
         return this.flowBox.marginBottom;
     }
 
-    split(availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
         this.materialize(this.lastAvailableWidth);
         if (this.isUnbreakable(availableHeight)) {
             return { currentFragment: null, continuationFragment: this };
@@ -175,7 +210,8 @@ export class SpatialGridPackager implements PackagerUnit {
         const splitResult = splitSpatialGridFlowBox(
             this.flowBox,
             availableHeight,
-            this.flowBox.marginTop
+            this.flowBox.marginTop,
+            context
         );
 
         if (!splitResult) {

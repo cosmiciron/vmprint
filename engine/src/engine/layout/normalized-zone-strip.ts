@@ -1,9 +1,15 @@
 import type { Element, ElementStyle, ZoneFrameOverflow, ZoneWorldBehavior } from '../types';
 
+export interface NormalizedWorldZoneRect {
+    x: number;
+    y: number;
+    width: number;
+    height?: number;
+}
+
 export interface NormalizedIndependentZone {
     id?: string;
-    x: number;
-    width: number;
+    rect: NormalizedWorldZoneRect;
     elements: Element[];
     style?: ElementStyle;
 }

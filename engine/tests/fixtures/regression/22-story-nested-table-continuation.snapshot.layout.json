@@ -1,0 +1,1647 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 372,
+        "h": 68.025,
+        "lines": [
+          [
+            {
+              "text": "Nested Table Continuation ",
+              "width": 308.894531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Inside Story Lanes",
+              "width": 213.398438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 104.025,
+        "w": 372,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "This regression fixture places a table inside a multi-column story. The first ",
+              "width": 361.308105,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lane is intentionally consumed by a large visual block so the table begins in ",
+              "width": 368.10791,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the second lane, then continues as the story itself continues.",
+              "width": 294.126465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 24,
+        "y": 24,
+        "w": 180,
+        "h": 332,
+        "lines": []
+      },
+      {
+        "type": "story-note",
+        "x": 24,
+        "y": 364,
+        "w": 180,
+        "h": 26,
+        "lines": [
+          [
+            {
+              "text": "The table starts in lane two after this ",
+              "width": 163.413086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "short note and must continue as a ",
+              "width": 153.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "story-note",
+        "x": 216,
+        "y": 24,
+        "w": 180,
+        "h": 27.171875,
+        "lines": [
+          [
+            {
+              "text": "nested structured actor rather than ",
+              "width": 156.196289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "moving wholesale.",
+              "width": 82.265625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 216,
+        "y": 59.171875,
+        "w": 48,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 268,
+        "y": 59.171875,
+        "w": 84,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "Checkpoint",
+              "width": 45.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 356,
+        "y": 59.171875,
+        "w": 56,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "Status",
+              "width": 25.514648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 216,
+        "y": 82.226563,
+        "w": 48,
+        "h": 68.473437,
+        "lines": [
+          [
+            {
+              "text": "NT-01",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 268,
+        "y": 82.226563,
+        "w": 84,
+        "h": 68.473437,
+        "lines": [
+          [
+            {
+              "text": "Lane entry and ",
+              "width": 62.547363,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "hand-off timing for",
+              "width": 72.373535,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the first structured",
+              "width": 72.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation ",
+              "width": 51.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "checkpoint.",
+              "width": 45.527344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 356,
+        "y": 82.226563,
+        "w": 56,
+        "h": 68.473437,
+        "lines": [
+          [
+            {
+              "text": "Ready",
+              "width": 26.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 216,
+        "y": 152.7,
+        "w": 48,
+        "h": 68.473437,
+        "lines": [
+          [
+            {
+              "text": "NT-02",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 268,
+        "y": 152.7,
+        "w": 84,
+        "h": 68.473437,
+        "lines": [
+          [
+            {
+              "text": "Viewport-aware ",
+              "width": 64.863281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "table emission ",
+              "width": 60.029297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should retain a ",
+              "width": 61.541016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "non-zero world ",
+              "width": 62.028809,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "origin in lane two.",
+              "width": 70.040039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 356,
+        "y": 152.7,
+        "w": 56,
+        "h": 68.473437,
+        "lines": [
+          [
+            {
+              "text": "Ready",
+              "width": 26.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 216,
+        "y": 223.173437,
+        "w": 48,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "NT-03",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 268,
+        "y": 223.173437,
+        "w": 84,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "Split decisions ",
+              "width": 60.029297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should prefer ",
+              "width": 55.032715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuing the ",
+              "width": 58.543945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested actor over ",
+              "width": 72.039551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "reauthoring the ",
+              "width": 63.043945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "whole table.",
+              "width": 48.032227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 356,
+        "y": 223.173437,
+        "w": 56,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "Watch",
+              "width": 25.171875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 24,
+        "w": 48,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 24,
+        "w": 84,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "Checkpoint",
+              "width": 45.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 24,
+        "w": 56,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "Status",
+              "width": 25.514648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 47.054688,
+        "w": 48,
+        "h": 92.182812,
+        "lines": [
+          [
+            {
+              "text": "NT-04",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 47.054688,
+        "w": 84,
+        "h": 92.182812,
+        "lines": [
+          [
+            {
+              "text": "Repeated ",
+              "width": 41.532715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "headers on later ",
+              "width": 67.543945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages should still ",
+              "width": 71.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "behave like ",
+              "width": 48.032227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "viewport clones ",
+              "width": 64.529297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "over persistent ",
+              "width": 61.527832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "rows.",
+              "width": 21.502441,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 47.054688,
+        "w": 56,
+        "h": 92.182812,
+        "lines": [
+          [
+            {
+              "text": "Watch",
+              "width": 25.171875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 141.2375,
+        "w": 48,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "NT-05",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 141.2375,
+        "w": 84,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "Continuation must",
+              "width": 72.540527,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "preserve source ",
+              "width": 67.029785,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "identity for cells ",
+              "width": 64.524902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "that migrate ",
+              "width": 50.022949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "beyond the first ",
+              "width": 64.037109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "page.",
+              "width": 22.521973,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 141.2375,
+        "w": 56,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "Ready",
+              "width": 26.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 223.565625,
+        "w": 48,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "NT-06",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 223.565625,
+        "w": 84,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "The second page ",
+              "width": 72.052734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should resume ",
+              "width": 61.532227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the table before ",
+              "width": 65.047852,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "any later story ",
+              "width": 59.022949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body resumes ",
+              "width": 59.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "below it.",
+              "width": 33.016113,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 223.565625,
+        "w": 56,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "Watch",
+              "width": 25.171875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 24,
+        "w": 48,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 24,
+        "w": 84,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "Checkpoint",
+              "width": 45.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 24,
+        "w": 56,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "Status",
+              "width": 25.514648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 47.054688,
+        "w": 48,
+        "h": 92.182812,
+        "lines": [
+          [
+            {
+              "text": "NT-07",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 47.054688,
+        "w": 84,
+        "h": 92.182812,
+        "lines": [
+          [
+            {
+              "text": "Story-lane ",
+              "width": 43.519043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation ",
+              "width": 51.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should not ",
+              "width": 44.033203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "collapse the ",
+              "width": 50.532715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested actor back",
+              "width": 71.041992,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "into page-zero ",
+              "width": 60.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "assumptions.",
+              "width": 53.024414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 47.054688,
+        "w": 56,
+        "h": 92.182812,
+        "lines": [
+          [
+            {
+              "text": "Ready",
+              "width": 26.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 141.2375,
+        "w": 48,
+        "h": 104.0375,
+        "lines": [
+          [
+            {
+              "text": "NT-08",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 141.2375,
+        "w": 84,
+        "h": 104.0375,
+        "lines": [
+          [
+            {
+              "text": "Rows near the ",
+              "width": 60.530273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "break are ",
+              "width": 40.521973,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "intentionally ",
+              "width": 50.031738,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "verbose so the ",
+              "width": 61.536621,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested table ",
+              "width": 51.539063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "cannot fit in a ",
+              "width": 56.034668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "single lane ",
+              "width": 45.531738,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "viewport.",
+              "width": 36.013184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 141.2375,
+        "w": 56,
+        "h": 104.0375,
+        "lines": [
+          [
+            {
+              "text": "Watch",
+              "width": 25.171875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 247.275,
+        "w": 48,
+        "h": 92.182812,
+        "lines": [
+          [
+            {
+              "text": "NT-09",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 247.275,
+        "w": 84,
+        "h": 92.182812,
+        "lines": [
+          [
+            {
+              "text": "The resumed ",
+              "width": 55.524902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragment should ",
+              "width": 67.038574,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keep participating",
+              "width": 70.54541,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "in story-owned ",
+              "width": 61.026855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "viewport ",
+              "width": 36.013184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "semantics on ",
+              "width": 55.524902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "page two.",
+              "width": 39.027832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 247.275,
+        "w": 56,
+        "h": 92.182812,
+        "lines": [
+          [
+            {
+              "text": "Ready",
+              "width": 26.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 24,
+        "w": 48,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "ID",
+              "width": 9,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 24,
+        "w": 84,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "Checkpoint",
+              "width": 45.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 24,
+        "w": 56,
+        "h": 21.054688,
+        "lines": [
+          [
+            {
+              "text": "Status",
+              "width": 25.514648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 47.054688,
+        "w": 48,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "NT-10",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 47.054688,
+        "w": 84,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "Regression ",
+              "width": 48.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "coverage here ",
+              "width": 60.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "guards the bridge ",
+              "width": 72.549316,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "between story ",
+              "width": 58.530762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation and ",
+              "width": 68.554688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "table continuation.",
+              "width": 73.054688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 47.054688,
+        "w": 56,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "Ready",
+              "width": 26.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 129.382813,
+        "w": 48,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "NT-11",
+              "width": 24.336914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 129.382813,
+        "w": 84,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "This row exists ",
+              "width": 62.01123,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mainly to ensure ",
+              "width": 68.532715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the nested table ",
+              "width": 66.550781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "really spills onto ",
+              "width": 66.528809,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the continuation ",
+              "width": 66.049805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "page.",
+              "width": 22.521973,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 129.382813,
+        "w": 56,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "Ready",
+              "width": 26.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 24,
+        "y": 211.710938,
+        "w": 48,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "NT-12",
+              "width": 25.004883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 76,
+        "y": 211.710938,
+        "w": 84,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "Late rows should ",
+              "width": 70.541016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain for page ",
+              "width": 65.535645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "two while earlier ",
+              "width": 67.025391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "rows are already ",
+              "width": 69.029297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "visible on page ",
+              "width": 62.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "one.",
+              "width": 17.516602,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 164,
+        "y": 211.710938,
+        "w": 56,
+        "h": 80.328125,
+        "lines": [
+          [
+            {
+              "text": "Ready",
+              "width": 26.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 302.039063,
+        "w": 180,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Story flow resumes after the nested ",
+              "width": 176.080566,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "table completes. This paragraph ",
+              "width": 160.198242,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should stay downstream of the ",
+              "width": 152.249023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continued table rather than jumping ",
+              "width": 175.505859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ahead of it.",
+              "width": 54.430664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

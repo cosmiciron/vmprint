@@ -21,6 +21,8 @@ export type TableModel = {
     rowIndices: number[];
     columnCount: number;
     headerRowIndices: number[];
+    rowSpanBlockedBoundaryIndices: number[];
+    rowSpanBlockedBoundaryLookup?: Set<number>;
     headerRows: number;
     hasRowSpan: boolean;
     headerHasRowSpan: boolean;
@@ -50,6 +52,7 @@ export type TableResolvedLayout = {
     columnCount: number;
     columnWidths: number[];
     rowHeightsByIndex: number[];
+    rowWorldOffsetsByIndex: number[];
     rowGap: number;
     columnGap: number;
     rowIndices: number[];

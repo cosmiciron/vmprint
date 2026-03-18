@@ -752,7 +752,9 @@ export class TransitionsRuntime {
                 ? (packager.emitBoxes(state.availableWidth, state.availableHeightAdjusted, {
                     ...contextBase,
                     pageIndex: currentPageIndex,
-                    cursorY: state.currentY
+                    cursorY: state.currentY,
+                    viewportWorldY: currentPageIndex * pageHeight,
+                    viewportHeight: pageHeight
                 }) || [])
                 : null;
             const outcome = this.host.resolveActorSplitFailure(
@@ -784,7 +786,9 @@ export class TransitionsRuntime {
         const splitContext: PackagerContext = {
             ...contextBase,
             pageIndex: currentPageIndex,
-            cursorY: state.currentY
+            cursorY: state.currentY,
+            viewportWorldY: currentPageIndex * pageHeight,
+            viewportHeight: pageHeight
         };
         const fitsMarginBottom = fitsCurrent.getMarginBottom();
         const fitsMarginTop = fitsCurrent.getMarginTop();

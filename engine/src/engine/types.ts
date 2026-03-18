@@ -79,6 +79,13 @@ export type OverflowPolicy = 'clip' | 'move-whole' | 'error';
 export type ZoneFrameOverflow = 'move-whole' | 'continue';
 export type ZoneWorldBehavior = 'fixed' | 'spanning' | 'expandable';
 
+export interface ZoneRegionRect {
+    x: number;
+    y: number;
+    width: number;
+    height?: number;
+}
+
 /**
  * A spatial region on a `zone-map` element.
  *
@@ -90,6 +97,8 @@ export type ZoneWorldBehavior = 'fixed' | 'spanning' | 'expandable';
 export interface ZoneDefinition {
     /** Optional identifier for the zone (for debugging and future linked-frame support). */
     id?: string;
+    /** Optional explicit region geometry in zone-field local/world coordinates. */
+    region?: ZoneRegionRect;
     /** Block-level elements assigned to this zone. Laid out independently of all other zones. */
     elements: Element[];
     /** Per-zone style overrides (e.g. backgroundColor for the zone cell background). */
@@ -498,11 +507,25 @@ export interface BoxMeta {
     clonedFromSourceId?: string;
 }
 
+export interface DebugZoneRegion {
+    fieldActorId: string;
+    fieldSourceId: string;
+    zoneId?: string;
+    zoneIndex: number;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    frameOverflowMode: 'move-whole' | 'continue';
+    worldBehaviorMode: ZoneWorldBehavior;
+}
+
 export interface Page {
     index: number;
     boxes: Box[];
     width: number;
     height: number;
+    debugZones?: DebugZoneRegion[];
 }
 
 export interface AnnotatedLayoutStream {

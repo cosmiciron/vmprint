@@ -1,4 +1,4 @@
-import type { Box, Page, PageRegionContent, PageReservationSelector } from '../types';
+import type { Box, DebugZoneRegion, Page, PageRegionContent, PageReservationSelector } from '../types';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
 import { getTailSplitPostAttemptOutcome } from './actor-formation';
@@ -239,6 +239,43 @@ export type PageRegionResolution = {
 
 export type PageOverrideState = 'inherit' | 'replace' | 'suppress';
 
+export type WorldSpace = {
+    originX: number;
+    originY: number;
+    width: number;
+    exploredBottom: number;
+};
+
+export type ViewportRect = {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+};
+
+export type ViewportTerrain = {
+    margins: PlacementFrameMargins & {
+        top: number;
+        bottom: number;
+    };
+    marginBlocks: SpatialExclusion[];
+    headerBlock: SpatialExclusion | null;
+    footerBlock: SpatialExclusion | null;
+    reservationBlocks: SpatialExclusion[];
+    exclusionBlocks: SpatialExclusion[];
+    blockedRects: SpatialExclusion[];
+};
+
+export type ViewportDescriptor = {
+    pageIndex: number;
+    worldX: number;
+    worldY: number;
+    width: number;
+    height: number;
+    contentRect: ViewportRect;
+    terrain: ViewportTerrain;
+};
+
 export type PageFinalizationState = {
     pageIndex: number;
     physicalPageNumber: number;
@@ -250,6 +287,8 @@ export type PageFinalizationState = {
     footerOverride: PageOverrideState;
     renderedHeader: boolean;
     renderedFooter: boolean;
+    worldSpace: WorldSpace;
+    viewport: ViewportDescriptor;
 };
 
 export class ConstraintField {
@@ -455,7 +494,8 @@ export class PageSurface {
         public readonly pageIndex: number,
         public readonly width: number,
         public readonly height: number,
-        public readonly boxes: Box[]
+        public readonly boxes: Box[],
+        public readonly debugZones: DebugZoneRegion[] = []
     ) { }
 
     finalize(): Page {
@@ -463,7 +503,8 @@ export class PageSurface {
             index: this.pageIndex,
             width: this.width,
             height: this.height,
-            boxes: this.boxes
+            boxes: this.boxes,
+            ...(this.debugZones.length > 0 ? { debugZones: this.debugZones.map((zone) => ({ ...zone })) } : {})
         };
     }
 }

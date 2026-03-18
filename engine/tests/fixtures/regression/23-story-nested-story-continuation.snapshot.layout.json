@@ -1,0 +1,3333 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 372,
+        "h": 68.025,
+        "lines": [
+          [
+            {
+              "text": "Nested Story Continuation ",
+              "width": 309.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Inside Story Lanes",
+              "width": 213.398438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 104.025,
+        "w": 372,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "This regression fixture places a nested story into the second lane of an ",
+              "width": 347.305664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "outer multi-column story. The nested story must continue across pages ",
+              "width": 348.487305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "without letting later outer-story flow jump ahead of it.",
+              "width": 254.348145,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 24,
+        "y": 24,
+        "w": 180,
+        "h": 332,
+        "lines": []
+      },
+      {
+        "type": "story-note",
+        "x": 24,
+        "y": 364,
+        "w": 180,
+        "h": 26,
+        "lines": [
+          [
+            {
+              "text": "The nested story begins in lane two ",
+              "width": 160.092773,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "after this note and should continue as a ",
+              "width": 177.34375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "story-note",
+        "x": 216,
+        "y": 24,
+        "w": 180,
+        "h": 14.171875,
+        "lines": [
+          [
+            {
+              "text": "real nested story actor.",
+              "width": 101.713867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 216,
+        "y": 46.171875,
+        "w": 86,
+        "h": 343.2,
+        "lines": [
+          [
+            {
+              "text": "Inner story ",
+              "width": 55.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "opening copy ",
+              "width": 68.497559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "establishes the ",
+              "width": 76.436035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "second-lane ",
+              "width": 62.986816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "entry point while ",
+              "width": 82.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "also consuming ",
+              "width": 79.486816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough room to ",
+              "width": 80.109863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "force a ",
+              "width": 36.68457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation path",
+              "width": 83.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "through the ",
+              "width": 58.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor. Inner story ",
+              "width": 85.588379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "opening copy ",
+              "width": 68.497559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "establishes the ",
+              "width": 76.436035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "second-lane ",
+              "width": 62.986816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "entry point while ",
+              "width": 82.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "also consuming ",
+              "width": 79.486816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough room to ",
+              "width": 80.109863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "force a ",
+              "width": 36.68457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation path",
+              "width": 83.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "through the ",
+              "width": 58.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor. Inner story ",
+              "width": 85.588379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "opening copy ",
+              "width": 68.497559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 310,
+        "y": 46.171875,
+        "w": 86,
+        "h": 343.2,
+        "lines": [
+          [
+            {
+              "text": "establishes the ",
+              "width": 76.436035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "second-lane ",
+              "width": 62.986816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "entry point while ",
+              "width": 82.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "also consuming ",
+              "width": 79.486816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough room to ",
+              "width": 80.109863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "force a ",
+              "width": 36.68457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation path",
+              "width": 83.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "through the ",
+              "width": 58.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor. Inner story ",
+              "width": 85.588379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "opening copy ",
+              "width": 68.497559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "establishes the ",
+              "width": 76.436035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "second-lane ",
+              "width": 62.986816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "entry point while ",
+              "width": 82.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "also consuming ",
+              "width": 79.486816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough room to ",
+              "width": 80.109863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "force a ",
+              "width": 36.68457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation path",
+              "width": 83.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "through the ",
+              "width": 58.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor. Inner story ",
+              "width": 85.588379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "opening copy ",
+              "width": 68.497559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "establishes the ",
+              "width": 76.436035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "second-lane ",
+              "width": 62.986816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 86,
+        "h": 272.989063,
+        "lines": [
+          [
+            {
+              "text": "entry point while ",
+              "width": 82.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "also consuming ",
+              "width": 79.486816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough room to ",
+              "width": 80.109863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "force a ",
+              "width": 36.68457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation path",
+              "width": 83.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "through the ",
+              "width": 58.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor. Inner story ",
+              "width": 85.588379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "opening copy ",
+              "width": 68.497559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "establishes the ",
+              "width": 76.436035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "second-lane ",
+              "width": 62.986816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "entry point while ",
+              "width": 82.542969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "also consuming ",
+              "width": 79.486816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough room to ",
+              "width": 80.109863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "force a ",
+              "width": 36.68457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation path",
+              "width": 83.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "through the ",
+              "width": 58.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor.",
+              "width": 27.510742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 306.989063,
+        "w": 86,
+        "h": 85.8,
+        "lines": [
+          [
+            {
+              "text": "Inner story ",
+              "width": 55.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "checkpoint ",
+              "width": 55.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "material should ",
+              "width": 77.649902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain inside the",
+              "width": 83.767578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordering contract ",
+              "width": 85.599121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 118,
+        "y": 24,
+        "w": 86,
+        "h": 371.8,
+        "lines": [
+          [
+            {
+              "text": "even when the ",
+              "width": 74.609863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "host story itself is",
+              "width": 84.358398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "already operating",
+              "width": 85.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "as a multi-lane ",
+              "width": 74.588379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "world region. ",
+              "width": 66.032227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Inner story ",
+              "width": 55.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "checkpoint ",
+              "width": 55.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "material should ",
+              "width": 77.649902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain inside the",
+              "width": 83.767578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordering contract ",
+              "width": 85.599121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "even when the ",
+              "width": 74.609863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "host story itself is",
+              "width": 84.358398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "already operating",
+              "width": 85.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "as a multi-lane ",
+              "width": 74.588379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "world region. ",
+              "width": 66.032227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Inner story ",
+              "width": 55.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "checkpoint ",
+              "width": 55.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "material should ",
+              "width": 77.649902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain inside the",
+              "width": 83.767578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordering contract ",
+              "width": 85.599121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "even when the ",
+              "width": 74.609863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "host story itself is",
+              "width": 84.358398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "already operating",
+              "width": 85.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "as a multi-lane ",
+              "width": 74.588379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 86,
+        "h": 330.189063,
+        "lines": [
+          [
+            {
+              "text": "world region. ",
+              "width": 66.032227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Inner story ",
+              "width": 55.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "checkpoint ",
+              "width": 55.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "material should ",
+              "width": 77.649902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain inside the",
+              "width": 83.767578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordering contract ",
+              "width": 85.599121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "even when the ",
+              "width": 74.609863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "host story itself is",
+              "width": 84.358398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "already operating",
+              "width": 85.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "as a multi-lane ",
+              "width": 74.588379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "world region. ",
+              "width": 66.032227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Inner story ",
+              "width": 55.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "checkpoint ",
+              "width": 55.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "material should ",
+              "width": 77.649902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remain inside the",
+              "width": 83.767578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "nested story ",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordering contract ",
+              "width": 85.599121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "even when the ",
+              "width": 74.609863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "host story itself is",
+              "width": 84.358398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "already operating",
+              "width": 85.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "as a multi-lane ",
+              "width": 74.588379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "world region.",
+              "width": 62.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 364.189063,
+        "w": 86,
+        "h": 28.6,
+        "lines": [
+          [
+            {
+              "text": "Nested story ",
+              "width": 64.802246,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation ",
+              "width": 62.379883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 118,
+        "y": 24,
+        "w": 86,
+        "h": 371.8,
+        "lines": [
+          [
+            {
+              "text": "needs to ",
+              "width": 45.256836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "preserve local ",
+              "width": 71.532227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lane geometry ",
+              "width": 72.762207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "instead of ",
+              "width": 50.756836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "collapsing back ",
+              "width": 78.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "to page-level ",
+              "width": 66.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "assumptions ",
+              "width": 64.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "during the ",
+              "width": 51.981445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resumed ",
+              "width": 45.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragment. Nested",
+              "width": 84.374512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story ",
+              "width": 26.893066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation ",
+              "width": 62.379883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "needs to ",
+              "width": 45.256836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "preserve local ",
+              "width": 71.532227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lane geometry ",
+              "width": 72.762207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "instead of ",
+              "width": 50.756836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "collapsing back ",
+              "width": 78.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "to page-level ",
+              "width": 66.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "assumptions ",
+              "width": 64.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "during the ",
+              "width": 51.981445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resumed ",
+              "width": 45.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragment. Nested",
+              "width": 84.374512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story ",
+              "width": 26.893066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation ",
+              "width": 62.379883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "needs to ",
+              "width": 45.256836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "preserve local ",
+              "width": 71.532227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 86,
+        "h": 371.8,
+        "lines": [
+          [
+            {
+              "text": "lane geometry ",
+              "width": 72.762207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "instead of ",
+              "width": 50.756836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "collapsing back ",
+              "width": 78.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "to page-level ",
+              "width": 66.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "assumptions ",
+              "width": 64.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "during the ",
+              "width": 51.981445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resumed ",
+              "width": 45.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragment. Nested",
+              "width": 84.374512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story ",
+              "width": 26.893066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation ",
+              "width": 62.379883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "needs to ",
+              "width": 45.256836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "preserve local ",
+              "width": 71.532227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lane geometry ",
+              "width": 72.762207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "instead of ",
+              "width": 50.756836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "collapsing back ",
+              "width": 78.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "to page-level ",
+              "width": 66.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "assumptions ",
+              "width": 64.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "during the ",
+              "width": 51.981445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resumed ",
+              "width": 45.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragment. Nested",
+              "width": 84.374512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story ",
+              "width": 26.893066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continuation ",
+              "width": 62.379883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "needs to ",
+              "width": 45.256836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "preserve local ",
+              "width": 71.532227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lane geometry ",
+              "width": 72.762207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "instead of ",
+              "width": 50.756836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 118,
+        "y": 24,
+        "w": 86,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "collapsing back ",
+              "width": 78.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "to page-level ",
+              "width": 66.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "assumptions ",
+              "width": 64.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "during the ",
+              "width": 51.981445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resumed ",
+              "width": 45.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragment.",
+              "width": 46.465332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 118,
+        "y": 121.089062,
+        "w": 86,
+        "h": 271.7,
+        "lines": [
+          [
+            {
+              "text": "This paragraph ",
+              "width": 77.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "exists to ensure ",
+              "width": 80.09375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "later nested story",
+              "width": 84.374512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "material survives ",
+              "width": 85.577637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "for page two and ",
+              "width": 85.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "beyond, proving ",
+              "width": 81.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "that the nested ",
+              "width": 75.834473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor is genuinely",
+              "width": 85.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continued rather ",
+              "width": 82.553711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "than flattened. ",
+              "width": 72.77832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "This paragraph ",
+              "width": 77.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "exists to ensure ",
+              "width": 80.09375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "later nested story",
+              "width": 84.374512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "material survives ",
+              "width": 85.577637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "for page two and ",
+              "width": 85.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "beyond, proving ",
+              "width": 81.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "that the nested ",
+              "width": 75.834473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor is genuinely",
+              "width": 85.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continued rather ",
+              "width": 82.553711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 86,
+        "h": 371.8,
+        "lines": [
+          [
+            {
+              "text": "than flattened. ",
+              "width": 72.77832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "This paragraph ",
+              "width": 77.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "exists to ensure ",
+              "width": 80.09375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "later nested story",
+              "width": 84.374512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "material survives ",
+              "width": 85.577637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "for page two and ",
+              "width": 85.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "beyond, proving ",
+              "width": 81.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "that the nested ",
+              "width": 75.834473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor is genuinely",
+              "width": 85.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continued rather ",
+              "width": 82.553711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "than flattened. ",
+              "width": 72.77832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "This paragraph ",
+              "width": 77.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "exists to ensure ",
+              "width": 80.09375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "later nested story",
+              "width": 84.374512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "material survives ",
+              "width": 85.577637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "for page two and ",
+              "width": 85.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "beyond, proving ",
+              "width": 81.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "that the nested ",
+              "width": 75.834473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor is genuinely",
+              "width": 85.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continued rather ",
+              "width": 82.553711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "than flattened. ",
+              "width": 72.77832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "This paragraph ",
+              "width": 77.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "exists to ensure ",
+              "width": 80.09375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "later nested story",
+              "width": 84.374512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "material survives ",
+              "width": 85.577637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "for page two and ",
+              "width": 85.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 118,
+        "y": 24,
+        "w": 86,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "beyond, proving ",
+              "width": 81.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "that the nested ",
+              "width": 75.834473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor is genuinely",
+              "width": 85.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "continued rather ",
+              "width": 82.553711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "than flattened.",
+              "width": 69.722168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 118,
+        "y": 106.789063,
+        "w": 86,
+        "h": 286,
+        "lines": [
+          [
+            {
+              "text": "Continuation ",
+              "width": 64.82373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordering matters:",
+              "width": 83.144531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "later outer-story ",
+              "width": 80.083008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paragraphs ",
+              "width": 58.706055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should wait until ",
+              "width": 81.32373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "this nested story ",
+              "width": 83.149902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor has fully ",
+              "width": 70.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resolved its own ",
+              "width": 81.925293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resumed ",
+              "width": 45.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragments. ",
+              "width": 55.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Continuation ",
+              "width": 64.82373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordering matters:",
+              "width": 83.144531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "later outer-story ",
+              "width": 80.083008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paragraphs ",
+              "width": 58.706055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should wait until ",
+              "width": 81.32373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "this nested story ",
+              "width": 83.149902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor has fully ",
+              "width": 70.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resolved its own ",
+              "width": 81.925293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resumed ",
+              "width": 45.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragments. ",
+              "width": 55.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 86,
+        "h": 371.8,
+        "lines": [
+          [
+            {
+              "text": "Continuation ",
+              "width": 64.82373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordering matters:",
+              "width": 83.144531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "later outer-story ",
+              "width": 80.083008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paragraphs ",
+              "width": 58.706055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should wait until ",
+              "width": 81.32373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "this nested story ",
+              "width": 83.149902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor has fully ",
+              "width": 70.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resolved its own ",
+              "width": 81.925293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resumed ",
+              "width": 45.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragments. ",
+              "width": 55.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Continuation ",
+              "width": 64.82373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordering matters:",
+              "width": 83.144531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "later outer-story ",
+              "width": 80.083008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paragraphs ",
+              "width": 58.706055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should wait until ",
+              "width": 81.32373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "this nested story ",
+              "width": 83.149902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "actor has fully ",
+              "width": 70.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resolved its own ",
+              "width": 81.925293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resumed ",
+              "width": 45.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragments. ",
+              "width": 55.021484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Continuation ",
+              "width": 64.82373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordering matters:",
+              "width": 83.144531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "later outer-story ",
+              "width": 80.083008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paragraphs ",
+              "width": 58.706055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "should wait until ",
+              "width": 81.32373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "this nested story ",
+              "width": 83.149902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 118,
+        "y": 24,
+        "w": 86,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "actor has fully ",
+              "width": 70.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resolved its own ",
+              "width": 81.925293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "resumed ",
+              "width": 45.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "fragments.",
+              "width": 51.965332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 118,
+        "y": 92.489063,
+        "w": 86,
+        "h": 300.3,
+        "lines": [
+          [
+            {
+              "text": "Final nested ",
+              "width": 62.981445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story material ",
+              "width": 69.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remains here ",
+              "width": 67.251465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mostly as ",
+              "width": 49.510742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "insurance that ",
+              "width": 72.155273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "some inner-story ",
+              "width": 84.970703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "content can only ",
+              "width": 83.166016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "appear after the ",
+              "width": 80.722168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "first page break. ",
+              "width": 81.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Final nested ",
+              "width": 62.981445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story material ",
+              "width": 69.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remains here ",
+              "width": 67.251465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mostly as ",
+              "width": 49.510742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "insurance that ",
+              "width": 72.155273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "some inner-story ",
+              "width": 84.970703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "content can only ",
+              "width": 83.166016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "appear after the ",
+              "width": 80.722168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "first page break. ",
+              "width": 81.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Final nested ",
+              "width": 62.981445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story material ",
+              "width": 69.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remains here ",
+              "width": 67.251465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 7,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 86,
+        "h": 344.489063,
+        "lines": [
+          [
+            {
+              "text": "mostly as ",
+              "width": 49.510742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "insurance that ",
+              "width": 72.155273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "some inner-story ",
+              "width": 84.970703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "content can only ",
+              "width": 83.166016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "appear after the ",
+              "width": 80.722168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "first page break. ",
+              "width": 81.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Final nested ",
+              "width": 62.981445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story material ",
+              "width": 69.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remains here ",
+              "width": 67.251465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mostly as ",
+              "width": 49.510742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "insurance that ",
+              "width": 72.155273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "some inner-story ",
+              "width": 84.970703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "content can only ",
+              "width": 83.166016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "appear after the ",
+              "width": 80.722168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "first page break. ",
+              "width": 81.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Final nested ",
+              "width": 62.981445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "story material ",
+              "width": 69.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "remains here ",
+              "width": 67.251465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "mostly as ",
+              "width": 49.510742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "insurance that ",
+              "width": 72.155273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "some inner-story ",
+              "width": 84.970703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "content can only ",
+              "width": 83.166016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "appear after the ",
+              "width": 80.722168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "first page break.",
+              "width": 78.874512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 368.489063,
+        "w": 180,
+        "h": 14.3,
+        "lines": [
+          [
+            {
+              "text": "Outer story flow resumes only after ",
+              "width": 173.615234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 216,
+        "y": 24,
+        "w": 180,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "the nested story finishes. This tail ",
+              "width": 165.6875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "paragraph should never leap ahead ",
+              "width": 176.746582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "of the nested continuation.",
+              "width": 129.040527,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

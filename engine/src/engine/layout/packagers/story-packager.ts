@@ -129,6 +129,7 @@ type StoryColumnRegion = {
 
 type MultiColumnContinuation = {
     continuationElement: Element | null;
+    continuationPackager: PackagerUnit | null;
     nextChildIndex: number;
     carryOvers: CarryOverObstacle[];
     consumedStoryHeight: number;
@@ -144,6 +145,12 @@ type MultiColumnPourResult = {
 };
 
 type StoryPourResult = FullPourResult | MultiColumnPourResult;
+
+type StoryViewportSnapshot = {
+    pageIndex: number;
+    viewportWorldY: number | null;
+    viewportHeight: number | null;
+};
 
 // ---------------------------------------------------------------------------
 // FrozenStoryPackager – holds pre-split partA boxes
@@ -224,6 +231,7 @@ export class StoryPackager implements PackagerUnit {
     private readonly storyIndex: number;
     /** Obstacles carried over from the preceding page (already started there). */
     private readonly initialObstacles: CarryOverObstacle[];
+    private readonly deferredLeadingPackager: PackagerUnit | null;
     /**
      * The story-local Y of this packager's origin relative to the overall
      * story.  For page-1 this is 0; for continuation pages it equals the
@@ -235,6 +243,7 @@ export class StoryPackager implements PackagerUnit {
     private lastResult: StoryPourResult | null = null;
     private lastAvailableWidth: number = -1;
     private lastAvailableHeight: number = -1;
+    private lastViewportSnapshot: StoryViewportSnapshot | null = null;
 
     readonly pageBreakBefore: boolean = false;
     readonly keepWithNext: boolean = false;
@@ -250,7 +259,8 @@ export class StoryPackager implements PackagerUnit {
         storyIndex: number,
         initialObstacles?: CarryOverObstacle[],
         storyYOffset?: number,
-        identity?: PackagerIdentity
+        identity?: PackagerIdentity,
+        deferredLeadingPackager?: PackagerUnit | null
     ) {
         this.storyElement = storyElement;
         this.normalizedStory = normalizeStoryElement(storyElement);
@@ -258,6 +268,7 @@ export class StoryPackager implements PackagerUnit {
         this.storyIndex = storyIndex;
         this.initialObstacles = initialObstacles ?? [];
         this.storyYOffset = storyYOffset ?? 0;
+        this.deferredLeadingPackager = deferredLeadingPackager ?? null;
         const resolvedIdentity = identity ?? createElementPackagerIdentity(storyElement, [storyIndex]);
         this.actorId = resolvedIdentity.actorId;
         this.sourceId = resolvedIdentity.sourceId;
@@ -269,9 +280,11 @@ export class StoryPackager implements PackagerUnit {
     // -- PackagerUnit ---------------------------------------------------------
 
     prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
+        const viewportSnapshot = resolveViewportSnapshot(context);
         if (
             this.lastAvailableWidth === availableWidth &&
             this.lastAvailableHeight === availableHeight &&
+            sameViewportSnapshot(this.lastViewportSnapshot, viewportSnapshot) &&
             this.lastResult
         ) {
             return;
@@ -279,11 +292,12 @@ export class StoryPackager implements PackagerUnit {
         const columnConfig = this.getStoryColumnConfig();
         const result =
             columnConfig.columns > 1
-                ? this.pourColumns(availableWidth, availableHeight, context.margins, columnConfig.columns, columnConfig.gutter, columnConfig.balance)
-                : this.pourAll(availableWidth, context.margins);
+                ? this.pourColumns(availableWidth, availableHeight, context, columnConfig.columns, columnConfig.gutter, columnConfig.balance)
+                : this.pourAll(availableWidth, context);
         this.lastResult = result;
         this.lastAvailableWidth = availableWidth;
         this.lastAvailableHeight = availableHeight;
+        this.lastViewportSnapshot = viewportSnapshot;
     }
 
     prepareLookahead(availableWidth: number, _availableHeight: number, context: PackagerContext): void {
@@ -292,18 +306,21 @@ export class StoryPackager implements PackagerUnit {
             this.prepare(availableWidth, _availableHeight, context);
             return;
         }
+        const viewportSnapshot = resolveViewportSnapshot(context);
         if (
             this.lastAvailableWidth === availableWidth &&
             !Number.isFinite(this.lastAvailableHeight) &&
+            sameViewportSnapshot(this.lastViewportSnapshot, viewportSnapshot) &&
             this.lastResult
         ) {
             return;
         }
         // Keep-with-next planning only needs a conservative fit probe. For multi-column stories,
         // reuse the cheaper width-driven full-pour instead of a commit-grade column simulation.
-        this.lastResult = this.pourAll(availableWidth, context.margins);
+        this.lastResult = this.pourAll(availableWidth, context);
         this.lastAvailableWidth = availableWidth;
         this.lastAvailableHeight = Number.POSITIVE_INFINITY;
+        this.lastViewportSnapshot = viewportSnapshot;
     }
 
     getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference | null {
@@ -336,7 +353,7 @@ export class StoryPackager implements PackagerUnit {
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] {
         this.prepare(availableWidth, availableHeight, context);
-        return cloneBoxes(this.lastResult?.allBoxes || []);
+        return cloneBoxes(this.lastResult?.allBoxes || [], context.pageIndex);
     }
 
     getRequiredHeight(): number {
@@ -358,8 +375,8 @@ export class StoryPackager implements PackagerUnit {
         const columnConfig = this.getStoryColumnConfig();
         const result = this.lastResult ?? (
             columnConfig.columns > 1
-                ? this.pourColumns(availableWidth, availableHeight, context.margins, columnConfig.columns, columnConfig.gutter, columnConfig.balance)
-                : this.pourAll(availableWidth, context.margins)
+                ? this.pourColumns(availableWidth, availableHeight, context, columnConfig.columns, columnConfig.gutter, columnConfig.balance)
+                : this.pourAll(availableWidth, context)
         );
         if (columnConfig.columns > 1) {
             return this.splitColumns(result as MultiColumnPourResult, availableWidth);
@@ -371,8 +388,9 @@ export class StoryPackager implements PackagerUnit {
 
     private pourAll(
         availableWidth: number,
-        margins: { left: number; right: number; top: number; bottom: number }
+        context: PackagerContext
     ): FullPourResult {
+        const margins = context.margins;
         const children = this.normalizedStory.children;
         const storyMap = new SpatialMap();
         const registeredObstacles: OccupiedRect[] = [];
@@ -514,21 +532,17 @@ export class StoryPackager implements PackagerUnit {
 
                     const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
                     const floatContext: PackagerContext = {
-                        processor: this.processor,
-                        pageIndex: 0,
-                        cursorY,
-                        margins: { ...margins, left: margins.left + floatX },
-                        pageWidth: margins.left + availableWidth + margins.right,
-                        pageHeight: Number.POSITIVE_INFINITY,
-                        publishActorSignal: (signal) => {
-                            const session = this.processor.getCurrentLayoutSession();
-                            if (!session) return { ...signal, pageIndex: signal.pageIndex ?? 0, sequence: -1 } as any;
-                            return session.publishActorSignal(signal);
-                        },
-                        readActorSignals: (topic?: string) => {
-                            const session = this.processor.getCurrentLayoutSession();
-                            return session ? session.getActorSignals(topic) : [];
-                        }
+                        ...this.createLocalFrameContext(
+                            context,
+                            dims.w,
+                            {
+                                cursorY,
+                                margins: { ...margins, left: margins.left + floatX },
+                                pageHeight: Number.POSITIVE_INFINITY
+                            },
+                            cursorY,
+                            dims.h
+                        )
                     };
                     pkg.prepare(dims.w, dims.h, floatContext);
                     const emitted = (pkg.emitBoxes(dims.w, dims.h, floatContext) || []) as Box[];
@@ -855,13 +869,14 @@ export class StoryPackager implements PackagerUnit {
     private pourColumns(
         availableWidth: number,
         availableHeight: number,
-        margins: { left: number; right: number; top: number; bottom: number },
+        context: PackagerContext,
         columns: number,
         gutter: number,
         balance: boolean = false
     ): MultiColumnPourResult {
+        const margins = context.margins;
         if (!Number.isFinite(availableHeight) || availableHeight <= 0) {
-            const single = this.pourAll(availableWidth, margins);
+            const single = this.pourAll(availableWidth, context);
             return {
                 registeredObstacles: single.registeredObstacles,
                 occupiedHeight: single.totalHeight,
@@ -882,7 +897,10 @@ export class StoryPackager implements PackagerUnit {
             const tempRegions = this.buildColumnRegions(availableWidth, 1, columns, gutter);
             if (tempRegions.length > 1) {
                 const colW = tempRegions[0].w;
-                const probe = this.pourAll(colW, { left: 0, right: 0, top: 0, bottom: 0 });
+                const probe = this.pourAll(colW, {
+                    ...context,
+                    margins: { left: 0, right: 0, top: 0, bottom: 0 }
+                });
                 if (probe.totalHeight > 0) {
                     // Add a 5 % buffer so margin / orphan rounding does not
                     // cause the last column to silently overflow by one line.
@@ -894,7 +912,7 @@ export class StoryPackager implements PackagerUnit {
 
         let regions = this.buildColumnRegions(availableWidth, effectiveHeight, columns, gutter);
         if (regions.length <= 1) {
-            const single = this.pourAll(availableWidth, margins);
+            const single = this.pourAll(availableWidth, context);
             return {
                 registeredObstacles: single.registeredObstacles,
                 occupiedHeight: single.totalHeight,
@@ -951,11 +969,13 @@ export class StoryPackager implements PackagerUnit {
             if (!metrics) continue;
             const { w: imgW, h: imgH } = metrics;
             const localY = layout.y - this.storyYOffset;
-            if (localY + imgH < 0 || localY > availableHeight) continue;
+            if (localY + imgH < 0 || localY > resolveRegionStackHeight(regions)) continue;
+            const projected = projectStoryYToRegionStack(localY, regions);
+            if (!projected) continue;
 
             const rect: OccupiedRect = {
                 x: layout.x,
-                y: Math.max(0, localY),
+                y: Math.max(0, projected.y),
                 w: imgW,
                 h: imgH,
                 wrap: layout.wrap,
@@ -969,6 +989,7 @@ export class StoryPackager implements PackagerUnit {
         let cursorY = 0;
         let hasOverflow = false;
         let continuationElement: Element | null = null;
+        let continuationPackager: PackagerUnit | null = null;
         let nextChildIndex = children.length;
 
         const goNextRegion = (): boolean => {
@@ -977,6 +998,81 @@ export class StoryPackager implements PackagerUnit {
             cursorY = 0;
             return true;
         };
+
+        const placeOpaquePackager = (
+            pkg: PackagerUnit,
+            childIndex: number,
+            onSplit: (continuation: PackagerUnit) => void
+        ): boolean => {
+            opaqueLoop: while (true) {
+                const region = regions[regionIndex];
+                const regionStartY = resolveRegionStartY(regions, region.index);
+                const remainingHeight = Math.max(0, region.h - cursorY);
+                const colContext: PackagerContext = {
+                    ...this.createLocalFrameContext(
+                        context,
+                        region.w,
+                        {
+                            cursorY,
+                            margins: { ...margins, left: margins.left + region.x },
+                            pageHeight: availableHeight
+                        },
+                        regionStartY + cursorY,
+                        remainingHeight
+                    )
+                };
+                const boxes = (pkg.emitBoxes(region.w, remainingHeight, colContext) || []) as Box[];
+                for (const b of boxes) b.y = (b.y || 0) + cursorY;
+                const cursorAfter = cursorY + pkg.getRequiredHeight();
+                if (cursorAfter <= region.h + 0.1) {
+                    for (const b of boxes) allBoxes.push(b);
+                    cursorY = cursorAfter;
+                    return true;
+                }
+
+                const split = pkg.split(remainingHeight, colContext);
+                if (split.currentFragment && split.continuationFragment) {
+                    const partABoxes = (split.currentFragment.emitBoxes(region.w, remainingHeight, colContext) || []) as Box[];
+                    for (const b of partABoxes) {
+                        b.y = (b.y || 0) + cursorY;
+                        allBoxes.push(b);
+                    }
+                    cursorY += split.currentFragment.getRequiredHeight();
+                    onSplit(split.continuationFragment);
+                    hasOverflow = true;
+                    nextChildIndex = childIndex + 1;
+                    return false;
+                }
+
+                if (goNextRegion()) continue opaqueLoop;
+                hasOverflow = true;
+                nextChildIndex = childIndex;
+                return false;
+            }
+        };
+
+        if (this.deferredLeadingPackager) {
+            const completed = placeOpaquePackager(this.deferredLeadingPackager, -1, (continuation) => {
+                continuationPackager = continuation;
+                nextChildIndex = 0;
+            });
+            if (!completed) {
+                return {
+                    registeredObstacles,
+                    occupiedHeight: Math.min(Math.max(0, cursorY), availableHeight),
+                    totalHeight: availableHeight + 1,
+                    allBoxes,
+                    hasOverflow,
+                    continuation: {
+                        continuationElement,
+                        continuationPackager,
+                        nextChildIndex,
+                        carryOvers: [],
+                        consumedStoryHeight: resolveRegionStackHeight(regions)
+                    }
+                };
+            }
+        }
 
         outer: for (let i = 0; i < children.length; i++) {
             const child = children[i];
@@ -987,11 +1083,13 @@ export class StoryPackager implements PackagerUnit {
                 if (!metrics) continue;
                 const { img: imgData, w: imgW, h: imgH } = metrics;
                 const localY = layout.y - this.storyYOffset;
-                if (localY + imgH < 0 || localY > availableHeight) continue;
+                if (localY + imgH < 0 || localY > resolveRegionStackHeight(regions)) continue;
+                const projected = projectStoryYToRegionStack(localY, regions);
+                if (!projected) continue;
                 const box = this.buildImageBox(
                     child.element,
                     margins.left + layout.x,
-                    Math.max(0, localY),
+                    Math.max(0, projected.y),
                     imgW,
                     imgH,
                     imgData,
@@ -1008,21 +1106,17 @@ export class StoryPackager implements PackagerUnit {
             if (child.kind === 'column-span') {
                 const spanTopY = this.resolveColumnFrontierY(cursorY, allBoxes, registeredObstacles);
                 const spanContext: PackagerContext = {
-                    processor: this.processor,
-                    pageIndex: 0,
-                    cursorY: spanTopY,
-                    margins: { ...margins },
-                    pageWidth: margins.left + availableWidth + margins.right,
-                    pageHeight: availableHeight,
-                    publishActorSignal: (signal) => {
-                        const session = this.processor.getCurrentLayoutSession();
-                        if (!session) return { ...signal, pageIndex: signal.pageIndex ?? 0, sequence: -1 } as any;
-                        return session.publishActorSignal(signal);
-                    },
-                    readActorSignals: (topic?: string) => {
-                        const session = this.processor.getCurrentLayoutSession();
-                        return session ? session.getActorSignals(topic) : [];
-                    }
+                    ...this.createLocalFrameContext(
+                        context,
+                        availableWidth,
+                        {
+                            cursorY: spanTopY,
+                            margins: { ...margins },
+                            pageHeight: availableHeight
+                        },
+                        spanTopY,
+                        Math.max(0, availableHeight - spanTopY)
+                    )
                 };
                 const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
                 pkg.prepare(availableWidth, availableHeight - spanTopY, spanContext);
@@ -1109,22 +1203,19 @@ export class StoryPackager implements PackagerUnit {
                         }
 
                         const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+                        const regionStartY = resolveRegionStartY(regions, region.index);
                         const floatContext: PackagerContext = {
-                            processor: this.processor,
-                            pageIndex: 0,
-                            cursorY: anchorY,
-                            margins: { ...margins, left: margins.left + x },
-                            pageWidth: margins.left + availableWidth + margins.right,
-                            pageHeight: Number.POSITIVE_INFINITY,
-                            publishActorSignal: (signal) => {
-                                const session = this.processor.getCurrentLayoutSession();
-                                if (!session) return { ...signal, pageIndex: signal.pageIndex ?? 0, sequence: -1 } as any;
-                                return session.publishActorSignal(signal);
-                            },
-                            readActorSignals: (topic?: string) => {
-                                const session = this.processor.getCurrentLayoutSession();
-                                return session ? session.getActorSignals(topic) : [];
-                            }
+                            ...this.createLocalFrameContext(
+                                context,
+                                effectiveW,
+                                {
+                                    cursorY: anchorY,
+                                    margins: { ...margins, left: margins.left + x },
+                                    pageHeight: Number.POSITIVE_INFINITY
+                                },
+                                regionStartY + anchorY,
+                                dims.h
+                            )
                         };
                         pkg.prepare(effectiveW, dims.h, floatContext);
                         const emitted = (pkg.emitBoxes(effectiveW, dims.h, floatContext) || []) as Box[];
@@ -1179,44 +1270,10 @@ export class StoryPackager implements PackagerUnit {
             const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
 
             if (!(pkg instanceof FlowBoxPackager)) {
-                opaqueLoop: while (true) {
-                    const region = regions[regionIndex];
-                    const colContext: PackagerContext = {
-                        processor: this.processor,
-                        pageIndex: 0,
-                        cursorY,
-                        margins: { ...margins, left: margins.left + region.x },
-                        pageWidth: margins.left + availableWidth + margins.right,
-                        pageHeight: availableHeight,
-                        publishActorSignal: (signal) => {
-                            const session = this.processor.getCurrentLayoutSession();
-                            if (!session) {
-                                return {
-                                    ...signal,
-                                    pageIndex: signal.pageIndex ?? 0,
-                                    sequence: -1
-                                } as any;
-                            }
-                            return session.publishActorSignal(signal);
-                        },
-                        readActorSignals: (topic?: string) => {
-                            const session = this.processor.getCurrentLayoutSession();
-                            return session ? session.getActorSignals(topic) : [];
-                        }
-                    };
-                    const boxes = (pkg.emitBoxes(region.w, region.h - cursorY, colContext) || []) as Box[];
-                    for (const b of boxes) b.y = (b.y || 0) + cursorY;
-                    const cursorAfter = cursorY + pkg.getRequiredHeight();
-                    if (cursorAfter <= region.h + 0.1) {
-                        for (const b of boxes) allBoxes.push(b);
-                        cursorY = cursorAfter;
-                        break opaqueLoop;
-                    }
-                    if (goNextRegion()) continue opaqueLoop;
-                    hasOverflow = true;
-                    nextChildIndex = i;
-                    break outer;
-                }
+                const completed = placeOpaquePackager(pkg, i, (continuation) => {
+                    continuationPackager = continuation;
+                });
+                if (!completed) break outer;
                 continue;
             }
 
@@ -1288,30 +1345,17 @@ export class StoryPackager implements PackagerUnit {
         }
         occupiedHeight = Math.min(Math.max(0, occupiedHeight), availableHeight);
 
-        const carryOvers: CarryOverObstacle[] = [];
-        if (hasOverflow) {
-            for (const obs of registeredObstacles) {
-                const bottom = obs.y + obs.h;
-                if (bottom > availableHeight && obs.y < availableHeight) {
-                    carryOvers.push({
-                        x: obs.x,
-                        w: obs.w,
-                        remainingH: Math.max(0, bottom - availableHeight),
-                        wrap: obs.wrap,
-                        gap: obs.gap,
-                        gapTop: 0,
-                        gapBottom: obs.gap
-                    });
-                }
-            }
-        }
+        const carryOvers = hasOverflow
+            ? buildCarryOverObstacles(registeredObstacles, availableHeight)
+            : [];
 
         const continuation: MultiColumnContinuation | null = hasOverflow
             ? {
                 continuationElement,
+                continuationPackager,
                 nextChildIndex,
                 carryOvers,
-                consumedStoryHeight: regions.length * availableHeight
+                consumedStoryHeight: resolveRegionStackHeight(regions)
             }
             : null;
 
@@ -1338,14 +1382,16 @@ export class StoryPackager implements PackagerUnit {
 
         const children = this.storyElement.children ?? [];
         const partA = new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this, availableWidth);
-        const partBChildren: Element[] = [];
-        if (result.continuation.continuationElement) {
-            partBChildren.push(result.continuation.continuationElement);
-        }
-        for (let i = result.continuation.nextChildIndex; i < children.length; i++) {
-            partBChildren.push(children[i]);
-        }
-        if (partBChildren.length === 0 && result.continuation.carryOvers.length === 0) {
+        const partBChildren = buildStoryContinuationChildren(
+            children,
+            result.continuation.nextChildIndex,
+            result.continuation.continuationElement
+        );
+        if (
+            partBChildren.length === 0
+            && result.continuation.carryOvers.length === 0
+            && !result.continuation.continuationPackager
+        ) {
             return { currentFragment: partA, continuationFragment: null };
         }
 
@@ -1359,7 +1405,8 @@ export class StoryPackager implements PackagerUnit {
             this.storyIndex,
             result.continuation.carryOvers,
             this.storyYOffset + result.continuation.consumedStoryHeight,
-            createContinuationIdentity(this)
+            createContinuationIdentity(this),
+            result.continuation.continuationPackager
         );
         return { currentFragment: partA, continuationFragment: partB };
     }
@@ -1494,34 +1541,17 @@ export class StoryPackager implements PackagerUnit {
         }
 
         // -- Carry-over obstacles -------------------------------------------
-        const carryOvers: CarryOverObstacle[] = [];
-        for (const obs of result.registeredObstacles) {
-            const imageBottom = obs.y + obs.h;
-            if (imageBottom > splitH && obs.y < splitH) {
-                const remainingImageH = Math.max(0, imageBottom - splitH);
-                carryOvers.push({
-                    x: obs.x,
-                    w: obs.w,
-                    remainingH: remainingImageH,
-                    wrap: obs.wrap,
-                    gap: obs.gap,
-                    gapTop: 0,
-                    gapBottom: obs.gap
-                });
-            }
-        }
+        const carryOvers = buildCarryOverObstacles(result.registeredObstacles, splitH);
 
         // -- partA (frozen) -------------------------------------------------
         const partA = new FrozenStoryPackager(partABoxes, partAHeight, this, availableWidth);
 
         // -- partB children -------------------------------------------------
-        const partBChildren: Element[] = [];
-        if (partBContinuationElement) {
-            partBChildren.push(partBContinuationElement);
-        }
-        for (let i = partBStartChildIdx; i < children.length; i++) {
-            partBChildren.push(children[i]);
-        }
+        const partBChildren = buildStoryContinuationChildren(
+            children,
+            partBStartChildIdx,
+            partBContinuationElement
+        );
 
         // Also re-include any story-absolute images that appear after splitH
         // in story coordinates (they were skipped in the current pour due to
@@ -1678,6 +1708,60 @@ export class StoryPackager implements PackagerUnit {
 
         return (this.processor as any).trimLeadingContinuationWhitespace(continuation) as Element;
     }
+
+    private createNestedPackagerContext(
+        context: PackagerContext,
+        overrides: Partial<PackagerContext>
+    ): PackagerContext {
+        return {
+            ...context,
+            ...overrides,
+            processor: this.processor,
+            publishActorSignal: (signal) => {
+                const session = this.processor.getCurrentLayoutSession();
+                if (!session) {
+                    return {
+                        ...signal,
+                        pageIndex: signal.pageIndex ?? context.pageIndex ?? 0,
+                        sequence: -1
+                    } as any;
+                }
+                return session.publishActorSignal(signal);
+            },
+            readActorSignals: (topic?: string) => {
+                const session = this.processor.getCurrentLayoutSession();
+                return session ? session.getActorSignals(topic) : [];
+            }
+        };
+    }
+
+    private createLocalFrameContext(
+        context: PackagerContext,
+        localFrameWidth: number,
+        overrides: Partial<PackagerContext>,
+        localWorldOffsetY: number = 0,
+        localViewportHeight?: number
+    ): PackagerContext {
+        const nested = this.createNestedPackagerContext(context, overrides);
+        const normalizedLocalFrameWidth = Math.max(0, Number(localFrameWidth) || 0);
+        const outerViewportWorldY = Number.isFinite(context.viewportWorldY)
+            ? Math.max(0, Number(context.viewportWorldY))
+            : Math.max(0, Number(context.pageIndex || 0)) * Math.max(0, Number(context.pageHeight || 0));
+        const resolvedViewportHeight = localViewportHeight !== undefined
+            ? Math.max(0, Number(localViewportHeight) || 0)
+            : (
+                Number.isFinite(nested.viewportHeight)
+                    ? Math.max(0, Number(nested.viewportHeight))
+                    : Math.max(0, Number(nested.pageHeight || 0))
+            );
+        return {
+            ...nested,
+            pageWidth: nested.margins.left + normalizedLocalFrameWidth + nested.margins.right,
+            contentWidthOverride: normalizedLocalFrameWidth,
+            viewportWorldY: outerViewportWorldY + Math.max(0, Number(localWorldOffsetY) || 0),
+            viewportHeight: resolvedViewportHeight
+        };
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -1699,6 +1783,118 @@ function resolveFloatX(
     return 0; // 'left'
 }
 
-function cloneBoxes(boxes: Box[]): Box[] {
-    return boxes.map((b) => ({ ...b, properties: { ...(b.properties || {}) } }));
+function cloneBoxes(boxes: Box[], pageIndex?: number): Box[] {
+    return boxes.map((b) => ({
+        ...b,
+        properties: { ...(b.properties || {}) },
+        ...(b.meta
+            ? {
+                meta: {
+                    ...b.meta,
+                    ...(pageIndex !== undefined ? { pageIndex } : {})
+                }
+            }
+            : {})
+    }));
+}
+
+function resolveViewportSnapshot(context: PackagerContext): StoryViewportSnapshot {
+    return {
+        pageIndex: Number.isFinite(context.pageIndex) ? Number(context.pageIndex) : 0,
+        viewportWorldY: Number.isFinite(context.viewportWorldY) ? Number(context.viewportWorldY) : null,
+        viewportHeight: Number.isFinite(context.viewportHeight) ? Number(context.viewportHeight) : null
+    };
+}
+
+function sameViewportSnapshot(
+    left: StoryViewportSnapshot | null,
+    right: StoryViewportSnapshot | null
+): boolean {
+    if (!left || !right) return left === right;
+    return left.pageIndex === right.pageIndex
+        && left.viewportWorldY === right.viewportWorldY
+        && left.viewportHeight === right.viewportHeight;
+}
+
+function collectDeferredStoryAbsoluteChildren(children: Element[], cutoffChildIndex: number): Element[] {
+    if (!Number.isFinite(cutoffChildIndex) || cutoffChildIndex <= 0) {
+        return [];
+    }
+    const deferred: Element[] = [];
+    for (let i = 0; i < Math.min(children.length, cutoffChildIndex); i++) {
+        const child = children[i];
+        if (child.type !== 'image') continue;
+        const layout = child.properties?.layout as StoryLayoutDirective | undefined;
+        if (layout?.mode !== 'story-absolute') continue;
+        deferred.push(child);
+    }
+    return deferred;
+}
+
+function buildStoryContinuationChildren(
+    children: Element[],
+    cutoffChildIndex: number,
+    continuationElement: Element | null
+): Element[] {
+    const result: Element[] = [];
+    for (const deferredAbsolute of collectDeferredStoryAbsoluteChildren(children, cutoffChildIndex)) {
+        result.push(deferredAbsolute);
+    }
+    if (continuationElement) {
+        result.push(continuationElement);
+    }
+    for (let i = Math.max(0, cutoffChildIndex); i < children.length; i++) {
+        result.push(children[i]);
+    }
+    return result;
+}
+
+function buildCarryOverObstacles(obstacles: OccupiedRect[], splitY: number): CarryOverObstacle[] {
+    const carryOvers: CarryOverObstacle[] = [];
+    for (const obstacle of obstacles) {
+        const obstacleBottom = obstacle.y + obstacle.h;
+        if (obstacleBottom > splitY && obstacle.y < splitY) {
+            carryOvers.push({
+                x: obstacle.x,
+                w: obstacle.w,
+                remainingH: Math.max(0, obstacleBottom - splitY),
+                wrap: obstacle.wrap,
+                gap: obstacle.gap,
+                gapTop: 0,
+                gapBottom: obstacle.gap
+            });
+        }
+    }
+    return carryOvers;
+}
+
+function projectStoryYToRegionStack(storyY: number, regions: StoryColumnRegion[]): { regionIndex: number; y: number } | null {
+    if (regions.length === 0) {
+        return null;
+    }
+    let cursor = 0;
+    for (let i = 0; i < regions.length; i++) {
+        const regionHeight = Math.max(0, Number(regions[i].h || 0));
+        const nextCursor = cursor + regionHeight;
+        if (storyY < nextCursor || i === regions.length - 1) {
+            return {
+                regionIndex: i,
+                y: storyY - cursor
+            };
+        }
+        cursor = nextCursor;
+    }
+    return null;
+}
+
+function resolveRegionStackHeight(regions: StoryColumnRegion[]): number {
+    return regions.reduce((sum, region) => sum + Math.max(0, Number(region.h || 0)), 0);
+}
+
+function resolveRegionStartY(regions: StoryColumnRegion[], regionIndex: number): number {
+    let cursor = 0;
+    for (let i = 0; i < Math.max(0, Math.floor(regionIndex)); i++) {
+        cursor += Math.max(0, Number(regions[i]?.h || 0));
+    }
+    return cursor;
 }

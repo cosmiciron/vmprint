@@ -15,11 +15,11 @@ This document details the current limitations of the system and proposes archite
 ~~The standard method for side-by-side content arrangement in VMPrint is either the `story` block (which flows text sequentially from column to column) or the `table` element. However, `table-cell` elements currently only accept inline children. There is no container that allows side-by-side placement of independent block-level flows. To create a "sidebar", users must currently force content into the last column of a `story` by manually tuning the exact word count of the preceding columns.~~
 
 ### Implementation
-The `zone-map` element (`type: "zone-map"`) provides a row of independent layout regions. Each zone runs its own non-paginating layout pass; content in one zone has no structural coupling to adjacent zones. Column widths are resolved with the same `TableColumnSizing` track solver used by tables (fixed / auto / flex `fr` units). The `zone-map` height equals the tallest zone; the entire map moves to the next page if it cannot fit (V1 move-whole semantics).
+The `zone-map` element (`type: "zone-map"`) provides independent layout regions inside a shared field. Each zone runs its own local layout pass; content in one zone has no structural coupling to adjacent zones. Strip-authored widths are still resolved with the same `TableColumnSizing` track solver used by tables (fixed / auto / flex `fr` units), and authored zones may also use explicit rectangular `region` bounds. `move-whole` remains the conservative compatibility mode, while expandable `continue` fields can now occupy the current viewport and continue forward.
 
 See `documents/LAYOUT-SKILL.md` §10a and `documents/AST-REFERENCE.md` §11a for usage, and regression fixture `21-zone-map-sidebar.json`.
 
-**V2 open work:** splitting a `zone-map` across pages (so very tall zones can paginate); per-zone background fills; linked-frame support (overflow from one zone continues in a later named frame).
+**Open work:** richer non-rectangular zone geometry, per-zone background fills, and linked-frame support (overflow from one zone continues in a later named frame).
 
 ---
 

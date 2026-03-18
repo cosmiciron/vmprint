@@ -101,7 +101,11 @@ import {
     type WholeFormationOverflowEntryOutcome,
     type WholeFormationOverflowEntrySettlementOutcome,
     type WholeFormationOverflowResolution,
-    type SpatialExclusion
+    type SpatialExclusion,
+    type ViewportDescriptor,
+    type ViewportRect,
+    type ViewportTerrain,
+    type WorldSpace
 } from './layout-session-types';
 
 export {
@@ -168,6 +172,9 @@ export type {
     SequencePlacementState,
     SessionSafeCheckpoint,
     SpatialExclusion,
+    ViewportDescriptor,
+    ViewportRect,
+    ViewportTerrain,
     SpatialPlacementDecision,
     SpatialPlacementSurface,
     SplitAttempt,
@@ -180,6 +187,7 @@ export type {
     TailSplitFailureSettlementOutcome,
     TailSplitFormationOutcome,
     TailSplitFormationSettlementOutcome,
+    WorldSpace,
     WholeFormationOverflowEntryOutcome,
     WholeFormationOverflowEntrySettlementOutcome,
     WholeFormationOverflowResolution

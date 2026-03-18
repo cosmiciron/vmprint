@@ -366,7 +366,9 @@ Use `strip` for lightweight composition, not tabular data.
 
 ## 11b. Zone Map (`type: "zone-map"`)
 
-A `zone-map` divides a horizontal strip of the page into independent layout regions.
+A `zone-map` defines independent layout regions inside the current field. The
+classic strip form is still supported, but zones may also use explicit
+rectangular `region` bounds with `x`, `y`, `width`, and optional `height`.
 
 ```json
 {
@@ -424,7 +426,7 @@ interface ZoneDefinition {
 
 `frameOverflow` makes the zone field lifecycle explicit:
 
-- `move-whole`: current shipped behavior; the whole zone-map moves if it does not fit
+- `move-whole`: conservative field behavior; the whole zone-map moves if it does not fit
 - `continue`: opt into paged-field lifecycle, but only authored world behaviors that support continuation currently activate it at runtime
 
 `worldBehavior` makes the authored world rule explicit:

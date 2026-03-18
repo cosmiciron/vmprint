@@ -470,7 +470,7 @@ Key details:
 
 ## 10a. Zone Map: Independent Layout Regions
 
-A `zone-map` divides a horizontal strip of the page into independent layout columns. Each zone runs its own non-paginating layout pass — content in zone A has no knowledge of zone B. The currently shipped runtime behavior is still `move-whole`: if the zone-map does not fit, it moves to the next page as a unit.
+A `zone-map` defines independent layout regions inside the current field. The classic strip form is still supported, but zones can also use explicit rectangular `region` bounds. Each zone runs its own local layout pass, so content in zone A has no structural coupling to zone B. `move-whole` remains the conservative compatibility mode, while `continue` + expandable world behavior allows bounded regional continuation.
 
 ### Two-column sidebar
 
@@ -509,7 +509,7 @@ A `zone-map` divides a horizontal strip of the page into independent layout colu
 
 - `zoneLayout.columns` — track sizing array (same `mode`/`fr`/`value` as tables). Omit for equal-width columns.
 - `zoneLayout.gap` — gap between columns in points (default `0`).
-- `zoneLayout.frameOverflow` — explicit page-boundary lifecycle. `move-whole` is the current shipped behavior; `continue` is reserved for future paged zone continuation.
+- `zoneLayout.frameOverflow` — explicit page-boundary lifecycle. `move-whole` keeps the conservative whole-field behavior; `continue` allows bounded zone-field continuation when paired with expandable world behavior.
 - `zones[]` — region descriptors, **not** DOM children. Each carries `id` (optional) and `elements[]`.
 - Zone height: the tallest zone determines the `zone-map`'s height in the document flow.
 - Legacy AST `1.0` still allows `properties.zones` instead of `zoneLayout`.

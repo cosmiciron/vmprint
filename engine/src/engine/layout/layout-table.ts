@@ -66,16 +66,11 @@ export function buildTableModel(element: Element): TableModel {
 }
 
 function doesTableBoundaryCrossRowSpan(model: TableModel, boundaryRowIndex: number): boolean {
-    for (const row of model.rows) {
-        for (const placement of row.placements) {
-            const rowSpan = Math.max(1, Math.floor(placement.rowSpan || 1));
-            if (rowSpan <= 1) continue;
-            const start = row.rowIndex;
-            const end = start + rowSpan - 1;
-            if (start < boundaryRowIndex && end >= boundaryRowIndex) return true;
-        }
+    if (!model.hasRowSpan) return false;
+    if (model.rowSpanBlockedBoundaryLookup) {
+        return model.rowSpanBlockedBoundaryLookup.has(boundaryRowIndex);
     }
-    return false;
+    return (model.rowSpanBlockedBoundaryIndices || []).includes(boundaryRowIndex);
 }
 
 function measureCellIntrinsicWidths(
@@ -143,6 +138,8 @@ function materializeTableCell(
     const lineHeight = Number(mergedStyle.lineHeight || tableContext.layoutLineHeight);
     const insetsVertical = tableContext.getVerticalInsets(mergedStyle);
     const insetsHorizontal = tableContext.getHorizontalInsets(mergedStyle);
+    const text = tableContext.getElementText(cell);
+    const hasChildElements = Array.isArray(cell.children) && cell.children.length > 0;
     const image = tableContext.resolveEmbeddedImage(cell);
 
     if (image) {
@@ -207,6 +204,20 @@ function materializeTableCell(
         }
     }
 
+    // Fast path: blank structural cells, especially auto-fill placeholders used to
+    // preserve occupied grid topology around row/col spans, do not need the full
+    // line-resolution pipeline.
+    if (!text && !hasChildElements) {
+        return {
+            placement,
+            source: cell,
+            style: mergedStyle,
+            measuredHeight: insetsVertical,
+            content: undefined,
+            properties: { ...(cell.properties || {}) }
+        };
+    }
+
     // Strip contentWidth from context: table cells use mergedStyle.width (= cellWidth)
     // as the authoritative width. The table-level context.contentWidth is the full
     // table available width and must not override the per-cell width here.
@@ -216,7 +227,6 @@ function materializeTableCell(
     if (resolved.lines.length > 0) {
         measuredHeight = tableContext.calculateLineBlockHeight(resolved.lines, mergedStyle, resolved.lineYOffsets);
     } else {
-        const text = tableContext.getElementText(cell);
         if (text) measuredHeight = fontSize * lineHeight;
     }
     measuredHeight += insetsVertical;
@@ -254,6 +264,7 @@ export function materializeSpatialGridFlowBox(
     const model = ((unit.properties?._tableModel as TableModel | undefined) || buildTableModelFromNormalizedTable(normalizedTable));
     const allRows = model.rows;
     const columnCount = Math.max(1, Number(model.columnCount || 0), Number(model.columns?.length || 0));
+    const headerRowSet = new Set<number>(model.headerRowIndices || []);
     const horizontalInsets = tableContext.getHorizontalInsets(style);
     const verticalInsets = tableContext.getVerticalInsets(style);
     const tableWidth = tableContext.getContextualBoxWidth(style, context, fontSize, lineHeight);
@@ -269,7 +280,7 @@ export function materializeSpatialGridFlowBox(
             const colSpan = Math.max(1, Math.min(columnCount - colStart, Math.floor(placement.colSpan || 1)));
             const cell = placement.source;
             const roleStyle = tableContext.getStyle(cell);
-            const headerStyle = row.isHeader || model.headerRowIndices.includes(row.rowIndex)
+            const headerStyle = row.isHeader || headerRowSet.has(row.rowIndex)
                 ? (model.headerCellStyle || {})
                 : {};
             const combinedStyle = {
@@ -380,7 +391,7 @@ export function materializeSpatialGridFlowBox(
                 properties: {}
             };
             const roleStyle = tableContext.getStyle(sourceCell);
-            const headerStyle = row.isHeader || model.headerRowIndices.includes(row.rowIndex)
+            const headerStyle = row.isHeader || headerRowSet.has(row.rowIndex)
                 ? (model.headerCellStyle || {})
                 : {};
             const cellStyle: ElementStyle = {
@@ -432,6 +443,13 @@ export function materializeSpatialGridFlowBox(
     const rowIndices = Array.isArray(model.rowIndices) && model.rowIndices.length > 0
         ? model.rowIndices.slice()
         : allRows.map((row) => row.rowIndex);
+    const rowWorldOffsetsByIndex = new Array(allRows.length).fill(0);
+    let worldRowCursor = 0;
+    for (let idx = 0; idx < allRows.length; idx++) {
+        rowWorldOffsetsByIndex[idx] = worldRowCursor;
+        worldRowCursor += Number(rowHeightsByIndex[idx] || 0);
+        if (idx < allRows.length - 1) worldRowCursor += model.rowGap;
+    }
     const rowsHeight = rowIndices.reduce((sum, rowIndex, idx) => {
         const rowHeight = rowHeightsByIndex[rowIndex] || 0;
         return sum + rowHeight + (idx > 0 ? model.rowGap : 0);
@@ -441,6 +459,7 @@ export function materializeSpatialGridFlowBox(
         columnCount,
         columnWidths,
         rowHeightsByIndex,
+        rowWorldOffsetsByIndex,
         rowGap: model.rowGap,
         columnGap: model.columnGap,
         rowIndices,
@@ -473,7 +492,16 @@ export function materializeSpatialGridFlowBox(
 export function splitSpatialGridFlowBox(
     box: FlowBox,
     availableHeight: number,
-    layoutBefore: number
+    layoutBefore: number,
+    context?: FlowMaterializationContext & {
+        pageIndex?: number;
+        getPageExclusions?: (pageIndex: number) => ReadonlyArray<{
+            x: number;
+            y: number;
+            w: number;
+            h: number;
+        }>;
+    }
 ): { partA: FlowBox; partB: FlowBox } | null {
     const model = box.properties?._tableModel as TableModel | undefined;
     const resolved = box.properties?._tableResolved as TableResolvedLayout | undefined;
@@ -493,7 +521,12 @@ export function splitSpatialGridFlowBox(
     const borderBottom = LayoutUtils.validateUnit(style.borderBottomWidth ?? style.borderWidth ?? 0);
     const verticalInsets = paddingTop + paddingBottom + borderTop + borderBottom;
 
-    const maxContentHeight = availableHeight - layoutBefore;
+    const maxContentHeight = resolveTableSplitMaxContentHeight(
+        box,
+        availableHeight,
+        layoutBefore,
+        context
+    );
     if (maxContentHeight <= verticalInsets + LAYOUT_DEFAULTS.wrapTolerance) return null;
 
     const headerSet = new Set<number>(resolved.headerRowIndices || []);
@@ -600,6 +633,55 @@ export function splitSpatialGridFlowBox(
     return { partA, partB };
 }
 
+function resolveTableSplitMaxContentHeight(
+    box: FlowBox,
+    availableHeight: number,
+    layoutBefore: number,
+    context?: FlowMaterializationContext & {
+        pageIndex?: number;
+        getPageExclusions?: (pageIndex: number) => ReadonlyArray<{
+            x: number;
+            y: number;
+            w: number;
+            h: number;
+        }>;
+    }
+): number {
+    const baseMaxContentHeight = availableHeight - layoutBefore;
+    if (!(baseMaxContentHeight > 0)) return baseMaxContentHeight;
+    if (!context?.getPageExclusions) return baseMaxContentHeight;
+
+    const pageIndex = Number.isFinite(context.pageIndex) ? Math.max(0, Math.floor(Number(context.pageIndex))) : 0;
+    const cursorY = Number.isFinite(context.cursorY) ? Number(context.cursorY) : 0;
+    const contentTop = cursorY + layoutBefore;
+    const tableWidth = Number.isFinite(box.measuredWidth) ? Math.max(0, Number(box.measuredWidth)) : 0;
+    if (!(tableWidth > 0)) return baseMaxContentHeight;
+
+    let nextBlockedTop: number | null = null;
+    for (const exclusion of context.getPageExclusions(pageIndex) || []) {
+        const exclusionTop = Number.isFinite(exclusion.y) ? Math.max(0, Number(exclusion.y)) : 0;
+        const exclusionHeight = Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0;
+        const exclusionBottom = exclusionTop + exclusionHeight;
+        if (exclusionBottom <= contentTop + LAYOUT_DEFAULTS.wrapTolerance) continue;
+        if (exclusionTop <= contentTop + LAYOUT_DEFAULTS.wrapTolerance) continue;
+
+        const exclusionLeft = Number.isFinite(exclusion.x) ? Number(exclusion.x) : 0;
+        const exclusionRight = exclusionLeft + (Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0);
+        const overlapsTableWidth =
+            exclusionLeft < tableWidth - LAYOUT_DEFAULTS.wrapTolerance &&
+            exclusionRight > LAYOUT_DEFAULTS.wrapTolerance;
+        if (!overlapsTableWidth) continue;
+
+        if (nextBlockedTop === null || exclusionTop < nextBlockedTop) {
+            nextBlockedTop = exclusionTop;
+        }
+    }
+
+    if (nextBlockedTop === null) return baseMaxContentHeight;
+
+    return Math.min(baseMaxContentHeight, Math.max(0, nextBlockedTop - contentTop));
+}
+
 function buildTableCellBorderStyle(
     style: ElementStyle,
     rowIndex: number,
@@ -665,6 +747,7 @@ export function positionSpatialGridFlowBoxes(
     const columnOffsets = getTableColumnOffsets(resolved.columnWidths, resolved.columnGap);
     const rowIndices = Array.isArray(resolved.rowIndices) ? resolved.rowIndices.slice() : [];
     const clonedRowSet = new Set<number>(Array.isArray(resolved.clonedRowIndices) ? resolved.clonedRowIndices : []);
+    const headerRowSet = new Set<number>(Array.isArray(resolved.headerRowIndices) ? resolved.headerRowIndices : []);
     const rowDisplayIndexBySource = new Map<number, number>();
     for (let displayRowIndex = 0; displayRowIndex < rowIndices.length; displayRowIndex++) {
         rowDisplayIndexBySource.set(rowIndices[displayRowIndex], displayRowIndex);
@@ -731,9 +814,10 @@ export function positionSpatialGridFlowBoxes(
                 (clonedRowSet.has(sourceRowIndex) || (
                     unit.meta.isContinuation
                     && resolved.repeatHeader
-                    && resolved.headerRowIndices.includes(sourceRowIndex)
-                    && displayRowIndex < resolved.headerRowIndices.length
+                    && headerRowSet.has(sourceRowIndex)
+                    && displayRowIndex < headerRowSet.size
                 ));
+            const rowWorldOffset = Number(resolved.rowWorldOffsetsByIndex?.[sourceRowIndex] || 0);
             const emittedCellMeta = isRepeatedHeaderClone
                 ? createClonedBoxMeta(cellMeta, normalizedCellSourceId)
                 : cellMeta;
@@ -758,6 +842,9 @@ export function positionSpatialGridFlowBoxes(
                     _isLastFragmentInLine: true,
                     _tableCell: true,
                     _tableRowIndex: sourceRowIndex,
+                    _tableViewportRowIndex: displayRowIndex,
+                    _tableWorldRowOffset: rowWorldOffset,
+                    _tableIsRepeatedHeaderClone: isRepeatedHeaderClone,
                     _tableColIndex: colStart,
                     _tableColStart: colStart,
                     _tableColSpan: colSpan,

@@ -47,7 +47,9 @@ async function run(): Promise<void> {
         '09-tables-spans-pagination.json',
         '15-story-multi-column.json',
         '17-header-footer-test.json',
-        '20-block-floats-and-column-span.json'
+        '20-block-floats-and-column-span.json',
+        '22-story-nested-table-continuation.json',
+        '23-story-nested-story-continuation.json'
     ];
 
     for (const fixtureName of selectedFixtures) {

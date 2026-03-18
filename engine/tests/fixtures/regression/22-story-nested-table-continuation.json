@@ -1,0 +1,249 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 420
+    },
+    "margins": {
+      "top": 24,
+      "right": 24,
+      "bottom": 24,
+      "left": 24
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true
+    },
+    "p": {
+      "marginBottom": 10,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "story-note": {
+      "fontSize": 10,
+      "marginBottom": 8,
+      "color": "#475569"
+    },
+    "table": {
+      "marginTop": 0,
+      "marginBottom": 10,
+      "padding": 0,
+      "borderWidth": 0
+    },
+    "table-cell": {
+      "fontSize": 9,
+      "lineHeight": 1.2,
+      "paddingTop": 4,
+      "paddingBottom": 4,
+      "paddingLeft": 5,
+      "paddingRight": 5,
+      "borderWidth": 0.6,
+      "borderColor": "#111111"
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Nested Table Continuation Inside Story Lanes"
+    },
+    {
+      "type": "p",
+      "content": "This regression fixture places a table inside a multi-column story. The first lane is intentionally consumed by a large visual block so the table begins in the second lane, then continues as the story itself continues."
+    },
+    {
+      "type": "story",
+      "columns": 2,
+      "gutter": 12,
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "properties": {
+            "sourceId": "nested-story-lane-anchor",
+            "style": {
+              "width": 180,
+              "height": 332,
+              "marginBottom": 8
+            }
+          },
+          "image": {
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+            "mimeType": "image/png",
+            "fit": "fill"
+          }
+        },
+        {
+          "type": "story-note",
+          "content": "The table starts in lane two after this short note and must continue as a nested structured actor rather than moving wholesale.",
+          "properties": {
+            "sourceId": "nested-story-lane-note"
+          }
+        },
+        {
+          "type": "table",
+          "properties": {
+            "sourceId": "nested-story-table"
+          },
+          "children": [
+            {
+              "type": "table-row",
+              "properties": {
+                "semanticRole": "header"
+              },
+              "children": [
+                {
+                  "type": "table-cell",
+                  "content": "ID",
+                  "properties": {
+                    "sourceId": "nested-table-header-id"
+                  }
+                },
+                {
+                  "type": "table-cell",
+                  "content": "Checkpoint",
+                  "properties": {
+                    "sourceId": "nested-table-header-checkpoint"
+                  }
+                },
+                {
+                  "type": "table-cell",
+                  "content": "Status",
+                  "properties": {
+                    "sourceId": "nested-table-header-status"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-01", "properties": { "sourceId": "nested-table-r01-id" } },
+                { "type": "table-cell", "content": "Lane entry and hand-off timing for the first structured continuation checkpoint.", "properties": { "sourceId": "nested-table-r01-note" } },
+                { "type": "table-cell", "content": "Ready", "properties": { "sourceId": "nested-table-r01-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-02", "properties": { "sourceId": "nested-table-r02-id" } },
+                { "type": "table-cell", "content": "Viewport-aware table emission should retain a non-zero world origin in lane two.", "properties": { "sourceId": "nested-table-r02-note" } },
+                { "type": "table-cell", "content": "Ready", "properties": { "sourceId": "nested-table-r02-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-03", "properties": { "sourceId": "nested-table-r03-id" } },
+                { "type": "table-cell", "content": "Split decisions should prefer continuing the nested actor over reauthoring the whole table.", "properties": { "sourceId": "nested-table-r03-note" } },
+                { "type": "table-cell", "content": "Watch", "properties": { "sourceId": "nested-table-r03-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-04", "properties": { "sourceId": "nested-table-r04-id" } },
+                { "type": "table-cell", "content": "Repeated headers on later pages should still behave like viewport clones over persistent rows.", "properties": { "sourceId": "nested-table-r04-note" } },
+                { "type": "table-cell", "content": "Watch", "properties": { "sourceId": "nested-table-r04-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-05", "properties": { "sourceId": "nested-table-r05-id" } },
+                { "type": "table-cell", "content": "Continuation must preserve source identity for cells that migrate beyond the first page.", "properties": { "sourceId": "nested-table-r05-note" } },
+                { "type": "table-cell", "content": "Ready", "properties": { "sourceId": "nested-table-r05-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-06", "properties": { "sourceId": "nested-table-r06-id" } },
+                { "type": "table-cell", "content": "The second page should resume the table before any later story body resumes below it.", "properties": { "sourceId": "nested-table-r06-note" } },
+                { "type": "table-cell", "content": "Watch", "properties": { "sourceId": "nested-table-r06-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-07", "properties": { "sourceId": "nested-table-r07-id" } },
+                { "type": "table-cell", "content": "Story-lane continuation should not collapse the nested actor back into page-zero assumptions.", "properties": { "sourceId": "nested-table-r07-note" } },
+                { "type": "table-cell", "content": "Ready", "properties": { "sourceId": "nested-table-r07-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-08", "properties": { "sourceId": "nested-table-r08-id" } },
+                { "type": "table-cell", "content": "Rows near the break are intentionally verbose so the nested table cannot fit in a single lane viewport.", "properties": { "sourceId": "nested-table-r08-note" } },
+                { "type": "table-cell", "content": "Watch", "properties": { "sourceId": "nested-table-r08-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-09", "properties": { "sourceId": "nested-table-r09-id" } },
+                { "type": "table-cell", "content": "The resumed fragment should keep participating in story-owned viewport semantics on page two.", "properties": { "sourceId": "nested-table-r09-note" } },
+                { "type": "table-cell", "content": "Ready", "properties": { "sourceId": "nested-table-r09-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-10", "properties": { "sourceId": "nested-table-r10-id" } },
+                { "type": "table-cell", "content": "Regression coverage here guards the bridge between story continuation and table continuation.", "properties": { "sourceId": "nested-table-r10-note" } },
+                { "type": "table-cell", "content": "Ready", "properties": { "sourceId": "nested-table-r10-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-11", "properties": { "sourceId": "nested-table-r11-id" } },
+                { "type": "table-cell", "content": "This row exists mainly to ensure the nested table really spills onto the continuation page.", "properties": { "sourceId": "nested-table-r11-note" } },
+                { "type": "table-cell", "content": "Ready", "properties": { "sourceId": "nested-table-r11-status" } }
+              ]
+            },
+            {
+              "type": "table-row",
+              "children": [
+                { "type": "table-cell", "content": "NT-12", "properties": { "sourceId": "nested-table-r12-id" } },
+                { "type": "table-cell", "content": "Late rows should remain for page two while earlier rows are already visible on page one.", "properties": { "sourceId": "nested-table-r12-note" } },
+                { "type": "table-cell", "content": "Ready", "properties": { "sourceId": "nested-table-r12-status" } }
+              ]
+            }
+          ],
+          "table": {
+            "headerRows": 1,
+            "repeatHeader": true,
+            "columnGap": 4,
+            "rowGap": 2,
+            "columns": [
+              { "mode": "fixed", "value": 48 },
+              { "mode": "flex", "fr": 1, "min": 84 },
+              { "mode": "fixed", "value": 56 }
+            ]
+          }
+        },
+        {
+          "type": "p",
+          "content": "Story flow resumes after the nested table completes. This paragraph should stay downstream of the continued table rather than jumping ahead of it.",
+          "properties": {
+            "sourceId": "nested-story-tail"
+          }
+        }
+      ]
+    }
+  ]
+}

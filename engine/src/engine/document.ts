@@ -57,7 +57,8 @@ const LAYOUT_KEYS = new Set([
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
 const ELEMENT_KEYS = new Set(['type', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'properties']);
-const ZONE_DEFINITION_KEYS = new Set(['id', 'elements', 'style']);
+const ZONE_DEFINITION_KEYS = new Set(['id', 'region', 'elements', 'style']);
+const ZONE_REGION_KEYS = new Set(['x', 'y', 'width', 'height']);
 const STRIP_SLOT_KEYS = new Set(['id', 'elements', 'style']);
 const ELEMENT_PROPERTIES_KEYS = new Set([
     'style',
@@ -562,6 +563,22 @@ function validateZoneDefinition(value: unknown, path: string, documentPath: stri
     assertAllowedKeys(zone, ZONE_DEFINITION_KEYS, path, documentPath);
 
     if (zone.id !== undefined) assertStringAt(zone.id, `${path}.id`, documentPath);
+    if (zone.region !== undefined) {
+        const region = assertPlainObjectAt(zone.region, `${path}.region`, documentPath);
+        assertAllowedKeys(region, ZONE_REGION_KEYS, `${path}.region`, documentPath);
+        assertFiniteNumberAt(region.x, `${path}.region.x`, documentPath);
+        assertFiniteNumberAt(region.y, `${path}.region.y`, documentPath);
+        assertFiniteNumberAt(region.width, `${path}.region.width`, documentPath);
+        if (Number(region.width) < 0) {
+            contractError(documentPath, `${path}.region.width`, 'must be >= 0.');
+        }
+        if (region.height !== undefined) {
+            assertFiniteNumberAt(region.height, `${path}.region.height`, documentPath);
+            if (Number(region.height) < 0) {
+                contractError(documentPath, `${path}.region.height`, 'must be >= 0.');
+            }
+        }
+    }
     if (zone.style !== undefined) validateStyleObject(zone.style, `${path}.style`, documentPath);
 
     if (zone.elements === undefined || !Array.isArray(zone.elements)) {
@@ -952,11 +969,21 @@ function normalizeElementNode(element: Element): Element {
     }
     if (Array.isArray(element.zones)) {
         normalized.zones = element.zones.map((zone) => ({
-            id: zone.id !== undefined ? String(zone.id) : undefined,
+            ...(zone.id !== undefined ? { id: String(zone.id) } : {}),
+            ...(zone.region !== undefined
+                ? {
+                    region: deepSortObject({
+                        x: Number(zone.region.x),
+                        y: Number(zone.region.y),
+                        width: Number(zone.region.width),
+                        ...(zone.region.height !== undefined ? { height: Number(zone.region.height) } : {})
+                    })
+                }
+                : {}),
             elements: Array.isArray(zone.elements)
                 ? zone.elements.map((e) => normalizeElementNode(e))
                 : [],
-            style: zone.style
+            ...(zone.style !== undefined ? { style: zone.style } : {})
         }));
     }
     if (normalizedProperties) {
@@ -996,9 +1023,9 @@ function normalizeElementNode(element: Element): Element {
             type: 'zone-map',
             content: '',
             zones: slots.map((slot) => ({
-                id: slot.id,
+                ...(slot.id !== undefined ? { id: slot.id } : {}),
                 elements: slot.elements,
-                style: slot.style
+                ...(slot.style !== undefined ? { style: slot.style } : {})
             })),
             properties: Object.keys(loweredProperties).length > 0 ? loweredProperties : undefined
         };

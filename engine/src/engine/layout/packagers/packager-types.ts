@@ -23,6 +23,16 @@ export interface PackagerContext {
     pageIndex: number;
     cursorY: number;
     actorIndex?: number;
+    viewportWorldY?: number;
+    viewportHeight?: number;
+    getPageExclusions?: (pageIndex: number) => ReadonlyArray<{
+        id?: string;
+        x: number;
+        y: number;
+        w: number;
+        h: number;
+        source?: string;
+    }>;
     margins: { top: number; right: number; bottom: number; left: number };
     pageWidth: number;
     pageHeight: number;

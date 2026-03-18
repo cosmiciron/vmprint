@@ -1187,6 +1187,59 @@ async function testTablePaginationRepeatsHeaderRows() {
             assert.ok(continuationRows.some((idx) => idx !== headerRowIndex), 'expected body rows after repeated header');
         }
     );
+
+    check(
+        'table continuation exposes world-row vs viewport-row semantics',
+        'repeated header clones on continuation pages retain header world offset while resetting viewport row index to 0',
+        () => {
+            const firstPageHeaderCells = pages[0].boxes.filter((box) =>
+                box.type === 'table_cell'
+                && Number(box.properties?._tableRowIndex) === headerRowIndex
+            );
+            const continuationHeaderCells = pages[1].boxes.filter((box) =>
+                box.type === 'table_cell'
+                && Number(box.properties?._tableRowIndex) === headerRowIndex
+            );
+            const continuationBodyCells = pages[1].boxes.filter((box) =>
+                box.type === 'table_cell'
+                && Number(box.properties?._tableRowIndex) !== headerRowIndex
+            );
+
+            assert.ok(continuationHeaderCells.length > 0, 'expected repeated header cells on page 2');
+            assert.ok(continuationBodyCells.length > 0, 'expected body cells on page 2');
+            assert.ok(
+                firstPageHeaderCells.every((box) => Number(box.properties?._tableViewportWorldY) === 0),
+                'expected first-page header cells to report viewport worldY 0'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => box.properties?._tableIsRepeatedHeaderClone === true),
+                'expected repeated header cells to be marked as viewport clones'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => Number(box.properties?._tableViewportRowIndex) === 0),
+                'expected repeated header cells to restart at viewport row index 0'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => Number(box.properties?._tableWorldRowOffset) === 0),
+                'expected repeated header cells to retain world row offset 0'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => Number(box.properties?._tableViewportWorldY) === 220),
+                'expected repeated header cells on page 2 to report viewport worldY 220'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => Number(box.properties?._tableViewportHeight) === 220),
+                'expected repeated header cells to report the current viewport height'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => Number(box.meta?.pageIndex) === 1),
+                'expected repeated header cells to carry continuation-page pageIndex metadata'
+            );
+
+            const firstContinuationBodyWorldOffset = Math.min(...continuationBodyCells.map((box) => Number(box.properties?._tableWorldRowOffset)));
+            assert.ok(firstContinuationBodyWorldOffset > 0, 'expected continued body rows to keep a positive world-row offset');
+        }
+    );
 }
 
 async function testTableColSpanMaterializesSpanWidth() {
@@ -1257,6 +1310,83 @@ async function testTableColSpanMaterializesSpanWidth() {
             assert.equal(Number(spanCell?.properties?._tableColIndex), 0);
             assert.equal(Number(spanCell?.properties?._tableColSpan), 2);
             assert.equal(Number((spanCell?.w || 0).toFixed(3)), Number(expectedSpanWidth.toFixed(3)));
+        }
+    );
+}
+
+async function testTableSplitStopsBeforeFullWidthViewportBlocker() {
+    logStep('Scenario: table split honors the next full-width viewport blocker below the cursor');
+    const config = buildConfig();
+    config.layout.pageSize = { width: 320, height: 320 };
+    config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
+    config.layout.pageStartExclusionTop = 210;
+    config.layout.pageStartExclusionHeight = 40;
+    config.layout.pageStartExclusionSelector = 'all';
+    config.styles.table = { marginTop: 0, marginBottom: 8, padding: 0 };
+    config.styles['table-cell'] = { fontSize: 11, lineHeight: 1.25 };
+
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const makeRow = (index: number): Element => ({
+        type: 'table-row',
+        content: '',
+        children: [
+            { type: 'table-cell', content: `Row ${index} alpha beta gamma delta epsilon zeta eta theta iota kappa` },
+            { type: 'table-cell', content: `Row ${index} companion text with enough wrap to raise the row height` }
+        ]
+    });
+
+    const elements: Element[] = [{
+        type: 'table',
+        content: '',
+        properties: {
+            table: {
+                headerRows: 1,
+                repeatHeader: true,
+                columnGap: 6,
+                rowGap: 0,
+                columns: [
+                    { mode: 'flex', fr: 1 },
+                    { mode: 'flex', fr: 1 }
+                ]
+            }
+        },
+        children: [
+            {
+                type: 'table-row',
+                content: '',
+                properties: { semanticRole: 'header' },
+                children: [
+                    { type: 'table-cell', content: 'Header A' },
+                    { type: 'table-cell', content: 'Header B' }
+                ]
+            },
+            makeRow(1),
+            makeRow(2),
+            makeRow(3),
+            makeRow(4),
+            makeRow(5),
+            makeRow(6),
+            makeRow(7),
+            makeRow(8)
+        ]
+    }];
+
+    const pages = engine.simulate(elements);
+    const firstPageCells = pages[0].boxes.filter((box) => box.type === 'table_cell');
+    const firstPageBottom = firstPageCells.reduce(
+        (max, box) => Math.max(max, Number(box.y || 0) + Number(box.h || 0)),
+        0
+    );
+
+    check(
+        'table split stops before the next full-width viewport blocker',
+        'first page table cells end at or above the blocker top instead of projecting through it',
+        () => {
+            assert.ok(pages.length >= 2, `expected table to continue; pages=${pages.length}`);
+            assert.ok(firstPageCells.length > 0, 'expected table cells on page 1');
+            assert.ok(firstPageBottom <= 210 + 0.5, `expected first-page table bottom <= 210, got ${firstPageBottom}`);
         }
     );
 }
@@ -1733,6 +1863,7 @@ async function run() {
     await testRendererZIndexOrdering();
     await testTablePaginationRepeatsHeaderRows();
     await testTableColSpanMaterializesSpanWidth();
+    await testTableSplitStopsBeforeFullWidthViewportBlocker();
     await testTableRowSpanStacksAcrossRows();
     await testTableCellSourceIdIntegrity();
     await testPageOverridesSuppressHeaderAndLogicalNumbersSkipSuppressedPages();

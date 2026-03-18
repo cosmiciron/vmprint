@@ -124,16 +124,16 @@ export class FlowBoxPackager implements PackagerUnit {
         const processor = this.processor as unknown as FlowBoxProcessor;
         this.prepare(availableWidth, availableHeight, context);
 
-        // Position at y=0, with layoutBefore matching marginTop
-        // The orchestration loop will shift box's .y by the current page Y.
-        // We pretend page index is 0 and we are positioning at (margins.left, 0).
+        // Position at y=0 in local flow-box space, with layoutBefore matching
+        // marginTop. The orchestration loop applies the outer page/frame
+        // placement later when the fragment is committed.
         const positioned = processor.positionFlowBox(
             this.flowBox,
             0, // currentY
             this.flowBox.marginTop, // layoutBefore
             context.margins,
             availableWidth,
-            0 // pageIndex
+            0 // local page index for a single flow-box materialization pass
         );
 
         const boxes = Array.isArray(positioned) ? positioned : [positioned];

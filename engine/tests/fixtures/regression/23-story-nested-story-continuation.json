@@ -1,0 +1,141 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 420
+    },
+    "margins": {
+      "top": 24,
+      "right": 24,
+      "bottom": 24,
+      "left": 24
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true
+    },
+    "p": {
+      "marginBottom": 10,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "story-note": {
+      "fontSize": 10,
+      "marginBottom": 8,
+      "color": "#475569"
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Nested Story Continuation Inside Story Lanes"
+    },
+    {
+      "type": "p",
+      "content": "This regression fixture places a nested story into the second lane of an outer multi-column story. The nested story must continue across pages without letting later outer-story flow jump ahead of it."
+    },
+    {
+      "type": "story",
+      "columns": 2,
+      "gutter": 12,
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "properties": {
+            "sourceId": "nested-story-outer-anchor",
+            "style": {
+              "width": 180,
+              "height": 332,
+              "marginBottom": 8
+            }
+          },
+          "image": {
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+            "mimeType": "image/png",
+            "fit": "fill"
+          }
+        },
+        {
+          "type": "story-note",
+          "content": "The nested story begins in lane two after this note and should continue as a real nested story actor.",
+          "properties": {
+            "sourceId": "nested-story-outer-note"
+          }
+        },
+        {
+          "type": "story",
+          "columns": 2,
+          "gutter": 8,
+          "properties": {
+            "sourceId": "nested-story-inner"
+          },
+          "children": [
+            {
+              "type": "p",
+              "content": "Inner story opening copy establishes the second-lane entry point while also consuming enough room to force a continuation path through the nested story actor. Inner story opening copy establishes the second-lane entry point while also consuming enough room to force a continuation path through the nested story actor. Inner story opening copy establishes the second-lane entry point while also consuming enough room to force a continuation path through the nested story actor. Inner story opening copy establishes the second-lane entry point while also consuming enough room to force a continuation path through the nested story actor. Inner story opening copy establishes the second-lane entry point while also consuming enough room to force a continuation path through the nested story actor. Inner story opening copy establishes the second-lane entry point while also consuming enough room to force a continuation path through the nested story actor.",
+              "properties": {
+                "sourceId": "nested-story-inner-a"
+              }
+            },
+            {
+              "type": "p",
+              "content": "Inner story checkpoint material should remain inside the nested story ordering contract even when the host story itself is already operating as a multi-lane world region. Inner story checkpoint material should remain inside the nested story ordering contract even when the host story itself is already operating as a multi-lane world region. Inner story checkpoint material should remain inside the nested story ordering contract even when the host story itself is already operating as a multi-lane world region. Inner story checkpoint material should remain inside the nested story ordering contract even when the host story itself is already operating as a multi-lane world region. Inner story checkpoint material should remain inside the nested story ordering contract even when the host story itself is already operating as a multi-lane world region.",
+              "properties": {
+                "sourceId": "nested-story-inner-b"
+              }
+            },
+            {
+              "type": "p",
+              "content": "Nested story continuation needs to preserve local lane geometry instead of collapsing back to page-level assumptions during the resumed fragment. Nested story continuation needs to preserve local lane geometry instead of collapsing back to page-level assumptions during the resumed fragment. Nested story continuation needs to preserve local lane geometry instead of collapsing back to page-level assumptions during the resumed fragment. Nested story continuation needs to preserve local lane geometry instead of collapsing back to page-level assumptions during the resumed fragment. Nested story continuation needs to preserve local lane geometry instead of collapsing back to page-level assumptions during the resumed fragment.",
+              "properties": {
+                "sourceId": "nested-story-inner-c"
+              }
+            },
+            {
+              "type": "p",
+              "content": "This paragraph exists to ensure later nested story material survives for page two and beyond, proving that the nested actor is genuinely continued rather than flattened. This paragraph exists to ensure later nested story material survives for page two and beyond, proving that the nested actor is genuinely continued rather than flattened. This paragraph exists to ensure later nested story material survives for page two and beyond, proving that the nested actor is genuinely continued rather than flattened. This paragraph exists to ensure later nested story material survives for page two and beyond, proving that the nested actor is genuinely continued rather than flattened. This paragraph exists to ensure later nested story material survives for page two and beyond, proving that the nested actor is genuinely continued rather than flattened.",
+              "properties": {
+                "sourceId": "nested-story-inner-d"
+              }
+            },
+            {
+              "type": "p",
+              "content": "Continuation ordering matters: later outer-story paragraphs should wait until this nested story actor has fully resolved its own resumed fragments. Continuation ordering matters: later outer-story paragraphs should wait until this nested story actor has fully resolved its own resumed fragments. Continuation ordering matters: later outer-story paragraphs should wait until this nested story actor has fully resolved its own resumed fragments. Continuation ordering matters: later outer-story paragraphs should wait until this nested story actor has fully resolved its own resumed fragments. Continuation ordering matters: later outer-story paragraphs should wait until this nested story actor has fully resolved its own resumed fragments.",
+              "properties": {
+                "sourceId": "nested-story-inner-e"
+              }
+            },
+            {
+              "type": "p",
+              "content": "Final nested story material remains here mostly as insurance that some inner-story content can only appear after the first page break. Final nested story material remains here mostly as insurance that some inner-story content can only appear after the first page break. Final nested story material remains here mostly as insurance that some inner-story content can only appear after the first page break. Final nested story material remains here mostly as insurance that some inner-story content can only appear after the first page break. Final nested story material remains here mostly as insurance that some inner-story content can only appear after the first page break.",
+              "properties": {
+                "sourceId": "nested-story-inner-f"
+              }
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "content": "Outer story flow resumes only after the nested story finishes. This tail paragraph should never leap ahead of the nested continuation.",
+          "properties": {
+            "sourceId": "nested-story-outer-tail"
+          }
+        }
+      ]
+    }
+  ]
+}

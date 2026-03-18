@@ -162,6 +162,8 @@ export class PhysicsRuntime {
             ...input.contextBase,
             pageIndex: input.currentPageIndex,
             cursorY: currentY,
+            viewportWorldY: input.currentPageIndex * input.pageHeight,
+            viewportHeight: input.pageHeight,
             margins: {
                 ...input.margins,
                 left: placementFrame.margins.left,

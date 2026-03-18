@@ -28,4 +28,4 @@ If you only want one takeaway before diving in:
 - use normal flow for ordinary content
 - use `story` for linked multi-column flow
 - use `strip` for one-row aligned bands
-- use `zone-map` for independent parallel regions
+- use `zone-map` for independent regions, including offset rectangular region fields

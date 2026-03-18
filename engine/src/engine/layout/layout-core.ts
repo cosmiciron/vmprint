@@ -40,6 +40,7 @@ import {
 import { SourcePositionArtifactCollaborator } from './source-position-artifact-collaborator';
 import { TransformCapabilityArtifactCollaborator } from './transform-capability-artifact-collaborator';
 import { TransformArtifactCollaborator } from './transform-artifact-collaborator';
+import { ZoneDebugOverlayCollaborator } from './zone-debug-overlay-collaborator';
 import {
     buildTableModel,
     isTableElement,
@@ -507,6 +508,7 @@ export class LayoutProcessor extends TextProcessor {
             pageWidth,
             pageHeight,
             margins: this.config.layout.margins,
+            getPageExclusions: (pageIndex: number) => session.getPageExclusions(pageIndex),
             publishActorSignal: (signal: any) => session.publishActorSignal(signal),
             readActorSignals: (topic?: string) => session.getActorSignals(topic)
         };
@@ -983,6 +985,7 @@ export class LayoutProcessor extends TextProcessor {
             new PageRegionArtifactCollaborator(),
             new SourcePositionArtifactCollaborator(),
             new HeadingTelemetryCollaborator(),
+            new ZoneDebugOverlayCollaborator(),
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType) =>
                     this.layoutRegion(content, rect, pageIndex, sourceType)
