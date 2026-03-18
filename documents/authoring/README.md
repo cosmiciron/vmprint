@@ -29,3 +29,9 @@ If you only want one takeaway before diving in:
 - use `story` for linked multi-column flow
 - use `strip` for one-row aligned bands
 - use `zone-map` for independent regions, including offset rectangular region fields
+
+One more important note:
+
+- authors work with `story`, `strip`, `zone-map`, and the rest of the AST
+- the engine may think in terms of a larger continuous world underneath
+- you do not need to author a raw `world-map` directly

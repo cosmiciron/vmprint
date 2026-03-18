@@ -60,6 +60,14 @@ Tables remain intentionally familiar.
 
 Use tables for tables. Use `strip` for aligned bands. Use `zone-map` for independent regions.
 
+A practical comparison:
+
+- use `table` when the rows and columns express data
+- use `strip` when the layout is one aligned band
+- use `zone-map` when a main body, note field, sidebar, or inset should behave as separate regions
+
+If you find yourself trying to use a table just to hold a sidebar next to article text, that is usually a sign that `zone-map` is the better fit.
+
 ## Overlays
 
 Overlays are debug and inspection tools, not authored content.
@@ -76,6 +84,8 @@ Good overlay uses:
 - highlight zone footprints
 - annotate gutters and reserved areas
 - inspect page-local terrain and actor occupancy
+
+The built-in debug overlay is especially useful now for `zone-map` work because it can show authored zone regions directly. That makes it much easier to see whether your field geometry matches your intent before you tune typography inside it.
 
 See also:
 

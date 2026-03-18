@@ -8,6 +8,12 @@ The core distinction is:
 - `strip`: one-row aligned composition band
 - `zone-map`: independent parallel regions
 
+Quick rule of thumb:
+
+- if the content should stay one reading stream, use `story`
+- if the content should line up in one band, use `strip`
+- if the content lives in separate rooms, use `zone-map`
+
 ## `story`
 
 Use `story` when content should remain one logical flow while moving through multiple columns.
@@ -162,8 +168,57 @@ This is the current advanced `zone-map` surface we want authors to use:
 - strip-style columns when the regions are aligned
 - explicit rectangular `region` bounds when they are not
 
+Here is the practical difference:
+
+- strip-authored `zone-map`: "these regions are aligned as one band"
+- explicit `region` rectangles: "these regions are separate rooms in the same field"
+
 For now, keep thinking in rectangles.
 The engine can do more internally than we want to expose all at once.
+
+### A Good First Explicit-Region Pattern
+
+This is a strong default when you want a main body plus a lifted note field:
+
+```json
+{
+  "type": "zone-map",
+  "zoneLayout": {
+    "frameOverflow": "move-whole",
+    "worldBehavior": "fixed"
+  },
+  "zones": [
+    {
+      "id": "main",
+      "region": { "x": 0, "y": 0, "width": 250 },
+      "elements": [
+        {
+          "type": "story",
+          "columns": 2,
+          "gutter": 12,
+          "children": [
+            { "type": "body", "content": "Main article flow..." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "note",
+      "region": { "x": 268, "y": 36, "width": 112, "height": 150 },
+      "elements": [
+        { "type": "sidebar-label", "content": "NOTE" },
+        { "type": "sidebar-body", "content": "Short independent side matter..." }
+      ]
+    }
+  ]
+}
+```
+
+That pattern works well because:
+
+- the main region can remain open-ended
+- the note region is clearly bounded
+- the visual offset is authored directly instead of being faked with tables or spacing hacks
 
 ### `worldBehavior`
 
@@ -189,6 +244,12 @@ The engine can do more internally than we want to expose all at once.
 - use `story` when the content is one flow
 - use `zone-map` when the regions are independent
 - use `strip` when the composition is a single aligned row
+
+Common mistake:
+
+- do not use `table` just to place a sidebar next to an article
+- do not use `strip` if the regions need independent vertical behavior
+- do not use separate unrelated blocks plus spacing hacks when the intent is clearly regional
 
 Next:
 
