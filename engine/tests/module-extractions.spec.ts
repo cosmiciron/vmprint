@@ -976,7 +976,7 @@ function testAst11PromotedFieldsContract(): void {
                             ],
                             gap: 12,
                             frameOverflow: 'continue',
-                            worldBehavior: 'spanning'
+                            worldBehavior: 'expandable'
                         },
                         zones: [
                             {
@@ -1043,7 +1043,7 @@ function testAst11PromotedFieldsContract(): void {
             const zoneMap = resolved.elements[0] as any;
             assert.equal(zoneMap.properties?.zones?.gap, 12);
             assert.equal(zoneMap.properties?.zones?.frameOverflow, 'continue');
-            assert.equal(zoneMap.properties?.zones?.worldBehavior, 'spanning');
+            assert.equal(zoneMap.properties?.zones?.worldBehavior, 'expandable');
             const story = zoneMap.zones?.[0]?.elements?.[0] as any;
             assert.equal(story.children?.[0]?.properties?.dropCap?.lines, 3);
             assert.equal(story.children?.[1]?.properties?.image?.mimeType, 'image/png');

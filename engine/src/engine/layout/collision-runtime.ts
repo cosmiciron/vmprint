@@ -340,6 +340,6 @@ export class CollisionRuntime {
 
     private hasContinuingZoneField(actor: PackagerUnit): actor is PackagerWithZoneContinuation {
         const zoneActor = actor as PackagerWithZoneContinuation;
-        return zoneActor.frameOverflowMode === 'continue' && zoneActor.worldBehaviorMode === 'spanning';
+        return zoneActor.frameOverflowMode === 'continue' && zoneActor.worldBehaviorMode === 'expandable';
     }
 }

@@ -4,6 +4,10 @@ This document is the reference for the public **VMPrint document input format**:
 
 The AST is the canonical public source format. The engine internally normalizes it into a spatial runtime form, but callers work with the AST.
 
+If you want the guided teaching path instead of the full contract, start with the authoring guide:
+
+- [authoring/README.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\README.md)
+
 For the current design audit and redesign notes, see [AST-SPATIAL-ALIGNMENT.md](c:\Users\cosmic\Projects\vmprint\documents\AST-SPATIAL-ALIGNMENT.md).
 
 ---
@@ -426,8 +430,8 @@ interface ZoneDefinition {
 `worldBehavior` makes the authored world rule explicit:
 
 - `fixed`: conservative default; the authored region topology is non-expandable
-- `spanning`: the same authored region may continue across later local maps
-- `expandable`: reserved for future authored procedural extension across the world map
+- `spanning`: the author explicitly defines a multi-map region plan, including how the region crosses later local maps
+- `expandable`: the region may automatically grow into later local maps while preserving authored topology unless later authored rules say otherwise
 
 `frameOverflow` and `worldBehavior` are related but not the same thing.
 
@@ -435,7 +439,7 @@ For now:
 
 - omitting `frameOverflow` keeps the old `move-whole` behavior
 - omitting `worldBehavior` defaults to `fixed`
-- `frameOverflow: "continue"` only gains live page-to-page regional continuation when paired with `worldBehavior: "spanning"`
+- `frameOverflow: "continue"` only gains live page-to-page regional continuation when paired with `worldBehavior: "expandable"`
 
 ---
 

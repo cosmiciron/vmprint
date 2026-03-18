@@ -161,11 +161,11 @@ keyed to authored world behavior:
 
 - `move-whole` keeps the conservative V1 semantics
 - `continue + fixed` remains conservative for now
-- `continue + spanning` is the first live paged-field behavior
-- `continue + expandable` remains declared but intentionally behaviorless
+- `continue + expandable` is the first live paged-field behavior
+- `continue + spanning` remains the future explicit multi-map planning mode
 
 That means `zone-map` now begins to inhabit the current frame when the author
-declares a spanning world region. It is still only a first step: nested actor
+declares an expandable world region. It is still only a first step: nested actor
 systems inside a paged zone field, especially `story`, still need stronger
 occupancy rules so the simulation stops actors cleanly at the local frame
 boundary instead of letting them overrun it.
@@ -207,7 +207,7 @@ In other words, the specimen did not expose a random rendering problem. It
 exposed the exact place where the current implementation still thinks too much
 like a typesetter and not enough like a game engine.
 
-After `frameOverflow: "continue"` plus `worldBehavior: "spanning"` were
+After `frameOverflow: "continue"` plus `worldBehavior: "expandable"` were
 introduced, the specimen started to show the right lifecycle but also exposed
 the next missing runtime rule:
 
@@ -346,7 +346,8 @@ This is the strictest and most conservative world rule.
 
 ### 9.2 Spanning
 
-A spanning region is one authored region that crosses multiple local maps.
+A spanning region is one authored region that crosses multiple local maps by
+explicit author plan.
 
 Meaning:
 
@@ -365,7 +366,8 @@ This is the clean model for cases like:
 
 ### 9.3 Expandable
 
-An expandable region starts from authored topology but is allowed to grow.
+An expandable region starts from authored topology but is allowed to grow into
+later local maps automatically.
 
 Meaning:
 

@@ -310,7 +310,7 @@
         ],
         "gap": 18,
         "frameOverflow": "continue",
-        "worldBehavior": "spanning"
+        "worldBehavior": "expandable"
       },
       "properties": {
         "style": { "marginBottom": 6 }

@@ -151,7 +151,7 @@ async function main() {
 
     const moveWholeResolved = resolveDocumentPaths(buildZoneContinuationDoc('move-whole'), 'zone-move-whole.json');
     const fixedContinueResolved = resolveDocumentPaths(buildZoneContinuationDoc('continue', 'fixed'), 'zone-continue-fixed.json');
-    const continueResolved = resolveDocumentPaths(buildZoneContinuationDoc('continue', 'spanning'), 'zone-continue.json');
+    const continueResolved = resolveDocumentPaths(buildZoneContinuationDoc('continue', 'expandable'), 'zone-continue.json');
 
     const moveWholeEngine = new LayoutEngine(toLayoutConfig(moveWholeResolved, false), runtime);
     const fixedContinueEngine = new LayoutEngine(toLayoutConfig(fixedContinueResolved, false), runtime);
@@ -166,7 +166,7 @@ async function main() {
 
     check(
         'zone packagers carry authored frame and world modes',
-        'move-whole defaults to fixed, while explicit continue/spanning survives onto the runtime packager surface',
+        'move-whole defaults to fixed, while explicit continue/expandable survives onto the runtime packager surface',
         () => {
             const moveWholePackager = buildPackagerForElement(moveWholeResolved.elements[2], 2, moveWholeEngine) as any;
             const fixedContinuePackager = buildPackagerForElement(fixedContinueResolved.elements[2], 2, fixedContinueEngine) as any;
@@ -177,7 +177,7 @@ async function main() {
             assert.equal(fixedContinuePackager.frameOverflowMode, 'continue');
             assert.equal(fixedContinuePackager.worldBehaviorMode, 'fixed');
             assert.equal(continuePackager.frameOverflowMode, 'continue');
-            assert.equal(continuePackager.worldBehaviorMode, 'spanning');
+            assert.equal(continuePackager.worldBehaviorMode, 'expandable');
         }
     );
 
@@ -192,7 +192,7 @@ async function main() {
 
     check(
         'fixed world behavior stays conservative even when frameOverflow is continue',
-        'non-spanning fields do not gain mid-page continuation semantics yet',
+        'non-expandable fields do not gain mid-page continuation semantics yet',
         () => {
             assert.deepEqual(findPagesForSource(fixedContinuePages, 'main-zone-open'), [1]);
             assert.deepEqual(findPagesForSource(fixedContinuePages, 'side-zone-label'), [1]);
@@ -201,7 +201,7 @@ async function main() {
 
     check(
         'continue zone-map fills the current page frame before overflowing',
-        'zone content starts on page 1 and continues onto page 2 when frameOverflow is continue and worldBehavior is spanning',
+        'zone content starts on page 1 and continues onto page 2 when frameOverflow is continue and worldBehavior is expandable',
         () => {
             const mainOpenPages = findPagesForSource(continuePages, 'main-zone-open');
             const sidePages = findPagesForSource(continuePages, 'side-zone-label');
@@ -222,7 +222,7 @@ async function main() {
     );
 
     check(
-        'spanning continued zones keep nested story column-span content below prior column occupancy',
+        'expandable continued zones keep nested story column-span content below prior column occupancy',
         'a full-width columnSpan element inside a continued regional story should either start below the tallest occupied column on the same page or defer together with its post-span content',
         () => {
             const doc: DocumentInput = {
@@ -247,7 +247,7 @@ async function main() {
                             columns: [{ mode: 'flex', fr: 1 }],
                             gap: 0,
                             frameOverflow: 'continue',
-                            worldBehavior: 'spanning'
+                            worldBehavior: 'expandable'
                         },
                         zones: [
                             {

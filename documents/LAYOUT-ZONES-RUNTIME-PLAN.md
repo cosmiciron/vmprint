@@ -177,17 +177,16 @@ That keeps orchestration simpler.
 But even that first version should be read through authored world policy:
 
 - `fixed` fields should not silently invent further region topology
-- `spanning` fields may continue through later page slices of the same region
-- `expandable` fields may eventually generate more region only when authored
-  rules explicitly permit it
+- `expandable` fields may continue through later page slices of the same region
+- `spanning` fields will eventually follow an explicit authored multi-map plan
 
 The first concrete runtime slice is now live:
 
-- only `spanning` fields receive true page-to-page regional continuation
+- only `expandable` fields receive true page-to-page regional continuation
 - `fixed` fields remain conservative even if `frameOverflow: "continue"` is
   authored
-- `expandable` remains declared but behaviorless until its authored rules are
-  designed
+- `spanning` remains declared but behaviorless until its authored planning
+  rules are designed
 
 Later versions can allow:
 
@@ -257,8 +256,8 @@ Concretely, the runtime now needs an authored-policy layer that can eventually
 answer:
 
 - is this zone field fixed?
-- is it spanning?
 - is it expandable?
+- is it spanning?
 
 Only after that exists should nested actor systems like `story` be taught what
 to do when the local room looks overcrowded.
@@ -388,7 +387,7 @@ The purpose is to prove:
 
 This phase has now produced a very useful intermediate result:
 
-- `frameOverflow: "continue" + worldBehavior: "spanning"` does start the zone
+- `frameOverflow: "continue" + worldBehavior: "expandable"` does start the zone
   field in page 1
 - the sidebar region continues independently
 - `frameOverflow: "continue" + worldBehavior: "fixed"` remains conservative

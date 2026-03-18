@@ -544,7 +544,7 @@ export class ZonePackager implements PackagerUnit {
     readonly continuationOf?: string;
 
     private usesSpanningContinuation(): boolean {
-        return this.frameOverflowMode === 'continue' && this.worldBehaviorMode === 'spanning';
+        return this.frameOverflowMode === 'continue' && this.worldBehaviorMode === 'expandable';
     }
 
     get pageBreakBefore(): boolean | undefined {
