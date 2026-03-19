@@ -516,6 +516,7 @@ export function finalizePagesWithCallbacks(
     config: LayoutConfig,
     callbacks: FinalizePagesCallbacks
 ): Page[] {
+    const totalPageCount = pages.length;
     const resolvedPerPage = pages.map((page) => {
         const baseline = resolveBaselineRegions(config, page.index);
         const override = findWinningPageOverride(page);
@@ -535,8 +536,8 @@ export function finalizePagesWithCallbacks(
         const logicalNumber = logicalNumbers[index];
         const resolved = resolvedPerPage[index];
 
-        const headerContent = materializePageTokens(resolved.header, physicalPageNumber, logicalNumber);
-        const footerContent = materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber);
+        const headerContent = materializePageTokens(resolved.header, physicalPageNumber, logicalNumber, totalPageCount);
+        const footerContent = materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber, totalPageCount);
 
         const extraBoxes: Box[] = [];
         if (headerContent) {
