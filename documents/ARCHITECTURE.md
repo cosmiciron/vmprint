@@ -104,4 +104,9 @@ The current architecture is designed to preserve these properties:
 - Swap-in rendering and font-loading implementations
 - Testability through layout snapshots and structural invariants
 
-For deeper runtime-planning notes, see the adjacent design documents in `documents/`.
+For the current detailed runtime model, see
+[SIMULATION-RUNTIME.md](/c:/Users/cosmic/Projects/vmprint/documents/SIMULATION-RUNTIME.md).
+Focused spatial deep-dives remain in
+[WORLD-MAP.md](/c:/Users/cosmic/Projects/vmprint/documents/WORLD-MAP.md),
+[LAYOUT-ZONES.md](/c:/Users/cosmic/Projects/vmprint/documents/LAYOUT-ZONES.md),
+and [SPATIAL-IR.md](/c:/Users/cosmic/Projects/vmprint/documents/SPATIAL-IR.md).

@@ -627,7 +627,7 @@ interface PageRegionContent {
 | AST normalization | [engine/src/engine/document.ts](c:\Users\cosmic\Projects\vmprint\engine\src\engine\document.ts) |
 | Spatial fixture normalization helper | [engine/tests/harness/spatialize.ts](c:\Users\cosmic\Projects\vmprint\engine\tests\harness\spatialize.ts) |
 | Architecture narrative | [documents/ARCHITECTURE.md](c:\Users\cosmic\Projects\vmprint\documents\ARCHITECTURE.md) |
-| Header/footer details | [documents/HEADER-FOOTER.md](c:\Users\cosmic\Projects\vmprint\documents\HEADER-FOOTER.md) |
+| Runtime and page-region details | [documents/SIMULATION-RUNTIME.md](c:\Users\cosmic\Projects\vmprint\documents\SIMULATION-RUNTIME.md) |
 | Overlay system | [documents/OVERLAY.md](c:\Users\cosmic\Projects\vmprint\documents\OVERLAY.md) |
 | Standard fonts | [documents/STANDARD-FONTS.md](c:\Users\cosmic\Projects\vmprint\documents\STANDARD-FONTS.md) |
 | Markdown compilation core | [markdown-core/src/index.ts](c:\Users\cosmic\Projects\vmprint\markdown-core\src\index.ts) |
