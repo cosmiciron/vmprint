@@ -36,15 +36,11 @@ class NodeWriteStreamAdapter {
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 
-function repeatedParagraph(seed: string, repeatCount: number): string {
-    return `${seed} `.repeat(repeatCount).trim();
-}
-
 function buildVisualConfig(): LayoutConfig {
     return {
         layout: {
-            pageSize: { width: 360, height: 480 },
-            margins: { top: 24, right: 24, bottom: 24, left: 24 },
+            pageSize: { width: 520, height: 420 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
             fontFamily: 'Arimo',
             fontSize: 12,
             lineHeight: 1.2
@@ -67,54 +63,83 @@ function buildVisualElements(): Element[] {
     return [
         {
             type: 'chapter-heading',
-            content: 'Same-Page Frontier Proof',
+            content: 'Actor Activation Board: Content-Only',
             properties: {
-                sourceId: 'same-page-frontier-heading',
+                sourceId: 'activation-content-only-heading',
                 style: {
                     textAlign: 'center',
                     fontWeight: 700,
                     fontSize: 18,
                     marginTop: 0,
-                    marginBottom: 18
+                    marginBottom: 14
                 }
             }
         },
         {
             type: 'p',
-            content: 'This proof keeps the collector and the later publisher on the same page. The collector should still learn the later mature signal and resettle before any page-boundary checkpoint is needed.',
-            properties: { sourceId: 'same-page-frontier-intro' }
+            content: 'Pinned actor wakes on committed signal. Geometry must stay fixed.',
+            properties: { sourceId: 'activation-content-only-intro' }
         },
         {
             type: 'test-signal-observer',
             content: '',
             properties: {
-                sourceId: 'same-page-frontier-collector',
-                style: { marginTop: 12, marginBottom: 10 },
+                sourceId: 'activation-content-only-observer',
+                style: { marginTop: 8, marginBottom: 8 },
                 _actorSignalObserve: {
-                    topic: 'same-page-frontier-entry',
-                    title: 'Same-Page Collector',
-                    renderMode: 'collector-list',
-                    backgroundColor: '#f8fafc',
-                    borderColor: '#475569',
-                    color: '#0f172a',
-                    baseHeight: 56,
-                    growthPerSignal: 28
+                    topic: 'activation-content-only-entry',
+                    title: 'Pinned Observer\nState: content-only redraw\nGeometry: unchanged',
+                    backgroundColor: '#dcfce7',
+                    borderColor: '#16a34a',
+                    color: '#166534',
+                    emptyLabel: 'Dormant -> waiting for committed signal',
+                    baseHeight: 92,
+                    growthPerSignal: 0
+                }
+            }
+        },
+        {
+            type: 'test-replay-marker',
+            content: '',
+            properties: {
+                sourceId: 'activation-content-only-marker',
+                style: { marginTop: 6, marginBottom: 8 },
+                _testReplayMarker: {
+                    title: 'Replay Marker\nMust stay at Render Count: 1',
+                    backgroundColor: '#fee2e2',
+                    borderColor: '#dc2626',
+                    color: '#7f1d1d',
+                    height: 60
                 }
             }
         },
         {
             type: 'p',
-            content: repeatedParagraph('Early aftermath occupies the first page so the collector must reclaim space before the page ever turns.', 8),
-            properties: { sourceId: 'same-page-frontier-aftermath-1' }
+            content: 'Spacer Region\nPinned board stays committed while later event source comes online.\nNo downstream replay should occur.',
+            properties: {
+                sourceId: 'activation-content-only-bridge',
+                style: {
+                    marginBottom: 8,
+                    paddingTop: 10,
+                    paddingRight: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    backgroundColor: '#f3f4f6',
+                    borderColor: '#9ca3af',
+                    borderWidth: 1,
+                    color: '#374151',
+                    height: 72
+                }
+            }
         },
         {
             type: 'test-signal-publisher',
-            content: 'Heading Publisher\nSame Page Entry',
+            content: 'Event Source Tile\nTopic: activation-content-only-entry\nCommitted Label: Quiet Update',
             properties: {
-                sourceId: 'same-page-frontier-publisher',
+                sourceId: 'activation-content-only-publisher',
                 style: {
-                    height: 72,
-                    marginBottom: 10,
+                    height: 76,
+                    marginBottom: 8,
                     paddingTop: 10,
                     paddingRight: 10,
                     paddingBottom: 10,
@@ -126,16 +151,30 @@ function buildVisualElements(): Element[] {
                     fontWeight: 700
                 },
                 _actorSignalPublish: {
-                    topic: 'same-page-frontier-entry',
-                    signalKey: 'same-page-frontier-entry:1',
-                    payload: { label: 'Same Page Entry' }
+                    topic: 'activation-content-only-entry',
+                    signalKey: 'activation-content-only-entry:1',
+                    payload: { label: 'Quiet Update' }
                 }
             }
         },
         {
             type: 'p',
-            content: repeatedParagraph('Late aftermath stays on the first page too, proving the settle happened at an actor boundary rather than waiting for a page checkpoint.', 6),
-            properties: { sourceId: 'same-page-frontier-aftermath-2' }
+            content: 'Expected Result\nObserver text changes in place.\nReplay marker stays at Render Count: 1.',
+            properties: {
+                sourceId: 'activation-content-only-outro',
+                style: {
+                    marginBottom: 0,
+                    paddingTop: 10,
+                    paddingRight: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    backgroundColor: '#eef2ff',
+                    borderColor: '#6366f1',
+                    borderWidth: 1,
+                    color: '#3730a3',
+                    height: 64
+                }
+            }
         }
     ];
 }
@@ -153,7 +192,7 @@ function resolveArg(flag: string): string | undefined {
 async function main(): Promise<void> {
     const outputArg = resolveArg('--output');
     const snapshotArg = resolveArg('--snapshot');
-    const defaultBase = path.resolve(SCRIPT_DIR, '..', '..', 'tests', 'output', 'actor-communication-same-page-frontier-visual');
+    const defaultBase = path.resolve(SCRIPT_DIR, '..', '..', 'tests', 'output', 'actor-activation-content-only-visual');
     const outputPath = path.resolve(outputArg || `${defaultBase}.pdf`);
     const snapshotPath = path.resolve(snapshotArg || `${defaultBase}.pages.json`);
 
@@ -162,15 +201,14 @@ async function main(): Promise<void> {
 
     const LocalFontManager = await loadLocalFontManager();
     const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
-    const config = buildVisualConfig();
-    const engine = new LayoutEngine(config, runtime);
+    const engine = new LayoutEngine(buildVisualConfig(), runtime);
     engine.setPackagerFactory(experimentFactory);
-
     await engine.waitForFonts();
+
     const pages = engine.simulate(buildVisualElements());
 
     const context = new PdfContext({
-        size: [config.layout.pageSize.width, config.layout.pageSize.height],
+        size: [520, 420],
         margins: { top: 0, left: 0, right: 0, bottom: 0 },
         autoFirstPage: false,
         bufferPages: false
@@ -178,18 +216,18 @@ async function main(): Promise<void> {
     const outputStream = new NodeWriteStreamAdapter(outputPath);
     context.pipe(outputStream as any);
 
-    const renderer = new Renderer(config, false, runtime);
+    const renderer = new Renderer(buildVisualConfig(), false, runtime);
     await renderer.render(pages, context);
     await outputStream.waitForFinish();
 
     fs.writeFileSync(snapshotPath, JSON.stringify(summarizePages(pages), null, 2) + '\n', 'utf8');
 
-    console.log(`[actor-communication-same-page-frontier-visual] pdf=${outputPath}`);
-    console.log(`[actor-communication-same-page-frontier-visual] snapshot=${snapshotPath}`);
-    console.log(`[actor-communication-same-page-frontier-visual] pages=${pages.length}`);
+    console.log(`[actor-activation-content-only-visual] pdf=${outputPath}`);
+    console.log(`[actor-activation-content-only-visual] snapshot=${snapshotPath}`);
+    console.log(`[actor-activation-content-only-visual] pages=${pages.length}`);
 }
 
 main().catch((error) => {
-    console.error('[actor-communication-same-page-frontier-visual] FAILED', error);
+    console.error('[actor-activation-content-only-visual] FAILED', error);
     process.exit(1);
 });

@@ -1,14 +1,26 @@
+import { performance } from 'node:perf_hooks';
 import type { Box, Page } from '../types';
 import { ActorEventBus, type ActorEventBusSnapshot, type ActorSignal, type ActorSignalDraft } from './actor-event-bus';
 import type { FlowBox } from './layout-core-types';
-import type { ObservationResult, PackagerContext, PackagerUnit, SpatialFrontier } from './packagers/packager-types';
+import type { LayoutProfileMetrics } from './layout-session-types';
+import {
+    normalizeObservationResult,
+    type ObservationResult,
+    type PackagerContext,
+    type PackagerUnit,
+    type SpatialFrontier
+} from './packagers/packager-types';
 
-export type LocalActorSignalSnapshot = ActorEventBusSnapshot;
+export type LocalActorSignalSnapshot = {
+    busSnapshot: ActorEventBusSnapshot;
+    awakenedObserverIds: string[];
+};
 
 export type ObserverSweepResult = {
     changed: boolean;
     geometryChanged: boolean;
     earliestAffectedFrontier?: SpatialFrontier;
+    contentOnlyActors: PackagerUnit[];
 };
 
 export type SafeCheckpointPageState = {
@@ -43,18 +55,27 @@ export class ActorCommunicationRuntime<
 > {
     private readonly actorEventBus = new ActorEventBus();
     private readonly observerRegistry = new Map<string, PackagerUnit>();
+    private readonly observerTopicSubscriptions = new Map<string, Set<string>>();
+    private readonly broadlyPolledObserverIds = new Set<string>();
+    private readonly awakenedObserverIds = new Set<string>();
     private readonly actorIndexByActorId = new Map<string, number>();
     private readonly actorIndexBySourceId = new Map<string, number>();
     private safeCheckpoints: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>[] = [];
     private safeCheckpointSequence = 0;
 
     constructor(
-        private readonly recordObserverCheckpointSweep: () => void
+        private readonly callbacks: {
+            recordObserverCheckpointSweep: () => void;
+            recordProfile: (metric: keyof LayoutProfileMetrics, delta: number) => void;
+        }
     ) { }
 
     resetForSimulation(): void {
         this.actorEventBus.resetForSimulation();
         this.observerRegistry.clear();
+        this.observerTopicSubscriptions.clear();
+        this.broadlyPolledObserverIds.clear();
+        this.awakenedObserverIds.clear();
         this.actorIndexByActorId.clear();
         this.actorIndexBySourceId.clear();
         this.safeCheckpoints = [];
@@ -62,24 +83,53 @@ export class ActorCommunicationRuntime<
     }
 
     publishActorSignal(signal: ActorSignalDraft): ActorSignal {
-        return this.actorEventBus.publish(signal);
+        const published = this.actorEventBus.publish(signal);
+        this.awakenObserversForSignal(published.topic);
+        return published;
     }
 
     getActorSignals(topic?: string): readonly ActorSignal[] {
         return this.actorEventBus.read(topic);
     }
 
+    getActorSignalSequence(): number {
+        return this.actorEventBus.getSequence();
+    }
+
     captureLocalActorSignalSnapshot(): LocalActorSignalSnapshot {
-        return this.actorEventBus.captureSnapshot();
+        return {
+            busSnapshot: this.actorEventBus.captureSnapshot(),
+            awakenedObserverIds: [...this.awakenedObserverIds]
+        };
     }
 
     restoreLocalActorSignalSnapshot(snapshot: LocalActorSignalSnapshot): void {
-        this.actorEventBus.restoreSnapshot(snapshot);
+        this.actorEventBus.restoreSnapshot(snapshot.busSnapshot);
+        this.awakenedObserverIds.clear();
+        for (const actorId of snapshot.awakenedObserverIds) {
+            this.awakenedObserverIds.add(actorId);
+        }
     }
 
     notifyActorSpawn(actor: PackagerUnit): void {
-        if (typeof actor.observeCommittedSignals === 'function') {
-            this.observerRegistry.set(actor.actorId, actor);
+        const hasCommittedUpdater =
+            typeof actor.updateCommittedState === 'function'
+            || typeof actor.observeCommittedSignals === 'function';
+        if (!hasCommittedUpdater) return;
+
+        this.observerRegistry.set(actor.actorId, actor);
+        const subscriptions = actor.getCommittedSignalSubscriptions?.()
+            ?.map((topic) => String(topic || '').trim())
+            .filter((topic) => topic.length > 0) ?? [];
+        if (subscriptions.length === 0) {
+            this.broadlyPolledObserverIds.add(actor.actorId);
+            return;
+        }
+
+        for (const topic of subscriptions) {
+            const entry = this.observerTopicSubscriptions.get(topic) ?? new Set<string>();
+            entry.add(actor.actorId);
+            this.observerTopicSubscriptions.set(topic, entry);
         }
     }
 
@@ -158,11 +208,12 @@ export class ActorCommunicationRuntime<
         pageIndex: number,
         cursorY: number
     ): ObserverSweepResult {
-        this.recordObserverCheckpointSweep();
+        this.callbacks.recordObserverCheckpointSweep();
 
         let changed = false;
         let geometryChanged = false;
         let earliestAffectedFrontier: SpatialFrontier | undefined;
+        const contentOnlyActors: PackagerUnit[] = [];
 
         const context: PackagerContext = {
             ...contextBase,
@@ -170,9 +221,37 @@ export class ActorCommunicationRuntime<
             cursorY
         };
 
+        const pendingAwakened = new Set(this.awakenedObserverIds);
+
         for (const observer of this.observerRegistry.values()) {
-            const result = observer.observeCommittedSignals?.(context);
-            if (!result || !result.changed) continue;
+            const shouldProcess =
+                this.broadlyPolledObserverIds.has(observer.actorId)
+                || pendingAwakened.has(observer.actorId);
+            if (!shouldProcess) {
+                this.callbacks.recordProfile('actorActivationDormantSkips', 1);
+                continue;
+            }
+
+            const startedAt = performance.now();
+            this.callbacks.recordProfile('actorUpdateCalls', 1);
+            const result = normalizeObservationResult(
+                observer.updateCommittedState?.(context)
+                ?? observer.observeCommittedSignals?.(context)
+            );
+            this.callbacks.recordProfile('actorUpdateMs', performance.now() - startedAt);
+            pendingAwakened.delete(observer.actorId);
+
+            if (!result || !result.changed) {
+                this.callbacks.recordProfile('actorUpdateNoopCalls', 1);
+                continue;
+            }
+
+            if (result.updateKind === 'geometry') {
+                this.callbacks.recordProfile('actorUpdateGeometryCalls', 1);
+            } else if (result.updateKind === 'content-only') {
+                this.callbacks.recordProfile('actorUpdateContentOnlyCalls', 1);
+                contentOnlyActors.push(observer);
+            }
 
             changed = true;
             if (!result.geometryChanged) continue;
@@ -183,7 +262,12 @@ export class ActorCommunicationRuntime<
             }
         }
 
-        return { changed, geometryChanged, earliestAffectedFrontier };
+        this.awakenedObserverIds.clear();
+        for (const actorId of pendingAwakened) {
+            this.awakenedObserverIds.delete(actorId);
+        }
+
+        return { changed, geometryChanged, earliestAffectedFrontier, contentOnlyActors };
     }
 
     resolveSafeCheckpoint(
@@ -231,6 +315,23 @@ export class ActorCommunicationRuntime<
             currentY: checkpoint.snapshot.currentY,
             lastSpacingAfter: checkpoint.snapshot.lastSpacingAfter
         };
+    }
+
+    private awakenObserversForSignal(topic: string): void {
+        const normalizedTopic = String(topic || '').trim();
+        if (!normalizedTopic) return;
+
+        const specific = this.observerTopicSubscriptions.get(normalizedTopic);
+        if (!specific || specific.size === 0) {
+            return;
+        }
+
+        for (const actorId of specific) {
+            if (this.awakenedObserverIds.has(actorId)) continue;
+            this.awakenedObserverIds.add(actorId);
+            this.callbacks.recordProfile('actorActivationAwakenCalls', 1);
+            this.callbacks.recordProfile('actorActivationSignalWakeCalls', 1);
+        }
     }
 }
 

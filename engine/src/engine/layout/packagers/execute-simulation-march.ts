@@ -23,13 +23,16 @@ export function executeSimulationMarch(
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
     session: LayoutSession
 ): Page[] {
+    const maxReactiveResettlementCycles = resolveReactiveResettlementCycleCap();
     const snapshotsEnabled = process.env.VMPRINT_DISABLE_SAFE_CHECKPOINTS !== '1';
-    const observerCheckpointsEnabled = snapshotsEnabled && session.hasCommittedSignalObservers();
+    const observerCheckpointsEnabled = () => snapshotsEnabled && session.hasCommittedSignalObservers();
     const positionFlowBox = (processor as FlowBoxPositioner).positionFlowBox.bind(processor);
     const pages: Page[] = [];
     let currentPageBoxes: LayoutBox[] = [];
     let currentPageIndex = 0;
     let i = 0;
+    let reactiveResettlementCycles = 0;
+    const reactiveResettlementSignatures = new Set<string>();
 
     const margins = contextBase.margins;
     let currentY = margins.top;
@@ -60,15 +63,19 @@ export function executeSimulationMarch(
         prevAfter + marginTop;
 
     session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
-    if (observerCheckpointsEnabled) {
+    if (observerCheckpointsEnabled()) {
         session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, 'page');
     }
 
     const maybeSettleAtCheckpoint = (): boolean => {
-        if (!observerCheckpointsEnabled) {
+        if (!observerCheckpointsEnabled()) {
             return false;
         }
         const observation = session.evaluateObserverRegistry(contextBase, currentPageIndex, currentY);
+        if (!observation.geometryChanged && observation.contentOnlyActors.length > 0) {
+            session.applyContentOnlyActorUpdates(pages, currentPageBoxes, observation.contentOnlyActors, contextBase);
+            return false;
+        }
         if (!observation.geometryChanged || !observation.earliestAffectedFrontier) {
             return false;
         }
@@ -78,7 +85,43 @@ export function executeSimulationMarch(
             return false;
         }
 
+        const signature = [
+            checkpoint.kind,
+            checkpoint.pageIndex,
+            checkpoint.actorIndex,
+            checkpoint.anchorActorId ?? 'na',
+            checkpoint.anchorSourceId ?? 'na',
+            observation.earliestAffectedFrontier.pageIndex,
+            observation.earliestAffectedFrontier.actorIndex ?? 'na',
+            observation.earliestAffectedFrontier.actorId ?? 'na',
+            observation.earliestAffectedFrontier.sourceId ?? 'na',
+            session.getActorSignalSequence()
+        ].join('|');
+
+        if (reactiveResettlementSignatures.has(signature)) {
+            session.recordProfile('actorUpdateRepeatedStateDetections', 1);
+            throw new Error(
+                `[executeSimulationMarch] Reactive geometry oscillation detected at checkpoint "${checkpoint.id}" `
+                + `(frontier page=${observation.earliestAffectedFrontier.pageIndex}, actor=${observation.earliestAffectedFrontier.actorId ?? observation.earliestAffectedFrontier.sourceId ?? 'unknown'}, `
+                + `signalSequence=${session.getActorSignalSequence()}).`
+            );
+        }
+
+        if (reactiveResettlementCycles >= maxReactiveResettlementCycles) {
+            session.recordProfile('actorUpdateResettlementCapHits', 1);
+            throw new Error(
+                `[executeSimulationMarch] Reactive geometry resettlement exceeded the cycle cap `
+                + `(${maxReactiveResettlementCycles}) at checkpoint "${checkpoint.id}" `
+                + `(frontier page=${observation.earliestAffectedFrontier.pageIndex}, actor=${observation.earliestAffectedFrontier.actorId ?? observation.earliestAffectedFrontier.sourceId ?? 'unknown'}, `
+                + `signalSequence=${session.getActorSignalSequence()}).`
+            );
+        }
+
+        reactiveResettlementSignatures.add(signature);
+        reactiveResettlementCycles += 1;
+
         session.recordProfile('observerSettleCalls', 1);
+        session.recordProfile('actorUpdateResettlementCycles', 1);
         if (checkpoint.kind === 'actor') {
             session.recordProfile('observerActorBoundarySettles', 1);
         } else {
@@ -108,7 +151,7 @@ export function executeSimulationMarch(
         if (!checkpointKind) {
             return false;
         }
-        if (!observerCheckpointsEnabled) {
+        if (!observerCheckpointsEnabled()) {
             return false;
         }
         const boundaryStart = performance.now();
@@ -414,10 +457,31 @@ export function executeSimulationMarch(
             );
         }
 
+        session.publishActorSignal({
+            topic: 'pagination:finalized',
+            publisherActorId: 'system:pagination-finalizer',
+            publisherSourceId: 'system:pagination-finalizer',
+            publisherActorKind: 'system',
+            fragmentIndex: 0,
+            pageIndex: Math.max(0, pages.length - 1),
+            signalKey: 'pagination:finalized',
+            payload: {
+                totalPageCount: pages.length
+            }
+        });
+
         if (!maybeSettleAtCheckpoint()) {
             break;
         }
     }
 
     return pages;
+}
+
+function resolveReactiveResettlementCycleCap(): number {
+    const raw = Number(process.env.VMPRINT_MAX_REACTIVE_RESETTLEMENT_CYCLES);
+    if (Number.isFinite(raw) && raw >= 1) {
+        return Math.floor(raw);
+    }
+    return 8;
 }

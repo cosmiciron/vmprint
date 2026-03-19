@@ -20,6 +20,7 @@ import { PageStartReservationCollaborator } from './page-start-reservation-colla
 import { FragmentTransitionArtifactCollaborator } from './fragment-transition-artifact-collaborator';
 import { createMorphedBoxMeta, freezeFlowFragment } from './flow-fragment-state';
 import { HeadingTelemetryCollaborator } from './heading-telemetry-collaborator';
+import { HeadingSignalCollaborator } from './heading-signal-collaborator';
 import { KeepWithNextCollaborator } from './keep-with-next-collaborator';
 import { PageRegionCollaborator } from './layout-page-finalization';
 import { PageNumberArtifactCollaborator } from './page-number-artifact-collaborator';
@@ -990,10 +991,11 @@ export class LayoutProcessor extends TextProcessor {
             new PageRegionArtifactCollaborator(),
             new SourcePositionArtifactCollaborator(),
             new HeadingTelemetryCollaborator(),
+            new HeadingSignalCollaborator(),
             new ZoneDebugOverlayCollaborator(),
             new PageRegionCollaborator(this.config, {
-                layoutRegion: (content, rect, pageIndex, sourceType) =>
-                    this.layoutRegion(content, rect, pageIndex, sourceType)
+                layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
+                    this.layoutRegion(content, rect, pageIndex, sourceType, actorId)
             })
         ];
     }
@@ -1002,7 +1004,8 @@ export class LayoutProcessor extends TextProcessor {
         content: PageRegionContent,
         rect: { x: number; y: number; w: number; h: number },
         pageIndex: number,
-        sourceType: 'header' | 'footer'
+        sourceType: 'header' | 'footer',
+        actorId?: string
     ): Box[] {
         if (!content || !Array.isArray(content.elements) || content.elements.length === 0) return [];
         if (!(rect.w > 0) || !(rect.h > 0)) return [];
@@ -1049,6 +1052,7 @@ export class LayoutProcessor extends TextProcessor {
                         fragmentIndex: 0,
                         isContinuation: false
                     }),
+                    ...(actorId ? { actorId } : {}),
                     pageIndex,
                     sourceType,
                     generated: true
@@ -1069,6 +1073,7 @@ export class LayoutProcessor extends TextProcessor {
             meta: {
                 sourceId: `system:${sourceType}:region:${pageIndex}`,
                 engineKey: `system:${sourceType}:region:${pageIndex}`,
+                ...(actorId ? { actorId } : {}),
                 sourceType,
                 fragmentIndex: 0,
                 isContinuation: false,

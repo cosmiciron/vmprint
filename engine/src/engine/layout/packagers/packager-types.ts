@@ -12,9 +12,14 @@ export type SpatialFrontier = {
     sourceId?: string;
 };
 
+export type ActorActivationState = 'dormant' | 'event-awakened' | 'active' | 'suspended';
+
+export type ActorUpdateKind = 'none' | 'content-only' | 'geometry';
+
 export type ObservationResult = {
     changed: boolean;
     geometryChanged: boolean;
+    updateKind?: ActorUpdateKind;
     earliestAffectedFrontier?: SpatialFrontier;
 };
 
@@ -133,6 +138,18 @@ export interface PackagerUnit {
     observeCommittedSignals?(context: PackagerContext): ObservationResult | null | undefined;
 
     /**
+     * Declares which committed signal topics should wake this actor.
+     * Omit or return an empty array to preserve broad checkpoint polling.
+     */
+    getCommittedSignalSubscriptions?(): readonly string[] | null | undefined;
+
+    /**
+     * Optional generic activation/update entrypoint for committed state changes.
+     * If absent, the runtime falls back to observeCommittedSignals().
+     */
+    updateCommittedState?(context: PackagerContext): ObservationResult | null | undefined;
+
+    /**
      * Splits this unit.
      */
     split(availableHeight: number, context: PackagerContext): PackagerSplitResult;
@@ -247,5 +264,21 @@ export function resolvePackagerTransformProfile(unit: PackagerUnit): PackagerTra
     return {
         supportedTransforms: Array.from(normalizedCapabilities.keys()),
         capabilities: Array.from(normalizedCapabilities.values())
+    };
+}
+
+export function normalizeObservationResult(result: ObservationResult | null | undefined): ObservationResult | null {
+    if (!result) {
+        return null;
+    }
+
+    const updateKind: ActorUpdateKind = result.updateKind
+        ?? (result.geometryChanged ? 'geometry' : (result.changed ? 'content-only' : 'none'));
+
+    return {
+        ...result,
+        geometryChanged: updateKind === 'geometry',
+        changed: result.changed,
+        updateKind
     };
 }

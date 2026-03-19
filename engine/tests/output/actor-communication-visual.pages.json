@@ -1,0 +1,4483 @@
+[
+  {
+    "index": 0,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "chapter-heading",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 23.709375,
+        "lines": [
+          [
+            {
+              "text": "Actor Communication Visual Proof",
+              "width": 297.703125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 65.709375,
+        "w": 312,
+        "h": 63.225,
+        "lines": [
+          [
+            {
+              "text": "This proof document shows multiple publisher actors ",
+              "width": 282.796875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "emitting normalized signals into one observing actor. The ",
+              "width": 306.826172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer reacts by growing its own footprint and crossing ",
+              "width": 306.146484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "page boundaries while preserving deterministic layout.",
+              "width": 288.826172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "test-signal-publisher",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 138,
+        "lines": [
+          [
+            {
+              "text": "Publisher Alpha",
+              "width": 91.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Topic: outline-entry",
+              "width": 111.105469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Label: Alpha Ridge",
+              "width": 108.673828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 200.675,
+        "lines": [
+          [
+            {
+              "text": "Alpha ridge filler body text keeps the world moving ",
+              "width": 270.808594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "forward. Alpha ridge filler body text keeps the world ",
+              "width": 275.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "moving forward. Alpha ridge filler body text keeps the ",
+              "width": 285.480469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "world moving forward. Alpha ridge filler body text ",
+              "width": 262.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the world moving forward. Alpha ridge filler ",
+              "width": 265.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the world moving forward. Alpha ridge",
+              "width": 288.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text keeps the world moving forward. Alpha ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ridge filler body text keeps the world moving forward. ",
+              "width": 283.464844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Alpha ridge filler body text keeps the world moving ",
+              "width": 270.808594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "forward. Alpha ridge filler body text keeps the world ",
+              "width": 275.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "moving forward. Alpha ridge filler body text keeps the ",
+              "width": 285.480469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "world moving forward. Alpha ridge filler body text ",
+              "width": 262.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "keeps the world moving forward. Alpha ridge filler ",
+              "width": 265.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the world moving forward. Alpha ridge",
+              "width": 288.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text keeps the world moving forward. Alpha ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ridge filler body text keeps the world moving forward. ",
+              "width": 283.464844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Alpha ridge filler body text keeps the world moving ",
+              "width": 270.808594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "forward. Alpha ridge filler body text keeps the world ",
+              "width": 275.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "moving forward. Alpha ridge filler body text keeps the ",
+              "width": 285.480469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "world moving forward. Alpha ridge filler body text ",
+              "width": 262.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the world moving forward. Alpha ridge filler ",
+              "width": 265.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the world moving forward. Alpha ridge",
+              "width": 288.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text keeps the world moving forward. Alpha ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ridge filler body text keeps the world moving forward. ",
+              "width": 283.464844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Alpha ridge filler body text keeps the world moving ",
+              "width": 270.808594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "forward. Alpha ridge filler body text keeps the world ",
+              "width": 275.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "moving forward. Alpha ridge filler body text keeps the ",
+              "width": 285.480469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "world moving forward. Alpha ridge filler body text ",
+              "width": 262.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the world moving forward. Alpha ridge filler ",
+              "width": 265.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the world moving forward. Alpha ridge",
+              "width": 288.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text keeps the world moving forward. Alpha ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ridge filler body text keeps the world moving forward. ",
+              "width": 283.464844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Alpha ridge filler body text keeps the world moving ",
+              "width": 270.808594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "forward. Alpha ridge filler body text keeps the world ",
+              "width": 275.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "moving forward. Alpha ridge filler body text keeps the ",
+              "width": 285.480469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "world moving forward. Alpha ridge filler body text ",
+              "width": 262.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the world moving forward. Alpha ridge filler ",
+              "width": 265.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the world moving forward. Alpha ridge",
+              "width": 288.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "filler body text keeps the world moving forward. Alpha ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ridge filler body text keeps the world moving forward. ",
+              "width": 283.464844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Alpha ridge filler body text keeps the world moving ",
+              "width": 270.808594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "forward. Alpha ridge filler body text keeps the world ",
+              "width": 275.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "moving forward. Alpha ridge filler body text keeps the ",
+              "width": 285.480469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "world moving forward. Alpha ridge filler body text ",
+              "width": 262.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the world moving forward. Alpha ridge filler ",
+              "width": 265.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the world moving forward. Alpha ridge",
+              "width": 288.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text keeps the world moving forward. Alpha ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ridge filler body text keeps the world moving forward. ",
+              "width": 283.464844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Alpha ridge filler body text keeps the world moving ",
+              "width": 270.808594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "forward. Alpha ridge filler body text keeps the world ",
+              "width": 275.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "moving forward. Alpha ridge filler body text keeps the ",
+              "width": 285.480469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 74.225,
+        "lines": [
+          [
+            {
+              "text": "world moving forward. Alpha ridge filler body text ",
+              "width": 262.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the world moving forward. Alpha ridge filler ",
+              "width": 265.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the world moving forward. Alpha ridge",
+              "width": 288.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text keeps the world moving forward.",
+              "width": 250.113281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 7,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "test-signal-publisher",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 138,
+        "lines": [
+          [
+            {
+              "text": "Publisher Beta",
+              "width": 84.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Topic: outline-entry",
+              "width": 111.105469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Label: Beta Hollow",
+              "width": 107.34375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 8,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 200.675,
+        "lines": [
+          [
+            {
+              "text": "Beta hollow filler body text forces the publishers to ",
+              "width": 270.140625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "spread across pages. Beta hollow filler body text ",
+              "width": 260.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "forces the publishers to spread across pages. Beta ",
+              "width": 273.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "hollow filler body text forces the publishers to spread ",
+              "width": 282.146484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "across pages. Beta hollow filler body text forces the ",
+              "width": 276.808594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 9,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 10,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 11,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 12,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 13,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 137.45,
+        "lines": [
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages. Beta hollow filler ",
+              "width": 280.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text forces the publishers to spread across ",
+              "width": 258.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "pages. Beta hollow filler body text forces the ",
+              "width": 238.130859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "publishers to spread across pages.",
+              "width": 186.105469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 14,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "test-signal-publisher",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 138,
+        "lines": [
+          [
+            {
+              "text": "Publisher Gamma",
+              "width": 102.035156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Topic: outline-entry",
+              "width": 111.105469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Label: Gamma Harbour",
+              "width": 132.697266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 15,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 200.675,
+        "lines": [
+          [
+            {
+              "text": "Gamma harbour filler body text keeps the observer ",
+              "width": 273.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "safely downstream. Gamma harbour filler body text ",
+              "width": 274.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the observer safely downstream. Gamma ",
+              "width": 258.111328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "harbour filler body text keeps the observer safely ",
+              "width": 262.136719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "downstream. Gamma harbour filler body text keeps ",
+              "width": 275.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the observer safely downstream. Gamma harbour filler",
+              "width": 289.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the observer safely downstream. ",
+              "width": 264.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gamma harbour filler body text keeps the observer ",
+              "width": 273.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "safely downstream. Gamma harbour filler body text ",
+              "width": 274.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the observer safely downstream. Gamma ",
+              "width": 258.111328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "harbour filler body text keeps the observer safely ",
+              "width": 262.136719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "downstream. Gamma harbour filler body text keeps ",
+              "width": 275.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 16,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "the observer safely downstream. Gamma harbour filler",
+              "width": 289.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the observer safely downstream. ",
+              "width": 264.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gamma harbour filler body text keeps the observer ",
+              "width": 273.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "safely downstream. Gamma harbour filler body text ",
+              "width": 274.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the observer safely downstream. Gamma ",
+              "width": 258.111328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "harbour filler body text keeps the observer safely ",
+              "width": 262.136719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "downstream. Gamma harbour filler body text keeps ",
+              "width": 275.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the observer safely downstream. Gamma harbour filler",
+              "width": 289.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the observer safely downstream. ",
+              "width": 264.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gamma harbour filler body text keeps the observer ",
+              "width": 273.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "safely downstream. Gamma harbour filler body text ",
+              "width": 274.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the observer safely downstream. Gamma ",
+              "width": 258.111328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "harbour filler body text keeps the observer safely ",
+              "width": 262.136719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 17,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "downstream. Gamma harbour filler body text keeps ",
+              "width": 275.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the observer safely downstream. Gamma harbour filler",
+              "width": 289.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the observer safely downstream. ",
+              "width": 264.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gamma harbour filler body text keeps the observer ",
+              "width": 273.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "safely downstream. Gamma harbour filler body text ",
+              "width": 274.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the observer safely downstream. Gamma ",
+              "width": 258.111328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "harbour filler body text keeps the observer safely ",
+              "width": 262.136719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "downstream. Gamma harbour filler body text keeps ",
+              "width": 275.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the observer safely downstream. Gamma harbour filler",
+              "width": 289.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the observer safely downstream. ",
+              "width": 264.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gamma harbour filler body text keeps the observer ",
+              "width": 273.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "safely downstream. Gamma harbour filler body text ",
+              "width": 274.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the observer safely downstream. Gamma ",
+              "width": 258.111328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 18,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "harbour filler body text keeps the observer safely ",
+              "width": 262.136719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "downstream. Gamma harbour filler body text keeps ",
+              "width": 275.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the observer safely downstream. Gamma harbour filler",
+              "width": 289.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the observer safely downstream. ",
+              "width": 264.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gamma harbour filler body text keeps the observer ",
+              "width": 273.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "safely downstream. Gamma harbour filler body text ",
+              "width": 274.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the observer safely downstream. Gamma ",
+              "width": 258.111328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "harbour filler body text keeps the observer safely ",
+              "width": 262.136719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "downstream. Gamma harbour filler body text keeps ",
+              "width": 275.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the observer safely downstream. Gamma harbour filler",
+              "width": 289.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the observer safely downstream. ",
+              "width": 264.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gamma harbour filler body text keeps the observer ",
+              "width": 273.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "safely downstream. Gamma harbour filler body text ",
+              "width": 274.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 19,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "keeps the observer safely downstream. Gamma ",
+              "width": 258.111328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "harbour filler body text keeps the observer safely ",
+              "width": 262.136719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "downstream. Gamma harbour filler body text keeps ",
+              "width": 275.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the observer safely downstream. Gamma harbour filler",
+              "width": 289.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the observer safely downstream. ",
+              "width": 264.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gamma harbour filler body text keeps the observer ",
+              "width": 273.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "safely downstream. Gamma harbour filler body text ",
+              "width": 274.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the observer safely downstream. Gamma ",
+              "width": 258.111328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "harbour filler body text keeps the observer safely ",
+              "width": 262.136719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "downstream. Gamma harbour filler body text keeps ",
+              "width": 275.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "the observer safely downstream. Gamma harbour filler",
+              "width": 289.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "body text keeps the observer safely downstream. ",
+              "width": 264.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gamma harbour filler body text keeps the observer ",
+              "width": 273.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 20,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 74.225,
+        "lines": [
+          [
+            {
+              "text": "safely downstream. Gamma harbour filler body text ",
+              "width": 274.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "keeps the observer safely downstream. Gamma ",
+              "width": 258.111328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "harbour filler body text keeps the observer safely ",
+              "width": 262.136719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "downstream.",
+              "width": 68.695313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 21,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "test-signal-publisher",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 138,
+        "lines": [
+          [
+            {
+              "text": "Publisher Delta",
+              "width": 87.357422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Topic: outline-entry",
+              "width": 111.105469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Label: Delta Lantern",
+              "width": 115.353516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 22,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 200.675,
+        "lines": [
+          [
+            {
+              "text": "Delta lantern filler body text gives the observer ",
+              "width": 250.125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough incoming traffic to become visibly larger. Delta",
+              "width": 287.923828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lantern filler body text gives the observer enough ",
+              "width": 262.154297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "incoming traffic to become visibly larger. Delta lantern ",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text gives the observer enough incoming ",
+              "width": 273.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "traffic to become visibly larger. Delta lantern filler body",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "text gives the observer enough incoming traffic to ",
+              "width": 264.591797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "become visibly larger. Delta lantern filler body text ",
+              "width": 268.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "gives the observer enough incoming traffic to become ",
+              "width": 287.941406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "visibly larger. Delta lantern filler body text gives the ",
+              "width": 273.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer enough incoming traffic to become visibly ",
+              "width": 272.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "larger. Delta lantern filler body text gives the observer ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 23,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "enough incoming traffic to become visibly larger. Delta",
+              "width": 287.923828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lantern filler body text gives the observer enough ",
+              "width": 262.154297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "incoming traffic to become visibly larger. Delta lantern ",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text gives the observer enough incoming ",
+              "width": 273.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "traffic to become visibly larger. Delta lantern filler body",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "text gives the observer enough incoming traffic to ",
+              "width": 264.591797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "become visibly larger. Delta lantern filler body text ",
+              "width": 268.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "gives the observer enough incoming traffic to become ",
+              "width": 287.941406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "visibly larger. Delta lantern filler body text gives the ",
+              "width": 273.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer enough incoming traffic to become visibly ",
+              "width": 272.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "larger. Delta lantern filler body text gives the observer ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough incoming traffic to become visibly larger. Delta",
+              "width": 287.923828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lantern filler body text gives the observer enough ",
+              "width": 262.154297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 24,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "incoming traffic to become visibly larger. Delta lantern ",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text gives the observer enough incoming ",
+              "width": 273.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "traffic to become visibly larger. Delta lantern filler body",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "text gives the observer enough incoming traffic to ",
+              "width": 264.591797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "become visibly larger. Delta lantern filler body text ",
+              "width": 268.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "gives the observer enough incoming traffic to become ",
+              "width": 287.941406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "visibly larger. Delta lantern filler body text gives the ",
+              "width": 273.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer enough incoming traffic to become visibly ",
+              "width": 272.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "larger. Delta lantern filler body text gives the observer ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough incoming traffic to become visibly larger. Delta",
+              "width": 287.923828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lantern filler body text gives the observer enough ",
+              "width": 262.154297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "incoming traffic to become visibly larger. Delta lantern ",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text gives the observer enough incoming ",
+              "width": 273.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 25,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "traffic to become visibly larger. Delta lantern filler body",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "text gives the observer enough incoming traffic to ",
+              "width": 264.591797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "become visibly larger. Delta lantern filler body text ",
+              "width": 268.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "gives the observer enough incoming traffic to become ",
+              "width": 287.941406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "visibly larger. Delta lantern filler body text gives the ",
+              "width": 273.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer enough incoming traffic to become visibly ",
+              "width": 272.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "larger. Delta lantern filler body text gives the observer ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough incoming traffic to become visibly larger. Delta",
+              "width": 287.923828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lantern filler body text gives the observer enough ",
+              "width": 262.154297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "incoming traffic to become visibly larger. Delta lantern ",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text gives the observer enough incoming ",
+              "width": 273.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "traffic to become visibly larger. Delta lantern filler body",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "text gives the observer enough incoming traffic to ",
+              "width": 264.591797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 26,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "become visibly larger. Delta lantern filler body text ",
+              "width": 268.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "gives the observer enough incoming traffic to become ",
+              "width": 287.941406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "visibly larger. Delta lantern filler body text gives the ",
+              "width": 273.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer enough incoming traffic to become visibly ",
+              "width": 272.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "larger. Delta lantern filler body text gives the observer ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough incoming traffic to become visibly larger. Delta",
+              "width": 287.923828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lantern filler body text gives the observer enough ",
+              "width": 262.154297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "incoming traffic to become visibly larger. Delta lantern ",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text gives the observer enough incoming ",
+              "width": 273.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "traffic to become visibly larger. Delta lantern filler body",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "text gives the observer enough incoming traffic to ",
+              "width": 264.591797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "become visibly larger. Delta lantern filler body text ",
+              "width": 268.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "gives the observer enough incoming traffic to become ",
+              "width": 287.941406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 27,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "visibly larger. Delta lantern filler body text gives the ",
+              "width": 273.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer enough incoming traffic to become visibly ",
+              "width": 272.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "larger. Delta lantern filler body text gives the observer ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough incoming traffic to become visibly larger. Delta",
+              "width": 287.923828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lantern filler body text gives the observer enough ",
+              "width": 262.154297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "incoming traffic to become visibly larger. Delta lantern ",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text gives the observer enough incoming ",
+              "width": 273.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "traffic to become visibly larger. Delta lantern filler body",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "text gives the observer enough incoming traffic to ",
+              "width": 264.591797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "become visibly larger. Delta lantern filler body text ",
+              "width": 268.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "gives the observer enough incoming traffic to become ",
+              "width": 287.941406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "visibly larger. Delta lantern filler body text gives the ",
+              "width": 273.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer enough incoming traffic to become visibly ",
+              "width": 272.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 28,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 158.0625,
+        "lines": [
+          [
+            {
+              "text": "larger. Delta lantern filler body text gives the observer ",
+              "width": 287.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "enough incoming traffic to become visibly larger. Delta",
+              "width": 287.923828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "lantern filler body text gives the observer enough ",
+              "width": 262.154297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "incoming traffic to become visibly larger. Delta lantern ",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "filler body text gives the observer enough incoming ",
+              "width": 273.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "traffic to become visibly larger. Delta lantern filler body",
+              "width": 287.90625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "text gives the observer enough incoming traffic to ",
+              "width": 264.591797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "become visibly larger. Delta lantern filler body text ",
+              "width": 268.119141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "gives the observer enough incoming traffic to become ",
+              "width": 287.941406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "visibly larger. Delta lantern filler body text gives the ",
+              "width": 273.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 29,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 42.6125,
+        "lines": [
+          [
+            {
+              "text": "observer enough incoming traffic to become visibly ",
+              "width": 272.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "larger.",
+              "width": 34.013672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 30,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "test-signal-observer",
+        "x": 24,
+        "y": 34,
+        "w": 312,
+        "h": 63.21875,
+        "lines": [
+          [
+            {
+              "text": "Observed Outline Entries",
+              "width": 134.0625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Count: 4",
+              "width": 45.363281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Pages: 2, 8, 15, 22",
+              "width": 100.740234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 31,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "test-signal-observer",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 46.8125,
+        "lines": [
+          [
+            {
+              "text": "Labels: Alpha Ridge | Beta Hollow | Gamma Harbour ",
+              "width": 283.705078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "| Delta Lantern",
+              "width": 78.498047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-signal-follower",
+        "x": 96,
+        "y": 90.8125,
+        "w": 240,
+        "h": 84,
+        "lines": [
+          [
+            {
+              "text": "Follower Shifted By Observer Summary",
+              "width": 210.732422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Observer Count: 4",
+              "width": 98.044922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Observer Pages: 2, 8, 15, 22",
+              "width": 153.421875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Labels: Alpha Ridge | Beta Hollow | ",
+              "width": 191.009766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "Gamma Harbour | Delta Lantern",
+              "width": 171.193359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 32,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "Observer aftermath text proves that the growing observer ",
+              "width": 307.476563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "is part of ordinary layout flow rather than a disconnected ",
+              "width": 301.5,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "debug overlay. Observer aftermath text proves that the ",
+              "width": 294.152344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "growing observer is part of ordinary layout flow rather than",
+              "width": 309.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "a disconnected debug overlay. Observer aftermath text ",
+              "width": 295.494141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 33,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 34,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 35,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 36,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 37,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 38,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 39,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 40,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 126.45,
+        "lines": [
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay. Observer ",
+              "width": 304.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "aftermath text proves that the growing observer is part of ",
+              "width": 304.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "ordinary layout flow rather than a disconnected debug ",
+              "width": 288.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "overlay. Observer aftermath text proves that the growing ",
+              "width": 302.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "observer is part of ordinary layout flow rather than a ",
+              "width": 277.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "disconnected debug overlay. Observer aftermath text ",
+              "width": 285.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "proves that the growing observer is part of ordinary layout ",
+              "width": 309.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ],
+          [
+            {
+              "text": "flow rather than a disconnected debug overlay.",
+              "width": 248.824219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

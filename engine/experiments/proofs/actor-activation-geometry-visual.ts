@@ -36,15 +36,11 @@ class NodeWriteStreamAdapter {
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 
-function repeatedParagraph(seed: string, repeatCount: number): string {
-    return `${seed} `.repeat(repeatCount).trim();
-}
-
 function buildVisualConfig(): LayoutConfig {
     return {
         layout: {
-            pageSize: { width: 360, height: 480 },
-            margins: { top: 24, right: 24, bottom: 24, left: 24 },
+            pageSize: { width: 520, height: 460 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
             fontFamily: 'Arimo',
             fontSize: 12,
             lineHeight: 1.2
@@ -67,35 +63,35 @@ function buildVisualElements(): Element[] {
     return [
         {
             type: 'chapter-heading',
-            content: 'Locked Prelude Precision Proof',
+            content: 'Actor Activation Board: Geometry',
             properties: {
-                sourceId: 'locked-prelude-heading',
+                sourceId: 'activation-geometry-heading',
                 style: {
                     textAlign: 'center',
                     fontWeight: 700,
                     fontSize: 18,
                     marginTop: 0,
-                    marginBottom: 18
+                    marginBottom: 14
                 }
             }
         },
         {
             type: 'p',
-            content: 'This proof keeps a replay marker before the collector frontier. If settling restores from a later anchored checkpoint, the marker should stay at Render Count: 1 even after the collector learns a later mature signal.',
-            properties: { sourceId: 'locked-prelude-intro' }
+            content: 'Pinned actor grows after wake. Upstream stays fixed. Downstream replays.',
+            properties: { sourceId: 'activation-geometry-intro' }
         },
         {
             type: 'test-replay-marker',
             content: '',
             properties: {
-                sourceId: 'locked-prelude-marker',
-                style: { marginTop: 8, marginBottom: 10 },
+                sourceId: 'activation-geometry-prelude',
+                style: { marginTop: 6, marginBottom: 8 },
                 _testReplayMarker: {
-                    title: 'Locked Prelude\nMust stay at Render Count: 1',
+                    title: 'Upstream Marker\nMust stay at Render Count: 1',
                     backgroundColor: '#fee2e2',
                     borderColor: '#dc2626',
                     color: '#7f1d1d',
-                    height: 68
+                    height: 60
                 }
             }
         },
@@ -103,54 +99,98 @@ function buildVisualElements(): Element[] {
             type: 'test-signal-observer',
             content: '',
             properties: {
-                sourceId: 'locked-prelude-collector',
-                style: { marginTop: 8, marginBottom: 10 },
+                sourceId: 'activation-geometry-observer',
+                style: { marginTop: 8, marginBottom: 8 },
                 _actorSignalObserve: {
-                    topic: 'locked-prelude-entry',
-                    title: 'Precision Collector',
+                    topic: 'activation-geometry-entry',
+                    title: 'Pinned Geometry Actor\nState: grows after wake\nUpdate: geometry',
                     renderMode: 'collector-list',
-                    backgroundColor: '#f8fafc',
-                    borderColor: '#475569',
-                    color: '#0f172a',
-                    baseHeight: 54,
-                    growthPerSignal: 28
+                    backgroundColor: '#fef3c7',
+                    borderColor: '#d97706',
+                    color: '#92400e',
+                    emptyLabel: 'Dormant -> no committed labels yet',
+                    baseHeight: 70,
+                    growthPerSignal: 46
+                }
+            }
+        },
+        {
+            type: 'test-replay-marker',
+            content: '',
+            properties: {
+                sourceId: 'activation-geometry-downstream',
+                style: { marginTop: 6, marginBottom: 8 },
+                _testReplayMarker: {
+                    title: 'Downstream Marker\nShould replay after settle',
+                    backgroundColor: '#dbeafe',
+                    borderColor: '#2563eb',
+                    color: '#1e3a8a',
+                    height: 60
                 }
             }
         },
         {
             type: 'p',
-            content: repeatedParagraph('Early aftermath sits below the collector and should move, but the locked prelude above should not be replayed.', 7),
-            properties: { sourceId: 'locked-prelude-aftermath-1' }
-        },
-        {
-            type: 'test-signal-publisher',
-            content: 'Heading Publisher\nAnchored Entry',
+            content: 'Downstream Region\nThis zone should shift after resettlement.\nReplay marker below proves the shift happened.',
             properties: {
-                sourceId: 'locked-prelude-publisher',
+                sourceId: 'activation-geometry-bridge',
                 style: {
-                    height: 72,
-                    marginBottom: 10,
+                    marginBottom: 8,
                     paddingTop: 10,
                     paddingRight: 10,
                     paddingBottom: 10,
                     paddingLeft: 10,
-                    backgroundColor: '#dbeafe',
-                    borderColor: '#2563eb',
+                    backgroundColor: '#f3f4f6',
+                    borderColor: '#9ca3af',
+                    borderWidth: 1,
+                    color: '#374151',
+                    height: 76
+                }
+            }
+        },
+        {
+            type: 'test-signal-publisher',
+            content: 'Event Source Tile\nTopic: activation-geometry-entry\nCommitted Label: Wake the actor',
+            properties: {
+                sourceId: 'activation-geometry-publisher',
+                style: {
+                    height: 78,
+                    marginBottom: 8,
+                    paddingTop: 10,
+                    paddingRight: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    backgroundColor: '#dcfce7',
+                    borderColor: '#16a34a',
                     borderWidth: 2,
-                    color: '#1e3a8a',
+                    color: '#166534',
                     fontWeight: 700
                 },
                 _actorSignalPublish: {
-                    topic: 'locked-prelude-entry',
-                    signalKey: 'locked-prelude-entry:1',
-                    payload: { label: 'Anchored Entry' }
+                    topic: 'activation-geometry-entry',
+                    signalKey: 'activation-geometry-entry:1',
+                    payload: { label: 'Wake the actor' }
                 }
             }
         },
         {
             type: 'p',
-            content: repeatedParagraph('Late aftermath proves the world resumed after the collector learned the later mature signal.', 5),
-            properties: { sourceId: 'locked-prelude-aftermath-2' }
+            content: 'Expected Result\nGeometry actor grows.\nUpstream marker stays at 1.\nDownstream marker increments.',
+            properties: {
+                sourceId: 'activation-geometry-outro',
+                style: {
+                    marginBottom: 0,
+                    paddingTop: 10,
+                    paddingRight: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    backgroundColor: '#eef2ff',
+                    borderColor: '#6366f1',
+                    borderWidth: 1,
+                    color: '#3730a3',
+                    height: 70
+                }
+            }
         }
     ];
 }
@@ -168,7 +208,7 @@ function resolveArg(flag: string): string | undefined {
 async function main(): Promise<void> {
     const outputArg = resolveArg('--output');
     const snapshotArg = resolveArg('--snapshot');
-    const defaultBase = path.resolve(SCRIPT_DIR, '..', '..', 'tests', 'output', 'actor-communication-locked-prelude-visual');
+    const defaultBase = path.resolve(SCRIPT_DIR, '..', '..', 'tests', 'output', 'actor-activation-geometry-visual');
     const outputPath = path.resolve(outputArg || `${defaultBase}.pdf`);
     const snapshotPath = path.resolve(snapshotArg || `${defaultBase}.pages.json`);
 
@@ -177,15 +217,14 @@ async function main(): Promise<void> {
 
     const LocalFontManager = await loadLocalFontManager();
     const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
-    const config = buildVisualConfig();
-    const engine = new LayoutEngine(config, runtime);
+    const engine = new LayoutEngine(buildVisualConfig(), runtime);
     engine.setPackagerFactory(experimentFactory);
-
     await engine.waitForFonts();
+
     const pages = engine.simulate(buildVisualElements());
 
     const context = new PdfContext({
-        size: [config.layout.pageSize.width, config.layout.pageSize.height],
+        size: [520, 460],
         margins: { top: 0, left: 0, right: 0, bottom: 0 },
         autoFirstPage: false,
         bufferPages: false
@@ -193,18 +232,18 @@ async function main(): Promise<void> {
     const outputStream = new NodeWriteStreamAdapter(outputPath);
     context.pipe(outputStream as any);
 
-    const renderer = new Renderer(config, false, runtime);
+    const renderer = new Renderer(buildVisualConfig(), false, runtime);
     await renderer.render(pages, context);
     await outputStream.waitForFinish();
 
     fs.writeFileSync(snapshotPath, JSON.stringify(summarizePages(pages), null, 2) + '\n', 'utf8');
 
-    console.log(`[actor-communication-locked-prelude-visual] pdf=${outputPath}`);
-    console.log(`[actor-communication-locked-prelude-visual] snapshot=${snapshotPath}`);
-    console.log(`[actor-communication-locked-prelude-visual] pages=${pages.length}`);
+    console.log(`[actor-activation-geometry-visual] pdf=${outputPath}`);
+    console.log(`[actor-activation-geometry-visual] snapshot=${snapshotPath}`);
+    console.log(`[actor-activation-geometry-visual] pages=${pages.length}`);
 }
 
 main().catch((error) => {
-    console.error('[actor-communication-locked-prelude-visual] FAILED', error);
+    console.error('[actor-activation-geometry-visual] FAILED', error);
     process.exit(1);
 });

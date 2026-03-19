@@ -83,6 +83,10 @@ export class ActorEventBus {
         return this.signals.filter((signal) => signal.topic === topic);
     }
 
+    getSequence(): number {
+        return this.sequence;
+    }
+
     captureSnapshot(): ActorEventBusSnapshot {
         return {
             signals: this.signals.map((signal) => ({

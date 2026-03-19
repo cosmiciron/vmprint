@@ -1,0 +1,105 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 340, "height": 460 },
+    "margins": { "top": 40, "right": 40, "bottom": 40, "left": 40 },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "lang": "en",
+    "direction": "auto"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "p": { "marginBottom": 10, "allowLineSplit": true, "orphans": 2, "widows": 2 },
+    "h1": { "fontSize": 18, "fontWeight": "bold", "marginTop": 0, "marginBottom": 12, "keepWithNext": true },
+    "h2": { "fontSize": 14, "fontWeight": "bold", "marginTop": 10, "marginBottom": 8, "keepWithNext": true }
+  },
+  "elements": [
+    {
+      "type": "toc",
+      "content": "",
+      "properties": {
+        "sourceId": "main-toc",
+        "toc": {
+          "title": "Contents",
+          "levelFilter": [1, 2],
+          "style": {
+            "marginBottom": 16,
+            "paddingTop": 8,
+            "paddingBottom": 8,
+            "paddingLeft": 12,
+            "paddingRight": 12,
+            "backgroundColor": "#f8fafc",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 1,
+            "fontSize": 11,
+            "lineHeight": 1.4
+          }
+        }
+      }
+    },
+    {
+      "type": "h1",
+      "content": "Chapter One: The Signal",
+      "properties": { "sourceId": "ch1" }
+    },
+    {
+      "type": "p",
+      "content": "The first chapter opens with an argument that has no easy resolution. Every sentence carries the weight of what came before it, and the burden of what must follow.",
+      "properties": { "sourceId": "ch1-p1" }
+    },
+    {
+      "type": "p",
+      "content": "A second paragraph extends the chapter body, giving the layout engine enough content to push subsequent headings onto later pages and make the TOC page references meaningful.",
+      "properties": { "sourceId": "ch1-p2" }
+    },
+    {
+      "type": "p",
+      "content": "A third paragraph ensures this chapter occupies substantial vertical space before the next heading appears.",
+      "properties": { "sourceId": "ch1-p3" }
+    },
+    {
+      "type": "h2",
+      "content": "Section 1.1: First Light",
+      "properties": { "sourceId": "sec1-1" }
+    },
+    {
+      "type": "p",
+      "content": "The subsection adds depth to the chapter. Its heading should appear in the TOC at a lower level than the chapter heading, demonstrating level filtering works correctly.",
+      "properties": { "sourceId": "sec1-1-p1" }
+    },
+    {
+      "type": "p",
+      "content": "More body text fills the section, ensuring this portion of the document takes meaningful vertical space before the next chapter heading.",
+      "properties": { "sourceId": "sec1-1-p2" }
+    },
+    {
+      "type": "h1",
+      "content": "Chapter Two: The Resettlement",
+      "properties": { "sourceId": "ch2" }
+    },
+    {
+      "type": "p",
+      "content": "The second chapter begins. Its heading should appear in the TOC on the correct page, which can only be determined after the full layout has settled. This is the live reactive proof.",
+      "properties": { "sourceId": "ch2-p1" }
+    },
+    {
+      "type": "p",
+      "content": "Additional body text keeps the second chapter substantive enough to push the third chapter onto yet another page.",
+      "properties": { "sourceId": "ch2-p2" }
+    },
+    {
+      "type": "h1",
+      "content": "Chapter Three: Settled Truth",
+      "properties": { "sourceId": "ch3" }
+    },
+    {
+      "type": "p",
+      "content": "The third chapter. Its presence in the TOC proves that all three chapters were discovered during layout and that the TOC grew from committed heading signals, not from a post-simulation artifact pass.",
+      "properties": { "sourceId": "ch3-p1" }
+    }
+  ]
+}

@@ -273,6 +273,12 @@ export interface ElementProperties extends Record<string, any> {
     marginBottom?: number;
     paginationContinuation?: Record<string, any>;
     pageReservationAfter?: number;
+    /** Table of Contents options. Declared on `toc` elements. */
+    toc?: {
+        title?: string;
+        levelFilter?: number[];
+        style?: Record<string, unknown>;
+    };
     pageOverrides?: {
         header?: PageRegionContent | null;
         footer?: PageRegionContent | null;
@@ -493,6 +499,7 @@ export interface Box {
 }
 
 export interface BoxMeta {
+    actorId?: string;
     sourceId: string;
     engineKey: string;
     sourceType: string;

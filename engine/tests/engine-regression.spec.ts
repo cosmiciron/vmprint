@@ -1229,6 +1229,87 @@ async function run() {
                 }
             );
         }
+        if (fixture.name === '24-toc-live-reactive.json') {
+            check(
+                `${fixture.name} live TOC reactive signals`,
+                'TOC actor placed before headings renders entries from committed heading signals, grows from signal accumulation, and body content follows after the TOC',
+                () => {
+                    const tocBoxes = pagesA.flatMap((page, pageIndex) =>
+                        page.boxes.filter((box: any) => box.type === 'toc').map((box: any) => ({ pageIndex, box }))
+                    );
+                    assert.ok(tocBoxes.length > 0, `${fixture.name}: expected at least one toc box in output`);
+
+                    const tocText = tocBoxes.map(({ box }: any) => {
+                        if (typeof box.content === 'string') return box.content;
+                        if (Array.isArray(box.lines)) {
+                            return box.lines.map((line: any[]) => line.map((seg: any) => seg.text || '').join('')).join(' ');
+                        }
+                        return '';
+                    }).join('\n');
+
+                    assert.match(tocText, /Chapter One/, `${fixture.name}: TOC should include Chapter One heading`);
+                    assert.match(tocText, /Chapter Two/, `${fixture.name}: TOC should include Chapter Two heading`);
+                    assert.match(tocText, /Chapter Three/, `${fixture.name}: TOC should include Chapter Three heading`);
+                    assert.match(tocText, /Section 1\.1/, `${fixture.name}: TOC should include h2 section heading`);
+
+                    // The TOC is placed first; headings appear later — prove the TOC box
+                    // precedes the first h1 heading box in document order
+                    const firstTocPage = tocBoxes[0].pageIndex;
+                    const headingBoxes = pagesA.flatMap((page, pageIndex) =>
+                        page.boxes.filter((box: any) => /^h[1-6]$/.test(box.meta?.sourceType ?? '') || /^h[1-6]$/.test(box.meta?.semanticRole ?? '')).map((box: any) => ({ pageIndex, box }))
+                    );
+                    assert.ok(headingBoxes.length >= 3, `${fixture.name}: expected at least three heading boxes`);
+                    const firstHeadingPage = headingBoxes[0].pageIndex;
+                    assert.ok(firstTocPage <= firstHeadingPage, `${fixture.name}: TOC should appear on same page or before first heading`);
+                }
+            );
+        }
+        if (fixture.name === '25-total-pages-footer.json') {
+            check(
+                `${fixture.name} total-pages content-only reactive update`,
+                'footer with {totalPages} token renders the actual final page count on every page, not a placeholder, without a second simulate() call',
+                () => {
+                    const totalPages = pagesA.length;
+                    const report = engine.getLastSimulationReportReader();
+                    assert.ok(totalPages >= 2, `${fixture.name}: expected at least 2 pages`);
+
+                    for (let pageIndex = 0; pageIndex < pagesA.length; pageIndex++) {
+                        const page = pagesA[pageIndex];
+                        const footerBoxes = page.boxes.filter((box: any) => box.meta?.sourceType === 'footer');
+                        assert.ok(footerBoxes.length > 0, `${fixture.name}: page ${pageIndex} should have footer boxes`);
+
+                        const footerText = footerBoxes.map((box: any) => {
+                            if (typeof box.content === 'string') return box.content;
+                            if (Array.isArray(box.lines)) {
+                                return box.lines.map((line: any[]) => line.map((seg: any) => seg.text || '').join('')).join(' ');
+                            }
+                            return '';
+                        }).join('\n');
+
+                        const expectedPhysical = pageIndex + 1;
+                        assert.match(
+                            footerText,
+                            new RegExp(`Page ${expectedPhysical} of ${totalPages}`),
+                            `${fixture.name}: page ${pageIndex} footer should read "Page ${expectedPhysical} of ${totalPages}", got: ${footerText.trim()}`
+                        );
+                        assert.doesNotMatch(
+                            footerText,
+                            /\{totalPages\}/,
+                            `${fixture.name}: page ${pageIndex} footer should not contain unresolved {totalPages} token`
+                        );
+                    }
+
+                    assert.ok(
+                        Number(report.profile.actorUpdateContentOnlyCalls || 0) > 0,
+                        `${fixture.name}: expected content-only actor updates for total-pages footer`
+                    );
+                    assert.ok(
+                        Number(report.profile.actorUpdateRedrawCalls || 0) > 0,
+                        `${fixture.name}: expected in-place redraw calls for total-pages footer`
+                    );
+                }
+            );
+        }
         if (fixture.name === '17-header-footer-test.json') {
             check(
                 `${fixture.name} header/footer test signals`,

@@ -257,7 +257,7 @@ export class FragmentSessionRuntime {
                 y: (box.y || 0) + state.currentY + state.layoutDelta
             };
             if (committed.meta) {
-                committed.meta = { ...committed.meta, pageIndex: state.pageIndex };
+                committed.meta = { ...committed.meta, actorId: actor.actorId, pageIndex: state.pageIndex };
             }
             return committed;
         });

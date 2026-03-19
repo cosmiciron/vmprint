@@ -101,6 +101,20 @@ export type LayoutProfileMetrics = {
     observerSettleCalls: number;
     observerActorBoundarySettles: number;
     observerPageBoundarySettles: number;
+    actorActivationAwakenCalls: number;
+    actorActivationSignalWakeCalls: number;
+    actorActivationLifecycleWakeCalls: number;
+    actorActivationScheduledWakeCalls: number;
+    actorActivationDormantSkips: number;
+    actorUpdateCalls: number;
+    actorUpdateMs: number;
+    actorUpdateContentOnlyCalls: number;
+    actorUpdateGeometryCalls: number;
+    actorUpdateNoopCalls: number;
+    actorUpdateRedrawCalls: number;
+    actorUpdateResettlementCycles: number;
+    actorUpdateRepeatedStateDetections: number;
+    actorUpdateResettlementCapHits: number;
 };
 
 export type RegionReservation = {

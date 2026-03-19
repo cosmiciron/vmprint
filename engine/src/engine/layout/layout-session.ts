@@ -1,5 +1,5 @@
 import { performance } from 'node:perf_hooks';
-import type { Box, Page, PageReservationSelector } from '../types';
+import type { Box, Page, PageReservationSelector, BoxMeta } from '../types';
 import type { EngineRuntime } from '../runtime';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
@@ -302,7 +302,21 @@ export class LayoutSession {
         observerCheckpointSweepCalls: 0,
         observerSettleCalls: 0,
         observerActorBoundarySettles: 0,
-        observerPageBoundarySettles: 0
+        observerPageBoundarySettles: 0,
+        actorActivationAwakenCalls: 0,
+        actorActivationSignalWakeCalls: 0,
+        actorActivationLifecycleWakeCalls: 0,
+        actorActivationScheduledWakeCalls: 0,
+        actorActivationDormantSkips: 0,
+        actorUpdateCalls: 0,
+        actorUpdateMs: 0,
+        actorUpdateContentOnlyCalls: 0,
+        actorUpdateGeometryCalls: 0,
+        actorUpdateNoopCalls: 0,
+        actorUpdateRedrawCalls: 0,
+        actorUpdateResettlementCycles: 0,
+        actorUpdateRepeatedStateDetections: 0,
+        actorUpdateResettlementCapHits: 0
     };
     private paginationLoopState: PaginationLoopState | null = null;
     private speculativeBranchSequence = 0;
@@ -317,9 +331,10 @@ export class LayoutSession {
         this.runtime = options.runtime;
         this.collaborators = options.collaborators ?? [];
         this.eventDispatcher = new EventDispatcher(this.collaborators);
-        this.actorCommunicationRuntime = new ActorCommunicationRuntime(
-            () => this.recordProfile('observerCheckpointSweepCalls', 1)
-        );
+        this.actorCommunicationRuntime = new ActorCommunicationRuntime({
+            recordObserverCheckpointSweep: () => this.recordProfile('observerCheckpointSweepCalls', 1),
+            recordProfile: (metric, delta) => this.recordProfile(metric, delta)
+        });
         this.fragmentSessionRuntime = new FragmentSessionRuntime(this.kernel, {
             notifyActorSpawn: (actor) => this.notifyActorSpawn(actor),
             notifyContinuationEnqueued: (predecessor, successor) => this.notifyContinuationEnqueued(predecessor, successor),
@@ -463,6 +478,10 @@ export class LayoutSession {
 
     getActorSignals(topic?: string): readonly ActorSignal[] {
         return this.actorCommunicationRuntime.getActorSignals(topic);
+    }
+
+    getActorSignalSequence(): number {
+        return this.actorCommunicationRuntime.getActorSignalSequence();
     }
 
     notifyActorSpawn(actor: PackagerUnit): void {
@@ -736,6 +755,49 @@ export class LayoutSession {
 
     onSimulationComplete(): void {
         this.sessionCollaborationRuntime.onSimulationComplete();
+    }
+
+    applyContentOnlyActorUpdates(
+        pages: Page[],
+        currentPageBoxes: Box[],
+        actors: readonly PackagerUnit[],
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>
+    ): number {
+        let patchedActors = 0;
+        for (const actor of actors) {
+            const refs = collectActorBoxRefs(pages, currentPageBoxes, actor.actorId);
+            if (refs.length === 0) continue;
+
+            const first = refs[0].box;
+            const pageIndex = Number(first.meta?.pageIndex ?? 0);
+            const cursorY = refs.reduce((best, ref) => Math.min(best, Number(ref.box.y || 0)), Number.POSITIVE_INFINITY);
+            const context: PackagerContext = {
+                ...contextBase,
+                pageIndex,
+                cursorY: Number.isFinite(cursorY) ? cursorY : 0
+            };
+            const availableWidth = Math.max(0, contextBase.pageWidth - contextBase.margins.left - contextBase.margins.right);
+            const availableHeight = Math.max(0, contextBase.pageHeight - context.cursorY - contextBase.margins.bottom);
+            actor.prepare(availableWidth, availableHeight, context);
+            const rendered = actor.emitBoxes(availableWidth, availableHeight, context) ?? [];
+
+            if (rendered.length !== refs.length) {
+                throw new Error(
+                    `[LayoutSession] content-only actor "${actor.actorId}" changed box count (${refs.length} -> ${rendered.length}).`
+                );
+            }
+
+            for (let index = 0; index < refs.length; index++) {
+                const oldBox = refs[index].box;
+                const nextBox = rendered[index];
+                assertContentOnlyGeometry(actor.actorId, oldBox, nextBox);
+                refs[index].container[refs[index].index] = transplantBoxContent(oldBox, nextBox);
+            }
+
+            this.recordProfile('actorUpdateRedrawCalls', 1);
+            patchedActors += 1;
+        }
+        return patchedActors;
     }
 
     // Collaborator-facing artifact publication. Downstream consumers should prefer
@@ -1036,4 +1098,53 @@ export class LayoutSession {
         this.recordProfile('flowResolveSignatureUniqueCalls', 1);
     }
 
+}
+
+type BoxRef = {
+    container: Box[];
+    index: number;
+    box: Box;
+};
+
+function collectActorBoxRefs(pages: Page[], currentPageBoxes: Box[], actorId: string): BoxRef[] {
+    const refs: BoxRef[] = [];
+    for (const page of pages) {
+        for (let index = 0; index < page.boxes.length; index++) {
+            const box = page.boxes[index];
+            if (box.meta?.actorId === actorId) {
+                refs.push({ container: page.boxes, index, box });
+            }
+        }
+    }
+    for (let index = 0; index < currentPageBoxes.length; index++) {
+        const box = currentPageBoxes[index];
+        if (box.meta?.actorId === actorId) {
+            refs.push({ container: currentPageBoxes, index, box });
+        }
+    }
+    return refs;
+}
+
+function assertContentOnlyGeometry(actorId: string, committed: Box, next: Box): void {
+    const tolerance = 0.01;
+    if (Math.abs(Number(committed.w || 0) - Number(next.w || 0)) > tolerance) {
+        throw new Error(`[LayoutSession] content-only actor "${actorId}" changed box width.`);
+    }
+    if (Math.abs(Number(committed.h || 0) - Number(next.h || 0)) > tolerance) {
+        throw new Error(`[LayoutSession] content-only actor "${actorId}" changed box height.`);
+    }
+}
+
+function transplantBoxContent(committed: Box, next: Box): Box {
+    const nextMeta: BoxMeta | undefined = next.meta
+        ? { ...committed.meta, ...next.meta, actorId: committed.meta?.actorId, pageIndex: committed.meta?.pageIndex }
+        : committed.meta;
+    return {
+        ...next,
+        x: committed.x,
+        y: committed.y,
+        w: committed.w,
+        h: committed.h,
+        meta: nextMeta
+    };
 }

@@ -30,6 +30,7 @@ type SignalObserveSpec = {
     emptyLabel?: string;
     baseHeight?: number;
     growthPerSignal?: number;
+    oscillateHeights?: number[];
 };
 
 type SignalFollowSpec = {
@@ -134,6 +135,8 @@ export class TestSignalObserverPackager implements PackagerUnit {
     private geometrySignature: string | null = null;
     private firstCommittedPageIndex: number | null = null;
     private firstCommittedActorIndex: number | null = null;
+    private currentResolvedHeightOverride: number | null = null;
+    private oscillationStep = 0;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -214,7 +217,19 @@ export class TestSignalObserverPackager implements PackagerUnit {
     getMarginTop(): number { return this.base?.getMarginTop() ?? this.flowBox.marginTop; }
     getMarginBottom(): number { return this.base?.getMarginBottom() ?? this.flowBox.marginBottom; }
 
+    getCommittedSignalSubscriptions(): readonly string[] {
+        const spec = (this.flowBox.properties?._actorSignalObserve || {}) as SignalObserveSpec;
+        return spec.topic ? [spec.topic] : [];
+    }
+
+    updateCommittedState(context: PackagerContext): ObservationResult {
+        return this.observeCommittedSignals(context);
+    }
+
     observeCommittedSignals(context: PackagerContext): ObservationResult {
+        if (this.firstCommittedPageIndex === null) {
+            return { changed: false, geometryChanged: false, updateKind: 'none' };
+        }
         const spec = (this.flowBox.properties?._actorSignalObserve || {}) as SignalObserveSpec;
         const observed = this.readSignals(context);
         const labels = observed
@@ -227,7 +242,7 @@ export class TestSignalObserverPackager implements PackagerUnit {
             : baseTitle;
         const baseHeight = Math.max(0, Number(spec.baseHeight) || 0);
         const growthPerSignal = Math.max(0, Number(spec.growthPerSignal) || 0);
-        const resolvedHeight = baseHeight + observed.length * growthPerSignal;
+        const resolvedHeight = this.resolveNextObservedHeight(spec, observed.length, baseHeight, growthPerSignal);
         const content = this.buildObservedContent(spec, title, observed.length, uniquePages, labels);
         const nextObservationSignature = JSON.stringify({
             topic: spec.topic || 'probe',
@@ -237,15 +252,20 @@ export class TestSignalObserverPackager implements PackagerUnit {
             height: resolvedHeight
         });
 
-        const changed = this.observationSignature !== nextObservationSignature;
         const geometryChanged = this.geometrySignature !== nextGeometrySignature;
+        const changed = this.observationSignature !== nextObservationSignature || geometryChanged;
 
         this.observationSignature = nextObservationSignature;
         this.geometrySignature = nextGeometrySignature;
+        this.currentResolvedHeightOverride = resolvedHeight;
+        if (observed.length > 0 && Array.isArray(spec.oscillateHeights) && spec.oscillateHeights.length > 0) {
+            this.oscillationStep += 1;
+        }
 
         return {
             changed,
             geometryChanged,
+            updateKind: geometryChanged ? 'geometry' : (changed ? 'content-only' : 'none'),
             earliestAffectedFrontier: geometryChanged
                 ? {
                     pageIndex: this.firstCommittedPageIndex ?? 0,
@@ -275,7 +295,7 @@ export class TestSignalObserverPackager implements PackagerUnit {
             : baseTitle;
         const baseHeight = Math.max(0, Number(spec.baseHeight) || 0);
         const growthPerSignal = Math.max(0, Number(spec.growthPerSignal) || 0);
-        const resolvedHeight = baseHeight + observed.length * growthPerSignal;
+        const resolvedHeight = this.currentResolvedHeightOverride ?? (baseHeight + observed.length * growthPerSignal);
         const content = this.buildObservedContent(spec, title, observed.length, uniquePages, labels);
         this.observationSignature = JSON.stringify({
             topic: spec.topic || 'probe',
@@ -342,6 +362,24 @@ export class TestSignalObserverPackager implements PackagerUnit {
         }
 
         return `${title}\nCount: ${observedCount}\nPages: ${uniquePages.map((page) => page + 1).join(', ')}${labels.length > 0 ? `\nLabels: ${labels.join(' | ')}` : ''}`;
+    }
+
+    private resolveNextObservedHeight(
+        spec: SignalObserveSpec,
+        observedCount: number,
+        baseHeight: number,
+        growthPerSignal: number
+    ): number {
+        const oscillateHeights = Array.isArray(spec.oscillateHeights)
+            ? spec.oscillateHeights
+                .map((height) => Math.max(0, Number(height) || 0))
+                .filter((height) => Number.isFinite(height))
+            : [];
+        if (observedCount > 0 && oscillateHeights.length > 0) {
+            return oscillateHeights[this.oscillationStep % oscillateHeights.length];
+        }
+
+        return baseHeight + observedCount * growthPerSignal;
     }
 
     private publishSummarySignal(context: PackagerContext, observed: readonly ReturnType<PackagerContext['readActorSignals']>[number][]): void {

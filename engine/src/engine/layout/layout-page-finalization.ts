@@ -4,6 +4,8 @@ import {
     LayoutSession,
 } from './layout-session';
 import type { LayoutCollaborator, PageOverrideState, PageSurface } from './layout-session-types';
+import type { ActorSignal } from './actor-event-bus';
+import type { LayoutBox, ObservationResult, PackagerContext, PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
 
 type RegionRect = {
     x: number;
@@ -17,11 +19,14 @@ type FinalizePagesCallbacks = {
         content: PageRegionContent,
         rect: RegionRect,
         pageIndex: number,
-        sourceType: 'header' | 'footer'
+        sourceType: 'header' | 'footer',
+        actorId?: string
     ) => Box[];
 };
 
 export class PageRegionCollaborator implements LayoutCollaborator {
+    private reactiveRegionSequence = 0;
+
     constructor(
         private readonly config: LayoutConfig,
         private readonly callbacks: FinalizePagesCallbacks
@@ -36,10 +41,36 @@ export class PageRegionCollaborator implements LayoutCollaborator {
         const logicalNumber = session.allocateLogicalPageNumber(usesLogical);
         const physicalPageNumber = page.index + 1;
 
-        const headerContent = materializePageTokens(resolved.header, physicalPageNumber, logicalNumber);
-        const footerContent = materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber);
         const headerRect = getHeaderRect(this.config, page);
         const footerRect = getFooterRect(this.config, page);
+
+        const headerActor = createReactivePageRegionActor(
+            resolved.header,
+            headerRect,
+            page.index,
+            physicalPageNumber,
+            logicalNumber,
+            'header',
+            this.callbacks,
+            ++this.reactiveRegionSequence
+        );
+        const footerActor = createReactivePageRegionActor(
+            resolved.footer,
+            footerRect,
+            page.index,
+            physicalPageNumber,
+            logicalNumber,
+            'footer',
+            this.callbacks,
+            ++this.reactiveRegionSequence
+        );
+        const headerContent = headerActor
+            ? headerActor.emitCurrentBoxes()
+            : (resolved.header ? this.callbacks.layoutRegion(materializePageTokens(resolved.header, physicalPageNumber, logicalNumber), headerRect, page.index, 'header') : []);
+        const footerContent = footerActor
+            ? footerActor.emitCurrentBoxes()
+            : (resolved.footer ? this.callbacks.layoutRegion(materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber), footerRect, page.index, 'footer') : []);
+
         const viewport = session.sessionWorldRuntime.createViewportDescriptor({
             pageIndex: page.index,
             pageWidth: page.width,
@@ -50,15 +81,18 @@ export class PageRegionCollaborator implements LayoutCollaborator {
         });
         const worldSpace = session.sessionWorldRuntime.createWorldSpace(page.index, page.width, page.height);
 
-        if (headerContent) {
-            surface.boxes.push(
-                ...this.callbacks.layoutRegion(headerContent, headerRect, page.index, 'header')
-            );
+        if (headerContent.length > 0) {
+            surface.boxes.push(...headerContent);
         }
-        if (footerContent) {
-            surface.boxes.push(
-                ...this.callbacks.layoutRegion(footerContent, footerRect, page.index, 'footer')
-            );
+        if (footerContent.length > 0) {
+            surface.boxes.push(...footerContent);
+        }
+
+        if (headerActor) {
+            session.notifyActorSpawn(headerActor);
+        }
+        if (footerActor) {
+            session.notifyActorSpawn(footerActor);
         }
 
         session.recordPageFinalization({
@@ -70,14 +104,15 @@ export class PageRegionCollaborator implements LayoutCollaborator {
             overrideSourceId: findOverrideSourceId(page, override),
             headerOverride: resolveOverrideState(override?.header),
             footerOverride: resolveOverrideState(override?.footer),
-            renderedHeader: !!headerContent,
-            renderedFooter: !!footerContent,
+            renderedHeader: headerContent.length > 0,
+            renderedFooter: footerContent.length > 0,
             worldSpace,
             viewport
         });
     }
 
     onSimulationStart(session: LayoutSession): void {
+        this.reactiveRegionSequence = 0;
         session.resetLogicalPageNumbering(Number(this.config.layout.pageNumberStart ?? 1));
     }
 }
@@ -172,11 +207,13 @@ export function findOverrideSourceId(page: Page, winningOverride: PageOverrideCa
     return null;
 }
 
+type RegionElement = { content?: string; children?: any[]; slots?: Array<{ elements?: any[] }>; zones?: Array<{ elements?: any[] }> };
+
 function hasLogicalPageNumberTokenInText(text: string): boolean {
     return text.includes('{logicalPageNumber}') || text.includes('{pageNumber}');
 }
 
-function elementContainsLogicalPageNumber(element: { content?: string; children?: any[]; slots?: Array<{ elements?: any[] }>; zones?: Array<{ elements?: any[] }> }): boolean {
+function elementContainsLogicalPageNumber(element: RegionElement): boolean {
     if (typeof element.content === 'string' && hasLogicalPageNumberTokenInText(element.content)) return true;
     if (Array.isArray(element.children) && element.children.some((child) => elementContainsLogicalPageNumber(child))) {
         return true;
@@ -195,32 +232,49 @@ export function regionContainsLogicalPageNumber(content: PageRegionContent | nul
     return (content.elements || []).some((element) => elementContainsLogicalPageNumber(element));
 }
 
+function elementContainsTotalPages(element: RegionElement): boolean {
+    if (typeof element.content === 'string' && element.content.includes('{totalPages}')) return true;
+    if (Array.isArray(element.children) && element.children.some((child) => elementContainsTotalPages(child))) return true;
+    if (Array.isArray(element.slots) && element.slots.some((slot) => Array.isArray(slot.elements) && slot.elements.some((child) => elementContainsTotalPages(child)))) return true;
+    if (Array.isArray(element.zones) && element.zones.some((zone) => Array.isArray(zone.elements) && zone.elements.some((child) => elementContainsTotalPages(child)))) return true;
+    return false;
+}
+
+export function regionContainsTotalPages(content: PageRegionContent | null): boolean {
+    if (!content) return false;
+    return (content.elements || []).some((element) => elementContainsTotalPages(element));
+}
+
 function replaceToken(text: string, token: string, value: string): string {
     return text.split(token).join(value);
 }
 
-function replacePageTokens(text: string, physicalPageNumber: number, logicalPageNumber: number | null): string {
+function replacePageTokens(text: string, physicalPageNumber: number, logicalPageNumber: number | null, totalPageCount?: number): string {
     let out = replaceToken(text, '{physicalPageNumber}', String(physicalPageNumber));
     const logicalValue = logicalPageNumber === null ? '' : String(logicalPageNumber);
     out = replaceToken(out, '{logicalPageNumber}', logicalValue);
     out = replaceToken(out, '{pageNumber}', logicalValue);
+    if (totalPageCount !== undefined) {
+        out = replaceToken(out, '{totalPages}', String(totalPageCount));
+    }
     return out;
 }
 
 function cloneElementWithPageTokens<T extends { content?: string; children?: T[]; slots?: Array<{ elements?: T[] }>; zones?: Array<{ elements?: T[] }> }>(
     element: T,
     physicalPageNumber: number,
-    logicalPageNumber: number | null
+    logicalPageNumber: number | null,
+    totalPageCount?: number
 ): T {
     return {
         ...element,
         ...(typeof element.content === 'string'
-            ? { content: replacePageTokens(element.content, physicalPageNumber, logicalPageNumber) }
+            ? { content: replacePageTokens(element.content, physicalPageNumber, logicalPageNumber, totalPageCount) }
             : {}),
         ...(Array.isArray(element.children)
             ? {
                 children: element.children.map((child) =>
-                    cloneElementWithPageTokens(child, physicalPageNumber, logicalPageNumber)
+                    cloneElementWithPageTokens(child, physicalPageNumber, logicalPageNumber, totalPageCount)
                 )
             }
             : {}),
@@ -231,7 +285,7 @@ function cloneElementWithPageTokens<T extends { content?: string; children?: T[]
                     ...(Array.isArray(slot.elements)
                         ? {
                             elements: slot.elements.map((child) =>
-                                cloneElementWithPageTokens(child, physicalPageNumber, logicalPageNumber)
+                                cloneElementWithPageTokens(child, physicalPageNumber, logicalPageNumber, totalPageCount)
                             )
                         }
                         : {})
@@ -245,7 +299,7 @@ function cloneElementWithPageTokens<T extends { content?: string; children?: T[]
                     ...(Array.isArray(zone.elements)
                         ? {
                             elements: zone.elements.map((child) =>
-                                cloneElementWithPageTokens(child, physicalPageNumber, logicalPageNumber)
+                                cloneElementWithPageTokens(child, physicalPageNumber, logicalPageNumber, totalPageCount)
                             )
                         }
                         : {})
@@ -258,13 +312,34 @@ function cloneElementWithPageTokens<T extends { content?: string; children?: T[]
 function materializePageTokens(
     content: PageRegionContent | null,
     physicalPageNumber: number,
-    logicalPageNumber: number | null
+    logicalPageNumber: number | null,
+    totalPageCount?: number
 ): PageRegionContent | null {
     if (!content) return null;
     return {
         ...content,
         elements: content.elements.map((element) =>
-            cloneElementWithPageTokens(element, physicalPageNumber, logicalPageNumber)
+            cloneElementWithPageTokens(element, physicalPageNumber, logicalPageNumber, totalPageCount)
+        )
+    };
+}
+
+function materializeReactivePageTokens(
+    content: PageRegionContent | null,
+    physicalPageNumber: number,
+    logicalPageNumber: number | null,
+    totalPageCount: number | null
+): PageRegionContent | null {
+    if (!content) return null;
+    return {
+        ...content,
+        elements: content.elements.map((element) =>
+            cloneElementWithPageTokens(
+                element,
+                physicalPageNumber,
+                logicalPageNumber,
+                totalPageCount ?? 0
+            )
         )
     };
 }
@@ -291,6 +366,149 @@ function getFooterRect(config: LayoutConfig, page: Page): RegionRect {
         w: Math.max(0, page.width - margins.left - margins.right),
         h: Math.max(0, margins.bottom - insetTop - insetBottom)
     };
+}
+
+type PageRegionActorSourceType = 'header' | 'footer';
+
+class ReactivePageRegionActor implements PackagerUnit {
+    readonly actorKind = 'page-region';
+    readonly fragmentIndex = 0;
+    readonly pageBreakBefore = false;
+    readonly keepWithNext = false;
+    private readonly sourceType: PageRegionActorSourceType;
+    private readonly pageIndex: number;
+    private readonly physicalPageNumber: number;
+    private readonly logicalPageNumber: number | null;
+    private readonly content: PageRegionContent;
+    private readonly rect: RegionRect;
+    private readonly callbacks: FinalizePagesCallbacks;
+    private totalPageCount: number | null = null;
+    private lastSeenSignalSequence = -1;
+
+    constructor(input: {
+        actorId: string;
+        sourceId: string;
+        sourceType: PageRegionActorSourceType;
+        pageIndex: number;
+        physicalPageNumber: number;
+        logicalPageNumber: number | null;
+        content: PageRegionContent;
+        rect: RegionRect;
+        callbacks: FinalizePagesCallbacks;
+    }) {
+        this.actorId = input.actorId;
+        this.sourceId = input.sourceId;
+        this.sourceType = input.sourceType;
+        this.pageIndex = input.pageIndex;
+        this.physicalPageNumber = input.physicalPageNumber;
+        this.logicalPageNumber = input.logicalPageNumber;
+        this.content = input.content;
+        this.rect = input.rect;
+        this.callbacks = input.callbacks;
+    }
+
+    readonly actorId: string;
+    readonly sourceId: string;
+
+    prepare(_availableWidth: number, _availableHeight: number, _context: PackagerContext): void { }
+
+    emitBoxes(_availableWidth: number, _availableHeight: number, _context: PackagerContext): LayoutBox[] | null {
+        return this.emitCurrentBoxes();
+    }
+
+    updateCommittedState(context: PackagerContext): ObservationResult | null {
+        const latest = readLatestPaginationFinalizedSignal(context.readActorSignals('pagination:finalized'));
+        if (!latest) {
+            return null;
+        }
+        if (latest.sequence === this.lastSeenSignalSequence) {
+            return { changed: false, geometryChanged: false, updateKind: 'none' };
+        }
+        this.lastSeenSignalSequence = latest.sequence;
+        const nextTotal = normalizePublishedTotalPageCount(latest);
+        const changed = nextTotal !== this.totalPageCount;
+        this.totalPageCount = nextTotal;
+        return {
+            changed,
+            geometryChanged: false,
+            updateKind: changed ? 'content-only' : 'none'
+        };
+    }
+
+    getCommittedSignalSubscriptions(): readonly string[] {
+        return ['pagination:finalized'];
+    }
+
+    split(_availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+        return {
+            currentFragment: this,
+            continuationFragment: null
+        };
+    }
+
+    getRequiredHeight(): number {
+        return this.rect.h;
+    }
+
+    isUnbreakable(_availableHeight: number): boolean {
+        return true;
+    }
+
+    getMarginTop(): number {
+        return 0;
+    }
+
+    getMarginBottom(): number {
+        return 0;
+    }
+
+    emitCurrentBoxes(): LayoutBox[] {
+        const content = materializeReactivePageTokens(
+            this.content,
+            this.physicalPageNumber,
+            this.logicalPageNumber,
+            this.totalPageCount
+        );
+        if (!content) return [];
+        return this.callbacks.layoutRegion(content, this.rect, this.pageIndex, this.sourceType, this.actorId);
+    }
+}
+
+function createReactivePageRegionActor(
+    content: PageRegionContent | null,
+    rect: RegionRect,
+    pageIndex: number,
+    physicalPageNumber: number,
+    logicalPageNumber: number | null,
+    sourceType: PageRegionActorSourceType,
+    callbacks: FinalizePagesCallbacks,
+    sequence: number
+): ReactivePageRegionActor | null {
+    if (!content || !regionContainsTotalPages(content)) {
+        return null;
+    }
+    return new ReactivePageRegionActor({
+        actorId: `system:${sourceType}:reactive-region:${pageIndex}:${sequence}`,
+        sourceId: `system:${sourceType}:reactive-region:${pageIndex}`,
+        sourceType,
+        pageIndex,
+        physicalPageNumber,
+        logicalPageNumber,
+        content,
+        rect,
+        callbacks
+    });
+}
+
+function readLatestPaginationFinalizedSignal(signals: readonly ActorSignal[]): ActorSignal | null {
+    if (!signals.length) return null;
+    return signals[signals.length - 1] ?? null;
+}
+
+function normalizePublishedTotalPageCount(signal: ActorSignal): number | null {
+    const total = signal.payload?.totalPageCount;
+    if (!Number.isFinite(total)) return null;
+    return Math.max(0, Math.floor(Number(total)));
 }
 
 export function finalizePagesWithCallbacks(

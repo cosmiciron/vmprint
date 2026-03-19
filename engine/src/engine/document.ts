@@ -83,7 +83,8 @@ const ELEMENT_PROPERTIES_KEYS = new Set([
     'sourceRange',
     'sourceSyntax',
     'language',
-    'pageReservationAfter'
+    'pageReservationAfter',
+    'toc'
 ]);
 const PAGINATION_CONTINUATION_KEYS = new Set(['enabled', 'markerAfterSplit', 'markerBeforeContinuation', 'markersBeforeContinuation']);
 const CONTINUATION_MARKER_KEYS = new Set(['type', 'content', 'style', 'properties']);

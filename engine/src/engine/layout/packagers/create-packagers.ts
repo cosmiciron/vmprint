@@ -6,6 +6,7 @@ import { DropCapPackager } from './dropcap-packager';
 import { SpatialGridPackager } from './spatial-grid-packager';
 import { StoryPackager } from './story-packager';
 import { ZonePackager, isZoneMapElement } from './zone-packager';
+import { TocPackager } from './toc-packager';
 import { isTableElement } from '../layout-table';
 import type { FlowBox } from '../layout-core-types';
 import type { NormalizedFlowBlock } from '../normalized-flow-block';
@@ -52,6 +53,9 @@ export function buildPackagerForElement(
     }
     const normalizedFlowBlock = shaper.normalizeFlowBlock(item, { path: [index] });
     const flowBox = shaper.shapeNormalizedFlowBlock(normalizedFlowBlock);
+    if (item.type === 'toc') {
+        return new TocPackager(processor, flowBox, identity);
+    }
     const dropCap = item.properties?.dropCap;
     if (dropCap && dropCap.enabled) {
         return new DropCapPackager(processor, item, index, dropCap, identity);

@@ -1,0 +1,79 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 340, "height": 400 },
+    "margins": { "top": 40, "right": 40, "bottom": 50, "left": 40 },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "footerInsetTop": 8,
+    "footerInsetBottom": 8,
+    "lang": "en",
+    "direction": "auto"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "p": { "marginBottom": 8, "allowLineSplit": true, "orphans": 2, "widows": 2 },
+    "h1": { "fontSize": 16, "fontWeight": "bold", "marginTop": 0, "marginBottom": 10, "keepWithNext": true }
+  },
+  "footer": {
+    "default": {
+      "elements": [
+        {
+          "type": "p",
+          "content": "Page {pageNumber} of {totalPages}",
+          "properties": { "sourceId": "footer-text" }
+        }
+      ]
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Chapter One",
+      "properties": { "sourceId": "ch1" }
+    },
+    {
+      "type": "p",
+      "content": "This is the first paragraph of chapter one. It fills vertical space so the document spans multiple pages.",
+      "properties": { "sourceId": "p1" }
+    },
+    {
+      "type": "p",
+      "content": "A second paragraph continues to build out the page. The footer on every page must read the correct total once layout is complete.",
+      "properties": { "sourceId": "p2" }
+    },
+    {
+      "type": "p",
+      "content": "A third paragraph ensures we push content onto a second page. Total pages can only be known after simulation ends.",
+      "properties": { "sourceId": "p3" }
+    },
+    {
+      "type": "h1",
+      "content": "Chapter Two",
+      "properties": { "sourceId": "ch2" }
+    },
+    {
+      "type": "p",
+      "content": "Chapter two begins on page two or three depending on content flow. The footer here must still show the same correct total.",
+      "properties": { "sourceId": "p4" }
+    },
+    {
+      "type": "p",
+      "content": "More body text pushes content further down the page, ensuring we reach at least two distinct pages in the output.",
+      "properties": { "sourceId": "p5" }
+    },
+    {
+      "type": "h1",
+      "content": "Chapter Three",
+      "properties": { "sourceId": "ch3" }
+    },
+    {
+      "type": "p",
+      "content": "Chapter three exists to ensure the document reaches a third page. Every footer must show the same total page count: the final number determined after simulation, not a placeholder.",
+      "properties": { "sourceId": "p6" }
+    }
+  ]
+}

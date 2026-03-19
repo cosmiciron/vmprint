@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { LayoutEngine, Renderer, createEngineRuntime } from '../../src';
 import type { Element, LayoutConfig, Page } from '../../src/engine/types';
 import PdfContext from '@vmprint/context-pdf';
@@ -32,6 +33,8 @@ class NodeWriteStreamAdapter {
         });
     }
 }
+
+const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 function buildVisualConfig(): LayoutConfig {
     return {
@@ -256,7 +259,7 @@ function resolveArg(flag: string): string | undefined {
 async function main(): Promise<void> {
     const outputArg = resolveArg('--output');
     const snapshotArg = resolveArg('--snapshot');
-    const defaultBase = path.resolve(process.cwd(), 'engine', 'tests', 'output', 'actor-communication-visual');
+    const defaultBase = path.resolve(SCRIPT_DIR, '..', '..', 'tests', 'output', 'actor-communication-visual');
     const outputPath = path.resolve(outputArg || `${defaultBase}.pdf`);
     const snapshotPath = path.resolve(snapshotArg || `${defaultBase}.pages.json`);
 

@@ -703,6 +703,390 @@ async function testSamePageCollectorSettlesAtActorBoundary() {
     );
 }
 
+async function testContentOnlyObserverWakeAvoidsResettlement() {
+    logStep('Scenario: topic-scoped awakened observer reports content-only change without triggering resettlement');
+    const config = buildConfig();
+    const engine = new LayoutEngine(config);
+    engine.setPackagerFactory(experimentFactory);
+    await engine.waitForFonts();
+
+    const elements: Element[] = [
+        {
+            type: 'test-signal-observer',
+            content: '',
+            properties: {
+                sourceId: 'content-only-observer',
+                style: { marginTop: 8, marginBottom: 8 },
+                _actorSignalObserve: {
+                    topic: 'content-only-entry',
+                    title: 'Content-Only Observer',
+                    backgroundColor: '#ecfccb',
+                    borderColor: '#65a30d',
+                    color: '#365314',
+                    baseHeight: 72,
+                    growthPerSignal: 0
+                }
+            }
+        },
+        {
+            type: 'test-replay-marker',
+            content: '',
+            properties: {
+                sourceId: 'content-only-marker',
+                style: { marginTop: 6, marginBottom: 8 },
+                _testReplayMarker: {
+                    title: 'Content-Only Marker',
+                    backgroundColor: '#fee2e2',
+                    borderColor: '#dc2626',
+                    color: '#7f1d1d',
+                    height: 52
+                }
+            }
+        },
+        {
+            type: 'p',
+            content: repeatedParagraph('Early committed content gives the observer and marker a stable page presence before the later publisher fires.', 8),
+            properties: { sourceId: 'content-only-early-filler' }
+        },
+        {
+            type: 'test-signal-publisher',
+            content: 'Content-Only Publisher\nQuiet Update',
+            properties: {
+                sourceId: 'content-only-publisher',
+                style: {
+                    height: 68,
+                    marginBottom: 10,
+                    paddingTop: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    paddingBottom: 10,
+                    backgroundColor: '#dbeafe',
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
+                    color: '#1e3a8a',
+                    fontWeight: 700
+                },
+                _actorSignalPublish: {
+                    topic: 'content-only-entry',
+                    signalKey: 'content-only-entry:1',
+                    payload: { label: 'Quiet Update' }
+                }
+            }
+        },
+        {
+            type: 'p',
+            content: repeatedParagraph('Bridge content keeps the observer later in normal document order while preserving a same-pass content-only proof.', 8),
+            properties: { sourceId: 'content-only-bridge' }
+        }
+    ];
+
+    const pages = engine.simulate(elements);
+    const snapshot = engine.getLastPrintPipelineSnapshot();
+    const profile = snapshot.report?.profile;
+    const observerBoxes = pages.flatMap((page, pageIndex) =>
+        page.boxes
+            .filter((box) => box.type === 'test-signal-observer')
+            .map((box) => ({ pageIndex, box, text: getBoxText(box) }))
+    );
+    const markerBoxes = pages.flatMap((page, pageIndex) =>
+        page.boxes
+            .filter((box) => box.type === 'test-replay-marker')
+            .map((box) => ({ pageIndex, box, text: getBoxText(box) }))
+    );
+
+    check(
+        'content-only observer redraws in place after the later publisher',
+        'observer and marker appear early, and the observer later shows the committed label without changing its geometry',
+        () => {
+            assert.ok(observerBoxes.length > 0, 'expected content-only observer box');
+            assert.ok(markerBoxes.length > 0, 'expected content-only marker box');
+            const observerText = observerBoxes.map(({ text }) => text).join('\n');
+            assert.match(observerText, /Content-Only Observer/, 'expected observer title');
+            assert.match(observerText, /Quiet Update/, 'expected redrawn observer label');
+            const heights = new Set(
+                observerBoxes.map(({ box }) => Number(box.h || box.height || box.properties?._observedSignalHeight || 0).toFixed(3))
+            );
+            assert.equal(heights.size, 1, 'expected fixed geometry across content-only observer fragments');
+        }
+    );
+
+    check(
+        'content-only observer wakes without resettlement',
+        'profile records signal awakening and content-only updates while the committed replay marker stays at render count 1 and settle count stays at zero',
+        () => {
+            assert.ok(profile, 'expected simulation profile');
+            assert.ok(profile.actorActivationSignalWakeCalls > 0, 'expected at least one signal wake');
+            assert.ok(profile.actorUpdateContentOnlyCalls > 0, 'expected at least one content-only update');
+            assert.equal(profile.actorUpdateGeometryCalls, 0, 'expected no geometry updates');
+            assert.ok(profile.actorUpdateRedrawCalls > 0, 'expected at least one redraw-in-place');
+            assert.equal(profile.observerSettleCalls, 0, 'expected no resettlement for content-only update');
+            const markerText = markerBoxes.map(({ text }) => text).join('\n');
+            assert.match(markerText, /Render Count:\s*1/, 'expected marker to remain at render count 1');
+        }
+    );
+}
+
+async function testGeometryObserverWakeTriggersBoundedResettlement() {
+    logStep('Scenario: topic-scoped awakened observer reports geometry change, settles from its checkpoint, and replays only downstream actors');
+    const config = buildConfig();
+    const engine = new LayoutEngine(config);
+    engine.setPackagerFactory(experimentFactory);
+    await engine.waitForFonts();
+
+    const elements: Element[] = [
+        {
+            type: 'test-replay-marker',
+            content: '',
+            properties: {
+                sourceId: 'geometry-prelude-marker',
+                style: { marginTop: 6, marginBottom: 8 },
+                _testReplayMarker: {
+                    title: 'Geometry Prelude',
+                    backgroundColor: '#fee2e2',
+                    borderColor: '#dc2626',
+                    color: '#7f1d1d',
+                    height: 52
+                }
+            }
+        },
+        {
+            type: 'test-signal-observer',
+            content: '',
+            properties: {
+                sourceId: 'geometry-observer',
+                style: { marginTop: 8, marginBottom: 8 },
+                _actorSignalObserve: {
+                    topic: 'geometry-entry',
+                    title: 'Geometry Observer',
+                    renderMode: 'collector-list',
+                    backgroundColor: '#fef3c7',
+                    borderColor: '#d97706',
+                    color: '#92400e',
+                    baseHeight: 64,
+                    growthPerSignal: 34
+                }
+            }
+        },
+        {
+            type: 'test-replay-marker',
+            content: '',
+            properties: {
+                sourceId: 'geometry-downstream-marker',
+                style: { marginTop: 6, marginBottom: 8 },
+                _testReplayMarker: {
+                    title: 'Geometry Downstream',
+                    backgroundColor: '#dbeafe',
+                    borderColor: '#2563eb',
+                    color: '#1e3a8a',
+                    height: 52
+                }
+            }
+        },
+        {
+            type: 'p',
+            content: repeatedParagraph('Early body keeps the observer and downstream marker committed before a later publisher finalizes the mature world fact.', 10),
+            properties: { sourceId: 'geometry-early-filler-1' }
+        },
+        {
+            type: 'p',
+            content: repeatedParagraph('Additional body ensures the later publisher lands after the committed observer checkpoint rather than immediately adjacent to it.', 10),
+            properties: { sourceId: 'geometry-early-filler-2' }
+        },
+        {
+            type: 'test-signal-publisher',
+            content: 'Geometry Publisher\nWake the observer',
+            properties: {
+                sourceId: 'geometry-publisher',
+                style: {
+                    height: 68,
+                    marginBottom: 10,
+                    paddingTop: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    paddingBottom: 10,
+                    backgroundColor: '#dcfce7',
+                    borderColor: '#16a34a',
+                    borderWidth: 2,
+                    color: '#166534',
+                    fontWeight: 700
+                },
+                _actorSignalPublish: {
+                    topic: 'geometry-entry',
+                    signalKey: 'geometry-entry:1',
+                    payload: { label: 'Wake the observer' }
+                }
+            }
+        },
+        {
+            type: 'p',
+            content: repeatedParagraph('Late aftermath shows the forward march resumed after the reactive geometry settle completed.', 7),
+            properties: { sourceId: 'geometry-late-aftermath' }
+        }
+    ];
+
+    const pages = engine.simulate(elements);
+    const snapshot = engine.getLastPrintPipelineSnapshot();
+    const profile = snapshot.report?.profile;
+    const observerBoxes = pages.flatMap((page, pageIndex) =>
+        page.boxes
+            .filter((box) => box.type === 'test-signal-observer')
+            .map((box) => ({ pageIndex, box, text: getBoxText(box) }))
+    );
+    const markerBoxes = pages.flatMap((page, pageIndex) =>
+        page.boxes
+            .filter((box) => box.type === 'test-replay-marker')
+            .map((box) => ({ pageIndex, box, text: getBoxText(box) }))
+    );
+    const preludeBoxes = markerBoxes.filter(({ text }) => /Geometry Prelude/.test(text));
+    const downstreamBoxes = markerBoxes.filter(({ text }) => /Geometry Downstream/.test(text));
+
+    check(
+        'geometry observer grows after the later publisher matures',
+        'observer renders the late label and claims more vertical space than its dormant baseline',
+        () => {
+            assert.ok(observerBoxes.length > 0, 'expected geometry observer boxes');
+            const observerText = observerBoxes.map(({ text }) => text).join('\n');
+            assert.match(observerText, /Geometry Observer/, 'expected observer title');
+            assert.match(observerText, /1\.\s+Wake the observer/, 'expected committed label in observer text');
+            const firstHeight = Number(observerBoxes[0].box.h || observerBoxes[0].box.height || 0);
+            assert.ok(firstHeight > 64, `expected observer height to grow beyond baseline 64, got ${firstHeight}`);
+        }
+    );
+
+    check(
+        'geometry settle preserves upstream actors while replaying downstream actors',
+        'prelude marker remains at render count 1 while the downstream marker renders again after one or more resettlement cycles',
+        () => {
+            assert.ok(preludeBoxes.length > 0, 'expected geometry prelude marker');
+            assert.ok(downstreamBoxes.length > 0, 'expected geometry downstream marker');
+            const preludeText = preludeBoxes.map(({ text }) => text).join('\n');
+            const downstreamText = downstreamBoxes.map(({ text }) => text).join('\n');
+            assert.match(preludeText, /Render Count:\s*1/, 'expected upstream marker to remain at render count 1');
+            const downstreamRenderCounts = Array.from(
+                downstreamText.matchAll(/Render Count:\s*(\d+)/g),
+                (match) => Number(match[1])
+            );
+            assert.ok(downstreamRenderCounts.length > 0, 'expected downstream render count markers');
+            assert.ok(
+                downstreamRenderCounts.some((count) => count > 1),
+                `expected downstream marker to replay after settle, got counts: ${downstreamRenderCounts.join(', ')}`
+            );
+            assert.ok(preludeBoxes[0].box.y < observerBoxes[0].box.y, 'expected prelude marker above observer');
+            const firstObserver = observerBoxes[0];
+            const firstDownstream = downstreamBoxes[0];
+            assert.ok(
+                firstDownstream.pageIndex > firstObserver.pageIndex
+                || (firstDownstream.pageIndex === firstObserver.pageIndex && firstDownstream.box.y > firstObserver.box.y),
+                `expected downstream marker after observer in document order, got observer p${firstObserver.pageIndex}@${firstObserver.box.y} and downstream p${firstDownstream.pageIndex}@${firstDownstream.box.y}`
+            );
+        }
+    );
+
+    check(
+        'geometry wake routes through bounded resettlement rather than redraw-in-place',
+        'profile records geometry updates and resettlement cycles while content-only redraw stays unused for this case',
+        () => {
+            assert.ok(profile, 'expected simulation profile');
+            assert.ok(profile.actorActivationSignalWakeCalls > 0, 'expected at least one signal wake');
+            assert.ok(profile.actorUpdateGeometryCalls > 0, 'expected at least one geometry update');
+            assert.ok(profile.actorUpdateResettlementCycles > 0, 'expected at least one resettlement cycle');
+            assert.ok(profile.observerSettleCalls > 0, 'expected at least one settle');
+            assert.equal(profile.actorUpdateRedrawCalls, 0, 'expected no content-only redraw for geometry update');
+        }
+    );
+}
+
+async function testReactiveGeometryOscillationFailsDeterministically() {
+    logStep('Scenario: unchanged reactive geometry oscillation fails deterministically instead of silently churning');
+    const config = buildConfig();
+    const engine = new LayoutEngine(config);
+    engine.setPackagerFactory(experimentFactory);
+    await engine.waitForFonts();
+
+    const elements: Element[] = [
+        {
+            type: 'test-signal-observer',
+            content: '',
+            properties: {
+                sourceId: 'oscillation-observer',
+                style: { marginTop: 8, marginBottom: 8 },
+                _actorSignalObserve: {
+                    topic: 'oscillation-entry',
+                    title: 'Oscillation Probe',
+                    renderMode: 'collector-list',
+                    backgroundColor: '#fee2e2',
+                    borderColor: '#dc2626',
+                    color: '#7f1d1d',
+                    baseHeight: 60,
+                    growthPerSignal: 0,
+                    oscillateHeights: [96, 132]
+                }
+            }
+        },
+        {
+            type: 'test-replay-marker',
+            content: '',
+            properties: {
+                sourceId: 'oscillation-marker',
+                style: { marginTop: 6, marginBottom: 8 },
+                _testReplayMarker: {
+                    title: 'Oscillation Marker',
+                    backgroundColor: '#dbeafe',
+                    borderColor: '#2563eb',
+                    color: '#1e3a8a',
+                    height: 52
+                }
+            }
+        },
+        {
+            type: 'p',
+            content: repeatedParagraph('The oscillation proof keeps enough committed downstream flow in place that the reactive actor can keep attempting geometry settles on unchanged facts.', 12),
+            properties: { sourceId: 'oscillation-filler-1' }
+        },
+        {
+            type: 'p',
+            content: repeatedParagraph('More committed flow keeps the observer frontier meaningful and makes any silent churn immediately suspicious.', 10),
+            properties: { sourceId: 'oscillation-filler-2' }
+        },
+        {
+            type: 'test-signal-publisher',
+            content: 'Oscillation Publisher\nFrozen fact',
+            properties: {
+                sourceId: 'oscillation-publisher',
+                style: {
+                    height: 68,
+                    marginBottom: 10,
+                    paddingTop: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    paddingBottom: 10,
+                    backgroundColor: '#ecfccb',
+                    borderColor: '#65a30d',
+                    borderWidth: 2,
+                    color: '#365314',
+                    fontWeight: 700
+                },
+                _actorSignalPublish: {
+                    topic: 'oscillation-entry',
+                    signalKey: 'oscillation-entry:1',
+                    payload: { label: 'Frozen fact' }
+                }
+            }
+        }
+    ];
+
+    check(
+        'unchanged reactive oscillation is stopped deterministically',
+        'simulate() throws a clear oscillation error instead of silently looping',
+        () => {
+            assert.throws(
+                () => engine.simulate(elements),
+                /Reactive geometry (oscillation detected|resettlement exceeded the cycle cap)/
+            );
+        }
+    );
+}
+
 async function testAnchoredCheckpointAvoidsReplayingLockedPrelude() {
     logStep('Scenario: anchored checkpoint restore avoids replaying a locked prelude actor before the collector frontier');
     const config = buildConfig();
@@ -1250,6 +1634,9 @@ async function run() {
     await testObserverSummaryDrivesFollowerLayout();
     await testSyntheticCollectorListDrivesTrailingFlow();
     await testInFlowCollectorResettlesFromLaterSignals();
+    await testContentOnlyObserverWakeAvoidsResettlement();
+    await testGeometryObserverWakeTriggersBoundedResettlement();
+    await testReactiveGeometryOscillationFailsDeterministically();
     await testSamePageCollectorSettlesAtActorBoundary();
     await testAnchoredCheckpointAvoidsReplayingLockedPrelude();
     await testDualInFlowCollectorsResettleFromInterleavedSignals();
