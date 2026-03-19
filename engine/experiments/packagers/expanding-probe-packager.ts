@@ -1,15 +1,15 @@
-import type { Box, BoxMeta } from '../../types';
-import type { FlowBox } from '../layout-core-types';
-import type { LayoutProcessor } from '../layout-core';
-import { createContinuationIdentity, type PackagerIdentity } from './packager-identity';
-import { FlowBoxPackager } from './flow-box-packager';
+import type { Box, BoxMeta } from '../../src/engine/types';
+import type { FlowBox } from '../../src/engine/layout/layout-core-types';
+import type { LayoutProcessor } from '../../src/engine/layout/layout-core';
+import { createContinuationIdentity, type PackagerIdentity } from '../../src/engine/layout/packagers/packager-identity';
+import { FlowBoxPackager } from '../../src/engine/layout/packagers/flow-box-packager';
 import type {
     PackagerContext,
     PackagerPlacementPreference,
     PackagerSplitResult,
     PackagerTransformProfile,
     PackagerUnit
-} from './packager-types';
+} from '../../src/engine/layout/packagers/packager-types';
 
 export class ExpandingProbePackager implements PackagerUnit {
     private readonly base: FlowBoxPackager;

@@ -51,7 +51,7 @@ import {
 } from './layout-table';
 import { buildTableModelFromNormalizedTable, normalizeTableElement } from './normalized-table';
 import { DropCapPackager } from './packagers/dropcap-packager';
-import { createPackagers } from './packagers/create-packagers';
+import { createPackagers, ExternalPackagerFactory } from './packagers/create-packagers';
 import { executeSimulationMarch } from './packagers/execute-simulation-march';
 import type { PackagerContext } from './packagers/packager-types';
 
@@ -59,6 +59,11 @@ import type { PackagerContext } from './packagers/packager-types';
 export class LayoutProcessor extends TextProcessor {
     private static readonly REGION_LAYOUT_HEIGHT = 1000000;
     private lastLayoutSession: LayoutSession | null = null;
+    private packagerFactory: ExternalPackagerFactory | undefined = undefined;
+
+    setPackagerFactory(factory: ExternalPackagerFactory | undefined): void {
+        this.packagerFactory = factory;
+    }
 
     private normalizeOverflowPolicy(value: unknown): OverflowPolicy {
         if (value === undefined || value === null || value === '') return LAYOUT_DEFAULTS.overflowPolicy;
@@ -499,7 +504,7 @@ export class LayoutProcessor extends TextProcessor {
         });
         this.lastLayoutSession = session;
         session.notifySimulationStart();
-        const packagers = createPackagers(elements, this);
+        const packagers = createPackagers(elements, this, this.packagerFactory);
         for (const packager of packagers) {
             session.notifyActorSpawn(packager);
         }

@@ -38,7 +38,14 @@
     "test:perf": "tsx --conditions tsx tests/performance-benchmark.ts",
     "test:perf-watch": "tsx --conditions tsx tests/performance-benchmark.ts --preset=watchlist --repeat=2 --warmup=1",
     "test:update-layout-snapshots": "tsx --conditions tsx tests/engine-regression.spec.ts --update-layout-snapshots",
-    "test": "npm run test:modules && npm run test:ast-compat && npm run test:flat && npm run test:strip && npm run test:standard-fonts && npm run test:spatial-ir && npm run test:engine"
+    "test": "npm run test:modules && npm run test:ast-compat && npm run test:flat && npm run test:strip && npm run test:standard-fonts && npm run test:spatial-ir && npm run test:engine",
+    "experiment:actor-comm": "tsx --conditions tsx experiments/proofs/actor-communication.spec.ts",
+    "experiment:visual:actor-comm": "tsx --conditions tsx experiments/proofs/actor-communication-visual.ts",
+    "experiment:visual:collector": "tsx --conditions tsx experiments/proofs/actor-communication-collector-visual.ts",
+    "experiment:visual:inflow": "tsx --conditions tsx experiments/proofs/actor-communication-inflow-collector-visual.ts",
+    "experiment:visual:dual-inflow": "tsx --conditions tsx experiments/proofs/actor-communication-dual-inflow-visual.ts",
+    "experiment:visual:same-page": "tsx --conditions tsx experiments/proofs/actor-communication-same-page-frontier-visual.ts",
+    "experiment:visual:locked-prelude": "tsx --conditions tsx experiments/proofs/actor-communication-locked-prelude-visual.ts"
   },
   "dependencies": {
     "@vmprint/contracts": "file:../contracts",
