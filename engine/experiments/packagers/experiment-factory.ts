@@ -3,7 +3,13 @@ import type { LayoutProcessor } from '../../src/engine/layout/layout-core';
 import type { PackagerUnit } from '../../src/engine/layout/packagers/packager-types';
 import type { ExternalPackagerFactory } from '../../src/engine/layout/packagers/create-packagers';
 import { createElementPackagerIdentity } from '../../src/engine/layout/packagers/packager-identity';
-import { TestSignalPublisherPackager, TestSignalObserverPackager, TestSignalFollowerPackager, TestReplayMarkerPackager } from './test-signal-packagers';
+import {
+    TestClockCookingPackager,
+    TestSignalPublisherPackager,
+    TestSignalObserverPackager,
+    TestSignalFollowerPackager,
+    TestReplayMarkerPackager
+} from './test-signal-packagers';
 import { ExpandingProbePackager } from './expanding-probe-packager';
 
 type ElementShaper = {
@@ -46,6 +52,12 @@ export const experimentFactory: ExternalPackagerFactory = (
         const normalizedFlowBlock = shaper.normalizeFlowBlock(item, { path: [index] });
         const flowBox = shaper.shapeNormalizedFlowBlock(normalizedFlowBlock);
         return new TestSignalObserverPackager(processor, flowBox, identity);
+    }
+
+    if (item.type === 'test-clock-cooking') {
+        const normalizedFlowBlock = shaper.normalizeFlowBlock(item, { path: [index] });
+        const flowBox = shaper.shapeNormalizedFlowBlock(normalizedFlowBlock);
+        return new TestClockCookingPackager(processor, flowBox, identity);
     }
 
     if (item.type === 'test-replay-marker') {

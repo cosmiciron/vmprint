@@ -932,6 +932,23 @@ function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: s
     assert.equal(printSnapshot.pages.length, pages.length, `${fixtureName}: print pipeline snapshot page count mismatch`);
     assert.ok(printSnapshot.reader, `${fixtureName}: expected print pipeline snapshot reader`);
     assert.equal(reader.pageCount, pages.length, `${fixtureName}: simulation report pageCount mismatch`);
+    assert.ok(reader.progression, `${fixtureName}: simulation report should expose progression summary`);
+    assert.equal(reader.progression?.policy, 'until-settled', `${fixtureName}: progression policy mismatch`);
+    assert.equal(reader.progression?.stopReason, 'settled', `${fixtureName}: progression stopReason mismatch`);
+    assert.equal(reader.progression?.captureKind, 'finalized-pages', `${fixtureName}: progression captureKind mismatch`);
+    assert.ok(
+        Number.isFinite(reader.progression?.finalTick),
+        `${fixtureName}: progression finalTick should be finite`
+    );
+    assert.ok(
+        Number(reader.progression?.finalTick) >= 0,
+        `${fixtureName}: progression finalTick should be non-negative`
+    );
+    assert.ok(
+        Number(reader.progression?.finalTick) <= Number(reader.profile?.simulationTickCount ?? 0),
+        `${fixtureName}: progression finalTick should not exceed cumulative simulationTickCount`
+    );
+    assert.equal(reader.progression?.progressionStopped, true, `${fixtureName}: progression should be stopped at capture`);
     assert.ok(
         reader.has(simulationArtifactKeys.fragmentationSummary),
         `${fixtureName}: simulation report should expose fragmentationSummary`

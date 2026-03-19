@@ -55,6 +55,7 @@ export class ActorCommunicationRuntime<
 > {
     private readonly actorEventBus = new ActorEventBus();
     private readonly observerRegistry = new Map<string, PackagerUnit>();
+    private readonly steppedActorRegistry = new Map<string, PackagerUnit>();
     private readonly observerTopicSubscriptions = new Map<string, Set<string>>();
     private readonly broadlyPolledObserverIds = new Set<string>();
     private readonly awakenedObserverIds = new Set<string>();
@@ -73,6 +74,7 @@ export class ActorCommunicationRuntime<
     resetForSimulation(): void {
         this.actorEventBus.resetForSimulation();
         this.observerRegistry.clear();
+        this.steppedActorRegistry.clear();
         this.observerTopicSubscriptions.clear();
         this.broadlyPolledObserverIds.clear();
         this.awakenedObserverIds.clear();
@@ -112,6 +114,9 @@ export class ActorCommunicationRuntime<
     }
 
     notifyActorSpawn(actor: PackagerUnit): void {
+        if (typeof actor.stepSimulationTick === 'function') {
+            this.steppedActorRegistry.set(actor.actorId, actor);
+        }
         const hasCommittedUpdater =
             typeof actor.updateCommittedState === 'function'
             || typeof actor.observeCommittedSignals === 'function';
@@ -135,6 +140,31 @@ export class ActorCommunicationRuntime<
 
     hasCommittedSignalObservers(): boolean {
         return this.observerRegistry.size > 0;
+    }
+
+    hasSteppedActors(): boolean {
+        return this.steppedActorRegistry.size > 0;
+    }
+
+    hasActiveSteppedActors(
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
+        pageIndex: number,
+        cursorY: number
+    ): boolean {
+        if (this.steppedActorRegistry.size === 0) {
+            return false;
+        }
+        const context: PackagerContext = {
+            ...contextBase,
+            pageIndex,
+            cursorY
+        };
+        for (const actor of this.steppedActorRegistry.values()) {
+            if (actor.wantsSimulationTicks?.(context)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     noteActorIndex(actor: PackagerUnit | undefined, actorIndex: number): void {
@@ -265,6 +295,59 @@ export class ActorCommunicationRuntime<
         this.awakenedObserverIds.clear();
         for (const actorId of pendingAwakened) {
             this.awakenedObserverIds.delete(actorId);
+        }
+
+        return { changed, geometryChanged, earliestAffectedFrontier, contentOnlyActors };
+    }
+
+    evaluateSteppedActors(
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
+        pageIndex: number,
+        cursorY: number
+    ): ObserverSweepResult {
+        let changed = false;
+        let geometryChanged = false;
+        let earliestAffectedFrontier: SpatialFrontier | undefined;
+        const contentOnlyActors: PackagerUnit[] = [];
+
+        const context: PackagerContext = {
+            ...contextBase,
+            pageIndex,
+            cursorY
+        };
+
+        for (const actor of this.steppedActorRegistry.values()) {
+            if (actor.wantsSimulationTicks && !actor.wantsSimulationTicks(context)) {
+                this.callbacks.recordProfile('actorActivationDormantSkips', 1);
+                continue;
+            }
+            this.callbacks.recordProfile('actorActivationAwakenCalls', 1);
+            this.callbacks.recordProfile('actorActivationScheduledWakeCalls', 1);
+
+            const startedAt = performance.now();
+            this.callbacks.recordProfile('actorUpdateCalls', 1);
+            const result = normalizeObservationResult(actor.stepSimulationTick?.(context));
+            this.callbacks.recordProfile('actorUpdateMs', performance.now() - startedAt);
+
+            if (!result || !result.changed) {
+                this.callbacks.recordProfile('actorUpdateNoopCalls', 1);
+                continue;
+            }
+
+            if (result.updateKind === 'geometry') {
+                this.callbacks.recordProfile('actorUpdateGeometryCalls', 1);
+            } else if (result.updateKind === 'content-only') {
+                this.callbacks.recordProfile('actorUpdateContentOnlyCalls', 1);
+                contentOnlyActors.push(actor);
+            }
+
+            changed = true;
+            if (!result.geometryChanged) continue;
+
+            geometryChanged = true;
+            if (isEarlierFrontier(result, earliestAffectedFrontier)) {
+                earliestAffectedFrontier = result.earliestAffectedFrontier;
+            }
         }
 
         return { changed, geometryChanged, earliestAffectedFrontier, contentOnlyActors };

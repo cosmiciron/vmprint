@@ -25,7 +25,9 @@ export function executeSimulationMarch(
 ): Page[] {
     const maxReactiveResettlementCycles = resolveReactiveResettlementCycleCap();
     const snapshotsEnabled = process.env.VMPRINT_DISABLE_SAFE_CHECKPOINTS !== '1';
-    const observerCheckpointsEnabled = () => snapshotsEnabled && session.hasCommittedSignalObservers();
+    const reactiveCheckpointsEnabled = () =>
+        snapshotsEnabled && (session.hasCommittedSignalObservers() || session.hasSteppedActors());
+    const steppedActorsEnabled = () => session.hasSteppedActors();
     const positionFlowBox = (processor as FlowBoxPositioner).positionFlowBox.bind(processor);
     const pages: Page[] = [];
     let currentPageBoxes: LayoutBox[] = [];
@@ -62,13 +64,14 @@ export function executeSimulationMarch(
     const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
         prevAfter + marginTop;
 
+    session.resumeSimulationProgression();
     session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
-    if (observerCheckpointsEnabled()) {
+    if (reactiveCheckpointsEnabled()) {
         session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, 'page');
     }
 
     const maybeSettleAtCheckpoint = (): boolean => {
-        if (!observerCheckpointsEnabled()) {
+        if (!reactiveCheckpointsEnabled()) {
             return false;
         }
         const observation = session.evaluateObserverRegistry(contextBase, currentPageIndex, currentY);
@@ -141,6 +144,52 @@ export function executeSimulationMarch(
         return true;
     };
 
+    const maybeAdvanceSteppedActorsAtTick = (): boolean => {
+        if (!steppedActorsEnabled()) {
+            return false;
+        }
+        const stepped = session.evaluateSteppedActors(
+            {
+                ...contextBase,
+                simulationTick: session.getSimulationTick()
+            },
+            currentPageIndex,
+            currentY
+        );
+        if (!stepped.geometryChanged && stepped.contentOnlyActors.length > 0) {
+            session.applyContentOnlyActorUpdates(
+                pages,
+                currentPageBoxes,
+                stepped.contentOnlyActors,
+                {
+                    ...contextBase,
+                    simulationTick: session.getSimulationTick()
+                }
+            );
+            return false;
+        }
+        if (!stepped.geometryChanged || !stepped.earliestAffectedFrontier) {
+            return false;
+        }
+
+        const checkpoint = session.resolveSafeCheckpoint(stepped.earliestAffectedFrontier);
+        if (!checkpoint) {
+            return false;
+        }
+
+        const restored = session.restoreSafeCheckpoint(pages, packagers, checkpoint);
+        applySessionPaginationState({
+            currentPageIndex: checkpoint.pageIndex,
+            currentPageBoxes: restored.currentPageBoxes as LayoutBox[],
+            currentY: restored.currentY,
+            lastSpacingAfter: restored.lastSpacingAfter
+        });
+        i = checkpoint.actorIndex;
+        session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
+        session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, checkpoint.kind);
+        return true;
+    };
+
     const afterPotentialBoundary = (previousPageIndex: number, previousActorIndex: number): boolean => {
         let checkpointKind: 'page' | 'actor' | null = null;
         if (currentPageIndex !== previousPageIndex) {
@@ -151,7 +200,7 @@ export function executeSimulationMarch(
         if (!checkpointKind) {
             return false;
         }
-        if (!observerCheckpointsEnabled()) {
+        if (!reactiveCheckpointsEnabled()) {
             return false;
         }
         const boundaryStart = performance.now();
@@ -169,6 +218,8 @@ export function executeSimulationMarch(
     };
 
     while (true) {
+        session.advanceSimulationTick();
+        maybeAdvanceSteppedActorsAtTick();
         while (i < packagers.length) {
             const actorIndexBeforeAction = i;
             const packager = packagers[i];
@@ -471,6 +522,20 @@ export function executeSimulationMarch(
         });
 
         if (!maybeSettleAtCheckpoint()) {
+            if (
+                steppedActorsEnabled()
+                && session.hasActiveSteppedActors(
+                    {
+                        ...contextBase,
+                        simulationTick: session.getSimulationTick()
+                    },
+                    currentPageIndex,
+                    currentY
+                )
+            ) {
+                continue;
+            }
+            session.stopSimulationProgression();
             break;
         }
     }

@@ -1625,6 +1625,223 @@ async function testActorEventBusRollback() {
     );
 }
 
+async function testSimulationClockRollback() {
+    logStep('Scenario: speculative branch rollback restores the prior simulation tick exactly');
+    const runtime = createEngineRuntime({ fontManager: new (await loadLocalFontManager())() });
+    const session = new LayoutSession({ runtime });
+    session.notifySimulationStart();
+
+    check(
+        'clock starts at tick zero',
+        'a fresh session has not advanced simulation time yet',
+        () => {
+            assert.equal(session.getSimulationTick(), 0);
+        }
+    );
+
+    session.advanceSimulationTick();
+
+    check(
+        'clock can advance before speculation begins',
+        'one explicit advancement moves the session to tick 1',
+        () => {
+            assert.equal(session.getSimulationTick(), 1);
+        }
+    );
+
+    session.executeSpeculativeBranch({
+        reason: 'other',
+        pageBoxes: [],
+        actorQueue: [],
+        currentY: 0,
+        lastSpacingAfter: 0,
+        currentPageIndex: 0,
+        run: () => {
+            session.advanceSimulationTick();
+            session.advanceSimulationTick();
+            assert.equal(session.getSimulationTick(), 3, 'speculative branch should see its own later tick');
+            return { accept: false };
+        }
+    });
+
+    check(
+        'rollback restores the prior tick',
+        'discarding the speculative branch returns the session to tick 1 instead of keeping tick 3',
+        () => {
+            assert.equal(session.getSimulationTick(), 1);
+        }
+    );
+}
+
+async function testCommittedSignalsCarryTick() {
+    logStep('Scenario: committed signals carry tick and keyed replacements refresh temporal position without changing identity sequence');
+    const runtime = createEngineRuntime({ fontManager: new (await loadLocalFontManager())() });
+    const session = new LayoutSession({ runtime });
+    session.notifySimulationStart();
+
+    session.advanceSimulationTick();
+    const first = session.publishActorSignal({
+        topic: 'probe-heading',
+        publisherActorId: 'actor:first',
+        publisherSourceId: 'source:first',
+        publisherActorKind: 'test-signal-publisher',
+        fragmentIndex: 0,
+        pageIndex: 0,
+        signalKey: 'probe:stable',
+        payload: { label: 'Tick One' }
+    });
+
+    check(
+        'first committed signal is stamped with the current tick',
+        'publishing at simulation tick 1 produces a signal whose tick is also 1',
+        () => {
+            assert.equal(first.tick, 1);
+            assert.equal(first.sequence, 1);
+        }
+    );
+
+    session.advanceSimulationTick();
+    session.advanceSimulationTick();
+    const replacement = session.publishActorSignal({
+        topic: 'probe-heading',
+        publisherActorId: 'actor:first',
+        publisherSourceId: 'source:first',
+        publisherActorKind: 'test-signal-publisher',
+        fragmentIndex: 0,
+        pageIndex: 0,
+        signalKey: 'probe:stable',
+        payload: { label: 'Tick Three' }
+    });
+
+    check(
+        'keyed replacement keeps sequence identity but refreshes tick',
+        'the stable signal keeps sequence 1 while reflecting the newer committed tick 3',
+        () => {
+            assert.equal(replacement.sequence, 1);
+            assert.equal(replacement.tick, 3);
+            const signals = session.getActorSignals('probe-heading');
+            assert.equal(signals.length, 1);
+            assert.equal(signals[0].sequence, 1);
+            assert.equal(signals[0].tick, 3);
+            assert.deepEqual(signals[0].payload, { label: 'Tick Three' });
+        }
+    );
+}
+
+async function testDeliberateProgressionCookingProof() {
+    logStep('Scenario: a synthetic cooking actor advances one deliberate stage per outer simulation tick before final capture');
+    const config = buildConfig();
+    const engine = new LayoutEngine(config);
+    engine.setPackagerFactory(experimentFactory);
+    await engine.waitForFonts();
+
+    const elements: Element[] = [
+        {
+            type: 'test-replay-marker',
+            content: '',
+            properties: {
+                sourceId: 'cooking-upstream-marker',
+                _testReplayMarker: {
+                    title: 'Upstream Marker\nMust stay at Render Count: 1',
+                    backgroundColor: '#fee2e2',
+                    borderColor: '#dc2626',
+                    color: '#7f1d1d',
+                    height: 60
+                }
+            }
+        },
+        {
+            type: 'test-clock-cooking',
+            content: '',
+            properties: {
+                sourceId: 'cooking-actor',
+                style: {
+                    marginTop: 8,
+                    marginBottom: 8
+                },
+                _clockCooking: {
+                    title: 'Document Cooker',
+                    emptyLabel: 'Waiting for pagination to settle the first time.',
+                    backgroundColor: '#ecfccb',
+                    borderColor: '#65a30d',
+                    color: '#365314',
+                    baseHeight: 76,
+                    growthPerStage: 26,
+                    maxStages: 2
+                }
+            }
+        },
+        {
+            type: 'test-replay-marker',
+            content: '',
+            properties: {
+                sourceId: 'cooking-downstream-marker',
+                _testReplayMarker: {
+                    title: 'Downstream Marker\nShould replay while the cooker grows',
+                    backgroundColor: '#dbeafe',
+                    borderColor: '#2563eb',
+                    color: '#1e3a8a',
+                    height: 60
+                }
+            }
+        },
+        { type: 'p', content: longParagraph('Cooking proof filler one keeps the document long enough for repeated capture-and-resettle cycles.') },
+        { type: 'p', content: longParagraph('Cooking proof filler two preserves a real downstream region while the synthetic cooker accumulates visible stages.') },
+        { type: 'p', content: longParagraph('Cooking proof filler three ensures pagination finalization remains a meaningful world fact rather than a trivial single-page event.') }
+    ];
+
+    const pages = engine.simulate(elements);
+    const cookerBoxes = pages.flatMap((page) =>
+        page.boxes
+            .filter((box) => box.type === 'test-clock-cooking')
+            .map((box) => ({ text: getBoxText(box) }))
+    );
+    const replayBoxes = pages.flatMap((page) =>
+        page.boxes
+            .filter((box) => box.type === 'test-replay-marker')
+            .map((box) => ({ text: getBoxText(box) }))
+    );
+    const report = engine.getLastSimulationReportReader();
+
+    check(
+        'cooking actor accumulates more than one deliberate stage before capture',
+        'final rendered text shows a two-stage trail tied to successive committed ticks',
+        () => {
+            assert.ok(cookerBoxes.length > 0, 'expected a cooking actor box');
+            const combinedText = cookerBoxes.map(({ text }) => text).join('\n');
+            assert.match(combinedText, /Document Cooker/, 'expected cooker title');
+            assert.match(combinedText, /State:\s+settled/, 'expected cooker to finish in settled state');
+            assert.match(combinedText, /Stages:\s+2\s*\/\s*2/, 'expected two completed stages');
+            assert.match(combinedText, /1\.\s+tick 2/, 'expected first cooking stage at tick 2 after the initial commit pass');
+            assert.match(combinedText, /2\.\s+tick 3/, 'expected second cooking stage at tick 3 after the next simulation step');
+        }
+    );
+
+    check(
+        'the final capture reports the later settled world tick',
+        'progression finalTick reflects the captured world slice while the profile still records cumulative replay work',
+        () => {
+            assert.equal(report.progression?.policy, 'until-settled');
+            assert.equal(report.progression?.stopReason, 'settled');
+            assert.equal(report.progression?.finalTick, 3);
+            assert.equal(report.progression?.progressionStopped, true);
+            assert.ok(Number(report.profile?.simulationTickCount ?? 0) >= Number(report.progression?.finalTick ?? 0));
+        }
+    );
+
+    check(
+        'geometry cooking has real downstream spatial consequence',
+        'upstream replay marker stays at 1 while the downstream marker replays across the cooking stages',
+        () => {
+            const combinedText = replayBoxes.map(({ text }) => text).join('\n');
+            assert.match(combinedText, /Upstream Marker[\s\S]*Render Count:\s*1/, 'expected upstream marker to remain untouched');
+            const downstreamMatch = combinedText.match(/Downstream Marker[\s\S]*?Render Count:\s*(\d+)/);
+            assert.ok(downstreamMatch, 'expected downstream replay marker text');
+            assert.ok(Number(downstreamMatch[1]) >= 3, `expected downstream marker to replay at least three times, got ${downstreamMatch?.[1]}`);
+        }
+    );
+}
+
 async function run() {
     const LocalFontManager = await loadLocalFontManager();
     setDefaultEngineRuntime(createEngineRuntime({ fontManager: new LocalFontManager() }));
@@ -1641,6 +1858,9 @@ async function run() {
     await testAnchoredCheckpointAvoidsReplayingLockedPrelude();
     await testDualInFlowCollectorsResettleFromInterleavedSignals();
     await testActorEventBusRollback();
+    await testSimulationClockRollback();
+    await testCommittedSignalsCarryTick();
+    await testDeliberateProgressionCookingProof();
     console.log('[actor-communication.spec] OK');
 }
 

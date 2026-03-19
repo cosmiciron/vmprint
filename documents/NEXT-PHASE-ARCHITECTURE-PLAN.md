@@ -181,6 +181,16 @@ Route speculative publications into a branch-local lane inside `actor-event-bus.
 
 This is the proof that **geometric reactive growth** works end-to-end with real domain actors: new TOC entries increase the TOC height, downstream actors shift, the simulation resettles deterministically.
 
+With Phase C and Phase C.2 both now landed, the next architectural pressure is no longer merely "reactivity."
+It is **time itself**:
+
+* who owns it
+* how the world advances against it
+* how the kernel can stop, snapshot, sleep, and resume
+* and how print capture should be understood as a slice of that progression
+
+That next step is described more directly in [PRINT-AS-WORLD-SLICE.md](/c:/Users/cosmic/Projects/vmprint/documents/PRINT-AS-WORLD-SLICE.md).
+
 ### Priority
 
 **Closed**
@@ -370,8 +380,9 @@ Ordered by dependency:
 8. ~~Add regression fixture proving `Page X of N` renders correctly in all footers after single simulation pass~~ **DONE (fixture 25)**
 9. Add `branchId` and `maturity` to `ActorSignal` and formalize the two read paths
 10. Extend the rollback experiment to assert per-signal maturity fields
-11. Re-audit the march loop after C.2 lands and classify domain branches for extraction
-12. For each slice above, capture and record warmed before/after performance numbers
+11. Design the kernel-owned simulation clock and resumable progression model that will support stopping, snapshot, sleep, resume, and capture as first-class runtime powers
+12. Re-audit the march loop after C.2 lands and classify domain branches for extraction
+13. For each slice above, capture and record warmed before/after performance numbers
 
 If there is any doubt about prioritization, choose the task that most directly advances the total-pages proof path.
 
@@ -399,6 +410,7 @@ At the end of this phase, ask:
 * Does a header/footer actor that references `{totalPages}` render the correct total after a single simulation pass, with no second `simulate()` call? **YES — fixture 25 passes**
 * Is `changed: true, geometryChanged: false` handled by a content-patch path, not ignored and not treated as resimulation? **YES**
 * Are signals formally tagged with maturity and branch provenance?
+* Has the next-step design for kernel-owned time and resumable world progression been made explicit, so print remains one slice of the same world rather than a special mode?
 * Is the proof mechanism (experiments) clearly separated from the production feature (regression fixture)?
 * Has each landed slice been checked for performance regression with recorded before/after evidence?
 

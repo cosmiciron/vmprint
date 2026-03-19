@@ -340,6 +340,7 @@ function createZoneSessionContextBase(
             publisherActorId: '',
             publisherSourceId: '',
             publisherActorKind: '',
+            tick: 0,
             fragmentIndex: 0,
             pageIndex: 0,
             sequence: 0

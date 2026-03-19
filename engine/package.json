@@ -44,6 +44,7 @@
     "experiment:visual:activation-content-only": "tsx --conditions tsx experiments/proofs/actor-activation-content-only-visual.ts",
     "experiment:visual:activation-geometry": "tsx --conditions tsx experiments/proofs/actor-activation-geometry-visual.ts",
     "experiment:visual:activation-oscillation": "tsx --conditions tsx experiments/proofs/actor-activation-oscillation-visual.ts",
+    "experiment:visual:clock-cooking": "tsx --conditions tsx experiments/proofs/actor-clock-cooking-visual.ts",
     "experiment:visual:collector": "tsx --conditions tsx experiments/proofs/actor-communication-collector-visual.ts",
     "experiment:visual:inflow": "tsx --conditions tsx experiments/proofs/actor-communication-inflow-collector-visual.ts",
     "experiment:visual:dual-inflow": "tsx --conditions tsx experiments/proofs/actor-communication-dual-inflow-visual.ts",

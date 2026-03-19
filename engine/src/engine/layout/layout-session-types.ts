@@ -115,6 +115,16 @@ export type LayoutProfileMetrics = {
     actorUpdateResettlementCycles: number;
     actorUpdateRepeatedStateDetections: number;
     actorUpdateResettlementCapHits: number;
+    simulationTickCount: number;
+    progressionStopCalls: number;
+    progressionResumeCalls: number;
+    progressionSnapshotCalls: number;
+};
+
+export type SimulationTick = number;
+
+export type SimulationClockSnapshot = {
+    tick: SimulationTick;
 };
 
 export type RegionReservation = {
@@ -941,14 +951,20 @@ export type LocalSplitStateSnapshot = {
     fragmentTransitionsBySource: Map<string, FragmentTransition[]>;
 };
 
+export type ProgressionStateSnapshot = {
+    simulationClockSnapshot: SimulationClockSnapshot;
+};
+
 export type KernelBranchStateSnapshot = LocalQueueSnapshot & LocalSplitStateSnapshot;
 
-export type LocalBranchStateSnapshot = KernelBranchStateSnapshot & LocalActorSignalSnapshot;
+export type SessionBranchStateSnapshot = KernelBranchStateSnapshot & ProgressionStateSnapshot;
 
-export type LocalBranchSnapshot = LocalTransitionSnapshot & LocalQueueSnapshot & LocalSplitStateSnapshot & LocalActorSignalSnapshot;
+export type LocalBranchStateSnapshot = SessionBranchStateSnapshot & LocalActorSignalSnapshot;
 
-export type SafeCheckpointSnapshot = LocalTransitionSnapshot & KernelBranchStateSnapshot;
-export type SessionSafeCheckpoint = SafeCheckpoint<LocalTransitionSnapshot, KernelBranchStateSnapshot>;
+export type LocalBranchSnapshot = LocalTransitionSnapshot & SessionBranchStateSnapshot & LocalActorSignalSnapshot;
+
+export type SafeCheckpointSnapshot = LocalTransitionSnapshot & SessionBranchStateSnapshot;
+export type SessionSafeCheckpoint = SafeCheckpoint<LocalTransitionSnapshot, SessionBranchStateSnapshot>;
 
 export type FragmentTransition = {
     predecessorActorId: string;

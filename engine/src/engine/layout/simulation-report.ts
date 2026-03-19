@@ -62,8 +62,21 @@ export type SimulationReport = {
     actorCount: number;
     splitTransitionCount: number;
     generatedBoxCount: number;
+    progression: SimulationProgressionSummary;
     profile: LayoutProfileMetrics;
     artifacts: SimulationArtifacts;
+};
+
+export type SimulationProgressionPolicy = 'until-settled';
+
+export type SimulationCaptureKind = 'finalized-pages';
+
+export type SimulationProgressionSummary = {
+    policy: SimulationProgressionPolicy;
+    stopReason: 'settled';
+    captureKind: SimulationCaptureKind;
+    finalTick: number;
+    progressionStopped: boolean;
 };
 
 export type SimulationReportReader = {
@@ -72,6 +85,7 @@ export type SimulationReportReader = {
     readonly actorCount: number;
     readonly splitTransitionCount: number;
     readonly generatedBoxCount: number;
+    readonly progression: SimulationProgressionSummary | undefined;
     readonly profile: LayoutProfileMetrics | undefined;
     get<K extends SimulationArtifactKey>(key: K): SimulationArtifactMap[K] | undefined;
     has<K extends SimulationArtifactKey>(key: K): boolean;
@@ -209,6 +223,7 @@ export function createSimulationReportReader(
         actorCount: report?.actorCount ?? 0,
         splitTransitionCount: report?.splitTransitionCount ?? 0,
         generatedBoxCount: report?.generatedBoxCount ?? 0,
+        progression: report?.progression,
         profile: report?.profile,
         get: (key) => getSimulationArtifact(report, key),
         has: (key) => hasSimulationArtifact(report, key),

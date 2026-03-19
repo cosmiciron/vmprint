@@ -10,6 +10,7 @@ import type {
     LocalQueueSnapshot,
     LocalSplitStateSnapshot,
     LocalTransitionSnapshot,
+    SessionBranchStateSnapshot,
     SequencePlacementCheckpoint,
     SequencePlacementState,
     SplitAttempt,
@@ -32,6 +33,8 @@ export type FragmentSessionRuntimeHost = {
     notifyContinuationEnqueued(predecessor: PackagerUnit, successor: PackagerUnit): void;
     notifySplitAccepted(attempt: SplitAttempt, result: PackagerSplitResult): void;
     notifyActorCommitted(actor: PackagerUnit, committed: Box[]): void;
+    captureSessionBranchStateSnapshot(actorQueue: readonly PackagerUnit[]): SessionBranchStateSnapshot;
+    restoreSessionBranchStateSnapshot(actorQueue: PackagerUnit[], snapshot: SessionBranchStateSnapshot): void;
     captureLocalActorSignalSnapshot(): LocalActorSignalSnapshot;
     restoreLocalActorSignalSnapshot(snapshot: LocalActorSignalSnapshot): void;
 };
@@ -178,7 +181,7 @@ export class FragmentSessionRuntime {
     ): LocalBranchSnapshot {
         return {
             ...this.captureLocalTransitionSnapshot(pageBoxes, currentY, lastSpacingAfter),
-            ...this.kernel.captureLocalBranchStateSnapshot(actorQueue),
+            ...this.host.captureSessionBranchStateSnapshot(actorQueue),
             ...this.host.captureLocalActorSignalSnapshot()
         };
     }
@@ -207,7 +210,7 @@ export class FragmentSessionRuntime {
         actorQueue: PackagerUnit[],
         snapshot: LocalBranchSnapshot
     ): { currentY: number; lastSpacingAfter: number } {
-        this.kernel.restoreLocalBranchStateSnapshot(actorQueue, snapshot);
+        this.host.restoreSessionBranchStateSnapshot(actorQueue, snapshot);
         this.host.restoreLocalActorSignalSnapshot(snapshot);
         return this.restoreLocalTransitionSnapshot(pageBoxes, snapshot);
     }

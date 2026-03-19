@@ -24,6 +24,7 @@ import { PlacementSessionRuntime } from './placement-session-runtime';
 import { PhysicsRuntime } from './physics-runtime';
 import { SessionCollaborationRuntime } from './session-collaboration-runtime';
 import { SessionWorldRuntime } from './session-world-runtime';
+import { SimulationClock } from './simulation-clock';
 import { TransitionsRuntime } from './transitions-runtime';
 import type {
     SimulationArtifactKey,
@@ -86,8 +87,10 @@ import {
     type RegionReservation,
     type ResolvedPlacementFrame,
     type SequencePlacementCheckpoint,
+    type SessionBranchStateSnapshot,
     type SequencePlacementState,
     type SessionSafeCheckpoint,
+    type SimulationClockSnapshot,
     type SplitAttempt,
     type SplitExecution,
     type SplitMarkerPlacementState,
@@ -203,7 +206,7 @@ export class LayoutSession {
     readonly collaborators: readonly LayoutCollaborator[];
     readonly eventDispatcher: EventDispatcher;
     readonly kernel = new Kernel();
-    readonly actorCommunicationRuntime: ActorCommunicationRuntime<LocalTransitionSnapshot, KernelBranchStateSnapshot>;
+    readonly actorCommunicationRuntime: ActorCommunicationRuntime<LocalTransitionSnapshot, SessionBranchStateSnapshot>;
     readonly fragmentSessionRuntime: FragmentSessionRuntime;
     readonly paginationLoopRuntime: PaginationLoopRuntime;
     readonly placementSessionRuntime: PlacementSessionRuntime;
@@ -215,6 +218,7 @@ export class LayoutSession {
     readonly sessionCollaborationRuntime: SessionCollaborationRuntime;
     readonly simulationReportBridge: SimulationReportBridge;
     readonly transitionsRuntime: TransitionsRuntime;
+    readonly simulationClock = new SimulationClock();
     readonly profile: LayoutProfileMetrics = {
         speculativeBranchCalls: 0,
         speculativeBranchMs: 0,
@@ -316,7 +320,11 @@ export class LayoutSession {
         actorUpdateRedrawCalls: 0,
         actorUpdateResettlementCycles: 0,
         actorUpdateRepeatedStateDetections: 0,
-        actorUpdateResettlementCapHits: 0
+        actorUpdateResettlementCapHits: 0,
+        simulationTickCount: 0,
+        progressionStopCalls: 0,
+        progressionResumeCalls: 0,
+        progressionSnapshotCalls: 0
     };
     private paginationLoopState: PaginationLoopState | null = null;
     private speculativeBranchSequence = 0;
@@ -340,6 +348,8 @@ export class LayoutSession {
             notifyContinuationEnqueued: (predecessor, successor) => this.notifyContinuationEnqueued(predecessor, successor),
             notifySplitAccepted: (attempt, result) => this.notifySplitAccepted(attempt, result),
             notifyActorCommitted: (actor, committed) => this.notifyActorCommitted(actor, committed),
+            captureSessionBranchStateSnapshot: (actorQueue) => this.captureSessionBranchStateSnapshot(actorQueue),
+            restoreSessionBranchStateSnapshot: (actorQueue, snapshot) => this.restoreSessionBranchStateSnapshot(actorQueue, snapshot),
             captureLocalActorSignalSnapshot: () => this.captureLocalActorSignalSnapshot(),
             restoreLocalActorSignalSnapshot: (snapshot) => this.restoreLocalActorSignalSnapshot(snapshot)
         });
@@ -473,7 +483,10 @@ export class LayoutSession {
     }
 
     publishActorSignal(signal: ActorSignalDraft): ActorSignal {
-        return this.actorCommunicationRuntime.publishActorSignal(signal);
+        return this.actorCommunicationRuntime.publishActorSignal({
+            ...signal,
+            tick: this.getSimulationTick()
+        });
     }
 
     getActorSignals(topic?: string): readonly ActorSignal[] {
@@ -492,6 +505,18 @@ export class LayoutSession {
 
     hasCommittedSignalObservers(): boolean {
         return this.actorCommunicationRuntime.hasCommittedSignalObservers();
+    }
+
+    hasSteppedActors(): boolean {
+        return this.actorCommunicationRuntime.hasSteppedActors();
+    }
+
+    hasActiveSteppedActors(
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
+        pageIndex: number,
+        cursorY: number
+    ): boolean {
+        return this.actorCommunicationRuntime.hasActiveSteppedActors(contextBase, pageIndex, cursorY);
     }
 
     notifyPageStart(pageIndex: number, width: number, height: number, boxes: Box[]): void {
@@ -630,7 +655,7 @@ export class LayoutSession {
             currentPageIndex,
             kind,
             () => this.fragmentSessionRuntime.captureLocalTransitionSnapshot(currentPageBoxes, currentY, lastSpacingAfter),
-            () => this.kernel.captureLocalBranchStateSnapshot(actorQueue)
+            () => this.captureSessionBranchStateSnapshot(actorQueue)
         );
     }
 
@@ -642,6 +667,14 @@ export class LayoutSession {
         return this.actorCommunicationRuntime.evaluateObserverRegistry(contextBase, pageIndex, cursorY);
     }
 
+    evaluateSteppedActors(
+        contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
+        pageIndex: number,
+        cursorY: number
+    ): ObserverSweepResult {
+        return this.actorCommunicationRuntime.evaluateSteppedActors(contextBase, pageIndex, cursorY);
+    }
+
     resolveSafeCheckpoint(frontier: SpatialFrontier): SessionSafeCheckpoint | null {
         return this.actorCommunicationRuntime.resolveSafeCheckpoint(frontier);
     }
@@ -651,12 +684,15 @@ export class LayoutSession {
         actorQueue: PackagerUnit[],
         checkpoint: SessionSafeCheckpoint
     ): { currentPageBoxes: Box[]; currentY: number; lastSpacingAfter: number } {
-        return this.actorCommunicationRuntime.restoreSafeCheckpoint(
+        const currentClock = this.captureSimulationClockSnapshot();
+        const restored = this.actorCommunicationRuntime.restoreSafeCheckpoint(
             pages,
             actorQueue,
             checkpoint,
-            (restoredQueue, snapshot) => this.kernel.restoreLocalBranchStateSnapshot(restoredQueue, snapshot)
+            (restoredQueue, snapshot) => this.restoreSessionBranchStateSnapshot(restoredQueue, snapshot)
         );
+        this.restoreSimulationClockSnapshot(currentClock);
+        return restored;
     }
 
     executeSpeculativeBranch<T>(
@@ -900,6 +936,59 @@ export class LayoutSession {
 
     getProfileSnapshot(): LayoutProfileMetrics {
         return this.sessionCollaborationRuntime.getProfileSnapshot();
+    }
+
+    getSimulationTick(): number {
+        return this.simulationClock.tick;
+    }
+
+    isSimulationProgressionStopped(): boolean {
+        return this.simulationClock.isStopped;
+    }
+
+    advanceSimulationTick(): number {
+        const previousTick = this.simulationClock.tick;
+        const nextTick = this.simulationClock.advance();
+        if (nextTick !== previousTick) {
+            this.recordProfile('simulationTickCount', 1);
+        }
+        return nextTick;
+    }
+
+    stopSimulationProgression(): void {
+        if (this.simulationClock.isStopped) return;
+        this.simulationClock.stop();
+        this.recordProfile('progressionStopCalls', 1);
+    }
+
+    resumeSimulationProgression(): void {
+        if (!this.simulationClock.isStopped) return;
+        this.simulationClock.resume();
+        this.recordProfile('progressionResumeCalls', 1);
+    }
+
+    captureSimulationClockSnapshot(): SimulationClockSnapshot {
+        this.recordProfile('progressionSnapshotCalls', 1);
+        return this.simulationClock.captureSnapshot();
+    }
+
+    restoreSimulationClockSnapshot(snapshot: SimulationClockSnapshot): void {
+        this.simulationClock.restoreSnapshot(snapshot);
+    }
+
+    captureSessionBranchStateSnapshot(actorQueue: readonly PackagerUnit[]): SessionBranchStateSnapshot {
+        return {
+            ...this.kernel.captureLocalBranchStateSnapshot(actorQueue),
+            simulationClockSnapshot: this.captureSimulationClockSnapshot()
+        };
+    }
+
+    restoreSessionBranchStateSnapshot(
+        actorQueue: PackagerUnit[],
+        snapshot: SessionBranchStateSnapshot
+    ): void {
+        this.kernel.restoreLocalBranchStateSnapshot(actorQueue, snapshot);
+        this.restoreSimulationClockSnapshot(snapshot.simulationClockSnapshot);
     }
 
     getCurrentPageIndex(): number {

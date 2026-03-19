@@ -5,6 +5,7 @@ export type ActorSignalDraft = {
     publisherActorId: string;
     publisherSourceId: string;
     publisherActorKind: string;
+    tick?: number;
     fragmentIndex: number;
     pageIndex?: number;
     signalKey?: string;
@@ -16,6 +17,7 @@ export type ActorSignal = {
     publisherActorId: string;
     publisherSourceId: string;
     publisherActorKind: string;
+    tick: number;
     fragmentIndex: number;
     pageIndex: number;
     signalKey?: string;
@@ -51,6 +53,7 @@ export class ActorEventBus {
             publisherActorId: signal.publisherActorId,
             publisherSourceId: signal.publisherSourceId,
             publisherActorKind: signal.publisherActorKind,
+            tick: Number.isFinite(signal.tick) ? Math.max(0, Math.floor(Number(signal.tick))) : 0,
             fragmentIndex: Math.max(0, Math.floor(Number(signal.fragmentIndex || 0))),
             pageIndex: Number.isFinite(signal.pageIndex) ? Math.max(0, Number(signal.pageIndex)) : 0,
             signalKey: signal.signalKey,

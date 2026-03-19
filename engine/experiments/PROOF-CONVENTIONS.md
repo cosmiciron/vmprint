@@ -36,6 +36,23 @@ For the actor activation/update work, prefer proof names that describe the runti
 
 The paired spec names should use the same vocabulary so it is clear which visual proof they exercise.
 
+## Clock Terminology
+
+For the kernel simulation clock rollout, use these terms consistently:
+
+* `tick`: one discrete advancement of kernel-owned simulation time
+* `progression`: the act of advancing the world
+* `stop`: pause progression at a deterministic point
+* `snapshot`: capture resumable progression state
+* `resume`: continue progression from a prior stopped/snapshotted state
+* `capture`: take a world slice for layout/render output
+
+These terms are intentionally broader than any one subsystem. In particular:
+
+* do not define a tick in proof names as "just an observer sweep"
+* do not use wall-clock language for deterministic proof behavior
+* do not conflate speculative rollback snapshots with eventual ordinary pause/resume state
+
 ## Phase 0 Baseline Metrics
 
 The runtime profile already tracks observer and speculative-settlement behavior.
@@ -56,6 +73,15 @@ The actor activation/update rollout reserves these additional metrics so proofs 
 * `actorUpdateResettlementCycles`
 
 These counters are intentionally generic and should not encode page-counter, footer, or other document-domain semantics.
+
+For the clock/progression rollout, reserve these additional metrics:
+
+* `simulationTickCount`
+* `progressionStopCalls`
+* `progressionResumeCalls`
+* `progressionSnapshotCalls`
+
+Phase 0 only reserves these names. Their behavior will be implemented in later slices.
 
 ## Promotion Rule
 

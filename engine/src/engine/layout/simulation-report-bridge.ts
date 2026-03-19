@@ -3,6 +3,7 @@ import type {
     SimulationArtifactKey,
     SimulationArtifactMap,
     SimulationArtifacts,
+    SimulationProgressionSummary,
     SimulationReport,
     SimulationReportReader
 } from './simulation-report';
@@ -15,6 +16,8 @@ export type SimulationReportBridgeHost = {
     getFragmentTransitions(): readonly unknown[];
     getPublishedArtifacts(): ReadonlyMap<string, unknown>;
     getProfileSnapshot(): LayoutProfileMetrics;
+    getSimulationTick(): number;
+    isSimulationProgressionStopped(): boolean;
     onSimulationComplete(): void;
 };
 
@@ -64,12 +67,20 @@ export class SimulationReportBridge {
             }, 0);
         }, 0);
         const profile = this.host.getProfileSnapshot();
+        const progression: SimulationProgressionSummary = {
+            policy: 'until-settled',
+            stopReason: 'settled',
+            captureKind: 'finalized-pages',
+            finalTick: this.host.getSimulationTick(),
+            progressionStopped: this.host.isSimulationProgressionStopped()
+        };
 
         return {
             pageCount: pages.length,
             actorCount: this.host.getRegisteredActors().length,
             splitTransitionCount: this.host.getFragmentTransitions().length,
             generatedBoxCount,
+            progression,
             profile: {
                 ...profile,
                 keepWithNextPrepareByKind: { ...profile.keepWithNextPrepareByKind },

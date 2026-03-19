@@ -27,6 +27,7 @@ export interface PackagerContext {
     processor: any; // We'll cast to LayoutProcessor
     pageIndex: number;
     cursorY: number;
+    simulationTick?: number;
     actorIndex?: number;
     viewportWorldY?: number;
     viewportHeight?: number;
@@ -148,6 +149,19 @@ export interface PackagerUnit {
      * If absent, the runtime falls back to observeCommittedSignals().
      */
     updateCommittedState?(context: PackagerContext): ObservationResult | null | undefined;
+
+    /**
+     * Optional kernel-owned stepped update entrypoint.
+     * Called once per simulation tick for actors that opt into active stepping.
+     */
+    stepSimulationTick?(context: PackagerContext): ObservationResult | null | undefined;
+
+    /**
+     * Optional stepped-actor liveness check.
+     * Returning true keeps the simulation progressing even if no committed-signal
+     * observer fired in the previous settle cycle.
+     */
+    wantsSimulationTicks?(context: PackagerContext): boolean;
 
     /**
      * Splits this unit.
