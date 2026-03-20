@@ -64,12 +64,18 @@ export class PageRegionCollaborator implements Collaborator {
             this.callbacks,
             ++this.reactiveRegionSequence
         );
+        const headerMaterialized = resolved.header
+            ? materializePageTokens(resolved.header, physicalPageNumber, logicalNumber)
+            : null;
+        const footerMaterialized = resolved.footer
+            ? materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber)
+            : null;
         const headerContent = headerActor
             ? headerActor.emitCurrentBoxes()
-            : (resolved.header ? this.callbacks.layoutRegion(materializePageTokens(resolved.header, physicalPageNumber, logicalNumber), headerRect, page.index, 'header') : []);
+            : (headerMaterialized ? this.callbacks.layoutRegion(headerMaterialized, headerRect, page.index, 'header') : []);
         const footerContent = footerActor
             ? footerActor.emitCurrentBoxes()
-            : (resolved.footer ? this.callbacks.layoutRegion(materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber), footerRect, page.index, 'footer') : []);
+            : (footerMaterialized ? this.callbacks.layoutRegion(footerMaterialized, footerRect, page.index, 'footer') : []);
 
         const viewport = session.sessionWorldRuntime.createViewportDescriptor({
             pageIndex: page.index,

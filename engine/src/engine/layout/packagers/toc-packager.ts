@@ -126,11 +126,11 @@ export class TocPackager implements PackagerUnit {
     split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
         const packager = this.base ?? this.buildPackager(context);
         const result = packager.split(availableHeight, context);
-        if (!result.continuation) return result;
+        if (!result.continuationFragment) return result;
 
         const continuationIdentity = createContinuationIdentity(this.identity);
-        const continuation = new TocPackager(this.processor, this.flowBox, continuationIdentity);
-        return { ...result, continuation };
+        const continuationFragment = new TocPackager(this.processor, this.flowBox, continuationIdentity);
+        return { ...result, continuationFragment };
     }
 
     getRequiredHeight(): number { return this.base?.getRequiredHeight() ?? 0; }
@@ -229,13 +229,14 @@ export class TocPackager implements PackagerUnit {
             }
         };
 
-        this.renderedFlowBox = (this.processor as any).shapeElement(syntheticElement, {
+        const renderedFlowBox = (this.processor as any).shapeElement(syntheticElement, {
             sourceId: this.sourceId,
             sourceType: 'toc',
             fragmentIndex: this.fragmentIndex,
             isContinuation
-        });
-        this.base = new FlowBoxPackager(this.processor, this.renderedFlowBox, this.identity);
+        }) as FlowBox;
+        this.renderedFlowBox = renderedFlowBox;
+        this.base = new FlowBoxPackager(this.processor, renderedFlowBox, this.identity);
         return this.base;
     }
 }
