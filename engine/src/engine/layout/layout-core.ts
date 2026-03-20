@@ -13,22 +13,22 @@ import {
 } from './layout-core-types';
 import type { NormalizedFlowBlock } from './normalized-flow-block';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
-import { ContinuationMarkerCollaborator } from './continuation-marker-collaborator';
-import { PageReservationCollaborator } from './page-reservation-collaborator';
-import { PageStartExclusionCollaborator } from './page-start-exclusion-collaborator';
-import { PageStartReservationCollaborator } from './page-start-reservation-collaborator';
-import { FragmentTransitionArtifactCollaborator } from './fragment-transition-artifact-collaborator';
+import { ContinuationMarkerCollaborator } from './collaborators/continuation-marker-collaborator';
+import { PageReservationCollaborator } from './collaborators/page-reservation-collaborator';
+import { PageStartExclusionCollaborator } from './collaborators/page-start-exclusion-collaborator';
+import { PageStartReservationCollaborator } from './collaborators/page-start-reservation-collaborator';
+import { FragmentTransitionArtifactCollaborator } from './collaborators/fragment-transition-artifact-collaborator';
 import { createMorphedBoxMeta, freezeFlowFragment } from './flow-fragment-state';
-import { HeadingTelemetryCollaborator } from './heading-telemetry-collaborator';
-import { HeadingSignalCollaborator } from './heading-signal-collaborator';
-import { KeepWithNextCollaborator } from './keep-with-next-collaborator';
+import { HeadingTelemetryCollaborator } from './collaborators/heading-telemetry-collaborator';
+import { HeadingSignalCollaborator } from './collaborators/heading-signal-collaborator';
+import { KeepWithNextCollaborator } from './collaborators/keep-with-next-collaborator';
 import { PageRegionCollaborator } from './layout-page-finalization';
-import { PageNumberArtifactCollaborator } from './page-number-artifact-collaborator';
-import { PageOverrideArtifactCollaborator } from './page-override-artifact-collaborator';
-import { PageExclusionArtifactCollaborator } from './page-exclusion-artifact-collaborator';
-import { PageReservationArtifactCollaborator } from './page-reservation-artifact-collaborator';
-import { PageSpatialConstraintArtifactCollaborator } from './page-spatial-constraint-artifact-collaborator';
-import { PageRegionArtifactCollaborator } from './page-region-artifact-collaborator';
+import { PageNumberArtifactCollaborator } from './collaborators/page-number-artifact-collaborator';
+import { PageOverrideArtifactCollaborator } from './collaborators/page-override-artifact-collaborator';
+import { PageExclusionArtifactCollaborator } from './collaborators/page-exclusion-artifact-collaborator';
+import { PageReservationArtifactCollaborator } from './collaborators/page-reservation-artifact-collaborator';
+import { PageSpatialConstraintArtifactCollaborator } from './collaborators/page-spatial-constraint-artifact-collaborator';
+import { PageRegionArtifactCollaborator } from './collaborators/page-region-artifact-collaborator';
 import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import {
@@ -38,10 +38,10 @@ import {
     SimulationReport,
     SimulationReportReader
 } from './simulation-report';
-import { SourcePositionArtifactCollaborator } from './source-position-artifact-collaborator';
-import { TransformCapabilityArtifactCollaborator } from './transform-capability-artifact-collaborator';
-import { TransformArtifactCollaborator } from './transform-artifact-collaborator';
-import { ZoneDebugOverlayCollaborator } from './zone-debug-overlay-collaborator';
+import { SourcePositionArtifactCollaborator } from './collaborators/source-position-artifact-collaborator';
+import { TransformCapabilityArtifactCollaborator } from './collaborators/transform-capability-artifact-collaborator';
+import { TransformArtifactCollaborator } from './collaborators/transform-artifact-collaborator';
+import { ZoneDebugOverlayCollaborator } from './collaborators/zone-debug-overlay-collaborator';
 import {
     buildTableModel,
     isTableElement,

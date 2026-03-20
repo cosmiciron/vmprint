@@ -1,14 +1,14 @@
-import type { FragmentationSummary } from './fragment-transition-artifact-collaborator';
-import type { TransformCapabilitySummary } from './transform-capability-artifact-collaborator';
-import type { TransformSummary } from './transform-artifact-collaborator';
-import type { PageNumberSummary } from './page-number-artifact-collaborator';
-import type { PageOverrideSummary } from './page-override-artifact-collaborator';
-import type { PageReservationSummary } from './page-reservation-artifact-collaborator';
-import type { PageExclusionSummary } from './page-exclusion-artifact-collaborator';
-import type { PageSpatialConstraintSummary } from './page-spatial-constraint-artifact-collaborator';
-import type { PageRegionSummary } from './page-region-artifact-collaborator';
-import type { SourcePositionSummary } from './source-position-artifact-collaborator';
-import type { HeadingTelemetrySummary } from './heading-telemetry-collaborator';
+import type { FragmentationSummary } from './collaborators/fragment-transition-artifact-collaborator';
+import type { TransformCapabilitySummary } from './collaborators/transform-capability-artifact-collaborator';
+import type { TransformSummary } from './collaborators/transform-artifact-collaborator';
+import type { PageNumberSummary } from './collaborators/page-number-artifact-collaborator';
+import type { PageOverrideSummary } from './collaborators/page-override-artifact-collaborator';
+import type { PageReservationSummary } from './collaborators/page-reservation-artifact-collaborator';
+import type { PageExclusionSummary } from './collaborators/page-exclusion-artifact-collaborator';
+import type { PageSpatialConstraintSummary } from './collaborators/page-spatial-constraint-artifact-collaborator';
+import type { PageRegionSummary } from './collaborators/page-region-artifact-collaborator';
+import type { SourcePositionSummary } from './collaborators/source-position-artifact-collaborator';
+import type { HeadingTelemetrySummary } from './collaborators/heading-telemetry-collaborator';
 import type { LayoutProfileMetrics } from './layout-session-types';
 import type { Element, Page } from '../types';
 

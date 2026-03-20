@@ -1,8 +1,8 @@
-import type { Box, DebugZoneRegion } from '../types';
-import type { Collaborator, PageSurface } from './layout-session-types';
-import type { LayoutSession } from './layout-session';
-import type { PackagerUnit } from './packagers/packager-types';
-import { ZonePackager } from './packagers/zone-packager';
+import type { Box, DebugZoneRegion } from '../../types';
+import type { Collaborator, PageSurface } from '../layout-session-types';
+import type { LayoutSession } from '../layout-session';
+import type { PackagerUnit } from '../packagers/packager-types';
+import { ZonePackager } from '../packagers/zone-packager';
 
 function zoneKey(zone: ReturnType<ZonePackager['getDebugRegions']>[number]): string {
     return [

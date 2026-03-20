@@ -3,7 +3,7 @@ import type { LayoutProcessor } from '../layout-core';
 import type { FlowBox } from '../layout-core-types';
 import { createContinuationIdentity, type PackagerIdentity } from './packager-identity';
 import { FlowBoxPackager } from './flow-box-packager';
-import { HEADING_SIGNAL_TOPIC } from '../heading-signal-collaborator';
+import { HEADING_SIGNAL_TOPIC } from '../collaborators/heading-signal-collaborator';
 import type {
     ObservationResult,
     PackagerContext,

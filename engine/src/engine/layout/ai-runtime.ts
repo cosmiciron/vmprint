@@ -7,7 +7,7 @@ import {
     type KeepWithNextFormationPlan,
     type WholeFormationOverflowHandling
 } from './actor-formation';
-import { computeKeepWithNextPlan } from './keep-with-next-collaborator';
+import { computeKeepWithNextPlan } from './collaborators/keep-with-next-collaborator';
 import {
     type KeepWithNextOverflowActionInput,
     type KeepWithNextPlanningResolution,

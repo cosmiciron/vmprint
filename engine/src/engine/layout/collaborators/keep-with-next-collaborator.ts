@@ -1,9 +1,9 @@
 import { performance } from 'node:perf_hooks';
-import type { ActorFormationMember, KeepWithNextFormationPlan } from './actor-formation';
-import { LAYOUT_DEFAULTS } from './defaults';
-import type { Collaborator, PaginationLoopState } from './layout-session-types';
-import { LayoutSession } from './layout-session';
-import { PackagerUnit, preparePackagerForPhase } from './packagers/packager-types';
+import type { ActorFormationMember, KeepWithNextFormationPlan } from '../actor-formation';
+import { LAYOUT_DEFAULTS } from '../defaults';
+import type { Collaborator, PaginationLoopState } from '../layout-session-types';
+import { LayoutSession } from '../layout-session';
+import { PackagerUnit, preparePackagerForPhase } from '../packagers/packager-types';
 
 export type KeepWithNextPlan = KeepWithNextFormationPlan;
 

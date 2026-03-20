@@ -1,6 +1,6 @@
-import type { Collaborator } from './layout-session-types';
-import { LayoutSession } from './layout-session';
-import { PackagerUnit } from './packagers/packager-types';
+import type { Collaborator } from '../layout-session-types';
+import { LayoutSession } from '../layout-session';
+import { PackagerUnit } from '../packagers/packager-types';
 
 function resolveReservationHeight(actor: PackagerUnit): number {
     const flowBox = (actor as any).flowBox;

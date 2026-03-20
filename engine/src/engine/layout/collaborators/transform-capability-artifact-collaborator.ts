@@ -1,8 +1,8 @@
-import type { PackagerTransformCapability } from './packagers/packager-types';
-import type { Collaborator } from './layout-session-types';
-import { LayoutSession } from './layout-session';
-import { simulationArtifactKeys } from './simulation-report';
-import { resolvePackagerTransformProfile } from './packagers/packager-types';
+import type { PackagerTransformCapability } from '../packagers/packager-types';
+import type { Collaborator } from '../layout-session-types';
+import { LayoutSession } from '../layout-session';
+import { simulationArtifactKeys } from '../simulation-report';
+import { resolvePackagerTransformProfile } from '../packagers/packager-types';
 
 export type TransformCapabilitySummary = {
     sourceId: string;

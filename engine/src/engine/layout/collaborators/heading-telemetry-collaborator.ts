@@ -1,8 +1,8 @@
-import type { Box } from '../types';
-import type { Collaborator, PageSurface } from './layout-session-types';
-import { LayoutSession } from './layout-session';
-import { simulationArtifactKeys } from './simulation-report';
-import type { PackagerUnit } from './packagers/packager-types';
+import type { Box } from '../../types';
+import type { Collaborator, PageSurface } from '../layout-session-types';
+import { LayoutSession } from '../layout-session';
+import { simulationArtifactKeys } from '../simulation-report';
+import type { PackagerUnit } from '../packagers/packager-types';
 
 export type HeadingTelemetrySummary = {
     sourceId: string;

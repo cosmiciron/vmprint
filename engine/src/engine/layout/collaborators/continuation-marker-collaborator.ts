@@ -1,8 +1,8 @@
-import { FlowBox } from './layout-core-types';
-import type { Collaborator } from './layout-session-types';
-import { LayoutSession } from './layout-session';
-import { PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
-import { FlowBoxPackager } from './packagers/flow-box-packager';
+import { FlowBox } from '../layout-core-types';
+import type { Collaborator } from '../layout-session-types';
+import { LayoutSession } from '../layout-session';
+import { PackagerSplitResult, PackagerUnit } from '../packagers/packager-types';
+import { FlowBoxPackager } from '../packagers/flow-box-packager';
 
 export class ContinuationMarkerCollaborator implements Collaborator {
     onActorPrepared(actor: PackagerUnit, session: LayoutSession): void {
