@@ -8,9 +8,8 @@ If you want the guided teaching path instead of the full contract, start with th
 
 - [authoring/README.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\README.md)
 
-For the current design audit and redesign notes, see [AST-SPATIAL-ALIGNMENT.md](c:\Users\cosmic\Projects\vmprint\documents\AST-SPATIAL-ALIGNMENT.md).
-
 ---
+
 
 ## 1. Pipeline Overview
 
@@ -613,10 +612,10 @@ interface PageRegionContent {
 | Type definitions | [engine/src/engine/types.ts](c:\Users\cosmic\Projects\vmprint\engine\src\engine\types.ts) |
 | AST normalization | [engine/src/engine/document.ts](c:\Users\cosmic\Projects\vmprint\engine\src\engine\document.ts) |
 | Spatial fixture normalization helper | [engine/tests/harness/spatialize.ts](c:\Users\cosmic\Projects\vmprint\engine\tests\harness\spatialize.ts) |
-| Architecture narrative | [documents/ARCHITECTURE.md](c:\Users\cosmic\Projects\vmprint\documents\ARCHITECTURE.md) |
-| Runtime and page-region details | [documents/SIMULATION-RUNTIME.md](c:\Users\cosmic\Projects\vmprint\documents\SIMULATION-RUNTIME.md) |
+| Architecture and Runtime Internals | [documents/ENGINE-INTERNALS.md](c:\Users\cosmic\Projects\vmprint\documents\ENGINE-INTERNALS.md) |
 | Overlay system | [documents/OVERLAY.md](c:\Users\cosmic\Projects\vmprint\documents\OVERLAY.md) |
 | Standard fonts | [documents/STANDARD-FONTS.md](c:\Users\cosmic\Projects\vmprint\documents\STANDARD-FONTS.md) |
-| Markdown compilation core | [markdown-core/src/index.ts](c:\Users\cosmic\Projects\vmprint\markdown-core\src\index.ts) |
+| Testing guide | [documents/TESTING.md](c:\Users\cosmic\Projects\vmprint\documents\TESTING.md) |
+| Markdown compilation core | [transmuters/markdown-core/src/index.ts](../transmuters/markdown-core/src/index.ts) |
 | Transmuters | [transmuters](c:\Users\cosmic\Projects\vmprint\transmuters) |
 | Regression fixtures | [engine/tests/fixtures](c:\Users\cosmic\Projects\vmprint\engine\tests\fixtures) |

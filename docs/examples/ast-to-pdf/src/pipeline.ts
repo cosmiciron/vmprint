@@ -115,6 +115,18 @@ const BUILTIN_FIXTURES: FixturePreset[] = [
         scriptFile: '15-story-multi-column.js'
     },
     {
+        id: '26-strip-layout',
+        label: '26: Strip Composition (v1.1)',
+        description: 'Metadata bands and horizontal composition with strips.',
+        scriptFile: '26-strip-layout.js'
+    },
+    {
+        id: '21-zone-map-sidebar',
+        label: '21: Zone Maps (v1.1)',
+        description: 'Independent layout regions and parallel zones.',
+        scriptFile: '21-zone-map-sidebar.js'
+    },
+    {
         id: '09-tables-spans-pagination',
         label: '09: Tables Spans Pagination',
         description: 'Complex table spanning and pagination stress test.',

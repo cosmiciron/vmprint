@@ -15,6 +15,11 @@ import {
     loadStandardFontManager,
     MockContext
 } from './harness/engine-harness';
+import { logStep, check } from './harness/test-utils';
+
+const TEST_PREFIX = 'standard-fonts.spec';
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
+const _check = (desc: string, exp: string, fn: () => void) => check(TEST_PREFIX, desc, exp, fn);
 
 const FIXTURE_NAME = '16-standard-fonts-pdf14.json';
 const EXPECTED_STANDARD_POSTSCRIPT_NAMES = [
@@ -56,18 +61,8 @@ class StandardCaptureContext extends MockContext {
     }
 }
 
-function logStep(message: string): void {
-    console.log(`[standard-fonts.spec] ${message}`);
-}
-
-function check(description: string, expected: string, assertion: () => void): void {
-    logStep(`CHECK: ${description}`);
-    logStep(`EXPECT: ${expected}`);
-    assertion();
-    logStep(`PASS: ${description}`);
-}
-
 async function run() {
+
     const fixturePath = getAstFixturePath(FIXTURE_NAME);
     const fixture = resolveDocumentPaths(
         JSON.parse(fs.readFileSync(fixturePath, 'utf-8')),
@@ -80,7 +75,7 @@ async function run() {
 
     await engine.waitForFonts();
 
-    check(
+    _check(
         'standard-font encoder collapses unsupported Unicode to one fallback glyph per code point',
         'astral Unicode produces one default-width glyph instead of two UTF-16 surrogate glyphs',
         () => {
@@ -95,7 +90,7 @@ async function run() {
         }
     );
 
-    check(
+    _check(
         'standard-font encoder preserves WinAnsi extension characters',
         'characters like em dash and euro map to single-byte WinAnsi codes used by PDF standard fonts',
         () => {
@@ -109,7 +104,7 @@ async function run() {
         }
     );
 
-    check(
+    _check(
         'all 14 standard fonts are loaded via sentinel buffers',
         'font cache contains exactly 14 standard font entries and each buffer is a 5-byte sentinel',
         () => {
@@ -131,7 +126,7 @@ async function run() {
     );
 
     const pages = engine.simulate(fixture.elements);
-    check(
+    _check(
         'fixture paginates under StandardFontManager',
         'flat-pipeline invariants hold for the standard font specimen document',
         () => {
@@ -145,7 +140,7 @@ async function run() {
     const renderer = new Renderer(config, false, runtime);
     await renderer.render(pages, context);
 
-    check(
+    _check(
         'renderer registers all standard fonts with metadata',
         '14 registrations use sentinel-size buffers and include standard PostScript names',
         () => {
@@ -163,7 +158,7 @@ async function run() {
         }
     );
 
-    logStep('OK');
+    log('OK');
 }
 
 run().catch((err) => {

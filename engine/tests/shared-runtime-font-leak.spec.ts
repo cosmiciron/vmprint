@@ -8,9 +8,10 @@ import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runt
 import { loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 import { getAstFixturePath } from './harness/ast-fixture-harness';
 
-function logStep(message: string): void {
-    console.log(`[shared-runtime-font-leak.spec] ${message}`);
-}
+import { logStep } from './harness/test-utils';
+
+const TEST_PREFIX = 'shared-runtime-font-leak.spec';
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
 
 function loadFixtureDocument(fixtureName: string) {
     const fixturePath = getAstFixturePath(fixtureName);
@@ -36,7 +37,7 @@ async function renderFixtureWithRuntime(document: any, runtime: any): Promise<an
 }
 
 async function run(): Promise<void> {
-    logStep('Scenario: shared EngineRuntime state currently leaks font selection across documents');
+    log('Scenario: shared EngineRuntime state currently leaks font selection across documents');
 
     const LocalFontManager = await loadLocalFontManager();
     const fixtureSequence = [
@@ -70,7 +71,7 @@ async function run(): Promise<void> {
         'Shared runtime render is expected to reproduce the current cross-document font leak'
     );
 
-    logStep(`Observed isolated family=${isolatedFamily}, shared family=${sharedFamily}`);
+    log(`Observed isolated family=${isolatedFamily}, shared family=${sharedFamily}`);
 }
 
 run().catch((err) => {

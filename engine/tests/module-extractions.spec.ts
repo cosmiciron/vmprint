@@ -26,16 +26,10 @@ import { createStandardFontSentinelBuffer, getStandardFontMetadata } from '../sr
 
 let LocalFontManager: any;
 
-function logStep(message: string): void {
-    console.log(`[module-extractions.spec] ${message}`);
-}
-
-function check(description: string, expected: string, assertion: () => void): void {
-    logStep(`CHECK: ${description}`);
-    logStep(`EXPECT: ${expected}`);
-    assertion();
-    logStep(`PASS: ${description}`);
-}
+import { logStep, check } from './harness/test-utils';
+const TEST_PREFIX = 'module-extractions.spec';
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
+const _check = (desc: string, exp: string, fn: () => void) => check(TEST_PREFIX, desc, exp, fn);
 
 function assertNear(actual: number, expected: number, epsilon: number = 0.001): void {
     assert.ok(Math.abs(actual - expected) <= epsilon, `expected ${actual} ~= ${expected} (±${epsilon})`);
@@ -46,7 +40,7 @@ function testStyleSignatureCache(): void {
     const styleA = { fontSize: 12, fontWeight: 700, nested: { a: 1, b: 2 } };
     const styleB = { nested: { b: 2, a: 1 }, fontWeight: 700, fontSize: 12 };
 
-    check(
+    _check(
         'style signature normalization',
         'equivalent style objects with different key order compare equal',
         () => {
@@ -73,7 +67,7 @@ function testAppendSegmentMerge(): void {
         glyphs: [{ char: 'l', x: 0, y: 0 }, { char: 'o', x: 3, y: 0 }]
     };
 
-    check(
+    _check(
         'segment line merge',
         'compatible adjacent segments are merged into one segment',
         () => {
@@ -87,7 +81,7 @@ function testAppendSegmentMerge(): void {
 }
 
 function testScriptSegmentationHelpers(): void {
-    check(
+    _check(
         'script char helpers',
         'CJK/Thai/RTL detector helpers classify representative code points',
         () => {
@@ -98,7 +92,7 @@ function testScriptSegmentationHelpers(): void {
         }
     );
 
-    check(
+    _check(
         'splitByScriptType',
         'mixed CJK/Latin text splits into at least two script runs',
         () => {
@@ -113,7 +107,7 @@ function testScriptSegmentationHelpers(): void {
         }
     );
 
-    check(
+    _check(
         'getScriptClass',
         'dominant-script classifier reports cjk for CJK-leading text',
         () => {
@@ -122,7 +116,7 @@ function testScriptSegmentationHelpers(): void {
         }
     );
 
-    check(
+    _check(
         'locale-aware fallback preference',
         'Japanese locale prioritizes JP fallback for Han text when multiple CJK fallbacks support the glyph',
         () => {
@@ -148,7 +142,7 @@ function testScriptSegmentationHelpers(): void {
         }
     );
 
-    check(
+    _check(
         'neutral whitespace inherits active run font',
         'spaces between Arabic words stay in the Arabic font run to avoid bidi fragmentation',
         () => {
@@ -188,7 +182,7 @@ function testAdvancedJustification(): void {
         ]
     ];
 
-    check(
+    _check(
         'advanced justification spacing',
         'non-final lines receive positive justifyAfter while final line remains unchanged',
         () => {
@@ -217,7 +211,7 @@ function testAdvancedJustificationSkipsForcedBreakLines(): void {
         ]
     ];
 
-    check(
+    _check(
         'advanced justification ignores forced hard-break lines',
         'line marked with forcedBreakAfter does not receive expansion metadata',
         () => {
@@ -243,7 +237,7 @@ function testHyphenationSoftBreak(): void {
 
     const segment: TextSegment = { text: 'trans\u00ADform', style: {} };
 
-    check(
+    _check(
         'hyphenation soft break',
         'soft hyphen point is selected when head fits available width',
         () => {
@@ -276,7 +270,7 @@ function testHyphenationSoftBreak(): void {
 }
 
 function testDocumentContractNormalization(): void {
-    check(
+    _check(
         'document contract normalization',
         'fonts.regular-only documents are accepted and layout.fontFamily is canonicalized',
         () => {
@@ -307,7 +301,7 @@ function testDocumentContractNormalization(): void {
         }
     );
 
-    check(
+    _check(
         'document contract validation',
         'documents without layout.fontFamily and fonts.regular are rejected',
         () => {
@@ -329,7 +323,7 @@ function testDocumentContractNormalization(): void {
         }
     );
 
-    check(
+    _check(
         'document version validation',
         'documents with unsupported documentVersion are rejected',
         () => {
@@ -351,7 +345,7 @@ function testDocumentContractNormalization(): void {
         }
     );
 
-    check(
+    _check(
         'strict layout key validation',
         'legacy/unknown layout keys are rejected with a precise error',
         () => {
@@ -374,7 +368,7 @@ function testDocumentContractNormalization(): void {
         }
     );
 
-    check(
+    _check(
         'strict style key validation',
         'legacy/unknown style keys are rejected with a precise error',
         () => {
@@ -400,7 +394,7 @@ function testDocumentContractNormalization(): void {
         }
     );
 
-    check(
+    _check(
         'strict element properties key validation',
         'domain-specific or unknown element properties are rejected with a precise error',
         () => {
@@ -432,7 +426,7 @@ function testDocumentContractNormalization(): void {
 }
 
 function testRichTextStyleInheritance(): void {
-    check(
+    _check(
         'rich text style inheritance',
         'nested text leaves inherit parent heading style unless explicitly overridden',
         () => {
@@ -462,7 +456,7 @@ function testRichTextStyleInheritance(): void {
 }
 
 function testOrientationDimensions(): void {
-    check(
+    _check(
         'orientation dimension resolution',
         'landscape swaps width/height for named and custom page sizes',
         () => {
@@ -501,7 +495,7 @@ function testOrientationDimensions(): void {
 }
 
 function testTrackSizingFoundation(): void {
-    check(
+    _check(
         'track sizing fixed + flex growth',
         'remaining width is distributed by flex weight after fixed track allocation',
         () => {
@@ -526,7 +520,7 @@ function testTrackSizingFoundation(): void {
         }
     );
 
-    check(
+    _check(
         'track sizing shrink to minima',
         'overflowing basis widths shrink proportionally while respecting per-track min',
         () => {
@@ -547,7 +541,7 @@ function testTrackSizingFoundation(): void {
         }
     );
 
-    check(
+    _check(
         'track sizing auto-content cap + flex spillover',
         'auto tracks grow to content caps first, then remaining space goes to flex tracks',
         () => {
@@ -570,7 +564,7 @@ function testTrackSizingFoundation(): void {
         }
     );
 
-    check(
+    _check(
         'track sizing flex max cap',
         'max-capped flex track stops growing and surplus flows to uncapped flex siblings',
         () => {
@@ -592,7 +586,7 @@ function testTrackSizingFoundation(): void {
 
 function testFontWeightMatching(): void {
     const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
-    check(
+    _check(
         'numeric font weight nearest matching',
         'weights resolve to nearest static Arimo instances with style preservation',
         () => {
@@ -617,7 +611,7 @@ function testFontWeightMatching(): void {
 function testEmbeddedImageContract(): void {
     const onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO9Wl9kAAAAASUVORK5CYII=';
 
-    check(
+    _check(
         'embedded image contract acceptance',
         'type=image with top-level image payload is accepted by strict contract validation in AST 1.1',
         () => {
@@ -653,7 +647,7 @@ function testEmbeddedImageContract(): void {
         }
     );
 
-    check(
+    _check(
         'embedded image required for image element',
         'type=image without top-level image is rejected in AST 1.1',
         () => {
@@ -677,7 +671,7 @@ function testEmbeddedImageContract(): void {
         }
     );
 
-    check(
+    _check(
         'embedded image in properties rejected',
         'image field in properties is not allowed; it must be a first-class element field',
         () => {
@@ -706,7 +700,7 @@ function testEmbeddedImageContract(): void {
         }
     );
 
-    check(
+    _check(
         'embedded image fit validation',
         'unsupported fit values are rejected with a precise error',
         () => {
@@ -740,7 +734,7 @@ function testEmbeddedImageContract(): void {
 }
 
 function testTableLayoutContract(): void {
-    check(
+    _check(
         'table layout contract acceptance',
         'top-level element.table with track definitions is accepted by strict contract validation in AST 1.1',
         () => {
@@ -791,7 +785,7 @@ function testTableLayoutContract(): void {
         }
     );
 
-    check(
+    _check(
         'table layout in properties rejected',
         'table field in properties is not allowed; it must be a first-class element field',
         () => {
@@ -820,7 +814,7 @@ function testTableLayoutContract(): void {
         }
     );
 
-    check(
+    _check(
         'table layout contract validation',
         'invalid table column mode is rejected with a precise error',
         () => {
@@ -856,7 +850,7 @@ function testTableLayoutContract(): void {
 function testAst11PromotedFieldsContract(): void {
     const onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO9Wl9kAAAAASUVORK5CYII=';
 
-    check(
+    _check(
         'AST 1.1 promoted fields acceptance',
         'zoneLayout, zone frame overflow, zone world behavior, stripLayout, dropCap, columnSpan, placement, and top-level image payload normalize cleanly in AST 1.1',
         () => {
@@ -962,7 +956,7 @@ function testAst11PromotedFieldsContract(): void {
         }
     );
 
-    check(
+    _check(
         'story placement scope validation',
         'placement is rejected outside direct story children',
         () => {
@@ -986,7 +980,7 @@ function testAst11PromotedFieldsContract(): void {
         }
     );
 
-    check(
+    _check(
         'story placement non-image absolute acceptance',
         'a non-image direct child of story may use story-absolute placement',
         () => {
@@ -1025,7 +1019,7 @@ function testAst11PromotedFieldsContract(): void {
 }
 
 function testRuntimeIsolation(): void {
-    check(
+    _check(
         'runtime state isolation',
         'font registry writes in one runtime do not leak into another runtime',
         () => {
@@ -1049,7 +1043,7 @@ function testRuntimeIsolation(): void {
 }
 
 function testEmbeddedImageCacheCollisionSafety(): void {
-    check(
+    _check(
         'embedded image cache collision safety',
         'distinct payloads that share the compact sampled cache key do not alias to the same parsed object',
         () => {
@@ -1084,7 +1078,7 @@ function testEmbeddedImageCacheCollisionSafety(): void {
 }
 
 function testLocalFontManagerOverride(): void {
-    check(
+    _check(
         'local font manager override',
         'runtime font manager can be overridden with a custom local manager',
         () => {
@@ -1115,7 +1109,7 @@ function testLocalFontManagerOverride(): void {
 }
 
 function testEngineCoreDomainAgnosticBoundary(): void {
-    check(
+    _check(
         'engine core boundary guard',
         'non-test engine source files do not contain screenplay/domain-specific vocabulary',
         () => {

@@ -1,5 +1,5 @@
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": {
     "pageSize": {
       "width": 600,
@@ -69,16 +69,16 @@
           "type": "p",
           "content": "The magazine's equipo editorial verifies every proof before publication, ensuring typographic fidelity is maintained across all scripts, locales, and output formats throughout the production cycle.",
           "properties": {
-            "sourceId": "mc2-lang-spanish",
-            "dropCap": {
-              "enabled": true,
-              "lines": 3,
-              "gap": 6,
-              "characterStyle": {
-                "fontFamily": "Times New Roman",
-                "fontWeight": 700,
-                "color": "#1e3a5f"
-              }
+            "sourceId": "mc2-lang-spanish"
+          },
+          "dropCap": {
+            "enabled": true,
+            "lines": 3,
+            "gap": 6,
+            "characterStyle": {
+              "fontFamily": "Times New Roman",
+              "fontWeight": 700,
+              "color": "#1e3a5f"
             }
           }
         },
@@ -101,22 +101,22 @@
           "content": "Pull Quote",
           "properties": {
             "sourceId": "mc2-obstacle-1",
-            "layout": {
-              "mode": "float",
-              "align": "left",
-              "wrap": "around",
-              "gap": 15
-            },
             "style": {
               "width": 140,
               "height": 130,
               "backgroundColor": "#cbd5e1"
-            },
-            "image": {
-              "mimeType": "image/png",
-              "fit": "fill",
-              "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
             }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+          },
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 15
           }
         },
         {
@@ -189,22 +189,22 @@
           "content": "A Note",
           "properties": {
             "sourceId": "mc3-obstacle-1",
-            "layout": {
-              "mode": "float",
-              "align": "center",
-              "wrap": "around",
-              "gap": 8
-            },
             "style": {
               "width": 80,
               "height": 80,
               "backgroundColor": "#94a3b8"
-            },
-            "image": {
-              "mimeType": "image/png",
-              "fit": "fill",
-              "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
             }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+          },
+          "placement": {
+            "mode": "float",
+            "align": "center",
+            "wrap": "around",
+            "gap": 8
           }
         },
         {
@@ -226,22 +226,22 @@
           "content": "Note 2",
           "properties": {
             "sourceId": "mc3-obstacle-2",
-            "layout": {
-              "mode": "float",
-              "align": "right",
-              "wrap": "around",
-              "gap": 10
-            },
             "style": {
               "width": 60,
               "height": 90,
               "backgroundColor": "#f87171"
-            },
-            "image": {
-              "mimeType": "image/png",
-              "fit": "fill",
-              "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
             }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+          },
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10
           }
         },
         {

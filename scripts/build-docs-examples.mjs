@@ -20,7 +20,7 @@ const examples = [
 const aliases = {
     '@vmprint/contracts': path.join(repoRoot, 'contracts', 'src', 'index.ts'),
     '@vmprint/engine': path.join(repoRoot, 'engine', 'src', 'index.ts'),
-    '@vmprint/markdown-core': path.join(repoRoot, 'markdown-core', 'src', 'index.ts'),
+    '@vmprint/markdown-core': path.join(repoRoot, 'transmuters', 'markdown-core', 'src', 'index.ts'),
     '@vmprint/standard-fonts': path.join(repoRoot, 'font-managers', 'standard', 'src', 'index.ts'),
     '@vmprint/context-pdf-lite': path.join(repoRoot, 'contexts', 'pdf-lite', 'src', 'index.ts'),
     fontkit: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'fontkit.ts'),

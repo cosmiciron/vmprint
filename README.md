@@ -127,10 +127,10 @@ npm run test:packaged-integration
 ## Documentation
 
 - [Quickstart](QUICKSTART.md)
-- [Architecture](documents/ARCHITECTURE.md)
-- [Testing](documents/TESTING.md)
-- [Docs Index](docs/README.md)
 - [Authoring Guide](documents/authoring/README.md)
+- [AST Reference](documents/AST-REFERENCE.md)
+- [Testing Guide](documents/TESTING.md)
+- [Docs Index](docs/README.md)
 
 ## License
 

@@ -21,7 +21,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@vmprint/markdown-core": "file:../../markdown-core",
+    "@vmprint/markdown-core": "file:../markdown-core",
     "@vmprint/contracts": "file:../../contracts"
   },
   "devDependencies": {

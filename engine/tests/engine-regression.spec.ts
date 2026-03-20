@@ -1,4 +1,5 @@
-﻿import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';
+
 import fs from 'node:fs';
 import path from 'node:path';
 import { LayoutEngine } from '../src/engine/layout-engine';
@@ -29,36 +30,15 @@ import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runt
 
 const UPDATE_LAYOUT_SNAPSHOTS =
     process.argv.includes('--update-layout-snapshots') || process.env.VMPRINT_UPDATE_LAYOUT_SNAPSHOTS === '1';
-
-function logStep(message: string): void {
-    console.log(`[engine-regression.spec] ${message}`);
-}
-
-function check(description: string, expected: string, assertion: () => void): void {
-    logStep(`CHECK: ${description}`);
-    logStep(`EXPECT: ${expected}`);
-    assertion();
-    logStep(`PASS: ${description}`);
-}
-
-async function checkAsync(description: string, expected: string, assertion: () => Promise<void>): Promise<void> {
-    logStep(`CHECK: ${description}`);
-    logStep(`EXPECT: ${expected}`);
-    await assertion();
-    logStep(`PASS: ${description}`);
-}
-
-function assertNoInputMutation(elements: any[], fixtureName: string): void {
-    const visit = (node: any) => {
-        assert.equal(node?.properties?._box, undefined, `${fixtureName}: input node mutated with _box`);
-        if (Array.isArray(node?.children)) {
-            node.children.forEach(visit);
-        }
-    };
-    elements.forEach(visit);
-}
+import { logStep, check, checkAsync, assertNoInputMutation as _assertNoInputMutation } from './harness/test-utils';
+const TEST_PREFIX = 'engine-regression.spec';
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
+const _check = (desc: string, exp: string, fn: () => void) => check(TEST_PREFIX, desc, exp, fn);
+const _checkAsync = (desc: string, exp: string, fn: () => Promise<void>) => checkAsync(TEST_PREFIX, desc, exp, fn);
+const assertNoInputMutation = (elements: any[], fixtureName: string) => _assertNoInputMutation(assert, elements, fixtureName);
 
 function assertTableMixedSpanFixtureSignals(
+
     pages: any[],
     fixtureName: string,
     engine: any
@@ -1027,9 +1007,9 @@ async function run() {
     const LocalFontManager = await loadLocalFontManager();
     setDefaultEngineRuntime(createEngineRuntime({ fontManager: new LocalFontManager() }));
 
-    logStep('Scenario: fixture-driven deterministic pagination and renderer regression checks');
+    log('Scenario: fixture-driven deterministic pagination and renderer regression checks');
     const fixtures = loadAstJsonDocumentFixtures();
-    check(
+    _check(
         'fixture discovery',
         'at least one AST fixture is present in engine/tests/fixtures/regression',
         () => {
@@ -1038,13 +1018,13 @@ async function run() {
     );
 
     for (const fixture of fixtures) {
-        logStep(`Fixture: ${fixture.name}`);
+        log(`Fixture: ${fixture.name}`);
         const fixturePath = fixture.filePath;
         const fixtureRaw = fs.readFileSync(fixturePath, 'utf-8');
         const irA = resolveDocumentPaths(JSON.parse(fixtureRaw), fixturePath);
         const irB = resolveDocumentPaths(JSON.parse(fixtureRaw), fixturePath);
 
-        check(
+        _check(
             `${fixture.name} canonical IR determinism`,
             're-loading the same fixture yields byte-equivalent canonical IR',
             () => {
@@ -1062,14 +1042,14 @@ async function run() {
         const pagesA = engine.simulate(elements);
         const pagesB = engine.simulate(elements);
 
-        check(
+        _check(
             `${fixture.name} flat pipeline invariants`,
             'finite geometry, measured lines fit, and no nested children in boxes',
             () => {
                 assertFlatPipelineInvariants(pagesA, fixture.name);
             }
         );
-        check(
+        _check(
             `${fixture.name} deterministic pagination`,
             'two paginate runs with same input produce identical snapshots',
             () => {
@@ -1080,14 +1060,14 @@ async function run() {
                 );
             }
         );
-        check(
+        _check(
             `${fixture.name} simulation report contract`,
             'simulate() produces a simulation report whose top-level counts and typed artifact sections are available',
             () => {
                 assertSimulationReportSignals(engine, pagesA, fixture.name);
             }
         );
-        check(
+        _check(
             `${fixture.name} layout snapshot`,
             'matches stored snapshot',
             () => {
@@ -1095,7 +1075,7 @@ async function run() {
             }
         );
         if (fixture.name.startsWith('05-page-size-') || fixture.name.startsWith('06-page-size-')) {
-            check(
+            _check(
                 `${fixture.name} orientation/page-size dimensions`,
                 'all paginated pages use dimensions resolved from pageSize + orientation',
                 () => {
@@ -1108,7 +1088,7 @@ async function run() {
             );
         }
         if (fixture.name === '02-text-layout-advanced.json') {
-            check(
+            _check(
                 `${fixture.name} advanced layout signals`,
                 'advanced fixtures emit expected justification and soft-hyphen layout markers',
                 () => {
@@ -1117,7 +1097,7 @@ async function run() {
             );
         }
         if (fixture.name === '14-flow-images-multipage.json') {
-            check(
+            _check(
                 `${fixture.name} flow-image pagination coverage`,
                 'flow-image comic fixture spans multiple pages and retains all three image boxes',
                 () => {
@@ -1131,7 +1111,7 @@ async function run() {
             );
         }
         if (fixture.name === '13-inline-rich-objects.json') {
-            check(
+            _check(
                 `${fixture.name} inline rich-object pagination coverage`,
                 'inline object fixture spans multiple pages and includes inline-object segments on later pages',
                 () => {
@@ -1154,7 +1134,7 @@ async function run() {
             );
         }
         if (fixture.name === '12-inline-baseline-alignment.json') {
-            check(
+            _check(
                 `${fixture.name} inline baseline controls coverage`,
                 'fixture emits inline metrics for all verticalAlign variants and inline margin metadata',
                 () => {
@@ -1195,7 +1175,7 @@ async function run() {
             );
         }
         if (fixture.name === '09-tables-spans-pagination.json') {
-            check(
+            _check(
                 `${fixture.name} mixed-span table signals`,
                 'colSpan + rowSpan cells paginate deterministically with repeated headers, no span boundary splits, and table transform capabilities',
                 () => {
@@ -1205,7 +1185,7 @@ async function run() {
             );
         }
         if (fixture.name === '10-packager-split-scenarios.json') {
-            check(
+            _check(
                 `${fixture.name} packager split scenarios`,
                 'keepWithNext, mid-page table, and page-top overflow splits are all exercised',
                 () => {
@@ -1214,7 +1194,7 @@ async function run() {
             );
         }
         if (fixture.name === '19-accepted-split-branching.json') {
-            check(
+            _check(
                 `${fixture.name} accepted split branching signals`,
                 'two accepted-split seams each emit exactly one marker pair and leave no duplicated post-split residue behind',
                 () => {
@@ -1223,7 +1203,7 @@ async function run() {
             );
         }
         if (fixture.name === '08-dropcap-pagination.json') {
-            check(
+            _check(
                 `${fixture.name} dropcap pagination`,
                 'dropcap stays on first fragment, continuation splits correctly, and dropcap actors declare split+morph capabilities',
                 () => {
@@ -1237,7 +1217,7 @@ async function run() {
             || fixture.name === '08-dropcap-pagination.json'
             || fixture.name === '10-packager-split-scenarios.json'
         ) {
-            check(
+            _check(
                 `${fixture.name} split transform signals`,
                 'split-heavy fixtures publish split transform summaries with continuation fragment indices and actor split capabilities',
                 () => {
@@ -1247,7 +1227,7 @@ async function run() {
             );
         }
         if (fixture.name === '24-toc-live-reactive.json') {
-            check(
+            _check(
                 `${fixture.name} live TOC reactive signals`,
                 'TOC actor placed before headings renders entries from committed heading signals, grows from signal accumulation, and body content follows after the TOC',
                 () => {
@@ -1282,7 +1262,7 @@ async function run() {
             );
         }
         if (fixture.name === '25-total-pages-footer.json') {
-            check(
+            _check(
                 `${fixture.name} total-pages content-only reactive update`,
                 'footer with {totalPages} token renders the actual final page count on every page, not a placeholder, without a second simulate() call',
                 () => {
@@ -1328,7 +1308,7 @@ async function run() {
             );
         }
         if (fixture.name === '17-header-footer-test.json') {
-            check(
+            _check(
                 `${fixture.name} header/footer test signals`,
                 'firstPage suppression, odd/even selectors, per-page override replacement and null-suppression, physicalPageNumber token, and logical counter skipping all behave deterministically',
                 () => {
@@ -1337,7 +1317,7 @@ async function run() {
             );
         }
         if (fixture.name === '20-block-floats-and-column-span.json') {
-            check(
+            _check(
                 `${fixture.name} block float and column span signals`,
                 'block floats are positioned correctly, text wraps around them, column span is full-width, and post-span content flows in columns',
                 () => {
@@ -1346,7 +1326,7 @@ async function run() {
             );
         }
         if (fixture.name === '11-story-image-floats.json') {
-            check(
+            _check(
                 `${fixture.name} story layout signals`,
                 'multi-page story with image floats, story-absolute, and non-uniform line widths',
                 () => {
@@ -1355,7 +1335,7 @@ async function run() {
             );
         }
         if (fixture.name === '15-story-multi-column.json') {
-            check(
+            _check(
                 `${fixture.name} multi-column story signals`,
                 'story emits at least two column anchors on page 1, continues across pages, and declares split+morph capabilities',
                 () => {
@@ -1365,7 +1345,7 @@ async function run() {
             );
         }
         if (fixture.name === '22-story-nested-table-continuation.json') {
-            check(
+            _check(
                 `${fixture.name} nested table continuation signals`,
                 'a nested table starts in a later story lane, continues across pages, repeats headers, and keeps downstream story flow after the continuation',
                 () => {
@@ -1375,7 +1355,7 @@ async function run() {
             );
         }
         if (fixture.name === '23-story-nested-story-continuation.json') {
-            check(
+            _check(
                 `${fixture.name} nested story continuation signals`,
                 'a nested story starts in a later story lane, continues across pages, and keeps downstream outer-story flow after the continuation',
                 () => {
@@ -1384,7 +1364,7 @@ async function run() {
                 }
             );
         }
-        check(
+        _check(
             `${fixture.name} input immutability`,
             'input elements are unchanged after pagination',
             () => {
@@ -1396,7 +1376,7 @@ async function run() {
         const context = new MockContext(pageWidth, pageHeight);
         const renderer = new Renderer(config, false, engine.getRuntime());
         await renderer.render(pagesA, context);
-        check(
+        _check(
             `${fixture.name} renderer integration`,
             'renderer consumes all pages and emits text draw calls',
             () => {
@@ -1427,7 +1407,7 @@ async function run() {
             }
         );
         if (fixture.name === '02-text-layout-advanced.json') {
-            check(
+            _check(
                 `${fixture.name} advanced render signals`,
                 'advanced fixtures exhibit expected rtl drawing progression',
                 () => {
@@ -1437,7 +1417,7 @@ async function run() {
         }
     }
 
-    await checkAsync(
+    await _checkAsync(
         'heading telemetry probe',
         'heading actors should publish ordered heading telemetry artifacts for the print pipeline handoff',
         async () => {
@@ -2050,7 +2030,7 @@ async function run() {
         }
     );
 
-    await checkAsync(
+    await _checkAsync(
         'experimental page reservation system',
         'a committed actor can reserve page space for subsequent actors through session-owned constraint state',
         async () => {
@@ -2509,7 +2489,7 @@ async function run() {
         }
     );
 
-    await checkAsync(
+    await _checkAsync(
         'transformable actor cloning probe',
         'two independent multi-page tables each emit their own repeated-header clones and clone summaries without leaking into each other',
         async () => {

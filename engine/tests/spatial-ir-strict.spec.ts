@@ -8,10 +8,10 @@ import { HARNESS_REGRESSION_CASES_DIR, loadLocalFontManager, snapshotPages } fro
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
 import { getAstFixturePath, listAstFixtureNames } from './harness/ast-fixture-harness';
 import { transformAstSource } from './harness/ast-transform';
+import { logStep } from './harness/test-utils';
 
-function logStep(message: string): void {
-    console.log(`[spatial-ir-strict.spec] ${message}`);
-}
+const TEST_PREFIX = 'spatial-ir-strict.spec';
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
 
 function resolveSnapshotPath(fixtureName: string): string {
     return path.join(
@@ -21,7 +21,7 @@ function resolveSnapshotPath(fixtureName: string): string {
 }
 
 async function run(): Promise<void> {
-    logStep('Scenario: strict Spatial IR mode forbids AST/source recovery during fixture adaptation');
+    log('Scenario: strict Spatial IR mode forbids AST/source recovery during fixture adaptation');
 
     const LocalFontManager = await loadLocalFontManager();
     const fixtureNames = listAstFixtureNames();
@@ -30,7 +30,7 @@ async function run(): Promise<void> {
     const passes: string[] = [];
 
     for (const fixtureName of fixtureNames) {
-        logStep(`Fixture: ${fixtureName}`);
+        log(`Fixture: ${fixtureName}`);
         const fixturePath = getAstFixturePath(fixtureName);
         const snapshotPath = resolveSnapshotPath(fixtureName);
 
@@ -72,14 +72,14 @@ async function run(): Promise<void> {
         }
     }
 
-    logStep(`Strict Spatial IR passes: ${passes.length}/${fixtureNames.length}`);
+    log(`Strict Spatial IR passes: ${passes.length}/${fixtureNames.length}`);
     if (passes.length > 0) {
-        logStep(`Passing fixtures: ${passes.join(', ')}`);
+        log(`Passing fixtures: ${passes.join(', ')}`);
     }
     if (failures.length > 0) {
-        logStep('Strict Spatial IR failures:');
+        log('Strict Spatial IR failures:');
         for (const failure of failures) {
-            logStep(`- ${failure.fixture} [${failure.kind}] ${failure.message}`);
+            log(`- ${failure.fixture} [${failure.kind}] ${failure.message}`);
         }
     }
 

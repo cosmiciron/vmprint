@@ -4,16 +4,10 @@ import { createEngineRuntime } from '../src/engine/runtime';
 import { normalizeZoneMapElement } from '../src/engine/layout/packagers/zone-packager';
 import { loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 
-function logStep(message: string): void {
-    console.log(`[strip-layout.spec] ${message}`);
-}
-
-function check(description: string, expected: string, assertion: () => void): void {
-    logStep(`CHECK: ${description}`);
-    logStep(`EXPECT: ${expected}`);
-    assertion();
-    logStep(`PASS: ${description}`);
-}
+import { logStep, check } from './harness/test-utils';
+const TEST_PREFIX = 'strip-layout.spec';
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
+const _check = (desc: string, exp: string, fn: () => void) => check(TEST_PREFIX, desc, exp, fn);
 
 async function main() {
     const LocalFontManager = await loadLocalFontManager();
@@ -144,7 +138,7 @@ async function main() {
     const resolvedStrip = resolveDocumentPaths(stripDoc, 'strip-doc.json');
     const resolvedZoneMap = resolveDocumentPaths(zoneMapDoc, 'zone-map-doc.json');
 
-    check(
+    _check(
         'strip lowers to zone-map during normalization',
         'top-level strip and footer strip normalize into zone-map elements',
         () => {
@@ -153,7 +147,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'normalized strip structure matches authored zone-map structure',
         'strip lowering produces the same normalized geometry-facing AST as a direct zone-map',
         () => {
@@ -162,7 +156,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'zone-map normalization emits explicit region rectangles',
         'strip-lowered and authored zone-map structures normalize into region rects with x, y, and width',
         () => {
@@ -189,7 +183,7 @@ async function main() {
     const stripPages = stripEngine.simulate(resolvedStrip.elements);
     const zonePages = zoneEngine.simulate(resolvedZoneMap.elements);
 
-    check(
+    _check(
         'strip and equivalent zone-map render identically',
         'page snapshots are exactly equal',
         () => {
@@ -224,7 +218,7 @@ async function main() {
 
     const resolvedExplicitRegion = resolveDocumentPaths(explicitRegionDoc, 'zone-map-explicit-region.json');
 
-    check(
+    _check(
         'zone-map preserves authored explicit region geometry',
         'authored region rectangles survive normalization and become the zone field geometry',
         () => {
@@ -251,7 +245,7 @@ async function main() {
     await explicitRegionEngine.waitForFonts();
     const explicitRegionPages = explicitRegionEngine.simulate(resolvedExplicitRegion.elements);
 
-    check(
+    _check(
         'zone-map explicit regions affect rendered placement',
         'content in a later region renders to the right and below content in an earlier region when authored that way',
         () => {
@@ -278,7 +272,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'zone-map publishes page-level debug regions',
         'finalized pages expose subtle debug overlay geometry for authored zones',
         () => {

@@ -1,5 +1,5 @@
 {
-  "documentVersion": "1.0",
+  "documentVersion": "1.1",
   "layout": {
     "pageSize": {
       "width": 612,
@@ -54,16 +54,16 @@
       "type": "p",
       "content": "Printing from movable type eliminated the scribe but could not immediately replace the illuminator — early printed books left spaces for hand-drawn initial capitals, a transitional practice that persisted for decades before decorative woodcut initials took their place. The drop cap survived this transition intact, carrying the manuscript tradition forward into the age of mechanical reproduction. Printing from movable type eliminated the scribe but could not immediately replace the illuminator — early printed books left spaces for hand-drawn initial capitals, a transitional practice that persisted for decades before decorative woodcut initials took their place. The drop cap survived this transition intact, carrying the manuscript tradition forward into the age of mechanical reproduction. Printing from movable type eliminated the scribe but could not immediately replace the illuminator.",
       "properties": {
-        "sourceId": "dropcap-basic",
-        "dropCap": {
-          "enabled": true,
-          "lines": 4,
-          "gap": 6,
-          "characterStyle": {
-            "fontFamily": "Times New Roman",
-            "fontWeight": 700,
-            "color": "#0f3f63"
-          }
+        "sourceId": "dropcap-basic"
+      },
+      "dropCap": {
+        "enabled": true,
+        "lines": 4,
+        "gap": 6,
+        "characterStyle": {
+          "fontFamily": "Times New Roman",
+          "fontWeight": 700,
+          "color": "#0f3f63"
         }
       }
     },
@@ -74,16 +74,16 @@
         "sourceId": "dropcap-move-whole",
         "style": {
           "overflowPolicy": "move-whole"
-        },
-        "dropCap": {
-          "enabled": true,
-          "lines": 3,
-          "gap": 5,
-          "characters": 6,
-          "characterStyle": {
-            "fontFamily": "Times New Roman",
-            "fontWeight": 700
-          }
+        }
+      },
+      "dropCap": {
+        "enabled": true,
+        "lines": 3,
+        "gap": 5,
+        "characters": 6,
+        "characterStyle": {
+          "fontFamily": "Times New Roman",
+          "fontWeight": 700
         }
       }
     },
@@ -94,27 +94,6 @@
     {
       "type": "table",
       "content": "",
-      "properties": {
-        "table": {
-          "headerRows": 1,
-          "repeatHeader": false,
-          "columnGap": 8,
-          "rowGap": 6,
-          "columns": [
-            { "mode": "flex", "fr": 2 },
-            { "mode": "flex", "fr": 1 }
-          ],
-          "cellStyle": {
-            "padding": 6,
-            "borderWidth": 0.6,
-            "borderColor": "#999999"
-          },
-          "headerCellStyle": {
-            "fontWeight": 700,
-            "backgroundColor": "#f2f4f7"
-          }
-        }
-      },
       "children": [
         {
           "type": "table-row",
@@ -139,16 +118,16 @@
               "type": "table-cell",
               "content": "Ornamental initials inside tabular layouts first appeared in reference books where each entry opened with a large letter to aid quick scanning. The drop cap must stay within the cell's content boundary and align with surrounding body text.",
               "properties": {
-                "sourceId": "dropcap-table-cell",
-                "dropCap": {
-                  "enabled": true,
-                  "lines": 3,
-                  "gap": 6,
-                  "characterStyle": {
-                    "fontFamily": "Times New Roman",
-                    "fontWeight": 700,
-                    "color": "#0f3f63"
-                  }
+                "sourceId": "dropcap-table-cell"
+              },
+              "dropCap": {
+                "enabled": true,
+                "lines": 3,
+                "gap": 6,
+                "characterStyle": {
+                  "fontFamily": "Times New Roman",
+                  "fontWeight": 700,
+                  "color": "#0f3f63"
                 }
               }
             },
@@ -190,7 +169,32 @@
             }
           ]
         }
-      ]
+      ],
+      "table": {
+        "headerRows": 1,
+        "repeatHeader": false,
+        "columnGap": 8,
+        "rowGap": 6,
+        "columns": [
+          {
+            "mode": "flex",
+            "fr": 2
+          },
+          {
+            "mode": "flex",
+            "fr": 1
+          }
+        ],
+        "cellStyle": {
+          "padding": 6,
+          "borderWidth": 0.6,
+          "borderColor": "#999999"
+        },
+        "headerCellStyle": {
+          "fontWeight": 700,
+          "backgroundColor": "#f2f4f7"
+        }
+      }
     }
   ]
 }

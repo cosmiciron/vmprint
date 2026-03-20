@@ -8,10 +8,10 @@ import { HARNESS_REGRESSION_CASES_DIR, loadLocalFontManager, snapshotPages } fro
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
 import { getAstFixturePath } from './harness/ast-fixture-harness';
 import { transformAstSource } from './harness/ast-transform';
+import { logStep } from './harness/test-utils';
 
-function logStep(message: string): void {
-    console.log(`[spatial-ir-engine.spec] ${message}`);
-}
+const TEST_PREFIX = 'spatial-ir-engine.spec';
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
 
 function resolveSnapshotPath(fixtureName: string): string {
     return path.join(
@@ -21,7 +21,7 @@ function resolveSnapshotPath(fixtureName: string): string {
 }
 
 async function run(): Promise<void> {
-    logStep('Scenario: AST-normalized Spatial IR can be adapted into the engine and match stored layout snapshots');
+    log('Scenario: AST-normalized Spatial IR can be adapted into the engine and match stored layout snapshots');
 
     const LocalFontManager = await loadLocalFontManager();
 
@@ -53,7 +53,7 @@ async function run(): Promise<void> {
     ];
 
     for (const fixtureName of selectedFixtures) {
-        logStep(`Fixture: ${fixtureName}`);
+        log(`Fixture: ${fixtureName}`);
         const fixturePath = getAstFixturePath(fixtureName);
         const snapshotPath = resolveSnapshotPath(fixtureName);
 
@@ -79,7 +79,7 @@ async function run(): Promise<void> {
         );
     }
 
-    logStep(`OK (${selectedFixtures.length} fixtures)`);
+    log(`OK (${selectedFixtures.length} fixtures)`);
 }
 
 run().catch((err) => {

@@ -12,16 +12,10 @@ import { StoryPackager } from '../src/engine/layout/packagers/story-packager';
 import type { PackagerContext, PackagerSplitResult, PackagerUnit } from '../src/engine/layout/packagers/packager-types';
 import { loadLocalFontManager } from './harness/engine-harness';
 
-function logStep(message: string): void {
-    console.log(`[zone-map-continue.spec] ${message}`);
-}
-
-function check(description: string, expected: string, assertion: () => void): void {
-    logStep(`CHECK: ${description}`);
-    logStep(`EXPECT: ${expected}`);
-    assertion();
-    logStep(`PASS: ${description}`);
-}
+import { logStep, check } from './harness/test-utils';
+const TEST_PREFIX = 'zone-map-continue.spec';
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
+const _check = (desc: string, exp: string, fn: () => void) => check(TEST_PREFIX, desc, exp, fn);
 
 function buildZoneContinuationDoc(
     frameOverflow: 'move-whole' | 'continue',
@@ -167,7 +161,7 @@ async function main() {
     const fixedContinuePages = fixedContinueEngine.simulate(fixedContinueResolved.elements);
     const continuePages = continueEngine.simulate(continueResolved.elements);
 
-    check(
+    _check(
         'zone packagers carry authored frame and world modes',
         'move-whole defaults to fixed, while explicit continue/expandable survives onto the runtime packager surface',
         () => {
@@ -184,7 +178,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'move-whole zone-map defers the regional body to the next page',
         'zone content begins only on page 2 when frameOverflow is move-whole',
         () => {
@@ -193,7 +187,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'fixed world behavior stays conservative even when frameOverflow is continue',
         'non-expandable fields do not gain mid-page continuation semantics yet',
         () => {
@@ -202,7 +196,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'continue zone-map fills the current page frame before overflowing',
         'zone content starts on page 1 and continues onto page 2 when frameOverflow is continue and worldBehavior is expandable',
         () => {
@@ -214,7 +208,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'continue mode preserves downstream document flow',
         'post-zone ordinary flow still appears after the regional continuation finishes',
         () => {
@@ -224,7 +218,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'expandable continued zones keep nested story column-span content below prior column occupancy',
         'a full-width columnSpan element inside a continued regional story should either start below the tallest occupied column on the same page or defer together with its post-span content',
         () => {
@@ -325,7 +319,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'explicit region height constrains a continued regional story like a bounded room',
         'a story inside a zone with authored region.height should stop at that room boundary and continue later even if the page has more open space',
         () => {
@@ -405,7 +399,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'multi-column story continuation advances by actual region stack height',
         'when lane regions differ in height, the continuation storyYOffset should use the real stacked travel distance rather than raw columns times viewport height',
         () => {
@@ -466,7 +460,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'deferred story-absolute images survive into continuation fragments',
         'an absolute image authored before the overflowing text but positioned after page 1 should still appear on page 2',
         () => {
@@ -535,7 +529,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'multi-column story-absolute images project into later lanes',
         'an absolute image whose story y falls into the second lane should render near the top of that lane rather than at a flat page y far below',
         () => {
@@ -609,7 +603,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'story-absolute blocks render as real placed actors',
         'a non-image direct child of story with story-absolute placement should render at its pinned x/y instead of degrading to normal flow',
         () => {
@@ -676,7 +670,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'continued story fragments stamp emitted boxes with the real continuation page index',
         'boxes emitted from a continuation fragment should report the pageIndex supplied at emit time rather than staying pinned to page 0',
         () => {
@@ -741,7 +735,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'nested tables inside later story lanes inherit stacked viewport world origins',
         'a table pushed into lane 2 of a multi-column story should see the second lane world origin rather than the outer page origin',
         () => {
@@ -817,7 +811,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'continued multi-column stories can carry deferred nested actors forward as packagers',
         'when a nested structured actor splits late in a story lane, the continuation story should resume that actor before later children',
         () => {
@@ -918,7 +912,7 @@ async function main() {
         }
     );
 
-    check(
+    _check(
         'continued multi-column stories preserve deferred nested actors even with no later source children',
         'a split nested actor by itself should still produce a continuation story fragment instead of being dropped',
         () => {
