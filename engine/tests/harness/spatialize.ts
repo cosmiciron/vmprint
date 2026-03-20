@@ -2,12 +2,12 @@ import { parseEmbeddedImagePayloadCached, LayoutUtils, solveTrackSizing } from '
 import type {
   DocumentIR,
   Element,
-  ElementProperties,
   EmbeddedImagePayload,
   LayoutConfig,
   PageRegionContent,
   PageRegionDefinition,
   SpatialDocument,
+  StoryLayoutDirective,
   TableColumnSizing,
   ZoneDefinition
 } from '../../src';
@@ -437,15 +437,15 @@ function createFlowBlock(element: Element, context: NormalizeContext, scope: Con
     children: Array.isArray(element.children) && element.children.length > 0
       ? JSON.parse(JSON.stringify(element.children))
       : undefined,
-    columnSpan: properties.columnSpan === 'all'
+    columnSpan: element.columnSpan === 'all'
       ? 'all'
-      : (typeof properties.columnSpan === 'number' ? properties.columnSpan : undefined),
+      : (typeof element.columnSpan === 'number' ? element.columnSpan : undefined),
     style,
     keepWithNext: Boolean(properties.keepWithNext ?? style.keepWithNext),
     pageBreakBefore: Boolean(style.pageBreakBefore),
     allowLineSplit: style.allowLineSplit !== false,
     overflowPolicy: (style.overflowPolicy as FlowBlock['overflowPolicy']) || 'clip',
-    dropCap: isObject(properties.dropCap) ? deepSortObject({ ...properties.dropCap }) : undefined,
+    dropCap: isObject(element.dropCap) ? deepSortObject({ ...element.dropCap }) : undefined,
     paginationContinuation: isObject(properties.paginationContinuation)
       ? deepSortObject({ ...properties.paginationContinuation })
       : undefined,
@@ -453,18 +453,18 @@ function createFlowBlock(element: Element, context: NormalizeContext, scope: Con
       ? Math.max(0, LayoutUtils.validateUnit(properties.pageReservationAfter))
       : undefined,
     pageOverrides: compilePageOverrides(context, properties.pageOverrides),
-    image: compileEmbeddedImage(element.properties?.image),
+    image: compileEmbeddedImage(element.image),
     source: buildSourceRef(element, scope.path)
   });
 }
 
 function createBlockObstacle(element: Element, context: NormalizeContext, scope: ContentScope): BlockObstacle {
   const style = mergeStyle(context.document, element);
-  const layout = (element.properties?.layout || {}) as ElementProperties['layout'];
+  const layout = (element.placement || {}) as StoryLayoutDirective;
   const gap = Math.max(0, LayoutUtils.validateUnit(layout?.gap ?? 0));
   const align = (layout?.align || 'left') as BlockObstacle['align'];
   const mode = (layout?.mode || 'float') as BlockObstacle['mode'];
-  const dimensions = resolveObstacleDimensions(style, element.properties?.image);
+  const dimensions = resolveObstacleDimensions(style, element.image);
   const resolvedX = mode === 'story-absolute'
     ? Math.max(0, LayoutUtils.validateUnit(layout?.x ?? 0))
     : resolveFloatX(align, dimensions.width, scope.contentWidth, gap);
@@ -484,7 +484,7 @@ function createBlockObstacle(element: Element, context: NormalizeContext, scope:
 }
 
 function isBlockObstacle(element: Element): boolean {
-  const mode = String(element.properties?.layout?.mode || '');
+  const mode = String(element.placement?.mode || '');
   return mode === 'float' || mode === 'story-absolute';
 }
 
@@ -544,7 +544,7 @@ function normalizeStory(element: Element, context: NormalizeContext, scope: Cont
   let cursor = 0;
   while (cursor < children.length) {
     const child = children[cursor];
-    const columnSpan = child.properties?.columnSpan;
+    const columnSpan = child.columnSpan;
     const isSpan = columnSpan === 'all' || (typeof columnSpan === 'number' && Number.isFinite(columnSpan) && columnSpan >= 2);
     if (isSpan) {
       output.push(createFlowBlock(child, context, {
@@ -557,7 +557,7 @@ function normalizeStory(element: Element, context: NormalizeContext, scope: Cont
     const segmentChildren: Element[] = [];
     while (cursor < children.length) {
       const segmentChild = children[cursor];
-      const segmentSpan = segmentChild.properties?.columnSpan;
+      const segmentSpan = segmentChild.columnSpan;
       const hitsSpan = segmentSpan === 'all' || (typeof segmentSpan === 'number' && Number.isFinite(segmentSpan) && segmentSpan >= 2);
       if (hitsSpan) break;
       segmentChildren.push(segmentChild);
@@ -585,7 +585,7 @@ function normalizeStory(element: Element, context: NormalizeContext, scope: Cont
 function normalizeZoneMap(element: Element, context: NormalizeContext, scope: ContentScope): ZoneStrip {
   const blockStyle = mergeStyle(context.document, element);
   const mapWidth = computeContentWidth(scope.contentWidth, blockStyle);
-  const zoneOptions = element.properties?.zones || {};
+  const zoneOptions = element.zoneLayout || {};
   const gap = Math.max(0, LayoutUtils.validateUnit(zoneOptions.gap ?? 0));
   const declaredZones = Array.isArray(element.zones) ? element.zones : [];
   const trackDefinitions = normalizeTrackDefinitions(zoneOptions.columns, declaredZones.length || 1);
@@ -638,7 +638,7 @@ function countRowColumns(row: Element): number {
 function normalizeTable(element: Element, context: NormalizeContext, scope: ContentScope): SpatialGrid {
   const blockStyle = mergeStyle(context.document, element);
   const tableWidth = computeContentWidth(scope.contentWidth, blockStyle);
-  const tableOptions = element.properties?.table || {};
+  const tableOptions = element.table || {};
   const columnGap = Math.max(0, LayoutUtils.validateUnit(tableOptions.columnGap ?? 0));
   const rowGap = Math.max(0, LayoutUtils.validateUnit(tableOptions.rowGap ?? 0));
   const headerRows = Math.max(0, Math.trunc(Number(tableOptions.headerRows || 0)));

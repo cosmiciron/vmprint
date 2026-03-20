@@ -346,7 +346,7 @@ function testDocumentContractNormalization(): void {
                     styles: {},
                     elements: []
                 } as any, 'inline-doc'),
-                /must set "documentVersion" to one of: 1\.0, 1\.1/
+                /must set "documentVersion" to "1\.1"/
             );
         }
     );
@@ -646,45 +646,7 @@ function testEmbeddedImageContract(): void {
                 ]
             } as any, 'inline-doc');
 
-            const image = resolved.elements[0].properties?.image as any;
-            assert.equal(typeof image?.data, 'string');
-            assert.equal(image?.mimeType, 'image/png');
-            assert.equal(image?.fit, 'contain');
-        }
-    );
-
-    check(
-        'embedded image contract legacy compatibility',
-        'type=image with legacy properties.image payload remains accepted in AST 1.0',
-        () => {
-            const resolved = resolveDocumentPaths({
-                documentVersion: '1.0',
-                layout: {
-                    pageSize: 'A4',
-                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
-                    fontFamily: 'Arimo',
-                    fontSize: 12,
-                    lineHeight: 1.2
-                },
-                styles: {
-                    image: { width: 40 }
-                },
-                elements: [
-                    {
-                        type: 'image',
-                        content: '',
-                        properties: {
-                            image: {
-                                data: onePixelPng,
-                                mimeType: 'image/png',
-                                fit: 'contain'
-                            }
-                        }
-                    }
-                ]
-            } as any, 'inline-doc');
-
-            const image = resolved.elements[0].properties?.image as any;
+            const image = resolved.elements[0].image as any;
             assert.equal(typeof image?.data, 'string');
             assert.equal(image?.mimeType, 'image/png');
             assert.equal(image?.fit, 'contain');
@@ -716,8 +678,8 @@ function testEmbeddedImageContract(): void {
     );
 
     check(
-        'embedded image legacy field rejection in 1.1',
-        'AST 1.1 rejects legacy properties.image payload placement',
+        'embedded image in properties rejected',
+        'image field in properties is not allowed; it must be a first-class element field',
         () => {
             assert.throws(
                 () => resolveDocumentPaths({
@@ -734,16 +696,12 @@ function testEmbeddedImageContract(): void {
                         {
                             type: 'image',
                             content: '',
-                            properties: {
-                                image: {
-                                    data: onePixelPng,
-                                    mimeType: 'image/png'
-                                }
-                            }
+                            image: { data: onePixelPng, mimeType: 'image/png' },
+                            properties: { image: { data: onePixelPng, mimeType: 'image/png' } }
                         }
                     ]
                 } as any, 'inline-doc'),
-                /legacy structural field\(s\) image/
+                /unexpected key.*image|image.*not allowed/i
             );
         }
     );
@@ -824,7 +782,7 @@ function testTableLayoutContract(): void {
                 ]
             } as any, 'inline-doc');
 
-            const table = resolved.elements[0].properties?.table as any;
+            const table = resolved.elements[0].table as any;
             const firstCell = resolved.elements[0]?.children?.[0]?.children?.[0] as any;
             assert.equal(table.headerRows, 1);
             assert.equal(table.columns.length, 2);
@@ -834,56 +792,8 @@ function testTableLayoutContract(): void {
     );
 
     check(
-        'table layout contract legacy compatibility',
-        'legacy element.properties.table remains accepted in AST 1.0',
-        () => {
-            const resolved = resolveDocumentPaths({
-                documentVersion: '1.0',
-                layout: {
-                    pageSize: 'A4',
-                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
-                    fontFamily: 'Arimo',
-                    fontSize: 12,
-                    lineHeight: 1.2
-                },
-                styles: {},
-                elements: [
-                    {
-                        type: 'table',
-                        content: '',
-                        properties: {
-                            table: {
-                                headerRows: 1,
-                                repeatHeader: true,
-                                columns: [
-                                    { mode: 'fixed', value: 120 },
-                                    { mode: 'flex', fr: 1, min: 80 }
-                                ]
-                            }
-                        },
-                        children: [
-                            {
-                                type: 'table-row',
-                                content: '',
-                                children: [
-                                    { type: 'table-cell', content: 'A' },
-                                    { type: 'table-cell', content: 'B' }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            } as any, 'inline-doc');
-
-            const table = resolved.elements[0].properties?.table as any;
-            assert.equal(table.headerRows, 1);
-            assert.equal(table.columns.length, 2);
-        }
-    );
-
-    check(
-        'table layout legacy field rejection in 1.1',
-        'AST 1.1 rejects legacy properties.table placement',
+        'table layout in properties rejected',
+        'table field in properties is not allowed; it must be a first-class element field',
         () => {
             assert.throws(
                 () => resolveDocumentPaths({
@@ -900,17 +810,12 @@ function testTableLayoutContract(): void {
                         {
                             type: 'table',
                             content: '',
-                            properties: {
-                                table: {
-                                    columns: [
-                                        { mode: 'fixed', value: 100 }
-                                    ]
-                                }
-                            }
+                            table: { columns: [{ mode: 'fixed', value: 100 }] },
+                            properties: { table: { columns: [{ mode: 'fixed', value: 100 }] } }
                         }
                     ]
                 } as any, 'inline-doc'),
-                /legacy structural field\(s\) table/
+                /unexpected key.*table|table.*not allowed/i
             );
         }
     );
@@ -953,7 +858,7 @@ function testAst11PromotedFieldsContract(): void {
 
     check(
         'AST 1.1 promoted fields acceptance',
-        'zoneLayout, zone frame overflow, zone world behavior, stripLayout, dropCap, columnSpan, and top-level image payload normalize cleanly in AST 1.1',
+        'zoneLayout, zone frame overflow, zone world behavior, stripLayout, dropCap, columnSpan, placement, and top-level image payload normalize cleanly in AST 1.1',
         () => {
             const resolved = resolveDocumentPaths({
                 documentVersion: CURRENT_DOCUMENT_VERSION,
@@ -1001,8 +906,8 @@ function testAst11PromotedFieldsContract(): void {
                                                     mimeType: 'image/png',
                                                     fit: 'contain'
                                                 },
+                                                placement: { mode: 'float', align: 'right', wrap: 'around', gap: 8 },
                                                 properties: {
-                                                    layout: { mode: 'float', align: 'right', wrap: 'around', gap: 8 },
                                                     style: { width: 40, height: 40 }
                                                 }
                                             },
@@ -1041,18 +946,80 @@ function testAst11PromotedFieldsContract(): void {
             } as any, 'inline-doc');
 
             const zoneMap = resolved.elements[0] as any;
-            assert.equal(zoneMap.properties?.zones?.gap, 12);
-            assert.equal(zoneMap.properties?.zones?.frameOverflow, 'continue');
-            assert.equal(zoneMap.properties?.zones?.worldBehavior, 'expandable');
+            assert.equal(zoneMap.zoneLayout?.gap, 12);
+            assert.equal(zoneMap.zoneLayout?.frameOverflow, 'continue');
+            assert.equal(zoneMap.zoneLayout?.worldBehavior, 'expandable');
             const story = zoneMap.zones?.[0]?.elements?.[0] as any;
-            assert.equal(story.children?.[0]?.properties?.dropCap?.lines, 3);
-            assert.equal(story.children?.[1]?.properties?.image?.mimeType, 'image/png');
-            assert.equal(story.children?.[2]?.properties?.columnSpan, 'all');
+            assert.equal(story.children?.[0]?.dropCap?.lines, 3);
+            assert.equal(story.children?.[1]?.image?.mimeType, 'image/png');
+            assert.equal(story.children?.[1]?.placement?.mode, 'float');
+            assert.equal(story.children?.[2]?.columnSpan, 'all');
             const stripAsZoneMap = zoneMap.zones?.[1]?.elements?.[0] as any;
             assert.equal(stripAsZoneMap.type, 'zone-map');
-            assert.equal(stripAsZoneMap.properties?.zones?.gap, 6);
-            assert.equal(stripAsZoneMap.properties?.zones?.frameOverflow, undefined);
-            assert.equal(stripAsZoneMap.properties?.zones?.worldBehavior, 'fixed');
+            assert.equal(stripAsZoneMap.zoneLayout?.gap, 6);
+            assert.equal(stripAsZoneMap.zoneLayout?.frameOverflow, undefined);
+            assert.equal(stripAsZoneMap.zoneLayout?.worldBehavior, 'fixed');
+        }
+    );
+
+    check(
+        'story placement scope validation',
+        'placement is rejected outside direct story children',
+        () => {
+            assert.throws(
+                () => resolveDocumentPaths({
+                    documentVersion: CURRENT_DOCUMENT_VERSION,
+                    layout: {
+                        pageSize: 'A4',
+                        margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                        fontFamily: 'Arimo',
+                        fontSize: 12,
+                        lineHeight: 1.2
+                    },
+                    styles: {},
+                    elements: [
+                        { type: 'box', content: 'oops', placement: { mode: 'float', align: 'left' } }
+                    ]
+                } as any, 'inline-doc'),
+                /placement.*only allowed on direct children of story/i
+            );
+        }
+    );
+
+    check(
+        'story placement non-image absolute acceptance',
+        'a non-image direct child of story may use story-absolute placement',
+        () => {
+            const resolved = resolveDocumentPaths({
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: 'A4',
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                },
+                styles: {},
+                elements: [
+                    {
+                        type: 'story',
+                        content: '',
+                        children: [
+                            {
+                                type: 'box',
+                                content: 'Pinned note',
+                                placement: { mode: 'story-absolute', x: 24, y: 36, wrap: 'around', gap: 6 },
+                                properties: { style: { width: 80, height: 40 } }
+                            }
+                        ]
+                    }
+                ]
+            } as any, 'inline-doc');
+
+            const child = (resolved.elements[0] as any).children?.[0];
+            assert.equal(child?.placement?.mode, 'story-absolute');
+            assert.equal(child?.placement?.x, 24);
+            assert.equal(child?.placement?.y, 36);
         }
     );
 }

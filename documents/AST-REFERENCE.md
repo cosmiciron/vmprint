@@ -47,7 +47,7 @@ interface DocumentInput {
 
 | Field | Required | Description |
 |---|---|---|
-| `documentVersion` | yes | `"1.1"` is the current authored surface. `"1.0"` remains supported for compatibility. |
+| `documentVersion` | yes | `"1.1"` is the current and only supported authored surface. |
 | `layout` | yes | Page geometry and default typography. |
 | `fonts` | no | Font file sources keyed by weight/style. |
 | `styles` | yes | Named style table; keys are element `type` strings. |
@@ -145,6 +145,7 @@ interface Element {
     stripLayout?: StripLayoutOptions;
     dropCap?: DropCapSpec;
     columnSpan?: 'all' | number;
+    placement?: StoryLayoutDirective;
 
     properties?: ElementProperties;
 }
@@ -178,19 +179,12 @@ Style resolution order: `styles[element.type]` -> `properties.style`.
 interface ElementProperties {
     style?: Partial<ElementStyle>;
 
-    image?: EmbeddedImagePayload;
-    table?: TableLayoutOptions;
-    zones?: ZoneLayoutOptions;
-    strip?: StripLayoutOptions;
     colSpan?: number;
     rowSpan?: number;
 
     sourceId?: string;
     linkTarget?: string;
     semanticRole?: string;
-    dropCap?: DropCapSpec;
-    layout?: StoryLayoutDirective;
-    columnSpan?: 'all' | number;
     reflowKey?: string;
 
     keepWithNext?: boolean;
@@ -209,23 +203,16 @@ interface ElementProperties {
 }
 ```
 
-AST `1.1` keeps `properties` for overrides, metadata, and cross-cutting controls, but promotes structural payloads onto the element itself. Legacy AST `1.0` placements such as `properties.image`, `properties.table`, `properties.zones`, `properties.strip`, `properties.dropCap`, and `properties.columnSpan` are still accepted for compatibility.
+AST `1.1` keeps `properties` for overrides, metadata, and cross-cutting controls. Structural payloads live on the element itself.
 
 | Property | Applies to | Description |
 |---|---|---|
 | `style` | any | Inline style overrides. |
-| `image` | legacy `1.0` image-bearing nodes | Legacy image payload placement; prefer `element.image` in `1.1`. |
-| `table` | legacy `1.0` `table` | Legacy table layout placement; prefer `element.table` in `1.1`. |
-| `zones` | legacy `1.0` `zone-map` | Legacy zone-map layout placement; prefer `element.zoneLayout` in `1.1`. |
-| `strip` | legacy `1.0` `strip` | Legacy strip layout placement; prefer `element.stripLayout` in `1.1`. |
 | `colSpan` | `table-cell` | Number of columns this cell spans. |
 | `rowSpan` | `table-cell` | Number of rows this cell spans. |
 | `sourceId` | any | Caller-assigned stable ID surfaced in `BoxMeta`. |
 | `linkTarget` | inline `text`, `inline` | Hyperlink URL. |
 | `semanticRole` | `table-row` | `"header"` marks the row as a header row. |
-| `dropCap` | legacy `1.0` paragraph-like | Legacy drop-cap placement; prefer `element.dropCap` in `1.1`. |
-| `layout` | children of `story` | Float / absolute positioning; see §13. |
-| `columnSpan` | legacy `1.0` children of multi-column `story` | Legacy column-span placement; prefer `element.columnSpan` in `1.1`. |
 | `reflowKey` | any | Explicit cache key for the reflow cache. |
 | `keepWithNext` | any | Keep this element on the same page as the one after it. |
 | `marginTop` | any | Top margin shorthand override. |
@@ -255,12 +242,12 @@ See [engine/src/engine/types.ts](c:\Users\cosmic\Projects\vmprint\engine\src\eng
 
 | `type` | Purpose |
 |---|---|
-| `story` | Multi-column flowing content area. Uses `columns`, `gutter`, `balance`. Children may carry `properties.layout`. |
-| `table` | Table container. Children must be `table-row`. Uses `element.table` in `1.1` and legacy `properties.table` in `1.0`. |
+| `story` | Multi-column flowing content area. Uses `columns`, `gutter`, `balance`. Direct children may carry `placement`. |
+| `table` | Table container. Children must be `table-row`. Uses `element.table`. |
 | `table-row` | Table row. Children must be `table-cell`. |
 | `table-cell` | Table cell. Supports `properties.colSpan` and `properties.rowSpan`. |
-| `strip` | One-row horizontal composition band. Uses `slots[]` plus `element.stripLayout` in `1.1` and legacy `properties.strip` in `1.0`. |
-| `zone-map` | Independent-region layout. Uses `zones[]` plus `element.zoneLayout` in `1.1` and legacy `properties.zones` in `1.0`. |
+| `strip` | One-row horizontal composition band. Uses `slots[]` plus `element.stripLayout`. |
+| `zone-map` | Independent-region layout. Uses `zones[]` plus `element.zoneLayout`. |
 
 All other `type` strings are user-defined and are used for style lookup.
 
@@ -272,7 +259,7 @@ All other `type` strings are user-defined and are used for style lookup.
 |---|---|
 | `text` | Plain text run. |
 | `inline` | Styled inline wrapper. |
-| `image` | Inline image. Prefer `element.image` in AST `1.1`; `properties.image` remains valid in `1.0`. |
+| `image` | Inline image. Uses `element.image`. |
 | `inline-box` | Inline bordered widget. |
 
 ---
@@ -459,9 +446,9 @@ interface DropCapSpec {
 
 ---
 
-## 13. Story Layout Directives (`properties.layout`)
+## 13. Story Placement (`element.placement`)
 
-Declared on children of a `story` element to float or absolutely position them relative to the story's content area.
+Declared on direct children of a `story` element to float or absolutely position them relative to the story's content area.
 
 ```typescript
 interface StoryLayoutDirective {
@@ -474,7 +461,7 @@ interface StoryLayoutDirective {
 }
 ```
 
-Any block element can float if it carries explicit obstacle size through style width/height. `story-absolute` is currently restricted to image elements.
+Any block element can float or use `story-absolute` if it carries explicit obstacle size through style `width` and `height`. Images may omit explicit size and derive it from intrinsic image dimensions.
 
 ---
 
@@ -518,7 +505,7 @@ interface PageRegionContent {
 
 | Parent `type` | Valid children |
 |---|---|
-| `story` | Any block `Element`. Children may carry `properties.layout`. |
+| `story` | Any block `Element`. Direct children may carry `placement`. |
 | `table` | `table-row` only. |
 | `table-row` | `table-cell` only. |
 | `table-cell` | Either `content` or inline `children`. |

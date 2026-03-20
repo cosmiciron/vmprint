@@ -158,7 +158,7 @@ function materializeTableCell(
         };
     }
 
-    const dropCapSpec = cell.properties?.dropCap;
+    const dropCapSpec = cell.dropCap;
     if (dropCapSpec?.enabled && typeof tableContext.emitDropCapBoxes === 'function') {
         const contentWidth = Math.max(0, width - insetsHorizontal);
         const dropCapElement: Element = {

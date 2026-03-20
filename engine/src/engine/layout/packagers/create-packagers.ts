@@ -56,7 +56,7 @@ export function buildPackagerForElement(
     if (item.type === 'toc') {
         return new TocPackager(processor, flowBox, identity);
     }
-    const dropCap = item.properties?.dropCap;
+    const dropCap = item.dropCap;
     if (dropCap && dropCap.enabled) {
         return new DropCapPackager(processor, item, index, dropCap, identity);
     }

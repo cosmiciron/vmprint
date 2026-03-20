@@ -104,7 +104,7 @@ function resolveRowGroup(row: Element): NormalizedTableRowGroup {
 }
 
 export function normalizeTableElement(element: Element): NormalizedTableGrid {
-    const options = normalizeTableOptions((element.properties || {}).table);
+    const options = normalizeTableOptions(element.table);
     const candidateRows = Array.isArray(element.children)
         ? element.children.filter((child) => isTableRowElement(child))
         : [];

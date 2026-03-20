@@ -224,7 +224,7 @@ export class LayoutProcessor extends TextProcessor {
             resolveMeasurementFontForStyle: (style) => this.resolveMeasurementFontForStyle(style),
             measureText: (text, font, fontSize, letterSpacing) => this.measureText(text, font, fontSize, letterSpacing),
             emitDropCapBoxes: (element, width, context) => {
-                const spec = element.properties?.dropCap;
+                const spec = element.dropCap;
                 if (!spec || spec.enabled === false) return null;
                 const packager = new DropCapPackager(this, element, tableDropCapIndex++, spec);
                 const pageDims = this.getPageDimensions();
@@ -605,7 +605,7 @@ export class LayoutProcessor extends TextProcessor {
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
         const marginTop = LayoutUtils.validateUnit(element.properties?.marginTop ?? style.marginTop ?? 0);
         const marginBottom = LayoutUtils.validateUnit(element.properties?.marginBottom ?? style.marginBottom ?? 0);
-        const hasEmbeddedImage = !!element.properties?.image;
+        const hasEmbeddedImage = !!element.image;
         const allowLineSplit = hasEmbeddedImage ? false : style.allowLineSplit !== false;
         const normalizedStyle = this.normalizeElementStyle(style, {
             fontSize,
@@ -669,7 +669,7 @@ export class LayoutProcessor extends TextProcessor {
     }
 
     private resolveEmbeddedImage(element: Element): BoxImagePayload | undefined {
-        const image = element.properties?.image;
+        const image = element.image;
         if (!image || typeof image !== 'object') return undefined;
         const parsed = parseEmbeddedImagePayloadCached(image);
         return {

@@ -10,7 +10,6 @@ import type {
 
 export const CURRENT_DOCUMENT_VERSION: VmprintDocumentVersion = '1.1';
 export const CURRENT_IR_VERSION: VmprintIRVersion = '1.0';
-const SUPPORTED_DOCUMENT_VERSIONS = new Set<VmprintDocumentVersion>(['1.0', '1.1']);
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
     return !!value && typeof value === 'object' && !Array.isArray(value);
@@ -56,24 +55,17 @@ const LAYOUT_KEYS = new Set([
 ]);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
-const ELEMENT_KEYS = new Set(['type', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'properties']);
+const ELEMENT_KEYS = new Set(['type', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
 const ZONE_DEFINITION_KEYS = new Set(['id', 'region', 'elements', 'style']);
 const ZONE_REGION_KEYS = new Set(['x', 'y', 'width', 'height']);
 const STRIP_SLOT_KEYS = new Set(['id', 'elements', 'style']);
 const ELEMENT_PROPERTIES_KEYS = new Set([
     'style',
-    'image',
-    'table',
-    'zones',
-    'strip',
     'colSpan',
     'rowSpan',
     'sourceId',
     'linkTarget',
     'semanticRole',
-    'dropCap',
-    'layout',
-    'columnSpan',
     'reflowKey',
     'keepWithNext',
     'marginTop',
@@ -418,34 +410,34 @@ function validateStyleObject(style: unknown, path: string, documentPath: string)
     if (obj.borderRightColor !== undefined) assertStringAt(obj.borderRightColor, `${path}.borderRightColor`, documentPath);
 }
 
-function validatePageRegionContent(value: unknown, path: string, documentPath: string, documentVersion: VmprintDocumentVersion): void {
+function validatePageRegionContent(value: unknown, path: string, documentPath: string): void {
     const content = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(content, PAGE_REGION_CONTENT_KEYS, path, documentPath);
     if (!Array.isArray(content.elements)) {
         contractError(documentPath, `${path}.elements`, 'expected an array.');
     }
-    content.elements.forEach((element, index) => validateElementNode(element, `${path}.elements[${index}]`, documentPath, documentVersion));
+    content.elements.forEach((element, index) => validateElementNode(element, `${path}.elements[${index}]`, documentPath));
     if (content.style !== undefined) validateStyleObject(content.style, `${path}.style`, documentPath);
 }
 
-function validatePageRegionDefinition(value: unknown, path: string, documentPath: string, documentVersion: VmprintDocumentVersion): void {
+function validatePageRegionDefinition(value: unknown, path: string, documentPath: string): void {
     const definition = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(definition, PAGE_REGION_DEFINITION_KEYS, path, documentPath);
     for (const key of ['default', 'firstPage', 'odd', 'even'] as const) {
         const entry = definition[key];
         if (entry === undefined || entry === null) continue;
-        validatePageRegionContent(entry, `${path}.${key}`, documentPath, documentVersion);
+        validatePageRegionContent(entry, `${path}.${key}`, documentPath);
     }
 }
 
-function validatePageOverrides(value: unknown, path: string, documentPath: string, documentVersion: VmprintDocumentVersion): void {
+function validatePageOverrides(value: unknown, path: string, documentPath: string): void {
     const overrides = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(overrides, PAGE_OVERRIDES_KEYS, path, documentPath);
     if (overrides.header !== undefined && overrides.header !== null) {
-        validatePageRegionContent(overrides.header, `${path}.header`, documentPath, documentVersion);
+        validatePageRegionContent(overrides.header, `${path}.header`, documentPath);
     }
     if (overrides.footer !== undefined && overrides.footer !== null) {
-        validatePageRegionContent(overrides.footer, `${path}.footer`, documentPath, documentVersion);
+        validatePageRegionContent(overrides.footer, `${path}.footer`, documentPath);
     }
 }
 
@@ -459,14 +451,14 @@ function validateSourceRange(value: unknown, path: string, documentPath: string)
     }
 }
 
-function validateContinuationMarker(value: unknown, path: string, documentPath: string, documentVersion: VmprintDocumentVersion): void {
+function validateContinuationMarker(value: unknown, path: string, documentPath: string): void {
     const marker = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(marker, CONTINUATION_MARKER_KEYS, path, documentPath);
 
     if (marker.type !== undefined) assertStringAt(marker.type, `${path}.type`, documentPath);
     if (marker.content !== undefined) assertStringAt(marker.content, `${path}.content`, documentPath);
     if (marker.style !== undefined) validateStyleObject(marker.style, `${path}.style`, documentPath);
-    if (marker.properties !== undefined) validateElementProperties(marker.properties, `${path}.properties`, documentPath, documentVersion);
+    if (marker.properties !== undefined) validateElementProperties(marker.properties, `${path}.properties`, documentPath);
 }
 
 function validateDropCapSpec(value: unknown, path: string, documentPath: string): void {
@@ -501,23 +493,23 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
     if (directive.gap !== undefined) assertFiniteNumberAt(directive.gap, `${path}.gap`, documentPath);
 }
 
-function validatePaginationContinuation(value: unknown, path: string, documentPath: string, documentVersion: VmprintDocumentVersion): void {
+function validatePaginationContinuation(value: unknown, path: string, documentPath: string): void {
     const continuation = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(continuation, PAGINATION_CONTINUATION_KEYS, path, documentPath);
 
     if (continuation.enabled !== undefined) assertBooleanAt(continuation.enabled, `${path}.enabled`, documentPath);
     if (continuation.markerAfterSplit !== undefined) {
-        validateContinuationMarker(continuation.markerAfterSplit, `${path}.markerAfterSplit`, documentPath, documentVersion);
+        validateContinuationMarker(continuation.markerAfterSplit, `${path}.markerAfterSplit`, documentPath);
     }
     if (continuation.markerBeforeContinuation !== undefined) {
-        validateContinuationMarker(continuation.markerBeforeContinuation, `${path}.markerBeforeContinuation`, documentPath, documentVersion);
+        validateContinuationMarker(continuation.markerBeforeContinuation, `${path}.markerBeforeContinuation`, documentPath);
     }
     if (continuation.markersBeforeContinuation !== undefined) {
         if (!Array.isArray(continuation.markersBeforeContinuation)) {
             contractError(documentPath, `${path}.markersBeforeContinuation`, 'expected an array.');
         }
         continuation.markersBeforeContinuation.forEach((entry, index) => {
-            validateContinuationMarker(entry, `${path}.markersBeforeContinuation[${index}]`, documentPath, documentVersion);
+            validateContinuationMarker(entry, `${path}.markersBeforeContinuation[${index}]`, documentPath);
         });
     }
 }
@@ -559,7 +551,7 @@ function validateTableLayoutOptions(value: unknown, path: string, documentPath: 
     }
 }
 
-function validateZoneDefinition(value: unknown, path: string, documentPath: string, documentVersion: VmprintDocumentVersion): void {
+function validateZoneDefinition(value: unknown, path: string, documentPath: string): void {
     const zone = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(zone, ZONE_DEFINITION_KEYS, path, documentPath);
 
@@ -586,7 +578,7 @@ function validateZoneDefinition(value: unknown, path: string, documentPath: stri
         contractError(documentPath, `${path}.elements`, 'expected an array of block elements.');
     } else {
         zone.elements.forEach((child: unknown, index: number) =>
-            validateElementNode(child, `${path}.elements[${index}]`, documentPath, documentVersion)
+            validateElementNode(child, `${path}.elements[${index}]`, documentPath)
         );
     }
 }
@@ -613,7 +605,7 @@ function validateZoneLayoutOptions(value: unknown, path: string, documentPath: s
     }
 }
 
-function validateStripSlot(value: unknown, path: string, documentPath: string, documentVersion: VmprintDocumentVersion): void {
+function validateStripSlot(value: unknown, path: string, documentPath: string): void {
     const slot = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(slot, STRIP_SLOT_KEYS, path, documentPath);
 
@@ -624,7 +616,7 @@ function validateStripSlot(value: unknown, path: string, documentPath: string, d
         contractError(documentPath, `${path}.elements`, 'expected an array of block elements.');
     } else {
         slot.elements.forEach((child: unknown, index: number) =>
-            validateElementNode(child, `${path}.elements[${index}]`, documentPath, documentVersion)
+            validateElementNode(child, `${path}.elements[${index}]`, documentPath)
         );
     }
 }
@@ -654,40 +646,20 @@ function validateColumnSpanValue(value: unknown, path: string, documentPath: str
 function validateElementProperties(
     properties: unknown,
     path: string,
-    documentPath: string,
-    documentVersion: VmprintDocumentVersion
+    documentPath: string
 ): void {
     const props = assertPlainObjectAt(properties, path, documentPath);
     assertAllowedKeys(props, ELEMENT_PROPERTIES_KEYS, path, documentPath, { allowUnderscore: true });
 
-    if (documentVersion === '1.1') {
-        const legacyStructuralKeys = ['image', 'table', 'zones', 'strip', 'dropCap', 'columnSpan']
-            .filter((key) => props[key] !== undefined);
-        if (legacyStructuralKeys.length > 0) {
-            contractError(
-                documentPath,
-                path,
-                `legacy structural field(s) ${legacyStructuralKeys.join(', ')} are not allowed in documentVersion 1.1; move them onto the element itself.`
-            );
-        }
-    }
-
     if (props.style !== undefined) validateStyleObject(props.style, `${path}.style`, documentPath);
-    if (props.image !== undefined) validateEmbeddedImagePayload(props.image, `${path}.image`, documentPath);
-    if (props.table !== undefined) validateTableLayoutOptions(props.table, `${path}.table`, documentPath);
-    if (props.zones !== undefined) validateZoneLayoutOptions(props.zones, `${path}.zones`, documentPath);
-    if (props.strip !== undefined) validateStripLayoutOptions(props.strip, `${path}.strip`, documentPath);
-    if (props.paginationContinuation !== undefined) validatePaginationContinuation(props.paginationContinuation, `${path}.paginationContinuation`, documentPath, documentVersion);
-    if (props.pageOverrides !== undefined) validatePageOverrides(props.pageOverrides, `${path}.pageOverrides`, documentPath, documentVersion);
+    if (props.paginationContinuation !== undefined) validatePaginationContinuation(props.paginationContinuation, `${path}.paginationContinuation`, documentPath);
+    if (props.pageOverrides !== undefined) validatePageOverrides(props.pageOverrides, `${path}.pageOverrides`, documentPath);
     if (props.colSpan !== undefined) assertFiniteNumberAt(props.colSpan, `${path}.colSpan`, documentPath);
     if (props.rowSpan !== undefined) assertFiniteNumberAt(props.rowSpan, `${path}.rowSpan`, documentPath);
     if (props.keepWithNext !== undefined) assertBooleanAt(props.keepWithNext, `${path}.keepWithNext`, documentPath);
     if (props.sourceId !== undefined) assertStringAt(props.sourceId, `${path}.sourceId`, documentPath);
     if (props.linkTarget !== undefined) assertStringAt(props.linkTarget, `${path}.linkTarget`, documentPath);
     if (props.semanticRole !== undefined) assertStringAt(props.semanticRole, `${path}.semanticRole`, documentPath);
-    if (props.dropCap !== undefined) validateDropCapSpec(props.dropCap, `${path}.dropCap`, documentPath);
-    if (props.layout !== undefined) validateStoryLayoutDirective(props.layout, `${path}.layout`, documentPath);
-    if (props.columnSpan !== undefined) validateColumnSpanValue(props.columnSpan, `${path}.columnSpan`, documentPath);
     if (props.reflowKey !== undefined) assertStringAt(props.reflowKey, `${path}.reflowKey`, documentPath);
     if (props.sourceSyntax !== undefined) assertStringAt(props.sourceSyntax, `${path}.sourceSyntax`, documentPath);
     if (props.language !== undefined) assertStringAt(props.language, `${path}.language`, documentPath);
@@ -711,7 +683,7 @@ function validateEmbeddedImagePayload(value: unknown, path: string, documentPath
     }
 }
 
-function validateElementNode(node: unknown, path: string, documentPath: string, documentVersion: VmprintDocumentVersion): void {
+function validateElementNode(node: unknown, path: string, documentPath: string, parentType?: string): void {
     const element = assertPlainObjectAt(node, path, documentPath);
     assertAllowedKeys(element, ELEMENT_KEYS, path, documentPath);
 
@@ -745,6 +717,12 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
     if (element.columnSpan !== undefined) {
         validateColumnSpanValue(element.columnSpan, `${path}.columnSpan`, documentPath);
     }
+    if (element.placement !== undefined) {
+        if (parentType !== 'story') {
+            contractError(documentPath, `${path}.placement`, 'is only allowed on direct children of story elements.');
+        }
+        validateStoryLayoutDirective(element.placement, `${path}.placement`, documentPath);
+    }
     if (String(element.type).trim() === 'story') {
         if (element.columns !== undefined && Number(element.columns) < 1) {
             contractError(documentPath, `${path}.columns`, 'must be >= 1 for story elements.');
@@ -759,7 +737,7 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
             contractError(documentPath, `${path}.zones`, 'expected an array of zone definitions.');
         } else {
             element.zones.forEach((zone: unknown, index: number) =>
-                validateZoneDefinition(zone, `${path}.zones[${index}]`, documentPath, documentVersion)
+                validateZoneDefinition(zone, `${path}.zones[${index}]`, documentPath)
             );
         }
     }
@@ -769,7 +747,7 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
             contractError(documentPath, `${path}.slots`, 'expected an array of strip slots.');
         } else {
             element.slots.forEach((slot: unknown, index: number) =>
-                validateStripSlot(slot, `${path}.slots[${index}]`, documentPath, documentVersion)
+                validateStripSlot(slot, `${path}.slots[${index}]`, documentPath)
             );
         }
     }
@@ -778,21 +756,16 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
         if (!Array.isArray(element.children)) {
             contractError(documentPath, `${path}.children`, 'expected an array.');
         }
-        element.children.forEach((child, index) => validateElementNode(child, `${path}.children[${index}]`, documentPath, documentVersion));
+        element.children.forEach((child, index) => validateElementNode(child, `${path}.children[${index}]`, documentPath, String(element.type)));
     }
 
     if (element.properties !== undefined) {
-        validateElementProperties(element.properties, `${path}.properties`, documentPath, documentVersion);
+        validateElementProperties(element.properties, `${path}.properties`, documentPath);
     }
 
     if (String(element.type).trim() === 'image') {
-        const props = element.properties as Record<string, unknown> | undefined;
-        if (documentVersion === '1.1') {
-            if (element.image === undefined) {
-                contractError(documentPath, `${path}.image`, 'is required when element.type is "image" in documentVersion 1.1.');
-            }
-        } else if (element.image === undefined && (!props || props.image === undefined)) {
-            contractError(documentPath, `${path}.image`, 'or legacy properties.image is required when element.type is "image".');
+        if (element.image === undefined) {
+            contractError(documentPath, `${path}.image`, 'is required when element.type is "image".');
         }
     }
 
@@ -811,7 +784,7 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
     }
 }
 
-function validateDocumentContract(document: DocumentInput, documentPath: string, documentVersion: VmprintDocumentVersion): void {
+function validateDocumentContract(document: DocumentInput, documentPath: string): void {
     const root = assertPlainObjectAt(document, 'root', documentPath);
     assertAllowedKeys(root, ROOT_KEYS, 'root', documentPath);
 
@@ -836,10 +809,10 @@ function validateDocumentContract(document: DocumentInput, documentPath: string,
         contractError(documentPath, 'elements', 'expected an array.');
     }
     document.elements.forEach((element, index) => {
-        validateElementNode(element, `elements[${index}]`, documentPath, documentVersion);
+        validateElementNode(element, `elements[${index}]`, documentPath);
     });
-    if (document.header !== undefined) validatePageRegionDefinition(document.header, 'header', documentPath, documentVersion);
-    if (document.footer !== undefined) validatePageRegionDefinition(document.footer, 'footer', documentPath, documentVersion);
+    if (document.header !== undefined) validatePageRegionDefinition(document.header, 'header', documentPath);
+    if (document.footer !== undefined) validatePageRegionDefinition(document.footer, 'footer', documentPath);
     if (document.printPipeline !== undefined) validatePrintPipeline(document.printPipeline, documentPath);
 }
 
@@ -926,34 +899,31 @@ function normalizeElementNode(element: Element): Element {
         type,
         content: typeof element?.content === 'string' ? element.content : ''
     };
-    const legacyImage = normalizedProperties?.image;
-    const legacyTable = normalizedProperties?.table;
-    const legacyZoneLayout = normalizedProperties?.zones;
-    const legacyStripLayout = normalizedProperties?.strip;
-    const legacyDropCap = normalizedProperties?.dropCap;
-    const legacyColumnSpan = normalizedProperties?.columnSpan;
 
-    if (element.image !== undefined || legacyImage !== undefined) {
-        normalized.image = deepSortObject((element.image ?? legacyImage) as any);
+    if (element.image !== undefined) {
+        normalized.image = deepSortObject(element.image as any);
     }
-    if (element.table !== undefined || legacyTable !== undefined) {
-        normalized.table = deepSortObject((element.table ?? legacyTable) as any);
+    if (element.table !== undefined) {
+        normalized.table = deepSortObject(element.table as any);
     }
-    if (element.zoneLayout !== undefined || legacyZoneLayout !== undefined) {
-        const normalizedZoneLayout = deepSortObject((element.zoneLayout ?? legacyZoneLayout) as any) as Record<string, unknown>;
+    if (element.zoneLayout !== undefined) {
+        const normalizedZoneLayout = deepSortObject(element.zoneLayout as any) as Record<string, unknown>;
         if (normalizedZoneLayout.worldBehavior === undefined) {
             normalizedZoneLayout.worldBehavior = 'fixed';
         }
         normalized.zoneLayout = normalizedZoneLayout as any;
     }
-    if (element.stripLayout !== undefined || legacyStripLayout !== undefined) {
-        normalized.stripLayout = deepSortObject((element.stripLayout ?? legacyStripLayout) as any);
+    if (element.stripLayout !== undefined) {
+        normalized.stripLayout = deepSortObject(element.stripLayout as any);
     }
-    if (element.dropCap !== undefined || legacyDropCap !== undefined) {
-        normalized.dropCap = deepSortObject((element.dropCap ?? legacyDropCap) as any);
+    if (element.dropCap !== undefined) {
+        normalized.dropCap = deepSortObject(element.dropCap as any);
     }
-    if (element.columnSpan !== undefined || legacyColumnSpan !== undefined) {
-        normalized.columnSpan = (element.columnSpan ?? legacyColumnSpan) as any;
+    if (element.columnSpan !== undefined) {
+        normalized.columnSpan = element.columnSpan;
+    }
+    if (element.placement !== undefined) {
+        normalized.placement = deepSortObject(element.placement as any);
     }
     if (element.columns !== undefined && Number.isFinite(Number(element.columns))) {
         normalized.columns = Number(element.columns);
@@ -988,12 +958,6 @@ function normalizeElementNode(element: Element): Element {
         }));
     }
     if (normalizedProperties) {
-        delete normalizedProperties.image;
-        delete normalizedProperties.table;
-        delete normalizedProperties.zones;
-        delete normalizedProperties.strip;
-        delete normalizedProperties.dropCap;
-        delete normalizedProperties.columnSpan;
         normalized.properties = normalizedProperties;
         if (Object.keys(normalized.properties).length === 0) {
             delete normalized.properties;
@@ -1012,69 +976,21 @@ function normalizeElementNode(element: Element): Element {
         const stripOptions = isPlainObject(normalized.stripLayout)
             ? (normalized.stripLayout as Record<string, unknown>)
             : {};
-        const loweredProperties: ElementProperties = {
-            ...(normalized.properties || {})
-        };
-        loweredProperties.zones = {
-            columns: Array.isArray(stripOptions.tracks) ? stripOptions.tracks as any[] : [],
-            gap: stripOptions.gap !== undefined ? stripOptions.gap as number : 0,
-            worldBehavior: 'fixed'
-        };
         return {
             type: 'zone-map',
             content: '',
+            zoneLayout: {
+                columns: Array.isArray(stripOptions.tracks) ? stripOptions.tracks as any[] : [],
+                gap: stripOptions.gap !== undefined ? stripOptions.gap as number : 0,
+                worldBehavior: 'fixed'
+            },
             zones: slots.map((slot) => ({
                 ...(slot.id !== undefined ? { id: slot.id } : {}),
                 elements: slot.elements,
                 ...(slot.style !== undefined ? { style: slot.style } : {})
             })),
-            properties: Object.keys(loweredProperties).length > 0 ? loweredProperties : undefined
+            properties: Object.keys(normalized.properties || {}).length > 0 ? normalized.properties : undefined
         };
-    }
-
-    if (type === 'zone-map' && normalized.zoneLayout) {
-        const loweredProperties: ElementProperties = {
-            ...(normalized.properties || {}),
-            zones: deepSortObject(normalized.zoneLayout as any)
-        };
-        delete normalized.zoneLayout;
-        normalized.properties = loweredProperties;
-    }
-
-    if (type === 'table' && normalized.table) {
-        const loweredProperties: ElementProperties = {
-            ...(normalized.properties || {}),
-            table: deepSortObject(normalized.table as any)
-        };
-        delete normalized.table;
-        normalized.properties = loweredProperties;
-    }
-
-    if (normalized.image) {
-        const loweredProperties: ElementProperties = {
-            ...(normalized.properties || {}),
-            image: deepSortObject(normalized.image as any)
-        };
-        delete normalized.image;
-        normalized.properties = loweredProperties;
-    }
-
-    if (normalized.dropCap) {
-        const loweredProperties: ElementProperties = {
-            ...(normalized.properties || {}),
-            dropCap: deepSortObject(normalized.dropCap as any)
-        };
-        delete normalized.dropCap;
-        normalized.properties = loweredProperties;
-    }
-
-    if (normalized.columnSpan !== undefined) {
-        const loweredProperties: ElementProperties = {
-            ...(normalized.properties || {}),
-            columnSpan: normalized.columnSpan
-        };
-        delete normalized.columnSpan;
-        normalized.properties = loweredProperties;
     }
 
     return normalized;
@@ -1082,9 +998,9 @@ function normalizeElementNode(element: Element): Element {
 
 export function normalizeDocumentToIR(document: DocumentInput, documentPath: string): DocumentIR {
     const sourceVersion = String(document?.documentVersion || '').trim();
-    if (!SUPPORTED_DOCUMENT_VERSIONS.has(sourceVersion as VmprintDocumentVersion)) {
+    if (sourceVersion !== CURRENT_DOCUMENT_VERSION) {
         throw new Error(
-            `Document at "${documentPath}" must set "documentVersion" to one of: ${Array.from(SUPPORTED_DOCUMENT_VERSIONS).join(', ')}.`
+            `Document at "${documentPath}" must set "documentVersion" to "${CURRENT_DOCUMENT_VERSION}".`
         );
     }
 
@@ -1098,7 +1014,7 @@ export function normalizeDocumentToIR(document: DocumentInput, documentPath: str
         throw new Error(`Document at "${documentPath}" must include "styles".`);
     }
 
-    validateDocumentContract(document, documentPath, sourceVersion as VmprintDocumentVersion);
+    validateDocumentContract(document, documentPath);
 
     const normalizedFonts: Record<string, string | undefined> = {};
 
@@ -1156,7 +1072,7 @@ export function toLayoutConfig(document: DocumentIR, debug: boolean): LayoutConf
             for (const node of nodes || []) {
                 const family = String(node?.properties?.style?.fontFamily || '').trim();
                 if (family) families.add(family);
-                const dropCapFamily = String(node?.properties?.dropCap?.characterStyle?.fontFamily || '').trim();
+                const dropCapFamily = String(node?.dropCap?.characterStyle?.fontFamily || '').trim();
                 if (dropCapFamily) families.add(dropCapFamily);
                 if (Array.isArray(node?.children) && node.children.length > 0) {
                     visit(node.children);

@@ -99,14 +99,14 @@
         {
           "type": "box",
           "content": "Pull Quote",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 15
+          },
           "properties": {
             "sourceId": "mc2-obstacle-1",
-            "layout": {
-              "mode": "float",
-              "align": "left",
-              "wrap": "around",
-              "gap": 15
-            },
             "style": {
               "width": 140,
               "height": 130,
@@ -187,14 +187,14 @@
         {
           "type": "box",
           "content": "A Note",
+          "placement": {
+            "mode": "float",
+            "align": "center",
+            "wrap": "around",
+            "gap": 8
+          },
           "properties": {
             "sourceId": "mc3-obstacle-1",
-            "layout": {
-              "mode": "float",
-              "align": "center",
-              "wrap": "around",
-              "gap": 8
-            },
             "style": {
               "width": 80,
               "height": 80,
@@ -224,14 +224,14 @@
         {
           "type": "box",
           "content": "Note 2",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10
+          },
           "properties": {
             "sourceId": "mc3-obstacle-2",
-            "layout": {
-              "mode": "float",
-              "align": "right",
-              "wrap": "around",
-              "gap": 10
-            },
             "style": {
               "width": 60,
               "height": 90,

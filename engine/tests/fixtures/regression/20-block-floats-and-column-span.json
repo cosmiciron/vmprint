@@ -86,17 +86,17 @@
         {
           "type": "pull-quote",
           "content": "Text wraps around any block element, not just images.",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8
+          },
           "properties": {
             "sourceId": "pull-quote-float",
             "style": {
               "width": 108,
               "height": 58
-            },
-            "layout": {
-              "mode": "float",
-              "align": "left",
-              "wrap": "around",
-              "gap": 8
             }
           }
         },
@@ -146,17 +146,17 @@
         {
           "type": "pull-quote",
           "content": "Right-margin block floats behave symmetrically to left-margin ones.",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 8
+          },
           "properties": {
             "sourceId": "pull-quote-float-right",
             "style": {
               "width": 108,
               "height": 60
-            },
-            "layout": {
-              "mode": "float",
-              "align": "right",
-              "wrap": "around",
-              "gap": 8
             }
           }
         },

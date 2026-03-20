@@ -3,7 +3,7 @@ import { Element, ElementType, TextSegment } from '../types';
 export const INLINE_OBJECT_CHAR = '\uFFFC';
 
 function isInlineImageElement(element: Element): boolean {
-    return element.type === 'image' && !!element.properties?.image;
+    return element.type === 'image' && !!element.image;
 }
 
 function isInlineBoxElement(element: Element): boolean {
@@ -88,7 +88,7 @@ export function getRichSegments(
     const currentLinkTarget = ownLinkTarget || inheritedLinkTarget;
 
     if (isInlineImageElement(element)) {
-        const imagePayload = element.properties?.image;
+        const imagePayload = element.image;
         if (!imagePayload) return segments;
         segments.push({
             text: INLINE_OBJECT_CHAR,

@@ -256,7 +256,7 @@ export function normalizeZoneMapElement(element: Element, availableWidth: number
     const marginTop = Math.max(0, LayoutUtils.validateUnit(style.marginTop ?? 0));
     const marginBottom = Math.max(0, LayoutUtils.validateUnit(style.marginBottom ?? 0));
 
-    const options = (element.properties?.zones ?? {}) as ZoneLayoutOptions;
+    const options = (element.zoneLayout ?? {}) as ZoneLayoutOptions;
     const gap = Math.max(0, LayoutUtils.validateUnit(options.gap ?? 0));
     const frameOverflow = options.frameOverflow === 'continue' ? 'continue' : 'move-whole';
     const worldBehavior = options.worldBehavior === 'spanning' || options.worldBehavior === 'expandable'

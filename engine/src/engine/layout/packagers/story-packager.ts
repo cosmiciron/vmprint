@@ -2,7 +2,7 @@
  * StoryPackager – DTP-style "rocks in a river" layout.
  *
  * A `story` element groups a continuous stream of text and images.  Images
- * carry a `properties.layout` directive that declares how they sit relative
+ * carry a `placement` directive that declares how they sit relative
  * to the text flow:
  *
  *   mode: 'float'          – anchored at the current text cursor; moves with
@@ -109,6 +109,7 @@ type PlacedFloatBlock = {
     allBoxes: Box[];
     topY: number;
     bottomY: number;
+    isAbsolute: boolean;
 };
 
 type PlacedElement = PlacedTextElement | PlacedImageElement | PlacedFloatBlock;
@@ -397,7 +398,7 @@ export class StoryPackager implements PackagerUnit {
         const imageMetricsCache = new Map<number, { img: BoxImagePayload; w: number; h: number } | null>();
 
         const resolveImageMetrics = (child: Element, index: number): { img: BoxImagePayload; w: number; h: number } | null => {
-            if (!child.properties?.image) return null;
+            if (!child.image) return null;
             if (imageMetricsCache.has(index)) return imageMetricsCache.get(index)!;
             const imgData = this.resolveImage(child);
             if (!imgData) {
@@ -427,21 +428,22 @@ export class StoryPackager implements PackagerUnit {
         // -------------------------------------------------------------------
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            if (child.kind !== 'story-absolute-image') continue;
+            if (child.kind !== 'story-absolute') continue;
             const layout = child.layout!;
             if (layout.wrap === 'none') continue;
 
-            const metrics = resolveImageMetrics(child.element, child.childIndex);
-            if (!metrics) continue;
-            const { w: imgW, h: imgH } = metrics;
+            const dims = child.element.image
+                ? resolveImageMetrics(child.element, child.childIndex)
+                : this.measureFloatBox(child.element, availableWidth);
+            if (!dims) continue;
             const localY = layout.y - this.storyYOffset;
-            if (localY + imgH < 0) continue; // wholly before this page's origin
+            if (localY + dims.h < 0) continue; // wholly before this page's origin
 
             const rect: OccupiedRect = {
                 x: layout.x,
                 y: Math.max(0, localY),
-                w: imgW,
-                h: imgH,
+                w: dims.w,
+                h: dims.h,
                 wrap: layout.wrap,
                 gap: layout.gap
             };
@@ -460,20 +462,54 @@ export class StoryPackager implements PackagerUnit {
             const child = children[i];
             const layout = child.layout;
 
-            // ---- story-absolute image --------------------------------------
-            if (child.kind === 'story-absolute-image' && layout) {
-                const metrics = resolveImageMetrics(child.element, child.childIndex);
-                if (!metrics) continue;
-                const { img: imgData, w: imgW, h: imgH } = metrics;
+            // ---- story-absolute element ------------------------------------
+            if (child.kind === 'story-absolute' && layout) {
                 const localY = layout.y - this.storyYOffset;
-                if (localY + imgH < 0) continue; // wholly before this page's origin
                 const effectiveY = Math.max(0, localY);
-                const x = layout.x;
-                const box = this.buildImageBox(child.element, margins.left + x, effectiveY, imgW, imgH, imgData, child.childIndex);
-                allBoxes.push(box);
+
+                if (child.element.image) {
+                    const metrics = resolveImageMetrics(child.element, child.childIndex);
+                    if (!metrics) continue;
+                    const { img: imgData, w: imgW, h: imgH } = metrics;
+                    if (localY + imgH < 0) continue; // wholly before this page's origin
+                    const x = layout.x;
+                    const box = this.buildImageBox(child.element, margins.left + x, effectiveY, imgW, imgH, imgData, child.childIndex);
+                    allBoxes.push(box);
+                    placedElements.push({
+                        kind: 'image', childIndex: child.childIndex, box,
+                        topY: effectiveY, bottomY: effectiveY + imgH, isFloat: false, isAbsolute: true
+                    });
+                    continue;
+                }
+
+                const dims = this.measureFloatBox(child.element, availableWidth);
+                if (!dims) continue;
+                if (localY + dims.h < 0) continue; // wholly before this page's origin
+                const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+                const absoluteContext: PackagerContext = {
+                    ...this.createLocalFrameContext(
+                        context,
+                        dims.w,
+                        {
+                            cursorY: effectiveY,
+                            margins: { ...margins, left: margins.left + layout.x },
+                            pageHeight: Number.POSITIVE_INFINITY
+                        },
+                        effectiveY,
+                        dims.h
+                    )
+                };
+                pkg.prepare(dims.w, dims.h, absoluteContext);
+                const emitted = (pkg.emitBoxes(dims.w, dims.h, absoluteContext) || []) as Box[];
+                for (const b of emitted) b.y = (b.y || 0) + effectiveY;
+                for (const b of emitted) allBoxes.push(b);
                 placedElements.push({
-                    kind: 'image', childIndex: child.childIndex, box,
-                    topY: effectiveY, bottomY: effectiveY + imgH, isFloat: false, isAbsolute: true
+                    kind: 'float-block',
+                    childIndex: child.childIndex,
+                    allBoxes: emitted,
+                    topY: effectiveY,
+                    bottomY: effectiveY + dims.h,
+                    isAbsolute: true
                 });
                 continue;
             }
@@ -553,7 +589,8 @@ export class StoryPackager implements PackagerUnit {
                         childIndex: child.childIndex,
                         allBoxes: emitted,
                         topY: cursorY,
-                        bottomY: cursorY + dims.h
+                        bottomY: cursorY + dims.h,
+                        isAbsolute: false
                     });
                     // Float blocks do NOT advance cursorY — text flows alongside them.
                     continue;
@@ -931,7 +968,7 @@ export class StoryPackager implements PackagerUnit {
         const maxRegionWidth = Math.max(...regions.map((r) => r.w));
 
         const resolveImageMetrics = (child: NormalizedStoryChild): { img: BoxImagePayload; w: number; h: number } | null => {
-            if (!child.element.properties?.image) return null;
+            if (!child.element.image) return null;
             if (imageMetricsCache.has(child.childIndex)) return imageMetricsCache.get(child.childIndex)!;
             const imgData = this.resolveImage(child.element);
             if (!imgData) {
@@ -962,22 +999,23 @@ export class StoryPackager implements PackagerUnit {
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             const layout = child.layout;
-            if (child.kind !== 'story-absolute-image' || !layout) continue;
+            if (child.kind !== 'story-absolute' || !layout) continue;
             if (layout.wrap === 'none') continue;
 
-            const metrics = resolveImageMetrics(child);
-            if (!metrics) continue;
-            const { w: imgW, h: imgH } = metrics;
+            const dims = child.element.image
+                ? resolveImageMetrics(child)
+                : this.measureFloatBox(child.element, maxRegionWidth);
+            if (!dims) continue;
             const localY = layout.y - this.storyYOffset;
-            if (localY + imgH < 0 || localY > resolveRegionStackHeight(regions)) continue;
+            if (localY + dims.h < 0 || localY > resolveRegionStackHeight(regions)) continue;
             const projected = projectStoryYToRegionStack(localY, regions);
             if (!projected) continue;
 
             const rect: OccupiedRect = {
                 x: layout.x,
                 y: Math.max(0, projected.y),
-                w: imgW,
-                h: imgH,
+                w: dims.w,
+                h: dims.h,
                 wrap: layout.wrap,
                 gap: layout.gap
             };
@@ -1078,24 +1116,52 @@ export class StoryPackager implements PackagerUnit {
             const child = children[i];
             const layout = child.layout;
 
-            if (child.kind === 'story-absolute-image' && layout) {
-                const metrics = resolveImageMetrics(child);
-                if (!metrics) continue;
-                const { img: imgData, w: imgW, h: imgH } = metrics;
+            if (child.kind === 'story-absolute' && layout) {
                 const localY = layout.y - this.storyYOffset;
-                if (localY + imgH < 0 || localY > resolveRegionStackHeight(regions)) continue;
                 const projected = projectStoryYToRegionStack(localY, regions);
                 if (!projected) continue;
-                const box = this.buildImageBox(
-                    child.element,
-                    margins.left + layout.x,
-                    Math.max(0, projected.y),
-                    imgW,
-                    imgH,
-                    imgData,
-                    child.childIndex
-                );
-                allBoxes.push(box);
+
+                if (child.element.image) {
+                    const metrics = resolveImageMetrics(child);
+                    if (!metrics) continue;
+                    const { img: imgData, w: imgW, h: imgH } = metrics;
+                    if (localY + imgH < 0 || localY > resolveRegionStackHeight(regions)) continue;
+                    const box = this.buildImageBox(
+                        child.element,
+                        margins.left + layout.x,
+                        Math.max(0, projected.y),
+                        imgW,
+                        imgH,
+                        imgData,
+                        child.childIndex
+                    );
+                    allBoxes.push(box);
+                    continue;
+                }
+
+                const dims = this.measureFloatBox(child.element, maxRegionWidth);
+                if (!dims) continue;
+                if (localY + dims.h < 0 || localY > resolveRegionStackHeight(regions)) continue;
+                const region = regions[projected.regionIndex];
+                const regionStartY = resolveRegionStartY(regions, region.index);
+                const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+                const absoluteContext: PackagerContext = {
+                    ...this.createLocalFrameContext(
+                        context,
+                        dims.w,
+                        {
+                            cursorY: Math.max(0, projected.y),
+                            margins: { ...margins, left: margins.left + layout.x },
+                            pageHeight: Number.POSITIVE_INFINITY
+                        },
+                        regionStartY + Math.max(0, projected.y),
+                        dims.h
+                    )
+                };
+                pkg.prepare(dims.w, dims.h, absoluteContext);
+                const emitted = (pkg.emitBoxes(dims.w, dims.h, absoluteContext) || []) as Box[];
+                for (const b of emitted) b.y = (b.y || 0) + Math.max(0, projected.y);
+                for (const b of emitted) allBoxes.push(b);
                 continue;
             }
 
@@ -1466,8 +1532,15 @@ export class StoryPackager implements PackagerUnit {
 
             // ---- float block -----------------------------------------------
             if (elem.kind === 'float-block') {
-                // Same split policy as float images: include in partA if
-                // the float's anchor is within the split zone.
+                // Absolute blocks follow the same no-clip policy as absolute images.
+                if (elem.isAbsolute) {
+                    if (elem.bottomY <= splitH) {
+                        for (const b of elem.allBoxes) partABoxes.push({ ...b });
+                        recordPartAHeight(elem.bottomY);
+                    }
+                    continue;
+                }
+                // Floats are included in partA if the anchor is within the split zone.
                 if (elem.topY <= splitH) {
                     for (const b of elem.allBoxes) partABoxes.push({ ...b });
                     recordPartAHeight(elem.bottomY);
@@ -1769,7 +1842,7 @@ export class StoryPackager implements PackagerUnit {
 // ---------------------------------------------------------------------------
 
 function isColumnSpanElement(element: Element): boolean {
-    const span = element.properties?.columnSpan;
+    const span = element.columnSpan;
     return span === 'all' || (typeof span === 'number' && span > 1);
 }
 
@@ -1823,8 +1896,7 @@ function collectDeferredStoryAbsoluteChildren(children: Element[], cutoffChildIn
     const deferred: Element[] = [];
     for (let i = 0; i < Math.min(children.length, cutoffChildIndex); i++) {
         const child = children[i];
-        if (child.type !== 'image') continue;
-        const layout = child.properties?.layout as StoryLayoutDirective | undefined;
+        const layout = child.placement as StoryLayoutDirective | undefined;
         if (layout?.mode !== 'story-absolute') continue;
         deferred.push(child);
     }

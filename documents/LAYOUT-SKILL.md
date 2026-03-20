@@ -141,7 +141,7 @@ Special structural types handled by the engine:
 | `type` | Role |
 |--------|------|
 | `"story"` | Multi-column DTP zone; carries `columns`, `gutter`, `balance` |
-| `"table"` | Table container; must have `properties.table` |
+| `"table"` | Table container; must have `table` |
 | `"table-row"` | Row inside a table |
 | `"table-cell"` | Cell inside a row; supports `colSpan`, `rowSpan` |
 | `"zone-map"` | Independent-region layout; use `zoneLayout` for field options and `zones[]` for authored regions |
@@ -267,9 +267,9 @@ When a paragraph has mixed styling, use `children` instead of `content`. Set `"c
 
 ## 8. Floats and Obstacles
 
-Any block element inside a `story` can be floated by adding `properties.layout: { mode: "float" }`. There are two kinds:
+Any direct child of a `story` can declare `placement: { mode: "float" }` or `placement: { mode: "story-absolute" }`. There are two kinds of float:
 
-**Image floats** — elements with `properties.image`. Width/height can be omitted and the engine derives them from intrinsic image dimensions.
+**Image floats** — elements with `image`. Width/height can be omitted and the engine derives them from intrinsic image dimensions.
 
 **Block floats** — any other element (pull-quote, sidebar, table, nested story, …). Both `properties.style.width` **and** `properties.style.height` are required; if either is missing the element renders as a normal block instead.
 
@@ -277,9 +277,22 @@ Any block element inside a `story` can be floated by adding `properties.layout: 
 {
   "type": "pull-quote",
   "content": "Any block can float — not just images.",
+  "placement": { "mode": "float", "align": "left", "wrap": "around", "gap": 8 },
   "properties": {
-    "style": { "width": 120, "height": 60 },
-    "layout": { "mode": "float", "align": "left", "wrap": "around", "gap": 8 }
+    "style": { "width": 120, "height": 60 }
+  }
+}
+```
+
+`story-absolute` uses the same field:
+
+```json
+{
+  "type": "box",
+  "content": "Pinned note",
+  "placement": { "mode": "story-absolute", "x": 220, "y": 36, "wrap": "around", "gap": 8 },
+  "properties": {
+    "style": { "width": 90, "height": 70 }
   }
 }
 ```
@@ -512,7 +525,6 @@ A `zone-map` defines independent layout regions inside the current field. The cl
 - `zoneLayout.frameOverflow` — explicit page-boundary lifecycle. `move-whole` keeps the conservative whole-field behavior; `continue` allows bounded zone-field continuation when paired with expandable world behavior.
 - `zones[]` — region descriptors, **not** DOM children. Each carries `id` (optional) and `elements[]`.
 - Zone height: the tallest zone determines the `zone-map`'s height in the document flow.
-- Legacy AST `1.0` still allows `properties.zones` instead of `zoneLayout`.
 
 ### Equal three-column strip
 

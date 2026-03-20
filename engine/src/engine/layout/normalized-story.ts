@@ -3,7 +3,7 @@ import type { Element, StoryFloatAlign, StoryLayoutDirective, StoryWrapMode } fr
 export type NormalizedStoryChildKind =
     | 'flow'
     | 'column-span'
-    | 'story-absolute-image'
+    | 'story-absolute'
     | 'float-image'
     | 'float-block'
     | 'block-image';
@@ -45,14 +45,14 @@ function normalizeLayout(layout?: StoryLayoutDirective): NormalizedStoryLayout |
 }
 
 function classifyChild(element: Element, layout?: NormalizedStoryLayout): NormalizedStoryChildKind {
-    const span = element.properties?.columnSpan;
+    const span = element.columnSpan;
     if (span === 'all' || (typeof span === 'number' && Number.isFinite(span) && span > 1)) {
         return 'column-span';
     }
-    if (layout?.mode === 'story-absolute' && element.properties?.image) return 'story-absolute-image';
-    if (layout?.mode === 'float' && element.properties?.image) return 'float-image';
-    if (layout?.mode === 'float' && !element.properties?.image) return 'float-block';
-    if (element.properties?.image && !layout?.mode) return 'block-image';
+    if (layout?.mode === 'story-absolute') return 'story-absolute';
+    if (layout?.mode === 'float' && element.image) return 'float-image';
+    if (layout?.mode === 'float' && !element.image) return 'float-block';
+    if (element.image && !layout?.mode) return 'block-image';
     return 'flow';
 }
 
@@ -62,7 +62,7 @@ export function normalizeStoryElement(element: Element): NormalizedStory {
     const rawBalance = (element as any).balance ?? element.properties?.balance;
     const balance = rawBalance === true || rawBalance === 'true' || rawBalance === 1;
     const children = (element.children ?? []).map((child, childIndex) => {
-        const layout = normalizeLayout(child.properties?.layout as StoryLayoutDirective | undefined);
+        const layout = normalizeLayout(child.placement as StoryLayoutDirective | undefined);
         return {
             childIndex,
             element: child,

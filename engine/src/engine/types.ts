@@ -5,7 +5,7 @@ export type JustifyEngineMode = 'legacy' | 'advanced';
 export type JustifyStrategy = 'auto' | 'space' | 'inter-character';
 export type ImageFitMode = 'contain' | 'fill';
 export type PageReservationSelector = 'first' | 'odd' | 'even' | 'all';
-export type VmprintDocumentVersion = '1.0' | '1.1';
+export type VmprintDocumentVersion = '1.1';
 export type VmprintIRVersion = '1.0';
 
 export type ShapedGlyph = {
@@ -121,15 +121,9 @@ export interface Element {
     type: ElementType;
     content: string;
     children?: Element[];
-    /**
-     * Embedded image payload. Preferred on AST 1.1+ for image-bearing nodes.
-     * AST 1.0 may still supply this through properties.image.
-     */
+    /** Embedded image payload. Required on `type: "image"` elements. */
     image?: EmbeddedImagePayload;
-    /**
-     * Table layout model. Preferred on AST 1.1+ for type: "table".
-     * AST 1.0 may still supply this through properties.table.
-     */
+    /** Table layout model. Required on `type: "table"` elements. */
     table?: TableLayoutOptions;
     /**
      * Strip slots. Each entry is an independent compact region in a one-row
@@ -150,18 +144,24 @@ export interface Element {
     /**
      * Zone-map spatial regions. Each entry is an independent layout context
      * (a room on the map). Only meaningful for `type: "zone-map"`.
-     * Column widths and gap are declared in `zoneLayout` on AST 1.1+ and
-     * legacy `properties.zones` on AST 1.0.
+     * Column widths and gap are declared in `zoneLayout`.
      */
     zones?: ZoneDefinition[];
     /** Zone-map layout model. Preferred on AST 1.1+. */
     zoneLayout?: ZoneLayoutOptions;
     /** Strip track model. Preferred on AST 1.1+. */
     stripLayout?: StripLayoutOptions;
-    /** Drop-cap configuration. Preferred on AST 1.1+. */
+    /** Drop-cap configuration. */
     dropCap?: DropCapSpec;
-    /** Story-local full-width span directive. Preferred on AST 1.1+. */
+    /** Story-local full-width span directive. */
     columnSpan?: 'all' | number;
+    /**
+     * Story-local placement directive. Declares how this element participates
+     * in a story's spatial layout — as a float anchored to the text cursor,
+     * or as an absolutely positioned element pinned within the story area.
+     * Only meaningful for direct children of a `story` element.
+     */
+    placement?: StoryLayoutDirective;
     properties?: ElementProperties;
 }
 
@@ -247,26 +247,11 @@ export interface StripLayoutOptions {
 
 export interface ElementProperties extends Record<string, any> {
     style?: Record<string, any>;
-    image?: EmbeddedImagePayload;
-    table?: TableLayoutOptions;
-    /** Zone-map layout options. Declared on `zone-map` elements. */
-    zones?: ZoneLayoutOptions;
-    /** Strip layout options. Declared on `strip` elements. */
-    strip?: StripLayoutOptions;
     colSpan?: number;
     rowSpan?: number;
     sourceId?: string;
     linkTarget?: string;
     semanticRole?: string;
-    dropCap?: DropCapSpec;
-    /** Story layout directive: declared on children of a `story` element. */
-    layout?: StoryLayoutDirective;
-    /**
-     * Column span for children of a multi-column `story`.
-     * `'all'` or any number ≥ 2 causes the element to span the full story
-     * width, breaking column flow above and resuming column flow below.
-     */
-    columnSpan?: 'all' | number;
     reflowKey?: string;
     keepWithNext?: boolean;
     marginTop?: number;

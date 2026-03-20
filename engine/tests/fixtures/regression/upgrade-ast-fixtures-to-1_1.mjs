@@ -52,6 +52,10 @@ function upgradeElement(element) {
         next.columnSpan = properties.columnSpan;
         delete properties.columnSpan;
     }
+    if (properties?.layout !== undefined && next.placement === undefined) {
+        next.placement = properties.layout;
+        delete properties.layout;
+    }
 
     if (isObject(properties?.pageOverrides)) {
         properties.pageOverrides = {

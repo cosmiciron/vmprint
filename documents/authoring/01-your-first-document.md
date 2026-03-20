@@ -50,7 +50,7 @@ vmprint --input document.json --output out.pdf
 
 What matters most:
 
-- `documentVersion: "1.1"` opts into the cleaned-up authored surface
+- `documentVersion: "1.1"` is the current and only supported version
 - `layout` defines the page and default typography
 - `styles` are named style presets keyed by `type`
 - `elements` are the authored content tree

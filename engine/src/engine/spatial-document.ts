@@ -235,12 +235,12 @@ function adaptFlowBlock(
         },
         keepWithNext: block.keepWithNext
     };
-    if (block.dropCap) properties.dropCap = { ...(block.dropCap as Record<string, unknown>) };
+    if (block.dropCap) element.dropCap = { ...(block.dropCap as Record<string, unknown>) } as any;
     if (block.columnSpan !== undefined) {
-        properties.columnSpan = block.columnSpan;
+        element.columnSpan = block.columnSpan as any;
     }
     if (block.image?.data) {
-        properties.image = {
+        element.image = {
             data: block.image.data,
             mimeType: block.image.mimeType,
             fit: block.image.fit
@@ -404,26 +404,19 @@ function adaptSpatialGrid(grid: SpatialGrid, options: SpatialAdaptOptions): Elem
 
     const baseTable = createBaseElement('table', '');
     baseTable.children = rows;
+    baseTable.table = {
+        headerRows: grid.headerRows,
+        repeatHeader: grid.repeatHeader,
+        columnGap: grid.columnGap,
+        rowGap: grid.rowGap,
+        columns: Array.isArray(grid.columns) && grid.columns.length > 0
+            ? grid.columns.map((column) => ({ ...column }))
+            : buildFixedColumns(grid.resolvedColumns.map((column) => column.width)),
+        ...(grid.cellStyle ? { cellStyle: { ...grid.cellStyle } } : {}),
+        ...(grid.headerCellStyle ? { headerCellStyle: { ...grid.headerCellStyle } } : {})
+    };
     baseTable.properties = applySpatialSourceProperties({
-        ...(baseTable.properties || {}),
-        style: {
-            ...((baseTable.properties?.style as Record<string, unknown>) || {}),
-            ...(grid.blockStyle || {})
-        },
-        table: {
-            ...((baseTable.properties?.table as Record<string, unknown>) || {}),
-            headerRows: grid.headerRows,
-            repeatHeader: grid.repeatHeader,
-            columnGap: grid.columnGap,
-            rowGap: grid.rowGap,
-            columns: Array.isArray(grid.columns) && grid.columns.length > 0
-                ? grid.columns.map((column) => ({ ...column }))
-                : Array.isArray(baseTable.properties?.table?.columns) && baseTable.properties.table.columns.length > 0
-                    ? baseTable.properties.table.columns
-                    : buildFixedColumns(grid.resolvedColumns.map((column) => column.width)),
-            ...(grid.cellStyle ? { cellStyle: { ...grid.cellStyle } } : {}),
-            ...(grid.headerCellStyle ? { headerCellStyle: { ...grid.headerCellStyle } } : {})
-        }
+        style: { ...(grid.blockStyle || {}) }
     }, grid.source);
     if (grid.paginationContinuation) {
         baseTable.properties.paginationContinuation = { ...(grid.paginationContinuation as Record<string, unknown>) };

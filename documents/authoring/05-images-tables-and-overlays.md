@@ -4,8 +4,6 @@ This chapter covers the remaining common authoring tools.
 
 ## Images
 
-AST `1.1` promotes image payload to a top-level field.
-
 ```json
 {
   "type": "image",

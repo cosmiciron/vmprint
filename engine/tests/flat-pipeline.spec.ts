@@ -265,15 +265,15 @@ async function testEmbeddedImageFlowAndRender() {
         {
             type: 'image',
             content: '',
+            image: {
+                data: onePixelPng,
+                mimeType: 'image/png',
+                fit: 'contain'
+            },
             properties: {
                 style: {
                     width: 80,
                     marginBottom: 8
-                },
-                image: {
-                    data: onePixelPng,
-                    mimeType: 'image/png',
-                    fit: 'contain'
                 }
             }
         },
@@ -326,6 +326,7 @@ async function testInlineObjectsInsideRichTextFlow() {
                 {
                     type: 'image',
                     content: '',
+                    image: { data: onePixelPng, mimeType: 'image/png', fit: 'contain' },
                     properties: {
                         style: {
                             width: 18,
@@ -336,8 +337,7 @@ async function testInlineObjectsInsideRichTextFlow() {
                             inlineOpticalInsetBottom: 2,
                             inlineMarginLeft: 1,
                             inlineMarginRight: 2
-                        },
-                        image: { data: onePixelPng, mimeType: 'image/png', fit: 'contain' }
+                        }
                     }
                 },
                 { type: 'text', content: ' and ' },
@@ -1136,17 +1136,15 @@ async function testTablePaginationRepeatsHeaderRows() {
     const elements: Element[] = [{
         type: 'table',
         content: '',
-        properties: {
-            table: {
-                headerRows: 1,
-                repeatHeader: true,
-                columnGap: 0,
-                rowGap: 0,
-                columns: [
-                    { mode: 'fixed', value: 52 },
-                    { mode: 'flex', fr: 1 }
-                ]
-            }
+        table: {
+            headerRows: 1,
+            repeatHeader: true,
+            columnGap: 0,
+            rowGap: 0,
+            columns: [
+                { mode: 'fixed', value: 52 },
+                { mode: 'flex', fr: 1 }
+            ]
         },
         children: rows
     }];
@@ -1256,18 +1254,16 @@ async function testTableColSpanMaterializesSpanWidth() {
     const elements: Element[] = [{
         type: 'table',
         content: '',
-        properties: {
-            table: {
-                headerRows: 1,
-                repeatHeader: true,
-                columnGap: 6,
-                rowGap: 0,
-                columns: [
-                    { mode: 'fixed', value: 60 },
-                    { mode: 'fixed', value: 90 },
-                    { mode: 'fixed', value: 70 }
-                ]
-            }
+        table: {
+            headerRows: 1,
+            repeatHeader: true,
+            columnGap: 6,
+            rowGap: 0,
+            columns: [
+                { mode: 'fixed', value: 60 },
+                { mode: 'fixed', value: 90 },
+                { mode: 'fixed', value: 70 }
+            ]
         },
         children: [
             {
@@ -1340,17 +1336,15 @@ async function testTableSplitStopsBeforeFullWidthViewportBlocker() {
     const elements: Element[] = [{
         type: 'table',
         content: '',
-        properties: {
-            table: {
-                headerRows: 1,
-                repeatHeader: true,
-                columnGap: 6,
-                rowGap: 0,
-                columns: [
-                    { mode: 'flex', fr: 1 },
-                    { mode: 'flex', fr: 1 }
-                ]
-            }
+        table: {
+            headerRows: 1,
+            repeatHeader: true,
+            columnGap: 6,
+            rowGap: 0,
+            columns: [
+                { mode: 'flex', fr: 1 },
+                { mode: 'flex', fr: 1 }
+            ]
         },
         children: [
             {
@@ -1406,17 +1400,15 @@ async function testTableRowSpanStacksAcrossRows() {
     const elements: Element[] = [{
         type: 'table',
         content: '',
-        properties: {
-            table: {
-                headerRows: 0,
-                repeatHeader: false,
-                columnGap: 0,
-                rowGap,
-                columns: [
-                    { mode: 'fixed', value: 70 },
-                    { mode: 'fixed', value: 170 }
-                ]
-            }
+        table: {
+            headerRows: 0,
+            repeatHeader: false,
+            columnGap: 0,
+            rowGap,
+            columns: [
+                { mode: 'fixed', value: 70 },
+                { mode: 'fixed', value: 170 }
+            ]
         },
         children: [
             {
@@ -1486,17 +1478,15 @@ async function testTableCellSourceIdIntegrity() {
     const elements: Element[] = [{
         type: 'table',
         content: '',
-        properties: {
-            table: {
-                headerRows: 0,
-                repeatHeader: false,
-                columnGap: 0,
-                rowGap: 0,
-                columns: [
-                    { mode: 'fixed', value: 80 },
-                    { mode: 'fixed', value: 160 }
-                ]
-            }
+        table: {
+            headerRows: 0,
+            repeatHeader: false,
+            columnGap: 0,
+            rowGap: 0,
+            columns: [
+                { mode: 'fixed', value: 80 },
+                { mode: 'fixed', value: 160 }
+            ]
         },
         children: [{
             type: 'table-row',
@@ -1622,9 +1612,9 @@ async function testInlineObjectJustificationIsolation() {
             {
                 type: 'image',
                 content: '',
+                image: { data: onePixelPng, mimeType: 'image/png', fit: 'contain' },
                 properties: {
-                    style: { width: 18, height: 18, verticalAlign: 'middle' },
-                    image: { data: onePixelPng, mimeType: 'image/png', fit: 'contain' }
+                    style: { width: 18, height: 18, verticalAlign: 'middle' }
                 }
             },
             { type: 'text', content: ' More trailing text to ensure the line containing the inline image is not the final line and is eligible for justification.' }

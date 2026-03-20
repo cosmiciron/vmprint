@@ -40,6 +40,95 @@ Use `columnSpan` when a full-width interruption should cut across the story:
 }
 ```
 
+## Story Placement
+
+Direct children of a `story` can declare how they participate in the story's
+spatial layout through a first-class `placement` field.
+
+Without `placement`, a child is a flow element — it sits in the reading stream
+and the text flows around it normally. With `placement`, it becomes a spatial
+actor: a float anchored to the text cursor, or an element pinned at a fixed
+position within the story area.
+
+### Float
+
+A float is anchored to the position where it appears in the child list. The
+text stream flows around it.
+
+```json
+{
+  "type": "image",
+  "image": { "mimeType": "image/png", "data": "...", "fit": "contain" },
+  "placement": {
+    "mode": "float",
+    "align": "right",
+    "wrap": "around",
+    "gap": 8
+  },
+  "properties": {
+    "style": { "width": 120, "height": 90 }
+  }
+}
+```
+
+`align` controls which margin the float anchors to: `"left"`, `"right"`, or
+`"center"`.
+
+`wrap` controls how the text behaves:
+
+| `wrap` | Effect |
+|---|---|
+| `"around"` | Text snakes around the obstacle on the available side(s) |
+| `"top-bottom"` | Text clears the obstacle entirely — no side-by-side text |
+| `"none"` | Element overlays the text with no reflow |
+
+`gap` adds clearance around the obstacle bounding box (in points).
+
+Floats are not limited to images. Any story child — a pull quote, a sidebar
+note, a box — can be declared as a float. The engine treats it as a spatial
+obstacle regardless of content type.
+
+For non-image floats, give the element an explicit `width` and `height` in
+`properties.style` so the obstacle geometry is known up front.
+
+### Story-Absolute
+
+A `story-absolute` element is pinned at a fixed offset from the story's own
+origin, independent of the text cursor position.
+
+```json
+{
+  "type": "image",
+  "image": { "mimeType": "image/png", "data": "...", "fit": "contain" },
+  "placement": {
+    "mode": "story-absolute",
+    "x": 240,
+    "y": 0,
+    "wrap": "around",
+    "gap": 12
+  },
+  "properties": {
+    "style": { "width": 100, "height": 140 }
+  }
+}
+```
+
+`x` and `y` are offsets from the story's content-area origin (top-left of the
+story's first column). The text still respects `wrap` around the element's
+bounding box.
+
+Use `story-absolute` when you want an element at a specific visual position
+regardless of where the surrounding text happens to be — a decorative image
+pinned to the top-right of the story area, for example.
+
+For non-image `story-absolute` elements, provide explicit `width` and `height`
+in `properties.style`.
+
+### What `placement` replaces
+
+Before A2, these semantics lived in `properties.layout`. That form is no longer
+accepted. Use the top-level `placement` field.
+
 ## `strip`
 
 Use `strip` for masthead rows, bylines, folios, and other one-row bands.

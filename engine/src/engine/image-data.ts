@@ -159,7 +159,7 @@ export function parseEmbeddedImageData(
     const normalizedExplicitMime = explicitMimeType ? explicitMimeType.trim().toLowerCase() : undefined;
     const mimeType = (uriMime || normalizedExplicitMime || inferredMime || '').trim();
     if (!mimeType) {
-        throw new Error('[image] Unable to determine embedded image mimeType. Set "properties.image.mimeType".');
+        throw new Error('[image] Unable to determine embedded image mimeType. Set "image.mimeType".');
     }
 
     if (inferredMime && mimeType !== inferredMime) {

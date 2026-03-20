@@ -490,15 +490,15 @@ async function main() {
                             {
                                 type: 'image',
                                 content: '',
+                                placement: {
+                                    mode: 'story-absolute',
+                                    x: 220,
+                                    y: 430,
+                                    wrap: 'around',
+                                    gap: 8
+                                },
                                 properties: {
                                     sourceId: 'deferred-abs-image',
-                                    layout: {
-                                        mode: 'story-absolute',
-                                        x: 220,
-                                        y: 430,
-                                        wrap: 'around',
-                                        gap: 8
-                                    },
                                     style: {
                                         width: 80,
                                         height: 80
@@ -561,15 +561,15 @@ async function main() {
                             {
                                 type: 'image',
                                 content: '',
+                                placement: {
+                                    mode: 'story-absolute',
+                                    x: 206,
+                                    y: 412,
+                                    wrap: 'around',
+                                    gap: 8
+                                },
                                 properties: {
                                     sourceId: 'lane-two-abs-image',
-                                    layout: {
-                                        mode: 'story-absolute',
-                                        x: 206,
-                                        y: 412,
-                                        wrap: 'around',
-                                        gap: 8
-                                    },
                                     style: {
                                         width: 80,
                                         height: 80
@@ -606,6 +606,73 @@ async function main() {
             const imageTop = Math.min(...imageBoxes.map((box: any) => Number(box.y || 0)));
             assert.ok(imageLeft >= 24 + 192 - 0.5, `expected lane-two absolute image x (${imageLeft}) to land in the second lane`);
             assert.ok(imageTop < 80, `expected lane-two absolute image y (${imageTop}) to project near the top of lane two rather than a flat page y`);
+        }
+    );
+
+    check(
+        'story-absolute blocks render as real placed actors',
+        'a non-image direct child of story with story-absolute placement should render at its pinned x/y instead of degrading to normal flow',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 420, height: 420 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10, allowLineSplit: true, orphans: 2, widows: 2, textAlign: 'justify' }
+                },
+                elements: [
+                    {
+                        type: 'story',
+                        children: [
+                            {
+                                type: 'box',
+                                content: 'Pinned note',
+                                placement: {
+                                    mode: 'story-absolute',
+                                    x: 220,
+                                    y: 36,
+                                    wrap: 'around',
+                                    gap: 8
+                                },
+                                properties: {
+                                    sourceId: 'pinned-abs-box',
+                                    style: {
+                                        width: 90,
+                                        height: 60,
+                                        borderWidth: 1
+                                    }
+                                }
+                            },
+                            {
+                                type: 'body',
+                                content: 'Absolute block probe text. '.repeat(80),
+                                properties: { sourceId: 'pinned-abs-body' }
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'story-absolute-block.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+            const pageOne = pages[0];
+            const boxMatches = (pageOne.boxes || []).filter((box: any) => {
+                const actual = String(box.meta?.sourceId || '');
+                return actual === 'pinned-abs-box' || actual.endsWith(':pinned-abs-box');
+            });
+
+            assert.ok(boxMatches.length > 0, 'expected the story-absolute block to render');
+            const placedLeft = Math.min(...boxMatches.map((box: any) => Number(box.x || 0)));
+            const placedTop = Math.min(...boxMatches.map((box: any) => Number(box.y || 0)));
+            assert.ok(placedLeft >= 24 + 220 - 0.5, `expected story-absolute block x (${placedLeft}) to respect the pinned story offset`);
+            assert.ok(placedTop >= 36 - 0.5 && placedTop < 110, `expected story-absolute block y (${placedTop}) to land near the authored story y`);
         }
     );
 
