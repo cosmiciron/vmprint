@@ -68,7 +68,7 @@ import {
     type KernelBranchStateSnapshot,
     type KeepWithNextOverflowActionInput,
     type KeepWithNextPlanningResolution,
-    type LayoutCollaborator,
+    type Collaborator,
     type LayoutProfileMetrics,
     type LocalBranchSnapshot,
     type LocalBranchStateSnapshot,
@@ -149,7 +149,7 @@ export type {
     KeepWithNextOverflowActionInput,
     KeepWithNextPlanningResolution,
     KernelBranchStateSnapshot,
-    LayoutCollaborator,
+    Collaborator,
     LayoutProfileMetrics,
     LocalBranchSnapshot,
     LocalBranchStateSnapshot,
@@ -198,12 +198,12 @@ export type {
 
 type LayoutSessionOptions = {
     runtime: EngineRuntime;
-    collaborators?: readonly LayoutCollaborator[];
+    collaborators?: readonly Collaborator[];
 };
 
 export class LayoutSession {
     readonly runtime: EngineRuntime;
-    readonly collaborators: readonly LayoutCollaborator[];
+    readonly collaborators: readonly Collaborator[];
     readonly eventDispatcher: EventDispatcher;
     readonly kernel = new Kernel();
     readonly actorCommunicationRuntime: ActorCommunicationRuntime<LocalTransitionSnapshot, SessionBranchStateSnapshot>;

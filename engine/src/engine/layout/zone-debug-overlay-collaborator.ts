@@ -1,5 +1,5 @@
 import type { Box, DebugZoneRegion } from '../types';
-import type { LayoutCollaborator, PageSurface } from './layout-session-types';
+import type { Collaborator, PageSurface } from './layout-session-types';
 import type { LayoutSession } from './layout-session';
 import type { PackagerUnit } from './packagers/packager-types';
 import { ZonePackager } from './packagers/zone-packager';
@@ -15,7 +15,7 @@ function zoneKey(zone: ReturnType<ZonePackager['getDebugRegions']>[number]): str
     ].join(':');
 }
 
-export class ZoneDebugOverlayCollaborator implements LayoutCollaborator {
+export class ZoneDebugOverlayCollaborator implements Collaborator {
     onActorCommitted(actor: PackagerUnit, _committed: Box[], surface: PageSurface, _session: LayoutSession): void {
         if (!(actor instanceof ZonePackager)) return;
 

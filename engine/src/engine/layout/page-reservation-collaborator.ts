@@ -1,4 +1,4 @@
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import { PackagerUnit } from './packagers/packager-types';
 
@@ -10,7 +10,7 @@ function resolveReservationHeight(actor: PackagerUnit): number {
     return Number.isFinite(value) ? Math.max(0, Number(value)) : 0;
 }
 
-export class PageReservationCollaborator implements LayoutCollaborator {
+export class PageReservationCollaborator implements Collaborator {
     onActorCommitted(actor: PackagerUnit, _committed: unknown, _surface: unknown, session: LayoutSession): void {
         const startedAt = performance.now();
         session.recordProfile('reservationCommitProbeCalls', 1);

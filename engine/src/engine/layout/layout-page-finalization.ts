@@ -3,7 +3,7 @@ import { LayoutUtils } from './layout-utils';
 import {
     LayoutSession,
 } from './layout-session';
-import type { LayoutCollaborator, PageOverrideState, PageSurface } from './layout-session-types';
+import type { Collaborator, PageOverrideState, PageSurface } from './layout-session-types';
 import type { ActorSignal } from './actor-event-bus';
 import type { LayoutBox, ObservationResult, PackagerContext, PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
 
@@ -24,7 +24,7 @@ type FinalizePagesCallbacks = {
     ) => Box[];
 };
 
-export class PageRegionCollaborator implements LayoutCollaborator {
+export class PageRegionCollaborator implements Collaborator {
     private reactiveRegionSequence = 0;
 
     constructor(

@@ -1,4 +1,4 @@
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 
@@ -11,7 +11,7 @@ export type PageNumberSummary = {
     renderedFooter: boolean;
 };
 
-export class PageNumberArtifactCollaborator implements LayoutCollaborator {
+export class PageNumberArtifactCollaborator implements Collaborator {
     onSimulationComplete(session: LayoutSession): void {
         const summaries: PageNumberSummary[] = session.getPageFinalizationStates().map((state) => ({
             pageIndex: state.pageIndex,

@@ -29,7 +29,7 @@ import { PageExclusionArtifactCollaborator } from './page-exclusion-artifact-col
 import { PageReservationArtifactCollaborator } from './page-reservation-artifact-collaborator';
 import { PageSpatialConstraintArtifactCollaborator } from './page-spatial-constraint-artifact-collaborator';
 import { PageRegionArtifactCollaborator } from './page-region-artifact-collaborator';
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import {
     createPrintPipelineSnapshot,
@@ -973,7 +973,7 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 
-    private createLayoutCollaborators(): LayoutCollaborator[] {
+    private createLayoutCollaborators(): Collaborator[] {
         return [
             new KeepWithNextCollaborator(),
             new ContinuationMarkerCollaborator(),

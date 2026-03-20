@@ -977,7 +977,7 @@ export type FragmentTransition = {
     continuationEnqueued: boolean;
 };
 
-export interface LayoutCollaborator {
+export interface Collaborator {
     onSimulationStart?(session: LayoutSession): void;
     onActorSpawn?(actor: PackagerUnit, session: LayoutSession): void;
     onPageStart?(pageIndex: number, surface: PageSurface, session: LayoutSession): void;

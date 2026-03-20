@@ -1,4 +1,4 @@
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 
@@ -9,7 +9,7 @@ export type FragmentationSummary = {
     pageIndices: number[];
 };
 
-export class FragmentTransitionArtifactCollaborator implements LayoutCollaborator {
+export class FragmentTransitionArtifactCollaborator implements Collaborator {
     onSimulationComplete(session: LayoutSession): void {
         const summaries: FragmentationSummary[] = session.getFragmentTransitionSourceIds().map((sourceActorId) => {
             const summary: FragmentationSummary = {

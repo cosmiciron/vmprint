@@ -1,5 +1,5 @@
 import { LayoutConfig, PageReservationSelector } from '../types';
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 
 function resolvePageStartExclusionTop(config: LayoutConfig): number {
@@ -17,7 +17,7 @@ function resolvePageStartExclusionSelector(config: LayoutConfig): PageReservatio
     return value === 'all' || value === 'odd' || value === 'even' ? value : 'first';
 }
 
-export class PageStartExclusionCollaborator implements LayoutCollaborator {
+export class PageStartExclusionCollaborator implements Collaborator {
     private readonly top: number;
     private readonly height: number;
     private readonly explicitRectangles: Array<{ x: number; width: number }>;

@@ -1,4 +1,4 @@
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 
@@ -9,7 +9,7 @@ export type PageExclusionSummary = {
     totalExcludedHeight: number;
 };
 
-export class PageExclusionArtifactCollaborator implements LayoutCollaborator {
+export class PageExclusionArtifactCollaborator implements Collaborator {
     onSimulationComplete(session: LayoutSession): void {
         const summary = session.getExclusionPageIndices().map((pageIndex) => {
             const exclusions = session.getPageExclusions(pageIndex);

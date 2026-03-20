@@ -1,5 +1,5 @@
 import type { Box } from '../types';
-import type { LayoutCollaborator, PageSurface } from './layout-session-types';
+import type { Collaborator, PageSurface } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import type { PackagerUnit } from './packagers/packager-types';
 
@@ -49,7 +49,7 @@ function extractBoxText(box: Box): string {
  * Runs alongside HeadingTelemetryCollaborator, which continues to produce its
  * post-simulation artifact unchanged.
  */
-export class HeadingSignalCollaborator implements LayoutCollaborator {
+export class HeadingSignalCollaborator implements Collaborator {
     onActorCommitted(
         actor: PackagerUnit,
         committed: Box[],

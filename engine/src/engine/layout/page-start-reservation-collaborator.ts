@@ -1,5 +1,5 @@
 import { LayoutConfig, PageReservationSelector } from '../types';
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 
 function resolvePageStartReservationHeight(config: LayoutConfig): number {
@@ -12,7 +12,7 @@ function resolvePageStartReservationSelector(config: LayoutConfig): PageReservat
     return value === 'all' || value === 'odd' || value === 'even' ? value : 'first';
 }
 
-export class PageStartReservationCollaborator implements LayoutCollaborator {
+export class PageStartReservationCollaborator implements Collaborator {
     private readonly reservationHeight: number;
     private readonly selector: PageReservationSelector;
 

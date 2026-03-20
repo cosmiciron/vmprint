@@ -1,7 +1,7 @@
 import { performance } from 'node:perf_hooks';
 import type { ActorFormationMember, KeepWithNextFormationPlan } from './actor-formation';
 import { LAYOUT_DEFAULTS } from './defaults';
-import type { LayoutCollaborator, PaginationLoopState } from './layout-session-types';
+import type { Collaborator, PaginationLoopState } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import { PackagerUnit, preparePackagerForPhase } from './packagers/packager-types';
 
@@ -130,7 +130,7 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
     };
 }
 
-export class KeepWithNextCollaborator implements LayoutCollaborator {
+export class KeepWithNextCollaborator implements Collaborator {
     onActorPrepared(actor: PackagerUnit, session: LayoutSession): void {
         if (!actor.keepWithNext) return;
         const state = session.getPaginationLoopState();

@@ -1,4 +1,4 @@
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 
@@ -16,7 +16,7 @@ export type PageSpatialConstraintSummary = {
     exclusionIds: string[];
 };
 
-export class PageSpatialConstraintArtifactCollaborator implements LayoutCollaborator {
+export class PageSpatialConstraintArtifactCollaborator implements Collaborator {
     onSimulationComplete(session: LayoutSession): void {
         const summary = session.getSpatialConstraintPageIndices().map((pageIndex) => {
             const reservations = session.getPageReservations(pageIndex);

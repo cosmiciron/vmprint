@@ -1,4 +1,4 @@
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 
@@ -10,7 +10,7 @@ export type PageReservationSummary = {
     reservationSources: string[];
 };
 
-export class PageReservationArtifactCollaborator implements LayoutCollaborator {
+export class PageReservationArtifactCollaborator implements Collaborator {
     onSimulationComplete(session: LayoutSession): void {
         const startedAt = performance.now();
         const summaries = session.getReservationPageIndices().map((pageIndex) => {

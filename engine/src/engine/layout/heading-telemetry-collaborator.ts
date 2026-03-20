@@ -1,5 +1,5 @@
 import type { Box } from '../types';
-import type { LayoutCollaborator, PageSurface } from './layout-session-types';
+import type { Collaborator, PageSurface } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 import type { PackagerUnit } from './packagers/packager-types';
@@ -68,7 +68,7 @@ function normalizeHeadingText(text: string): string {
     return text.replace(/\s+/g, ' ').trim();
 }
 
-export class HeadingTelemetryCollaborator implements LayoutCollaborator {
+export class HeadingTelemetryCollaborator implements Collaborator {
     private readonly headings = new Map<string, HeadingTelemetrySummary>();
 
     onSimulationStart(): void {

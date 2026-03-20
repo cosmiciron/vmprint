@@ -1,11 +1,11 @@
 import type { Box } from '../types';
 import type { PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
 import type { LayoutSession } from './layout-session';
-import type { ConstraintField, LayoutCollaborator, PageSurface, SplitAttempt } from './layout-session-types';
+import type { Collaborator, ConstraintField, PageSurface, SplitAttempt } from './layout-session-types';
 
 export class EventDispatcher {
     constructor(
-        private readonly collaborators: readonly LayoutCollaborator[]
+        private readonly collaborators: readonly Collaborator[]
     ) { }
 
     onSimulationStart(session: LayoutSession): void {

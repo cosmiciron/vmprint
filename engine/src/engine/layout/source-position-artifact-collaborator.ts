@@ -1,4 +1,4 @@
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 
@@ -11,7 +11,7 @@ export type SourcePositionSummary = {
     fragmentCount: number;
 };
 
-export class SourcePositionArtifactCollaborator implements LayoutCollaborator {
+export class SourcePositionArtifactCollaborator implements Collaborator {
     onSimulationComplete(session: LayoutSession): void {
         const pages = session.getFinalizedPages();
         const summaries = new Map<string, SourcePositionSummary>();

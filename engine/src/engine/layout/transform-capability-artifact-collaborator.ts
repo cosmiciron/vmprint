@@ -1,5 +1,5 @@
 import type { PackagerTransformCapability } from './packagers/packager-types';
-import type { LayoutCollaborator } from './layout-session-types';
+import type { Collaborator } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import { simulationArtifactKeys } from './simulation-report';
 import { resolvePackagerTransformProfile } from './packagers/packager-types';
@@ -11,7 +11,7 @@ export type TransformCapabilitySummary = {
     capabilities: PackagerTransformCapability[];
 };
 
-export class TransformCapabilityArtifactCollaborator implements LayoutCollaborator {
+export class TransformCapabilityArtifactCollaborator implements Collaborator {
     onSimulationComplete(session: LayoutSession): void {
         const summaries = new Map<string, TransformCapabilitySummary>();
 
