@@ -7,7 +7,7 @@ import { LayoutEngine } from '@vmprint/engine';
 import { Renderer } from '@vmprint/engine';
 import { LayoutUtils } from '@vmprint/engine';
 import { createEngineRuntime } from '@vmprint/engine';
-import { AnnotatedLayoutStream, LayoutConfig, Page, resolveDocumentPaths, toLayoutConfig, type DocumentIR } from '@vmprint/engine';
+import { AnnotatedLayoutStream, LayoutConfig, Page, resolveDocumentSourceText, toLayoutConfig, type DocumentIR } from '@vmprint/engine';
 import { performance } from 'perf_hooks';
 import PdfContext from '@vmprint/context-pdf';
 
@@ -172,8 +172,7 @@ async function run() {
             }
         }
         const inputRaw = fs.readFileSync(inputPath, 'utf-8');
-        const sourceDocument = JSON.parse(inputRaw);
-        document = resolveDocumentPaths(sourceDocument, inputPath);
+        document = resolveDocumentSourceText(inputRaw, inputPath);
         config = {
             ...toLayoutConfig(document, false),
             debug: !!options.debug

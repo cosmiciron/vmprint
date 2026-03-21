@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { resolveDocumentPaths, type DocumentIR } from '../../src';
+import { resolveDocumentSourceText, type DocumentIR } from '../../src';
 import { HARNESS_REGRESSION_CASES_DIR } from './engine-harness';
 
 export const AST_FIXTURES_DIR = HARNESS_REGRESSION_CASES_DIR;
@@ -23,7 +23,7 @@ export function loadAstJsonDocumentFixtures(casesDir: string = AST_FIXTURES_DIR)
         return {
             name,
             filePath,
-            document: resolveDocumentPaths(JSON.parse(fs.readFileSync(filePath, 'utf-8')), filePath)
+            document: resolveDocumentSourceText(fs.readFileSync(filePath, 'utf-8'), filePath)
         };
     });
 }

@@ -1,0 +1,21 @@
+{
+  "expectedTextIncludes": ["Heading count: 1", "Chapter One"],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "summary",
+      "content": "Heading count: pending"
+    }
+  ],
+  "profileEquals": {
+    "scriptReplayRequests": 1,
+    "scriptReplayPasses": 1,
+    "scriptBeforeLayoutCalls": 0,
+    "scriptResolveCalls": 0
+  },
+  "profileAtLeast": {
+    "scriptHandlerCalls": 2,
+    "scriptAfterSettleCalls": 2,
+    "scriptSetContentCalls": 1,
+    "scriptDocQueryCalls": 2
+  }
+}

@@ -26,6 +26,7 @@ export const HARNESS_ROOT = HARNESS_PACKAGE_ROOT;
 export const HARNESS_FIXTURES_DIR = resolveHarnessFixturesDir();
 export const HARNESS_REGRESSION_CASES_DIR = path.join(HARNESS_FIXTURES_DIR, 'regression');
 export const HARNESS_DEMO_CASES_DIR = path.join(HARNESS_FIXTURES_DIR, 'demo');
+export const HARNESS_SCRIPTING_CASES_DIR = path.join(HARNESS_FIXTURES_DIR, 'scripting');
 const ADVANCED_LAYOUT_FIXTURE = '02-text-layout-advanced.json';
 
 function resolveBuiltin(bundledRelPath: string, packageName: string): string {

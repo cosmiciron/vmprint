@@ -1,0 +1,31 @@
+---
+methods:
+  helloWorld: |
+    vm.doc.setContent('greeting', 'Hello, world!');
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 320, "height": 220 },
+    "margins": { "top": 20, "right": 20, "bottom": 20, "left": 20 },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.2
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "p": { "marginBottom": 8, "allowLineSplit": true, "orphans": 2, "widows": 2 }
+  },
+  "onBeforeLayout": "helloWorld",
+  "elements": [
+    {
+      "type": "p",
+      "content": "Pending greeting",
+      "properties": {
+        "sourceId": "greeting"
+      }
+    }
+  ]
+}

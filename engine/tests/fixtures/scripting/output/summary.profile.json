@@ -1,0 +1,42 @@
+[
+  {
+    "fixture": "00-hello-world.json",
+    "pages": 1,
+    "simulateMs": 43.99,
+    "renderMs": 46.42,
+    "totalMs": 90.41,
+    "scriptHandlerCalls": 1,
+    "scriptHandlerMs": 0.09,
+    "scriptBeforeLayoutCalls": 1,
+    "scriptBeforeLayoutMs": 0.09,
+    "scriptResolveCalls": 0,
+    "scriptResolveMs": 0,
+    "scriptAfterSettleCalls": 0,
+    "scriptAfterSettleMs": 0,
+    "scriptReplayRequests": 0,
+    "scriptReplayPasses": 0,
+    "scriptDocQueryCalls": 0,
+    "scriptSetContentCalls": 1,
+    "scriptReplaceCalls": 0
+  },
+  {
+    "fixture": "01-after-settle-replay.json",
+    "pages": 1,
+    "simulateMs": 46.84,
+    "renderMs": 24.19,
+    "totalMs": 71.03,
+    "scriptHandlerCalls": 2,
+    "scriptHandlerMs": 0.07,
+    "scriptBeforeLayoutCalls": 0,
+    "scriptBeforeLayoutMs": 0,
+    "scriptResolveCalls": 0,
+    "scriptResolveMs": 0,
+    "scriptAfterSettleCalls": 2,
+    "scriptAfterSettleMs": 0.07,
+    "scriptReplayRequests": 1,
+    "scriptReplayPasses": 1,
+    "scriptDocQueryCalls": 2,
+    "scriptSetContentCalls": 1,
+    "scriptReplaceCalls": 0
+  }
+]

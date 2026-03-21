@@ -29,7 +29,7 @@ import { PageExclusionArtifactCollaborator } from './collaborators/page-exclusio
 import { PageReservationArtifactCollaborator } from './collaborators/page-reservation-artifact-collaborator';
 import { PageSpatialConstraintArtifactCollaborator } from './collaborators/page-spatial-constraint-artifact-collaborator';
 import { PageRegionArtifactCollaborator } from './collaborators/page-region-artifact-collaborator';
-import type { Collaborator } from './layout-session-types';
+import type { Collaborator, LayoutProfileMetrics } from './layout-session-types';
 import { LayoutSession } from './layout-session';
 import {
     createPrintPipelineSnapshot,
@@ -39,6 +39,7 @@ import {
     SimulationReportReader
 } from './simulation-report';
 import { SourcePositionArtifactCollaborator } from './collaborators/source-position-artifact-collaborator';
+import { ScriptRuntimeCollaborator } from './collaborators/script-runtime-collaborator';
 import { TransformCapabilityArtifactCollaborator } from './collaborators/transform-capability-artifact-collaborator';
 import { TransformArtifactCollaborator } from './collaborators/transform-artifact-collaborator';
 import { ZoneDebugOverlayCollaborator } from './collaborators/zone-debug-overlay-collaborator';
@@ -61,9 +62,28 @@ export class LayoutProcessor extends TextProcessor {
     private static readonly REGION_LAYOUT_HEIGHT = 1000000;
     private lastLayoutSession: LayoutSession | null = null;
     private packagerFactory: ExternalPackagerFactory | undefined = undefined;
+    private static readonly SCRIPT_PROFILE_KEYS: Array<keyof LayoutProfileMetrics> = [
+        'scriptHandlerCalls',
+        'scriptHandlerMs',
+        'scriptBeforeLayoutCalls',
+        'scriptBeforeLayoutMs',
+        'scriptResolveCalls',
+        'scriptResolveMs',
+        'scriptAfterSettleCalls',
+        'scriptAfterSettleMs',
+        'scriptReplayRequests',
+        'scriptReplayPasses',
+        'scriptDocQueryCalls',
+        'scriptSetContentCalls',
+        'scriptReplaceCalls'
+    ];
 
     setPackagerFactory(factory: ExternalPackagerFactory | undefined): void {
         this.packagerFactory = factory;
+    }
+
+    private cloneElementsForSimulation(elements: Element[]): Element[] {
+        return JSON.parse(JSON.stringify(elements)) as Element[];
     }
 
     private normalizeOverflowPolicy(value: unknown): OverflowPolicy {
@@ -499,27 +519,61 @@ export class LayoutProcessor extends TextProcessor {
      */
     simulate(elements: Element[]): Page[] {
         const { height: pageHeight, width: pageWidth } = this.getPageDimensions();
-        const session = new LayoutSession({
-            runtime: this.getRuntime(),
-            collaborators: this.createLayoutCollaborators()
-        });
-        this.lastLayoutSession = session;
-        session.notifySimulationStart();
-        const packagers = createPackagers(elements, this, this.packagerFactory);
-        for (const packager of packagers) {
-            session.notifyActorSpawn(packager);
+        const simulationElements = this.cloneElementsForSimulation(elements);
+        const maxScriptReplayPasses = 2;
+        const aggregateScriptProfile = Object.fromEntries(
+            LayoutProcessor.SCRIPT_PROFILE_KEYS.map((key) => [key, 0])
+        ) as Record<keyof LayoutProfileMetrics, number>;
+
+        for (let pass = 0; pass < maxScriptReplayPasses; pass++) {
+            const { collaborators, scriptRuntimeCollaborator } = this.createLayoutCollaborators(simulationElements);
+            const session = new LayoutSession({
+                runtime: this.getRuntime(),
+                collaborators
+            });
+            this.lastLayoutSession = session;
+            session.notifySimulationStart();
+            const packagers = createPackagers(simulationElements, this, this.packagerFactory);
+            for (const packager of packagers) {
+                session.notifyActorSpawn(packager);
+            }
+            const contextBase = {
+                processor: this,
+                pageWidth,
+                pageHeight,
+                margins: this.config.layout.margins,
+                getPageExclusions: (pageIndex: number) => session.getPageExclusions(pageIndex),
+                publishActorSignal: (signal: any) => session.publishActorSignal(signal),
+                readActorSignals: (topic?: string) => session.getActorSignals(topic)
+            };
+            const pages = executeSimulationMarch(this, packagers, contextBase, session);
+            const finalized = session.finalizePages(pages);
+            for (const key of LayoutProcessor.SCRIPT_PROFILE_KEYS) {
+                aggregateScriptProfile[key] += Number(session.profile[key] || 0);
+            }
+
+            if (scriptRuntimeCollaborator?.consumeReplayRequested()) {
+                aggregateScriptProfile.scriptReplayPasses += 1;
+                if (pass >= maxScriptReplayPasses - 1) {
+                    throw new Error('[LayoutProcessor] Script requested replay more times than the current bounded limit allows.');
+                }
+                continue;
+            }
+
+            for (const key of LayoutProcessor.SCRIPT_PROFILE_KEYS) {
+                session.profile[key] = aggregateScriptProfile[key] as never;
+            }
+            const report = session.getSimulationReport();
+            if (report?.profile) {
+                for (const key of LayoutProcessor.SCRIPT_PROFILE_KEYS) {
+                    report.profile[key] = aggregateScriptProfile[key] as never;
+                }
+            }
+
+            return finalized;
         }
-        const contextBase = {
-            processor: this,
-            pageWidth,
-            pageHeight,
-            margins: this.config.layout.margins,
-            getPageExclusions: (pageIndex: number) => session.getPageExclusions(pageIndex),
-            publishActorSignal: (signal: any) => session.publishActorSignal(signal),
-            readActorSignals: (topic?: string) => session.getActorSignals(topic)
-        };
-        const pages = executeSimulationMarch(this, packagers, contextBase, session);
-        return session.finalizePages(pages);
+
+        throw new Error('[LayoutProcessor] Script replay loop exited unexpectedly.');
     }
 
     getLastSimulationReport(): SimulationReport | undefined {
@@ -973,8 +1027,16 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 
-    private createLayoutCollaborators(): Collaborator[] {
-        return [
+    private createLayoutCollaborators(elements: Element[]): {
+        collaborators: Collaborator[];
+        scriptRuntimeCollaborator: ScriptRuntimeCollaborator | null;
+    } {
+        const scriptRuntimeCollaborator = this.config.scripting
+            ? new ScriptRuntimeCollaborator(this.config.scripting, elements)
+            : null;
+        return {
+            scriptRuntimeCollaborator,
+            collaborators: [
             new KeepWithNextCollaborator(),
             new ContinuationMarkerCollaborator(),
             new PageStartExclusionCollaborator(this.config),
@@ -996,8 +1058,10 @@ export class LayoutProcessor extends TextProcessor {
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
                     this.layoutRegion(content, rect, pageIndex, sourceType, actorId)
-            })
-        ];
+            }),
+                ...(scriptRuntimeCollaborator ? [scriptRuntimeCollaborator] : [])
+            ]
+        };
     }
 
     private layoutRegion(

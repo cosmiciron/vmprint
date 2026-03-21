@@ -220,6 +220,19 @@ export class LayoutSession {
     readonly transitionsRuntime: TransitionsRuntime;
     readonly simulationClock = new SimulationClock();
     readonly profile: LayoutProfileMetrics = {
+        scriptHandlerCalls: 0,
+        scriptHandlerMs: 0,
+        scriptBeforeLayoutCalls: 0,
+        scriptBeforeLayoutMs: 0,
+        scriptResolveCalls: 0,
+        scriptResolveMs: 0,
+        scriptAfterSettleCalls: 0,
+        scriptAfterSettleMs: 0,
+        scriptReplayRequests: 0,
+        scriptReplayPasses: 0,
+        scriptDocQueryCalls: 0,
+        scriptSetContentCalls: 0,
+        scriptReplaceCalls: 0,
         speculativeBranchCalls: 0,
         speculativeBranchMs: 0,
         speculativeBranchAcceptedCalls: 0,

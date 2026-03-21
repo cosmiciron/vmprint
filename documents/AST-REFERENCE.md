@@ -613,6 +613,9 @@ interface PageRegionContent {
 | AST normalization | [engine/src/engine/document.ts](c:\Users\cosmic\Projects\vmprint\engine\src\engine\document.ts) |
 | Spatial fixture normalization helper | [engine/tests/harness/spatialize.ts](c:\Users\cosmic\Projects\vmprint\engine\tests\harness\spatialize.ts) |
 | Architecture and Runtime Internals | [documents/ENGINE-INTERNALS.md](c:\Users\cosmic\Projects\vmprint\documents\ENGINE-INTERNALS.md) |
+| Scripting architecture | [documents/SCRIPTING-ARCHITECTURE.md](c:\Users\cosmic\Projects\vmprint\documents\SCRIPTING-ARCHITECTURE.md) |
+| VPX architecture | [documents/VPX-ARCHITECTURE.md](c:\Users\cosmic\Projects\vmprint\documents\VPX-ARCHITECTURE.md) |
+| TOC and VPX design note | [documents/TOC-VPX.md](c:\Users\cosmic\Projects\vmprint\documents\TOC-VPX.md) |
 | Overlay system | [documents/OVERLAY.md](c:\Users\cosmic\Projects\vmprint\documents\OVERLAY.md) |
 | Standard fonts | [documents/STANDARD-FONTS.md](c:\Users\cosmic\Projects\vmprint\documents\STANDARD-FONTS.md) |
 | Testing guide | [documents/TESTING.md](c:\Users\cosmic\Projects\vmprint\documents\TESTING.md) |

@@ -2,8 +2,9 @@ import assert from 'node:assert/strict';
 import { Context, ContextImageOptions, ContextTextOptions } from '@vmprint/contracts';
 import { LayoutEngine } from '../src/engine/layout-engine';
 import { Renderer } from '../src/engine/renderer';
-import { Element, LayoutConfig, Page } from '../src/engine/types';
+import { Element, LayoutConfig, Page, DocumentInput } from '../src/engine/types';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
+import { CURRENT_DOCUMENT_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src';
 import { loadLocalFontManager, snapshotPages, MockContext } from './harness/engine-harness';
 import { logStep, check, checkAsync } from './harness/test-utils';
 
@@ -1781,6 +1782,215 @@ async function testBackgroundFillPaintersOrder() {
     );
 }
 
+async function testScriptedHelloWorldMutation() {
+    log('Scenario: document-level onBeforeLayout script mutates a named element');
+    const document: DocumentInput = {
+        documentVersion: CURRENT_DOCUMENT_VERSION,
+        layout: {
+            pageSize: { width: 320, height: 220 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
+            fontFamily: 'Arimo',
+            fontSize: 12,
+            lineHeight: 1.2
+        },
+        fonts: {
+            regular: 'Arimo'
+        },
+        styles: {
+            p: { marginBottom: 8 }
+        },
+        methods: {
+            helloWorld: [
+                'vm.doc.setContent("greeting", "Hello, world!");'
+            ]
+        },
+        onBeforeLayout: 'helloWorld',
+        elements: [
+            {
+                type: 'p',
+                content: 'Placeholder',
+                properties: {
+                    sourceId: 'greeting'
+                }
+            }
+        ]
+    };
+
+    const resolved = resolveDocumentPaths(document, 'memory://scripted-hello-world.json');
+    const config = toLayoutConfig(resolved, false);
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const pages = engine.simulate(document.elements);
+    const paragraphBoxes = pages.flatMap((page) => page.boxes.filter((box) => box.type === 'p'));
+    const renderedText = paragraphBoxes
+        .map((box) => getBoxText(box))
+        .join('\n');
+
+    _check(
+        'document-level onBeforeLayout script updates content before packager creation',
+        'rendered paragraph text changes from placeholder text to Hello, world!',
+        () => {
+            assert.match(renderedText, /Hello, world!/, 'expected scripted content to appear in rendered output');
+            assert.doesNotMatch(renderedText, /Placeholder/, 'expected placeholder text to be replaced before layout');
+        }
+    );
+
+    _check(
+        'scripted pre-layout mutation does not mutate caller-owned AST',
+        'the original document elements remain unchanged after simulation',
+        () => {
+            assert.equal(document.elements[0].content, 'Placeholder');
+        }
+    );
+}
+
+async function testElementLevelResolveHandler() {
+    log('Scenario: element-level onResolve handler mutates its own content');
+    const document: DocumentInput = {
+        documentVersion: CURRENT_DOCUMENT_VERSION,
+        layout: {
+            pageSize: { width: 320, height: 220 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
+            fontFamily: 'Arimo',
+            fontSize: 12,
+            lineHeight: 1.2
+        },
+        fonts: {
+            regular: 'Arimo'
+        },
+        styles: {
+            p: { marginBottom: 8 }
+        },
+        methods: {
+            resolveGreeting: [
+                'vm.self.setContent("Hello from onResolve!");'
+            ]
+        },
+        elements: [
+            {
+                type: 'p',
+                content: 'Placeholder',
+                properties: {
+                    sourceId: 'component-greeting',
+                    onResolve: 'resolveGreeting'
+                }
+            }
+        ]
+    };
+
+    const resolved = resolveDocumentPaths(document, 'memory://element-on-resolve.json');
+    const config = toLayoutConfig(resolved, false);
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const pages = engine.simulate(document.elements);
+    const paragraphBoxes = pages.flatMap((page) => page.boxes.filter((box) => box.type === 'p'));
+    const renderedText = paragraphBoxes
+        .map((box) => getBoxText(box))
+        .join('\n');
+
+    _check(
+        'element-level onResolve script updates its own content via vm.self',
+        'rendered paragraph text changes from placeholder text to Hello from onResolve!',
+        () => {
+            assert.match(renderedText, /Hello from onResolve!/, 'expected onResolve scripted content to appear');
+            assert.doesNotMatch(renderedText, /Placeholder/, 'expected placeholder text to be replaced by onResolve');
+        }
+    );
+
+    _check(
+        'element-level scripting preserves caller-owned input immutability',
+        'the original element content remains unchanged after simulation',
+        () => {
+            assert.equal(document.elements[0].content, 'Placeholder');
+        }
+    );
+}
+
+async function testAfterSettleScriptWithReplay() {
+    log('Scenario: document-level onAfterSettle script reads settled headings and requests one replay');
+    const document: DocumentInput = {
+        documentVersion: CURRENT_DOCUMENT_VERSION,
+        layout: {
+            pageSize: { width: 320, height: 220 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
+            fontFamily: 'Arimo',
+            fontSize: 12,
+            lineHeight: 1.2
+        },
+        fonts: {
+            regular: 'Arimo'
+        },
+        styles: {
+            h1: { marginBottom: 8, fontSize: 18, fontWeight: 'bold' },
+            p: { marginBottom: 8 }
+        },
+        methods: {
+            summarizeHeadings: [
+                'const box = vm.doc.get("summary");',
+                'if (!box) return;',
+                'const headings = vm.report.getHeadings();',
+                'const next = `Heading count: ${headings.length}`;',
+                'if (box.content !== next) {',
+                '  vm.doc.setContent("summary", next);',
+                '  vm.requestReplay();',
+                '}'
+            ]
+        },
+        onAfterSettle: 'summarizeHeadings',
+        elements: [
+            {
+                type: 'p',
+                content: 'Heading count: pending',
+                properties: {
+                    sourceId: 'summary'
+                }
+            },
+            {
+                type: 'h1',
+                content: 'Chapter One',
+                properties: {
+                    sourceId: 'chapter-one',
+                    semanticRole: 'h1'
+                }
+            },
+            {
+                type: 'p',
+                content: 'Body paragraph.'
+            }
+        ]
+    };
+
+    const resolved = resolveDocumentPaths(document, 'memory://after-settle-replay.json');
+    const config = toLayoutConfig(resolved, false);
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const pages = engine.simulate(document.elements);
+    const renderedText = pages
+        .flatMap((page) => page.boxes.filter((box) => box.type === 'p' || box.type === 'h1'))
+        .map((box) => getBoxText(box))
+        .join('\n');
+
+    _check(
+        'onAfterSettle can read heading telemetry and trigger one replay',
+        'summary paragraph reflects settled heading count after replay',
+        () => {
+            assert.match(renderedText, /Heading count: 1/, 'expected replayed summary content to reflect one heading');
+            assert.doesNotMatch(renderedText, /Heading count: pending/, 'expected pending summary to be replaced after replay');
+        }
+    );
+
+    _check(
+        'post-settlement script replay keeps caller-owned input immutable',
+        'the original input document is unchanged after simulation',
+        () => {
+            assert.equal(document.elements[0].content, 'Heading count: pending');
+        }
+    );
+}
+
 async function run() {
     const LocalFontManager = await loadLocalFontManager();
     setDefaultEngineRuntime(createEngineRuntime({ fontManager: new LocalFontManager() }));
@@ -1810,6 +2020,9 @@ async function run() {
     await testWidowOrphanKeepWithNextComposition();
     await testGlobalStateIsolation();
     await testBackgroundFillPaintersOrder();
+    await testScriptedHelloWorldMutation();
+    await testElementLevelResolveHandler();
+    await testAfterSettleScriptWithReplay();
     console.log('[flat-pipeline.spec] OK');
 }
 

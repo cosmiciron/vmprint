@@ -10,12 +10,13 @@ import type {
 
 export const CURRENT_DOCUMENT_VERSION: VmprintDocumentVersion = '1.1';
 export const CURRENT_IR_VERSION: VmprintIRVersion = '1.0';
+const YAML_FRONT_MATTER_OPEN = '---';
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
     return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
-const ROOT_KEYS = new Set(['documentVersion', 'layout', 'fonts', 'styles', 'elements', 'header', 'footer', 'printPipeline', 'debug']);
+const ROOT_KEYS = new Set(['documentVersion', 'layout', 'fonts', 'styles', 'elements', 'header', 'footer', 'printPipeline', 'methods', 'onBeforeLayout', 'onAfterSettle', 'debug']);
 const PAGE_RESERVATION_SELECTOR_VALUES = new Set(['first', 'odd', 'even', 'all']);
 const LAYOUT_KEYS = new Set([
     'pageSize',
@@ -68,6 +69,7 @@ const ELEMENT_PROPERTIES_KEYS = new Set([
     'semanticRole',
     'reflowKey',
     'keepWithNext',
+    'onResolve',
     'marginTop',
     'marginBottom',
     'paginationContinuation',
@@ -814,6 +816,20 @@ function validateDocumentContract(document: DocumentInput, documentPath: string)
     if (document.header !== undefined) validatePageRegionDefinition(document.header, 'header', documentPath);
     if (document.footer !== undefined) validatePageRegionDefinition(document.footer, 'footer', documentPath);
     if (document.printPipeline !== undefined) validatePrintPipeline(document.printPipeline, documentPath);
+    if (document.onBeforeLayout !== undefined) {
+        assertStringAt(document.onBeforeLayout, 'onBeforeLayout', documentPath);
+    }
+    if (document.onAfterSettle !== undefined) {
+        assertStringAt(document.onAfterSettle, 'onAfterSettle', documentPath);
+    }
+    if (document.methods !== undefined) {
+        const methods = assertPlainObjectAt(document.methods, 'methods', documentPath);
+        for (const [methodName, methodValue] of Object.entries(methods)) {
+            if (typeof methodValue === 'string') continue;
+            if (Array.isArray(methodValue) && methodValue.every((entry) => typeof entry === 'string')) continue;
+            contractError(documentPath, `methods.${methodName}`, 'expected a string or string array.');
+        }
+    }
 }
 
 function deepSortObject<T>(value: T): T {
@@ -996,6 +1012,174 @@ function normalizeElementNode(element: Element): Element {
     return normalized;
 }
 
+function parseYamlScalar(raw: string): unknown {
+    const value = raw.trim();
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    if (value === 'null') return null;
+    if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
+    if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith('\'') && value.endsWith('\''))
+    ) {
+        return value.slice(1, -1);
+    }
+    return value;
+}
+
+function countLeadingSpaces(value: string): number {
+    let count = 0;
+    while (count < value.length && value[count] === ' ') count += 1;
+    return count;
+}
+
+function parseYamlBlock(
+    lines: string[],
+    startIndex: number,
+    parentIndent: number,
+    documentPath: string
+): { value: Record<string, unknown>; nextIndex: number } {
+    const output: Record<string, unknown> = {};
+    let index = startIndex;
+
+    while (index < lines.length) {
+        const rawLine = lines[index];
+        if (!rawLine.trim() || rawLine.trimStart().startsWith('#')) {
+            index += 1;
+            continue;
+        }
+
+        const indent = countLeadingSpaces(rawLine);
+        if (indent <= parentIndent) break;
+        if (indent !== parentIndent + 2) {
+            throw new Error(
+                `[document] Front matter in "${documentPath}" is invalid at line ${index + 1}: unexpected indentation.`
+            );
+        }
+
+        const line = rawLine.slice(indent);
+        const separatorIndex = line.indexOf(':');
+        if (separatorIndex <= 0) {
+            throw new Error(
+                `[document] Front matter in "${documentPath}" is invalid at line ${index + 1}: expected "key: value".`
+            );
+        }
+
+        const key = line.slice(0, separatorIndex).trim();
+        const remainder = line.slice(separatorIndex + 1).trim();
+        if (!key) {
+            throw new Error(
+                `[document] Front matter in "${documentPath}" is invalid at line ${index + 1}: empty key.`
+            );
+        }
+
+        if (remainder === '|') {
+            const blockIndent = indent + 2;
+            const blockLines: string[] = [];
+            index += 1;
+            while (index < lines.length) {
+                const candidate = lines[index];
+                if (!candidate.trim()) {
+                    blockLines.push('');
+                    index += 1;
+                    continue;
+                }
+                const candidateIndent = countLeadingSpaces(candidate);
+                if (candidateIndent < blockIndent) break;
+                blockLines.push(candidate.slice(blockIndent));
+                index += 1;
+            }
+            output[key] = blockLines.join('\n');
+            continue;
+        }
+
+        if (remainder === '') {
+            const nested = parseYamlBlock(lines, index + 1, indent, documentPath);
+            output[key] = nested.value;
+            index = nested.nextIndex;
+            continue;
+        }
+
+        output[key] = parseYamlScalar(remainder);
+        index += 1;
+    }
+
+    return { value: output, nextIndex: index };
+}
+
+function extractYamlFrontMatter(
+    source: string,
+    documentPath: string
+): { frontMatter: Record<string, unknown>; body: string } {
+    const normalized = source.replace(/^\uFEFF/, '');
+    if (!normalized.startsWith(`${YAML_FRONT_MATTER_OPEN}\n`) && !normalized.startsWith(`${YAML_FRONT_MATTER_OPEN}\r\n`)) {
+        return { frontMatter: {}, body: normalized };
+    }
+
+    const lines = normalized.replace(/\r\n/g, '\n').split('\n');
+    let closingIndex = -1;
+    for (let index = 1; index < lines.length; index += 1) {
+        if (lines[index].trim() === YAML_FRONT_MATTER_OPEN) {
+            closingIndex = index;
+            break;
+        }
+    }
+    if (closingIndex < 0) {
+        throw new Error(`[document] Front matter in "${documentPath}" is missing a closing "---" line.`);
+    }
+
+    const frontMatterLines = lines.slice(1, closingIndex);
+    const parsed = parseYamlBlock(frontMatterLines, 0, -2, documentPath).value;
+    const body = lines.slice(closingIndex + 1).join('\n').trim();
+    return {
+        frontMatter: parsed,
+        body
+    };
+}
+
+export function parseDocumentSourceText(source: string, documentPath: string = '<memory>'): DocumentInput {
+    const { frontMatter, body } = extractYamlFrontMatter(source, documentPath);
+    if (!body) {
+        throw new Error(`[document] Document source "${documentPath}" does not contain a JSON document body.`);
+    }
+
+    let parsedBody: unknown;
+    try {
+        parsedBody = JSON.parse(body);
+    } catch (error) {
+        throw new Error(
+            `[document] Document source "${documentPath}" contains invalid JSON body: ${error instanceof Error ? error.message : String(error)}`
+        );
+    }
+
+    if (!isPlainObject(parsedBody)) {
+        throw new Error(`[document] Document source "${documentPath}" must parse to a root object.`);
+    }
+
+    if (!isPlainObject(frontMatter)) {
+        return parsedBody as unknown as DocumentInput;
+    }
+
+    const merged = {
+        ...parsedBody,
+        ...frontMatter,
+        methods: {
+            ...(isPlainObject((parsedBody as Record<string, unknown>).methods) ? (parsedBody as Record<string, unknown>).methods as Record<string, unknown> : {}),
+            ...(isPlainObject(frontMatter.methods) ? frontMatter.methods as Record<string, unknown> : {})
+        }
+    } as Record<string, unknown>;
+
+    if (!isPlainObject(frontMatter.methods) && merged.methods && Object.keys(merged.methods).length === 0) {
+        delete merged.methods;
+    }
+
+    return merged as unknown as DocumentInput;
+}
+
+export function resolveDocumentSourceText(source: string, documentPath: string): DocumentIR {
+    return resolveDocumentPaths(parseDocumentSourceText(source, documentPath), documentPath);
+}
+
 export function normalizeDocumentToIR(document: DocumentInput, documentPath: string): DocumentIR {
     const sourceVersion = String(document?.documentVersion || '').trim();
     if (sourceVersion !== CURRENT_DOCUMENT_VERSION) {
@@ -1052,7 +1236,10 @@ export function normalizeDocumentToIR(document: DocumentInput, documentPath: str
         elements: normalizedElements,
         header: normalizePageRegionDefinition(document.header as Record<string, unknown> | undefined) as any,
         footer: normalizePageRegionDefinition(document.footer as Record<string, unknown> | undefined) as any,
-        printPipeline: document.printPipeline ? deepSortObject(document.printPipeline) as any : undefined
+        printPipeline: document.printPipeline ? deepSortObject(document.printPipeline) as any : undefined,
+        methods: document.methods ? deepSortObject(document.methods) as any : undefined,
+        onBeforeLayout: document.onBeforeLayout,
+        onAfterSettle: document.onAfterSettle
     };
 }
 
@@ -1107,6 +1294,11 @@ export function toLayoutConfig(document: DocumentIR, debug: boolean): LayoutConf
         header: document.header,
         footer: document.footer,
         printPipeline: document.printPipeline,
+        scripting: document.methods || document.onBeforeLayout || document.onAfterSettle ? {
+            methods: document.methods,
+            onBeforeLayout: document.onBeforeLayout,
+            onAfterSettle: document.onAfterSettle
+        } : undefined,
         preloadFontFamilies: Array.from(new Set([
             ...collectElementFontFamilies(document.elements),
             ...collectRegionFontFamilies(document.header),

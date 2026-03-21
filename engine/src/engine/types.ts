@@ -7,6 +7,13 @@ export type ImageFitMode = 'contain' | 'fill';
 export type PageReservationSelector = 'first' | 'odd' | 'even' | 'all';
 export type VmprintDocumentVersion = '1.1';
 export type VmprintIRVersion = '1.0';
+export type ScriptMethodSource = string | string[];
+
+export interface LayoutScriptingConfig {
+    methods?: Record<string, ScriptMethodSource>;
+    onBeforeLayout?: string;
+    onAfterSettle?: string;
+}
 
 export type ShapedGlyph = {
     id: number;
@@ -254,6 +261,7 @@ export interface ElementProperties extends Record<string, any> {
     semanticRole?: string;
     reflowKey?: string;
     keepWithNext?: boolean;
+    onResolve?: string;
     marginTop?: number;
     marginBottom?: number;
     paginationContinuation?: Record<string, any>;
@@ -446,6 +454,7 @@ export interface LayoutConfig {
             includeTitle?: boolean;
         };
     };
+    scripting?: LayoutScriptingConfig;
     preloadFontFamilies?: string[];
     debug?: boolean;
 }
@@ -459,6 +468,9 @@ export interface DocumentInput {
     header?: PageRegionDefinition;
     footer?: PageRegionDefinition;
     printPipeline?: LayoutConfig['printPipeline'];
+    methods?: Record<string, ScriptMethodSource>;
+    onBeforeLayout?: string;
+    onAfterSettle?: string;
     debug?: boolean;
 }
 
