@@ -40,6 +40,7 @@ import {
 } from './simulation-report';
 import { SourcePositionArtifactCollaborator } from './collaborators/source-position-artifact-collaborator';
 import { ScriptRuntimeCollaborator } from './collaborators/script-runtime-collaborator';
+import { ScriptRuntimeHost } from './script-runtime-host';
 import { TransformCapabilityArtifactCollaborator } from './collaborators/transform-capability-artifact-collaborator';
 import { TransformArtifactCollaborator } from './collaborators/transform-artifact-collaborator';
 import { ZoneDebugOverlayCollaborator } from './collaborators/zone-debug-overlay-collaborator';
@@ -54,6 +55,7 @@ import {
 import { buildTableModelFromNormalizedTable, normalizeTableElement } from './normalized-table';
 import { DropCapPackager } from './packagers/dropcap-packager';
 import { createPackagers, ExternalPackagerFactory } from './packagers/create-packagers';
+import { ScriptDocumentPackager } from './packagers/script-document-packager';
 import { executeSimulationMarch } from './packagers/execute-simulation-march';
 import type { PackagerContext } from './packagers/packager-types';
 
@@ -61,27 +63,34 @@ import type { PackagerContext } from './packagers/packager-types';
 export class LayoutProcessor extends TextProcessor {
     private static readonly REGION_LAYOUT_HEIGHT = 1000000;
     private lastLayoutSession: LayoutSession | null = null;
+    private activeScriptRuntimeHost: ScriptRuntimeHost | null = null;
     private packagerFactory: ExternalPackagerFactory | undefined = undefined;
     private static readonly SCRIPT_PROFILE_KEYS: Array<keyof LayoutProfileMetrics> = [
-        'scriptHandlerCalls',
-        'scriptHandlerMs',
-        'scriptBeforeLayoutCalls',
-        'scriptBeforeLayoutMs',
-        'scriptResolveCalls',
-        'scriptResolveMs',
-        'scriptAfterSettleCalls',
-        'scriptAfterSettleMs',
-        'scriptReplayRequests',
-        'scriptReplayPasses',
-        'scriptDocQueryCalls',
-        'scriptSetContentCalls',
-        'scriptReplaceCalls',
-        'scriptInsertCalls',
-        'scriptRemoveCalls'
+        'handlerCalls',
+        'handlerMs',
+        'loadCalls',
+        'loadMs',
+        'createCalls',
+        'createMs',
+        'readyCalls',
+        'readyMs',
+        'replayRequests',
+        'replayPasses',
+        'docQueryCalls',
+        'setContentCalls',
+        'replaceCalls',
+        'insertCalls',
+        'removeCalls',
+        'messageSendCalls',
+        'messageHandlerCalls'
     ];
 
     setPackagerFactory(factory: ExternalPackagerFactory | undefined): void {
         this.packagerFactory = factory;
+    }
+
+    getActiveScriptRuntimeHost(): ScriptRuntimeHost | null {
+        return this.activeScriptRuntimeHost;
     }
 
     private cloneElementsForSimulation(elements: Element[]): Element[] {
@@ -528,7 +537,8 @@ export class LayoutProcessor extends TextProcessor {
         ) as Record<keyof LayoutProfileMetrics, number>;
 
         for (let pass = 0; pass < maxScriptReplayPasses; pass++) {
-            const { collaborators, scriptRuntimeCollaborator } = this.createLayoutCollaborators(simulationElements);
+            const { collaborators, scriptRuntimeCollaborator, scriptRuntimeHost } = this.createLayoutCollaborators(simulationElements);
+            this.activeScriptRuntimeHost = scriptRuntimeHost;
             const session = new LayoutSession({
                 runtime: this.getRuntime(),
                 collaborators
@@ -536,6 +546,11 @@ export class LayoutProcessor extends TextProcessor {
             this.lastLayoutSession = session;
             session.notifySimulationStart();
             const packagers = createPackagers(simulationElements, this, this.packagerFactory);
+            let scriptDocumentPackager: ScriptDocumentPackager | null = null;
+            if (scriptRuntimeHost?.hasDocumentAfterSettleHandler()) {
+                scriptDocumentPackager = new ScriptDocumentPackager(scriptRuntimeHost, simulationElements);
+                packagers.push(scriptDocumentPackager);
+            }
             for (const packager of packagers) {
                 session.notifyActorSpawn(packager);
             }
@@ -554,8 +569,12 @@ export class LayoutProcessor extends TextProcessor {
                 aggregateScriptProfile[key] += Number(session.profile[key] || 0);
             }
 
-            if (scriptRuntimeCollaborator?.consumeReplayRequested()) {
-                aggregateScriptProfile.scriptReplayPasses += 1;
+            if (
+                scriptRuntimeCollaborator?.consumeReplayRequested()
+                || scriptDocumentPackager?.consumeReplayRequested()
+                || session.consumeScriptReplayRequested()
+            ) {
+                aggregateScriptProfile.replayPasses += 1;
                 if (pass >= maxScriptReplayPasses - 1) {
                     throw new Error('[LayoutProcessor] Script requested replay more times than the current bounded limit allows.');
                 }
@@ -1032,11 +1051,16 @@ export class LayoutProcessor extends TextProcessor {
     private createLayoutCollaborators(elements: Element[]): {
         collaborators: Collaborator[];
         scriptRuntimeCollaborator: ScriptRuntimeCollaborator | null;
+        scriptRuntimeHost: ScriptRuntimeHost | null;
     } {
-        const scriptRuntimeCollaborator = this.config.scripting
-            ? new ScriptRuntimeCollaborator(this.config.scripting, elements)
+        const scriptRuntimeHost = this.config.scripting
+            ? new ScriptRuntimeHost(this.config.scripting)
+            : null;
+        const scriptRuntimeCollaborator = scriptRuntimeHost
+            ? new ScriptRuntimeCollaborator(scriptRuntimeHost, elements)
             : null;
         return {
+            scriptRuntimeHost,
             scriptRuntimeCollaborator,
             collaborators: [
             new KeepWithNextCollaborator(),

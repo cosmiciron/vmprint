@@ -252,50 +252,74 @@ export class ActorCommunicationRuntime<
         };
 
         const pendingAwakened = new Set(this.awakenedObserverIds);
+        const processed = new Set<string>();
+
+        while (true) {
+            let processedAny = false;
+
+            for (const observer of this.observerRegistry.values()) {
+                if (processed.has(observer.actorId)) continue;
+
+                const shouldProcess =
+                    this.broadlyPolledObserverIds.has(observer.actorId)
+                    || pendingAwakened.has(observer.actorId);
+                if (!shouldProcess) {
+                    continue;
+                }
+
+                processedAny = true;
+                processed.add(observer.actorId);
+                pendingAwakened.delete(observer.actorId);
+
+                const startedAt = performance.now();
+                this.callbacks.recordProfile('actorUpdateCalls', 1);
+                const result = normalizeObservationResult(
+                    observer.updateCommittedState?.(context)
+                    ?? observer.observeCommittedSignals?.(context)
+                );
+                this.callbacks.recordProfile('actorUpdateMs', performance.now() - startedAt);
+
+                if (!result || !result.changed) {
+                    this.callbacks.recordProfile('actorUpdateNoopCalls', 1);
+                } else {
+                    if (result.updateKind === 'geometry') {
+                        this.callbacks.recordProfile('actorUpdateGeometryCalls', 1);
+                    } else if (result.updateKind === 'content-only') {
+                        this.callbacks.recordProfile('actorUpdateContentOnlyCalls', 1);
+                        contentOnlyActors.push(observer);
+                    }
+
+                    changed = true;
+                    if (result.geometryChanged) {
+                        geometryChanged = true;
+                        if (isEarlierFrontier(result, earliestAffectedFrontier)) {
+                            earliestAffectedFrontier = result.earliestAffectedFrontier;
+                        }
+                    }
+                }
+            }
+
+            for (const actorId of this.awakenedObserverIds) {
+                if (!processed.has(actorId)) {
+                    pendingAwakened.add(actorId);
+                }
+            }
+
+            if (!processedAny && pendingAwakened.size === 0) {
+                break;
+            }
+            if (!processedAny) {
+                break;
+            }
+        }
 
         for (const observer of this.observerRegistry.values()) {
-            const shouldProcess =
-                this.broadlyPolledObserverIds.has(observer.actorId)
-                || pendingAwakened.has(observer.actorId);
-            if (!shouldProcess) {
+            if (!processed.has(observer.actorId)) {
                 this.callbacks.recordProfile('actorActivationDormantSkips', 1);
-                continue;
-            }
-
-            const startedAt = performance.now();
-            this.callbacks.recordProfile('actorUpdateCalls', 1);
-            const result = normalizeObservationResult(
-                observer.updateCommittedState?.(context)
-                ?? observer.observeCommittedSignals?.(context)
-            );
-            this.callbacks.recordProfile('actorUpdateMs', performance.now() - startedAt);
-            pendingAwakened.delete(observer.actorId);
-
-            if (!result || !result.changed) {
-                this.callbacks.recordProfile('actorUpdateNoopCalls', 1);
-                continue;
-            }
-
-            if (result.updateKind === 'geometry') {
-                this.callbacks.recordProfile('actorUpdateGeometryCalls', 1);
-            } else if (result.updateKind === 'content-only') {
-                this.callbacks.recordProfile('actorUpdateContentOnlyCalls', 1);
-                contentOnlyActors.push(observer);
-            }
-
-            changed = true;
-            if (!result.geometryChanged) continue;
-
-            geometryChanged = true;
-            if (isEarlierFrontier(result, earliestAffectedFrontier)) {
-                earliestAffectedFrontier = result.earliestAffectedFrontier;
             }
         }
 
         this.awakenedObserverIds.clear();
-        for (const actorId of pendingAwakened) {
-            this.awakenedObserverIds.delete(actorId);
-        }
 
         return { changed, geometryChanged, earliestAffectedFrontier, contentOnlyActors };
     }
@@ -426,7 +450,21 @@ function isEarlierFrontier(
         return false;
     }
 
-    return !current || result.earliestAffectedFrontier.pageIndex < current.pageIndex;
+    if (!current) {
+        return true;
+    }
+
+    if (result.earliestAffectedFrontier.pageIndex !== current.pageIndex) {
+        return result.earliestAffectedFrontier.pageIndex < current.pageIndex;
+    }
+
+    const nextActorIndex = Number.isFinite(result.earliestAffectedFrontier.actorIndex)
+        ? Number(result.earliestAffectedFrontier.actorIndex)
+        : Number.POSITIVE_INFINITY;
+    const currentActorIndex = Number.isFinite(current.actorIndex)
+        ? Number(current.actorIndex)
+        : Number.POSITIVE_INFINITY;
+    return nextActorIndex < currentActorIndex;
 }
 
 function sortCheckpointsDescending<

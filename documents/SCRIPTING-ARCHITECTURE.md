@@ -1,531 +1,196 @@
-# Scripting Architecture
+# VMPrint Scripting Architecture
 
-This document defines the near-term programmable behavior model for VMPrint.
+## Why This Exists
 
-It supersedes the earlier focus on `VPX` as the immediate implementation path. The `VPX` and TOC design notes remain useful backgrounders, but the practical next step is a simpler, more approachable scripting layer.
+VMPrint always had enough AST power to render rich static output.
 
-The short version:
+The real missing piece was different:
 
-- the real problem is not TOC itself
-- the real problem is programmatic document behavior
-- VMPrint should expose that behavior through event handlers
-- handlers should be easy to declare in document JSON
-- method bodies should live in a friendly authoring envelope such as YAML front matter
-- the engine should route and execute those handlers through modular collaborators
-- the engine itself should own the authored-text parsing contract for that format
+- some document features need programmatic control
+- some need settled document facts
+- some need elements to coordinate with each other
+- and none of that should force the AST to become a scripting language
 
----
+So the scripting layer exists to provide a humane programmable surface over the engine's native dynamic model.
 
-## 1. Why This Exists
+## Design Goal
 
-This effort began with TOC, but TOC turned out to be only the first visible symptom of a broader problem.
+The scripting model should be shaped around user intent and perception.
 
-The core issue was never:
+That means:
 
-- the AST cannot describe a nicely formatted TOC
+- document, page, and element concepts
+- events
+- messages
+- direct helper methods
 
-The real issue was:
+That does not mean:
 
-- some content cannot be created declaratively up front
-- it requires programmatic control tied to document realization
+- engine jargon
+- exposed refresh plumbing
+- internal lifecycle names
+- low-level runtime objects as the public language
 
-Examples include:
+## Current Mental Model
 
-- collecting headings after layout
-- reading settled page facts
-- assembling derived content
-- replacing or augmenting content at the correct position in flow
+There are two kinds of handlers:
 
-That is the class of problem this document addresses.
+- event handlers
+- message handlers
 
----
+Event handlers are raised by the system.
+Message handlers are raised by other document participants.
 
-## 2. Product Direction
+### Event Handlers
 
-VMPrint should not feel like a pile of powerful machine parts that only advanced consumers can assemble into something useful.
+Current surface:
 
-Developers need:
+- `doc_onLoad()`
+- `doc_onReady()`
+- `<elementName>_onCreate()`
 
-- a simple AST
-- a simple programmable behavior layer
-- an immediate visual payoff
+### Message Handlers
 
-That means the near-term priority is not "ship every built-in feature."
+Current surface:
 
-It is:
+- `<elementName>_onMessage(from, msg)`
 
-- make the engine programmable in a way that is easy to grasp
-- let developers build interesting dynamic behaviors quickly
-- prove the platform through that capability
+This split is intentional:
 
-TOC is still an important target, but as a proof-of-power use case rather than the first thing that must be fully productized.
+- events describe what happened in the system
+- messages let document participants build more complex logic in a simple, direct way
 
----
+## Handler Binding
 
-## 3. Background: Why We Are Setting VPX Aside
+Bindings are inferred by naming convention.
 
-The earlier `VPX` work was valuable because it clarified several things:
+The document JSON does not need to redundantly declare:
 
-- higher-order document capabilities should not bloat the core AST
-- some features need runtime knowledge
-- host-attached extension capability is a useful idea
+- `onXxx`
+- plus a method name
 
-However, `VPX` as the immediate surface still asks too much of developers:
+Instead, the method name itself is the binding.
 
-- create modules
-- register them with the host
-- think in terms of extension plumbing
+Examples:
 
-That is too much friction for the first success experience.
+- `doc_onLoad()`
+- `summary_onMessage(from, msg)`
+- `tocTitle_onCreate()`
 
-So for now:
+## Script Objects
 
-- the `VPX` and TOC notes are background documents
-- the current implementation direction is document scripting
+The user-facing objects are:
 
-If desired, future `VPX` concepts may later be reinterpreted as packaged scripting behaviors or standard-library modules built on top of the scripting system.
+- `doc`
+- `page`
+- `self`
 
----
+And the current helper functions are:
 
-## 4. Core Model
+- `sendMessage(recipient, msg)`
+- `findElementByName(name)`
+- `findElementsByRole(role)`
+- `findElementsByType(type)`
+- `setContent(target, value)`
+- `replaceElement(target, elements)`
+- `insertElementsBefore(target, elements)`
+- `insertElementsAfter(target, elements)`
+- `deleteElement(target)`
 
-The scripting model should follow a simple event-handler pattern inspired by the original Visual Basic model:
+`self` is always the current receiver.
+Event parameters are only for event payload.
 
-- document-level event handlers
-- element-level event handlers
-- named methods implemented separately
+## Identity
 
-This is intentionally not modeled after HTML plus JavaScript.
+Authored scripts should think in terms of element names, not internal engine source identifiers.
 
-The goal is:
+So the preferred authored identity is:
 
-- explicit event binding
-- low conceptual stress
-- easy discoverability
-- no need to think about plugin contracts just to get started
+- `name`
 
----
+Internally the engine may still normalize that into its own stable source identity system.
+That is an implementation detail.
 
-## 5. Event Declaration
+## Messages
 
-### 5.1 Document-Level Events
+Messages are the user-friendly scripting abstraction over the engine's deeper communication machinery.
 
-The long-term model may include several global lifecycle events.
+The engine may use bulletin boards, actor bridges, or signal transport internally.
+Scripters should not need to think about that.
 
-The document-level events currently implemented are:
+They should only need:
 
-- `onBeforeLayout`
-- `onAfterSettle`
+- `sendMessage(recipient, msg)`
+- `onMessage(from, msg)`
 
-Future candidates include:
+`msg` is a structured message object.
 
-- `onDocumentStart`
-- `onDocumentComplete`
+Current core shape:
 
-Example:
+- `msg.name`
+- `msg.payload`
 
-```json
-{
-  "onAfterSettle": "buildToc"
-}
-```
+## Update Semantics
 
-### 5.2 Element-Level Events
+The scripting layer should not burden authors with replay management.
 
-Elements may declare handlers through their properties.
+The public model is:
 
-The element-level event currently implemented is:
+- change content
+- send messages
+- react to events
 
-- `onResolve`
-
-Future candidates include:
-
-- `onCreate`
-- `onUpdate`
-- `onSettled`
-
-Example:
-
-```json
-{
-  "type": "p",
-  "content": "",
-  "properties": {
-    "sourceId": "main-toc",
-    "onResolve": "buildToc"
-  }
-}
-```
-
-The exact event set can grow over time. The scripting model itself should remain stable while capabilities and available events expand.
-
----
-
-## 6. Method Binding
-
-Handlers should point to methods by name.
-
-Example:
-
-```json
-{
-  "onAfterSettle": "buildToc"
-}
-```
-
-This is better than embedding raw code strings inside arbitrary JSON properties.
-
-The method implementation lives elsewhere in the document package, not inline at every call site.
-
-This keeps:
-
-- event declarations simple
-- behavior discoverable
-- the document easier to read
-
----
-
-## 7. Method Authoring Format
-
-Raw JavaScript embedded directly inside JSON strings is too fragile.
-
-It is easy to break with:
-
-- mismatched quotes
-- escaping noise
-- multiline formatting problems
-
-So the recommended authoring model is:
-
-- event declarations in JSON
-- method bodies in a friendlier envelope
-- that authored envelope parsed by the engine itself, not by a host-specific wrapper
-
-The preferred first format is YAML front matter using block scalars.
-
-Example:
-
-```yaml
----
-methods:
-  buildToc: |
-    const headings = vm.report.getHeadings();
-    const items = headings.map(h => ({
-      type: "p",
-      content: `${h.heading} ${h.pageIndex + 1}`
-    }));
-    vm.doc.replace("main-toc", items);
-    vm.requestReplay();
----
-```
-
-This gives authors a sane way to write code while keeping the runtime model simple.
-
-The boundary matters:
-
-- the CLI may read source text from disk
-- but the engine must own the parsing of YAML front matter plus JSON body
-- otherwise the engine becomes dependent on one host environment and loses its self-sustained nature
-
-### 7.1 Current Authored Shape
-
-The currently implemented authored shape is:
-
-1. optional YAML front matter
-2. followed by a JSON document body
-
-The front matter is currently used primarily for `methods`.
-
-Example:
-
-```text
----
-methods:
-  helloWorld: |
-    vm.doc.setContent('greeting', 'Hello, world!');
----
-{
-  "documentVersion": "1.1",
-  "onBeforeLayout": "helloWorld",
-  "layout": {
-    "pageSize": { "width": 320, "height": 220 },
-    "margins": { "top": 20, "right": 20, "bottom": 20, "left": 20 },
-    "fontFamily": "Arimo",
-    "fontSize": 12,
-    "lineHeight": 1.2
-  },
-  "fonts": {
-    "regular": "Arimo"
-  },
-  "styles": {
-    "p": { "marginBottom": 8 }
-  },
-  "elements": [
-    {
-      "type": "p",
-      "content": "Pending greeting",
-      "properties": {
-        "sourceId": "greeting"
-      }
-    }
-  ]
-}
-```
-
-The engine merges front-matter methods and JSON body fields into one normalized document contract before validation and layout.
-
----
-
-## 8. Query and Mutation Model
-
-For the growing concrete surface, see [SCRIPTING-API.md](c:\Users\cosmic\Projects\vmprint\documents\SCRIPTING-API.md).
-
-For scripting to be useful, handlers need a small but powerful document API.
-
-The first scripting surface should support:
-
-- query by id
-- query by role
-- query by type
-- read and write content
-- replace nodes
-- request replay or resettlement when geometry changes
-
-The surface currently implemented is:
-
-- `vm.doc.get(sourceId)`
-- `vm.doc.findByRole(role)`
-- `vm.doc.findByType(type)`
-- `vm.doc.setContent(sourceId, content)`
-- `vm.doc.replace(sourceId, elements)`
-- `vm.doc.insertBefore(sourceId, elements)`
-- `vm.doc.insertAfter(sourceId, elements)`
-- `vm.doc.remove(sourceId)`
-- `vm.self.setContent(...)`
-- `vm.self.replace(...)`
-- `vm.report.getPageCount()`
-- `vm.report.getHeadings()`
-- `vm.report.getSourcePositions()`
-- `vm.requestReplay()`
-
-The engine already tracks much of the identity needed for this through:
-
-- `sourceId`
-- `semanticRole`
-- element `type`
-- settled artifacts such as heading telemetry and source positions
-
-So the first scripting API should wrap existing identity surfaces rather than invent a second identity model.
-
-The practical naming model should be:
-
-- `sourceId` is the first-class element name
-
-This gives the scripting layer something close to the old VB experience of naming elements of interest without new conceptual baggage.
-
----
-
-## 9. Execution Model
-
-Scripts should execute as named event handlers called by the engine at well-defined lifecycle points.
-
-The engine should drive execution. Scripts should not own the loop.
-
-Conceptually:
-
-1. the document declares event bindings
-2. the document package provides named methods
-3. the engine reaches a lifecycle moment
-4. the matching handler is invoked
-5. the handler uses a constrained VM facade
-6. the handler may request replay if it changes geometry
-
-The current implementation already routes:
-
-- document-level `onBeforeLayout`
-- element-level `onResolve`
-- document-level `onAfterSettle`
-
-This works well with the engine as it exists today because:
-
-- the implementation language is already TypeScript/JavaScript-friendly
-- the kernel already owns a clock
-- packagers already have `update()` capacity where needed
-
-So the missing piece is not raw dynamism. The missing piece is a disciplined execution surface.
-
----
-
-## 10. Script State and Replay
-
-Script state should not be treated as an external sidecar memory bag.
-
-If scripted behavior participates in document realization, then its mutable state belongs to the same simulation truth model as other active runtime state.
-
-That means the right mental model is not:
-
-- persist everything
-- or wipe everything
-
-The right model is:
-
-- include the relevant script-visible state in deterministic runtime state
-- capture it in snapshots where appropriate
-- restore it on rollback exactly as the world is restored
-
-So when replay occurs, the question is not "does script memory survive?" in the abstract.
-
-The real questions are:
-
-- what checkpoint is being restored
-- what script-visible state lies inside snapshot scope
-- what invalidation boundary the replay represents
-
-This matches the engine's broader simulation design:
-
-- the world is not blindly reloaded for every change
-- refresh behavior is scoped
-- active state is restored according to restore-point targeting
-
-For the scripting layer, this implies:
-
-- event-local temporary values disappear after the handler returns
-- durable script-visible state must be treated as runtime state, not hidden closure magic
-- rollback restores that state according to checkpoint semantics
-- geometry-changing scripted behavior participates in the same replay machinery as any other geometry-changing actor behavior
-
-This is also why the scripting system must not become a second runtime bolted onto the engine. It needs to live within the engine's existing deterministic simulation rules.
-
----
-
-## 11. Update Classification
-
-The scripting layer should align with the engine's three-tier update model.
-
-Scripted behavior should eventually map into one of:
+The engine then classifies the effect natively as:
 
 - `none`
 - `content-only`
 - `geometry`
 
-Where:
+That is the same deeper capability the engine already proved in its actor-driven experiments.
 
-- `none` means the handler observed state but requires no change
-- `content-only` means rendered content changed without affecting geometry
-- `geometry` means spatial extent changed and targeted replay is required
+## Authoring Envelope
 
-This alignment is important because it allows scripted behavior to participate in the existing engine cost model instead of forcing every script-triggered change into the most expensive response.
+Methods are authored in YAML front matter.
+The document body remains JSON.
 
-In other words, the scripting layer is not inventing a separate reaction model. It is exposing the engine's existing reaction model to programmable behavior.
+This is owned by the engine itself, not by the CLI.
 
----
-
-## 12. Which Layer Should Own It
-
-The scripting layer should be implemented through collaborators.
-
-This is the most practical near-term choice because collaborators already:
-
-- hook into session lifecycle moments
-- sit at the runtime seam
-- are modular
-- can be introduced incrementally
-
-So the implementation plan is:
-
-- use one collaborator to route core document and element events
-- add further collaborators later for richer scripting capabilities
-
-This gives the best of both worlds:
-
-- a simple stable scripting model for users
-- modular staged implementation internally
-
-The user-facing scripting layer should not need to change as collaborators grow. The system simply gains:
-
-- more events
-- more available facts
-- more helper capabilities
-
----
-
-## 13. Minimal Success Criterion
-
-The near-term scripting layer is successful when it can implement a TOC without modifying engine internals.
-
-That means a script must be able to:
-
-- identify the placeholder or anchor element
-- read settled heading and page facts
-- generate ordinary AST content
-- replace the anchor content
-- request replay if needed
-
-If the scripting model can do that cleanly, it is likely already powerful enough for many other derived-content features.
-
-So TOC remains an important benchmark, but not the first thing to implement as a hardcoded feature.
-
----
-
-## 14. Example Shape
-
-A scripted document package may look like this:
+Example:
 
 ```yaml
 ---
 methods:
-  buildToc: |
-    const headings = vm.report.getHeadings();
-    const items = headings.map(h => ({
-      type: "p",
-      content: `${h.heading} ${h.pageIndex + 1}`
-    }));
-    vm.doc.replace("main-toc", items);
-    vm.requestReplay();
+  doc_onLoad(): |
+    setContent("greeting", "Hello, world!")
 ---
-```
-
-```json
 {
   "documentVersion": "1.1",
-  "onAfterSettle": "buildToc",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 20,
+    "lineHeight": 1.4
+  },
+  "styles": {},
   "elements": [
     {
       "type": "p",
-      "content": "",
-      "properties": {
-        "sourceId": "main-toc"
-      }
+      "name": "greeting",
+      "content": "Waiting for script..."
     }
   ]
 }
 ```
 
-This now reflects the actual authored direction rather than a purely hypothetical one. The key point is the separation:
+## Current Stage
 
-- event bindings stay simple
-- method code lives in a friendly authoring format
-- handlers manipulate ordinary AST through a constrained API
+The fixture lane has been intentionally reset.
 
----
+The new plan is:
 
-## 15. Non-Goals
+1. establish the clean public scripting surface
+2. prove it with a minimal Hello World
+3. evolve it gradually from there
 
-This document does not yet fully define:
-
-- the full scripting API surface beyond the current minimal set
-- the exact collaborator set as the system grows
-- the full long-term event catalog and ordering
-- the exact replay request contract beyond the current bounded replay path
-- the exact snapshot scope of script-visible state
-- sandboxing and security rules
-- whether scripts are synchronous only in v1
-
-It does establish the architectural direction clearly:
-
-- the next layer for VMPrint is scripting, not TOC-first implementation
-- event handlers are the right mental model
-- collaborators are the right implementation seam
-- YAML front matter plus JSON body is the current authored shape
-- the engine owns parsing of that authored shape
-- TOC is the benchmark use case for deciding when the first version is good enough
+That is preferable to carrying a large legacy comparison corpus while the public API is still being renamed and reshaped.

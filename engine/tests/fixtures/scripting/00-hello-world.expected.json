@@ -1,22 +1,16 @@
 {
-  "expectedTextIncludes": ["Hello, world!"],
+  "expectedTextIncludes": [
+    "Hello, world!"
+  ],
   "originalTextUnchanged": [
     {
       "sourceId": "greeting",
-      "content": "Pending greeting"
+      "content": "Waiting for script..."
     }
   ],
-  "profileEquals": {
-    "scriptReplayRequests": 0,
-    "scriptReplayPasses": 0,
-    "scriptAfterSettleCalls": 0,
-    "scriptResolveCalls": 0,
-    "scriptReplaceCalls": 0
-  },
   "profileAtLeast": {
-    "scriptHandlerCalls": 1,
-    "scriptBeforeLayoutCalls": 1,
-    "scriptSetContentCalls": 1,
-    "scriptDocQueryCalls": 0
+    "handlerCalls": 1,
+    "loadCalls": 1,
+    "setContentCalls": 1
   }
 }

@@ -18,21 +18,23 @@ type ScriptingPerfRow = {
     simulateMs: number;
     renderMs: number;
     totalMs: number;
-    scriptHandlerCalls: number;
-    scriptHandlerMs: number;
-    scriptBeforeLayoutCalls: number;
-    scriptBeforeLayoutMs: number;
-    scriptResolveCalls: number;
-    scriptResolveMs: number;
-    scriptAfterSettleCalls: number;
-    scriptAfterSettleMs: number;
-    scriptReplayRequests: number;
-    scriptReplayPasses: number;
-    scriptDocQueryCalls: number;
-    scriptSetContentCalls: number;
-    scriptReplaceCalls: number;
-    scriptInsertCalls: number;
-    scriptRemoveCalls: number;
+    handlerCalls: number;
+    handlerMs: number;
+    loadCalls: number;
+    loadMs: number;
+    createCalls: number;
+    createMs: number;
+    readyCalls: number;
+    readyMs: number;
+    replayRequests: number;
+    replayPasses: number;
+    docQueryCalls: number;
+    setContentCalls: number;
+    replaceCalls: number;
+    insertCalls: number;
+    removeCalls: number;
+    messageSendCalls: number;
+    messageHandlerCalls: number;
 };
 
 function round(value: number): number {
@@ -83,21 +85,23 @@ async function run(): Promise<void> {
                 simulateMs: round(t1 - t0),
                 renderMs: round(t2 - t1),
                 totalMs: round(t2 - t0),
-                scriptHandlerCalls: Number(profile?.scriptHandlerCalls || 0),
-                scriptHandlerMs: round(Number(profile?.scriptHandlerMs || 0)),
-                scriptBeforeLayoutCalls: Number(profile?.scriptBeforeLayoutCalls || 0),
-                scriptBeforeLayoutMs: round(Number(profile?.scriptBeforeLayoutMs || 0)),
-                scriptResolveCalls: Number(profile?.scriptResolveCalls || 0),
-                scriptResolveMs: round(Number(profile?.scriptResolveMs || 0)),
-                scriptAfterSettleCalls: Number(profile?.scriptAfterSettleCalls || 0),
-                scriptAfterSettleMs: round(Number(profile?.scriptAfterSettleMs || 0)),
-                scriptReplayRequests: Number(profile?.scriptReplayRequests || 0),
-                scriptReplayPasses: Number(profile?.scriptReplayPasses || 0),
-                scriptDocQueryCalls: Number(profile?.scriptDocQueryCalls || 0),
-                scriptSetContentCalls: Number(profile?.scriptSetContentCalls || 0),
-                scriptReplaceCalls: Number(profile?.scriptReplaceCalls || 0),
-                scriptInsertCalls: Number(profile?.scriptInsertCalls || 0),
-                scriptRemoveCalls: Number(profile?.scriptRemoveCalls || 0)
+                handlerCalls: Number(profile?.handlerCalls || 0),
+                handlerMs: round(Number(profile?.handlerMs || 0)),
+                loadCalls: Number(profile?.loadCalls || 0),
+                loadMs: round(Number(profile?.loadMs || 0)),
+                createCalls: Number(profile?.createCalls || 0),
+                createMs: round(Number(profile?.createMs || 0)),
+                readyCalls: Number(profile?.readyCalls || 0),
+                readyMs: round(Number(profile?.readyMs || 0)),
+                replayRequests: Number(profile?.replayRequests || 0),
+                replayPasses: Number(profile?.replayPasses || 0),
+                docQueryCalls: Number(profile?.docQueryCalls || 0),
+                setContentCalls: Number(profile?.setContentCalls || 0),
+                replaceCalls: Number(profile?.replaceCalls || 0),
+                insertCalls: Number(profile?.insertCalls || 0),
+                removeCalls: Number(profile?.removeCalls || 0),
+                messageSendCalls: Number(profile?.messageSendCalls || 0),
+                messageHandlerCalls: Number(profile?.messageHandlerCalls || 0)
             });
         }
 
@@ -109,21 +113,23 @@ async function run(): Promise<void> {
             simulateMs: average((row) => row.simulateMs),
             renderMs: average((row) => row.renderMs),
             totalMs: average((row) => row.totalMs),
-            scriptHandlerCalls: average((row) => row.scriptHandlerCalls),
-            scriptHandlerMs: average((row) => row.scriptHandlerMs),
-            scriptBeforeLayoutCalls: average((row) => row.scriptBeforeLayoutCalls),
-            scriptBeforeLayoutMs: average((row) => row.scriptBeforeLayoutMs),
-            scriptResolveCalls: average((row) => row.scriptResolveCalls),
-            scriptResolveMs: average((row) => row.scriptResolveMs),
-            scriptAfterSettleCalls: average((row) => row.scriptAfterSettleCalls),
-            scriptAfterSettleMs: average((row) => row.scriptAfterSettleMs),
-            scriptReplayRequests: average((row) => row.scriptReplayRequests),
-            scriptReplayPasses: average((row) => row.scriptReplayPasses),
-            scriptDocQueryCalls: average((row) => row.scriptDocQueryCalls),
-            scriptSetContentCalls: average((row) => row.scriptSetContentCalls),
-            scriptReplaceCalls: average((row) => row.scriptReplaceCalls),
-            scriptInsertCalls: average((row) => row.scriptInsertCalls),
-            scriptRemoveCalls: average((row) => row.scriptRemoveCalls)
+            handlerCalls: average((row) => row.handlerCalls),
+            handlerMs: average((row) => row.handlerMs),
+            loadCalls: average((row) => row.loadCalls),
+            loadMs: average((row) => row.loadMs),
+            createCalls: average((row) => row.createCalls),
+            createMs: average((row) => row.createMs),
+            readyCalls: average((row) => row.readyCalls),
+            readyMs: average((row) => row.readyMs),
+            replayRequests: average((row) => row.replayRequests),
+            replayPasses: average((row) => row.replayPasses),
+            docQueryCalls: average((row) => row.docQueryCalls),
+            setContentCalls: average((row) => row.setContentCalls),
+            replaceCalls: average((row) => row.replaceCalls),
+            insertCalls: average((row) => row.insertCalls),
+            removeCalls: average((row) => row.removeCalls),
+            messageSendCalls: average((row) => row.messageSendCalls),
+            messageHandlerCalls: average((row) => row.messageHandlerCalls)
         });
     }
 

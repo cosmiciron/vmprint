@@ -11,11 +11,17 @@ import { isTableElement } from '../layout-table';
 import type { FlowBox } from '../layout-core-types';
 import type { NormalizedFlowBlock } from '../normalized-flow-block';
 import { createElementPackagerIdentity } from './packager-identity';
+import { ScriptedFlowBoxPackager } from './scripted-flow-box-packager';
+import { ScriptRuntimeHost } from '../script-runtime-host';
 
 type ElementShaper = {
     shapeElement(element: Element, options: { path: number[] }): FlowBox;
     normalizeFlowBlock(element: Element, options: { path: number[] }): NormalizedFlowBlock;
     shapeNormalizedFlowBlock(block: NormalizedFlowBlock): FlowBox;
+};
+
+type ScriptHostProvider = LayoutProcessor & {
+    getActiveScriptRuntimeHost(): ScriptRuntimeHost | null;
 };
 
 /**
@@ -33,6 +39,7 @@ export function buildPackagerForElement(
     item: Element,
     index: number,
     processor: LayoutProcessor,
+    elements?: Element[],
     externalFactory?: ExternalPackagerFactory
 ): PackagerUnit {
     if (externalFactory) {
@@ -60,6 +67,14 @@ export function buildPackagerForElement(
     if (dropCap && dropCap.enabled) {
         return new DropCapPackager(processor, item, index, dropCap, identity);
     }
+    const scriptHost = (processor as unknown as ScriptHostProvider).getActiveScriptRuntimeHost();
+    const sourceId = typeof item.properties?.sourceId === 'string' ? item.properties.sourceId : null;
+    const hasMessageHandler =
+        (typeof item.properties?.onMessage === 'string' && item.properties.onMessage.length > 0)
+        || !!(scriptHost && scriptHost.hasElementHandler(sourceId, 'onMessage'));
+    if (scriptHost && hasMessageHandler) {
+        return new ScriptedFlowBoxPackager(processor, flowBox, scriptHost, item, identity, [index], elements || [item]);
+    }
     return new FlowBoxPackager(processor, flowBox, identity);
 }
 
@@ -68,5 +83,5 @@ export function createPackagers(
     processor: LayoutProcessor,
     externalFactory?: ExternalPackagerFactory
 ): PackagerUnit[] {
-    return elements.map((element, i) => buildPackagerForElement(element, i, processor, externalFactory));
+    return elements.map((element, i) => buildPackagerForElement(element, i, processor, elements, externalFactory));
 }

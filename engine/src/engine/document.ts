@@ -56,7 +56,7 @@ const LAYOUT_KEYS = new Set([
 ]);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
-const ELEMENT_KEYS = new Set(['type', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
+const ELEMENT_KEYS = new Set(['type', 'name', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
 const ZONE_DEFINITION_KEYS = new Set(['id', 'region', 'elements', 'style']);
 const ZONE_REGION_KEYS = new Set(['x', 'y', 'width', 'height']);
 const STRIP_SLOT_KEYS = new Set(['id', 'elements', 'style']);
@@ -70,6 +70,7 @@ const ELEMENT_PROPERTIES_KEYS = new Set([
     'reflowKey',
     'keepWithNext',
     'onResolve',
+    'onMessage',
     'marginTop',
     'marginBottom',
     'paginationContinuation',
@@ -662,6 +663,8 @@ function validateElementProperties(
     if (props.sourceId !== undefined) assertStringAt(props.sourceId, `${path}.sourceId`, documentPath);
     if (props.linkTarget !== undefined) assertStringAt(props.linkTarget, `${path}.linkTarget`, documentPath);
     if (props.semanticRole !== undefined) assertStringAt(props.semanticRole, `${path}.semanticRole`, documentPath);
+    if (props.onResolve !== undefined) assertStringAt(props.onResolve, `${path}.onResolve`, documentPath);
+    if (props.onMessage !== undefined) assertStringAt(props.onMessage, `${path}.onMessage`, documentPath);
     if (props.reflowKey !== undefined) assertStringAt(props.reflowKey, `${path}.reflowKey`, documentPath);
     if (props.sourceSyntax !== undefined) assertStringAt(props.sourceSyntax, `${path}.sourceSyntax`, documentPath);
     if (props.language !== undefined) assertStringAt(props.language, `${path}.language`, documentPath);
@@ -691,6 +694,9 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
 
     if (typeof element.type !== 'string' || element.type.trim().length === 0) {
         contractError(documentPath, `${path}.type`, 'expected a non-empty string.');
+    }
+    if (element.name !== undefined && typeof element.name !== 'string') {
+        contractError(documentPath, `${path}.name`, 'expected a string.');
     }
     if (element.content !== undefined && typeof element.content !== 'string') {
         contractError(documentPath, `${path}.content`, 'expected a string.');
@@ -911,10 +917,20 @@ function normalizeElementNode(element: Element): Element {
         ? element.children.map((child) => normalizeElementNode(child))
         : undefined;
     const normalizedProperties = normalizeElementProperties(element?.properties);
+    const normalizedName = typeof element?.name === 'string' && element.name.trim()
+        ? element.name.trim()
+        : (
+            typeof element?.properties?.name === 'string' && String(element.properties.name).trim()
+                ? String(element.properties.name).trim()
+                : undefined
+        );
     const normalized: Element = {
         type,
         content: typeof element?.content === 'string' ? element.content : ''
     };
+    if (normalizedName) {
+        normalized.name = normalizedName;
+    }
 
     if (element.image !== undefined) {
         normalized.image = deepSortObject(element.image as any);
@@ -974,10 +990,15 @@ function normalizeElementNode(element: Element): Element {
         }));
     }
     if (normalizedProperties) {
+        if (normalizedName && !normalizedProperties.sourceId) {
+            normalizedProperties.sourceId = normalizedName;
+        }
         normalized.properties = normalizedProperties;
         if (Object.keys(normalized.properties).length === 0) {
             delete normalized.properties;
         }
+    } else if (normalizedName) {
+        normalized.properties = { sourceId: normalizedName };
     }
     if (type === 'strip') {
         const slots = Array.isArray(element.slots)

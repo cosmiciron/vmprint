@@ -9,21 +9,23 @@ import type { ObservationResult, PackagerContext, PackagerSplitResult, SpatialFr
 import type { PackagerUnit } from './packagers/packager-types';
 
 export type LayoutProfileMetrics = {
-    scriptHandlerCalls: number;
-    scriptHandlerMs: number;
-    scriptBeforeLayoutCalls: number;
-    scriptBeforeLayoutMs: number;
-    scriptResolveCalls: number;
-    scriptResolveMs: number;
-    scriptAfterSettleCalls: number;
-    scriptAfterSettleMs: number;
-    scriptReplayRequests: number;
-    scriptReplayPasses: number;
-    scriptDocQueryCalls: number;
-    scriptSetContentCalls: number;
-    scriptReplaceCalls: number;
-    scriptInsertCalls: number;
-    scriptRemoveCalls: number;
+    handlerCalls: number;
+    handlerMs: number;
+    loadCalls: number;
+    loadMs: number;
+    createCalls: number;
+    createMs: number;
+    readyCalls: number;
+    readyMs: number;
+    replayRequests: number;
+    replayPasses: number;
+    docQueryCalls: number;
+    setContentCalls: number;
+    replaceCalls: number;
+    insertCalls: number;
+    removeCalls: number;
+    messageSendCalls: number;
+    messageHandlerCalls: number;
     speculativeBranchCalls: number;
     speculativeBranchMs: number;
     speculativeBranchAcceptedCalls: number;

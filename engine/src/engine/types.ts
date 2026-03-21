@@ -126,6 +126,7 @@ export interface StripSlot {
 
 export interface Element {
     type: ElementType;
+    name?: string;
     content: string;
     children?: Element[];
     /** Embedded image payload. Required on `type: "image"` elements. */
@@ -262,6 +263,7 @@ export interface ElementProperties extends Record<string, any> {
     reflowKey?: string;
     keepWithNext?: boolean;
     onResolve?: string;
+    onMessage?: string;
     marginTop?: number;
     marginBottom?: number;
     paginationContinuation?: Record<string, any>;

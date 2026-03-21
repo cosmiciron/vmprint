@@ -220,21 +220,23 @@ export class LayoutSession {
     readonly transitionsRuntime: TransitionsRuntime;
     readonly simulationClock = new SimulationClock();
     readonly profile: LayoutProfileMetrics = {
-        scriptHandlerCalls: 0,
-        scriptHandlerMs: 0,
-        scriptBeforeLayoutCalls: 0,
-        scriptBeforeLayoutMs: 0,
-        scriptResolveCalls: 0,
-        scriptResolveMs: 0,
-        scriptAfterSettleCalls: 0,
-        scriptAfterSettleMs: 0,
-        scriptReplayRequests: 0,
-        scriptReplayPasses: 0,
-        scriptDocQueryCalls: 0,
-        scriptSetContentCalls: 0,
-        scriptReplaceCalls: 0,
-        scriptInsertCalls: 0,
-        scriptRemoveCalls: 0,
+        handlerCalls: 0,
+        handlerMs: 0,
+        loadCalls: 0,
+        loadMs: 0,
+        createCalls: 0,
+        createMs: 0,
+        readyCalls: 0,
+        readyMs: 0,
+        replayRequests: 0,
+        replayPasses: 0,
+        docQueryCalls: 0,
+        setContentCalls: 0,
+        replaceCalls: 0,
+        insertCalls: 0,
+        removeCalls: 0,
+        messageSendCalls: 0,
+        messageHandlerCalls: 0,
         speculativeBranchCalls: 0,
         speculativeBranchMs: 0,
         speculativeBranchAcceptedCalls: 0,
@@ -344,11 +346,22 @@ export class LayoutSession {
     private paginationLoopState: PaginationLoopState | null = null;
     private speculativeBranchSequence = 0;
     private readonly flowResolveSignaturesSeen = new Set<string>();
+    private scriptReplayRequested = false;
 
     currentPageIndex = 0;
     currentY = 0;
     currentConstraintField: ConstraintField | null = null;
     currentSurface: PageSurface | null = null;
+
+    requestScriptReplay(): void {
+        this.scriptReplayRequested = true;
+    }
+
+    consumeScriptReplayRequested(): boolean {
+        const value = this.scriptReplayRequested;
+        this.scriptReplayRequested = false;
+        return value;
+    }
 
     constructor(options: LayoutSessionOptions) {
         this.runtime = options.runtime;
@@ -832,7 +845,7 @@ export class LayoutSession {
             actor.prepare(availableWidth, availableHeight, context);
             const rendered = actor.emitBoxes(availableWidth, availableHeight, context) ?? [];
 
-            if (rendered.length !== refs.length) {
+            if (rendered.length !== refs.length && !(rendered.length === 1 && refs.length > 1)) {
                 throw new Error(
                     `[LayoutSession] content-only actor "${actor.actorId}" changed box count (${refs.length} -> ${rendered.length}).`
                 );
@@ -840,7 +853,7 @@ export class LayoutSession {
 
             for (let index = 0; index < refs.length; index++) {
                 const oldBox = refs[index].box;
-                const nextBox = rendered[index];
+                const nextBox = rendered[Math.min(index, rendered.length - 1)];
                 assertContentOnlyGeometry(actor.actorId, oldBox, nextBox);
                 refs[index].container[refs[index].index] = transplantBoxContent(oldBox, nextBox);
             }

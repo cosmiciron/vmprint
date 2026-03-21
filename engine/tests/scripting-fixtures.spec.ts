@@ -25,7 +25,8 @@ function findSourceNode(nodes: any[], sourceId: string): any | null {
     while (stack.length > 0) {
         const node = stack.shift();
         if (!node) continue;
-        if (String(node?.properties?.sourceId || '') === sourceId) {
+        const nodeName = String(node?.name || node?.properties?.name || node?.properties?.sourceId || '');
+        if (nodeName === sourceId) {
             return node;
         }
         if (Array.isArray(node.children)) stack.unshift(...node.children);

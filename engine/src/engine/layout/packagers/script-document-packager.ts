@@ -1,14 +1,18 @@
 import type { Element } from '../../types';
-import type { Collaborator } from '../layout-session-types';
+import type { ActorSignal } from '../actor-event-bus';
+import { HEADING_SIGNAL_TOPIC } from '../collaborators/heading-signal-collaborator';
+import type { LayoutProcessor } from '../layout-core';
 import type { LayoutSession } from '../layout-session';
+import { LayoutUtils } from '../layout-utils';
+import type { HeadingOutlineEntry } from '../simulation-report';
 import { ScriptRuntimeHost, type ScriptGlobals } from '../script-runtime-host';
-
-type ScriptMessage = {
-    name: string;
-    payload?: unknown;
-    from: string | null;
-    to: string | null;
-};
+import type {
+    LayoutBox,
+    ObservationResult,
+    PackagerContext,
+    PackagerSplitResult,
+    PackagerUnit
+} from './packager-types';
 
 type ReplaceResult =
     | { replaced: false }
@@ -41,14 +45,6 @@ function visitElements(elements: Element[], visitor: (element: Element) => void)
             }
         }
     }
-}
-
-function collectElements(elements: Element[]): Element[] {
-    const collected: Element[] = [];
-    visitElements(elements, (element) => {
-        collected.push(element);
-    });
-    return collected;
 }
 
 function findBySourceId(elements: Element[], sourceId: string): Element | null {
@@ -203,18 +199,56 @@ function insertBySourceId(
         : { replaced: false };
 }
 
-export class ScriptRuntimeCollaborator implements Collaborator {
+function getCurrentLayoutSession(context: PackagerContext): LayoutSession {
+    const processor = context.processor as LayoutProcessor & {
+        getCurrentLayoutSession(): LayoutSession | null;
+    };
+    const session = processor.getCurrentLayoutSession();
+    if (!session) {
+        throw new Error('[ScriptDocumentPackager] No active layout session.');
+    }
+    return session;
+}
+
+function createScriptMessageTopic(sourceId: string): string {
+    const normalizedSourceId = LayoutUtils.normalizeAuthorSourceId(sourceId) || String(sourceId || '').trim();
+    return `script:message:${normalizedSourceId}`;
+}
+
+function toHeadingOutlineEntry(signal: ActorSignal): HeadingOutlineEntry | null {
+    const payload = signal.payload || {};
+    const heading = typeof payload.heading === 'string' ? payload.heading.trim() : '';
+    if (!heading) return null;
+    return {
+        sourceId: signal.publisherSourceId,
+        heading,
+        pageIndex: Math.max(0, Number(signal.pageIndex || 0)),
+        y: Number.isFinite(payload.y) ? Number(payload.y) : 0,
+        actorKind: signal.publisherActorKind,
+        sourceType: typeof payload.sourceType === 'string' ? payload.sourceType : undefined,
+        semanticRole: typeof payload.semanticRole === 'string' ? payload.semanticRole : undefined,
+        level: Number.isFinite(payload.level) ? Number(payload.level) : undefined
+    };
+}
+
+function buildHeadingSnapshot(context: PackagerContext): HeadingOutlineEntry[] {
+    return context.readActorSignals(HEADING_SIGNAL_TOPIC)
+        .map(toHeadingOutlineEntry)
+        .filter((entry): entry is HeadingOutlineEntry => !!entry)
+        .sort((a, b) => a.pageIndex - b.pageIndex || a.y - b.y || a.sourceId.localeCompare(b.sourceId));
+}
+
+export class ScriptDocumentPackager implements PackagerUnit {
+    readonly actorId = 'actor:system:script-document:script-document:0';
+    readonly sourceId = 'system:script-document';
+    readonly actorKind = 'script-document';
+    readonly fragmentIndex = 0;
     private replayRequested = false;
 
     constructor(
-        readonly host: ScriptRuntimeHost,
+        private readonly host: ScriptRuntimeHost,
         private readonly elements: Element[]
     ) { }
-
-    private recordReplayRequest(session: LayoutSession): void {
-        this.replayRequested = true;
-        session.recordProfile('replayRequests', 1);
-    }
 
     private resolveSourceId(target: unknown): string | null {
         if (target && typeof target === 'object' && (target as Record<string, unknown>).type === 'document') {
@@ -235,32 +269,14 @@ export class ScriptRuntimeCollaborator implements Collaborator {
         return null;
     }
 
-    private createElementRef(
-        session: LayoutSession,
-        element: Element
-    ): Record<string, unknown> {
-        const sourceId = typeof element.properties?.sourceId === 'string' ? element.properties.sourceId : null;
+    private createElementRef(element: Element): Record<string, unknown> {
         return {
-            name: sourceId,
+            name: typeof element.properties?.sourceId === 'string' ? element.properties.sourceId : null,
             type: String(element.type || ''),
             role: typeof element.properties?.semanticRole === 'string' ? element.properties.semanticRole : null,
             get content() {
                 return String(element.content || '');
-            },
-            setContent: (content: string) => {
-                element.content = String(content);
-                session.recordProfile('setContentCalls', 1);
-                return true;
-            },
-            replaceWith: (elements: Element[]) => {
-                if (!sourceId) return false;
-                const result = replaceBySourceId(this.elements, sourceId, elements);
-                if (!result.replaced) return false;
-                this.elements.splice(0, this.elements.length, ...result.nextNodes);
-                session.recordProfile('replaceCalls', 1);
-                return true;
-            },
-            sendMessage: (recipient: unknown, msg: unknown) => this.deliverMessage(recipient, msg, element, session)
+            }
         };
     }
 
@@ -271,27 +287,20 @@ export class ScriptRuntimeCollaborator implements Collaborator {
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
-                return node ? this.createElementRef(session, node) : null;
+                return node ? this.createElementRef(node) : null;
             },
             findElementsByRole: (role: string) => {
                 session.recordProfile('docQueryCalls', 1);
-                return findByRole(this.elements, role).map((node) => this.createElementRef(session, node));
+                return findByRole(this.elements, role).map((node) => this.createElementRef(node));
             },
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
-                return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
+                return findByType(this.elements, type).map((node) => this.createElementRef(node));
             }
         };
     }
 
-    private createGlobals(
-        session: LayoutSession,
-        options?: {
-            self?: Element;
-            message?: ScriptMessage;
-        }
-    ): ScriptGlobals {
-        const self = options?.self;
+    private createGlobals(session: LayoutSession, context: PackagerContext): ScriptGlobals {
         const docRef = this.createDocRef(session);
         const setContent = (target: unknown, content: string) => {
             const sourceId = this.resolveSourceId(target);
@@ -341,20 +350,44 @@ export class ScriptRuntimeCollaborator implements Collaborator {
         return {
             doc: docRef,
             page: undefined,
-            self: self ? this.createElementRef(session, self) : docRef,
-            sendMessage: (recipient: unknown, msg: unknown) => this.deliverMessage(recipient, msg, self, session),
+            self: docRef,
+            sendMessage: (recipient: unknown, msg: unknown) => {
+                const targetSourceId = this.resolveSourceId(recipient);
+                if (!targetSourceId || targetSourceId === 'doc') return false;
+                const message = typeof msg === 'string'
+                    ? { name: msg }
+                    : (msg && typeof msg === 'object' ? { ...(msg as Record<string, unknown>) } : { name: String(msg) });
+                if (typeof (message as Record<string, unknown>).name !== 'string' || !(message as Record<string, unknown>).name) {
+                    (message as Record<string, unknown>).name = 'message';
+                }
+                session.recordProfile('messageSendCalls', 1);
+                context.publishActorSignal({
+                    topic: createScriptMessageTopic(targetSourceId),
+                    publisherActorId: this.actorId,
+                    publisherSourceId: this.sourceId,
+                    publisherActorKind: this.actorKind,
+                    fragmentIndex: this.fragmentIndex,
+                    pageIndex: context.pageIndex,
+                    payload: {
+                        ...message,
+                        from: this.sourceId,
+                        to: targetSourceId
+                    }
+                });
+                return true;
+            },
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
-                return node ? this.createElementRef(session, node) : null;
+                return node ? this.createElementRef(node) : null;
             },
             findElementsByRole: (role: string) => {
                 session.recordProfile('docQueryCalls', 1);
-                return findByRole(this.elements, role).map((node) => this.createElementRef(session, node));
+                return findByRole(this.elements, role).map((node) => this.createElementRef(node));
             },
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
-                return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
+                return findByType(this.elements, type).map((node) => this.createElementRef(node));
             },
             setContent,
             replaceElement,
@@ -364,72 +397,57 @@ export class ScriptRuntimeCollaborator implements Collaborator {
         };
     }
 
-    private deliverMessage(
-        recipient: unknown,
-        msg: unknown,
-        sender: Element | undefined,
-        session: LayoutSession
-    ): boolean {
-        const targetSourceId = this.resolveSourceId(recipient);
-        if (!targetSourceId) return false;
-        if (targetSourceId === 'doc') return false;
-        const target = findBySourceId(this.elements, targetSourceId);
-        if (!target) return false;
-        const explicitHandlerName = typeof target.properties?.onMessage === 'string'
-            ? target.properties.onMessage
-            : null;
-        const handlerName = this.host.getElementHandlerName(targetSourceId, 'onMessage', explicitHandlerName);
-        if (!handlerName) return false;
+    prepare(): void { }
 
-        const senderSourceId = typeof sender?.properties?.sourceId === 'string'
-            ? sender.properties.sourceId
-            : null;
-        const message = typeof msg === 'string'
-            ? { name: msg }
-            : (msg && typeof msg === 'object' ? { ...(msg as Record<string, unknown>) } : { name: String(msg) });
-        if (typeof (message as Record<string, unknown>).name !== 'string' || !(message as Record<string, unknown>).name) {
-            (message as Record<string, unknown>).name = 'message';
-        }
-        const globals = this.createGlobals(session, {
-            self: target,
-        });
-        const fromRef = sender ? this.createElementRef(session, sender) : { name: 'doc', type: 'document' };
-
-        session.recordProfile('messageSendCalls', 1);
-        this.host.runHandler(
-            handlerName,
-            'onMessage',
-            globals,
-            {
-                from: fromRef,
-                msg: message
-            },
-            session
-        );
-        return true;
+    emitBoxes(): LayoutBox[] {
+        return [];
     }
 
-    onSimulationStart(session: LayoutSession): void {
-        this.replayRequested = false;
-        const documentHandlerName = this.host.getDocumentHandlerName('onLoad');
-        if (documentHandlerName) {
-            this.host.runHandler(documentHandlerName, 'onLoad', this.createGlobals(session), {}, session);
-        }
-
-        for (const element of collectElements(this.elements)) {
-            const sourceId = typeof element.properties?.sourceId === 'string' ? element.properties.sourceId : null;
-            const explicitHandlerName = typeof element.properties?.onResolve === 'string'
-                ? element.properties.onResolve
-                : null;
-            const handlerName = this.host.getElementHandlerName(sourceId, 'onCreate', explicitHandlerName);
-            if (!handlerName) continue;
-            this.host.runHandler(handlerName, 'onCreate', this.createGlobals(session, { self: element }), {}, session);
-        }
+    getCommittedSignalSubscriptions(): readonly string[] {
+        return ['pagination:finalized'];
     }
 
     consumeReplayRequested(): boolean {
         const value = this.replayRequested;
         this.replayRequested = false;
         return value;
+    }
+
+    updateCommittedState(context: PackagerContext): ObservationResult {
+        const handlerName = this.host.getDocumentHandlerName('onReady');
+        if (!handlerName) {
+            return { changed: false, geometryChanged: false, updateKind: 'none' };
+        }
+
+        const finalizedSignals = context.readActorSignals('pagination:finalized');
+        const latest = finalizedSignals[finalizedSignals.length - 1];
+        if (!latest) {
+            return { changed: false, geometryChanged: false, updateKind: 'none' };
+        }
+
+        const session = getCurrentLayoutSession(context);
+        const globals = this.createGlobals(session, context);
+        this.host.runHandler(handlerName, 'onReady', globals, {}, session);
+        return { changed: false, geometryChanged: false, updateKind: 'none' };
+    }
+
+    split(): PackagerSplitResult {
+        return { currentFragment: this, continuationFragment: null };
+    }
+
+    getRequiredHeight(): number {
+        return 0;
+    }
+
+    isUnbreakable(): boolean {
+        return true;
+    }
+
+    getMarginTop(): number {
+        return 0;
+    }
+
+    getMarginBottom(): number {
+        return 0;
     }
 }
