@@ -30,6 +30,7 @@
     "test:scripting-perf": "tsx --conditions tsx tests/scripting-performance.ts",
     "test:scripting-perf-write": "tsx --conditions tsx tests/scripting-performance.ts --write-output",
     "test:scripting-pdfs": "node tests/fixtures/scripting/generate-fixture-pdfs.mjs",
+    "test:scripting-refresh": "npm run test:scripting && npm run test:scripting-pdfs",
     "test:strip": "tsx --conditions tsx tests/strip-layout.spec.ts",
     "test:zone-continue": "tsx --conditions tsx tests/zone-map-continue.spec.ts",
     "test:standard-fonts": "tsx --conditions tsx tests/standard-fonts.spec.ts",

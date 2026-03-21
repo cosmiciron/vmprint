@@ -24,6 +24,7 @@ type ScriptVm = {
         replace(elements: Element[]): boolean;
     };
     readonly report?: {
+        getPageCount(): number;
         getHeadings(): HeadingOutlineEntry[];
         getSourcePositions(): SourcePositionSummary[];
     };
@@ -337,6 +338,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 }
             },
             report: {
+                getPageCount: () => session.getFinalizedPages().length,
                 getHeadings: () => headings.map((entry) => ({ ...entry })),
                 getSourcePositions: () => sourcePositions.map((entry) => ({
                     ...entry,

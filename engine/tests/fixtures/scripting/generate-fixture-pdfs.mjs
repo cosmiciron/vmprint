@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Renders every scripting fixture to a PDF and places the output in
+ * Renders every scripting fixture to a PDF and refreshes scripting profile JSON
+ * in:
  *   engine/tests/fixtures/scripting/output/
  *
  * Usage (from workspace root):
@@ -54,5 +55,18 @@ for (const fixture of fixtures) {
 
 console.log(`\n[scripting generate-fixture-pdfs] Done - ${passed} succeeded, ${failed} failed.`);
 if (failed > 0) {
+    process.exit(1);
+}
+
+process.stdout.write('  Refreshing scripting profiles ... ');
+try {
+    execSync('npm run test:scripting-perf-write --prefix engine -- --repeat=1', {
+        cwd: WORKSPACE_ROOT,
+        stdio: 'pipe'
+    });
+    console.log('OK');
+} catch (error) {
+    console.log('FAILED');
+    console.error(String(error?.stderr || error?.message || error));
     process.exit(1);
 }

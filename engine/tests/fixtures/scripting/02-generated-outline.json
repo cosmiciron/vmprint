@@ -1,0 +1,79 @@
+---
+methods:
+  buildOutline: |
+    const anchor = vm.doc.get('outline-anchor');
+    if (!anchor) return;
+    const headings = vm.report.getHeadings();
+    const pageCount = vm.report.getPageCount();
+    const generated = [
+      {
+        type: 'h1',
+        content: `Generated Outline (${pageCount} page${pageCount === 1 ? '' : 's'})`,
+        properties: {
+          sourceId: 'generated-outline-title',
+          semanticRole: 'generated-outline-title'
+        }
+      },
+      ...headings.map((heading, index) => ({
+        type: 'p',
+        content: `${index + 1}. ${heading.heading} - page ${heading.pageIndex + 1}`,
+        properties: {
+          sourceId: `generated-outline-entry-${index + 1}`,
+          semanticRole: 'generated-outline-entry'
+        }
+      }))
+    ];
+    vm.doc.replace('outline-anchor', generated);
+    vm.requestReplay();
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 320, "height": 260 },
+    "margins": { "top": 20, "right": 20, "bottom": 20, "left": 20 },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.2
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "p": { "marginBottom": 8, "allowLineSplit": true, "orphans": 2, "widows": 2 },
+    "h1": { "fontSize": 18, "fontWeight": "bold", "marginTop": 0, "marginBottom": 12, "keepWithNext": true }
+  },
+  "onAfterSettle": "buildOutline",
+  "elements": [
+    {
+      "type": "p",
+      "content": "Pending outline generation",
+      "properties": {
+        "sourceId": "outline-anchor"
+      }
+    },
+    {
+      "type": "h1",
+      "content": "Chapter One",
+      "properties": {
+        "sourceId": "chapter-one",
+        "semanticRole": "h1"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The first chapter body exists to give the generated outline something to discover."
+    },
+    {
+      "type": "h1",
+      "content": "Chapter Two",
+      "properties": {
+        "sourceId": "chapter-two",
+        "semanticRole": "h1"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The second chapter ensures the generated outline emits multiple block entries rather than a single text swap."
+    }
+  ]
+}
