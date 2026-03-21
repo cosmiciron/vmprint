@@ -75,7 +75,9 @@ export class LayoutProcessor extends TextProcessor {
         'scriptReplayPasses',
         'scriptDocQueryCalls',
         'scriptSetContentCalls',
-        'scriptReplaceCalls'
+        'scriptReplaceCalls',
+        'scriptInsertCalls',
+        'scriptRemoveCalls'
     ];
 
     setPackagerFactory(factory: ExternalPackagerFactory | undefined): void {
@@ -520,7 +522,7 @@ export class LayoutProcessor extends TextProcessor {
     simulate(elements: Element[]): Page[] {
         const { height: pageHeight, width: pageWidth } = this.getPageDimensions();
         const simulationElements = this.cloneElementsForSimulation(elements);
-        const maxScriptReplayPasses = 2;
+        const maxScriptReplayPasses = 3;
         const aggregateScriptProfile = Object.fromEntries(
             LayoutProcessor.SCRIPT_PROFILE_KEYS.map((key) => [key, 0])
         ) as Record<keyof LayoutProfileMetrics, number>;

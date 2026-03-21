@@ -233,6 +233,8 @@ export class LayoutSession {
         scriptDocQueryCalls: 0,
         scriptSetContentCalls: 0,
         scriptReplaceCalls: 0,
+        scriptInsertCalls: 0,
+        scriptRemoveCalls: 0,
         speculativeBranchCalls: 0,
         speculativeBranchMs: 0,
         speculativeBranchAcceptedCalls: 0,

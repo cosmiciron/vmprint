@@ -22,6 +22,8 @@ export type LayoutProfileMetrics = {
     scriptDocQueryCalls: number;
     scriptSetContentCalls: number;
     scriptReplaceCalls: number;
+    scriptInsertCalls: number;
+    scriptRemoveCalls: number;
     speculativeBranchCalls: number;
     speculativeBranchMs: number;
     speculativeBranchAcceptedCalls: number;

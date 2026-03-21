@@ -31,6 +31,8 @@ type ScriptingPerfRow = {
     scriptDocQueryCalls: number;
     scriptSetContentCalls: number;
     scriptReplaceCalls: number;
+    scriptInsertCalls: number;
+    scriptRemoveCalls: number;
 };
 
 function round(value: number): number {
@@ -93,7 +95,9 @@ async function run(): Promise<void> {
                 scriptReplayPasses: Number(profile?.scriptReplayPasses || 0),
                 scriptDocQueryCalls: Number(profile?.scriptDocQueryCalls || 0),
                 scriptSetContentCalls: Number(profile?.scriptSetContentCalls || 0),
-                scriptReplaceCalls: Number(profile?.scriptReplaceCalls || 0)
+                scriptReplaceCalls: Number(profile?.scriptReplaceCalls || 0),
+                scriptInsertCalls: Number(profile?.scriptInsertCalls || 0),
+                scriptRemoveCalls: Number(profile?.scriptRemoveCalls || 0)
             });
         }
 
@@ -117,7 +121,9 @@ async function run(): Promise<void> {
             scriptReplayPasses: average((row) => row.scriptReplayPasses),
             scriptDocQueryCalls: average((row) => row.scriptDocQueryCalls),
             scriptSetContentCalls: average((row) => row.scriptSetContentCalls),
-            scriptReplaceCalls: average((row) => row.scriptReplaceCalls)
+            scriptReplaceCalls: average((row) => row.scriptReplaceCalls),
+            scriptInsertCalls: average((row) => row.scriptInsertCalls),
+            scriptRemoveCalls: average((row) => row.scriptRemoveCalls)
         });
     }
 

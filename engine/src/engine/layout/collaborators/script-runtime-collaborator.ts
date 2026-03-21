@@ -15,6 +15,9 @@ type ScriptVm = {
         findByType(type: string): Element[];
         setContent(sourceId: string, content: string): boolean;
         replace(sourceId: string, elements: Element[]): boolean;
+        insertBefore(sourceId: string, elements: Element[]): boolean;
+        insertAfter(sourceId: string, elements: Element[]): boolean;
+        remove(sourceId: string): boolean;
     };
     readonly self?: {
         sourceId: string | null;
@@ -34,6 +37,8 @@ type ScriptVm = {
 type ReplaceResult =
     | { replaced: false }
     | { replaced: true; nextNodes: Element[] };
+
+type InsertPosition = 'before' | 'after';
 
 type ScriptPhase = 'beforeLayout' | 'resolve' | 'afterSettle';
 
@@ -163,6 +168,71 @@ function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Elem
         : { replaced: false };
 }
 
+function insertBySourceId(
+    nodes: Element[],
+    sourceId: string,
+    insertion: Element[],
+    position: InsertPosition
+): ReplaceResult {
+    let mutated = false;
+    const nextNodes: Element[] = [];
+
+    for (const node of nodes) {
+        if (String(node.properties?.sourceId || '') === sourceId) {
+            if (position === 'before') {
+                nextNodes.push(...cloneElementTree(insertion), node);
+            } else {
+                nextNodes.push(node, ...cloneElementTree(insertion));
+            }
+            mutated = true;
+            continue;
+        }
+
+        const nextNode: Element = { ...node };
+        if (Array.isArray(node.children) && node.children.length > 0) {
+            const childResult = insertBySourceId(node.children, sourceId, insertion, position);
+            if (childResult.replaced) {
+                nextNode.children = childResult.nextNodes;
+                mutated = true;
+            }
+        }
+        if (Array.isArray(node.zones) && node.zones.length > 0) {
+            let zoneMutated = false;
+            nextNode.zones = node.zones.map((zone) => {
+                if (!Array.isArray(zone.elements) || zone.elements.length === 0) return zone;
+                const zoneResult = insertBySourceId(zone.elements, sourceId, insertion, position);
+                if (!zoneResult.replaced) return zone;
+                zoneMutated = true;
+                return {
+                    ...zone,
+                    elements: zoneResult.nextNodes
+                };
+            });
+            if (zoneMutated) mutated = true;
+        }
+        if (Array.isArray(node.slots) && node.slots.length > 0) {
+            let slotMutated = false;
+            nextNode.slots = node.slots.map((slot) => {
+                if (!Array.isArray(slot.elements) || slot.elements.length === 0) return slot;
+                const slotResult = insertBySourceId(slot.elements, sourceId, insertion, position);
+                if (!slotResult.replaced) return slot;
+                slotMutated = true;
+                return {
+                    ...slot,
+                    elements: slotResult.nextNodes
+                };
+            });
+            if (slotMutated) mutated = true;
+        }
+
+        nextNodes.push(nextNode);
+    }
+
+    return mutated
+        ? { replaced: true, nextNodes }
+        : { replaced: false };
+}
+
 export class ScriptRuntimeCollaborator implements Collaborator {
     private readonly handlers = new Map<string, ScriptHandler>();
     private replayRequested = false;
@@ -254,6 +324,27 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                     this.elements.splice(0, this.elements.length, ...result.nextNodes);
                     session.recordProfile('scriptReplaceCalls', 1);
                     return true;
+                },
+                insertBefore: (sourceId, elements) => {
+                    const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+                    if (!result.replaced) return false;
+                    this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                    session.recordProfile('scriptInsertCalls', 1);
+                    return true;
+                },
+                insertAfter: (sourceId, elements) => {
+                    const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+                    if (!result.replaced) return false;
+                    this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                    session.recordProfile('scriptInsertCalls', 1);
+                    return true;
+                },
+                remove: (sourceId) => {
+                    const result = replaceBySourceId(this.elements, sourceId, []);
+                    if (!result.replaced) return false;
+                    this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                    session.recordProfile('scriptRemoveCalls', 1);
+                    return true;
                 }
             },
             self: self ? {
@@ -334,6 +425,27 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                     if (!result.replaced) return false;
                     this.elements.splice(0, this.elements.length, ...result.nextNodes);
                     session.recordProfile('scriptReplaceCalls', 1);
+                    return true;
+                },
+                insertBefore: (sourceId, elements) => {
+                    const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+                    if (!result.replaced) return false;
+                    this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                    session.recordProfile('scriptInsertCalls', 1);
+                    return true;
+                },
+                insertAfter: (sourceId, elements) => {
+                    const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+                    if (!result.replaced) return false;
+                    this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                    session.recordProfile('scriptInsertCalls', 1);
+                    return true;
+                },
+                remove: (sourceId) => {
+                    const result = replaceBySourceId(this.elements, sourceId, []);
+                    if (!result.replaced) return false;
+                    this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                    session.recordProfile('scriptRemoveCalls', 1);
                     return true;
                 }
             },

@@ -1,20 +1,22 @@
 {
   "fixture": "02-generated-outline.json",
   "pages": 2,
-  "simulateMs": 47.7,
-  "renderMs": 21.37,
-  "totalMs": 69.07,
+  "simulateMs": 47.32,
+  "renderMs": 29.13,
+  "totalMs": 76.45,
   "scriptHandlerCalls": 2,
-  "scriptHandlerMs": 0.24,
+  "scriptHandlerMs": 0.33,
   "scriptBeforeLayoutCalls": 0,
   "scriptBeforeLayoutMs": 0,
   "scriptResolveCalls": 0,
   "scriptResolveMs": 0,
   "scriptAfterSettleCalls": 2,
-  "scriptAfterSettleMs": 0.24,
+  "scriptAfterSettleMs": 0.33,
   "scriptReplayRequests": 1,
   "scriptReplayPasses": 1,
   "scriptDocQueryCalls": 2,
   "scriptSetContentCalls": 0,
-  "scriptReplaceCalls": 1
+  "scriptReplaceCalls": 1,
+  "scriptInsertCalls": 0,
+  "scriptRemoveCalls": 0
 }
