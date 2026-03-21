@@ -47,6 +47,8 @@ Current surface:
 
 - `doc_onLoad()`
 - `doc_onReady()`
+- `doc_onRefresh()`
+- `doc_onDocumentChanged()`
 - `<elementName>_onCreate()`
 
 ### Message Handlers
@@ -97,6 +99,10 @@ And the current helper functions are:
 - `insertElementsAfter(target, elements)`
 - `deleteElement(target)`
 
+Current settled-fact helpers on `doc`:
+
+- `doc.getPageCount()`
+
 `self` is always the current receiver.
 Event parameters are only for event payload.
 
@@ -127,7 +133,7 @@ They should only need:
 
 Current core shape:
 
-- `msg.name`
+- `msg.subject`
 - `msg.payload`
 
 ## Update Semantics
@@ -147,6 +153,21 @@ The engine then classifies the effect natively as:
 - `geometry`
 
 That is the same deeper capability the engine already proved in its actor-driven experiments.
+
+## Lifecycle Semantics
+
+The public lifecycle should match user perception, not engine settlement jargon.
+
+- `onLoad`
+  once, before layout
+- `onReady`
+  once, the first time the document becomes ready
+- `onDocumentChanged`
+  later, when content or structure changed
+- `onRefresh`
+  later, when the realized document refreshed
+
+This means the engine may internally settle many times, but the user does not need to treat every later settle as another `onReady`.
 
 ## Authoring Envelope
 

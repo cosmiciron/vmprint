@@ -41,6 +41,7 @@ import {
 import { SourcePositionArtifactCollaborator } from './collaborators/source-position-artifact-collaborator';
 import { ScriptRuntimeCollaborator } from './collaborators/script-runtime-collaborator';
 import { ScriptRuntimeHost } from './script-runtime-host';
+import type { ScriptLifecycleState } from './script-runtime-host';
 import { TransformCapabilityArtifactCollaborator } from './collaborators/transform-capability-artifact-collaborator';
 import { TransformArtifactCollaborator } from './collaborators/transform-artifact-collaborator';
 import { ZoneDebugOverlayCollaborator } from './collaborators/zone-debug-overlay-collaborator';
@@ -535,9 +536,15 @@ export class LayoutProcessor extends TextProcessor {
         const aggregateScriptProfile = Object.fromEntries(
             LayoutProcessor.SCRIPT_PROFILE_KEYS.map((key) => [key, 0])
         ) as Record<keyof LayoutProfileMetrics, number>;
+        const scriptLifecycleState = this.config.scripting
+            ? new ScriptRuntimeHost(this.config.scripting).createLifecycleState()
+            : null;
 
         for (let pass = 0; pass < maxScriptReplayPasses; pass++) {
-            const { collaborators, scriptRuntimeCollaborator, scriptRuntimeHost } = this.createLayoutCollaborators(simulationElements);
+            const { collaborators, scriptRuntimeCollaborator, scriptRuntimeHost } = this.createLayoutCollaborators(
+                simulationElements,
+                scriptLifecycleState
+            );
             this.activeScriptRuntimeHost = scriptRuntimeHost;
             const session = new LayoutSession({
                 runtime: this.getRuntime(),
@@ -548,7 +555,7 @@ export class LayoutProcessor extends TextProcessor {
             const packagers = createPackagers(simulationElements, this, this.packagerFactory);
             let scriptDocumentPackager: ScriptDocumentPackager | null = null;
             if (scriptRuntimeHost?.hasDocumentAfterSettleHandler()) {
-                scriptDocumentPackager = new ScriptDocumentPackager(scriptRuntimeHost, simulationElements);
+                scriptDocumentPackager = new ScriptDocumentPackager(scriptRuntimeHost, simulationElements, scriptLifecycleState!);
                 packagers.push(scriptDocumentPackager);
             }
             for (const packager of packagers) {
@@ -1048,7 +1055,7 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 
-    private createLayoutCollaborators(elements: Element[]): {
+    private createLayoutCollaborators(elements: Element[], scriptLifecycleState: ScriptLifecycleState | null): {
         collaborators: Collaborator[];
         scriptRuntimeCollaborator: ScriptRuntimeCollaborator | null;
         scriptRuntimeHost: ScriptRuntimeHost | null;
@@ -1057,7 +1064,7 @@ export class LayoutProcessor extends TextProcessor {
             ? new ScriptRuntimeHost(this.config.scripting)
             : null;
         const scriptRuntimeCollaborator = scriptRuntimeHost
-            ? new ScriptRuntimeCollaborator(scriptRuntimeHost, elements)
+            ? new ScriptRuntimeCollaborator(scriptRuntimeHost, elements, scriptLifecycleState ?? scriptRuntimeHost.createLifecycleState())
             : null;
         return {
             scriptRuntimeHost,

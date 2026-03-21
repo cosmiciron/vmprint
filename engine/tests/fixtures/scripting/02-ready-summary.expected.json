@@ -1,0 +1,20 @@
+{
+  "expectedTextIncludes": [
+    "Document settled across 1 page(s) with 2 title element(s).",
+    "First title discovered: Opening Notes."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "summary",
+      "content": "Waiting for the document to become ready."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 2,
+    "readyCalls": 1,
+    "docQueryCalls": 2,
+    "messageSendCalls": 1,
+    "messageHandlerCalls": 1,
+    "setContentCalls": 1
+  }
+}

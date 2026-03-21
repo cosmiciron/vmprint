@@ -17,6 +17,10 @@ export type LayoutProfileMetrics = {
     createMs: number;
     readyCalls: number;
     readyMs: number;
+    refreshCalls: number;
+    refreshMs: number;
+    documentChangedCalls: number;
+    documentChangedMs: number;
     replayRequests: number;
     replayPasses: number;
     docQueryCalls: number;

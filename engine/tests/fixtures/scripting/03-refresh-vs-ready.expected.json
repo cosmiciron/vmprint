@@ -1,0 +1,30 @@
+{
+  "expectedTextIncludes": [
+    "Lifecycle log:",
+    "- ready",
+    "- document changed",
+    "- refresh",
+    "The document grew after its first ready event."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "eventLog",
+      "content": "Lifecycle log:"
+    },
+    {
+      "sourceId": "expander",
+      "content": "This paragraph is waiting to receive extra content after the first ready event."
+    }
+  ],
+  "profileAtLeast": {
+    "readyCalls": 1,
+    "refreshCalls": 1,
+    "documentChangedCalls": 1,
+    "messageSendCalls": 3,
+    "messageHandlerCalls": 3,
+    "setContentCalls": 2
+  },
+  "profileEquals": {
+    "readyCalls": 1
+  }
+}

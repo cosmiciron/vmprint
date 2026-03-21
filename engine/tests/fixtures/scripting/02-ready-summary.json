@@ -1,0 +1,70 @@
+---
+methods:
+  doc_onReady(): |
+    const majorTitles = doc.findElementsByType("h1")
+    const minorTitles = doc.findElementsByType("h2")
+    const titleCount = majorTitles.length + minorTitles.length
+    const firstTitle = majorTitles[0] || minorTitles[0] || null
+    sendMessage("summary", {
+      subject: "ready-summary",
+      payload: {
+        pageCount: doc.getPageCount(),
+        titleCount,
+        firstTitle: firstTitle ? firstTitle.content : "None"
+      }
+    })
+
+  summary_onMessage(from, msg): |
+    if (!from || from.name !== "doc") return
+    if (!msg || msg.subject !== "ready-summary") return
+
+    const payload = msg.payload || {}
+    const pageCount = Number(payload.pageCount || 0)
+    const titleCount = Number(payload.titleCount || 0)
+    const firstTitle = String(payload.firstTitle || "None")
+
+    setContent(self, `Document settled across ${pageCount} page(s) with ${titleCount} title element(s).\n\nFirst title discovered: ${firstTitle}.`)
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "summary",
+      "content": "Waiting for the document to become ready.",
+      "properties": {
+        "style": {
+          "fontSize": 18,
+          "lineHeight": 1.5,
+          "marginBottom": 20
+        }
+      }
+    },
+    {
+      "type": "h1",
+      "name": "openingHeading",
+      "content": "Opening Notes"
+    },
+    {
+      "type": "p",
+      "content": "This document is intentionally short, but it still gives the ready handler something real to inspect after settlement. The summary block near the top should update itself from settled facts rather than from guessed values."
+    },
+    {
+      "type": "h2",
+      "name": "detailHeading",
+      "content": "Further Detail"
+    },
+    {
+      "type": "p",
+      "content": "A second heading helps prove that the document-level ready event can read the heading outline and pass that information down to a named element through messaging."
+    }
+  ]
+}

@@ -1,11 +1,9 @@
 import type { Element } from '../../types';
 import type { ActorSignal } from '../actor-event-bus';
-import { HEADING_SIGNAL_TOPIC } from '../collaborators/heading-signal-collaborator';
 import type { FlowBox } from '../layout-core-types';
 import type { LayoutProcessor } from '../layout-core';
 import type { LayoutSession } from '../layout-session';
 import { LayoutUtils } from '../layout-utils';
-import type { HeadingOutlineEntry } from '../simulation-report';
 import { ScriptRuntimeHost, type ScriptGlobals } from '../script-runtime-host';
 import { FlowBoxPackager } from './flow-box-packager';
 import type { PackagerIdentity } from './packager-identity';
@@ -21,7 +19,7 @@ import type {
 } from './packager-types';
 
 type ScriptMessage = {
-    name: string;
+    subject: string;
     payload?: unknown;
     from: string | null;
     to: string | null;
@@ -244,35 +242,25 @@ function createScriptMessageTopic(sourceId: string): string {
     return `script:message:${normalizedSourceId}`;
 }
 
-function toHeadingOutlineEntry(signal: ActorSignal): HeadingOutlineEntry | null {
-    const payload = signal.payload || {};
-    const heading = typeof payload.heading === 'string' ? payload.heading.trim() : '';
-    if (!heading) return null;
-    return {
-        sourceId: signal.publisherSourceId,
-        heading,
-        pageIndex: Math.max(0, Number(signal.pageIndex || 0)),
-        y: Number.isFinite(payload.y) ? Number(payload.y) : 0,
-        actorKind: signal.publisherActorKind,
-        sourceType: typeof payload.sourceType === 'string' ? payload.sourceType : undefined,
-        semanticRole: typeof payload.semanticRole === 'string' ? payload.semanticRole : undefined,
-        level: Number.isFinite(payload.level) ? Number(payload.level) : undefined
-    };
-}
-
-function buildHeadingSnapshot(context: PackagerContext): HeadingOutlineEntry[] {
-    return context.readActorSignals(HEADING_SIGNAL_TOPIC)
-        .map(toHeadingOutlineEntry)
-        .filter((entry): entry is HeadingOutlineEntry => !!entry)
-        .sort((a, b) => a.pageIndex - b.pageIndex || a.y - b.y || a.sourceId.localeCompare(b.sourceId));
+function toPublicScriptName(sourceId: string | null | undefined): string {
+    const trimmed = String(sourceId || '').trim();
+    if (!trimmed) return 'doc';
+    if (trimmed === 'system:script-document') return 'doc';
+    const prefixMatch = trimmed.match(/^(author|auto|gen|system):(.*)$/);
+    if (!prefixMatch) return trimmed;
+    const [, prefix, remainder] = prefixMatch;
+    if (prefix === 'system' && remainder === 'script-document') return 'doc';
+    return remainder.trim() || trimmed;
 }
 
 function parseScriptMessage(signal: ActorSignal, targetSourceId: string): ScriptMessage | null {
     const payload = signal.payload || {};
-    const name = typeof payload.name === 'string' ? payload.name : '';
-    if (!name) return null;
+    const subject = typeof payload.subject === 'string'
+        ? payload.subject
+        : (typeof payload.name === 'string' ? payload.name : '');
+    if (!subject) return null;
     return {
-        name,
+        subject,
         payload: payload.payload,
         from: typeof payload.from === 'string' ? payload.from : null,
         to: targetSourceId
@@ -330,11 +318,14 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         if (!targetSourceId || targetSourceId === 'doc') return false;
         const session = getCurrentLayoutSession(context);
         const message = typeof msg === 'string'
-            ? { name: msg }
-            : (msg && typeof msg === 'object' ? { ...(msg as Record<string, unknown>) } : { name: String(msg) });
-        if (typeof (message as Record<string, unknown>).name !== 'string' || !(message as Record<string, unknown>).name) {
-            (message as Record<string, unknown>).name = 'message';
+            ? { subject: msg }
+            : (msg && typeof msg === 'object' ? { ...(msg as Record<string, unknown>) } : { subject: String(msg) });
+        if (typeof (message as Record<string, unknown>).subject !== 'string' || !(message as Record<string, unknown>).subject) {
+            const legacyName = (message as Record<string, unknown>).name;
+            (message as Record<string, unknown>).subject =
+                typeof legacyName === 'string' && legacyName ? legacyName : 'message';
         }
+        delete (message as Record<string, unknown>).name;
         session.recordProfile('messageSendCalls', 1);
         context.publishActorSignal({
             topic: createScriptMessageTopic(targetSourceId),
@@ -398,7 +389,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         };
     }
 
-    private createDocRef(session: LayoutSession): Record<string, unknown> {
+    private createDocRef(session: LayoutSession, context: PackagerContext): Record<string, unknown> {
         return {
             name: 'doc',
             type: 'document',
@@ -414,12 +405,19 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 return findByType(this.elements, type).map((node) => this.createElementRef(session, node, () => false));
+            },
+            getPageCount: () => {
+                session.recordProfile('docQueryCalls', 1);
+                const finalizedSignals = context.readActorSignals('pagination:finalized');
+                const latest = finalizedSignals[finalizedSignals.length - 1];
+                const total = latest?.payload?.totalPageCount;
+                return Number.isFinite(total) ? Number(total) : 0;
             }
         };
     }
 
     private createGlobals(session: LayoutSession, context: PackagerContext): ScriptGlobals {
-        const docRef = this.createDocRef(session);
+        const docRef = this.createDocRef(session, context);
         const findElementByName = (name: string) => {
             session.recordProfile('docQueryCalls', 1);
             const node = findBySourceId(this.elements, name);
@@ -550,7 +548,9 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 'onMessage',
                 this.createGlobals(session, context),
                 {
-                    from: message.from ? { name: message.from } : { name: 'doc', type: 'document' },
+                    from: message.from
+                        ? { name: toPublicScriptName(message.from) }
+                        : { name: 'doc', type: 'document' },
                     msg: message
                 },
                 session

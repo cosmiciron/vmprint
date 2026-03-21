@@ -1,10 +1,10 @@
 import type { Element } from '../../types';
 import type { Collaborator } from '../layout-session-types';
 import type { LayoutSession } from '../layout-session';
-import { ScriptRuntimeHost, type ScriptGlobals } from '../script-runtime-host';
+import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../script-runtime-host';
 
 type ScriptMessage = {
-    name: string;
+    subject: string;
     payload?: unknown;
     from: string | null;
     to: string | null;
@@ -208,7 +208,8 @@ export class ScriptRuntimeCollaborator implements Collaborator {
 
     constructor(
         readonly host: ScriptRuntimeHost,
-        private readonly elements: Element[]
+        private readonly elements: Element[],
+        private readonly lifecycleState: ScriptLifecycleState
     ) { }
 
     private recordReplayRequest(session: LayoutSession): void {
@@ -385,11 +386,14 @@ export class ScriptRuntimeCollaborator implements Collaborator {
             ? sender.properties.sourceId
             : null;
         const message = typeof msg === 'string'
-            ? { name: msg }
-            : (msg && typeof msg === 'object' ? { ...(msg as Record<string, unknown>) } : { name: String(msg) });
-        if (typeof (message as Record<string, unknown>).name !== 'string' || !(message as Record<string, unknown>).name) {
-            (message as Record<string, unknown>).name = 'message';
+            ? { subject: msg }
+            : (msg && typeof msg === 'object' ? { ...(msg as Record<string, unknown>) } : { subject: String(msg) });
+        if (typeof (message as Record<string, unknown>).subject !== 'string' || !(message as Record<string, unknown>).subject) {
+            const legacyName = (message as Record<string, unknown>).name;
+            (message as Record<string, unknown>).subject =
+                typeof legacyName === 'string' && legacyName ? legacyName : 'message';
         }
+        delete (message as Record<string, unknown>).name;
         const globals = this.createGlobals(session, {
             self: target,
         });
@@ -411,19 +415,25 @@ export class ScriptRuntimeCollaborator implements Collaborator {
 
     onSimulationStart(session: LayoutSession): void {
         this.replayRequested = false;
-        const documentHandlerName = this.host.getDocumentHandlerName('onLoad');
+        const documentHandlerName = !this.lifecycleState.didLoad
+            ? this.host.getDocumentHandlerName('onLoad')
+            : null;
         if (documentHandlerName) {
             this.host.runHandler(documentHandlerName, 'onLoad', this.createGlobals(session), {}, session);
+            this.lifecycleState.didLoad = true;
         }
 
         for (const element of collectElements(this.elements)) {
             const sourceId = typeof element.properties?.sourceId === 'string' ? element.properties.sourceId : null;
+            if (!sourceId || this.lifecycleState.createdElements.has(sourceId)) continue;
             const explicitHandlerName = typeof element.properties?.onResolve === 'string'
                 ? element.properties.onResolve
                 : null;
             const handlerName = this.host.getElementHandlerName(sourceId, 'onCreate', explicitHandlerName);
-            if (!handlerName) continue;
-            this.host.runHandler(handlerName, 'onCreate', this.createGlobals(session, { self: element }), {}, session);
+            if (handlerName) {
+                this.host.runHandler(handlerName, 'onCreate', this.createGlobals(session, { self: element }), {}, session);
+            }
+            this.lifecycleState.createdElements.add(sourceId);
         }
     }
 

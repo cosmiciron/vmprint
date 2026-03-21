@@ -1,8 +1,8 @@
 import { performance } from 'node:perf_hooks';
-import type { LayoutScriptingConfig } from '../types';
+import type { Element, LayoutScriptingConfig } from '../types';
 import type { LayoutSession } from './layout-session';
 
-export type ScriptPhase = 'onLoad' | 'onCreate' | 'onReady' | 'onMessage';
+export type ScriptPhase = 'onLoad' | 'onCreate' | 'onReady' | 'onRefresh' | 'onDocumentChanged' | 'onMessage';
 
 export type ScriptGlobals = {
     doc?: unknown;
@@ -23,6 +23,13 @@ type CompiledHandler = {
     name: string;
     declaredParams: string[];
     invoke: (...args: unknown[]) => void;
+};
+
+export type ScriptLifecycleState = {
+    didLoad: boolean;
+    didReady: boolean;
+    createdElements: Set<string>;
+    lastSettledDigest: string | null;
 };
 
 const GLOBAL_PARAM_ORDER = [
@@ -65,7 +72,15 @@ function parseMethodDeclaration(rawDeclaration: string): { name: string; params:
 }
 
 function normalizeConventionTarget(value: string): string {
-    return String(value || '').trim();
+    const trimmed = String(value || '').trim();
+    if (!trimmed) return '';
+    const prefixMatch = trimmed.match(/^(author|auto|gen|system):(.*)$/);
+    if (!prefixMatch) return trimmed;
+    const [, prefix, remainder] = prefixMatch;
+    if (prefix === 'system' && remainder === 'script-document') {
+        return 'doc';
+    }
+    return remainder.trim();
 }
 
 export class ScriptRuntimeHost {
@@ -88,7 +103,7 @@ export class ScriptRuntimeHost {
         return `${normalizeConventionTarget(targetName)}_${phase}`;
     }
 
-    hasElementHandler(sourceId: string | null | undefined, phase: Exclude<ScriptPhase, 'onLoad' | 'onReady'>): boolean {
+    hasElementHandler(sourceId: string | null | undefined, phase: Exclude<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh' | 'onDocumentChanged'>): boolean {
         const normalized = normalizeConventionTarget(String(sourceId || ''));
         if (!normalized) return false;
         return this.handlers.has(this.buildConventionHandlerName(normalized, phase));
@@ -96,7 +111,7 @@ export class ScriptRuntimeHost {
 
     getElementHandlerName(
         sourceId: string | null | undefined,
-        phase: Exclude<ScriptPhase, 'onLoad' | 'onReady'>,
+        phase: Exclude<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh' | 'onDocumentChanged'>,
         explicitHandlerName?: string | null
     ): string | null {
         if (typeof explicitHandlerName === 'string' && explicitHandlerName.trim()) {
@@ -108,7 +123,7 @@ export class ScriptRuntimeHost {
         return this.handlers.has(conventionName) ? conventionName : null;
     }
 
-    getDocumentHandlerName(phase: Extract<ScriptPhase, 'onLoad' | 'onReady'>): string | null {
+    getDocumentHandlerName(phase: Extract<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh' | 'onDocumentChanged'>): string | null {
         if (phase === 'onLoad' && typeof this.scripting?.onBeforeLayout === 'string' && this.scripting.onBeforeLayout.trim()) {
             return this.scripting.onBeforeLayout.trim();
         }
@@ -121,7 +136,22 @@ export class ScriptRuntimeHost {
     }
 
     hasDocumentAfterSettleHandler(): boolean {
-        return this.getDocumentHandlerName('onReady') !== null;
+        return this.getDocumentHandlerName('onReady') !== null
+            || this.getDocumentHandlerName('onRefresh') !== null
+            || this.getDocumentHandlerName('onDocumentChanged') !== null;
+    }
+
+    createLifecycleState(): ScriptLifecycleState {
+        return {
+            didLoad: false,
+            didReady: false,
+            createdElements: new Set<string>(),
+            lastSettledDigest: null
+        };
+    }
+
+    createDocumentDigest(elements: Element[]): string {
+        return JSON.stringify(elements);
     }
 
     runHandler(
@@ -148,6 +178,12 @@ export class ScriptRuntimeHost {
             case 'onReady':
                 session.recordProfile('readyCalls', 1);
                 break;
+            case 'onRefresh':
+                session.recordProfile('refreshCalls', 1);
+                break;
+            case 'onDocumentChanged':
+                session.recordProfile('documentChangedCalls', 1);
+                break;
             case 'onMessage':
                 session.recordProfile('messageHandlerCalls', 1);
                 break;
@@ -170,6 +206,12 @@ export class ScriptRuntimeHost {
                 break;
             case 'onReady':
                 session.recordProfile('readyMs', elapsed);
+                break;
+            case 'onRefresh':
+                session.recordProfile('refreshMs', elapsed);
+                break;
+            case 'onDocumentChanged':
+                session.recordProfile('documentChangedMs', elapsed);
                 break;
             case 'onMessage':
                 break;

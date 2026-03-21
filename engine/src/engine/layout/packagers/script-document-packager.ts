@@ -1,11 +1,8 @@
 import type { Element } from '../../types';
-import type { ActorSignal } from '../actor-event-bus';
-import { HEADING_SIGNAL_TOPIC } from '../collaborators/heading-signal-collaborator';
 import type { LayoutProcessor } from '../layout-core';
 import type { LayoutSession } from '../layout-session';
 import { LayoutUtils } from '../layout-utils';
-import type { HeadingOutlineEntry } from '../simulation-report';
-import { ScriptRuntimeHost, type ScriptGlobals } from '../script-runtime-host';
+import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../script-runtime-host';
 import type {
     LayoutBox,
     ObservationResult,
@@ -215,29 +212,6 @@ function createScriptMessageTopic(sourceId: string): string {
     return `script:message:${normalizedSourceId}`;
 }
 
-function toHeadingOutlineEntry(signal: ActorSignal): HeadingOutlineEntry | null {
-    const payload = signal.payload || {};
-    const heading = typeof payload.heading === 'string' ? payload.heading.trim() : '';
-    if (!heading) return null;
-    return {
-        sourceId: signal.publisherSourceId,
-        heading,
-        pageIndex: Math.max(0, Number(signal.pageIndex || 0)),
-        y: Number.isFinite(payload.y) ? Number(payload.y) : 0,
-        actorKind: signal.publisherActorKind,
-        sourceType: typeof payload.sourceType === 'string' ? payload.sourceType : undefined,
-        semanticRole: typeof payload.semanticRole === 'string' ? payload.semanticRole : undefined,
-        level: Number.isFinite(payload.level) ? Number(payload.level) : undefined
-    };
-}
-
-function buildHeadingSnapshot(context: PackagerContext): HeadingOutlineEntry[] {
-    return context.readActorSignals(HEADING_SIGNAL_TOPIC)
-        .map(toHeadingOutlineEntry)
-        .filter((entry): entry is HeadingOutlineEntry => !!entry)
-        .sort((a, b) => a.pageIndex - b.pageIndex || a.y - b.y || a.sourceId.localeCompare(b.sourceId));
-}
-
 export class ScriptDocumentPackager implements PackagerUnit {
     readonly actorId = 'actor:system:script-document:script-document:0';
     readonly sourceId = 'system:script-document';
@@ -247,8 +221,18 @@ export class ScriptDocumentPackager implements PackagerUnit {
 
     constructor(
         private readonly host: ScriptRuntimeHost,
-        private readonly elements: Element[]
+        private readonly elements: Element[],
+        private readonly lifecycleState: ScriptLifecycleState
     ) { }
+
+    private createDocumentFrontier() {
+        return {
+            pageIndex: 0,
+            actorIndex: 0,
+            actorId: this.actorId,
+            sourceId: this.sourceId
+        };
+    }
 
     private resolveSourceId(target: unknown): string | null {
         if (target && typeof target === 'object' && (target as Record<string, unknown>).type === 'document') {
@@ -280,7 +264,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
         };
     }
 
-    private createDocRef(session: LayoutSession): Record<string, unknown> {
+    private createDocRef(session: LayoutSession, context?: PackagerContext): Record<string, unknown> {
         return {
             name: 'doc',
             type: 'document',
@@ -296,12 +280,20 @@ export class ScriptDocumentPackager implements PackagerUnit {
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 return findByType(this.elements, type).map((node) => this.createElementRef(node));
+            },
+            getPageCount: () => {
+                session.recordProfile('docQueryCalls', 1);
+                if (!context) return 0;
+                const finalizedSignals = context.readActorSignals('pagination:finalized');
+                const latest = finalizedSignals[finalizedSignals.length - 1];
+                const total = latest?.payload?.totalPageCount;
+                return Number.isFinite(total) ? Number(total) : 0;
             }
         };
     }
 
     private createGlobals(session: LayoutSession, context: PackagerContext): ScriptGlobals {
-        const docRef = this.createDocRef(session);
+        const docRef = this.createDocRef(session, context);
         const setContent = (target: unknown, content: string) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
@@ -355,11 +347,14 @@ export class ScriptDocumentPackager implements PackagerUnit {
                 const targetSourceId = this.resolveSourceId(recipient);
                 if (!targetSourceId || targetSourceId === 'doc') return false;
                 const message = typeof msg === 'string'
-                    ? { name: msg }
-                    : (msg && typeof msg === 'object' ? { ...(msg as Record<string, unknown>) } : { name: String(msg) });
-                if (typeof (message as Record<string, unknown>).name !== 'string' || !(message as Record<string, unknown>).name) {
-                    (message as Record<string, unknown>).name = 'message';
+                    ? { subject: msg }
+                    : (msg && typeof msg === 'object' ? { ...(msg as Record<string, unknown>) } : { subject: String(msg) });
+                if (typeof (message as Record<string, unknown>).subject !== 'string' || !(message as Record<string, unknown>).subject) {
+                    const legacyName = (message as Record<string, unknown>).name;
+                    (message as Record<string, unknown>).subject =
+                        typeof legacyName === 'string' && legacyName ? legacyName : 'message';
                 }
+                delete (message as Record<string, unknown>).name;
                 session.recordProfile('messageSendCalls', 1);
                 context.publishActorSignal({
                     topic: createScriptMessageTopic(targetSourceId),
@@ -414,8 +409,16 @@ export class ScriptDocumentPackager implements PackagerUnit {
     }
 
     updateCommittedState(context: PackagerContext): ObservationResult {
-        const handlerName = this.host.getDocumentHandlerName('onReady');
-        if (!handlerName) {
+        const onReadyHandlerName = !this.lifecycleState.didReady
+            ? this.host.getDocumentHandlerName('onReady')
+            : null;
+        const onRefreshHandlerName = this.lifecycleState.didReady
+            ? this.host.getDocumentHandlerName('onRefresh')
+            : null;
+        const onDocumentChangedHandlerName = this.lifecycleState.didReady
+            ? this.host.getDocumentHandlerName('onDocumentChanged')
+            : null;
+        if (!onReadyHandlerName && !onRefreshHandlerName && !onDocumentChangedHandlerName) {
             return { changed: false, geometryChanged: false, updateKind: 'none' };
         }
 
@@ -427,8 +430,44 @@ export class ScriptDocumentPackager implements PackagerUnit {
 
         const session = getCurrentLayoutSession(context);
         const globals = this.createGlobals(session, context);
-        this.host.runHandler(handlerName, 'onReady', globals, {}, session);
-        return { changed: false, geometryChanged: false, updateKind: 'none' };
+        const beforeDigest = this.host.createDocumentDigest(this.elements);
+
+        if (!this.lifecycleState.didReady) {
+            if (onReadyHandlerName) {
+                this.host.runHandler(onReadyHandlerName, 'onReady', globals, {}, session);
+            }
+            const afterDigest = this.host.createDocumentDigest(this.elements);
+            const changed = beforeDigest !== afterDigest;
+            this.lifecycleState.didReady = true;
+            this.lifecycleState.lastSettledDigest = beforeDigest;
+            return changed
+                ? {
+                    changed: true,
+                    geometryChanged: true,
+                    updateKind: 'geometry',
+                    earliestAffectedFrontier: this.createDocumentFrontier()
+                }
+                : { changed: false, geometryChanged: false, updateKind: 'none' };
+        }
+
+        const documentChanged = this.lifecycleState.lastSettledDigest !== null && this.lifecycleState.lastSettledDigest !== beforeDigest;
+        if (documentChanged && onDocumentChangedHandlerName) {
+            this.host.runHandler(onDocumentChangedHandlerName, 'onDocumentChanged', globals, {}, session);
+        }
+        if (onRefreshHandlerName) {
+            this.host.runHandler(onRefreshHandlerName, 'onRefresh', globals, {}, session);
+        }
+        const afterDigest = this.host.createDocumentDigest(this.elements);
+        const changed = beforeDigest !== afterDigest;
+        this.lifecycleState.lastSettledDigest = beforeDigest;
+        return changed
+            ? {
+                changed: true,
+                geometryChanged: true,
+                updateKind: 'geometry',
+                earliestAffectedFrontier: this.createDocumentFrontier()
+            }
+            : { changed: false, geometryChanged: false, updateKind: 'none' };
     }
 
     split(): PackagerSplitResult {

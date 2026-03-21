@@ -92,6 +92,8 @@ Current convention:
 
 - `doc_onLoad()`
 - `doc_onReady()`
+- `doc_onRefresh()`
+- `doc_onDocumentChanged()`
 - `<elementName>_onCreate()`
 - `<elementName>_onMessage(from, msg)`
 
@@ -103,7 +105,7 @@ methods:
     setContent("greeting", "Hello, world!")
 
   summary_onMessage(from, msg): |
-    if (msg.name !== "refresh") return
+    if (msg.subject !== "refresh") return
     self.setContent("Updated")
 ```
 
@@ -126,6 +128,8 @@ Implemented now:
 - document:
   - `onLoad`
   - `onReady`
+  - `onRefresh`
+  - `onDocumentChanged`
 - elements:
   - `onCreate`
   - `onMessage`
@@ -134,6 +138,19 @@ Planned next:
 
 - page events
 - richer element lifecycle events such as split/move/repackage
+
+### Document lifecycle meaning
+
+- `onLoad`
+  Called once before layout.
+- `onReady`
+  Called once, the first time the document becomes ready.
+- `onDocumentChanged`
+  Called on later cycles when the document content or structure changed.
+- `onRefresh`
+  Called on later cycles when the realized document refreshes.
+
+This distinction is intentional. `onReady` should match user expectation and not re-fire just because the engine internally settles again.
 
 ## Current Globals
 
@@ -148,6 +165,7 @@ Current helpers:
 - `doc.findElementByName(name)`
 - `doc.findElementsByRole(role)`
 - `doc.findElementsByType(type)`
+- `doc.getPageCount()`
 
 ### `page`
 
@@ -195,8 +213,8 @@ The helper target can be:
 Examples:
 
 ```js
-sendMessage("summary", { name: "refresh" })
-sendMessage(doc, { name: "refreshAll" })
+sendMessage("summary", { subject: "refresh" })
+sendMessage(doc, { subject: "refreshAll" })
 
 const heading = findElementByName("chapterTitle")
 setContent(heading, "Act I")
@@ -208,7 +226,7 @@ Sending:
 
 ```js
 sendMessage("summary", {
-  name: "refresh",
+  subject: "refresh",
   payload: {
     total: 3
   }
@@ -225,10 +243,12 @@ summary_onMessage(from, msg)
 
 Current expected shape:
 
-- `msg.name`
+- `msg.subject`
 - `msg.payload`
 
 `from` is the sender reference.
+
+When the document sends the message, `from.name` is `doc`.
 
 ## Update Model
 
@@ -276,6 +296,35 @@ methods:
     }
   ]
 }
+```
+
+## Ready Example
+
+```yaml
+---
+methods:
+  doc_onReady(): |
+    const majorTitles = doc.findElementsByType("h1")
+    const minorTitles = doc.findElementsByType("h2")
+    const titleCount = majorTitles.length + minorTitles.length
+    const firstTitle = majorTitles[0] || minorTitles[0] || null
+    sendMessage("summary", {
+      subject: "ready-summary",
+      payload: {
+        pageCount: doc.getPageCount(),
+        titleCount,
+        firstTitle: firstTitle ? firstTitle.content : "None"
+      }
+    })
+
+  summary_onMessage(from, msg): |
+    if (!from || from.name !== "doc") return
+    if (msg.subject !== "ready-summary") return
+    setContent(
+      self,
+      `Document settled across ${msg.payload.pageCount} page(s).\n\nFirst title: ${msg.payload.firstTitle}.`
+    )
+---
 ```
 
 ## Notes

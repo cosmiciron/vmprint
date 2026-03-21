@@ -26,6 +26,10 @@ type ScriptingPerfRow = {
     createMs: number;
     readyCalls: number;
     readyMs: number;
+    refreshCalls: number;
+    refreshMs: number;
+    documentChangedCalls: number;
+    documentChangedMs: number;
     replayRequests: number;
     replayPasses: number;
     docQueryCalls: number;
@@ -93,6 +97,10 @@ async function run(): Promise<void> {
                 createMs: round(Number(profile?.createMs || 0)),
                 readyCalls: Number(profile?.readyCalls || 0),
                 readyMs: round(Number(profile?.readyMs || 0)),
+                refreshCalls: Number(profile?.refreshCalls || 0),
+                refreshMs: round(Number(profile?.refreshMs || 0)),
+                documentChangedCalls: Number(profile?.documentChangedCalls || 0),
+                documentChangedMs: round(Number(profile?.documentChangedMs || 0)),
                 replayRequests: Number(profile?.replayRequests || 0),
                 replayPasses: Number(profile?.replayPasses || 0),
                 docQueryCalls: Number(profile?.docQueryCalls || 0),
@@ -121,6 +129,10 @@ async function run(): Promise<void> {
             createMs: average((row) => row.createMs),
             readyCalls: average((row) => row.readyCalls),
             readyMs: average((row) => row.readyMs),
+            refreshCalls: average((row) => row.refreshCalls),
+            refreshMs: average((row) => row.refreshMs),
+            documentChangedCalls: average((row) => row.documentChangedCalls),
+            documentChangedMs: average((row) => row.documentChangedMs),
             replayRequests: average((row) => row.replayRequests),
             replayPasses: average((row) => row.replayPasses),
             docQueryCalls: average((row) => row.docQueryCalls),
