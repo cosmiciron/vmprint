@@ -278,6 +278,8 @@ The engine merges front-matter methods and JSON body fields into one normalized 
 
 ## 8. Query and Mutation Model
 
+For the growing concrete surface, see [SCRIPTING-API.md](c:\Users\cosmic\Projects\vmprint\documents\SCRIPTING-API.md).
+
 For scripting to be useful, handlers need a small but powerful document API.
 
 The first scripting surface should support:
@@ -289,20 +291,22 @@ The first scripting surface should support:
 - replace nodes
 - request replay or resettlement when geometry changes
 
-The surface currently implemented is narrower:
+The surface currently implemented is:
 
 - `vm.doc.get(sourceId)`
 - `vm.doc.findByRole(role)`
 - `vm.doc.findByType(type)`
 - `vm.doc.setContent(sourceId, content)`
 - `vm.doc.replace(sourceId, elements)`
+- `vm.doc.insertBefore(sourceId, elements)`
+- `vm.doc.insertAfter(sourceId, elements)`
+- `vm.doc.remove(sourceId)`
 - `vm.self.setContent(...)`
 - `vm.self.replace(...)`
+- `vm.report.getPageCount()`
 - `vm.report.getHeadings()`
 - `vm.report.getSourcePositions()`
 - `vm.requestReplay()`
-
-Insertion helpers such as `insertBefore(...)` and `insertAfter(...)` remain future work.
 
 The engine already tracks much of the identity needed for this through:
 
