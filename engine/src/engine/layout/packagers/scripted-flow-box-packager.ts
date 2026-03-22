@@ -6,6 +6,7 @@ import type { LayoutSession } from '../layout-session';
 import { LayoutUtils } from '../layout-utils';
 import { ScriptRuntimeHost, type ScriptGlobals } from '../script-runtime-host';
 import { FlowBoxPackager } from './flow-box-packager';
+import { createPackagers, type ExternalPackagerFactory } from './create-packagers';
 import type { PackagerIdentity } from './packager-identity';
 import { createFlowBoxPackagerIdentity } from './packager-identity';
 import type {
@@ -30,11 +31,19 @@ type FlowBoxShaper = {
     shapeNormalizedFlowBlock(block: any): FlowBox;
 };
 
+type ScriptPackagerFactoryProvider = LayoutProcessor & {
+    getPackagerFactory(): ExternalPackagerFactory | undefined;
+};
+
 type ReplaceResult =
     | { replaced: false }
     | { replaced: true; nextNodes: Element[] };
 
 type InsertPosition = 'before' | 'after';
+type StructuralOperation =
+    | { kind: 'delete' }
+    | { kind: 'replace'; elements: Element[] }
+    | { kind: 'insert'; elements: Element[]; position: InsertPosition };
 
 function cloneElementTree<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T;
@@ -118,20 +127,32 @@ function normalizeRuntimeElement(element: Element): Element {
     return cloned;
 }
 
-function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Element[]): ReplaceResult {
+function applyStructuralOperationBySourceId(
+    nodes: Element[],
+    sourceId: string,
+    operation: StructuralOperation
+): ReplaceResult {
     let mutated = false;
     const nextNodes: Element[] = [];
 
     for (const node of nodes) {
         if (String(node.properties?.sourceId || '') === sourceId) {
-            nextNodes.push(...cloneElementTree(replacement));
+            if (operation.kind === 'insert') {
+                if (operation.position === 'before') {
+                    nextNodes.push(...cloneElementTree(operation.elements), node);
+                } else {
+                    nextNodes.push(node, ...cloneElementTree(operation.elements));
+                }
+            } else if (operation.kind === 'replace') {
+                nextNodes.push(...cloneElementTree(operation.elements));
+            }
             mutated = true;
             continue;
         }
 
         const nextNode: Element = { ...node };
         if (Array.isArray(node.children) && node.children.length > 0) {
-            const childResult = replaceBySourceId(node.children, sourceId, replacement);
+            const childResult = applyStructuralOperationBySourceId(node.children, sourceId, operation);
             if (childResult.replaced) {
                 nextNode.children = childResult.nextNodes;
                 mutated = true;
@@ -141,7 +162,7 @@ function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Elem
             let zoneMutated = false;
             nextNode.zones = node.zones.map((zone) => {
                 if (!Array.isArray(zone.elements) || zone.elements.length === 0) return zone;
-                const zoneResult = replaceBySourceId(zone.elements, sourceId, replacement);
+                const zoneResult = applyStructuralOperationBySourceId(zone.elements, sourceId, operation);
                 if (!zoneResult.replaced) return zone;
                 zoneMutated = true;
                 return {
@@ -155,7 +176,7 @@ function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Elem
             let slotMutated = false;
             nextNode.slots = node.slots.map((slot) => {
                 if (!Array.isArray(slot.elements) || slot.elements.length === 0) return slot;
-                const slotResult = replaceBySourceId(slot.elements, sourceId, replacement);
+                const slotResult = applyStructuralOperationBySourceId(slot.elements, sourceId, operation);
                 if (!slotResult.replaced) return slot;
                 slotMutated = true;
                 return {
@@ -174,69 +195,30 @@ function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Elem
         : { replaced: false };
 }
 
+function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Element[]): ReplaceResult {
+    return applyStructuralOperationBySourceId(nodes, sourceId, {
+        kind: 'replace',
+        elements: replacement
+    });
+}
+
 function insertBySourceId(
     nodes: Element[],
     sourceId: string,
     insertion: Element[],
     position: InsertPosition
 ): ReplaceResult {
-    let mutated = false;
-    const nextNodes: Element[] = [];
+    return applyStructuralOperationBySourceId(nodes, sourceId, {
+        kind: 'insert',
+        elements: insertion,
+        position
+    });
+}
 
-    for (const node of nodes) {
-        if (String(node.properties?.sourceId || '') === sourceId) {
-            if (position === 'before') {
-                nextNodes.push(...cloneElementTree(insertion), node);
-            } else {
-                nextNodes.push(node, ...cloneElementTree(insertion));
-            }
-            mutated = true;
-            continue;
-        }
-
-        const nextNode: Element = { ...node };
-        if (Array.isArray(node.children) && node.children.length > 0) {
-            const childResult = insertBySourceId(node.children, sourceId, insertion, position);
-            if (childResult.replaced) {
-                nextNode.children = childResult.nextNodes;
-                mutated = true;
-            }
-        }
-        if (Array.isArray(node.zones) && node.zones.length > 0) {
-            let zoneMutated = false;
-            nextNode.zones = node.zones.map((zone) => {
-                if (!Array.isArray(zone.elements) || zone.elements.length === 0) return zone;
-                const zoneResult = insertBySourceId(zone.elements, sourceId, insertion, position);
-                if (!zoneResult.replaced) return zone;
-                zoneMutated = true;
-                return {
-                    ...zone,
-                    elements: zoneResult.nextNodes
-                };
-            });
-            if (zoneMutated) mutated = true;
-        }
-        if (Array.isArray(node.slots) && node.slots.length > 0) {
-            let slotMutated = false;
-            nextNode.slots = node.slots.map((slot) => {
-                if (!Array.isArray(slot.elements) || slot.elements.length === 0) return slot;
-                const slotResult = insertBySourceId(slot.elements, sourceId, insertion, position);
-                if (!slotResult.replaced) return slot;
-                slotMutated = true;
-                return {
-                    ...slot,
-                    elements: slotResult.nextNodes
-                };
-            });
-            if (slotMutated) mutated = true;
-        }
-
-        nextNodes.push(nextNode);
-    }
-
-    return mutated
-        ? { replaced: true, nextNodes }
-        : { replaced: false };
+function deleteBySourceId(nodes: Element[], sourceId: string): ReplaceResult {
+    return applyStructuralOperationBySourceId(nodes, sourceId, {
+        kind: 'delete'
+    });
 }
 
 function getCurrentLayoutSession(context: PackagerContext): LayoutSession {
@@ -297,6 +279,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
     private readonly messageTopic: string;
     private lastObservedPageIndex = 0;
     private lastObservedActorIndex = 0;
+    private pendingLiveStructuralChange = false;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -331,6 +314,32 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const normalized = shaper.normalizeFlowBlock(this.sourceElement, { path: this.rootPath });
         const nextFlowBox = shaper.shapeNormalizedFlowBlock(normalized);
         this.inner = new FlowBoxPackager(this.processor, nextFlowBox, this.identity);
+    }
+
+    private replaceLiveSelf(session: LayoutSession, elements: Element[]): boolean {
+        const processorWithFactory = this.processor as unknown as ScriptPackagerFactoryProvider;
+        const packagerFactory = processorWithFactory.getPackagerFactory?.();
+        const replacements = createPackagers(elements, this.processor, packagerFactory);
+        if (replacements.length === 0) return false;
+        const replacedIndex = session.replaceActorInLiveQueue(this, replacements);
+        if (replacedIndex === null) return false;
+        this.pendingLiveStructuralChange = true;
+        return true;
+    }
+
+    private insertLiveRelativeToSelf(
+        session: LayoutSession,
+        elements: Element[],
+        position: InsertPosition
+    ): boolean {
+        const processorWithFactory = this.processor as unknown as ScriptPackagerFactoryProvider;
+        const packagerFactory = processorWithFactory.getPackagerFactory?.();
+        const insertions = createPackagers(elements, this.processor, packagerFactory);
+        if (insertions.length === 0) return false;
+        const insertedIndex = session.insertActorsInLiveQueue(this, insertions, position);
+        if (insertedIndex === null) return false;
+        this.pendingLiveStructuralChange = true;
+        return true;
     }
 
     private publishScriptMessage(
@@ -411,6 +420,12 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             replace: (value: unknown) => {
                 if (!sourceId) return false;
                 const elements = normalizeScriptElements(value);
+                if (element === this.sourceElement) {
+                    const replaced = this.replaceLiveSelf(session, elements);
+                    if (!replaced) return false;
+                    session.recordProfile('replaceCalls', 1);
+                    return true;
+                }
                 const result = replaceBySourceId(this.elements, sourceId, elements);
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
@@ -421,6 +436,12 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 if (!sourceId) return false;
                 const elements = normalizeScriptElements(value);
                 if (elements.length === 0) return false;
+                if (element === this.sourceElement) {
+                    const inserted = this.insertLiveRelativeToSelf(session, elements, 'after');
+                    if (!inserted) return false;
+                    session.recordProfile('insertCalls', 1);
+                    return true;
+                }
                 const result = insertBySourceId(this.elements, sourceId, elements, 'after');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
@@ -431,6 +452,12 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 if (!sourceId) return false;
                 const elements = normalizeScriptElements(value);
                 if (elements.length === 0) return false;
+                if (element === this.sourceElement) {
+                    const inserted = this.insertLiveRelativeToSelf(session, elements, 'before');
+                    if (!inserted) return false;
+                    session.recordProfile('insertCalls', 1);
+                    return true;
+                }
                 const result = insertBySourceId(this.elements, sourceId, elements, 'before');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
@@ -562,7 +589,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             deleteElement: (target: unknown) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
-                const result = replaceBySourceId(this.elements, sourceId, []);
+                const result = deleteBySourceId(this.elements, sourceId);
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
                 session.recordProfile('removeCalls', 1);
@@ -661,6 +688,20 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         }
 
         this.lastHandledMessageSequence = highestSequence;
+        if (this.pendingLiveStructuralChange) {
+            this.pendingLiveStructuralChange = false;
+            return {
+                changed: true,
+                geometryChanged: true,
+                updateKind: 'geometry',
+                earliestAffectedFrontier: {
+                    pageIndex: this.lastObservedPageIndex,
+                    actorIndex: this.lastObservedActorIndex,
+                    actorId: this.actorId,
+                    sourceId: this.sourceId
+                }
+            };
+        }
         if (!changed) {
             return { changed: false, geometryChanged: false, updateKind: 'none' };
         }

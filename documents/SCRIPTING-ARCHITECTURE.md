@@ -241,3 +241,12 @@ The new plan is:
 3. evolve it gradually from there
 
 That is preferable to carrying a large legacy comparison corpus while the public API is still being renamed and reshaped.
+
+## Runtime Composition Note
+
+There is now a separate note tracking the architectural gap between:
+
+- authored document structure
+- live runtime actor composition
+
+See [SCRIPTING-RUNTIME-COMPOSITION.md](/c:/Users/cosmic/Projects/vmprint/documents/SCRIPTING-RUNTIME-COMPOSITION.md).

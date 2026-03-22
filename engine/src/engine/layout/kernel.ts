@@ -49,6 +49,13 @@ export class Kernel {
         this.actorRegistry.push(actor);
     }
 
+    unregisterActor(actor: PackagerUnit): void {
+        const index = this.actorRegistry.findIndex((entry) => entry.actorId === actor.actorId);
+        if (index >= 0) {
+            this.actorRegistry.splice(index, 1);
+        }
+    }
+
     registerSplitAccepted(attempt: SplitAttempt, result: PackagerSplitResult): void {
         const transition: FragmentTransition = {
             predecessorActorId: attempt.actor.actorId,

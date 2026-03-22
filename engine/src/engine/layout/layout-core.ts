@@ -94,6 +94,10 @@ export class LayoutProcessor extends TextProcessor {
         return this.activeScriptRuntimeHost;
     }
 
+    getPackagerFactory(): ExternalPackagerFactory | undefined {
+        return this.packagerFactory;
+    }
+
     private cloneElementsForSimulation(elements: Element[]): Element[] {
         return JSON.parse(JSON.stringify(elements)) as Element[];
     }

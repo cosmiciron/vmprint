@@ -3,12 +3,14 @@ import type { LayoutProcessor } from '../layout-core';
 import type { LayoutSession } from '../layout-session';
 import { LayoutUtils } from '../layout-utils';
 import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../script-runtime-host';
+import { createPackagers, type ExternalPackagerFactory } from './create-packagers';
 import type {
     LayoutBox,
     ObservationResult,
     PackagerContext,
     PackagerSplitResult,
-    PackagerUnit
+    PackagerUnit,
+    SpatialFrontier
 } from './packager-types';
 
 type ReplaceResult =
@@ -16,6 +18,14 @@ type ReplaceResult =
     | { replaced: true; nextNodes: Element[] };
 
 type InsertPosition = 'before' | 'after';
+type StructuralOperation =
+    | { kind: 'delete' }
+    | { kind: 'replace'; elements: Element[] }
+    | { kind: 'insert'; elements: Element[]; position: InsertPosition };
+
+type ScriptPackagerFactoryProvider = LayoutProcessor & {
+    getPackagerFactory(): ExternalPackagerFactory | undefined;
+};
 
 function cloneElementTree<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T;
@@ -99,20 +109,32 @@ function normalizeScriptElements(value: unknown): Element[] {
     return [];
 }
 
-function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Element[]): ReplaceResult {
+function applyStructuralOperationBySourceId(
+    nodes: Element[],
+    sourceId: string,
+    operation: StructuralOperation
+): ReplaceResult {
     let mutated = false;
     const nextNodes: Element[] = [];
 
     for (const node of nodes) {
         if (String(node.properties?.sourceId || '') === sourceId) {
-            nextNodes.push(...cloneElementTree(replacement));
+            if (operation.kind === 'insert') {
+                if (operation.position === 'before') {
+                    nextNodes.push(...cloneElementTree(operation.elements), node);
+                } else {
+                    nextNodes.push(node, ...cloneElementTree(operation.elements));
+                }
+            } else if (operation.kind === 'replace') {
+                nextNodes.push(...cloneElementTree(operation.elements));
+            }
             mutated = true;
             continue;
         }
 
         const nextNode: Element = { ...node };
         if (Array.isArray(node.children) && node.children.length > 0) {
-            const childResult = replaceBySourceId(node.children, sourceId, replacement);
+            const childResult = applyStructuralOperationBySourceId(node.children, sourceId, operation);
             if (childResult.replaced) {
                 nextNode.children = childResult.nextNodes;
                 mutated = true;
@@ -122,7 +144,7 @@ function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Elem
             let zoneMutated = false;
             nextNode.zones = node.zones.map((zone) => {
                 if (!Array.isArray(zone.elements) || zone.elements.length === 0) return zone;
-                const zoneResult = replaceBySourceId(zone.elements, sourceId, replacement);
+                const zoneResult = applyStructuralOperationBySourceId(zone.elements, sourceId, operation);
                 if (!zoneResult.replaced) return zone;
                 zoneMutated = true;
                 return {
@@ -136,7 +158,7 @@ function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Elem
             let slotMutated = false;
             nextNode.slots = node.slots.map((slot) => {
                 if (!Array.isArray(slot.elements) || slot.elements.length === 0) return slot;
-                const slotResult = replaceBySourceId(slot.elements, sourceId, replacement);
+                const slotResult = applyStructuralOperationBySourceId(slot.elements, sourceId, operation);
                 if (!slotResult.replaced) return slot;
                 slotMutated = true;
                 return {
@@ -155,69 +177,30 @@ function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Elem
         : { replaced: false };
 }
 
+function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Element[]): ReplaceResult {
+    return applyStructuralOperationBySourceId(nodes, sourceId, {
+        kind: 'replace',
+        elements: replacement
+    });
+}
+
 function insertBySourceId(
     nodes: Element[],
     sourceId: string,
     insertion: Element[],
     position: InsertPosition
 ): ReplaceResult {
-    let mutated = false;
-    const nextNodes: Element[] = [];
+    return applyStructuralOperationBySourceId(nodes, sourceId, {
+        kind: 'insert',
+        elements: insertion,
+        position
+    });
+}
 
-    for (const node of nodes) {
-        if (String(node.properties?.sourceId || '') === sourceId) {
-            if (position === 'before') {
-                nextNodes.push(...cloneElementTree(insertion), node);
-            } else {
-                nextNodes.push(node, ...cloneElementTree(insertion));
-            }
-            mutated = true;
-            continue;
-        }
-
-        const nextNode: Element = { ...node };
-        if (Array.isArray(node.children) && node.children.length > 0) {
-            const childResult = insertBySourceId(node.children, sourceId, insertion, position);
-            if (childResult.replaced) {
-                nextNode.children = childResult.nextNodes;
-                mutated = true;
-            }
-        }
-        if (Array.isArray(node.zones) && node.zones.length > 0) {
-            let zoneMutated = false;
-            nextNode.zones = node.zones.map((zone) => {
-                if (!Array.isArray(zone.elements) || zone.elements.length === 0) return zone;
-                const zoneResult = insertBySourceId(zone.elements, sourceId, insertion, position);
-                if (!zoneResult.replaced) return zone;
-                zoneMutated = true;
-                return {
-                    ...zone,
-                    elements: zoneResult.nextNodes
-                };
-            });
-            if (zoneMutated) mutated = true;
-        }
-        if (Array.isArray(node.slots) && node.slots.length > 0) {
-            let slotMutated = false;
-            nextNode.slots = node.slots.map((slot) => {
-                if (!Array.isArray(slot.elements) || slot.elements.length === 0) return slot;
-                const slotResult = insertBySourceId(slot.elements, sourceId, insertion, position);
-                if (!slotResult.replaced) return slot;
-                slotMutated = true;
-                return {
-                    ...slot,
-                    elements: slotResult.nextNodes
-                };
-            });
-            if (slotMutated) mutated = true;
-        }
-
-        nextNodes.push(nextNode);
-    }
-
-    return mutated
-        ? { replaced: true, nextNodes }
-        : { replaced: false };
+function deleteBySourceId(nodes: Element[], sourceId: string): ReplaceResult {
+    return applyStructuralOperationBySourceId(nodes, sourceId, {
+        kind: 'delete'
+    });
 }
 
 function getCurrentLayoutSession(context: PackagerContext): LayoutSession {
@@ -253,6 +236,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
     readonly actorKind = 'script-document';
     readonly fragmentIndex = 0;
     private replayRequested = false;
+    private pendingLiveStructuralChange = false;
+    private pendingLiveFrontier: SpatialFrontier | null = null;
 
     constructor(
         private readonly host: ScriptRuntimeHost,
@@ -273,6 +258,100 @@ export class ScriptDocumentPackager implements PackagerUnit {
         this.replayRequested = true;
         session.recordProfile('replayRequests', 1);
         session.requestScriptReplay();
+    }
+
+    private recordRuntimeMutation(frontier?: SpatialFrontier): void {
+        this.lifecycleState.runtimeMutationVersion += 1;
+        this.pendingLiveStructuralChange = true;
+        if (frontier) {
+            this.pendingLiveFrontier = frontier;
+        }
+    }
+
+    private resolveLiveActor(session: LayoutSession, target: unknown): PackagerUnit | null {
+        const sourceId = this.resolveSourceId(target);
+        if (!sourceId || sourceId === 'doc') return null;
+        const normalized = LayoutUtils.normalizeAuthorSourceId(sourceId) || sourceId;
+        const actor = session.getRegisteredActors().find((entry) =>
+            entry.actorId !== this.actorId
+            && (entry.sourceId === sourceId || entry.sourceId === normalized)
+        );
+        return actor ?? null;
+    }
+
+    private createLivePackagers(context: PackagerContext, elements: Element[]): PackagerUnit[] {
+        const processorWithFactory = context.processor as unknown as ScriptPackagerFactoryProvider;
+        const packagerFactory = processorWithFactory.getPackagerFactory?.();
+        return createPackagers(elements, context.processor, packagerFactory);
+    }
+
+    private replaceLiveActor(session: LayoutSession, context: PackagerContext, target: unknown, value: unknown): boolean {
+        const actor = this.resolveLiveActor(session, target);
+        if (!actor) return false;
+        const elements = normalizeScriptElements(value);
+        const replacements = this.createLivePackagers(context, elements);
+        if (replacements.length === 0) return false;
+        const replacedIndex = session.replaceActorInLiveQueue(actor, replacements);
+        if (replacedIndex === null) return false;
+        this.recordRuntimeMutation({
+            pageIndex: 0,
+            actorIndex: replacedIndex,
+            actorId: replacements[0]?.actorId ?? actor.actorId,
+            sourceId: replacements[0]?.sourceId ?? actor.sourceId
+        });
+        return true;
+    }
+
+    private insertLiveRelative(
+        session: LayoutSession,
+        context: PackagerContext,
+        target: unknown,
+        value: unknown,
+        position: InsertPosition
+    ): boolean {
+        const actor = this.resolveLiveActor(session, target);
+        if (!actor) return false;
+        const elements = normalizeScriptElements(value);
+        const insertions = this.createLivePackagers(context, elements);
+        if (insertions.length === 0) return false;
+        const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position);
+        if (insertedIndex === null) return false;
+        this.recordRuntimeMutation({
+            pageIndex: 0,
+            actorIndex: insertedIndex,
+            actorId: insertions[0]?.actorId,
+            sourceId: insertions[0]?.sourceId
+        });
+        return true;
+    }
+
+    private createLiveActorRef(
+        session: LayoutSession,
+        context: PackagerContext,
+        actor: PackagerUnit
+    ): Record<string, unknown> {
+        return {
+            name: toPublicScriptName(actor.sourceId),
+            type: String(actor.actorKind || ''),
+            replace: (value: unknown) => {
+                const replaced = this.replaceLiveActor(session, context, actor.sourceId, value);
+                if (!replaced) return false;
+                session.recordProfile('replaceCalls', 1);
+                return true;
+            },
+            append: (value: unknown) => {
+                const inserted = this.insertLiveRelative(session, context, actor.sourceId, value, 'after');
+                if (!inserted) return false;
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
+            prepend: (value: unknown) => {
+                const inserted = this.insertLiveRelative(session, context, actor.sourceId, value, 'before');
+                if (!inserted) return false;
+                session.recordProfile('insertCalls', 1);
+                return true;
+            }
+        };
     }
 
     private resolveSourceId(target: unknown): string | null {
@@ -342,7 +421,10 @@ export class ScriptDocumentPackager implements PackagerUnit {
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
-                return node ? this.createElementRef(session, node) : null;
+                if (node) return this.createElementRef(session, node);
+                if (!context) return null;
+                const liveActor = this.resolveLiveActor(session, name);
+                return liveActor ? this.createLiveActorRef(session, context, liveActor) : null;
             },
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
@@ -378,7 +460,9 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const element = (name: string) => {
             session.recordProfile('docQueryCalls', 1);
             const node = findBySourceId(this.elements, name);
-            return node ? this.createElementRef(session, node) : null;
+            if (node) return this.createElementRef(session, node);
+            const liveActor = this.resolveLiveActor(session, name);
+            return liveActor ? this.createLiveActorRef(session, context, liveActor) : null;
         };
         const elementsByType = (type: string) => {
             session.recordProfile('docQueryCalls', 1);
@@ -415,6 +499,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
             return true;
         };
         const replaceElement = (target: unknown, elements: Element[]) => {
+            const liveReplaced = this.replaceLiveActor(session, context, target, elements);
+            if (liveReplaced) {
+                session.recordProfile('replaceCalls', 1);
+                return true;
+            }
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
             const normalizedElements = normalizeScriptElements(elements);
@@ -425,6 +514,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
             return true;
         };
         const insertElementsBefore = (target: unknown, elements: Element[]) => {
+            const liveInserted = this.insertLiveRelative(session, context, target, elements, 'before');
+            if (liveInserted) {
+                session.recordProfile('insertCalls', 1);
+                return true;
+            }
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
             const normalizedElements = normalizeScriptElements(elements);
@@ -435,6 +529,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
             return true;
         };
         const insertElementsAfter = (target: unknown, elements: Element[]) => {
+            const liveInserted = this.insertLiveRelative(session, context, target, elements, 'after');
+            if (liveInserted) {
+                session.recordProfile('insertCalls', 1);
+                return true;
+            }
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
             const normalizedElements = normalizeScriptElements(elements);
@@ -447,7 +546,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const deleteElement = (target: unknown) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
-            const result = replaceBySourceId(this.elements, sourceId, []);
+            const result = deleteBySourceId(this.elements, sourceId);
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
             session.recordProfile('removeCalls', 1);
@@ -521,6 +620,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const session = getCurrentLayoutSession(context);
         const globals = this.createGlobals(session, context);
         const beforeDigest = this.host.createDocumentDigest(this.elements);
+        const beforeMutationVersion = this.lifecycleState.runtimeMutationVersion;
         const messageHandlerName = this.host.getDocumentHandlerName('onMessage');
         const messageSignals = messageHandlerName
             ? context.readActorSignals(createScriptMessageTopic(this.sourceId))
@@ -577,6 +677,18 @@ export class ScriptDocumentPackager implements PackagerUnit {
             const changed = beforeDigest !== afterDigest;
             this.lifecycleState.didReady = true;
             this.lifecycleState.lastSettledDigest = beforeDigest;
+            this.lifecycleState.lastSettledRuntimeMutationVersion = beforeMutationVersion;
+            if (this.pendingLiveStructuralChange) {
+                this.pendingLiveStructuralChange = false;
+                const frontier = this.pendingLiveFrontier || this.createDocumentFrontier();
+                this.pendingLiveFrontier = null;
+                return {
+                    changed: true,
+                    geometryChanged: true,
+                    updateKind: 'geometry',
+                    earliestAffectedFrontier: frontier
+                };
+            }
             if (changed) {
                 this.requestReplay(session);
                 return { changed: false, geometryChanged: false, updateKind: 'none' };
@@ -584,7 +696,9 @@ export class ScriptDocumentPackager implements PackagerUnit {
             return { changed: false, geometryChanged: false, updateKind: 'none' };
         }
 
-        const documentChanged = this.lifecycleState.lastSettledDigest !== null && this.lifecycleState.lastSettledDigest !== beforeDigest;
+        const documentChanged =
+            (this.lifecycleState.lastSettledDigest !== null && this.lifecycleState.lastSettledDigest !== beforeDigest)
+            || this.lifecycleState.lastSettledRuntimeMutationVersion !== beforeMutationVersion;
         if (documentChanged && onDocumentChangedHandlerName) {
             this.host.runHandler(onDocumentChangedHandlerName, 'onChanged', globals, {}, session);
         }
@@ -593,7 +707,19 @@ export class ScriptDocumentPackager implements PackagerUnit {
         }
         const afterDigest = this.host.createDocumentDigest(this.elements);
         const changed = beforeDigest !== afterDigest;
+        if (this.pendingLiveStructuralChange) {
+            this.pendingLiveStructuralChange = false;
+            const frontier = this.pendingLiveFrontier || this.createDocumentFrontier();
+            this.pendingLiveFrontier = null;
+            return {
+                changed: true,
+                geometryChanged: true,
+                updateKind: 'geometry',
+                earliestAffectedFrontier: frontier
+            };
+        }
         this.lifecycleState.lastSettledDigest = beforeDigest;
+        this.lifecycleState.lastSettledRuntimeMutationVersion = beforeMutationVersion;
         if (changed) {
             this.requestReplay(session);
             return { changed: false, geometryChanged: false, updateKind: 'none' };

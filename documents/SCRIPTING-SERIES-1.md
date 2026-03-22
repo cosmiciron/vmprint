@@ -128,3 +128,11 @@ Series 1 is successful if it proves all of the following:
 - the author can understand the scripting model without learning internal runtime architecture
 
 That is the bar for this release line.
+
+## Runtime Composition Caveat
+
+Series 1 should preserve a clean user-facing scripting surface while the runtime underneath is strengthened.
+
+The architectural note for that work lives in:
+
+- [SCRIPTING-RUNTIME-COMPOSITION.md](/c:/Users/cosmic/Projects/vmprint/documents/SCRIPTING-RUNTIME-COMPOSITION.md)

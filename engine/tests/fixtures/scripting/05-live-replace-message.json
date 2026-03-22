@@ -1,0 +1,129 @@
+---
+methods:
+  swapper_onMessage(from, msg): |
+    if ((from.name === "greeter") && (msg.subject === "swap")) {
+      replace([
+        {
+          type: "table",
+          name: "liveTable",
+          content: "",
+          table: {
+            headerRows: 1,
+            repeatHeader: true,
+            columns: [
+              { mode: "flex", fr: 2 },
+              { mode: "flex", fr: 1 }
+            ]
+          },
+          children: [
+            {
+              type: "table-row",
+              content: "",
+              properties: {
+                semanticRole: "header"
+              },
+              children: [
+                {
+                  type: "table-cell",
+                  content: "Actor",
+                  properties: {
+                    style: {
+                      fontWeight: 700,
+                      backgroundColor: "#ebe5d8"
+                    }
+                  }
+                },
+                {
+                  type: "table-cell",
+                  content: "State",
+                  properties: {
+                    style: {
+                      fontWeight: 700,
+                      backgroundColor: "#ebe5d8"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              type: "table-row",
+              content: "",
+              children: [
+                {
+                  type: "table-cell",
+                  content: "Swapper"
+                },
+                {
+                  type: "table-cell",
+                  content: "Live replaced"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          type: "p",
+          name: "liveSummary",
+          content: "This paragraph was created by actor-local replace().",
+          properties: {
+            style: {
+              marginTop: 14
+            }
+          }
+        }
+      ])
+    }
+
+  greeter_onCreate(): |
+    sendMessage("swapper", {
+      subject: "swap"
+    })
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {
+    "table": {
+      "marginTop": 0,
+      "marginBottom": 12,
+      "padding": 0,
+      "borderWidth": 0
+    },
+    "table-cell": {
+      "paddingTop": 6,
+      "paddingRight": 8,
+      "paddingBottom": 6,
+      "paddingLeft": 8,
+      "borderWidth": 0.8,
+      "borderColor": "#7f7464"
+    }
+  },
+  "elements": [
+    {
+      "type": "p",
+      "name": "swapper",
+      "content": "This actor should be replaced in place."
+    },
+    {
+      "type": "p",
+      "name": "greeter",
+      "content": "Sender element: it triggers the live replacement after the target already exists.",
+      "properties": {
+        "style": {
+          "marginTop": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "name": "tail",
+      "content": "Tail paragraph: the flow should continue naturally after the replacement."
+    }
+  ]
+}

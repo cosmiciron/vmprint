@@ -36,6 +36,8 @@ export type ScriptLifecycleState = {
     didReady: boolean;
     createdElements: Set<string>;
     lastSettledDigest: string | null;
+    runtimeMutationVersion: number;
+    lastSettledRuntimeMutationVersion: number;
 };
 
 const RESERVED_GLOBAL_NAMES = [
@@ -200,7 +202,9 @@ export class ScriptRuntimeHost {
             didLoad: false,
             didReady: false,
             createdElements: new Set<string>(),
-            lastSettledDigest: null
+            lastSettledDigest: null,
+            runtimeMutationVersion: 0,
+            lastSettledRuntimeMutationVersion: 0
         };
     }
 

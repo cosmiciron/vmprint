@@ -535,6 +535,56 @@ export class LayoutSession {
         this.eventDispatcher.onActorSpawn(actor, this);
     }
 
+    notifyActorDespawn(actor: PackagerUnit): void {
+        this.kernel.unregisterActor(actor);
+        this.actorCommunicationRuntime.notifyActorDespawn(actor);
+    }
+
+    insertActorsInLiveQueue(
+        targetActor: PackagerUnit,
+        insertions: readonly PackagerUnit[],
+        position: 'before' | 'after'
+    ): number | null {
+        if (insertions.length === 0) return null;
+        const state = this.paginationLoopState;
+        if (!state) return null;
+        const actorQueue = state.actorQueue;
+        const index = actorQueue.findIndex((actor) => actor.actorId === targetActor.actorId);
+        if (index < 0) return null;
+
+        const insertionIndex = position === 'before' ? index : index + 1;
+        actorQueue.splice(insertionIndex, 0, ...insertions);
+        this.actorCommunicationRuntime.insertActorsInCheckpointQueues(targetActor.actorId, insertions, position);
+        for (const actor of insertions) {
+            this.notifyActorSpawn(actor);
+        }
+
+        return insertionIndex;
+    }
+
+    replaceActorInLiveQueue(targetActor: PackagerUnit, replacements: readonly PackagerUnit[]): number | null {
+        const state = this.paginationLoopState;
+        if (!state) return null;
+        const actorQueue = state.actorQueue;
+        const index = actorQueue.findIndex((actor) => actor.actorId === targetActor.actorId);
+        if (index < 0) return null;
+
+        actorQueue.splice(index, 1, ...replacements);
+        this.notifyActorDespawn(targetActor);
+        this.actorCommunicationRuntime.replaceActorInCheckpointQueues(targetActor.actorId, replacements);
+        for (const actor of replacements) {
+            this.notifyActorSpawn(actor);
+        }
+
+        if (state.actorIndex > index) {
+            state.actorIndex = state.actorIndex - 1 + replacements.length;
+        } else if (state.actorIndex === index) {
+            state.actorIndex = index;
+        }
+
+        return index;
+    }
+
     hasCommittedSignalObservers(): boolean {
         return this.actorCommunicationRuntime.hasCommittedSignalObservers();
     }

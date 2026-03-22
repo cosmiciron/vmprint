@@ -138,6 +138,54 @@ export class ActorCommunicationRuntime<
         }
     }
 
+    notifyActorDespawn(actor: PackagerUnit): void {
+        this.observerRegistry.delete(actor.actorId);
+        this.steppedActorRegistry.delete(actor.actorId);
+        this.broadlyPolledObserverIds.delete(actor.actorId);
+        this.awakenedObserverIds.delete(actor.actorId);
+        this.actorIndexByActorId.delete(actor.actorId);
+        this.actorIndexBySourceId.delete(actor.sourceId);
+
+        for (const subscriptions of this.observerTopicSubscriptions.values()) {
+            subscriptions.delete(actor.actorId);
+        }
+    }
+
+    insertActorsInCheckpointQueues(
+        targetActorId: string,
+        insertions: readonly PackagerUnit[],
+        position: 'before' | 'after'
+    ): void {
+        if (insertions.length === 0) return;
+        for (const checkpoint of this.safeCheckpoints) {
+            const actorQueue = checkpoint.snapshot.actorQueue;
+            const index = actorQueue.findIndex((actor) => actor.actorId === targetActorId);
+            if (index < 0) continue;
+            const insertionIndex = position === 'before' ? index : index + 1;
+            actorQueue.splice(insertionIndex, 0, ...insertions);
+        }
+    }
+
+    replaceActorInCheckpointQueues(targetActorId: string, replacements: readonly PackagerUnit[]): void {
+        for (const checkpoint of this.safeCheckpoints) {
+            const actorQueue = checkpoint.snapshot.actorQueue;
+            const index = actorQueue.findIndex((actor) => actor.actorId === targetActorId);
+            if (index < 0) continue;
+            actorQueue.splice(index, 1, ...replacements);
+
+            if (checkpoint.anchorActorId === targetActorId) {
+                const first = replacements[0];
+                checkpoint.anchorActorId = first?.actorId;
+                checkpoint.anchorSourceId = first?.sourceId;
+                checkpoint.frontier = {
+                    ...checkpoint.frontier,
+                    actorId: first?.actorId,
+                    sourceId: first?.sourceId
+                };
+            }
+        }
+    }
+
     hasCommittedSignalObservers(): boolean {
         return this.observerRegistry.size > 0;
     }
