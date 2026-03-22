@@ -425,7 +425,7 @@ The API may evolve. The fundamentals will not.
 
 ---
 
-[Authoring Guide](documents/authoring/README.md) · [Engine Internals](documents/ENGINE-INTERNALS.md) · [Scripting API](documents/SCRIPTING-API.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html) · [Substack](https://substack.com/@cosmiciron)
+[Authoring Guide](documents/authoring/README.md) · [Architecture](documents/ARCHITECTURE.md) · [Engine Internals](documents/ENGINE-INTERNALS.md) · [Scripting API](documents/SCRIPTING-API.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html) · [Substack](https://substack.com/@cosmiciron)
 
 ## License
 

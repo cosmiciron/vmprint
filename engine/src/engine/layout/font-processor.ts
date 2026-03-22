@@ -81,6 +81,21 @@ export class FontProcessor extends BaseLayout {
             const missingFallbacks = enabledFallbacks.filter(f => !getCachedFont(f.src, this.runtime));
             if (missingFallbacks.length > 0) {
                 const results = await Promise.allSettled(missingFallbacks.map(f => loadFont(f.src, this.runtime)));
+                const failures = results
+                    .map((result, index) => ({ result, font: missingFallbacks[index] }))
+                    .filter(({ result }) => result.status === 'rejected');
+
+                if (failures.length > 0) {
+                    const details = failures.map(({ result, font }) => {
+                        const reason = (result as PromiseRejectedResult).reason;
+                        const renderedReason = reason instanceof Error
+                            ? `${reason.message}${(reason as Error & { cause?: unknown }).cause ? ` | cause: ${String((reason as Error & { cause?: unknown }).cause)}` : ''}`
+                            : String(reason);
+                        return `${font.name} (${font.src}): ${renderedReason}`;
+                    }).join(' || ');
+                    throw new Error(`[FontProcessor] Failed to load fallback fonts: ${details}`);
+                }
+
                 const newFallbacks = results
                     .filter(r => r.status === 'fulfilled' && r.value)
                     .map(r => (r as PromiseFulfilledResult<any>).value);
