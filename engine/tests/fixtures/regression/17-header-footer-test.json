@@ -77,20 +77,27 @@
       "textAlign": "center",
       "marginBottom": 0
     },
-    "table": {
-      "marginBottom": 0,
-      "padding": 0,
-      "borderWidth": 0
-    },
-    "table-cell": {
+    "folio-left": {
       "fontFamily": "Carlito",
       "fontSize": 8,
       "lineHeight": 1,
-      "paddingTop": 0,
-      "paddingBottom": 0,
-      "paddingLeft": 0,
-      "paddingRight": 0,
-      "borderWidth": 0,
+      "letterSpacing": 0.3,
+      "textAlign": "left",
+      "marginBottom": 0
+    },
+    "folio-page": {
+      "fontFamily": "Carlito",
+      "fontSize": 8,
+      "lineHeight": 1,
+      "textAlign": "center",
+      "marginBottom": 0
+    },
+    "folio-right": {
+      "fontFamily": "Carlito",
+      "fontSize": 8,
+      "lineHeight": 1,
+      "letterSpacing": 0.3,
+      "textAlign": "right",
       "marginBottom": 0
     }
   },
@@ -99,16 +106,104 @@
     "odd": {
       "elements": [
         {
-          "type": "rh-odd",
-          "content": "I · The Problem of Regions"
+          "type": "strip",
+          "stripLayout": {
+            "tracks": [
+              {
+                "mode": "fixed",
+                "value": 16
+              },
+              {
+                "mode": "flex",
+                "fr": 1
+              }
+            ],
+            "gap": 8
+          },
+          "slots": [
+            {
+              "id": "logo",
+              "elements": [
+                {
+                  "type": "image",
+                  "image": {
+                    "mimeType": "image/png",
+                    "fit": "contain",
+                    "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAACCCAIAAABJp0gXAAAAsklEQVR42u3QMQ0AAAgDsElBKtL3YYGnSRU0m+FEgQ4dOnTo0KFDhw4dOnTo0KFDhw4dOtChQ4cOHTp06NChQ4cOHTp06NChQ4cOdOjQoUOHDh06dOjQoUOHDh06dOjQoQMdOnTo0KFDhw4dOnTo0KFDhw4dOnToQIcOHTp06NChQ4cOHTp06NChQ4cOHTrQoUOHDh06dOjQoUOHDh06dOjQoUOHDgs6dOjQoUOHDh06vhW2j5IlZjNcyAAAAABJRU5ErkJggg=="
+                  },
+                  "properties": {
+                    "sourceId": "brand-logo",
+                    "style": {
+                      "width": 12,
+                      "height": 12,
+                      "marginBottom": 0
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "title",
+              "elements": [
+                {
+                  "type": "rh-odd",
+                  "content": "I - The Problem of Regions"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     "even": {
       "elements": [
         {
-          "type": "rh-even",
-          "content": "A Study in Page Regions"
+          "type": "strip",
+          "stripLayout": {
+            "tracks": [
+              {
+                "mode": "flex",
+                "fr": 1
+              },
+              {
+                "mode": "fixed",
+                "value": 16
+              }
+            ],
+            "gap": 8
+          },
+          "slots": [
+            {
+              "id": "title",
+              "elements": [
+                {
+                  "type": "rh-even",
+                  "content": "A Study in Page Regions"
+                }
+              ]
+            },
+            {
+              "id": "logo",
+              "elements": [
+                {
+                  "type": "image",
+                  "image": {
+                    "mimeType": "image/png",
+                    "fit": "contain",
+                    "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAACCCAIAAABJp0gXAAAAsklEQVR42u3QMQ0AAAgDsElBKtL3YYGnSRU0m+FEgQ4dOnTo0KFDhw4dOnTo0KFDhw4dOtChQ4cOHTp06NChQ4cOHTp06NChQ4cOdOjQoUOHDh06dOjQoUOHDh06dOjQoQMdOnTo0KFDhw4dOnTo0KFDhw4dOnToQIcOHTp06NChQ4cOHTp06NChQ4cOHTrQoUOHDh06dOjQoUOHDh06dOjQoUOHDgs6dOjQoUOHDh06vhW2j5IlZjNcyAAAAABJRU5ErkJggg=="
+                  },
+                  "properties": {
+                    "sourceId": "brand-logo",
+                    "style": {
+                      "width": 12,
+                      "height": 12,
+                      "marginBottom": 0
+                    }
+                  }
+                }
+              ]
+            }
+          ]
         }
       ]
     }
@@ -118,132 +213,106 @@
     "odd": {
       "elements": [
         {
-          "type": "table",
-          "content": "",
-          "children": [
-            {
-              "type": "table-row",
-              "content": "",
-              "children": [
-                {
-                  "type": "table-cell",
-                  "content": "A Study in Page Regions",
-                  "properties": {
-                    "style": {
-                      "textAlign": "left",
-                      "letterSpacing": 0.3,
-                      "fontWeight": "bold"
-                    }
-                  }
-                },
-                {
-                  "type": "table-cell",
-                  "content": "{pageNumber}",
-                  "properties": {
-                    "style": {
-                      "textAlign": "center"
-                    }
-                  }
-                },
-                {
-                  "type": "table-cell",
-                  "content": "I · The Problem of Regions",
-                  "properties": {
-                    "style": {
-                      "textAlign": "right",
-                      "letterSpacing": 0.3
-                    }
-                  }
-                }
-              ]
-            }
-          ],
-          "table": {
-            "headerRows": 0,
-            "repeatHeader": false,
-            "columnGap": 8,
-            "rowGap": 0,
-            "columns": [
+          "type": "strip",
+          "stripLayout": {
+            "tracks": [
               {
                 "mode": "flex",
                 "fr": 1
               },
               {
                 "mode": "fixed",
-                "value": 32
+                "value": 86
               },
               {
                 "mode": "flex",
                 "fr": 1
               }
-            ]
-          }
+            ],
+            "gap": 8
+          },
+          "slots": [
+            {
+              "id": "left",
+              "elements": [
+                {
+                  "type": "folio-left",
+                  "content": "A Study in Page Regions"
+                }
+              ]
+            },
+            {
+              "id": "center",
+              "elements": [
+                {
+                  "type": "folio-page",
+                  "content": "Page {pageNumber} of {totalPages}"
+                }
+              ]
+            },
+            {
+              "id": "right",
+              "elements": [
+                {
+                  "type": "folio-right",
+                  "content": "I - The Problem of Regions"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     "even": {
       "elements": [
         {
-          "type": "table",
-          "content": "",
-          "children": [
-            {
-              "type": "table-row",
-              "content": "",
-              "children": [
-                {
-                  "type": "table-cell",
-                  "content": "I · The Problem of Regions",
-                  "properties": {
-                    "style": {
-                      "textAlign": "left",
-                      "letterSpacing": 0.3
-                    }
-                  }
-                },
-                {
-                  "type": "table-cell",
-                  "content": "{pageNumber}",
-                  "properties": {
-                    "style": {
-                      "textAlign": "center"
-                    }
-                  }
-                },
-                {
-                  "type": "table-cell",
-                  "content": "A Study in Page Regions",
-                  "properties": {
-                    "style": {
-                      "textAlign": "right",
-                      "letterSpacing": 0.3,
-                      "fontWeight": "bold"
-                    }
-                  }
-                }
-              ]
-            }
-          ],
-          "table": {
-            "headerRows": 0,
-            "repeatHeader": false,
-            "columnGap": 8,
-            "rowGap": 0,
-            "columns": [
+          "type": "strip",
+          "stripLayout": {
+            "tracks": [
               {
                 "mode": "flex",
                 "fr": 1
               },
               {
                 "mode": "fixed",
-                "value": 32
+                "value": 86
               },
               {
                 "mode": "flex",
                 "fr": 1
               }
-            ]
-          }
+            ],
+            "gap": 8
+          },
+          "slots": [
+            {
+              "id": "left",
+              "elements": [
+                {
+                  "type": "folio-left",
+                  "content": "I - The Problem of Regions"
+                }
+              ]
+            },
+            {
+              "id": "center",
+              "elements": [
+                {
+                  "type": "folio-page",
+                  "content": "Page {pageNumber} of {totalPages}"
+                }
+              ]
+            },
+            {
+              "id": "right",
+              "elements": [
+                {
+                  "type": "folio-right",
+                  "content": "A Study in Page Regions"
+                }
+              ]
+            }
+          ]
         }
       ]
     }
@@ -251,7 +320,7 @@
   "elements": [
     {
       "type": "chapter-title",
-      "content": "I · The Problem of Regions"
+      "content": "I - The Problem of Regions"
     },
     {
       "type": "p",
@@ -259,31 +328,31 @@
     },
     {
       "type": "p",
-      "content": "The firstPage selector takes highest priority. It applies only to page index zero and always wins over odd, even, and default. It is the author's signal that this page stands apart—a chapter opener, a title page, or any opening that inhabits its margin in silence."
+      "content": "The firstPage selector takes highest priority. It applies only to page index zero and always wins over odd, even, and default. It is the author's signal that this page stands apart, whether it is a chapter opener, a title page, or any opening that should inhabit its margin in silence."
     },
     {
       "type": "p",
-      "content": "Beginning with the next page, recto and verso rules take effect. The even selector governs left-hand pages; the odd selector governs right-hand pages. The footer default renders a logical page number on all pages that use the pageNumber token. Each of these selectors activates automatically once the firstPage guard passes."
+      "content": "Beginning with the next page, recto and verso rules take effect. The even selector governs left-hand pages; the odd selector governs right-hand pages. The footer renders a logical page number alongside the final total page count, so the reader sees Page x of y after pagination is settled."
     },
     {
       "type": "p",
-      "content": "Verso pages, by long convention, carry the title of the whole work. The reader glancing left finds an anchor—knowing what they are reading, not merely where within it. This document renders the string A Study in Page Regions on every even page, left-aligned in a small spaced face that recedes behind the body text without vanishing."
+      "content": "Verso pages, by long convention, carry the title of the whole work. The reader glancing left finds an anchor, knowing what they are reading rather than merely where within it. This document renders the string A Study in Page Regions on every even page in a small spaced face that recedes behind the body text without vanishing."
     },
     {
       "type": "p",
-      "content": "Recto pages carry the chapter title. The reader glancing right finds their position within the argument. Running the chapter title on odd pages identifies the unit; the verso line identifies the whole. Together the pair creates a coordinate system that needs no consultation."
+      "content": "Recto pages carry the chapter title. The reader glancing right finds their position within the argument. Running the chapter title on odd pages identifies the current unit while the verso line identifies the whole. Together the pair creates a coordinate system that needs no consultation."
     },
     {
       "type": "p",
-      "content": "The footer anchors position numerically. Centered, in a lighter face, the folio line renders a logical page number—a counter that advances only when the pageNumber token actually appears in a rendered region. Pages without a visible folio do not increment that counter."
+      "content": "The footer anchors position numerically. Centered in the footer strip, the folio line renders Page x of y. The x value is logical, advancing only on pages where the pageNumber token actually renders. The y value is the physical total, resolved only after the engine knows the final page count."
     },
     {
       "type": "p",
-      "content": "Region content uses the same rendering pipeline as body text. Any style, inline token, or inline element legal in body flow is equally legal inside a header or footer. Regions are clipped rectangles rendered in the margin, governed by the same box model as any other page element."
+      "content": "Region content uses the same rendering pipeline as body text. Any style, inline token, or image that is legal in authored content is equally legal inside a header or footer. This fixture uses a strip rather than a table to align a small logo with the running head, which is the cleaner model for this kind of composition."
     },
     {
       "type": "section-title",
-      "content": "1.1 · Selector Precedence"
+      "content": "1.1 - Selector Precedence"
     },
     {
       "type": "p",
@@ -312,7 +381,7 @@
     },
     {
       "type": "chapter-title",
-      "content": "II · Resolution and Override",
+      "content": "II - Resolution and Override",
       "properties": {
         "style": {
           "pageBreakBefore": true
@@ -321,8 +390,52 @@
           "header": {
             "elements": [
               {
-                "type": "rh-odd",
-                "content": "II · Resolution and Override"
+                "type": "strip",
+                "stripLayout": {
+                  "tracks": [
+                    {
+                      "mode": "fixed",
+                      "value": 16
+                    },
+                    {
+                      "mode": "flex",
+                      "fr": 1
+                    }
+                  ],
+                  "gap": 8
+                },
+                "slots": [
+                  {
+                    "id": "logo",
+                    "elements": [
+                      {
+                        "type": "image",
+                        "image": {
+                          "mimeType": "image/png",
+                          "fit": "contain",
+                          "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAACCCAIAAABJp0gXAAAAsklEQVR42u3QMQ0AAAgDsElBKtL3YYGnSRU0m+FEgQ4dOnTo0KFDhw4dOnTo0KFDhw4dOtChQ4cOHTp06NChQ4cOHTp06NChQ4cOdOjQoUOHDh06dOjQoUOHDh06dOjQoQMdOnTo0KFDhw4dOnTo0KFDhw4dOnToQIcOHTp06NChQ4cOHTp06NChQ4cOHTrQoUOHDh06dOjQoUOHDh06dOjQoUOHDgs6dOjQoUOHDh06vhW2j5IlZjNcyAAAAABJRU5ErkJggg=="
+                        },
+                        "properties": {
+                          "sourceId": "brand-logo",
+                          "style": {
+                            "width": 12,
+                            "height": 12,
+                            "marginBottom": 0
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "title",
+                    "elements": [
+                      {
+                        "type": "rh-odd",
+                        "content": "II - Resolution and Override"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
@@ -351,11 +464,11 @@
     },
     {
       "type": "p",
-      "content": "Physical page numbers and logical page numbers serve distinct purposes. The physical number counts each page unconditionally. The logical pageNumber token counts only pages where it appears in a rendered region—pages with suppressed footers do not advance that counter."
+      "content": "Physical page numbers and logical page numbers serve distinct purposes. The physical number counts each page unconditionally. The logical pageNumber token counts only pages where it appears in a rendered region, so pages with suppressed folios do not advance that counter even though the totalPages token still refers to the final physical document length."
     },
     {
       "type": "p",
-      "content": "This document uses a pageNumberStart of one. With the chapter opener and the part divider bearing no footer, neither contributed an increment to the logical counter. The folio on this page reflects the count of pages that have rendered a folio line, not the total physical sheet count."
+      "content": "This document uses a pageNumberStart of one. With the chapter opener and the part divider bearing no footer, neither contributed an increment to the logical counter. The folio on this page reflects the count of pages that have rendered a folio line, while the total remains the physical page count for the whole document."
     },
     {
       "type": "chapter-title",
@@ -368,8 +481,52 @@
           "header": {
             "elements": [
               {
-                "type": "rh-override",
-                "content": "Epilogue · p. {physicalPageNumber}"
+                "type": "strip",
+                "stripLayout": {
+                  "tracks": [
+                    {
+                      "mode": "fixed",
+                      "value": 16
+                    },
+                    {
+                      "mode": "flex",
+                      "fr": 1
+                    }
+                  ],
+                  "gap": 8
+                },
+                "slots": [
+                  {
+                    "id": "logo",
+                    "elements": [
+                      {
+                        "type": "image",
+                        "image": {
+                          "mimeType": "image/png",
+                          "fit": "contain",
+                          "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAACCCAIAAABJp0gXAAAAsklEQVR42u3QMQ0AAAgDsElBKtL3YYGnSRU0m+FEgQ4dOnTo0KFDhw4dOnTo0KFDhw4dOtChQ4cOHTp06NChQ4cOHTp06NChQ4cOdOjQoUOHDh06dOjQoUOHDh06dOjQoQMdOnTo0KFDhw4dOnTo0KFDhw4dOnToQIcOHTp06NChQ4cOHTp06NChQ4cOHTrQoUOHDh06dOjQoUOHDh06dOjQoUOHDgs6dOjQoUOHDh06vhW2j5IlZjNcyAAAAABJRU5ErkJggg=="
+                        },
+                        "properties": {
+                          "sourceId": "brand-logo",
+                          "style": {
+                            "width": 12,
+                            "height": 12,
+                            "marginBottom": 0
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "title",
+                    "elements": [
+                      {
+                        "type": "rh-override",
+                        "content": "Epilogue - p. {physicalPageNumber}"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
@@ -378,7 +535,7 @@
     },
     {
       "type": "p",
-      "content": "The epilogue's running head is a per-page override that renders the physicalPageNumber token directly, independent of whether the footer renders a logical number on the same page. Both tokens resolve in the same late pass, after all pagination decisions are settled."
+      "content": "The epilogue's running head is a per-page override that renders the physicalPageNumber token directly, independent of whether the footer renders a logical number on the same page. All three values, physical page, logical folio, and final total, resolve in the same late pass after pagination decisions are settled."
     },
     {
       "type": "p",
@@ -386,7 +543,7 @@
     },
     {
       "type": "p",
-      "content": "The footer on this page is suppressed by a pageOverrides declaration on this paragraph—the first flow element to land on a new page. No folio line is rendered, and the logical page counter does not advance. The engine increments the counter only when the pageNumber token appears in a rendered region.",
+      "content": "The footer on this page is suppressed by a pageOverrides declaration on this paragraph, the first flow element to land on a new page. No folio line is rendered, and the logical page counter does not advance. The total page count, however, remains the same final physical total for the document.",
       "properties": {
         "style": {
           "pageBreakBefore": true
@@ -398,7 +555,7 @@
     },
     {
       "type": "p",
-      "content": "Page regions are always optional. A document without any header or footer definition is valid and renders cleanly. The constructs exercised here—firstPage suppression, recto and verso selectors, per-page overrides, and token substitution—compose freely. Any subset is sufficient; any combination is legal."
+      "content": "Page regions are always optional. A document without any header or footer definition is valid and renders cleanly. The constructs exercised here, firstPage suppression, recto and verso selectors, strip-based logo headers, per-page overrides, logical folios, and total-page token substitution, compose freely. Any subset is sufficient and any combination is legal."
     }
   ]
 }

@@ -783,18 +783,23 @@ function assertHeaderFooterTestSignals(pages: any[], fixtureName: string): void 
     // Page 11 (index 10, odd): footer suppressed via pageOverrides.footer:null
     assert.equal(footerBoxes[10].length, 0, `${fixtureName}: page 11 should suppress footer (pageOverrides.footer:null)`);
 
-    // Footer uses a three-column folio table (work title | folio number | section title).
-    // Verify the table structure is present and the center cell resolves the logical number.
+    const pagesWithHeaders = [1, 2, 3, 4, 6, 7, 8, 9, 10];
+    pagesWithHeaders.forEach((pi) => {
+        const logo = headerBoxes[pi].find((box: any) => box.type === 'image');
+        assert.ok(logo, `${fixtureName}: expected header logo image on page ${pi + 1}`);
+    });
+
+    // Footer uses a three-slot strip (work title | Page x of y | section title).
+    // Verify the center folio resolves the logical number and the final page count.
     const folioPageIndices = [1, 2, 3, 4, 6, 7, 8, 9];
     const expectedNumbers = ['1', '2', '3', '4', '5', '6', '7', '8'];
     folioPageIndices.forEach((pi, i) => {
-        const folioCells = footerBoxes[pi].filter((box: any) => box.type === 'table_cell');
-        assert.equal(folioCells.length, 3, `${fixtureName}: expected three table_cell boxes on page ${pi + 1}`);
-        const centerCell = folioCells[1];
+        const centerFolio = footerBoxes[pi].find((box: any) => box.type === 'folio-page');
+        assert.ok(centerFolio, `${fixtureName}: expected folio-page footer box on page ${pi + 1}`);
         assert.equal(
-            textOf(centerCell),
-            expectedNumbers[i],
-            `${fixtureName}: expected logical number "${expectedNumbers[i]}" in center folio cell on page ${pi + 1}`
+            textOf(centerFolio),
+            `Page ${expectedNumbers[i]} of 11`,
+            `${fixtureName}: expected logical number "${expectedNumbers[i]}" and total "11" in center folio on page ${pi + 1}`
         );
     });
 }

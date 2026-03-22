@@ -496,7 +496,7 @@ interface PageRegionContent {
 }
 ```
 
-`"{pageNumber}"` tokens inside `content` are substituted during finalization.
+`"{pageNumber}"`, `"{physicalPageNumber}"`, and `"{totalPages}"` tokens inside `content` are substituted during finalization.
 
 ---
 
