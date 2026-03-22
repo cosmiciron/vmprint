@@ -16,6 +16,10 @@ const examples = [
         root: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf-webfonts')
     },
     {
+        name: 'ast-to-canvas-webfonts',
+        root: path.join(repoRoot, 'docs', 'examples', 'ast-to-canvas-webfonts')
+    },
+    {
         name: 'mkd-to-ast',
         root: path.join(repoRoot, 'docs', 'examples', 'mkd-to-ast')
     }
@@ -27,6 +31,7 @@ const aliases = {
     '@vmprint/markdown-core': path.join(repoRoot, 'transmuters', 'markdown-core', 'src', 'index.ts'),
     '@vmprint/standard-fonts': path.join(repoRoot, 'font-managers', 'standard', 'src', 'index.ts'),
     '@vmprint/web-fonts': path.join(repoRoot, 'font-managers', 'web', 'src', 'index.ts'),
+    '@vmprint/context-canvas': path.join(repoRoot, 'contexts', 'canvas', 'src', 'index.ts'),
     '@vmprint/context-pdf-lite': path.join(repoRoot, 'contexts', 'pdf-lite', 'src', 'index.ts'),
     fontkit: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'fontkit.ts'),
     'node:perf_hooks': path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'perf-hooks.ts'),
@@ -80,6 +85,7 @@ async function buildBrowserBundleSet(builds) {
 async function buildAstLikeExample(exampleRoot, fontBundle) {
     const srcDir = path.join(exampleRoot, 'src');
     const assetsDir = path.join(exampleRoot, 'assets');
+    fs.rmSync(assetsDir, { recursive: true, force: true });
     fs.mkdirSync(assetsDir, { recursive: true });
     emitFixtureScripts(path.join(srcDir, 'fixtures'), path.join(exampleRoot, 'fixtures'));
 
@@ -128,10 +134,56 @@ async function buildAstToPdfWebfontsExample(exampleRoot) {
     });
 }
 
+async function buildAstToCanvasWebfontsExample(exampleRoot) {
+    const srcDir = path.join(exampleRoot, 'src');
+    const assetsDir = path.join(exampleRoot, 'assets');
+    fs.rmSync(assetsDir, { recursive: true, force: true });
+    fs.mkdirSync(assetsDir, { recursive: true });
+    emitFixtureScripts(path.join(srcDir, 'fixtures'), path.join(exampleRoot, 'fixtures'));
+
+    const canvasAliases = {
+        ...aliases,
+        fontkit: path.join(repoRoot, 'node_modules', 'fontkit', 'dist', 'browser-module.mjs')
+    };
+
+    await buildBrowserBundleSet([
+        {
+            entryPoints: [path.join(srcDir, 'entries', 'vmprint-engine.ts')],
+            outfile: path.join(assetsDir, 'vmprint-engine.js'),
+            globalName: 'VMPrintEngine',
+            alias: canvasAliases
+        },
+        {
+            entryPoints: [path.join(srcDir, 'entries', 'vmprint-web-fonts-browser.ts')],
+            outfile: path.join(assetsDir, 'vmprint-web-fonts.js'),
+            globalName: 'VMPrintWebFonts',
+            alias: canvasAliases
+        },
+        {
+            entryPoints: [path.join(srcDir, 'entries', 'vmprint-context-canvas.ts')],
+            outfile: path.join(assetsDir, 'vmprint-context-canvas.js'),
+            globalName: 'VMPrintCanvasContext',
+            alias: canvasAliases
+        },
+        {
+            entryPoints: [path.join(srcDir, 'pipeline.ts')],
+            outfile: path.join(assetsDir, 'pipeline.js'),
+            globalName: 'VMPrintPipeline',
+            alias: canvasAliases
+        },
+        {
+            entryPoints: [path.join(srcDir, 'ui.ts')],
+            outfile: path.join(assetsDir, 'ui.js'),
+            alias: canvasAliases
+        }
+    ]);
+}
+
 async function buildMkdToAstExample(exampleRoot) {
     const transmutterRoot = path.join(repoRoot, 'transmuters', 'mkd-mkd');
     const srcDir = path.join(exampleRoot, 'src');
     const assetsDir = path.join(exampleRoot, 'assets');
+    fs.rmSync(assetsDir, { recursive: true, force: true });
     fs.mkdirSync(assetsDir, { recursive: true });
 
     const transmutterAliases = {
@@ -165,6 +217,8 @@ async function main() {
             await buildAstToPdfExample(example.root);
         } else if (example.name === 'ast-to-pdf-webfonts') {
             await buildAstToPdfWebfontsExample(example.root);
+        } else if (example.name === 'ast-to-canvas-webfonts') {
+            await buildAstToCanvasWebfontsExample(example.root);
         } else if (example.name === 'mkd-to-ast') {
             await buildMkdToAstExample(example.root);
         }

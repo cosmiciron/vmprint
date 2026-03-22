@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VMPrint Example: AST JSON to Canvas (Web Fonts)</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script>window.process = { env: {} };</script>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="kicker">VMPrint Examples</p>
+      <h1>AST JSON to Canvas (Web Fonts)</h1>
+      <p class="lede">Static browser pipeline: <code>WebFontManager + Engine + CanvasContext</code>.</p>
+      <a class="back-link" href="../index.html">All examples</a>
+    </header>
+
+    <section class="panel controls-panel">
+      <div class="toolbar">
+        <label id="fixture-picker-label" class="fixture-picker" for="fixture-select">
+          <select id="fixture-select" aria-label="Built-in fixture"></select>
+        </label>
+        <label class="scale-picker" for="preview-scale">
+          <span>Scale</span>
+          <select id="preview-scale" aria-label="Canvas preview scale">
+            <option value="0.75">75%</option>
+            <option value="1" selected>100%</option>
+            <option value="1.25">125%</option>
+            <option value="1.5">150%</option>
+          </select>
+        </label>
+        <label class="scale-picker" for="preview-dpi">
+          <span>DPI</span>
+          <select id="preview-dpi" aria-label="Canvas render DPI">
+            <option value="auto" selected>Auto</option>
+            <option value="72">72</option>
+            <option value="96">96</option>
+            <option value="144">144</option>
+            <option value="192">192</option>
+            <option value="300">300</option>
+          </select>
+        </label>
+        <button id="upload-button" type="button">Upload JSON</button>
+        <button id="generate" type="button" class="primary">Render Preview</button>
+        <input id="upload-json" type="file" accept=".json,application/json">
+      </div>
+    </section>
+
+    <section class="status-row panel status-panel">
+      <p id="status" data-state="idle">Ready.</p>
+      <p id="page-count"></p>
+      <div class="metrics-row" aria-live="polite">
+        <p><strong>Boot:</strong> <span id="boot-ms">-</span></p>
+        <p><strong>Render:</strong> <span id="render-ms">-</span></p>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <section class="panel editor-panel">
+        <div class="panel-heading">
+          <h2>Document AST JSON</h2>
+          <p>Edit the VMPrint document directly, then rerender the preview.</p>
+        </div>
+        <label class="field-label sr-only" for="ast-input">Document AST JSON</label>
+        <textarea id="ast-input" spellcheck="false" aria-label="Document AST JSON"></textarea>
+      </section>
+
+      <section class="preview-shell">
+        <div class="preview-header">
+          <h2>Canvas Preview</h2>
+          <p>Render once, then flip through pages on a single <code>&lt;canvas&gt;</code> surface.</p>
+        </div>
+        <div class="preview-nav">
+          <button id="previous-page" type="button">Previous</button>
+          <p id="current-page" class="current-page">No pages rendered</p>
+          <button id="next-page" type="button">Next</button>
+        </div>
+        <div class="preview-stage">
+          <canvas id="preview-canvas" class="preview-canvas" aria-live="polite" aria-label="Rendered document page preview"></canvas>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="./assets/vmprint-engine.js"></script>
+  <script src="./assets/vmprint-web-fonts.js"></script>
+  <script src="./assets/vmprint-context-canvas.js"></script>
+  <script src="./assets/pipeline.js"></script>
+  <script src="./assets/ui.js"></script>
+</body>
+</html>

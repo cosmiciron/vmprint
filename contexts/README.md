@@ -72,6 +72,7 @@ This is a deliberately minimal 2D drawing API. No layout logic. No text measurem
 | Package | Description |
 |---|---|
 | [`@vmprint/context-pdf`](pdf/) | PDF output via PDFKit. The production context. |
+| [`@vmprint/context-canvas`](canvas/) | Browser display context. Builds faithful page scenes internally as SVG and paints them onto canvas targets. |
 | [`@vmprint/context-pdf-lite`](pdf-lite/) | Lightweight jsPDF-based PDF context for browser/edge environments. Limited to standard fonts (PDF-14), minimal bundled footprint. |
 
 ## Writing a Custom Context

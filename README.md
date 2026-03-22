@@ -233,6 +233,52 @@ The engine runs identically in Cloudflare Workers, AWS Lambda, Bun, Deno, Node.j
 
 ---
 
+## In the Browser
+
+PDF covers the obvious cases. The less obvious case is worth naming.
+
+If you need rich, publication-quality text layout in a browser — not inside a document iframe, not a blob URL workaround, actual layout running directly in JavaScript on a canvas — your choices are thin. HTML and CSS give you a layout engine, but it belongs to the browser. You can style; you cannot instrument, query, or reason about what the layout produced. Canvas gives you full control of the pixel surface but zero text layout primitives. The common workaround is to pipe through something like React-PDF, dump the result to a blob URL, and load it into a viewer. Three layers of indirection to get text on screen.
+
+VMPrint runs natively in the browser. The `WebFontManager` fetches fonts from any URL with an in-memory cache and optional persistent caching via IndexedDB or Cache Storage. The `CanvasContext` builds each page as an SVG scene and rasterizes it onto a canvas element at any scale and DPI. The engine — same spatial simulation, same packagers, same settlement loop — runs in the browser at sub-second layout times.
+
+```ts
+import { WebFontManager } from '@vmprint/web-fonts';
+import { CanvasContext } from '@vmprint/context-canvas';
+
+const fontManager = await WebFontManager.fromCatalogUrl('/fonts/catalog.json');
+const context = new CanvasContext({
+  size: 'LETTER',
+  margins: { top: 72, right: 72, bottom: 72, left: 72 },
+  autoFirstPage: false,
+  bufferPages: false
+});
+
+// ... engine.waitForFonts() + engine.simulate() + renderer.render() ...
+
+await context.renderPageToCanvas(0, canvasElement, { scale: 1, dpi: 144 });
+```
+
+Print preview without a viewer. Live page display embedded in your product. Thumbnails. Anything requiring publication-quality layout on a canvas surface — without spinning up a browser engine to do it.
+
+### Browser Demos
+
+The static demos in `docs/examples/` are self-contained single-page applications — no build step, no server required. Open them directly in a browser.
+
+**[AST JSON to Canvas](docs/examples/ast-to-canvas-webfonts/index.html)** — The full browser pipeline: `WebFontManager + Engine + CanvasContext`. Choose from built-in fixtures or upload your own JSON. Edit the AST live in the browser, hit render, navigate pages, adjust scale and DPI. The canvas demo is also a useful development tool — you can paste any document JSON and immediately see how it lays out, without running the CLI.
+
+**[AST JSON to PDF](docs/examples/ast-to-pdf-webfonts/index.html)** — Same pipeline, output is a PDF download. `WebFontManager + Engine + PdfLiteContext`.
+
+**[Markdown to AST](docs/examples/mkd-to-ast/index.html)** — The transmuter running standalone in the browser. Paste Markdown, get `DocumentInput` JSON. Useful for inspecting what a transmuter produces before feeding it to the engine.
+
+To build from source:
+
+```bash
+npm run docs:build
+# then open docs/examples/index.html in any browser
+```
+
+---
+
 ## draft2final
 
 `draft2final` is a manuscript and screenplay compiler built entirely on the VMPrint API. It is also what VMPrint was originally built to produce: a tool that takes Markdown and returns publication-standard output without pain.
@@ -343,6 +389,8 @@ const runtime = createEngineRuntime({ fontManager: new StandardFontManager() });
 **Architecture**
 - Pure TypeScript, zero runtime environment dependencies
 - Identical layout output across browser, Node.js, serverless, and edge runtimes
+- Canvas rendering context for print preview, embedded page display, and thumbnails — no PDF viewer, no iframe
+- Web font manager with URL-based loading, memory cache, and persistent caching via IndexedDB or Cache Storage
 - Swappable font managers and rendering contexts via clean interfaces
 - Deterministic state snapshots and rollback for speculative layout pathfinding
 - Transactional inter-actor communication bus with branch-aware signal isolation
@@ -361,8 +409,10 @@ const runtime = createEngineRuntime({ fontManager: new StandardFontManager() });
 | `@vmprint/engine` | Deterministic layout simulation core |
 | `@vmprint/context-pdf` | PDF output context |
 | `@vmprint/context-pdf-lite` | Lightweight jsPDF-based PDF context |
+| `@vmprint/context-canvas` | Browser canvas context — page preview, thumbnails, embedded display |
 | `@vmprint/local-fonts` | Filesystem font loading |
 | `@vmprint/standard-fonts` | Standard font manager (no font assets) |
+| `@vmprint/web-fonts` | Browser font manager — fetch from URL, persistent cache |
 | `@vmprint/transmuter-mkd-mkd` | Markdown -> DocumentInput |
 | `@vmprint/transmuter-mkd-academic` | Markdown -> DocumentInput (academic defaults) |
 | `@vmprint/transmuter-mkd-literature` | Markdown -> DocumentInput (literature defaults) |
