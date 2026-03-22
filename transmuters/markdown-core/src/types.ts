@@ -94,7 +94,7 @@ export interface PageRegionDefinition {
 }
 
 export interface DocumentInput {
-  documentVersion: '1.0';
+  documentVersion: '1.1';
   layout: DocumentLayout;
   fonts?: Record<string, string | undefined>;
   styles: Partial<Record<string, ElementStyle>>;

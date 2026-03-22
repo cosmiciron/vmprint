@@ -149,7 +149,7 @@ export function transmuteMarkdown(markdown: string, options?: TransmuteMarkdownO
   const built = buildLayout(theme.layout);
 
   return {
-    documentVersion: '1.0',
+    documentVersion: '1.1',
     layout: built.layout,
     styles: theme.styles,
     elements: ctx.getElements(),
