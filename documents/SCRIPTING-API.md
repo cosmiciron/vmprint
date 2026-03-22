@@ -1,47 +1,44 @@
 # VMPrint Scripting API
 
-This document describes the current user-facing scripting surface for VMPrint.
+This document formalizes the public API for VMPrint Scripting Series 1.
 
-The guiding rule is simple:
+Series 1 is about one thing:
 
-- scripts should be written around document intent
-- not around engine plumbing
+- dynamic document content manipulation
 
-So the public model is built from:
+It is intentionally not about page scripting, animation, rich world interaction, or open-ended runtime state systems.
 
-- `doc`
-- `page`
-- `self`
-- event handlers
-- messages between elements
+## Core Model
 
-It is not built around:
+Series 1 is built around two supporting structures:
 
-- `vm`
-- `report`
-- `onResolve`
-- manual replay requests
+- Events
+- Messages
 
-## Status
+Together they form the basic paradigm of the scripting system.
 
-This API is now the active direction.
+- events tell the script what happened
+- messages let document participants coordinate directly
 
-It is still early, but the goal is already fixed:
+Series 1 is therefore not procedural-first.
+A scripter can still write procedural code inside a handler, but the public model is organized around:
 
-- one scripting model
-- object-centered handler naming
-- element-friendly helpers
-- actor-native behavior underneath
+- receivers
+- events
+- messages
+- content mutation
 
 ## Authoring Format
 
-Script methods live in YAML front matter.
+Script code lives in YAML front matter.
 The document body remains ordinary JSON.
 
 ```yaml
 ---
+TITLE: "Hello World"
+
 methods:
-  doc_onLoad(): |
+  onLoad(): |
     setContent("greeting", "Hello, world!")
 ---
 {
@@ -64,11 +61,125 @@ methods:
 }
 ```
 
-The engine parses the front matter itself. This is not delegated to the CLI.
+The engine parses this front matter itself. This is not delegated to the CLI.
 
-## Element Identity
+## Implied Scopes
 
-Use top-level `name` as the authored identity for elements.
+Series 1 relies heavily on implied scope.
+
+### Document Scope
+
+The top-level scope is the document scope.
+
+Its representative object is:
+
+- `doc`
+
+Top-level handlers belong to the document by default.
+They do not need an explicit `doc_` prefix.
+
+Examples:
+
+- `onLoad()`
+- `onReady()`
+- `onChanged()`
+- `onRefresh()`
+- `onMessage(from, msg)`
+
+So this:
+
+```yaml
+methods:
+  onLoad(): |
+    append({
+      type: "p",
+      content: "Loaded."
+    })
+```
+
+means the handler belongs to the document and `append(...)` applies to the document.
+
+### Element Scope
+
+Named element handlers are bound by convention:
+
+- `<elementName>_onCreate()`
+- `<elementName>_onChanged()`
+- `<elementName>_onMessage(from, msg)`
+
+Inside those handlers, `self` is that element.
+
+So:
+
+```yaml
+methods:
+  summary_onMessage(from, msg): |
+    append({
+      type: "p",
+      content: "Updated from message."
+    })
+```
+
+means the new content is appended to `summary`, not to the document.
+
+## Variable Scope
+
+Series 1 defines scope in scripting terms, not engine terms.
+
+### Top-Level Variables
+
+Variables declared in YAML front matter outside function bodies belong to the document scope.
+
+They are implicitly document variables.
+
+They may be accessed:
+
+- implicitly by name
+- explicitly through `doc.vars.<NAME>`
+
+Example:
+
+```yaml
+---
+TITLE: "Hello World"
+ACCENT: "#8A5A2B"
+
+methods:
+  onLoad(): |
+    append({
+      type: "p",
+      content: TITLE
+    })
+---
+```
+
+By convention, authors may use `ALL_CAPS` for these bindings, but that is only a convention.
+
+### Handler-Local Variables
+
+Variables declared inside a handler are local to that handler call only.
+
+Example:
+
+```js
+onReady(): |
+  const titles = elementsByType("h1")
+  const count = titles.length
+```
+
+### Not Supported In Series 1
+
+Series 1 does not formally support:
+
+- free-floating script globals
+- persistent local variables
+- shared mutable state bags beyond document-scoped bindings
+
+That limitation is intentional. Series 1 is about dynamic content manipulation, not open-ended runtime state design.
+
+## Identity
+
+Use top-level `name` as the public identity for elements.
 
 Example:
 
@@ -80,131 +191,132 @@ Example:
 }
 ```
 
-Internally the engine still maps this onto its stable source identity machinery.
-That internal mapping is not the public scripting concept.
+Internally the engine may map this into its own identity system.
+That is not part of the public scripting language.
 
-## Handler Naming
+## Handlers
 
-Bindings are inferred by convention.
-You do not need to put `onXxx: "methodName"` in the JSON for the public model.
+### Document Handlers
 
-Current convention:
+Series 1 document handlers:
 
-- `doc_onLoad()`
-- `doc_onReady()`
-- `doc_onRefresh()`
-- `doc_onDocumentChanged()`
-- `<elementName>_onCreate()`
-- `<elementName>_onMessage(from, msg)`
+- `onLoad()`
+- `onReady()`
+- `onChanged()`
+- `onRefresh()`
+- `onMessage(from, msg)`
 
-Examples:
+These handlers are declared directly at top level.
+They are document handlers by implication, not by a `doc_` naming prefix.
 
-```yaml
-methods:
-  doc_onLoad(): |
-    setContent("greeting", "Hello, world!")
+Lifecycle meaning:
 
-  summary_onMessage(from, msg): |
-    if (msg.subject !== "refresh") return
-    self.setContent("Updated")
-```
-
-## Receiver Model
-
-Every handler receives its current receiver implicitly as `self`.
-
-That means:
-
-- in `doc_onLoad()`, `self` is the document
-- in `summary_onMessage(from, msg)`, `self` is the `summary` element
-
-Event parameters are only for event payload.
-The receiver itself is not passed as a positional argument.
-
-## Current Event Surface
-
-Implemented now:
-
-- document:
-  - `onLoad`
-  - `onReady`
-  - `onRefresh`
-  - `onDocumentChanged`
-- elements:
-  - `onCreate`
-  - `onMessage`
-
-Planned next:
-
-- page events
-- richer element lifecycle events such as split/move/repackage
-
-### Document lifecycle meaning
-
-- `onLoad`
+- `onLoad()`
   Called once before layout.
-- `onReady`
+- `onReady()`
   Called once, the first time the document becomes ready.
-- `onDocumentChanged`
-  Called on later cycles when the document content or structure changed.
-- `onRefresh`
-  Called on later cycles when the realized document refreshes.
+- `onChanged()`
+  Called later when the document content or structure changed.
+- `onRefresh()`
+  Called later when the realized document refreshed.
+- `onMessage(from, msg)`
+  Called when the document receives a message.
 
-This distinction is intentional. `onReady` should match user expectation and not re-fire just because the engine internally settles again.
+This distinction is intentional. The public lifecycle follows user perception, not internal settlement terminology.
 
-## Current Globals
+### Element Handlers
 
-These names are available directly inside handlers.
+Series 1 element handlers:
+
+- `<name>_onCreate()`
+- `<name>_onChanged()`
+- `<name>_onMessage(from, msg)`
+
+The current receiver is always available as:
+
+- `self`
+
+Event parameters are only for event payload. The receiver itself is not passed positionally.
+
+## Public Objects
+
+Series 1 currently exposes these primary objects:
+
+- `doc`
+- `self`
 
 ### `doc`
 
-The whole document runtime.
+The document participant.
 
-Current helpers:
+Current document members:
 
-- `doc.findElementByName(name)`
-- `doc.findElementsByRole(role)`
-- `doc.findElementsByType(type)`
+- `doc.vars`
 - `doc.getPageCount()`
-
-### `page`
-
-Reserved for page-scoped scripting.
-
-It is not meaningfully populated yet.
 
 ### `self`
 
 The current receiver.
 
-Current element helpers:
+Typical element-facing members:
 
 - `self.name`
 - `self.type`
-- `self.role`
 - `self.content`
-- `self.setContent(value)`
+- `self.append(...)`
+- `self.prepend(...)`
+- `self.setContent(...)`
 - `self.sendMessage(recipient, msg)`
 
 For document handlers, `self` is the document.
 
-## Current Global Helpers
+## Global Helpers
 
-These are available directly in handlers.
+These helpers are available directly inside handlers.
 
+- `element(name)`
+- `elementsByType(type)`
 - `sendMessage(recipient, msg)`
-- `findElementByName(name)`
-- `findElementsByRole(role)`
-- `findElementsByType(type)`
 - `setContent(target, value)`
-- `replaceElement(target, elements)`
-- `insertElementsBefore(target, elements)`
-- `insertElementsAfter(target, elements)`
+- `append(value)`
+- `prepend(value)`
+- `replaceElement(target, value)`
+- `insertBefore(target, value)`
+- `insertAfter(target, value)`
 - `deleteElement(target)`
+
+### Helper Meaning
+
+`append(...)` and `prepend(...)` are receiver-oriented.
+
+They mean:
+
+- append/prepend to the current receiver
+
+So:
+
+- inside `onLoad()`, they affect the document
+- inside `summary_onMessage(...)`, they affect `summary`
+
+Explicit targeted forms are also valid through the receiver object, for example:
+
+- `element("summary").append(...)`
+- `element("summary").prepend(...)`
+
+If later Series need additional targeted helpers, they can be added explicitly. Series 1 should prefer the implicit receiver model first.
+
+### Value Shape
+
+`append(...)` and `prepend(...)` may accept:
+
+- a single element
+- a block of AST
+
+The runtime is responsible for normalizing that input.
 
 ### Recipient / Target Resolution
 
-The helper target can be:
+A target or recipient can be:
 
 - an element name string
 - a resolved element reference
@@ -216,9 +328,22 @@ Examples:
 sendMessage("summary", { subject: "refresh" })
 sendMessage(doc, { subject: "refreshAll" })
 
-const heading = findElementByName("chapterTitle")
-setContent(heading, "Act I")
+element("chapterTitle").append({
+  type: "p",
+  content: "Act I"
+})
 ```
+
+## Queries
+
+Series 1 keeps queries intentionally small and generic.
+
+Supported now:
+
+- `element(name)`
+- `elementsByType(type)`
+
+This is deliberate. Series 1 should not grow into a catalog of hard-coded document semantics.
 
 ## Messages
 
@@ -239,6 +364,12 @@ Receiving:
 summary_onMessage(from, msg)
 ```
 
+Document receiving:
+
+```js
+onMessage(from, msg)
+```
+
 `msg` is the full message object, not just raw payload.
 
 Current expected shape:
@@ -248,7 +379,7 @@ Current expected shape:
 
 `from` is the sender reference.
 
-When the document sends the message, `from.name` is `doc`.
+When the document sends a message, `from.name` is `doc`.
 
 ## Update Model
 
@@ -257,8 +388,8 @@ The public scripting model does not ask the author to think about replay.
 Authors should think in terms of:
 
 - changing content
+- reacting to events
 - reacting to messages
-- updating elements
 
 The engine is responsible for mapping those changes onto its native update model:
 
@@ -266,16 +397,16 @@ The engine is responsible for mapping those changes onto its native update model
 - `content-only`
 - `geometry`
 
-Manual refresh control is not the intended public surface.
+Manual refresh control is not part of the intended public Series 1 surface.
 
-## Hello World
+## Examples
 
-Current minimal example:
+### Minimal Hello World
 
 ```yaml
 ---
 methods:
-  doc_onLoad(): |
+  onLoad(): |
     setContent("greeting", "Hello, world!")
 ---
 {
@@ -298,37 +429,33 @@ methods:
 }
 ```
 
-## Ready Example
+### Message-Driven Element Growth
 
 ```yaml
 ---
 methods:
-  doc_onReady(): |
-    const majorTitles = doc.findElementsByType("h1")
-    const minorTitles = doc.findElementsByType("h2")
-    const titleCount = majorTitles.length + minorTitles.length
-    const firstTitle = majorTitles[0] || minorTitles[0] || null
-    sendMessage("summary", {
-      subject: "ready-summary",
+  greeter_onCreate(): |
+    sendMessage("messageTarget", {
+      subject: "greet",
       payload: {
-        pageCount: doc.getPageCount(),
-        titleCount,
-        firstTitle: firstTitle ? firstTitle.content : "None"
+        text: "Hello from another element!"
       }
     })
 
-  summary_onMessage(from, msg): |
-    if (!from || from.name !== "doc") return
-    if (msg.subject !== "ready-summary") return
-    setContent(
-      self,
-      `Document settled across ${msg.payload.pageCount} page(s).\n\nFirst title: ${msg.payload.firstTitle}.`
-    )
+  messageTarget_onMessage(from, msg): |
+    if (!from || from.name !== "greeter") return
+    if (msg.subject !== "greet") return
+
+    append({
+      type: "p",
+      content: msg.payload.text
+    })
 ---
 ```
 
 ## Notes
 
-- top-level `name` is the preferred authored identity.
-- Older explicit JSON bindings and older `vm.*` examples should be treated as legacy/provisional material, not the public direction.
-- This document should keep growing as the new scripting surface evolves.
+- top-level `name` is the preferred authored identity
+- `page` is not part of the public Series 1 scripting surface
+- Events and Messages are the central paradigm of Series 1
+- helper additions should stay generic, small, and user-facing

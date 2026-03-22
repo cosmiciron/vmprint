@@ -19,7 +19,7 @@ The scripting model should be shaped around user intent and perception.
 
 That means:
 
-- document, page, and element concepts
+- document and element concepts
 - events
 - messages
 - direct helper methods
@@ -45,11 +45,13 @@ Message handlers are raised by other document participants.
 
 Current surface:
 
-- `doc_onLoad()`
-- `doc_onReady()`
-- `doc_onRefresh()`
-- `doc_onDocumentChanged()`
+- `onLoad()`
+- `onReady()`
+- `onChanged()`
+- `onRefresh()`
+- `onMessage(from, msg)`
 - `<elementName>_onCreate()`
+- `<elementName>_onChanged()`
 
 ### Message Handlers
 
@@ -75,7 +77,7 @@ Instead, the method name itself is the binding.
 
 Examples:
 
-- `doc_onLoad()`
+- `onLoad()`
 - `summary_onMessage(from, msg)`
 - `tocTitle_onCreate()`
 
@@ -84,23 +86,24 @@ Examples:
 The user-facing objects are:
 
 - `doc`
-- `page`
 - `self`
 
 And the current helper functions are:
 
+- `element(name)`
+- `elementsByType(type)`
 - `sendMessage(recipient, msg)`
-- `findElementByName(name)`
-- `findElementsByRole(role)`
-- `findElementsByType(type)`
 - `setContent(target, value)`
-- `replaceElement(target, elements)`
-- `insertElementsBefore(target, elements)`
-- `insertElementsAfter(target, elements)`
+- `append(value)`
+- `prepend(value)`
+- `replaceElement(target, value)`
+- `insertBefore(target, value)`
+- `insertAfter(target, value)`
 - `deleteElement(target)`
 
 Current settled-fact helpers on `doc`:
 
+- `doc.vars`
 - `doc.getPageCount()`
 
 `self` is always the current receiver.
@@ -162,12 +165,35 @@ The public lifecycle should match user perception, not engine settlement jargon.
   once, before layout
 - `onReady`
   once, the first time the document becomes ready
-- `onDocumentChanged`
+- `onChanged`
   later, when content or structure changed
 - `onRefresh`
   later, when the realized document refreshed
 
 This means the engine may internally settle many times, but the user does not need to treat every later settle as another `onReady`.
+
+## Series 1 Scope
+
+Series 1 is specifically about dynamic document content manipulation.
+
+Its strongest structures are:
+
+- events
+- messages
+
+These are not secondary conveniences.
+They are the primary paradigm of the scripting model for this release line.
+
+Series 1 intentionally excludes:
+
+- page scripting
+- semantic convenience helpers tied to specific document domains
+- user-managed replay concepts
+- formal persistent script state systems
+- animation and continuous world interaction
+
+That discipline is deliberate.
+The scripting layer should evolve in controlled series, each serving a distinct purpose.
 
 ## Authoring Envelope
 
@@ -181,7 +207,7 @@ Example:
 ```yaml
 ---
 methods:
-  doc_onLoad(): |
+  onLoad(): |
     setContent("greeting", "Hello, world!")
 ---
 {

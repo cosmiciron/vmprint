@@ -16,7 +16,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
     return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
-const ROOT_KEYS = new Set(['documentVersion', 'layout', 'fonts', 'styles', 'elements', 'header', 'footer', 'printPipeline', 'methods', 'onBeforeLayout', 'onAfterSettle', 'debug']);
+const ROOT_KEYS = new Set(['documentVersion', 'layout', 'fonts', 'styles', 'elements', 'header', 'footer', 'printPipeline', 'methods', 'scriptVars', 'onBeforeLayout', 'onAfterSettle', 'debug']);
 const PAGE_RESERVATION_SELECTOR_VALUES = new Set(['first', 'odd', 'even', 'all']);
 const LAYOUT_KEYS = new Set([
     'pageSize',
@@ -836,6 +836,9 @@ function validateDocumentContract(document: DocumentInput, documentPath: string)
             contractError(documentPath, `methods.${methodName}`, 'expected a string or string array.');
         }
     }
+    if (document.scriptVars !== undefined) {
+        assertPlainObjectAt(document.scriptVars, 'scriptVars', documentPath);
+    }
 }
 
 function deepSortObject<T>(value: T): T {
@@ -1181,16 +1184,31 @@ export function parseDocumentSourceText(source: string, documentPath: string = '
         return parsedBody as unknown as DocumentInput;
     }
 
+    const bodyObject = parsedBody as Record<string, unknown>;
+    const frontMatterObject = frontMatter as Record<string, unknown>;
+    const scriptVars: Record<string, unknown> = {
+        ...(isPlainObject(bodyObject.scriptVars) ? bodyObject.scriptVars as Record<string, unknown> : {})
+    };
+
+    for (const [key, value] of Object.entries(frontMatterObject)) {
+        if (ROOT_KEYS.has(key)) continue;
+        scriptVars[key] = value;
+    }
+
     const merged = {
-        ...parsedBody,
-        ...frontMatter,
+        ...bodyObject,
+        ...Object.fromEntries(Object.entries(frontMatterObject).filter(([key]) => ROOT_KEYS.has(key))),
         methods: {
-            ...(isPlainObject((parsedBody as Record<string, unknown>).methods) ? (parsedBody as Record<string, unknown>).methods as Record<string, unknown> : {}),
-            ...(isPlainObject(frontMatter.methods) ? frontMatter.methods as Record<string, unknown> : {})
+            ...(isPlainObject(bodyObject.methods) ? bodyObject.methods as Record<string, unknown> : {}),
+            ...(isPlainObject(frontMatterObject.methods) ? frontMatterObject.methods as Record<string, unknown> : {})
         }
     } as Record<string, unknown>;
 
-    if (!isPlainObject(frontMatter.methods) && merged.methods && Object.keys(merged.methods).length === 0) {
+    if (Object.keys(scriptVars).length > 0) {
+        merged.scriptVars = scriptVars;
+    }
+
+    if (!isPlainObject(frontMatterObject.methods) && merged.methods && Object.keys(merged.methods).length === 0) {
         delete merged.methods;
     }
 
@@ -1259,6 +1277,7 @@ export function normalizeDocumentToIR(document: DocumentInput, documentPath: str
         footer: normalizePageRegionDefinition(document.footer as Record<string, unknown> | undefined) as any,
         printPipeline: document.printPipeline ? deepSortObject(document.printPipeline) as any : undefined,
         methods: document.methods ? deepSortObject(document.methods) as any : undefined,
+        scriptVars: document.scriptVars ? deepSortObject(document.scriptVars) as any : undefined,
         onBeforeLayout: document.onBeforeLayout,
         onAfterSettle: document.onAfterSettle
     };
@@ -1315,8 +1334,9 @@ export function toLayoutConfig(document: DocumentIR, debug: boolean): LayoutConf
         header: document.header,
         footer: document.footer,
         printPipeline: document.printPipeline,
-        scripting: document.methods || document.onBeforeLayout || document.onAfterSettle ? {
+        scripting: document.methods || document.scriptVars || document.onBeforeLayout || document.onAfterSettle ? {
             methods: document.methods,
+            vars: document.scriptVars,
             onBeforeLayout: document.onBeforeLayout,
             onAfterSettle: document.onAfterSettle
         } : undefined,

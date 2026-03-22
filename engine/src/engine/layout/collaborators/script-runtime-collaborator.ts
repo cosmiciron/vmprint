@@ -51,6 +51,12 @@ function collectElements(elements: Element[]): Element[] {
     return collected;
 }
 
+function normalizeScriptElements(value: unknown): Element[] {
+    if (Array.isArray(value)) return cloneElementTree(value as Element[]);
+    if (value && typeof value === 'object') return [cloneElementTree(value as Element)];
+    return [];
+}
+
 function findBySourceId(elements: Element[], sourceId: string): Element | null {
     let found: Element | null = null;
     visitElements(elements, (element) => {
@@ -253,6 +259,26 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 session.recordProfile('setContentCalls', 1);
                 return true;
             },
+            append: (value: unknown) => {
+                if (!sourceId) return false;
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
+            prepend: (value: unknown) => {
+                if (!sourceId) return false;
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
             replaceWith: (elements: Element[]) => {
                 if (!sourceId) return false;
                 const result = replaceBySourceId(this.elements, sourceId, elements);
@@ -269,18 +295,33 @@ export class ScriptRuntimeCollaborator implements Collaborator {
         return {
             name: 'doc',
             type: 'document',
+            vars: this.host.getScriptVars(),
+            getPageCount: () => {
+                session.recordProfile('docQueryCalls', 1);
+                return 0;
+            },
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
                 return node ? this.createElementRef(session, node) : null;
             },
-            findElementsByRole: (role: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                return findByRole(this.elements, role).map((node) => this.createElementRef(session, node));
-            },
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
+            },
+            append: (value: unknown) => {
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                this.elements.push(...elements);
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
+            prepend: (value: unknown) => {
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                this.elements.splice(0, 0, ...elements);
+                session.recordProfile('insertCalls', 1);
+                return true;
             }
         };
     }
@@ -341,27 +382,63 @@ export class ScriptRuntimeCollaborator implements Collaborator {
         };
         return {
             doc: docRef,
-            page: undefined,
             self: self ? this.createElementRef(session, self) : docRef,
             sendMessage: (recipient: unknown, msg: unknown) => this.deliverMessage(recipient, msg, self, session),
+            element: (name: string) => {
+                session.recordProfile('docQueryCalls', 1);
+                const node = findBySourceId(this.elements, name);
+                return node ? this.createElementRef(session, node) : null;
+            },
+            elementsByType: (type: string) => {
+                session.recordProfile('docQueryCalls', 1);
+                return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
+            },
+            append: (value: unknown) => {
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                if (self) {
+                    const sourceId = typeof self.properties?.sourceId === 'string' ? self.properties.sourceId : null;
+                    if (!sourceId) return false;
+                    const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+                    if (!result.replaced) return false;
+                    this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                } else {
+                    this.elements.push(...elements);
+                }
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
+            prepend: (value: unknown) => {
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                if (self) {
+                    const sourceId = typeof self.properties?.sourceId === 'string' ? self.properties.sourceId : null;
+                    if (!sourceId) return false;
+                    const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+                    if (!result.replaced) return false;
+                    this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                } else {
+                    this.elements.splice(0, 0, ...elements);
+                }
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
+            setContent,
+            replaceElement,
+            insertBefore: insertElementsBefore,
+            insertAfter: insertElementsAfter,
+            deleteElement,
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
                 return node ? this.createElementRef(session, node) : null;
             },
-            findElementsByRole: (role: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                return findByRole(this.elements, role).map((node) => this.createElementRef(session, node));
-            },
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
             },
-            setContent,
-            replaceElement,
             insertElementsBefore,
-            insertElementsAfter,
-            deleteElement
+            insertElementsAfter
         };
     }
 
@@ -373,7 +450,24 @@ export class ScriptRuntimeCollaborator implements Collaborator {
     ): boolean {
         const targetSourceId = this.resolveSourceId(recipient);
         if (!targetSourceId) return false;
-        if (targetSourceId === 'doc') return false;
+        if (targetSourceId === 'doc') {
+            const handlerName = this.host.getDocumentHandlerName('onMessage');
+            if (!handlerName) return false;
+            const message = typeof msg === 'string'
+                ? { subject: msg }
+                : (msg && typeof msg === 'object' ? { ...(msg as Record<string, unknown>) } : { subject: String(msg) });
+            if (typeof (message as Record<string, unknown>).subject !== 'string' || !(message as Record<string, unknown>).subject) {
+                const legacyName = (message as Record<string, unknown>).name;
+                (message as Record<string, unknown>).subject =
+                    typeof legacyName === 'string' && legacyName ? legacyName : 'message';
+            }
+            delete (message as Record<string, unknown>).name;
+            const globals = this.createGlobals(session);
+            const fromRef = sender ? this.createElementRef(session, sender) : { name: 'doc', type: 'document' };
+            session.recordProfile('messageSendCalls', 1);
+            this.host.runHandler(handlerName, 'onMessage', globals, { from: fromRef, msg: message }, session);
+            return true;
+        }
         const target = findBySourceId(this.elements, targetSourceId);
         if (!target) return false;
         const explicitHandlerName = typeof target.properties?.onMessage === 'string'

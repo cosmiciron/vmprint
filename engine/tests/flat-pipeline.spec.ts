@@ -1800,11 +1800,10 @@ async function testScriptedHelloWorldMutation() {
             p: { marginBottom: 8 }
         },
         methods: {
-            helloWorld: [
-                'vm.doc.setContent("greeting", "Hello, world!");'
+            'onLoad()': [
+                'setContent("greeting", "Hello, world!");'
             ]
         },
-        onBeforeLayout: 'helloWorld',
         elements: [
             {
                 type: 'p',
@@ -1863,8 +1862,8 @@ async function testElementLevelResolveHandler() {
             p: { marginBottom: 8 }
         },
         methods: {
-            resolveGreeting: [
-                'vm.self.setContent("Hello from onResolve!");'
+            'component-greeting_onCreate()': [
+                'setContent(self, "Hello from onResolve!");'
             ]
         },
         elements: [
@@ -1872,8 +1871,7 @@ async function testElementLevelResolveHandler() {
                 type: 'p',
                 content: 'Placeholder',
                 properties: {
-                    sourceId: 'component-greeting',
-                    onResolve: 'resolveGreeting'
+                    sourceId: 'component-greeting'
                 }
             }
         ]
@@ -1891,11 +1889,11 @@ async function testElementLevelResolveHandler() {
         .join('\n');
 
     _check(
-        'element-level onResolve script updates its own content via vm.self',
+        'element-level onCreate script updates its own content',
         'rendered paragraph text changes from placeholder text to Hello from onResolve!',
         () => {
             assert.match(renderedText, /Hello from onResolve!/, 'expected onResolve scripted content to appear');
-            assert.doesNotMatch(renderedText, /Placeholder/, 'expected placeholder text to be replaced by onResolve');
+            assert.doesNotMatch(renderedText, /Placeholder/, 'expected placeholder text to be replaced by onCreate');
         }
     );
 
@@ -1909,7 +1907,7 @@ async function testElementLevelResolveHandler() {
 }
 
 async function testAfterSettleScriptWithReplay() {
-    log('Scenario: document-level onAfterSettle script reads settled headings and requests one replay');
+    log('Scenario: document-level onReady script reads settled headings and updates after first settlement');
     const document: DocumentInput = {
         documentVersion: CURRENT_DOCUMENT_VERSION,
         layout: {
@@ -1927,18 +1925,19 @@ async function testAfterSettleScriptWithReplay() {
             p: { marginBottom: 8 }
         },
         methods: {
-            summarizeHeadings: [
-                'const box = vm.doc.get("summary");',
-                'if (!box) return;',
-                'const headings = vm.report.getHeadings();',
-                'const next = `Heading count: ${headings.length}`;',
-                'if (box.content !== next) {',
-                '  vm.doc.setContent("summary", next);',
-                '  vm.requestReplay();',
-                '}'
+            'onReady()': [
+                'const headings = elementsByType("h1");',
+                'sendMessage("summary", {',
+                '  subject: "ready-summary",',
+                '  payload: { count: headings.length }',
+                '});'
+            ],
+            'summary_onMessage(from, msg)': [
+                'if (!from || from.name !== "doc") return;',
+                'if (!msg || msg.subject !== "ready-summary") return;',
+                'setContent(self, `Heading count: ${Number(msg.payload?.count || 0)}`);'
             ]
         },
-        onAfterSettle: 'summarizeHeadings',
         elements: [
             {
                 type: 'p',
@@ -1974,11 +1973,11 @@ async function testAfterSettleScriptWithReplay() {
         .join('\n');
 
     _check(
-        'onAfterSettle can read heading telemetry and trigger one replay',
-        'summary paragraph reflects settled heading count after replay',
+        'onReady can read settled structure and update summary',
+        'summary paragraph reflects settled heading count after the first ready cycle',
         () => {
-            assert.match(renderedText, /Heading count: 1/, 'expected replayed summary content to reflect one heading');
-            assert.doesNotMatch(renderedText, /Heading count: pending/, 'expected pending summary to be replaced after replay');
+            assert.match(renderedText, /Heading count: 1/, 'expected summary content to reflect one heading');
+            assert.doesNotMatch(renderedText, /Heading count: pending/, 'expected pending summary to be replaced after ready');
         }
     );
 

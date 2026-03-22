@@ -74,16 +74,6 @@ function findBySourceId(elements: Element[], sourceId: string): Element | null {
     return found;
 }
 
-function findByRole(elements: Element[], role: string): Element[] {
-    const matches: Element[] = [];
-    visitElements(elements, (element) => {
-        if (String(element.properties?.semanticRole || '') === role) {
-            matches.push(element);
-        }
-    });
-    return matches;
-}
-
 function findByType(elements: Element[], type: string): Element[] {
     const matches: Element[] = [];
     visitElements(elements, (element) => {
@@ -92,6 +82,12 @@ function findByType(elements: Element[], type: string): Element[] {
         }
     });
     return matches;
+}
+
+function normalizeScriptElements(value: unknown): Element[] {
+    if (Array.isArray(value)) return cloneElementTree(value as Element[]);
+    if (value && typeof value === 'object') return [cloneElementTree(value as Element)];
+    return [];
 }
 
 function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Element[]): ReplaceResult {
@@ -371,7 +367,6 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         return {
             name: sourceId,
             type: String(element.type || ''),
-            role: typeof element.properties?.semanticRole === 'string' ? element.properties.semanticRole : null,
             get content() {
                 return String(element.content || '');
             },
@@ -385,6 +380,26 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 }
                 return true;
             },
+            append: (value: unknown) => {
+                if (!sourceId) return false;
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
+            prepend: (value: unknown) => {
+                if (!sourceId) return false;
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
             sendMessage
         };
     }
@@ -393,14 +408,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         return {
             name: 'doc',
             type: 'document',
+            vars: this.host.getScriptVars(),
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
                 return node ? this.createElementRef(session, node, () => false) : null;
-            },
-            findElementsByRole: (role: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                return findByRole(this.elements, role).map((node) => this.createElementRef(session, node, () => false));
             },
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
@@ -412,33 +424,54 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 const latest = finalizedSignals[finalizedSignals.length - 1];
                 const total = latest?.payload?.totalPageCount;
                 return Number.isFinite(total) ? Number(total) : 0;
+            },
+            append: (value: unknown) => {
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                this.elements.push(...elements);
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
+            prepend: (value: unknown) => {
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                this.elements.splice(0, 0, ...elements);
+                session.recordProfile('insertCalls', 1);
+                return true;
             }
         };
     }
 
     private createGlobals(session: LayoutSession, context: PackagerContext): ScriptGlobals {
         const docRef = this.createDocRef(session, context);
-        const findElementByName = (name: string) => {
+        const element = (name: string) => {
             session.recordProfile('docQueryCalls', 1);
             const node = findBySourceId(this.elements, name);
             return node ? this.createElementRef(session, node, () => false) : null;
         };
-        const findElementsByRole = (role: string) => {
-            session.recordProfile('docQueryCalls', 1);
-            return findByRole(this.elements, role).map((node) => this.createElementRef(session, node, () => false));
-        };
-        const findElementsByType = (type: string) => {
+        const elementsByType = (type: string) => {
             session.recordProfile('docQueryCalls', 1);
             return findByType(this.elements, type).map((node) => this.createElementRef(session, node, () => false));
         };
+        const selfRef = this.createElementRef(session, this.sourceElement, (recipient, msg) => this.publishScriptMessage(context, recipient, msg));
+        const append = (value: unknown) => {
+            const handler = selfRef as Record<string, unknown>;
+            const appendFn = handler.append as ((value: unknown) => boolean) | undefined;
+            return appendFn ? appendFn(value) : false;
+        };
+        const prepend = (value: unknown) => {
+            const handler = selfRef as Record<string, unknown>;
+            const prependFn = handler.prepend as ((value: unknown) => boolean) | undefined;
+            return prependFn ? prependFn(value) : false;
+        };
         return {
             doc: docRef,
-            page: undefined,
-            self: this.createElementRef(session, this.sourceElement, (recipient, msg) => this.publishScriptMessage(context, recipient, msg)),
+            self: selfRef,
             sendMessage: (recipient: unknown, msg: unknown) => this.publishScriptMessage(context, recipient, msg),
-            findElementByName,
-            findElementsByRole,
-            findElementsByType,
+            element,
+            elementsByType,
+            append,
+            prepend,
             setContent: (target: unknown, content: string) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
@@ -462,6 +495,35 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 session.recordProfile('replaceCalls', 1);
                 return true;
             },
+            insertBefore: (target: unknown, elements: Element[]) => {
+                const sourceId = this.resolveSourceId(target);
+                if (!sourceId || sourceId === 'doc') return false;
+                const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
+            insertAfter: (target: unknown, elements: Element[]) => {
+                const sourceId = this.resolveSourceId(target);
+                if (!sourceId || sourceId === 'doc') return false;
+                const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
+            deleteElement: (target: unknown) => {
+                const sourceId = this.resolveSourceId(target);
+                if (!sourceId || sourceId === 'doc') return false;
+                const result = replaceBySourceId(this.elements, sourceId, []);
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('removeCalls', 1);
+                return true;
+            },
+            findElementByName: element,
+            findElementsByType: elementsByType,
             insertElementsBefore: (target: unknown, elements: Element[]) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
@@ -478,15 +540,6 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
                 session.recordProfile('insertCalls', 1);
-                return true;
-            },
-            deleteElement: (target: unknown) => {
-                const sourceId = this.resolveSourceId(target);
-                if (!sourceId || sourceId === 'doc') return false;
-                const result = replaceBySourceId(this.elements, sourceId, []);
-                if (!result.replaced) return false;
-                this.elements.splice(0, this.elements.length, ...result.nextNodes);
-                session.recordProfile('removeCalls', 1);
                 return true;
             }
         };

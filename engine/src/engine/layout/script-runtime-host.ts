@@ -2,26 +2,31 @@ import { performance } from 'node:perf_hooks';
 import type { Element, LayoutScriptingConfig } from '../types';
 import type { LayoutSession } from './layout-session';
 
-export type ScriptPhase = 'onLoad' | 'onCreate' | 'onReady' | 'onRefresh' | 'onDocumentChanged' | 'onMessage';
+export type ScriptPhase = 'onLoad' | 'onCreate' | 'onReady' | 'onRefresh' | 'onChanged' | 'onMessage';
 
 export type ScriptGlobals = {
     doc?: unknown;
-    page?: unknown;
     self?: unknown;
+    element?: unknown;
+    elementsByType?: unknown;
     sendMessage?: unknown;
-    findElementByName?: unknown;
-    findElementsByRole?: unknown;
-    findElementsByType?: unknown;
     setContent?: unknown;
+    append?: unknown;
+    prepend?: unknown;
     replaceElement?: unknown;
+    insertBefore?: unknown;
+    insertAfter?: unknown;
+    deleteElement?: unknown;
+    findElementByName?: unknown;
+    findElementsByType?: unknown;
     insertElementsBefore?: unknown;
     insertElementsAfter?: unknown;
-    deleteElement?: unknown;
 };
 
 type CompiledHandler = {
     name: string;
     declaredParams: string[];
+    injectedVarNames: string[];
     invoke: (...args: unknown[]) => void;
 };
 
@@ -32,19 +37,23 @@ export type ScriptLifecycleState = {
     lastSettledDigest: string | null;
 };
 
-const GLOBAL_PARAM_ORDER = [
+const RESERVED_GLOBAL_NAMES = [
     'doc',
-    'page',
     'self',
+    'element',
+    'elementsByType',
     'sendMessage',
-    'findElementByName',
-    'findElementsByRole',
-    'findElementsByType',
     'setContent',
+    'append',
+    'prepend',
     'replaceElement',
+    'insertBefore',
+    'insertAfter',
+    'deleteElement',
+    'findElementByName',
+    'findElementsByType',
     'insertElementsBefore',
-    'insertElementsAfter',
-    'deleteElement'
+    'insertElementsAfter'
 ] as const;
 
 function normalizeMethodSource(source: string | string[]): string {
@@ -83,27 +92,59 @@ function normalizeConventionTarget(value: string): string {
     return remainder.trim();
 }
 
+function isValidIdentifier(name: string): boolean {
+    return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name);
+}
+
+function dedupeNames(names: string[]): string[] {
+    const seen = new Set<string>();
+    const ordered: string[] = [];
+    for (const name of names) {
+        if (!name || seen.has(name)) continue;
+        seen.add(name);
+        ordered.push(name);
+    }
+    return ordered;
+}
+
 export class ScriptRuntimeHost {
     private readonly handlers = new Map<string, CompiledHandler>();
+    private readonly scriptVars: Record<string, unknown>;
+    private readonly injectedVarNames: string[];
 
     constructor(readonly scripting: LayoutScriptingConfig | undefined) {
+        this.scriptVars = { ...(scripting?.vars || {}) };
+        this.injectedVarNames = Object.keys(this.scriptVars).filter((name) => {
+            if (!isValidIdentifier(name)) return false;
+            return !RESERVED_GLOBAL_NAMES.includes(name as any);
+        });
+
         for (const [declaration, methodSource] of Object.entries(scripting?.methods || {})) {
             const parsed = parseMethodDeclaration(declaration);
             const source = normalizeMethodSource(methodSource);
-            const paramNames = [...GLOBAL_PARAM_ORDER, ...parsed.params];
+            const orderedParams = dedupeNames([
+                ...RESERVED_GLOBAL_NAMES,
+                ...this.injectedVarNames,
+                ...parsed.params
+            ]);
             this.handlers.set(parsed.name, {
                 name: parsed.name,
                 declaredParams: parsed.params,
-                invoke: new Function(...paramNames, source) as (...args: unknown[]) => void
+                injectedVarNames: this.injectedVarNames,
+                invoke: new Function(...orderedParams, `"use strict";\n${source}`) as (...args: unknown[]) => void
             });
         }
     }
 
-    private buildConventionHandlerName(targetName: string, phase: ScriptPhase): string {
+    getScriptVars(): Record<string, unknown> {
+        return this.scriptVars;
+    }
+
+    private buildConventionHandlerName(targetName: string, phase: Exclude<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh'>): string {
         return `${normalizeConventionTarget(targetName)}_${phase}`;
     }
 
-    hasElementHandler(sourceId: string | null | undefined, phase: Exclude<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh' | 'onDocumentChanged'>): boolean {
+    hasElementHandler(sourceId: string | null | undefined, phase: Exclude<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh'>): boolean {
         const normalized = normalizeConventionTarget(String(sourceId || ''));
         if (!normalized) return false;
         return this.handlers.has(this.buildConventionHandlerName(normalized, phase));
@@ -111,7 +152,7 @@ export class ScriptRuntimeHost {
 
     getElementHandlerName(
         sourceId: string | null | undefined,
-        phase: Exclude<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh' | 'onDocumentChanged'>,
+        phase: Exclude<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh'>,
         explicitHandlerName?: string | null
     ): string | null {
         if (typeof explicitHandlerName === 'string' && explicitHandlerName.trim()) {
@@ -119,11 +160,16 @@ export class ScriptRuntimeHost {
         }
         const normalized = normalizeConventionTarget(String(sourceId || ''));
         if (!normalized) return null;
-        const conventionName = this.buildConventionHandlerName(normalized, phase);
-        return this.handlers.has(conventionName) ? conventionName : null;
+        const conventionName = `${normalized}_${phase}`;
+        if (this.handlers.has(conventionName)) return conventionName;
+        if (phase === 'onChanged') {
+            const legacyName = `${normalized}_onDocumentChanged`;
+            return this.handlers.has(legacyName) ? legacyName : null;
+        }
+        return null;
     }
 
-    getDocumentHandlerName(phase: Extract<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh' | 'onDocumentChanged'>): string | null {
+    getDocumentHandlerName(phase: Extract<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh' | 'onChanged' | 'onMessage'>): string | null {
         if (phase === 'onLoad' && typeof this.scripting?.onBeforeLayout === 'string' && this.scripting.onBeforeLayout.trim()) {
             return this.scripting.onBeforeLayout.trim();
         }
@@ -131,14 +177,20 @@ export class ScriptRuntimeHost {
             return this.scripting.onAfterSettle.trim();
         }
 
-        const conventionName = this.buildConventionHandlerName('doc', phase);
-        return this.handlers.has(conventionName) ? conventionName : null;
+        const primaryName = phase;
+        if (this.handlers.has(primaryName)) return primaryName;
+
+        const legacyName = phase === 'onChanged'
+            ? 'doc_onDocumentChanged'
+            : `doc_${phase}`;
+        return this.handlers.has(legacyName) ? legacyName : null;
     }
 
     hasDocumentAfterSettleHandler(): boolean {
         return this.getDocumentHandlerName('onReady') !== null
             || this.getDocumentHandlerName('onRefresh') !== null
-            || this.getDocumentHandlerName('onDocumentChanged') !== null;
+            || this.getDocumentHandlerName('onChanged') !== null
+            || this.getDocumentHandlerName('onMessage') !== null;
     }
 
     createLifecycleState(): ScriptLifecycleState {
@@ -181,7 +233,7 @@ export class ScriptRuntimeHost {
             case 'onRefresh':
                 session.recordProfile('refreshCalls', 1);
                 break;
-            case 'onDocumentChanged':
+            case 'onChanged':
                 session.recordProfile('documentChangedCalls', 1);
                 break;
             case 'onMessage':
@@ -189,11 +241,21 @@ export class ScriptRuntimeHost {
                 break;
         }
 
-        const args = [
-            ...GLOBAL_PARAM_ORDER.map((name) => globals[name]),
-            ...handler.declaredParams.map((name) => eventParams[name])
-        ];
-        handler.invoke(...args);
+        const orderedArgs = dedupeNames([
+            ...RESERVED_GLOBAL_NAMES,
+            ...handler.injectedVarNames,
+            ...handler.declaredParams
+        ]).map((name) => {
+            if ((RESERVED_GLOBAL_NAMES as readonly string[]).includes(name)) {
+                return globals[name as keyof ScriptGlobals];
+            }
+            if (handler.injectedVarNames.includes(name)) {
+                return this.scriptVars[name];
+            }
+            return eventParams[name];
+        });
+
+        handler.invoke(...orderedArgs);
 
         const elapsed = performance.now() - startedAt;
         session.recordProfile('handlerMs', elapsed);
@@ -210,7 +272,7 @@ export class ScriptRuntimeHost {
             case 'onRefresh':
                 session.recordProfile('refreshMs', elapsed);
                 break;
-            case 'onDocumentChanged':
+            case 'onChanged':
                 session.recordProfile('documentChangedMs', elapsed);
                 break;
             case 'onMessage':

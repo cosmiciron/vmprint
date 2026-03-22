@@ -1,6 +1,6 @@
 ---
 methods:
-  doc_onReady(): |
+  onReady(): |
     sendMessage("eventLog", {
       subject: "record",
       payload: {
@@ -15,7 +15,7 @@ methods:
       }
     })
 
-  doc_onDocumentChanged(): |
+  onChanged(): |
     sendMessage("eventLog", {
       subject: "record",
       payload: {
@@ -23,7 +23,7 @@ methods:
       }
     })
 
-  doc_onRefresh(): |
+  onRefresh(): |
     sendMessage("eventLog", {
       subject: "record",
       payload: {

@@ -55,16 +55,6 @@ function findBySourceId(elements: Element[], sourceId: string): Element | null {
     return found;
 }
 
-function findByRole(elements: Element[], role: string): Element[] {
-    const matches: Element[] = [];
-    visitElements(elements, (element) => {
-        if (String(element.properties?.semanticRole || '') === role) {
-            matches.push(element);
-        }
-    });
-    return matches;
-}
-
 function findByType(elements: Element[], type: string): Element[] {
     const matches: Element[] = [];
     visitElements(elements, (element) => {
@@ -73,6 +63,12 @@ function findByType(elements: Element[], type: string): Element[] {
         }
     });
     return matches;
+}
+
+function normalizeScriptElements(value: unknown): Element[] {
+    if (Array.isArray(value)) return cloneElementTree(value as Element[]);
+    if (value && typeof value === 'object') return [cloneElementTree(value as Element)];
+    return [];
 }
 
 function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Element[]): ReplaceResult {
@@ -212,6 +208,17 @@ function createScriptMessageTopic(sourceId: string): string {
     return `script:message:${normalizedSourceId}`;
 }
 
+function toPublicScriptName(sourceId: string | null | undefined): string {
+    const trimmed = String(sourceId || '').trim();
+    if (!trimmed) return 'doc';
+    if (trimmed === 'system:script-document') return 'doc';
+    const prefixMatch = trimmed.match(/^(author|auto|gen|system):(.*)$/);
+    if (!prefixMatch) return trimmed;
+    const [, prefix, remainder] = prefixMatch;
+    if (prefix === 'system' && remainder === 'script-document') return 'doc';
+    return remainder.trim() || trimmed;
+}
+
 export class ScriptDocumentPackager implements PackagerUnit {
     readonly actorId = 'actor:system:script-document:script-document:0';
     readonly sourceId = 'system:script-document';
@@ -254,12 +261,30 @@ export class ScriptDocumentPackager implements PackagerUnit {
     }
 
     private createElementRef(element: Element): Record<string, unknown> {
+        const sourceId = typeof element.properties?.sourceId === 'string' ? element.properties.sourceId : null;
         return {
-            name: typeof element.properties?.sourceId === 'string' ? element.properties.sourceId : null,
+            name: sourceId,
             type: String(element.type || ''),
-            role: typeof element.properties?.semanticRole === 'string' ? element.properties.semanticRole : null,
             get content() {
                 return String(element.content || '');
+            },
+            append: (value: unknown) => {
+                if (!sourceId) return false;
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                return true;
+            },
+            prepend: (value: unknown) => {
+                if (!sourceId) return false;
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                return true;
             }
         };
     }
@@ -268,14 +293,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return {
             name: 'doc',
             type: 'document',
+            vars: this.host.getScriptVars(),
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
                 return node ? this.createElementRef(node) : null;
-            },
-            findElementsByRole: (role: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                return findByRole(this.elements, role).map((node) => this.createElementRef(node));
             },
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
@@ -288,15 +310,53 @@ export class ScriptDocumentPackager implements PackagerUnit {
                 const latest = finalizedSignals[finalizedSignals.length - 1];
                 const total = latest?.payload?.totalPageCount;
                 return Number.isFinite(total) ? Number(total) : 0;
+            },
+            append: (value: unknown) => {
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                this.elements.push(...elements);
+                session.recordProfile('insertCalls', 1);
+                return true;
+            },
+            prepend: (value: unknown) => {
+                const elements = normalizeScriptElements(value);
+                if (elements.length === 0) return false;
+                this.elements.splice(0, 0, ...elements);
+                session.recordProfile('insertCalls', 1);
+                return true;
             }
         };
     }
 
     private createGlobals(session: LayoutSession, context: PackagerContext): ScriptGlobals {
         const docRef = this.createDocRef(session, context);
+        const element = (name: string) => {
+            session.recordProfile('docQueryCalls', 1);
+            const node = findBySourceId(this.elements, name);
+            return node ? this.createElementRef(node) : null;
+        };
+        const elementsByType = (type: string) => {
+            session.recordProfile('docQueryCalls', 1);
+            return findByType(this.elements, type).map((node) => this.createElementRef(node));
+        };
+        const append = (value: unknown) => {
+            const elements = normalizeScriptElements(value);
+            if (elements.length === 0) return false;
+            this.elements.push(...elements);
+            session.recordProfile('insertCalls', 1);
+            return true;
+        };
+        const prepend = (value: unknown) => {
+            const elements = normalizeScriptElements(value);
+            if (elements.length === 0) return false;
+            this.elements.splice(0, 0, ...elements);
+            session.recordProfile('insertCalls', 1);
+            return true;
+        };
         const setContent = (target: unknown, content: string) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
+            if (sourceId === 'doc') return false;
             const node = findBySourceId(this.elements, sourceId);
             if (!node) return false;
             node.content = String(content);
@@ -341,11 +401,10 @@ export class ScriptDocumentPackager implements PackagerUnit {
         };
         return {
             doc: docRef,
-            page: undefined,
             self: docRef,
             sendMessage: (recipient: unknown, msg: unknown) => {
                 const targetSourceId = this.resolveSourceId(recipient);
-                if (!targetSourceId || targetSourceId === 'doc') return false;
+                if (!targetSourceId) return false;
                 const message = typeof msg === 'string'
                     ? { subject: msg }
                     : (msg && typeof msg === 'object' ? { ...(msg as Record<string, unknown>) } : { subject: String(msg) });
@@ -371,24 +430,19 @@ export class ScriptDocumentPackager implements PackagerUnit {
                 });
                 return true;
             },
-            findElementByName: (name: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                const node = findBySourceId(this.elements, name);
-                return node ? this.createElementRef(node) : null;
-            },
-            findElementsByRole: (role: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                return findByRole(this.elements, role).map((node) => this.createElementRef(node));
-            },
-            findElementsByType: (type: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                return findByType(this.elements, type).map((node) => this.createElementRef(node));
-            },
+            element,
+            elementsByType,
+            append,
+            prepend,
             setContent,
             replaceElement,
+            insertBefore: insertElementsBefore,
+            insertAfter: insertElementsAfter,
+            deleteElement,
+            findElementByName: element,
+            findElementsByType: elementsByType,
             insertElementsBefore,
-            insertElementsAfter,
-            deleteElement
+            insertElementsAfter
         };
     }
 
@@ -399,7 +453,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
     }
 
     getCommittedSignalSubscriptions(): readonly string[] {
-        return ['pagination:finalized'];
+        return ['pagination:finalized', createScriptMessageTopic(this.sourceId)];
     }
 
     consumeReplayRequested(): boolean {
@@ -409,6 +463,38 @@ export class ScriptDocumentPackager implements PackagerUnit {
     }
 
     updateCommittedState(context: PackagerContext): ObservationResult {
+        const session = getCurrentLayoutSession(context);
+        const globals = this.createGlobals(session, context);
+        const beforeDigest = this.host.createDocumentDigest(this.elements);
+        const messageHandlerName = this.host.getDocumentHandlerName('onMessage');
+        const messageSignals = messageHandlerName
+            ? context.readActorSignals(createScriptMessageTopic(this.sourceId))
+            : [];
+
+        for (const signal of messageSignals) {
+            const payload = signal.payload || {};
+            const subject = typeof payload.subject === 'string'
+                ? payload.subject
+                : (typeof payload.name === 'string' ? payload.name : '');
+            if (!subject || !messageHandlerName) continue;
+            const from = typeof payload.from === 'string'
+                ? { name: toPublicScriptName(payload.from) }
+                : { name: 'doc', type: 'document' };
+            this.host.runHandler(
+                messageHandlerName,
+                'onMessage',
+                globals,
+                {
+                    from,
+                    msg: {
+                        subject,
+                        payload: payload.payload
+                    }
+                },
+                session
+            );
+        }
+
         const onReadyHandlerName = !this.lifecycleState.didReady
             ? this.host.getDocumentHandlerName('onReady')
             : null;
@@ -416,21 +502,17 @@ export class ScriptDocumentPackager implements PackagerUnit {
             ? this.host.getDocumentHandlerName('onRefresh')
             : null;
         const onDocumentChangedHandlerName = this.lifecycleState.didReady
-            ? this.host.getDocumentHandlerName('onDocumentChanged')
+            ? this.host.getDocumentHandlerName('onChanged')
             : null;
-        if (!onReadyHandlerName && !onRefreshHandlerName && !onDocumentChangedHandlerName) {
+        if (!onReadyHandlerName && !onRefreshHandlerName && !onDocumentChangedHandlerName && !messageHandlerName) {
             return { changed: false, geometryChanged: false, updateKind: 'none' };
         }
 
         const finalizedSignals = context.readActorSignals('pagination:finalized');
         const latest = finalizedSignals[finalizedSignals.length - 1];
-        if (!latest) {
+        if (!latest && !messageSignals.length) {
             return { changed: false, geometryChanged: false, updateKind: 'none' };
         }
-
-        const session = getCurrentLayoutSession(context);
-        const globals = this.createGlobals(session, context);
-        const beforeDigest = this.host.createDocumentDigest(this.elements);
 
         if (!this.lifecycleState.didReady) {
             if (onReadyHandlerName) {
@@ -452,7 +534,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
 
         const documentChanged = this.lifecycleState.lastSettledDigest !== null && this.lifecycleState.lastSettledDigest !== beforeDigest;
         if (documentChanged && onDocumentChangedHandlerName) {
-            this.host.runHandler(onDocumentChangedHandlerName, 'onDocumentChanged', globals, {}, session);
+            this.host.runHandler(onDocumentChangedHandlerName, 'onChanged', globals, {}, session);
         }
         if (onRefreshHandlerName) {
             this.host.runHandler(onRefreshHandlerName, 'onRefresh', globals, {}, session);

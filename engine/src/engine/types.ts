@@ -11,6 +11,7 @@ export type ScriptMethodSource = string | string[];
 
 export interface LayoutScriptingConfig {
     methods?: Record<string, ScriptMethodSource>;
+    vars?: Record<string, unknown>;
     onBeforeLayout?: string;
     onAfterSettle?: string;
 }
@@ -471,6 +472,7 @@ export interface DocumentInput {
     footer?: PageRegionDefinition;
     printPipeline?: LayoutConfig['printPipeline'];
     methods?: Record<string, ScriptMethodSource>;
+    scriptVars?: Record<string, unknown>;
     onBeforeLayout?: string;
     onAfterSettle?: string;
     debug?: boolean;

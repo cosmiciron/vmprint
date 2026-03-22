@@ -1,8 +1,8 @@
 ---
 methods:
-  doc_onReady(): |
-    const majorTitles = doc.findElementsByType("h1")
-    const minorTitles = doc.findElementsByType("h2")
+  onReady(): |
+    const majorTitles = elementsByType("h1")
+    const minorTitles = elementsByType("h2")
     const titleCount = majorTitles.length + minorTitles.length
     const firstTitle = majorTitles[0] || minorTitles[0] || null
     sendMessage("summary", {

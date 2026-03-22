@@ -1,7 +1,7 @@
 ---
 methods:
   greeter_onCreate(): |
-    self.sendMessage("messageTarget", {
+    sendMessage("messageTarget", {
       subject: "greet",
       payload: {
         text: "Hello from another element!"
@@ -15,27 +15,25 @@ methods:
     const originalText = self.content
     setContent(self, `${originalText}\n\nIncoming message from ${from.name || "doc"}.`)
 
-    insertElementsAfter(self, [
-      {
-        type: "p",
-        name: "messageTargetReply",
-        content: msg.payload && msg.payload.text ? String(msg.payload.text) : "Hello!",
-        properties: {
-          style: {
-            marginTop: 16,
-            paddingTop: 12,
-            paddingRight: 14,
-            paddingBottom: 12,
-            paddingLeft: 14,
-            backgroundColor: "#f4efe6",
-            borderWidth: 1,
-            borderColor: "#cda96a",
-            fontSize: 15,
-            lineHeight: 1.35
-          }
+    append({
+      type: "p",
+      name: "messageTargetReply",
+      content: msg.payload && msg.payload.text ? String(msg.payload.text) : "Hello!",
+      properties: {
+        style: {
+          marginTop: 16,
+          paddingTop: 12,
+          paddingRight: 14,
+          paddingBottom: 12,
+          paddingLeft: 14,
+          backgroundColor: "#f4efe6",
+          borderWidth: 1,
+          borderColor: "#cda96a",
+          fontSize: 15,
+          lineHeight: 1.35
         }
       }
-    ])
+    })
 ---
 {
   "documentVersion": "1.1",

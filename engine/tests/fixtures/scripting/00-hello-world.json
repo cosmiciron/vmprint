@@ -1,7 +1,8 @@
 ---
+TITLE: "Hello, world!"
 methods:
-  doc_onLoad(): |
-    setContent("greeting", "Hello, world!")
+  onLoad(): |
+    setContent("greeting", TITLE)
 ---
 {
   "documentVersion": "1.1",

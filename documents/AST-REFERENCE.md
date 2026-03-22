@@ -615,6 +615,7 @@ interface PageRegionContent {
 | Architecture and Runtime Internals | [documents/ENGINE-INTERNALS.md](c:\Users\cosmic\Projects\vmprint\documents\ENGINE-INTERNALS.md) |
 | Scripting architecture | [documents/SCRIPTING-ARCHITECTURE.md](c:\Users\cosmic\Projects\vmprint\documents\SCRIPTING-ARCHITECTURE.md) |
 | Scripting API | [documents/SCRIPTING-API.md](c:\Users\cosmic\Projects\vmprint\documents\SCRIPTING-API.md) |
+| Scripting Series 1 | [documents/SCRIPTING-SERIES-1.md](c:\Users\cosmic\Projects\vmprint\documents\SCRIPTING-SERIES-1.md) |
 | VPX architecture | [documents/VPX-ARCHITECTURE.md](c:\Users\cosmic\Projects\vmprint\documents\VPX-ARCHITECTURE.md) |
 | TOC and VPX design note | [documents/TOC-VPX.md](c:\Users\cosmic\Projects\vmprint\documents\TOC-VPX.md) |
 | Overlay system | [documents/OVERLAY.md](c:\Users\cosmic\Projects\vmprint\documents\OVERLAY.md) |
