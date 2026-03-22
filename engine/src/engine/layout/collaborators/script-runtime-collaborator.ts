@@ -20,6 +20,34 @@ function cloneElementTree<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T;
 }
 
+function normalizeRuntimeElement(element: Element): Element {
+    const cloned = cloneElementTree(element);
+    const normalizedName = typeof cloned.name === 'string' && cloned.name.trim() ? cloned.name.trim() : '';
+    if (normalizedName) {
+        cloned.name = normalizedName;
+        cloned.properties = {
+            ...(cloned.properties || {}),
+            sourceId: cloned.properties?.sourceId || normalizedName
+        };
+    }
+    if (Array.isArray(cloned.children)) {
+        cloned.children = cloned.children.map((child) => normalizeRuntimeElement(child));
+    }
+    if (Array.isArray(cloned.zones)) {
+        cloned.zones = cloned.zones.map((zone) => ({
+            ...zone,
+            elements: Array.isArray(zone.elements) ? zone.elements.map((child) => normalizeRuntimeElement(child)) : []
+        }));
+    }
+    if (Array.isArray(cloned.slots)) {
+        cloned.slots = cloned.slots.map((slot) => ({
+            ...slot,
+            elements: Array.isArray(slot.elements) ? slot.elements.map((child) => normalizeRuntimeElement(child)) : []
+        }));
+    }
+    return cloned;
+}
+
 function visitElements(elements: Element[], visitor: (element: Element) => void): void {
     for (const element of elements) {
         visitor(element);
@@ -52,8 +80,8 @@ function collectElements(elements: Element[]): Element[] {
 }
 
 function normalizeScriptElements(value: unknown): Element[] {
-    if (Array.isArray(value)) return cloneElementTree(value as Element[]);
-    if (value && typeof value === 'object') return [cloneElementTree(value as Element)];
+    if (Array.isArray(value)) return (value as Element[]).map((element) => normalizeRuntimeElement(element));
+    if (value && typeof value === 'object') return [normalizeRuntimeElement(value as Element)];
     return [];
 }
 
@@ -259,6 +287,15 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 session.recordProfile('setContentCalls', 1);
                 return true;
             },
+            replace: (value: unknown) => {
+                if (!sourceId) return false;
+                const elements = normalizeScriptElements(value);
+                const result = replaceBySourceId(this.elements, sourceId, elements);
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('replaceCalls', 1);
+                return true;
+            },
             append: (value: unknown) => {
                 if (!sourceId) return false;
                 const elements = normalizeScriptElements(value);
@@ -322,6 +359,12 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 this.elements.splice(0, 0, ...elements);
                 session.recordProfile('insertCalls', 1);
                 return true;
+            },
+            replace: (value: unknown) => {
+                const elements = normalizeScriptElements(value);
+                this.elements.splice(0, this.elements.length, ...elements);
+                session.recordProfile('replaceCalls', 1);
+                return true;
             }
         };
     }
@@ -347,7 +390,8 @@ export class ScriptRuntimeCollaborator implements Collaborator {
         const replaceElement = (target: unknown, elements: Element[]) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
-            const result = replaceBySourceId(this.elements, sourceId, elements);
+            const normalizedElements = normalizeScriptElements(elements);
+            const result = replaceBySourceId(this.elements, sourceId, normalizedElements);
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
             session.recordProfile('replaceCalls', 1);
@@ -356,7 +400,8 @@ export class ScriptRuntimeCollaborator implements Collaborator {
         const insertElementsBefore = (target: unknown, elements: Element[]) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
-            const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+            const normalizedElements = normalizeScriptElements(elements);
+            const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'before');
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
             session.recordProfile('insertCalls', 1);
@@ -365,7 +410,8 @@ export class ScriptRuntimeCollaborator implements Collaborator {
         const insertElementsAfter = (target: unknown, elements: Element[]) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
-            const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+            const normalizedElements = normalizeScriptElements(elements);
+            const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'after');
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
             session.recordProfile('insertCalls', 1);
@@ -392,6 +438,20 @@ export class ScriptRuntimeCollaborator implements Collaborator {
             elementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
+            },
+            replace: (value: unknown) => {
+                const elements = normalizeScriptElements(value);
+                if (self) {
+                    const sourceId = typeof self.properties?.sourceId === 'string' ? self.properties.sourceId : null;
+                    if (!sourceId) return false;
+                    const result = replaceBySourceId(this.elements, sourceId, elements);
+                    if (!result.replaced) return false;
+                    this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                } else {
+                    this.elements.splice(0, this.elements.length, ...elements);
+                }
+                session.recordProfile('replaceCalls', 1);
+                return true;
             },
             append: (value: unknown) => {
                 const elements = normalizeScriptElements(value);

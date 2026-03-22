@@ -1,9 +1,9 @@
 {
   "fixture": "00-hello-world.json",
   "pages": 1,
-  "simulateMs": 37.21,
-  "renderMs": 28.84,
-  "totalMs": 66.06,
+  "simulateMs": 63.52,
+  "renderMs": 40.5,
+  "totalMs": 104.03,
   "handlerCalls": 1,
   "handlerMs": 0.11,
   "loadCalls": 1,

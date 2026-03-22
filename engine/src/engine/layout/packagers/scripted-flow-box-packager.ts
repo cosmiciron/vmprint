@@ -85,9 +85,37 @@ function findByType(elements: Element[], type: string): Element[] {
 }
 
 function normalizeScriptElements(value: unknown): Element[] {
-    if (Array.isArray(value)) return cloneElementTree(value as Element[]);
-    if (value && typeof value === 'object') return [cloneElementTree(value as Element)];
+    if (Array.isArray(value)) return (value as Element[]).map((element) => normalizeRuntimeElement(element));
+    if (value && typeof value === 'object') return [normalizeRuntimeElement(value as Element)];
     return [];
+}
+
+function normalizeRuntimeElement(element: Element): Element {
+    const cloned = cloneElementTree(element);
+    const normalizedName = typeof cloned.name === 'string' && cloned.name.trim() ? cloned.name.trim() : '';
+    if (normalizedName) {
+        cloned.name = normalizedName;
+        cloned.properties = {
+            ...(cloned.properties || {}),
+            sourceId: cloned.properties?.sourceId || normalizedName
+        };
+    }
+    if (Array.isArray(cloned.children)) {
+        cloned.children = cloned.children.map((child) => normalizeRuntimeElement(child));
+    }
+    if (Array.isArray(cloned.zones)) {
+        cloned.zones = cloned.zones.map((zone) => ({
+            ...zone,
+            elements: Array.isArray(zone.elements) ? zone.elements.map((child) => normalizeRuntimeElement(child)) : []
+        }));
+    }
+    if (Array.isArray(cloned.slots)) {
+        cloned.slots = cloned.slots.map((slot) => ({
+            ...slot,
+            elements: Array.isArray(slot.elements) ? slot.elements.map((child) => normalizeRuntimeElement(child)) : []
+        }));
+    }
+    return cloned;
 }
 
 function replaceBySourceId(nodes: Element[], sourceId: string, replacement: Element[]): ReplaceResult {
@@ -380,6 +408,15 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 }
                 return true;
             },
+            replace: (value: unknown) => {
+                if (!sourceId) return false;
+                const elements = normalizeScriptElements(value);
+                const result = replaceBySourceId(this.elements, sourceId, elements);
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('replaceCalls', 1);
+                return true;
+            },
             append: (value: unknown) => {
                 if (!sourceId) return false;
                 const elements = normalizeScriptElements(value);
@@ -459,6 +496,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             const appendFn = handler.append as ((value: unknown) => boolean) | undefined;
             return appendFn ? appendFn(value) : false;
         };
+        const replace = (value: unknown) => {
+            const handler = selfRef as Record<string, unknown>;
+            const replaceFn = handler.replace as ((value: unknown) => boolean) | undefined;
+            return replaceFn ? replaceFn(value) : false;
+        };
         const prepend = (value: unknown) => {
             const handler = selfRef as Record<string, unknown>;
             const prependFn = handler.prepend as ((value: unknown) => boolean) | undefined;
@@ -470,6 +512,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             sendMessage: (recipient: unknown, msg: unknown) => this.publishScriptMessage(context, recipient, msg),
             element,
             elementsByType,
+            replace,
             append,
             prepend,
             setContent: (target: unknown, content: string) => {
@@ -489,7 +532,8 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             replaceElement: (target: unknown, elements: Element[]) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
-                const result = replaceBySourceId(this.elements, sourceId, elements);
+                const normalizedElements = normalizeScriptElements(elements);
+                const result = replaceBySourceId(this.elements, sourceId, normalizedElements);
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
                 session.recordProfile('replaceCalls', 1);
@@ -498,7 +542,8 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             insertBefore: (target: unknown, elements: Element[]) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
-                const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+                const normalizedElements = normalizeScriptElements(elements);
+                const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'before');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
                 session.recordProfile('insertCalls', 1);
@@ -507,7 +552,8 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             insertAfter: (target: unknown, elements: Element[]) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
-                const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+                const normalizedElements = normalizeScriptElements(elements);
+                const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'after');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
                 session.recordProfile('insertCalls', 1);
@@ -527,7 +573,8 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             insertElementsBefore: (target: unknown, elements: Element[]) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
-                const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+                const normalizedElements = normalizeScriptElements(elements);
+                const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'before');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
                 session.recordProfile('insertCalls', 1);
@@ -536,7 +583,8 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             insertElementsAfter: (target: unknown, elements: Element[]) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
-                const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+                const normalizedElements = normalizeScriptElements(elements);
+                const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'after');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
                 session.recordProfile('insertCalls', 1);

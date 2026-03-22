@@ -263,6 +263,7 @@ Typical element-facing members:
 - `self.name`
 - `self.type`
 - `self.content`
+- `self.replace(...)`
 - `self.append(...)`
 - `self.prepend(...)`
 - `self.setContent(...)`
@@ -278,6 +279,7 @@ These helpers are available directly inside handlers.
 - `elementsByType(type)`
 - `sendMessage(recipient, msg)`
 - `setContent(target, value)`
+- `replace(value)`
 - `append(value)`
 - `prepend(value)`
 - `replaceElement(target, value)`
@@ -287,6 +289,12 @@ These helpers are available directly inside handlers.
 
 ### Helper Meaning
 
+`replace(...)` is receiver-oriented.
+
+It means:
+
+- replace the current receiver with entirely new AST
+
 `append(...)` and `prepend(...)` are receiver-oriented.
 
 They mean:
@@ -295,11 +303,13 @@ They mean:
 
 So:
 
+- inside `summary_onMessage(...)`, `replace(...)` replaces `summary`
 - inside `onLoad()`, they affect the document
 - inside `summary_onMessage(...)`, they affect `summary`
 
 Explicit targeted forms are also valid through the receiver object, for example:
 
+- `element("summary").replace(...)`
 - `element("summary").append(...)`
 - `element("summary").prepend(...)`
 
@@ -313,6 +323,10 @@ If later Series need additional targeted helpers, they can be added explicitly. 
 - a block of AST
 
 The runtime is responsible for normalizing that input.
+
+`replace(...)` accepts the same shapes.
+
+This is the preferred structural mutation primitive for compound or ambiguous elements, where `setContent(...)` may not have a clear meaning.
 
 ### Recipient / Target Resolution
 
@@ -443,7 +457,7 @@ methods:
     })
 
   messageTarget_onMessage(from, msg): |
-    if (!from || from.name !== "greeter") return
+    if (from.name !== "greeter") return
     if (msg.subject !== "greet") return
 
     append({

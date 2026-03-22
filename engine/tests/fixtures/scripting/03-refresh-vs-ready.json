@@ -32,7 +32,7 @@ methods:
     })
 
   eventLog_onMessage(from, msg): |
-    if (!msg || msg.subject !== "record") return
+    if (msg.subject !== "record") return
 
     const nextLine = msg.payload && msg.payload.line ? String(msg.payload.line) : ""
     if (!nextLine) return
@@ -44,8 +44,8 @@ methods:
     setContent(self, `${current}\n- ${nextLine}`.trim())
 
   expander_onMessage(from, msg): |
-    if (!from || from.name !== "doc") return
-    if (!msg || msg.subject !== "expand") return
+    if (from.name !== "doc") return
+    if (msg.subject !== "expand") return
     if (String(self.content || "").includes("The document grew after its first ready event.")) return
 
     const extraText = msg.payload && msg.payload.text ? String(msg.payload.text) : "Expanded."

@@ -11,6 +11,7 @@ export type ScriptGlobals = {
     elementsByType?: unknown;
     sendMessage?: unknown;
     setContent?: unknown;
+    replace?: unknown;
     append?: unknown;
     prepend?: unknown;
     replaceElement?: unknown;
@@ -44,6 +45,7 @@ const RESERVED_GLOBAL_NAMES = [
     'elementsByType',
     'sendMessage',
     'setContent',
+    'replace',
     'append',
     'prepend',
     'replaceElement',

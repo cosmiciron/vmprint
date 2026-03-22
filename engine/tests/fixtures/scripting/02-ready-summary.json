@@ -15,8 +15,8 @@ methods:
     })
 
   summary_onMessage(from, msg): |
-    if (!from || from.name !== "doc") return
-    if (!msg || msg.subject !== "ready-summary") return
+    if (from.name !== "doc") return
+    if (msg.subject !== "ready-summary") return
 
     const payload = msg.payload || {}
     const pageCount = Number(payload.pageCount || 0)

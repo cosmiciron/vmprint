@@ -21,6 +21,34 @@ function cloneElementTree<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T;
 }
 
+function normalizeRuntimeElement(element: Element): Element {
+    const cloned = cloneElementTree(element);
+    const normalizedName = typeof cloned.name === 'string' && cloned.name.trim() ? cloned.name.trim() : '';
+    if (normalizedName) {
+        cloned.name = normalizedName;
+        cloned.properties = {
+            ...(cloned.properties || {}),
+            sourceId: cloned.properties?.sourceId || normalizedName
+        };
+    }
+    if (Array.isArray(cloned.children)) {
+        cloned.children = cloned.children.map((child) => normalizeRuntimeElement(child));
+    }
+    if (Array.isArray(cloned.zones)) {
+        cloned.zones = cloned.zones.map((zone) => ({
+            ...zone,
+            elements: Array.isArray(zone.elements) ? zone.elements.map((child) => normalizeRuntimeElement(child)) : []
+        }));
+    }
+    if (Array.isArray(cloned.slots)) {
+        cloned.slots = cloned.slots.map((slot) => ({
+            ...slot,
+            elements: Array.isArray(slot.elements) ? slot.elements.map((child) => normalizeRuntimeElement(child)) : []
+        }));
+    }
+    return cloned;
+}
+
 function visitElements(elements: Element[], visitor: (element: Element) => void): void {
     for (const element of elements) {
         visitor(element);
@@ -66,8 +94,8 @@ function findByType(elements: Element[], type: string): Element[] {
 }
 
 function normalizeScriptElements(value: unknown): Element[] {
-    if (Array.isArray(value)) return cloneElementTree(value as Element[]);
-    if (value && typeof value === 'object') return [cloneElementTree(value as Element)];
+    if (Array.isArray(value)) return (value as Element[]).map((element) => normalizeRuntimeElement(element));
+    if (value && typeof value === 'object') return [normalizeRuntimeElement(value as Element)];
     return [];
 }
 
@@ -241,6 +269,12 @@ export class ScriptDocumentPackager implements PackagerUnit {
         };
     }
 
+    private requestReplay(session: LayoutSession): void {
+        this.replayRequested = true;
+        session.recordProfile('replayRequests', 1);
+        session.requestScriptReplay();
+    }
+
     private resolveSourceId(target: unknown): string | null {
         if (target && typeof target === 'object' && (target as Record<string, unknown>).type === 'document') {
             return 'doc';
@@ -260,13 +294,22 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return null;
     }
 
-    private createElementRef(element: Element): Record<string, unknown> {
+    private createElementRef(session: LayoutSession, element: Element): Record<string, unknown> {
         const sourceId = typeof element.properties?.sourceId === 'string' ? element.properties.sourceId : null;
         return {
             name: sourceId,
             type: String(element.type || ''),
             get content() {
                 return String(element.content || '');
+            },
+            replace: (value: unknown) => {
+                if (!sourceId) return false;
+                const elements = normalizeScriptElements(value);
+                const result = replaceBySourceId(this.elements, sourceId, elements);
+                if (!result.replaced) return false;
+                this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('replaceCalls', 1);
+                return true;
             },
             append: (value: unknown) => {
                 if (!sourceId) return false;
@@ -275,6 +318,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
                 const result = insertBySourceId(this.elements, sourceId, elements, 'after');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('insertCalls', 1);
                 return true;
             },
             prepend: (value: unknown) => {
@@ -284,6 +328,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
                 const result = insertBySourceId(this.elements, sourceId, elements, 'before');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
+                session.recordProfile('insertCalls', 1);
                 return true;
             }
         };
@@ -297,11 +342,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
-                return node ? this.createElementRef(node) : null;
+                return node ? this.createElementRef(session, node) : null;
             },
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
-                return findByType(this.elements, type).map((node) => this.createElementRef(node));
+                return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
             },
             getPageCount: () => {
                 session.recordProfile('docQueryCalls', 1);
@@ -333,11 +378,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const element = (name: string) => {
             session.recordProfile('docQueryCalls', 1);
             const node = findBySourceId(this.elements, name);
-            return node ? this.createElementRef(node) : null;
+            return node ? this.createElementRef(session, node) : null;
         };
         const elementsByType = (type: string) => {
             session.recordProfile('docQueryCalls', 1);
-            return findByType(this.elements, type).map((node) => this.createElementRef(node));
+            return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
         };
         const append = (value: unknown) => {
             const elements = normalizeScriptElements(value);
@@ -353,6 +398,12 @@ export class ScriptDocumentPackager implements PackagerUnit {
             session.recordProfile('insertCalls', 1);
             return true;
         };
+        const replace = (value: unknown) => {
+            const elements = normalizeScriptElements(value);
+            this.elements.splice(0, this.elements.length, ...elements);
+            session.recordProfile('replaceCalls', 1);
+            return true;
+        };
         const setContent = (target: unknown, content: string) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
@@ -366,7 +417,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const replaceElement = (target: unknown, elements: Element[]) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
-            const result = replaceBySourceId(this.elements, sourceId, elements);
+            const normalizedElements = normalizeScriptElements(elements);
+            const result = replaceBySourceId(this.elements, sourceId, normalizedElements);
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
             session.recordProfile('replaceCalls', 1);
@@ -375,7 +427,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const insertElementsBefore = (target: unknown, elements: Element[]) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
-            const result = insertBySourceId(this.elements, sourceId, elements, 'before');
+            const normalizedElements = normalizeScriptElements(elements);
+            const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'before');
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
             session.recordProfile('insertCalls', 1);
@@ -384,7 +437,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const insertElementsAfter = (target: unknown, elements: Element[]) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
-            const result = insertBySourceId(this.elements, sourceId, elements, 'after');
+            const normalizedElements = normalizeScriptElements(elements);
+            const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'after');
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
             session.recordProfile('insertCalls', 1);
@@ -432,6 +486,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
             },
             element,
             elementsByType,
+            replace,
             append,
             prepend,
             setContent,
@@ -522,14 +577,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
             const changed = beforeDigest !== afterDigest;
             this.lifecycleState.didReady = true;
             this.lifecycleState.lastSettledDigest = beforeDigest;
-            return changed
-                ? {
-                    changed: true,
-                    geometryChanged: true,
-                    updateKind: 'geometry',
-                    earliestAffectedFrontier: this.createDocumentFrontier()
-                }
-                : { changed: false, geometryChanged: false, updateKind: 'none' };
+            if (changed) {
+                this.requestReplay(session);
+                return { changed: false, geometryChanged: false, updateKind: 'none' };
+            }
+            return { changed: false, geometryChanged: false, updateKind: 'none' };
         }
 
         const documentChanged = this.lifecycleState.lastSettledDigest !== null && this.lifecycleState.lastSettledDigest !== beforeDigest;
@@ -542,14 +594,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const afterDigest = this.host.createDocumentDigest(this.elements);
         const changed = beforeDigest !== afterDigest;
         this.lifecycleState.lastSettledDigest = beforeDigest;
-        return changed
-            ? {
-                changed: true,
-                geometryChanged: true,
-                updateKind: 'geometry',
-                earliestAffectedFrontier: this.createDocumentFrontier()
-            }
-            : { changed: false, geometryChanged: false, updateKind: 'none' };
+        if (changed) {
+            this.requestReplay(session);
+            return { changed: false, geometryChanged: false, updateKind: 'none' };
+        }
+        return { changed: false, geometryChanged: false, updateKind: 'none' };
     }
 
     split(): PackagerSplitResult {

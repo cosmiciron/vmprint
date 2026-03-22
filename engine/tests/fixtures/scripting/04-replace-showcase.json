@@ -1,0 +1,119 @@
+---
+methods:
+  onReady(): |
+    replaceElement("placeholder", [
+      {
+        type: "table",
+        name: "generatedTable",
+        content: "",
+        table: {
+          headerRows: 1,
+          repeatHeader: true,
+          columns: [
+            { mode: "flex", fr: 2 },
+            { mode: "flex", fr: 1 }
+          ]
+        },
+        children: [
+          {
+            type: "table-row",
+            content: "",
+            properties: {
+              semanticRole: "header"
+            },
+            children: [
+              {
+                type: "table-cell",
+                content: "Item",
+                properties: {
+                  style: {
+                    fontWeight: 700,
+                    backgroundColor: "#ebe5d8"
+                  }
+                }
+              },
+              {
+                type: "table-cell",
+                content: "Value",
+                properties: {
+                  style: {
+                    fontWeight: 700,
+                    backgroundColor: "#ebe5d8"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            type: "table-row",
+            content: "",
+            children: [
+              {
+                type: "table-cell",
+                content: "Replacement"
+              },
+              {
+                type: "table-cell",
+                content: "Works"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        type: "p",
+        name: "generatedBody",
+        content: "The placeholder became a table and a paragraph.",
+        properties: {
+          style: {
+            marginTop: 14
+          }
+        }
+      }
+    ])
+
+  onChanged(): |
+    const generatedBody = element("generatedBody")
+    const generatedNote = element("generatedNote")
+    if (!generatedBody || generatedNote) return
+
+    generatedBody.append({
+      type: "p",
+      name: "generatedNote",
+      content: "onChanged appended this note after replacement."
+    })
+
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {
+    "table": {
+      "marginTop": 0,
+      "marginBottom": 12,
+      "padding": 0,
+      "borderWidth": 0
+    },
+    "table-cell": {
+      "paddingTop": 6,
+      "paddingRight": 8,
+      "paddingBottom": 6,
+      "paddingLeft": 8,
+      "borderWidth": 0.8,
+      "borderColor": "#7f7464"
+    }
+  },
+  "elements": [
+    {
+      "type": "p",
+      "name": "placeholder",
+      "content": "This placeholder should disappear."
+    }
+  ]
+}
