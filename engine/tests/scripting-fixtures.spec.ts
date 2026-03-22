@@ -67,6 +67,12 @@ async function run(): Promise<void> {
                         `${fixture.name}: expected rendered text to include "${expectedText}"`
                     );
                 }
+                for (const excludedText of fixture.expectation.expectedTextExcludes || []) {
+                    assert.ok(
+                        !renderedText.includes(excludedText),
+                        `${fixture.name}: expected rendered text to exclude "${excludedText}"`
+                    );
+                }
             }
         );
 

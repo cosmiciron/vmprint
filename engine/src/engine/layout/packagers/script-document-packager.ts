@@ -325,6 +325,20 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return true;
     }
 
+    private deleteLiveActor(session: LayoutSession, target: unknown): boolean {
+        const actor = this.resolveLiveActor(session, target);
+        if (!actor) return false;
+        const deletedIndex = session.deleteActorInLiveQueue(actor);
+        if (deletedIndex === null) return false;
+        this.recordRuntimeMutation({
+            pageIndex: 0,
+            actorIndex: deletedIndex,
+            actorId: actor.actorId,
+            sourceId: actor.sourceId
+        });
+        return true;
+    }
+
     private createLiveActorRef(
         session: LayoutSession,
         context: PackagerContext,
@@ -544,6 +558,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
             return true;
         };
         const deleteElement = (target: unknown) => {
+            const liveDeleted = this.deleteLiveActor(session, target);
+            if (liveDeleted) {
+                session.recordProfile('removeCalls', 1);
+                return true;
+            }
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
             const result = deleteBySourceId(this.elements, sourceId);

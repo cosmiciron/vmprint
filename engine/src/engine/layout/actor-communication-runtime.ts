@@ -166,6 +166,26 @@ export class ActorCommunicationRuntime<
         }
     }
 
+    deleteActorInCheckpointQueues(targetActorId: string): void {
+        for (const checkpoint of this.safeCheckpoints) {
+            const actorQueue = checkpoint.snapshot.actorQueue;
+            const index = actorQueue.findIndex((actor) => actor.actorId === targetActorId);
+            if (index < 0) continue;
+            actorQueue.splice(index, 1);
+
+            if (checkpoint.anchorActorId === targetActorId) {
+                const nextActor = actorQueue[index] ?? actorQueue[index - 1];
+                checkpoint.anchorActorId = nextActor?.actorId;
+                checkpoint.anchorSourceId = nextActor?.sourceId;
+                checkpoint.frontier = {
+                    ...checkpoint.frontier,
+                    actorId: nextActor?.actorId,
+                    sourceId: nextActor?.sourceId
+                };
+            }
+        }
+    }
+
     replaceActorInCheckpointQueues(targetActorId: string, replacements: readonly PackagerUnit[]): void {
         for (const checkpoint of this.safeCheckpoints) {
             const actorQueue = checkpoint.snapshot.actorQueue;

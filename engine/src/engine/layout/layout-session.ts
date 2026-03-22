@@ -562,6 +562,26 @@ export class LayoutSession {
         return insertionIndex;
     }
 
+    deleteActorInLiveQueue(targetActor: PackagerUnit): number | null {
+        const state = this.paginationLoopState;
+        if (!state) return null;
+        const actorQueue = state.actorQueue;
+        const index = actorQueue.findIndex((actor) => actor.actorId === targetActor.actorId);
+        if (index < 0) return null;
+
+        actorQueue.splice(index, 1);
+        this.notifyActorDespawn(targetActor);
+        this.actorCommunicationRuntime.deleteActorInCheckpointQueues(targetActor.actorId);
+
+        if (state.actorIndex > index) {
+            state.actorIndex -= 1;
+        } else if (state.actorIndex === index) {
+            state.actorIndex = Math.max(0, index);
+        }
+
+        return index;
+    }
+
     replaceActorInLiveQueue(targetActor: PackagerUnit, replacements: readonly PackagerUnit[]): number | null {
         const state = this.paginationLoopState;
         if (!state) return null;

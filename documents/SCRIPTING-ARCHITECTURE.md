@@ -250,3 +250,5 @@ There is now a separate note tracking the architectural gap between:
 - live runtime actor composition
 
 See [SCRIPTING-RUNTIME-COMPOSITION.md](/c:/Users/cosmic/Projects/vmprint/documents/SCRIPTING-RUNTIME-COMPOSITION.md).
+
+That runtime-composition work has now reached the point where the core Series 1 structural helpers operate through live participant composition rather than replay-oriented document mutation in the normal case.

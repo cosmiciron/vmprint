@@ -413,6 +413,8 @@ The engine is responsible for mapping those changes onto its native update model
 
 Manual refresh control is not part of the intended public Series 1 surface.
 
+For the core Series 1 structural helpers, the runtime now prefers live participant composition over replay-oriented document mutation.
+
 ## Examples
 
 ### Minimal Hello World

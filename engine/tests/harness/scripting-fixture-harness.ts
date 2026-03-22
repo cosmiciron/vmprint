@@ -6,6 +6,7 @@ import { HARNESS_SCRIPTING_CASES_DIR } from './engine-harness';
 
 export type ScriptingFixtureExpectation = {
     expectedTextIncludes?: string[];
+    expectedTextExcludes?: string[];
     originalTextUnchanged?: Array<{
         sourceId: string;
         content: string;

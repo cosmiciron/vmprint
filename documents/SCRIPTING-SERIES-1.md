@@ -1,5 +1,17 @@
 # Scripting Series 1
 
+## Status
+
+Series 1 is now considered complete in scope.
+
+Its public purpose and runtime model have both been proven through the scripting fixture lane, including:
+
+- document and element events
+- document and element messages
+- dynamic content mutation
+- actor-local and targeted structural helpers
+- live runtime composition without replay as the default path
+
 ## Purpose
 
 Series 1 exists to establish VMPrint scripting as a clean system for dynamic document content manipulation.
@@ -67,6 +79,8 @@ Current public mutation helpers:
 - `insertAfter(...)`
 - `deleteElement(...)`
 
+These helpers now ride the native live-composition path for the core Series 1 cases, rather than depending on replay as the normal implementation strategy.
+
 Current public generic queries:
 
 - `element(name)`
@@ -128,6 +142,8 @@ Series 1 is successful if it proves all of the following:
 - the author can understand the scripting model without learning internal runtime architecture
 
 That is the bar for this release line.
+
+That bar has now been met.
 
 ## Runtime Composition Caveat
 
