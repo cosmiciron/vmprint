@@ -38,7 +38,14 @@ What this gives you is not just "better PDFs." It gives you a different substrat
 - a document runtime that behaves identically on a Cloudflare Worker, a laptop, a Lambda, and a phone
 - a layout engine you can inspect, instrument, and participate in
 - a pagination model that is not approximate — the same input produces the same output, always, everywhere
+- a rendering output that is a flat, absolutely-positioned geometry list — no DOM, no layout re-traversal, just draw calls — and the right shape for GPU-accelerated rendering
 - a foundation for tools the web made people forget were possible
+
+Here is the part that makes the rest of this possible. When you hand the engine a document, each element — paragraph, table, heading, drop cap — gets compiled into a live actor. Think Lego Batman standing on the board. When Batman approaches a page boundary and doesn't fully fit, he doesn't get clipped and he doesn't get deferred. He disassembles into blocks. The blocks that fit commit to the current page. The remaining blocks reconstitute on the next page as the same Batman — same identity, same memory, same relationships — picking up exactly where he left off. A table that spans three pages is one actor that has split and reformed twice. A drop cap is an actor that claimed its territory and pushed the surrounding text to respond. None of this is post-processing. It is just what actors do when they run out of space.
+
+The output of all that activity is refreshingly simple: a flat list of absolutely-positioned boxes with exact coordinates and the story of how each one got there. No tree. No cascade. No layout to re-run at render time — just draw calls. That flatness is what makes rendering fast, output diffable, and the path to GPU acceleration a straight line.
+
+And then there is this: because the document is a *running simulation*, the output doesn't have to capture equilibrium. The engine can be told to capture the world at a specific tick instead — which means each page can represent a successive world state. The document becomes a valid print artifact *and* a temporal record of a running simulation. Pages that evolve. A flipbook whose frames are world states, not hand-drawn images. That has no equivalent in any prior art layout system.
 
 ---
 
@@ -58,7 +65,7 @@ VMPrint was deliberately designed to be the opposite.
 
 > The same document rendered with `--debug`. Every actor named. Every boundary measured. Every extent, margin, and origin labeled in place.
 
-The actor contract means you can introduce your own participants into the same simulation as native ones. The communication bus means those participants can publish and observe signals inside the same world. The overlay system means you can draw what the engine sees. The snapshot and rollback model means layout bugs become reproducible facts instead of spooky behavior.
+The actor contract means you can introduce your own participants into the same simulation as native ones. The communication bus means those participants can publish and observe signals inside the same world. The overlay system means you can draw what the engine sees. The snapshot and rollback model means layout bugs become reproducible facts instead of spooky behavior. And if reactive actors ever drive the engine into a geometric oscillation loop, it doesn't silently spin — it stops deterministically and surfaces a diagnostic identifying the oscillating actor, the triggering signal, and the exact frontier where the cycle was detected. The failure mode is observable and reproducible, not a hung process.
 
 ![VMPrint Quarterly - clean render, no debug overlay](documents/readme-assets/newsletter.png)
 
@@ -197,7 +204,7 @@ One element fires. Another grows — before and after — in direct response. Al
 
 The scripting model is built around events, messages, and receiver-oriented mutation. Documents react to lifecycle events. Elements react to their own. Participants coordinate through direct messages. Structural change is a native runtime operation, not a workaround.
 
-For details, see [Scripting API](documents/SCRIPTING-API.md) and [Scripting Series 1](documents/SCRIPTING-SERIES-1.md).
+For details, see [Scripting API](documents/SCRIPTING-API.md).
 
 ---
 
@@ -418,7 +425,7 @@ The API may evolve. The fundamentals will not.
 
 ---
 
-[Architecture](documents/ARCHITECTURE.md) · [Scripting API](documents/SCRIPTING-API.md) · [Scripting Series 1](documents/SCRIPTING-SERIES-1.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html) · [Substack](https://substack.com/@cosmiciron)
+[Authoring Guide](documents/authoring/README.md) · [Engine Internals](documents/ENGINE-INTERNALS.md) · [Scripting API](documents/SCRIPTING-API.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html) · [Substack](https://substack.com/@cosmiciron)
 
 ## License
 

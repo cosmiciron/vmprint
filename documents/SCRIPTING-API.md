@@ -17,8 +17,10 @@ Series 1 is built around two supporting structures:
 
 Together they form the basic paradigm of the scripting system.
 
-- events tell the script what happened
-- messages let document participants coordinate directly
+- events tell the script what happened — they are raised by the engine at defined lifecycle moments
+- messages let document participants coordinate directly with each other — they are raised by other elements, not by the engine
+
+The split is intentional. Events describe system-level moments. Messages are how elements build more complex logic between themselves without needing a central coordinator. A well-written VMPrint script uses events to react to the world and messages to coordinate participants.
 
 Series 1 is therefore not procedural-first.
 A scripter can still write procedural code inside a handler, but the public model is organized around:
@@ -313,8 +315,6 @@ Explicit targeted forms are also valid through the receiver object, for example:
 - `element("summary").append(...)`
 - `element("summary").prepend(...)`
 
-If later Series need additional targeted helpers, they can be added explicitly. Series 1 should prefer the implicit receiver model first.
-
 ### Value Shape
 
 `append(...)` and `prepend(...)` may accept:
@@ -469,9 +469,21 @@ methods:
 ---
 ```
 
+## What This Version Does Not Include
+
+The following are intentional boundaries for this release, not gaps to work around.
+
+**Page scripting** — `page` is not part of the public scripting surface. Scripts operate on document elements, not on individual pages.
+
+**Semantic document helpers** — there is no built-in `getHeadings()`, `getFootnotes()`, or similar catalog of document-type-specific queries. Use `elementsByType(type)` with the element types you author. This keeps the scripting layer generic and usable across any document structure.
+
+**Persistent inter-handler state** — variables declared inside a handler live only for that handler call. Document-scoped bindings (`TITLE`, `ACCENT`, etc. declared in the YAML front matter) are available across all handlers and persist for the document's lifetime. There is no mutable state bag beyond that.
+
+**Animation and ticking** — scripting does not run on a continuous tick. It runs at defined lifecycle moments. Document elements do not animate.
+
+**User-managed refresh control** — you do not instruct the engine when to re-render or re-settle. The engine classifies the effect of each change and responds at the minimum necessary cost. This is by design: scripts that reason about rendering internals are fragile; scripts that reason about content and structure are not.
+
 ## Notes
 
-- top-level `name` is the preferred authored identity
-- `page` is not part of the public Series 1 scripting surface
-- Events and Messages are the central paradigm of Series 1
-- helper additions should stay generic, small, and user-facing
+- `name` is the preferred authored identity for elements; use it consistently
+- `page` is not part of the public scripting surface

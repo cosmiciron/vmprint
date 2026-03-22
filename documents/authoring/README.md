@@ -4,15 +4,16 @@ This directory is the practical guide to authoring VMPrint documents with AST `1
 
 Use it in this order:
 
-1. [01-your-first-document.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\01-your-first-document.md)
-2. [02-styles-and-text.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\02-styles-and-text.md)
-3. [03-stories-strips-and-zones.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\03-stories-strips-and-zones.md)
-4. [04-headers-footers-and-page-control.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\04-headers-footers-and-page-control.md)
-5. [05-images-tables-and-overlays.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\05-images-tables-and-overlays.md)
+1. [01-your-first-document.md](01-your-first-document.md)
+2. [02-styles-and-text.md](02-styles-and-text.md)
+3. [03-stories-strips-and-zones.md](03-stories-strips-and-zones.md)
+4. [04-headers-footers-and-page-control.md](04-headers-footers-and-page-control.md)
+5. [05-images-tables-and-overlays.md](05-images-tables-and-overlays.md)
+6. [06-scripting.md](06-scripting.md)
 
 How this guide differs from the reference:
 
-- [AST-REFERENCE.md](c:\Users\cosmic\Projects\vmprint\documents\AST-REFERENCE.md) is the contract
+- [AST-REFERENCE.md](../AST-REFERENCE.md) is the contract
 - this guide is the teaching path
 - the examples here prefer AST `1.1`
 

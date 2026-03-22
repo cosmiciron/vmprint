@@ -87,9 +87,13 @@ The built-in debug overlay is especially useful now for `zone-map` work because 
 
 See also:
 
-- [OVERLAY.md](c:\Users\cosmic\Projects\vmprint\documents\OVERLAY.md)
-- [LAYOUT-ZONES.md](c:\Users\cosmic\Projects\vmprint\documents\LAYOUT-ZONES.md)
+- [OVERLAY.md](../OVERLAY.md)
 
-After this point, use the reference as needed:
+Next:
 
-- [AST-REFERENCE.md](c:\Users\cosmic\Projects\vmprint\documents\AST-REFERENCE.md)
+- [06-scripting.md](06-scripting.md)
+
+After this point, use the references as needed:
+
+- [AST-REFERENCE.md](../AST-REFERENCE.md)
+- [SCRIPTING-API.md](../SCRIPTING-API.md)

@@ -74,7 +74,7 @@ AST `1.1` promotes drop-cap structure to a first-class field.
     "enabled": true,
     "lines": 3,
     "gap": 8,
-    "style": {
+    "characterStyle": {
       "fontFamily": "Tinos",
       "fontSize": 44,
       "fontWeight": "bold"
@@ -87,4 +87,4 @@ Use plain flow as long as you can. Reach for spatial constructs only when flow s
 
 Next:
 
-- [03-stories-strips-and-zones.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\03-stories-strips-and-zones.md)
+- [03-stories-strips-and-zones.md](03-stories-strips-and-zones.md)

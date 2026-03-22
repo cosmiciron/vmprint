@@ -108,4 +108,4 @@ Use page regions for repeated composition; keep ordinary document content in `el
 
 Next:
 
-- [05-images-tables-and-overlays.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\05-images-tables-and-overlays.md)
+- [05-images-tables-and-overlays.md](05-images-tables-and-overlays.md)

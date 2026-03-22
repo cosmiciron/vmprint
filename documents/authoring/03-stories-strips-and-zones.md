@@ -124,11 +124,6 @@ pinned to the top-right of the story area, for example.
 For non-image `story-absolute` elements, provide explicit `width` and `height`
 in `properties.style`.
 
-### What `placement` replaces
-
-Before A2, these semantics lived in `properties.layout`. That form is no longer
-accepted. Use the top-level `placement` field.
-
 ## `strip`
 
 Use `strip` for masthead rows, bylines, folios, and other one-row bands.
@@ -262,9 +257,6 @@ Here is the practical difference:
 - strip-authored `zone-map`: "these regions are aligned as one band"
 - explicit `region` rectangles: "these regions are separate rooms in the same field"
 
-For now, keep thinking in rectangles.
-The engine can do more internally than we want to expose all at once.
-
 ### A Good First Explicit-Region Pattern
 
 This is a strong default when you want a main body plus a lifted note field:
@@ -342,4 +334,4 @@ Common mistake:
 
 Next:
 
-- [04-headers-footers-and-page-control.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\04-headers-footers-and-page-control.md)
+- [04-headers-footers-and-page-control.md](04-headers-footers-and-page-control.md)

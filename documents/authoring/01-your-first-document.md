@@ -63,4 +63,4 @@ Rules of thumb:
 
 Next:
 
-- [02-styles-and-text.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\02-styles-and-text.md)
+- [02-styles-and-text.md](02-styles-and-text.md)
