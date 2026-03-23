@@ -1,6 +1,6 @@
 {
-  "name": "vmprint",
-  "version": "1.0.0",
+  "name": "@vmprint/cli",
+  "version": "1.0.1",
   "description": "Deterministic typesetting CLI for the programmable web. Convert JSON document streams to bit-perfect PDFs.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
