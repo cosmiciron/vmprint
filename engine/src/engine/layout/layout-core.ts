@@ -99,7 +99,7 @@ export class LayoutProcessor extends TextProcessor {
     }
 
     private cloneElementsForSimulation(elements: Element[]): Element[] {
-        return JSON.parse(JSON.stringify(elements)) as Element[];
+        return structuredClone(elements) as Element[];
     }
 
     private normalizeOverflowPolicy(value: unknown): OverflowPolicy {

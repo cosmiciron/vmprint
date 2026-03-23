@@ -79,7 +79,7 @@ export function inlineToElements(nodes: SemanticNode[], ctx: InlineContext): Ele
         break;
 
       case 'del':
-        result.push({ type: 'inline', content: '', properties: { style: { textDecoration: 'line-through' } }, children: inlineToElements(node.children || [], ctx) });
+        result.push({ type: 'inline', content: '', children: inlineToElements(node.children || [], ctx) });
         break;
 
       case 'link': {
@@ -115,9 +115,9 @@ export function inlineToElements(nodes: SemanticNode[], ctx: InlineContext): Ele
           result.push({
             type: 'image',
             content: '',
+            image: { data: resolved.data, mimeType: resolved.mimeType, fit: 'contain' },
             properties: {
               style: ctx.inlineImageStyle ? { ...ctx.inlineImageStyle } : undefined,
-              image: { data: resolved.data, mimeType: resolved.mimeType, fit: 'contain' },
               sourceRange: node.sourceRange,
               sourceSyntax: node.sourceSyntax
             }

@@ -218,17 +218,16 @@ export class Kernel {
     }
 
     captureLocalSplitStateSnapshot(): LocalSplitStateSnapshot {
+        const fragmentTransitionsBySource = new Map<string, FragmentTransition[]>();
+        for (const [sourceActorId, transitions] of this.fragmentTransitionsBySource) {
+            fragmentTransitionsBySource.set(sourceActorId, [...transitions]);
+        }
         return {
             currentPageReservations: this.currentPageReservations.map((reservation) => ({ ...reservation })),
             currentPageExclusions: this.currentPageExclusions.map((exclusion) => ({ ...exclusion })),
             fragmentTransitions: [...this.fragmentTransitions],
             fragmentTransitionsByActor: new Map(this.fragmentTransitionsByActor),
-            fragmentTransitionsBySource: new Map(
-                Array.from(this.fragmentTransitionsBySource.entries(), ([sourceActorId, transitions]) => [
-                    sourceActorId,
-                    [...transitions]
-                ])
-            )
+            fragmentTransitionsBySource
         };
     }
 

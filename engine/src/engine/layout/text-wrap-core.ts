@@ -73,19 +73,19 @@ export function buildRichWrapTokens(params: {
         const locale = params.getSegmenterLocale((seg.style || params.primaryStyle) as ElementStyle);
         const scriptSegments = params.segmentTextByFont(seg.text, seg.fontFamily, locale);
         for (const scriptSeg of scriptSegments) {
-            const bidiSplitStartedAt = performance.now();
+            const bidiT0 = params.onBidiSplit ? performance.now() : 0;
             const bidiRuns = params.splitByBidiDirection(scriptSeg.text, params.baseDirection);
-            params.onBidiSplit?.(performance.now() - bidiSplitStartedAt);
+            if (params.onBidiSplit) params.onBidiSplit(performance.now() - bidiT0);
             for (const bidiRun of bidiRuns) {
-                const scriptSplitStartedAt = performance.now();
+                const scriptT0 = params.onScriptSplit ? performance.now() : 0;
                 const scriptRuns = params.splitByScriptType(bidiRun.text);
-                params.onScriptSplit?.(performance.now() - scriptSplitStartedAt);
+                if (params.onScriptSplit) params.onScriptSplit(performance.now() - scriptT0);
 
                 for (const run of scriptRuns) {
                     const segmenter = params.makeWordSegmenter(locale, run.isCJK);
-                    const wordSegmentStartedAt = performance.now();
+                    const wordT0 = params.onWordSegment ? performance.now() : 0;
                     const subSegments = segmenter.segment(run.text);
-                    params.onWordSegment?.(performance.now() - wordSegmentStartedAt);
+                    if (params.onWordSegment) params.onWordSegment(performance.now() - wordT0);
 
                     for (const { segment } of subSegments) {
                         const rawSubSeg = {
@@ -212,10 +212,10 @@ export function wrapTokenStream(params: {
             continue;
         }
 
-        const overflowTokenStartedAt = performance.now();
+        const overflowT0 = params.onOverflowToken ? performance.now() : 0;
         if (params.hyphenate) {
             const remainingWidth = lineWidthLimit - currentLineWidth;
-            const hyphenationStartedAt = performance.now();
+            const hyphenT0 = params.onHyphenationAttempt ? performance.now() : 0;
             const hyphenated = params.tryHyphenateSegmentToFit(
                 token.segment,
                 token.font,
@@ -224,7 +224,7 @@ export function wrapTokenStream(params: {
                 remainingWidth,
                 token.hyphenationStyle
             );
-            params.onHyphenationAttempt?.(performance.now() - hyphenationStartedAt, !!hyphenated);
+            if (params.onHyphenationAttempt) params.onHyphenationAttempt(performance.now() - hyphenT0, !!hyphenated);
 
             if (hyphenated) {
                 pushSegmentToLine(hyphenated.head, hyphenated.headWidth, false);
@@ -236,7 +236,7 @@ export function wrapTokenStream(params: {
                     currentLine = [hyphenated.tail];
                     currentLineWidth = hyphenated.tailWidth;
                 } else {
-                    const graphemeFallbackStartedAt = performance.now();
+                    const graphemeT0 = params.onGraphemeFallback ? performance.now() : 0;
                     const graphemes = params.splitToGraphemes(hyphenated.tail.text, token.locale);
                     for (const grapheme of graphemes) {
                         const graphemeSegment = params.transformSegment({ ...hyphenated.tail, text: grapheme }, hyphenated.tail.fontFamily);
@@ -254,9 +254,9 @@ export function wrapTokenStream(params: {
                         }
                         pushSegmentToLine(graphemeSegment, graphemeWidth, false);
                     }
-                    params.onGraphemeFallback?.(performance.now() - graphemeFallbackStartedAt, graphemes.length);
+                    if (params.onGraphemeFallback) params.onGraphemeFallback(performance.now() - graphemeT0, graphemes.length);
                 }
-                params.onOverflowToken?.(performance.now() - overflowTokenStartedAt);
+                if (params.onOverflowToken) params.onOverflowToken(performance.now() - overflowT0);
                 continue;
             }
         }
@@ -279,7 +279,7 @@ export function wrapTokenStream(params: {
         }
 
         if (segmentWidth > getCurrentLineWidthLimit()) {
-            const graphemeFallbackStartedAt = performance.now();
+            const graphemeT0 = params.onGraphemeFallback ? performance.now() : 0;
             const graphemes = params.splitToGraphemes(token.segment.text, token.locale);
             for (const grapheme of graphemes) {
                 const graphemeSegment = params.transformSegment({ ...token.segment, text: grapheme }, token.segment.fontFamily);
@@ -297,12 +297,12 @@ export function wrapTokenStream(params: {
                 }
                 pushSegmentToLine(graphemeSegment, graphemeWidth, token.allowMerge);
             }
-            params.onGraphemeFallback?.(performance.now() - graphemeFallbackStartedAt, graphemes.length);
+            if (params.onGraphemeFallback) params.onGraphemeFallback(performance.now() - graphemeT0, graphemes.length);
         } else {
             currentLine = [token.segment];
             currentLineWidth = segmentWidth;
         }
-        params.onOverflowToken?.(performance.now() - overflowTokenStartedAt);
+        if (params.onOverflowToken) params.onOverflowToken(performance.now() - overflowT0);
     }
 
     if (currentLine.length > 0) finalLines.push(currentLine);

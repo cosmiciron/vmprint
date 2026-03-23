@@ -90,7 +90,19 @@ export function getStrongDirection(text: string): 'ltr' | 'rtl' | 'neutral' {
             (cp >= 0xFB1D && cp <= 0xFDFF) ||
             (cp >= 0xFE70 && cp <= 0xFEFF);
         if (isRtl) return 'rtl';
-        if (/\p{L}/u.test(ch)) return 'ltr';
+        // Fast code-point check for common letter ranges before falling back to regex.
+        if ((cp >= 0x41 && cp <= 0x5A) ||   // A-Z
+            (cp >= 0x61 && cp <= 0x7A) ||   // a-z
+            (cp >= 0xC0 && cp <= 0x024F) || // Latin Extended
+            (cp >= 0x0370 && cp <= 0x03FF) || // Greek
+            (cp >= 0x0400 && cp <= 0x04FF) || // Cyrillic
+            (cp >= 0x0900 && cp <= 0x097F) || // Devanagari
+            (cp >= 0x4E00 && cp <= 0x9FFF) || // CJK Unified
+            (cp >= 0xAC00 && cp <= 0xD7AF) || // Hangul
+            (cp >= 0x3040 && cp <= 0x30FF)) { // Hiragana/Katakana
+            return 'ltr';
+        }
+        if (cp > 0x20 && /\p{L}/u.test(ch)) return 'ltr';
     }
     return 'neutral';
 }
@@ -195,6 +207,15 @@ export function splitByScriptType(
 ): { text: string; isCJK: boolean }[] {
     if (!text) return [];
 
+    // Fast path: if all code points are in the Basic Latin + Latin Extended range,
+    // skip the grapheme segmenter entirely and return the text as a single non-CJK run.
+    let allLatin = true;
+    for (let i = 0; i < text.length; i++) {
+        const cp = text.charCodeAt(i);
+        if (cp > 0x024F) { allLatin = false; break; }
+    }
+    if (allLatin) return [{ text, isCJK: false }];
+
     const clusters = getGraphemeClusters(text);
     if (clusters.length === 0) return [];
 
@@ -273,6 +294,8 @@ export function segmentTextByFont(params: {
     getGraphemeClusters: (value: string) => string[];
     resolveLoadedFamilyFont: (familyName: string, weight: number, style?: string) => any;
     fontSupportsCluster: (font: any, cluster: string) => boolean;
+    /** Optional shared cache to avoid re-resolving fonts across multiple calls within the same layout pass. */
+    sharedFontCache?: Map<string, any | null>;
 }): ScriptFontSegment[] {
     const clusters = params.getGraphemeClusters(params.text);
     if (clusters.length === 0) return [];
@@ -291,7 +314,7 @@ export function segmentTextByFont(params: {
         }
     };
 
-    const familyFontCache = new Map<string, any | null>();
+    const familyFontCache = params.sharedFontCache ?? new Map<string, any | null>();
     const getFamilyFont = (family: string): any | null => {
         if (!familyFontCache.has(family)) {
             familyFontCache.set(family, resolveRegularFont(family));

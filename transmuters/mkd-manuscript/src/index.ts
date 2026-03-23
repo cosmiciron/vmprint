@@ -298,7 +298,7 @@ export function transmuteWithArtifacts(markdown: string, options?: ManuscriptTra
 
   const built = buildLayout(theme.layout);
   const document: DocumentInput = {
-    documentVersion: '1.0',
+    documentVersion: '1.1',
     layout: built.layout,
     styles: theme.styles,
     elements: ctx.getElements(),

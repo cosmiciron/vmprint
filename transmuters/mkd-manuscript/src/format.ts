@@ -351,8 +351,8 @@ export class ManuscriptFormat {
       type: 'table',
       content: '',
       children: [{ type: 'table-row', content: '', children: [authorCell, wordCountCell] }],
+      table: { headerRows: 0, columnGap: 0, columns: [{ mode: 'flex', fr: 1 }, { mode: 'flex', fr: 1 }] },
       properties: {
-        table: { headerRows: 0, columnGap: 0, columns: [{ mode: 'flex', fr: 1 }, { mode: 'flex', fr: 1 }] },
         style: { marginBottom: 6 },
         _coverKey: 'author',
         _coverValue: author,

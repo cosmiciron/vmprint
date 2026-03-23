@@ -33,6 +33,7 @@ export class TextProcessor extends FontProcessor {
 
     private styleSignatureCache = new StyleSignatureCache();
 
+
     private cloneGlyphs(glyphs: Array<{ char: string; x: number; y: number }>): Array<{ char: string; x: number; y: number }> {
         const out = new Array(glyphs.length);
         for (let i = 0; i < glyphs.length; i++) {
@@ -298,8 +299,12 @@ export class TextProcessor extends FontProcessor {
             throw new Error(`[TextProcessor] Missing measurement font for text "${text.slice(0, 24)}". Ensure fonts are loaded before layout.`);
         }
 
-        // Cache Key: Unique string representing the font, size, letterSpacing and text with context
-        const fontKey = measurementFont.postscriptName || measurementFont.familyName || 'unknown';
+        // Cache Key: Unique string representing the font, size, letterSpacing and text with context.
+        // Intern fontKey on the font object to avoid repeated property traversal.
+        if (!measurementFont._vmFontKey) {
+            measurementFont._vmFontKey = measurementFont.postscriptName || measurementFont.familyName || 'unknown';
+        }
+        const fontKey: string = measurementFont._vmFontKey;
         const ctxDirection = populateSegment?.direction || 'ltr';
         const ctxScriptClass = populateSegment?.scriptClass || 'none';
         const cacheKey = `${fontKey}-${measurementFontSize}-${letterSpacing}-${ctxScriptClass}-${ctxDirection}-${text}`;
@@ -308,7 +313,9 @@ export class TextProcessor extends FontProcessor {
         if (cached) {
             session?.recordProfile?.('textMeasurementCacheHits', 1);
             if (populateSegment) {
-                populateSegment.glyphs = this.cloneGlyphs(cached.glyphs);
+                // Assign the cached glyphs array directly. appendSegmentToLine always
+                // calls .slice() before pushing, so the cached array is never mutated.
+                populateSegment.glyphs = cached.glyphs;
                 if (cached.shapedGlyphs) populateSegment.shapedGlyphs = cached.shapedGlyphs;
                 populateSegment.width = cached.width;
                 populateSegment.ascent = cached.ascent;
@@ -396,8 +403,13 @@ export class TextProcessor extends FontProcessor {
             // Save to cache (LRU eviction: keep at most 50,000 entries)
             this.runtime.measurementCache.set(cacheKey, { width, glyphs, shapedGlyphs: isRtl ? shapedGlyphs : undefined, ascent, descent });
             if (this.runtime.measurementCache.size > 50_000) {
-                const oldestKey = this.runtime.measurementCache.keys().next().value;
-                if (oldestKey !== undefined) this.runtime.measurementCache.delete(oldestKey);
+                // Evict 500 entries (1%) at once to amortize the cost of eviction
+                // across subsequent inserts rather than paying it on every cache miss.
+                let evictCount = 500;
+                for (const key of this.runtime.measurementCache.keys()) {
+                    this.runtime.measurementCache.delete(key);
+                    if (--evictCount === 0) break;
+                }
             }
 
             if (populateSegment) {
@@ -631,17 +643,20 @@ export class TextProcessor extends FontProcessor {
     protected segmentTextByFont(
         text: string,
         preferredFamily?: string,
-        preferredLocale?: string
+        preferredLocale?: string,
+        fallbackFamiliesOverride?: string[],
+        sharedFontCache?: Map<string, any | null>
     ): { text: string, fontName?: string, fontObject?: any }[] {
         return segmentTextByFontBySupport({
             text,
             preferredFamily,
             preferredLocale,
             baseFontFamily: this.config.layout.fontFamily,
-            fallbackFamilies: getFallbackFamilies(this.runtime.fontRegistry, this.runtime.fontManager),
+            fallbackFamilies: fallbackFamiliesOverride ?? getFallbackFamilies(this.runtime.fontRegistry, this.runtime.fontManager),
             getGraphemeClusters: (value) => this.getGraphemeClusters(value),
             resolveLoadedFamilyFont: (familyName, weight) => this.resolveLoadedFamilyFont(familyName, weight),
-            fontSupportsCluster: (font, cluster) => this.fontSupportsCluster(font, cluster)
+            fontSupportsCluster: (font, cluster) => this.fontSupportsCluster(font, cluster),
+            sharedFontCache
         });
     }
 
@@ -709,7 +724,11 @@ export class TextProcessor extends FontProcessor {
             return normalized;
         };
         const session = (this as any).getCurrentLayoutSession?.() || null;
-        const buildTokensStartedAt = performance.now();
+        // Compute fallback families once per paragraph (fix #2) and share a font
+        // resolution cache across all segmentTextByFont calls (fix #3).
+        const wrapFallbackFamilies = getFallbackFamilies(this.runtime.fontRegistry, this.runtime.fontManager);
+        const wrapFontCache = new Map<string, any | null>();
+        const buildTokensT0 = session ? performance.now() : 0;
         const tokens = buildRichWrapTokens({
             flattenedSegments,
             defaultFontSize: fontSize,
@@ -720,7 +739,7 @@ export class TextProcessor extends FontProcessor {
             preserveDirectionalBoundaries,
             splitByBidiDirection: (value, base) => splitByBidiDirection(value, base),
             segmentTextByFont: (value, preferredFamily, preferredLocale) =>
-                this.segmentTextByFont(value, preferredFamily, preferredLocale),
+                this.segmentTextByFont(value, preferredFamily, preferredLocale, wrapFallbackFamilies, wrapFontCache),
             splitByScriptType: (value) => this.splitByScriptType(value),
             getScriptClass: (value) => this.getScriptClass(value),
             getOpticalScale: (scriptClass) => this.getOpticalScale(scriptClass),
@@ -733,22 +752,22 @@ export class TextProcessor extends FontProcessor {
                 resolveRichFontInfo(seg, defaultSize, this.config.layout.fontFamily, (familyName, weight) =>
                     this.resolveLoadedFamilyFont(familyName, weight)
                 ),
-            onBidiSplit: (durationMs) => {
-                session?.recordProfile?.('flowBidiSplitCalls', 1);
-                session?.recordProfile?.('flowBidiSplitMs', durationMs);
-            },
-            onScriptSplit: (durationMs) => {
-                session?.recordProfile?.('flowScriptSplitCalls', 1);
-                session?.recordProfile?.('flowScriptSplitMs', durationMs);
-            },
-            onWordSegment: (durationMs) => {
-                session?.recordProfile?.('flowWordSegmentCalls', 1);
-                session?.recordProfile?.('flowWordSegmentMs', durationMs);
-            }
+            onBidiSplit: session ? (durationMs) => {
+                session.recordProfile?.('flowBidiSplitCalls', 1);
+                session.recordProfile?.('flowBidiSplitMs', durationMs);
+            } : undefined,
+            onScriptSplit: session ? (durationMs) => {
+                session.recordProfile?.('flowScriptSplitCalls', 1);
+                session.recordProfile?.('flowScriptSplitMs', durationMs);
+            } : undefined,
+            onWordSegment: session ? (durationMs) => {
+                session.recordProfile?.('flowWordSegmentCalls', 1);
+                session.recordProfile?.('flowWordSegmentMs', durationMs);
+            } : undefined
         });
         session?.recordProfile?.('flowBuildTokensCalls', 1);
-        session?.recordProfile?.('flowBuildTokensMs', performance.now() - buildTokensStartedAt);
-        const wrapStreamStartedAt = performance.now();
+        if (session) session.recordProfile?.('flowBuildTokensMs', performance.now() - buildTokensT0);
+        const wrapStreamT0 = session ? performance.now() : 0;
         const wrapped = wrapTokenStream({
             tokens,
             maxWidth,
@@ -779,25 +798,25 @@ export class TextProcessor extends FontProcessor {
                 resolveRichFontInfo(seg, defaultSize, this.config.layout.fontFamily, (familyName, weight) =>
                     this.resolveLoadedFamilyFont(familyName, weight)
                 ),
-            onOverflowToken: (durationMs) => {
-                session?.recordProfile?.('wrapOverflowTokenCalls', 1);
-                session?.recordProfile?.('wrapOverflowTokenMs', durationMs);
-            },
-            onHyphenationAttempt: (durationMs, succeeded) => {
-                session?.recordProfile?.('wrapHyphenationAttemptCalls', 1);
-                session?.recordProfile?.('wrapHyphenationAttemptMs', durationMs);
+            onOverflowToken: session ? (durationMs) => {
+                session.recordProfile?.('wrapOverflowTokenCalls', 1);
+                session.recordProfile?.('wrapOverflowTokenMs', durationMs);
+            } : undefined,
+            onHyphenationAttempt: session ? (durationMs, succeeded) => {
+                session.recordProfile?.('wrapHyphenationAttemptCalls', 1);
+                session.recordProfile?.('wrapHyphenationAttemptMs', durationMs);
                 if (succeeded) {
-                    session?.recordProfile?.('wrapHyphenationSuccessCalls', 1);
+                    session.recordProfile?.('wrapHyphenationSuccessCalls', 1);
                 }
-            },
-            onGraphemeFallback: (durationMs, graphemeCount) => {
-                session?.recordProfile?.('wrapGraphemeFallbackCalls', 1);
-                session?.recordProfile?.('wrapGraphemeFallbackMs', durationMs);
-                session?.recordProfile?.('wrapGraphemeFallbackSegments', graphemeCount);
-            }
+            } : undefined,
+            onGraphemeFallback: session ? (durationMs, graphemeCount) => {
+                session.recordProfile?.('wrapGraphemeFallbackCalls', 1);
+                session.recordProfile?.('wrapGraphemeFallbackMs', durationMs);
+                session.recordProfile?.('wrapGraphemeFallbackSegments', graphemeCount);
+            } : undefined
         });
         session?.recordProfile?.('flowWrapStreamCalls', 1);
-        session?.recordProfile?.('flowWrapStreamMs', performance.now() - wrapStreamStartedAt);
+        if (session) session.recordProfile?.('flowWrapStreamMs', performance.now() - wrapStreamT0);
 
         if (lineLayoutOut) {
             lineLayoutOut.widths = [];

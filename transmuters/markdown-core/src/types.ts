@@ -69,6 +69,9 @@ export interface Element {
   columns?: number;
   gutter?: number;
   balance?: boolean;
+  table?: Record<string, unknown>;
+  image?: Record<string, unknown>;
+  dropCap?: Record<string, unknown>;
   properties?: Record<string, unknown>;
 }
 

@@ -50,10 +50,17 @@ export class FormatContextImpl implements FormatContext {
 
   emit(role: string, content: string | SemanticNode[], properties?: Record<string, unknown>): void {
     let element: Element;
+    const { dropCap: dropCapValue, ...elementProps } = properties || {};
+    const hasProps = Object.keys(elementProps).length > 0;
     if (typeof content === 'string') {
       const typoCfg = (this.config.typography as Record<string, unknown>) || {};
       const sq = typoCfg.smartQuotes !== false;
-      element = { type: role, content: sq ? applySmartQuotes(content) : content, ...(properties ? { properties } : {}) };
+      element = {
+        type: role,
+        content: sq ? applySmartQuotes(content) : content,
+        ...(hasProps ? { properties: elementProps } : {}),
+        ...(dropCapValue !== undefined ? { dropCap: dropCapValue as Record<string, unknown> } : {})
+      };
     } else {
       const ctx = makeInlineContext(
         this.themeStyles,
@@ -63,7 +70,13 @@ export class FormatContextImpl implements FormatContext {
         (id, c) => this.registerFootnote(id, c)
       );
       const children = inlineToElements(content, ctx);
-      element = { type: role, content: '', children, ...(properties ? { properties } : {}) };
+      element = {
+        type: role,
+        content: '',
+        children,
+        ...(hasProps ? { properties: elementProps } : {}),
+        ...(dropCapValue !== undefined ? { dropCap: dropCapValue as Record<string, unknown> } : {})
+      };
     }
     this.elements.push(element);
   }
@@ -78,8 +91,8 @@ export class FormatContextImpl implements FormatContext {
     this.elements.push({
       type: 'image',
       content: '',
+      image: { data: resolved.data, mimeType: resolved.mimeType, fit: 'contain' },
       properties: {
-        image: { data: resolved.data, mimeType: resolved.mimeType, fit: 'contain' },
         sourceRange: imageNode.sourceRange,
         sourceSyntax: imageNode.sourceSyntax,
         ...(properties || {})
@@ -132,10 +145,10 @@ export class FormatContextImpl implements FormatContext {
     const headerCellStyle: Record<string, unknown> = { fontWeight: 700 };
     if (options.headerColor) headerCellStyle.backgroundColor = options.headerColor;
 
-    const tableProps: Record<string, unknown> = { table: { headerRows: 1, repeatHeader: true, headerCellStyle }, sourceRange: tableNode.sourceRange, sourceSyntax: tableNode.sourceSyntax };
+    const tableProps: Record<string, unknown> = { sourceRange: tableNode.sourceRange, sourceSyntax: tableNode.sourceSyntax };
     if (Object.keys(tableStyle).length > 0) tableProps.style = tableStyle;
 
-    this.elements.push({ type: 'table', content: '', children: rowElements as Element[], properties: tableProps });
+    this.elements.push({ type: 'table', content: '', children: rowElements as Element[], table: { headerRows: 1, repeatHeader: true, headerCellStyle }, properties: tableProps });
   }
 
   emitReferenceItem(numberPrefix: string, url: string, title?: string): void {

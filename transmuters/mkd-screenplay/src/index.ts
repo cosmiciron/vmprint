@@ -272,7 +272,7 @@ export function transmute(markdown: string, options?: ScreenplayTransmuteOptions
 
   const built = buildLayout(theme.layout);
   return {
-    documentVersion: '1.0',
+    documentVersion: '1.1',
     layout: built.layout,
     styles: theme.styles,
     elements: ctx.getElements(),
