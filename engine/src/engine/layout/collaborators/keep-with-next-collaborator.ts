@@ -6,9 +6,45 @@ import { LayoutSession } from '../layout-session';
 import { PackagerUnit, preparePackagerForPhase } from '../packagers/packager-types';
 
 export type KeepWithNextPlan = KeepWithNextFormationPlan;
+export type KeepWithNextPlanObserver = {
+    recordProfile(metric: 'keepWithNextEarlyExitCalls' | 'keepWithNextPreparedActors' | 'keepWithNextPlanCalls' | 'keepWithNextPlanMs', delta: number): void;
+    recordKeepWithNextPrepare(actorKind: string, durationMs: number): void;
+    getSplitMarkerReserve(actor: PackagerUnit): number;
+    getActorSignalSequence?(): number;
+};
 
 const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
     prevAfter + marginTop;
+
+export function buildKeepWithNextPlanSignature(state: PaginationLoopState, observer?: Pick<KeepWithNextPlanObserver, 'getActorSignalSequence'>): string {
+    const { actorQueue, actorIndex, paginationState, availableWidth, availableHeight, lastSpacingAfter, isAtPageTop, context } = state;
+    const actor = actorQueue[actorIndex];
+    const chain: string[] = [];
+
+    for (let index = actorIndex; index < actorQueue.length; index += 1) {
+        const current = actorQueue[index];
+        chain.push(`${current.actorId}:${current.fragmentIndex}:${current.keepWithNext ? 1 : 0}`);
+        if (!current.keepWithNext || index + 1 >= actorQueue.length) {
+            break;
+        }
+    }
+
+    return [
+        actor?.actorId ?? 'unknown',
+        actorIndex,
+        paginationState.currentPageIndex,
+        Number(paginationState.currentY).toFixed(3),
+        Number(availableWidth).toFixed(3),
+        Number(availableHeight).toFixed(3),
+        Number(lastSpacingAfter).toFixed(3),
+        isAtPageTop ? 'top' : 'body',
+        context.pageIndex,
+        Number(context.cursorY).toFixed(3),
+        Number(context.simulationTick ?? -1),
+        Number(observer?.getActorSignalSequence?.() ?? -1),
+        chain.join('>')
+    ].join('|');
+}
 
 function computeUnitHeight(unit: PackagerUnit, prevSpacingAfter: number): { height: number; nextSpacingAfter: number } {
     const unitMarginTop = unit.getMarginTop();
@@ -23,7 +59,7 @@ function computeUnitHeight(unit: PackagerUnit, prevSpacingAfter: number): { heig
     };
 }
 
-export function computeKeepWithNextPlan(state: PaginationLoopState, session?: LayoutSession): KeepWithNextPlan {
+export function computeKeepWithNextPlan(state: PaginationLoopState, observer?: KeepWithNextPlanObserver): KeepWithNextPlan {
     const { actorQueue, actorIndex, availableWidth, lastSpacingAfter, context } = state;
     const packager = actorQueue[actorIndex];
     const sequence: PackagerUnit[] = [packager];
@@ -48,7 +84,7 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
         // Once the measured prefix fills or exceeds the page, any longer chain cannot fit.
         // The split fallback only needs to know that a downstream actor exists.
         if (sequenceHeight >= state.availableHeight) {
-            session?.recordProfile('keepWithNextEarlyExitCalls', 1);
+            observer?.recordProfile('keepWithNextEarlyExitCalls', 1);
             sequence.push(nextPackager);
             cumulativeHeights.push(sequenceHeight);
             break;
@@ -57,8 +93,8 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
         const prepareStart = performance.now();
         preparePackagerForPhase(nextPackager, 'lookahead', availableWidth, remainingHeight, context);
         const prepareMs = performance.now() - prepareStart;
-        session?.recordProfile('keepWithNextPreparedActors', 1);
-        session?.recordKeepWithNextPrepare(nextPackager.actorKind, prepareMs);
+        observer?.recordProfile('keepWithNextPreparedActors', 1);
+        observer?.recordKeepWithNextPrepare(nextPackager.actorKind, prepareMs);
         sequence.push(nextPackager);
         const measured = computeUnitHeight(nextPackager, tempLastSpacing);
         sequenceHeight += measured.height;
@@ -79,7 +115,7 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, session?: La
     const splitCandidate = sequence.length > 1 ? sequence[sequence.length - 1] : null;
     const tailSplitBreakableInCurrentTerrain =
         splitCandidate !== null && !splitCandidate.isUnbreakable(state.availableHeight - prefixHeight);
-    const splitMarkerReserve = splitCandidate && session ? session.getSplitMarkerReserve(splitCandidate) : 0;
+    const splitMarkerReserve = splitCandidate && observer ? observer.getSplitMarkerReserve(splitCandidate) : 0;
     const tailSplitViableWithMarkerReserve =
         splitCandidate !== null &&
         !splitCandidate.isUnbreakable(state.availableHeight - prefixHeight - splitMarkerReserve);
@@ -136,11 +172,13 @@ export class KeepWithNextCollaborator implements Collaborator {
         const state = session.getPaginationLoopState();
         if (!state) return;
         if (state.actorQueue[state.actorIndex] !== actor) return;
+        const signature = buildKeepWithNextPlanSignature(state, session);
+        if (session.getKeepWithNextPlan(actor.actorId, signature)) return;
         const t0 = performance.now();
         const plan = computeKeepWithNextPlan(state, session);
         const t1 = performance.now();
         session.recordProfile('keepWithNextPlanCalls', 1);
         session.recordProfile('keepWithNextPlanMs', t1 - t0);
-        session.setKeepWithNextPlan(actor.actorId, plan);
+        session.setKeepWithNextPlan(actor.actorId, plan, signature);
     }
 }

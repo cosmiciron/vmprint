@@ -373,7 +373,10 @@ export class LayoutSession {
         this.eventDispatcher = new EventDispatcher(this.collaborators);
         this.actorCommunicationRuntime = new ActorCommunicationRuntime({
             recordObserverCheckpointSweep: () => this.recordProfile('observerCheckpointSweepCalls', 1),
-            recordProfile: (metric, delta) => this.recordProfile(metric, delta)
+            recordProfile: (metric, delta) => this.recordProfile(metric, delta),
+            recordKeepWithNextPrepare: (actorKind, durationMs) => this.recordKeepWithNextPrepare(actorKind, durationMs),
+            getSplitMarkerReserve: (actor) => this.getSplitMarkerReserve(actor),
+            getActorSignalSequence: () => this.getActorSignalSequence()
         });
         this.fragmentSessionRuntime = new FragmentSessionRuntime(this.kernel, {
             notifyActorSpawn: (actor) => this.notifyActorSpawn(actor),
@@ -503,7 +506,10 @@ export class LayoutSession {
                 shouldAdvancePageOnFailure,
                 positionMarker
             ),
-            recordProfile: (metric, delta) => this.recordProfile(metric, delta)
+            recordProfile: (metric, delta) => this.recordProfile(metric, delta),
+            recordKeepWithNextPrepare: (actorKind, durationMs) => this.recordKeepWithNextPrepare(actorKind, durationMs),
+            getSplitMarkerReserve: (actor) => this.getSplitMarkerReserve(actor),
+            getActorSignalSequence: () => this.getActorSignalSequence()
         });
     }
 
@@ -1157,12 +1163,12 @@ export class LayoutSession {
         };
     }
 
-    setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan): void {
-        this.aiRuntime.setKeepWithNextPlan(actorId, plan);
+    setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan, signature?: string | null): void {
+        this.aiRuntime.setKeepWithNextPlan(actorId, plan, signature);
     }
 
-    getKeepWithNextPlan(actorId: string): KeepWithNextFormationPlan | undefined {
-        return this.aiRuntime.getKeepWithNextPlan(actorId);
+    getKeepWithNextPlan(actorId: string, signature?: string | null): KeepWithNextFormationPlan | undefined {
+        return this.aiRuntime.getKeepWithNextPlan(actorId, signature);
     }
 
     resolveKeepWithNextOverflow(

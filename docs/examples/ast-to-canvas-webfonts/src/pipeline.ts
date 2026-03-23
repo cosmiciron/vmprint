@@ -37,6 +37,8 @@ type CanvasContextInstance = {
     ): Promise<void>;
 };
 
+type CanvasTextRenderMode = 'text' | 'glyph-path';
+
 type CanvasContextBundle = {
     CanvasContext: new (options: any) => CanvasContextInstance;
 };
@@ -179,7 +181,10 @@ function parseDocumentJson(jsonText: string): VmprintDocument {
     return parsed as VmprintDocument;
 }
 
-async function createCanvasPreviewSession(documentInput: VmprintDocument): Promise<CanvasPreviewSession> {
+async function createCanvasPreviewSession(
+    documentInput: VmprintDocument,
+    options: { textRenderMode?: CanvasTextRenderMode } = {}
+): Promise<CanvasPreviewSession> {
     if (!window.VMPrintEngine || !window.VMPrintWebFonts || !window.VMPrintCanvasContext) {
         throw new Error('VMPrint browser bundles are missing. Rebuild docs assets and reload.');
     }
@@ -203,7 +208,8 @@ async function createCanvasPreviewSession(documentInput: VmprintDocument): Promi
         size: [width, height],
         margins: { top: 0, right: 0, bottom: 0, left: 0 },
         autoFirstPage: false,
-        bufferPages: false
+        bufferPages: false,
+        textRenderMode: options.textRenderMode || 'text'
     });
 
     const renderer = new engineApi.Renderer(config, false, runtime);

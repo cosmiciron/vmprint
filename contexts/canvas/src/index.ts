@@ -50,8 +50,11 @@ type RenderPageOptions = {
     backgroundColor?: string;
 };
 
+type TextRenderMode = 'text' | 'glyph-path';
+
 type PageScene = {
     nodes: string[];
+    usedFontIds: Set<string>;
 };
 
 const identityMatrix = (): Matrix => [1, 0, 0, 1, 0, 0];
@@ -109,8 +112,11 @@ const normalizeFamilyName = (fontId: string, standardFontPostScriptName?: string
     standardFontPostScriptName || fontId;
 
 const ensureBrowserImageApis = (): void => {
-    if (typeof Blob === 'undefined' || typeof URL === 'undefined' || typeof Image === 'undefined') {
-        throw new Error('[CanvasContext] Canvas rasterization helpers require browser Blob, URL, and Image APIs.');
+    if (typeof Blob === 'undefined') {
+        throw new Error('[CanvasContext] Canvas rasterization helpers require browser Blob APIs.');
+    }
+    if (typeof createImageBitmap === 'undefined' && (typeof URL === 'undefined' || typeof Image === 'undefined')) {
+        throw new Error('[CanvasContext] Canvas rasterization helpers require createImageBitmap(), or browser URL and Image APIs.');
     }
 };
 
@@ -135,10 +141,11 @@ const defaultRasterDpi = (): number => {
 export class CanvasContext implements Context {
     private readonly pageWidth: number;
     private readonly pageHeight: number;
+    private readonly textRenderMode: TextRenderMode;
     private readonly fonts = new Map<string, RegisteredFont>();
     private readonly pages: PageScene[] = [];
     private readonly svgCache = new Map<number, string>();
-    private readonly pageImageCache = new Map<number, Promise<HTMLImageElement>>();
+    private readonly pageImageCache = new Map<number, Promise<CanvasImageSource>>();
     private readonly stateStack: GraphicsState[] = [];
     private currentState: GraphicsState = {
         fontId: null,
@@ -154,7 +161,7 @@ export class CanvasContext implements Context {
     private currentPageIndex = -1;
     private isEnded = false;
 
-    constructor(options: ContextFactoryOptions) {
+    constructor(options: ContextFactoryOptions & { textRenderMode?: TextRenderMode }) {
         const size = Array.isArray(options.size)
             ? { width: options.size[0], height: options.size[1] }
             : typeof options.size === 'string'
@@ -162,13 +169,14 @@ export class CanvasContext implements Context {
                 : options.size;
         this.pageWidth = size.width;
         this.pageHeight = size.height;
+        this.textRenderMode = options.textRenderMode || 'text';
         if (options.autoFirstPage) {
             this.addPage();
         }
     }
 
     addPage(): void {
-        this.pages.push({ nodes: [] });
+        this.pages.push({ nodes: [], usedFontIds: new Set<string>() });
         this.currentPageIndex = this.pages.length - 1;
         this.currentPath = [];
         this.markPageDirty(this.currentPageIndex);
@@ -355,7 +363,13 @@ export class CanvasContext implements Context {
         const page = this.requireCurrentPage();
         this.markPageDirty(this.currentPageIndex);
         const fontId = this.currentState.fontId;
+        if (fontId) {
+            page.usedFontIds.add(fontId);
+        }
         const font = fontId ? this.fonts.get(fontId) : null;
+        if (this.textRenderMode === 'glyph-path' && fontId && font?.font && font.unitsPerEm) {
+            return this.drawTextAsGlyphPaths(page, fontId, str, x, y, options, font);
+        }
         const baselineY = contextBaselineY(y, Number(options?.ascent || 0), this.currentState.fontSize);
         const transformAttr = ` transform="${matrixToSvg(this.currentState.matrix)}"`;
         const opacityAttr = this.currentState.opacity !== 1 ? ` opacity="${this.currentState.opacity}"` : '';
@@ -369,6 +383,54 @@ export class CanvasContext implements Context {
         page.nodes.push(
             `<text x="${x}" y="${baselineY}"${transformAttr}${opacityAttr}${letterSpacingAttr} style="${style}" xml:space="preserve">${escapeXml(str)}</text>`
         );
+        return this;
+    }
+
+    private drawTextAsGlyphPaths(
+        page: PageScene,
+        fontId: string,
+        str: string,
+        x: number,
+        y: number,
+        options: ContextTextOptions | undefined,
+        font: RegisteredFont
+    ): this {
+        const fontSize = this.currentState.fontSize;
+        const ascent = Number(options?.ascent || 0);
+        const baselineY = contextBaselineY(y, ascent, fontSize);
+        const baseMatrix = this.currentState.matrix;
+        const scale = fontSize / font.unitsPerEm!;
+        const color = cssColorOrDefault(this.currentState.fillColor, '#000000');
+        const opacityAttr = this.currentState.opacity !== 1 ? ` opacity="${this.currentState.opacity}"` : '';
+        const extraTracking = Number(options?.characterSpacing || 0);
+        const run = font.font.layout(String(str || ''));
+        let penX = 0;
+
+        for (let index = 0; index < run.glyphs.length; index += 1) {
+            const glyph = run.glyphs[index];
+            const position = run.positions[index];
+            if (!glyph?.path) continue;
+            const pathData = glyph.path.toSVG();
+            const glyphMatrix = multiplyMatrix(
+                baseMatrix,
+                [
+                    scale,
+                    0,
+                    0,
+                    -scale,
+                    x + penX + Number(position?.xOffset || 0) * scale,
+                    baselineY - Number(position?.yOffset || 0) * scale
+                ]
+            );
+            page.nodes.push(
+                `<path d="${pathData}" transform="${matrixToSvg(glyphMatrix)}" fill="${escapeXml(color)}"${opacityAttr} />`
+            );
+            penX += Number(position?.xAdvance || 0) * scale;
+            if (extraTracking && index < run.glyphs.length - 1) {
+                penX += extraTracking;
+            }
+        }
+
         return this;
     }
 
@@ -391,6 +453,7 @@ export class CanvasContext implements Context {
 
         const page = this.requireCurrentPage();
         this.markPageDirty(this.currentPageIndex);
+        page.usedFontIds.add(fontId);
         const baselineY = contextBaselineY(y, ascent, fontSize);
         const baseMatrix = this.currentState.matrix;
         const upm = font.unitsPerEm;
@@ -456,10 +519,14 @@ export class CanvasContext implements Context {
         if (!page) {
             throw new Error(`[CanvasContext] Page ${pageIndex} does not exist.`);
         }
-        const fontFaces = Array.from(this.fonts.values())
-            .filter((font) => !!font.embeddedCssSrc)
-            .map((font) => `@font-face{font-family:"${escapeXml(font.familyName)}";src:${font.embeddedCssSrc};}`)
-            .join('');
+        const fontFaces = this.textRenderMode === 'glyph-path'
+            ? ''
+            : Array.from(page.usedFontIds)
+                .map((fontId) => this.fonts.get(fontId))
+                .filter((font): font is RegisteredFont => !!font)
+                .filter((font) => !!font.embeddedCssSrc)
+                .map((font) => `@font-face{font-family:"${escapeXml(font.familyName)}";src:${font.embeddedCssSrc};}`)
+                .join('');
         const svg = [
             '<?xml version="1.0" encoding="UTF-8"?>',
             `<svg xmlns="http://www.w3.org/2000/svg" width="${this.pageWidth}" height="${this.pageHeight}" viewBox="0 0 ${this.pageWidth} ${this.pageHeight}">`,
@@ -487,11 +554,20 @@ export class CanvasContext implements Context {
         const logicalHeight = Math.max(1, this.pageHeight * scale);
         const width = Math.max(1, Math.round(this.pageWidth * rasterScale));
         const height = Math.max(1, Math.round(this.pageHeight * rasterScale));
-        (canvas as HTMLCanvasElement | OffscreenCanvas).width = width;
-        (canvas as HTMLCanvasElement | OffscreenCanvas).height = height;
+        if ((canvas as HTMLCanvasElement | OffscreenCanvas).width !== width) {
+            (canvas as HTMLCanvasElement | OffscreenCanvas).width = width;
+        }
+        if ((canvas as HTMLCanvasElement | OffscreenCanvas).height !== height) {
+            (canvas as HTMLCanvasElement | OffscreenCanvas).height = height;
+        }
         if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
-            canvas.style.width = `${logicalWidth}px`;
-            canvas.style.height = 'auto';
+            const nextWidth = `${logicalWidth}px`;
+            if (canvas.style.width !== nextWidth) {
+                canvas.style.width = nextWidth;
+            }
+            if (canvas.style.height !== 'auto') {
+                canvas.style.height = 'auto';
+            }
         }
 
         if (options.clear !== false) {
@@ -524,7 +600,7 @@ export class CanvasContext implements Context {
         });
     }
 
-    private async getPageImage(pageIndex: number): Promise<HTMLImageElement> {
+    private async getPageImage(pageIndex: number): Promise<CanvasImageSource> {
         const cached = this.pageImageCache.get(pageIndex);
         if (cached) {
             return await cached;
@@ -541,8 +617,16 @@ export class CanvasContext implements Context {
         }
     }
 
-    private async loadImageFromSvg(svg: string): Promise<HTMLImageElement> {
+    private async loadImageFromSvg(svg: string): Promise<CanvasImageSource> {
         const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+        if (typeof createImageBitmap !== 'undefined') {
+            try {
+                return await createImageBitmap(blob);
+            } catch {
+                // Some browsers reject SVG blobs here even though the Image/object-URL path works.
+                // Fall through to the broader compatibility path instead of surfacing a hard failure.
+            }
+        }
         const url = URL.createObjectURL(blob);
         try {
             return await this.loadImage(url);
@@ -591,7 +675,8 @@ export class CanvasContext implements Context {
 
 export type {
     CanvasTarget,
-    RenderPageOptions
+    RenderPageOptions,
+    TextRenderMode
 };
 
 export default CanvasContext;

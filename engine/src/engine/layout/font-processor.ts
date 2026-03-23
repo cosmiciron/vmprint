@@ -15,7 +15,10 @@ export class FontProcessor extends BaseLayout {
     }
 
     async waitForFonts(): Promise<void> {
-        if (this.font && this.fallbackFonts.length > 0) return;
+        if (this.fontPromise) {
+            await this.fontPromise;
+            return;
+        }
         await this.initializeFont();
     }
 

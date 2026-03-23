@@ -25,6 +25,12 @@ type ScriptSegment = { text: string; fontName?: string; fontObject?: any };
 type ScriptRun = { text: string; isCJK: boolean };
 type BidiDirectionRun = { text: string; direction: 'ltr' | 'rtl' };
 
+const SIMPLE_LATIN_WRAP_RE = /^[\u0009\u0020-\u007E\u00A0-\u00FF\u2010-\u201F\u2026]*$/u;
+
+function tokenizeSimpleLatinSegment(text: string): string[] {
+    return text.match(/\s+|[^\s]+/g) ?? [];
+}
+
 export function buildRichWrapTokens(params: {
     flattenedSegments: TextSegment[];
     defaultFontSize: number;
@@ -71,6 +77,36 @@ export function buildRichWrapTokens(params: {
         }
 
         const locale = params.getSegmenterLocale((seg.style || params.primaryStyle) as ElementStyle);
+        const canUseSimpleLatinPath =
+            !params.advancedJustify &&
+            !params.preserveDirectionalBoundaries &&
+            params.baseDirection === 'ltr' &&
+            SIMPLE_LATIN_WRAP_RE.test(seg.text);
+
+        if (canUseSimpleLatinPath) {
+            const simpleSubSegments = tokenizeSimpleLatinSegment(seg.text);
+            if (simpleSubSegments.length > 0) {
+                for (const segment of simpleSubSegments) {
+                    const richSubSeg = params.transformSegment({
+                        ...seg,
+                        text: segment
+                    }, seg.fontFamily);
+                    const resolved = params.resolveRichFontInfo(richSubSeg, params.defaultFontSize);
+                    tokens.push({
+                        kind: 'segment',
+                        segment: richSubSeg,
+                        font: resolved.font,
+                        fontSize: resolved.fontSize,
+                        locale,
+                        allowMerge: true,
+                        hyphenationStyle: (richSubSeg.style || seg.style || params.primaryStyle) as ElementStyle,
+                        noLineStart: isForbiddenLineStart(richSubSeg.text || '')
+                    });
+                }
+                continue;
+            }
+        }
+
         const scriptSegments = params.segmentTextByFont(seg.text, seg.fontFamily, locale);
         for (const scriptSeg of scriptSegments) {
             const bidiT0 = params.onBidiSplit ? performance.now() : 0;
@@ -305,7 +341,7 @@ export function wrapTokenStream(params: {
         if (params.onOverflowToken) params.onOverflowToken(performance.now() - overflowT0);
     }
 
-    if (currentLine.length > 0) finalLines.push(currentLine);
+    if (currentLine.length > 0) pushCurrentLine();
     return finalLines.length > 0 ? finalLines : [[params.createEmptyMeasuredSegment(params.fallbackFont)]];
 }
 

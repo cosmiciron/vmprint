@@ -41,6 +41,13 @@
             <option value="300">300</option>
           </select>
         </label>
+        <label class="scale-picker" for="text-render-mode">
+          <span>Text Mode</span>
+          <select id="text-render-mode" aria-label="Canvas text render mode">
+            <option value="text">Text</option>
+            <option value="glyph-path" selected>Glyph Path</option>
+          </select>
+        </label>
         <button id="upload-button" type="button">Upload JSON</button>
         <button id="generate" type="button" class="primary">Render Preview</button>
         <input id="upload-json" type="file" accept=".json,application/json">

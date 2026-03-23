@@ -2,7 +2,7 @@
 
 Browser display context for vmprint.
 
-`ContextCanvas` is a first-class screen-rendering context. Internally it builds each page as an SVG scene, then exposes helpers to paint those pages onto HTML canvas or OffscreenCanvas targets. This keeps the browser product centered on screen display and interaction, while still using SVG as the internal scene format.
+`ContextCanvas` is a first-class screen-rendering context. It builds page scenes and exposes helpers to paint those pages onto HTML canvas or OffscreenCanvas targets. This keeps the browser product centered on screen display and interaction without exposing the scene format as part of the public API.
 
 ## What It Solves
 
@@ -13,9 +13,9 @@ Browser display context for vmprint.
 
 ## Rendering Model
 
-- standard text is emitted as SVG text with embedded `@font-face` rules
-- `showShapedGlyphs()` uses Fontkit glyph outlines and writes SVG `<path>` geometry directly
-- canvas rendering rasterizes the generated SVG page rather than relying on `fillText()`
+- `textRenderMode: 'text'` keeps text as text and embeds the required fonts for faithful page preview
+- `textRenderMode: 'glyph-path'` converts all text to Fontkit glyph outlines for the fastest and most robust heavy-document preview path
+- canvas rendering paints vmprint page scenes rather than relying on `fillText()`
 
 ## Usage
 
@@ -26,7 +26,8 @@ const context = new CanvasContext({
   size: 'LETTER',
   margins: { top: 0, right: 0, bottom: 0, left: 0 },
   autoFirstPage: false,
-  bufferPages: false
+  bufferPages: false,
+  textRenderMode: 'glyph-path'
 });
 
 // render with vmprint's engine/renderer...
@@ -41,5 +42,8 @@ await context.renderPageToCanvas(0, canvasElement, {
 
 - `pipe()` is a no-op. This context manages page scenes internally.
 - The first implementation is browser-oriented and expects DOM canvas/image APIs for rasterization helpers.
-- The public product is canvas display. SVG is an internal scene representation and can also be inspected via `toSvgString()` and `toSvgPages()`.
+- The public product is canvas display. You can still inspect serialized page scenes with `toSvgString()` and `toSvgPages()` when needed.
 - `renderPageToCanvas()` accepts `dpi` so the canvas backing bitmap can be sharper than the displayed page size.
+- Recommended mode guidance:
+  - `text`: simpler Latin or single-script documents
+  - `glyph-path`: multilingual fidelity and lowest perceived first-view latency on heavy documents

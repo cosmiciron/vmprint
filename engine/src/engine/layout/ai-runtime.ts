@@ -7,7 +7,7 @@ import {
     type KeepWithNextFormationPlan,
     type WholeFormationOverflowHandling
 } from './actor-formation';
-import { computeKeepWithNextPlan } from './collaborators/keep-with-next-collaborator';
+import { buildKeepWithNextPlanSignature, computeKeepWithNextPlan } from './collaborators/keep-with-next-collaborator';
 import {
     type KeepWithNextOverflowActionInput,
     type KeepWithNextPlanningResolution,
@@ -64,22 +64,37 @@ export type AIRuntimeHost = {
         shouldAdvancePageOnFailure: boolean,
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): TailSplitFormationSettlementOutcome;
-    recordProfile(metric: 'keepWithNextBranchCalls' | 'keepWithNextBranchMs', delta: number): void;
+    recordProfile(
+        metric: 'keepWithNextBranchCalls' | 'keepWithNextBranchMs' | 'keepWithNextPlanCalls' | 'keepWithNextPlanMs',
+        delta: number
+    ): void;
+    recordKeepWithNextPrepare(actorKind: string, durationMs: number): void;
+    getSplitMarkerReserve(actor: PackagerUnit): number;
+    getActorSignalSequence(): number;
 };
 
 export class AIRuntime {
-    private readonly keepWithNextPlans = new Map<string, KeepWithNextFormationPlan>();
+    private readonly keepWithNextPlans = new Map<string, {
+        signature: string | null;
+        plan: KeepWithNextFormationPlan;
+    }>();
 
     constructor(
         private readonly host: AIRuntimeHost
     ) { }
 
-    setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan): void {
-        this.keepWithNextPlans.set(actorId, plan);
+    setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan, signature?: string | null): void {
+        this.keepWithNextPlans.set(actorId, {
+            signature: signature ?? null,
+            plan
+        });
     }
 
-    getKeepWithNextPlan(actorId: string): KeepWithNextFormationPlan | undefined {
-        return this.keepWithNextPlans.get(actorId);
+    getKeepWithNextPlan(actorId: string, signature?: string | null): KeepWithNextFormationPlan | undefined {
+        const cached = this.keepWithNextPlans.get(actorId);
+        if (!cached) return undefined;
+        if (signature !== undefined && cached.signature !== signature) return undefined;
+        return cached.plan;
     }
 
     handleWholeFormationOverflowEntry(
@@ -235,7 +250,7 @@ export class AIRuntime {
             context: PackagerContext;
         }
     ): KeepWithNextPlanningResolution | null {
-        const plan = this.getKeepWithNextPlan(input.actorId) ?? computeKeepWithNextPlan({
+        const signature = buildKeepWithNextPlanSignature({
             actorQueue: input.actorQueue,
             actorIndex: input.actorIndex,
             paginationState: input.paginationState,
@@ -244,7 +259,24 @@ export class AIRuntime {
             lastSpacingAfter: input.lastSpacingAfter,
             isAtPageTop: input.isAtPageTop,
             context: input.context
-        });
+        }, this.host);
+        const plan = this.getKeepWithNextPlan(input.actorId, signature) ?? (() => {
+            const planStart = performance.now();
+            const computed = computeKeepWithNextPlan({
+                actorQueue: input.actorQueue,
+                actorIndex: input.actorIndex,
+                paginationState: input.paginationState,
+                availableWidth: input.availableWidth,
+                availableHeight: input.availableHeight,
+                lastSpacingAfter: input.lastSpacingAfter,
+                isAtPageTop: input.isAtPageTop,
+                context: input.context
+            }, this.host);
+            this.host.recordProfile('keepWithNextPlanCalls', 1);
+            this.host.recordProfile('keepWithNextPlanMs', performance.now() - planStart);
+            this.setKeepWithNextPlan(input.actorId, computed, signature);
+            return computed;
+        })();
         if (!plan) return null;
 
         const handling = getWholeFormationOverflowHandling(plan, input.isAtPageTop);

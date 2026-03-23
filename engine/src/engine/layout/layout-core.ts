@@ -21,7 +21,6 @@ import { FragmentTransitionArtifactCollaborator } from './collaborators/fragment
 import { createMorphedBoxMeta, freezeFlowFragment } from './flow-fragment-state';
 import { HeadingTelemetryCollaborator } from './collaborators/heading-telemetry-collaborator';
 import { HeadingSignalCollaborator } from './collaborators/heading-signal-collaborator';
-import { KeepWithNextCollaborator } from './collaborators/keep-with-next-collaborator';
 import { PageRegionCollaborator } from './layout-page-finalization';
 import { PageNumberArtifactCollaborator } from './collaborators/page-number-artifact-collaborator';
 import { PageOverrideArtifactCollaborator } from './collaborators/page-override-artifact-collaborator';
@@ -66,6 +65,7 @@ export class LayoutProcessor extends TextProcessor {
     private lastLayoutSession: LayoutSession | null = null;
     private activeScriptRuntimeHost: ScriptRuntimeHost | null = null;
     private packagerFactory: ExternalPackagerFactory | undefined = undefined;
+    private resolvedLinesCache = new WeakMap<Element, Map<string, ResolvedLinesResult>>();
     private static readonly SCRIPT_PROFILE_KEYS: Array<keyof LayoutProfileMetrics> = [
         'handlerCalls',
         'handlerMs',
@@ -185,6 +185,15 @@ export class LayoutProcessor extends TextProcessor {
         return `${context.pageIndex}:${top}:${unit.type}:${widthKey}`;
     }
 
+    private hashTextContent(text: string): string {
+        let hash = 2166136261;
+        for (let index = 0; index < text.length; index += 1) {
+            hash ^= text.charCodeAt(index);
+            hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+        }
+        return `${text.length}:${(hash >>> 0).toString(36)}`;
+    }
+
     private buildFlowResolveSignature(
         unit: FlowBox,
         element: Element,
@@ -205,7 +214,7 @@ export class LayoutProcessor extends TextProcessor {
         const hyphenation = String(style.hyphenation || this.config.layout.hyphenation || '');
         const justifyEngine = String(style.justifyEngine || this.config.layout.justifyEngine || '');
         const reflowKey = unit.meta?.reflowKey || unit.meta?.sourceId || unit.meta?.engineKey || '';
-        const textLength = this.getElementText(element).length;
+        const textHash = this.hashTextContent(this.getElementText(element));
         return [
             reflowKey,
             unit.type,
@@ -221,8 +230,67 @@ export class LayoutProcessor extends TextProcessor {
             direction,
             hyphenation,
             justifyEngine,
-            String(textLength)
+            textHash
         ].join('|');
+    }
+
+    private buildResolvedLinesCacheKey(
+        element: Element,
+        style: ElementStyle,
+        fontSize: number,
+        lineHeight: number,
+        context?: FlowMaterializationContext
+    ): string {
+        const width = this.getContextualContentWidth(style, context, fontSize, lineHeight);
+        const widthKey = Number.isFinite(width) ? Number(width).toFixed(3) : 'auto';
+        const fontFamily = String(style.fontFamily || this.config.layout.fontFamily || '');
+        const fontWeight = String(style.fontWeight ?? 400);
+        const fontStyle = String(style.fontStyle || 'normal');
+        const letterSpacing = Number(style.letterSpacing || 0).toFixed(3);
+        const textIndent = Number(style.textIndent || 0).toFixed(3);
+        const lang = String(style.lang || this.config.layout.lang || '');
+        const direction = String(style.direction || this.config.layout.direction || '');
+        const hyphenation = String(style.hyphenation || this.config.layout.hyphenation || '');
+        const justifyEngine = String(style.justifyEngine || this.config.layout.justifyEngine || '');
+        const textHash = this.hashTextContent(this.getElementText(element));
+        return [
+            widthKey,
+            fontFamily,
+            fontWeight,
+            fontStyle,
+            Number(fontSize).toFixed(3),
+            Number(lineHeight).toFixed(3),
+            letterSpacing,
+            textIndent,
+            lang,
+            direction,
+            hyphenation,
+            justifyEngine,
+            textHash
+        ].join('|');
+    }
+
+    private cloneResolvedLinesResult(result: ResolvedLinesResult): ResolvedLinesResult {
+        return {
+            lines: result.lines.map((line) => line.map((segment) => ({
+                ...segment,
+                glyphs: Array.isArray(segment.glyphs)
+                    ? this.cloneGlyphs(segment.glyphs)
+                    : segment.glyphs,
+                shapedGlyphs: Array.isArray(segment.shapedGlyphs)
+                    ? segment.shapedGlyphs.map((glyph) => ({
+                        ...glyph,
+                        codePoints: Array.isArray(glyph.codePoints) ? [...glyph.codePoints] : glyph.codePoints
+                    }))
+                    : segment.shapedGlyphs,
+                inlineMetrics: segment.inlineMetrics
+                    ? { ...segment.inlineMetrics }
+                    : segment.inlineMetrics
+            }))),
+            lineOffsets: result.lineOffsets?.slice(),
+            lineWidths: result.lineWidths?.slice(),
+            lineYOffsets: result.lineYOffsets?.slice()
+        };
     }
 
     private getContextualContentWidth(
@@ -602,6 +670,7 @@ export class LayoutProcessor extends TextProcessor {
         const scriptLifecycleState = scriptRuntimeHost?.createLifecycleState() ?? null;
 
         for (let pass = 0; pass < maxScriptReplayPasses; pass++) {
+            this.resolvedLinesCache = new WeakMap<Element, Map<string, ResolvedLinesResult>>();
             const { collaborators, scriptRuntimeCollaborator, scriptRuntimeHost: activeScriptRuntimeHost } = this.createLayoutCollaborators(
                 simulationElements,
                 scriptLifecycleState,
@@ -976,6 +1045,13 @@ export class LayoutProcessor extends TextProcessor {
         }
 
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
+        const cacheKey = this.buildResolvedLinesCacheKey(element, style, Number(fontSize), lineHeight, context);
+        const cachedByElement = this.resolvedLinesCache.get(element);
+        const cached = cachedByElement?.get(cacheKey);
+        if (cached) {
+            session?.recordProfile('flowResolveLinesMs', performance.now() - resolveStartedAt);
+            return this.cloneResolvedLinesResult(cached);
+        }
         const baseWidth = this.getContextualContentWidth(style, context, Number(fontSize), lineHeight);
         let measurementFont = this.font;
 
@@ -1014,7 +1090,13 @@ export class LayoutProcessor extends TextProcessor {
             undefined
         );
         session?.recordProfile('flowResolveLinesMs', performance.now() - resolveStartedAt);
-        return { lines: wrapped };
+        const resolved = { lines: wrapped };
+        const cacheBucket = cachedByElement ?? new Map<string, ResolvedLinesResult>();
+        cacheBucket.set(cacheKey, this.cloneResolvedLinesResult(resolved));
+        if (!cachedByElement) {
+            this.resolvedLinesCache.set(element, cacheBucket);
+        }
+        return resolved;
     }
 
     protected splitFlowBox(
@@ -1137,7 +1219,6 @@ export class LayoutProcessor extends TextProcessor {
             scriptRuntimeHost,
             scriptRuntimeCollaborator,
             collaborators: [
-            new KeepWithNextCollaborator(),
             new ContinuationMarkerCollaborator(),
             new PageStartExclusionCollaborator(this.config),
             new PageStartReservationCollaborator(this.config),

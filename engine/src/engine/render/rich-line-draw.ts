@@ -29,6 +29,9 @@ export const drawRichLineSegments = (
     options: DrawRichLineSegmentsOptions
 ): number => {
     let currentX = options.lineX;
+    let activeFontId: string | null = null;
+    let activeFontSize: number | null = null;
+    let activeFillColor: string | null = null;
     const hasInlineObjectInLine = line.some((seg) => !!seg?.inlineObject);
     let lineBaselineFromTop = options.vOffset + (options.lineReferenceAscentScale * options.actualLineFontSize);
 
@@ -57,10 +60,19 @@ export const drawRichLineSegments = (
         const size = seg.style?.fontSize || options.fontSize;
         const color = seg.style?.color || options.containerColor || 'black';
         const bg = seg.style?.backgroundColor;
-
-        context.font(options.getFontId(fam, wt, st));
-        context.fontSize(size);
-        context.fillColor(color);
+        const fontId = options.getFontId(fam, wt, st);
+        if (fontId !== activeFontId) {
+            context.font(fontId);
+            activeFontId = fontId;
+        }
+        if (size !== activeFontSize) {
+            context.fontSize(size);
+            activeFontSize = size;
+        }
+        if (color !== activeFillColor) {
+            context.fillColor(color);
+            activeFillColor = color;
+        }
 
         if (seg.width === undefined) {
             throw new Error(`[Renderer] Missing precomputed width for segment "${(seg.text || '').slice(0, 24)}".`);
@@ -141,7 +153,7 @@ export const drawRichLineSegments = (
             // character or the full string without the shaping context we computed at layout time.
             // The shaped glyph IDs (e.g. uni0627.fina = 9) must be emitted as-is to the PDF.
             context.showShapedGlyphs(
-                options.getFontId(fam, wt, st),
+                fontId,
                 Number(size) || options.fontSize,
                 color,
                 drawX,

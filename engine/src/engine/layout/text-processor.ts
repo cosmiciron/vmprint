@@ -728,6 +728,22 @@ export class TextProcessor extends FontProcessor {
         // resolution cache across all segmentTextByFont calls (fix #3).
         const wrapFallbackFamilies = getFallbackFamilies(this.runtime.fontRegistry, this.runtime.fontManager);
         const wrapFontCache = new Map<string, any | null>();
+        const richFontInfoCache = new Map<string, { font: any; fontSize: number }>();
+        const resolveCachedRichFontInfo = (seg: TextSegment, defaultSize: number): { font: any; fontSize: number } => {
+            const style = seg.style || {};
+            const resolvedWeight = LayoutUtils.normalizeFontWeight(style.fontWeight);
+            const resolvedStyle = LayoutUtils.normalizeFontStyle(style.fontStyle);
+            const fontSize = Number(style.fontSize || defaultSize);
+            const familyName = seg.fontFamily || this.config.layout.fontFamily;
+            const cacheKey = `${familyName}|${resolvedWeight}|${resolvedStyle}|${fontSize}`;
+            const cached = richFontInfoCache.get(cacheKey);
+            if (cached) return cached;
+            const resolved = resolveRichFontInfo(seg, defaultSize, this.config.layout.fontFamily, (resolvedFamilyName, weight) =>
+                this.resolveLoadedFamilyFont(resolvedFamilyName, weight)
+            );
+            richFontInfoCache.set(cacheKey, resolved);
+            return resolved;
+        };
         const buildTokensT0 = session ? performance.now() : 0;
         const tokens = buildRichWrapTokens({
             flattenedSegments,
@@ -748,10 +764,7 @@ export class TextProcessor extends FontProcessor {
             transformSegment: (segment) => segment,
             hasRtlScript: (value) => this.hasRtlScript(value),
             isAdvancedJustifyEnabled: (style) => this.isAdvancedJustifyEnabled(style),
-            resolveRichFontInfo: (seg, defaultSize) =>
-                resolveRichFontInfo(seg, defaultSize, this.config.layout.fontFamily, (familyName, weight) =>
-                    this.resolveLoadedFamilyFont(familyName, weight)
-                ),
+            resolveRichFontInfo: (seg, defaultSize) => resolveCachedRichFontInfo(seg, defaultSize),
             onBidiSplit: session ? (durationMs) => {
                 session.recordProfile?.('flowBidiSplitCalls', 1);
                 session.recordProfile?.('flowBidiSplitMs', durationMs);
@@ -794,10 +807,7 @@ export class TextProcessor extends FontProcessor {
                 this.tryHyphenateSegmentToFit(seg, segFont, segFontSize, segTracking, availableWidth, style),
             splitToGraphemes: (value, locale) => splitToGraphemes(value, locale, (fallback) => this.getGraphemeClusters(fallback)),
             transformSegment: (segment) => segment,
-            resolveRichFontInfo: (seg, defaultSize) =>
-                resolveRichFontInfo(seg, defaultSize, this.config.layout.fontFamily, (familyName, weight) =>
-                    this.resolveLoadedFamilyFont(familyName, weight)
-                ),
+            resolveRichFontInfo: (seg, defaultSize) => resolveCachedRichFontInfo(seg, defaultSize),
             onOverflowToken: session ? (durationMs) => {
                 session.recordProfile?.('wrapOverflowTokenCalls', 1);
                 session.recordProfile?.('wrapOverflowTokenMs', durationMs);

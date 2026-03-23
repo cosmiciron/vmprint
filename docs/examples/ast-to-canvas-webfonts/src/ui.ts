@@ -3,7 +3,10 @@ declare const VMPrintPipeline: {
     getBuiltinFixtureDocument(id: string): Promise<Record<string, unknown>>;
     SAMPLE_DOCUMENT: Record<string, unknown>;
     parseDocumentJson(jsonText: string): Record<string, unknown>;
-    createCanvasPreviewSession(documentInput: Record<string, unknown>): Promise<{
+    createCanvasPreviewSession(
+        documentInput: Record<string, unknown>,
+        options?: { textRenderMode?: 'text' | 'glyph-path' }
+    ): Promise<{
         pageCount: number;
         pageSize: { width: number; height: number };
         renderPage(pageIndex: number, target: HTMLCanvasElement, scale?: number, dpi?: number): Promise<void>;
@@ -55,6 +58,7 @@ function installUi(): void {
     const uploadInput = byId<HTMLInputElement>('upload-json');
     const scaleSelect = byId<HTMLSelectElement>('preview-scale');
     const dpiSelect = byId<HTMLSelectElement>('preview-dpi');
+    const textRenderModeSelect = byId<HTMLSelectElement>('text-render-mode');
     const previewCanvas = byId<HTMLCanvasElement>('preview-canvas');
     const previousPageButton = byId<HTMLButtonElement>('previous-page');
     const nextPageButton = byId<HTMLButtonElement>('next-page');
@@ -212,6 +216,11 @@ function installUi(): void {
         });
     });
 
+    textRenderModeSelect.addEventListener('change', () => {
+        resetPreview();
+        setStatus(statusNode, 'idle', 'Text render mode changed. Render again to apply it.');
+    });
+
     previousPageButton.addEventListener('click', () => {
         if (!currentSession || currentPageIndex <= 0) return;
         currentPageIndex -= 1;
@@ -262,7 +271,9 @@ function installUi(): void {
 
         try {
             const documentInput = VMPrintPipeline.parseDocumentJson(input.value);
-            currentSession = await VMPrintPipeline.createCanvasPreviewSession(documentInput);
+            currentSession = await VMPrintPipeline.createCanvasPreviewSession(documentInput, {
+                textRenderMode: textRenderModeSelect.value as 'text' | 'glyph-path'
+            });
             currentPageIndex = 0;
             await renderCurrentPage();
             const renderElapsedMs = performance.now() - renderStartMs;
