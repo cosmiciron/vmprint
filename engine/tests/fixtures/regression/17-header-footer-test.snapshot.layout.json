@@ -13,11 +13,11 @@
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 184.592,
+              "text": "I - The Problem of Regions",
+              "width": 187.328,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -35,16 +35,16 @@
               "width": 230.494,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "with deliberate quiet. The first page invites the eye to ",
-              "width": 239.393,
+              "width": 239.558,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -53,7 +53,7 @@
               "width": 236.918,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -62,7 +62,7 @@
               "width": 237.776,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -71,7 +71,7 @@
               "width": 233.717,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -80,7 +80,7 @@
               "width": 84.194,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -90,65 +90,67 @@
         "x": 57,
         "y": 268.5,
         "w": 246,
-        "h": 96.25,
+        "h": 115.5,
         "lines": [
           [
             {
               "text": "The firstPage selector takes highest priority. It applies ",
-              "width": 243.034,
+              "width": 242.121,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "only to page index zero and always wins over odd, even,",
-              "width": 246.818,
+              "text": "only to page index zero and always wins over odd, ",
+              "width": 223.883,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": " and default. It is the author's signal that this page ",
-              "width": 226.963,
+              "text": "even, and default. It is the author's signal that this ",
+              "width": 226.974,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page stands apart, whether it is a chapter opener, a ",
+              "width": 229.13,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "title page, or any opening that should inhabit its ",
+              "width": 217.734,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": ""
             },
             {
-              "text": "sta-",
-              "width": 16.676,
+              "text": "marg-",
+              "width": 27.06,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "nds apart—a chapter opener, a title page, or any ",
-              "width": 218.229,
+              "text": "in in silence.",
+              "width": 56.287,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "open-",
-              "width": 25.608,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
-            }
-          ],
-          [
-            {
-              "text": "ing that inhabits its margin in silence.",
-              "width": 170.093,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -173,16 +175,16 @@
               "width": 231.143,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "take effect. The even selector governs left-hand pages; ",
-              "width": 242.088,
+              "width": 242.253,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -191,41 +193,41 @@
               "width": 239.646,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "default renders a logical page number on all pages that",
-              "width": 244.75,
+              "text": "renders a logical page number alongside the final total ",
+              "width": 245.52,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "use the pageNumber token. Each of these selectors ",
-              "width": 228.107,
+              "text": "page count, so the reader sees Page x of y after ",
+              "width": 208.142,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
-              "text": "act-",
-              "width": 16.995,
+              "text": "paginat-",
+              "width": 37.488,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "ivates automatically once the firstPage guard passes.",
-              "width": 233.431,
+              "text": "ion is settled.",
+              "width": 58.795,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -243,61 +245,61 @@
               "width": 238.26,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "whole work. The reader glancing left finds an anchor—",
-              "width": 247.599,
+              "text": "whole work. The reader glancing left finds an anchor, ",
+              "width": 240.196,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "knowing what they are reading, not merely where ",
-              "width": 225.258,
+              "text": "knowing what they are reading rather than merely ",
+              "width": 229.405,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "within it. This document renders the string A Study in ",
-              "width": 244.189,
+              "text": "where within it. This document renders the string A ",
+              "width": 235.18,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "Page Regions on every even page, left-aligned in a ",
-              "width": 222.596,
+              "text": "Study in Page Regions on every even page in a small ",
+              "width": 232.694,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "small spaced face that recedes behind the body text ",
-              "width": 231.33,
+              "text": "spaced face that recedes behind the body text without ",
+              "width": 242.44,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "without vanishing.",
-              "width": 84.117,
+              "text": "vanishing.",
+              "width": 46.2,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -315,23 +317,23 @@
               "width": 208.263,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "glanci-",
               "width": 30.558,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "ng right finds their position within the argument. ",
-              "width": 224.191,
+              "width": 224.356,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -340,7 +342,7 @@
               "width": 237.336,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -349,7 +351,7 @@
         "type": "rh-even",
         "x": 57,
         "y": 16,
-        "w": 246,
+        "w": 222,
         "h": 13.655273,
         "lines": [
           [
@@ -364,16 +366,33 @@
         ]
       },
       {
-        "type": "table_cell",
+        "type": "image",
+        "x": 287,
+        "y": 16,
+        "w": 12,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "folio-left",
         "x": 57,
         "y": 407,
-        "w": 99.732422,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 92.378125,
+              "text": "I - The Problem of ",
+              "width": 65.371875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -382,16 +401,16 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 164.732422,
+        "type": "folio-page",
+        "x": 137,
         "y": 407,
-        "w": 32,
+        "w": 86,
         "h": 9.765625,
         "lines": [
           [
             {
-              "text": "1",
-              "width": 4.054688,
+              "text": "Page 1 of 11",
+              "width": 39.722656,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -400,16 +419,25 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 204.732422,
+        "type": "folio-right",
+        "x": 231,
         "y": 407,
-        "w": 98.267578,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 85.911719,
+              "text": "A Study in Page ",
+              "width": 56.557812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -433,36 +461,29 @@
         "lines": [
           [
             {
-              "text": "unit; the verso line identifies the whole. Together the ",
-              "width": 238.381,
+              "text": "current unit while the verso line identifies the whole. ",
+              "width": 240.196,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "pair creates a coordinate system that needs no ",
-              "width": 208.791,
+              "text": "Together the pair creates a coordinate system that ",
+              "width": 225.313,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "consult-",
-              "width": 36.542,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "ation.",
-              "width": 25.476,
+              "text": "needs no consultation.",
+              "width": 100.529,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -476,70 +497,56 @@
         "lines": [
           [
             {
-              "text": "The footer anchors position numerically. Centered, in a",
-              "width": 245.795,
+              "text": "The footer anchors position numerically. Centered in ",
+              "width": 237.457,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "lighter face, the folio line renders a logical page ",
-              "width": 212.608,
+              "text": "the footer strip, the folio line renders Page x of y. The x ",
+              "width": 245.322,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "numb-",
-              "width": 30.426,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "er—a counter that advances only when the ",
-              "width": 195.074,
+              "text": "value is logical, advancing only on pages where the ",
+              "width": 228.459,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "pageNu-",
-              "width": 37.917,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "mber token actually appears in a rendered region. ",
-              "width": 225.148,
+              "text": "pageNumber token actually renders. The y value is the ",
+              "width": 245.762,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "Pages without a visible folio do not increment that ",
-              "width": 227.15,
+              "text": "physical total, resolved only after the engine knows the",
+              "width": 245.025,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "counter.",
-              "width": 37.004,
+              "text": "final page count.",
+              "width": 74.349,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -557,67 +564,75 @@
               "width": 231.814,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "body text. Any style, inline token, or inline element ",
-              "width": 229.922,
+              "text": "body text. Any style, inline token, or image that is legal",
+              "width": 243.771,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "legal in body flow is equally legal inside a header or ",
-              "width": 231.968,
+              "text": "in authored content is equally legal inside a header or ",
+              "width": 242.209,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "footer. Regions are clipped rectangles rendered in the ",
-              "width": 240.174,
+              "text": "footer. This fixture uses a strip rather than a table to ",
+              "width": 235.444,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "margin, governed by the same box model as any other ",
-              "width": 242.814,
+              "text": "align a small logo with the running head, which is the ",
+              "width": 242.704,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "page element.",
-              "width": 61.545,
+              "text": "cleaner model for this kind of composition.",
+              "width": 192.17,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
       },
       {
-        "type": "rh-odd",
+        "type": "image",
         "x": 57,
         "y": 16,
-        "w": 246,
+        "w": 12,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "rh-odd",
+        "x": 81,
+        "y": 16,
+        "w": 222,
         "h": 13.655273,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 89.691992,
+              "text": "I - The Problem of Regions",
+              "width": 90.094824,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -626,16 +641,25 @@
         ]
       },
       {
-        "type": "table_cell",
+        "type": "folio-left",
         "x": 57,
         "y": 407,
-        "w": 98.267578,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 85.911719,
+              "text": "A Study in Page ",
+              "width": 56.557812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -644,16 +668,16 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 163.267578,
+        "type": "folio-page",
+        "x": 137,
         "y": 407,
-        "w": 32,
+        "w": 86,
         "h": 9.765625,
         "lines": [
           [
             {
-              "text": "2",
-              "width": 4.054688,
+              "text": "Page 2 of 11",
+              "width": 39.722656,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -662,16 +686,25 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 203.267578,
+        "type": "folio-right",
+        "x": 231,
         "y": 407,
-        "w": 99.732422,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 92.378125,
+              "text": "I - The Problem of ",
+              "width": 65.371875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -695,11 +728,11 @@
         "lines": [
           [
             {
-              "text": "1.1 · Selector Precedence",
-              "width": 117.634,
+              "text": "1.1 - Selector Precedence",
+              "width": 119.515,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -717,7 +750,7 @@
               "width": 240.119,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -726,7 +759,7 @@
               "width": 237.534,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -735,7 +768,7 @@
               "width": 237.765,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -744,23 +777,23 @@
               "width": 218.009,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "neith-",
               "width": 27.324,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "er matches, the engine falls back to default.",
-              "width": 193.16,
+              "width": 193.325,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -778,34 +811,34 @@
               "width": 234.179,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "header rather than default. Had this document defined",
-              "width": 245.542,
+              "width": 245.707,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "only a default header, all pages except the first would ",
-              "width": 239.459,
+              "width": 238.381,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "render identically. The two-path model keeps the ",
-              "width": 222.035,
+              "width": 221.122,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -814,7 +847,7 @@
               "width": 241.12,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -823,7 +856,7 @@
               "width": 89.782,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -841,7 +874,7 @@
               "width": 230.758,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -850,7 +883,7 @@
               "width": 237.82,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -859,7 +892,7 @@
               "width": 225.258,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -868,7 +901,7 @@
         "type": "rh-even",
         "x": 57,
         "y": 16,
-        "w": 246,
+        "w": 222,
         "h": 13.655273,
         "lines": [
           [
@@ -883,16 +916,33 @@
         ]
       },
       {
-        "type": "table_cell",
+        "type": "image",
+        "x": 287,
+        "y": 16,
+        "w": 12,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "folio-left",
         "x": 57,
         "y": 407,
-        "w": 99.732422,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 92.378125,
+              "text": "I - The Problem of ",
+              "width": 65.371875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -901,16 +951,16 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 164.732422,
+        "type": "folio-page",
+        "x": 137,
         "y": 407,
-        "w": 32,
+        "w": 86,
         "h": 9.765625,
         "lines": [
           [
             {
-              "text": "3",
-              "width": 4.054688,
+              "text": "Page 3 of 11",
+              "width": 39.722656,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -919,16 +969,25 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 204.732422,
+        "type": "folio-right",
+        "x": 231,
         "y": 407,
-        "w": 98.267578,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 85.911719,
+              "text": "A Study in Page ",
+              "width": 56.557812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -956,7 +1015,7 @@
               "width": 239.283,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -965,31 +1024,39 @@
               "width": 225.61,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "normally.",
-              "width": 43.197,
+              "width": 42.284,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
       },
       {
-        "type": "rh-odd",
+        "type": "image",
         "x": 57,
         "y": 16,
-        "w": 246,
+        "w": 12,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "rh-odd",
+        "x": 81,
+        "y": 16,
+        "w": 222,
         "h": 13.655273,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 89.691992,
+              "text": "I - The Problem of Regions",
+              "width": 90.094824,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -998,16 +1065,25 @@
         ]
       },
       {
-        "type": "table_cell",
+        "type": "folio-left",
         "x": 57,
         "y": 407,
-        "w": 98.267578,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 85.911719,
+              "text": "A Study in Page ",
+              "width": 56.557812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1016,16 +1092,16 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 163.267578,
+        "type": "folio-page",
+        "x": 137,
         "y": 407,
-        "w": 32,
+        "w": 86,
         "h": 9.765625,
         "lines": [
           [
             {
-              "text": "4",
-              "width": 4.054688,
+              "text": "Page 4 of 11",
+              "width": 39.722656,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1034,16 +1110,25 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 203.267578,
+        "type": "folio-right",
+        "x": 231,
         "y": 407,
-        "w": 99.732422,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 92.378125,
+              "text": "I - The Problem of ",
+              "width": 65.371875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1071,7 +1156,7 @@
               "width": 47.307,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1092,11 +1177,11 @@
         "lines": [
           [
             {
-              "text": "II · Resolution and Override",
-              "width": 195.536,
+              "text": "II - Resolution and Override",
+              "width": 198.272,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1114,7 +1199,7 @@
               "width": 233.915,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1123,7 +1208,7 @@
               "width": 229.482,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1132,41 +1217,34 @@
               "width": 225.885,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "ove-",
-              "width": 18.535,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "rride: the recto running head on this page shows the ",
-              "width": 236.5,
+              "text": "override: the recto running head on this page shows ",
+              "width": 234.476,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "chapter-specific title rather than the chapter-one title ",
-              "width": 242.495,
+              "text": "the chapter-specific title rather than the chapter-one ",
+              "width": 238.986,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "inherited from the global odd selector definition.",
-              "width": 217.591,
+              "text": "title inherited from the global odd selector definition.",
+              "width": 238.04,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1181,10 +1259,10 @@
           [
             {
               "text": "The replacement is self-contained content, expressed ",
-              "width": 238.942,
+              "width": 239.107,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1193,16 +1271,16 @@
               "width": 243.375,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "content. It is not a reference to one of the four global ",
-              "width": 236.456,
+              "width": 236.621,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1211,7 +1289,7 @@
               "width": 236.412,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1220,22 +1298,30 @@
               "width": 67.287,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
       },
       {
-        "type": "rh-odd",
+        "type": "image",
         "x": 57,
         "y": 16,
-        "w": 246,
+        "w": 12,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "rh-odd",
+        "x": 81,
+        "y": 16,
+        "w": 222,
         "h": 13.655273,
         "lines": [
           [
             {
-              "text": "II · Resolution and Override",
-              "width": 93.658887,
+              "text": "II - Resolution and Override",
+              "width": 94.061719,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1244,16 +1330,25 @@
         ]
       },
       {
-        "type": "table_cell",
+        "type": "folio-left",
         "x": 57,
         "y": 407,
-        "w": 98.267578,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 85.911719,
+              "text": "A Study in Page ",
+              "width": 56.557812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1262,16 +1357,16 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 163.267578,
+        "type": "folio-page",
+        "x": 137,
         "y": 407,
-        "w": 32,
+        "w": 86,
         "h": 9.765625,
         "lines": [
           [
             {
-              "text": "5",
-              "width": 4.054688,
+              "text": "Page 5 of 11",
+              "width": 39.722656,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1280,16 +1375,25 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 203.267578,
+        "type": "folio-right",
+        "x": 231,
         "y": 407,
-        "w": 99.732422,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 92.378125,
+              "text": "I - The Problem of ",
+              "width": 65.371875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1317,7 +1421,7 @@
               "width": 245.333,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1326,7 +1430,7 @@
               "width": 233.53,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1335,7 +1439,7 @@
               "width": 241.351,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1344,14 +1448,14 @@
               "width": 213.169,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "Conti-",
               "width": 27.368,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1360,14 +1464,14 @@
               "width": 213.884,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "stand-",
               "width": 28.534,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1376,7 +1480,7 @@
               "width": 88.341,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1394,14 +1498,14 @@
               "width": 218.526,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "pag-",
               "width": 19.558,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1410,7 +1514,7 @@
               "width": 239.844,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1419,7 +1523,7 @@
               "width": 231.308,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1428,7 +1532,7 @@
               "width": 242.319,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1437,7 +1541,7 @@
               "width": 244.64,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1446,7 +1550,7 @@
               "width": 79.464,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1464,14 +1568,14 @@
               "width": 218.504,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "supp-",
               "width": 25.377,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1480,7 +1584,7 @@
               "width": 231.737,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1489,7 +1593,7 @@
               "width": 245.069,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1498,7 +1602,7 @@
         "type": "rh-even",
         "x": 57,
         "y": 16,
-        "w": 246,
+        "w": 222,
         "h": 13.655273,
         "lines": [
           [
@@ -1513,16 +1617,33 @@
         ]
       },
       {
-        "type": "table_cell",
+        "type": "image",
+        "x": 287,
+        "y": 16,
+        "w": 12,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "folio-left",
         "x": 57,
         "y": 407,
-        "w": 99.732422,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 92.378125,
+              "text": "I - The Problem of ",
+              "width": 65.371875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1531,16 +1652,16 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 164.732422,
+        "type": "folio-page",
+        "x": 137,
         "y": 407,
-        "w": 32,
+        "w": 86,
         "h": 9.765625,
         "lines": [
           [
             {
-              "text": "6",
-              "width": 4.054688,
+              "text": "Page 6 of 11",
+              "width": 39.722656,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1549,16 +1670,25 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 204.732422,
+        "type": "folio-right",
+        "x": 231,
         "y": 407,
-        "w": 98.267578,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 85.911719,
+              "text": "A Study in Page ",
+              "width": 56.557812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1586,7 +1716,7 @@
               "width": 230.791,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1595,7 +1725,7 @@
               "width": 67.364,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1605,7 +1735,7 @@
         "x": 57,
         "y": 107.5,
         "w": 246,
-        "h": 115.5,
+        "h": 134.75,
         "lines": [
           [
             {
@@ -1613,7 +1743,7 @@
               "width": 245.476,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1622,16 +1752,16 @@
               "width": 234.498,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "page unconditionally. The logical pageNumber token ",
-              "width": 238.381,
+              "width": 237.468,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1640,32 +1770,41 @@
               "width": 220.77,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "region, so pages with suppressed folios do not advance ",
+              "width": 244.398,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "that counter even though the totalPages token still ",
+              "width": 227.348,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": ""
             },
             {
-              "text": "reg-",
-              "width": 17.71,
+              "text": "ref-",
+              "width": 16.104,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "ion—pages with suppressed footers do not advance ",
-              "width": 231.275,
+              "text": "ers to the final physical document length.",
+              "width": 185.108,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            }
-          ],
-          [
-            {
-              "text": "that counter.",
-              "width": 57.838,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1673,9 +1812,9 @@
       {
         "type": "p",
         "x": 57,
-        "y": 232,
+        "y": 251.25,
         "w": 246,
-        "h": 115.5,
+        "h": 134.75,
         "lines": [
           [
             {
@@ -1683,7 +1822,7 @@
               "width": 238.04,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1692,65 +1831,75 @@
               "width": 229.603,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "footer, neither contributed an increment to the logical ",
-              "width": 243.969,
+              "width": 242.891,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "counter. The folio on this page reflects the count of ",
-              "width": 228.998,
+              "width": 227.92,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "pages that have rendered a folio line, not the total ",
-              "width": 223.289,
+              "text": "pages that have rendered a folio line, while the total ",
+              "width": 233.079,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "phy-",
-              "width": 20.295,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "sical sheet count.",
-              "width": 76.56,
+              "text": "remains the physical page count for the whole ",
+              "width": 208.23,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "document.",
+              "width": 47.575,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": ""
             }
           ]
         ]
       },
       {
-        "type": "rh-odd",
+        "type": "image",
         "x": 57,
         "y": 16,
-        "w": 246,
+        "w": 12,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "rh-odd",
+        "x": 81,
+        "y": 16,
+        "w": 222,
         "h": 13.655273,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 89.691992,
+              "text": "I - The Problem of Regions",
+              "width": 90.094824,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1759,16 +1908,25 @@
         ]
       },
       {
-        "type": "table_cell",
+        "type": "folio-left",
         "x": 57,
         "y": 407,
-        "w": 98.267578,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 85.911719,
+              "text": "A Study in Page ",
+              "width": 56.557812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1777,16 +1935,16 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 163.267578,
+        "type": "folio-page",
+        "x": 137,
         "y": 407,
-        "w": 32,
+        "w": 86,
         "h": 9.765625,
         "lines": [
           [
             {
-              "text": "7",
-              "width": 4.054688,
+              "text": "Page 7 of 11",
+              "width": 39.722656,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1795,16 +1953,25 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 203.267578,
+        "type": "folio-right",
+        "x": 231,
         "y": 407,
-        "w": 99.732422,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 92.378125,
+              "text": "I - The Problem of ",
+              "width": 65.371875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1832,7 +1999,7 @@
               "width": 62.576,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1850,16 +2017,16 @@
               "width": 228.514,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "that renders the physicalPageNumber token directly, ",
-              "width": 238.546,
+              "width": 237.633,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1868,41 +2035,34 @@
               "width": 232.265,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "number on the same page. Both tokens resolve in the ",
-              "width": 238.227,
+              "text": "number on the same page. All three values, physical ",
+              "width": 233.486,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "same late pass, after all pagination decisions are ",
-              "width": 217.195,
+              "text": "page, logical folio, and final total, resolve in the same ",
+              "width": 237.138,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "settl-",
-              "width": 22.913,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "ed.",
-              "width": 12.837,
+              "text": "late pass after pagination decisions are settled.",
+              "width": 207.823,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1920,16 +2080,16 @@
               "width": 238.139,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "output. The first pass places flow content into pages; ",
-              "width": 236.676,
+              "width": 236.841,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1938,23 +2098,16 @@
               "width": 224.873,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "ove-",
-              "width": 18.535,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "rrides. This sequencing allows regions to reference ",
-              "width": 227.953,
+              "text": "overrides. This sequencing allows regions to reference ",
+              "width": 242.869,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1963,7 +2116,7 @@
               "width": 238.535,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1972,22 +2125,30 @@
               "width": 46.64,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
       },
       {
-        "type": "rh-override",
+        "type": "image",
         "x": 57,
         "y": 16,
-        "w": 246,
+        "w": 12,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "rh-override",
+        "x": 81,
+        "y": 16,
+        "w": 222,
         "h": 13.655273,
         "lines": [
           [
             {
-              "text": "Epilogue · p. 10",
-              "width": 53.018652,
+              "text": "Epilogue - p. 10",
+              "width": 53.421484,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1996,16 +2157,25 @@
         ]
       },
       {
-        "type": "table_cell",
+        "type": "folio-left",
         "x": 57,
         "y": 407,
-        "w": 99.732422,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 92.378125,
+              "text": "I - The Problem of ",
+              "width": 65.371875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2014,16 +2184,16 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 164.732422,
+        "type": "folio-page",
+        "x": 137,
         "y": 407,
-        "w": 32,
+        "w": 86,
         "h": 9.765625,
         "lines": [
           [
             {
-              "text": "8",
-              "width": 4.054688,
+              "text": "Page 8 of 11",
+              "width": 39.722656,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2032,16 +2202,25 @@
         ]
       },
       {
-        "type": "table_cell",
-        "x": 204.732422,
+        "type": "folio-right",
+        "x": 231,
         "y": 407,
-        "w": 98.267578,
-        "h": 9.765625,
+        "w": 72,
+        "h": 19.53125,
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 85.911719,
+              "text": "A Study in Page ",
+              "width": 56.557812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            }
+          ],
+          [
+            {
+              "text": "Regions",
+              "width": 27.435938,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2069,73 +2248,66 @@
               "width": 187.902,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "pageOverri-",
               "width": 52.437,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "des declaration on this paragraph—the first flow ",
-              "width": 221.254,
+              "text": "des declaration on this paragraph, the first flow ",
+              "width": 214.929,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
-              "text": "ele-",
-              "width": 16.302,
+              "text": "eleme-",
+              "width": 30.096,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "ment to land on a new page. No folio line is rendered, ",
-              "width": 239.69,
+              "text": "nt to land on a new page. No folio line is rendered, and ",
+              "width": 245.344,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "and the logical page counter does not advance. The ",
-              "width": 228.767,
+              "text": "the logical page counter does not advance. The total ",
+              "width": 232.221,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "engine increments the counter only when the ",
-              "width": 205.843,
+              "text": "page count, however, remains the same final physical ",
+              "width": 239.393,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "pageNu-",
-              "width": 37.917,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "mber token appears in a rendered region.",
-              "width": 184.712,
+              "text": "total for the document.",
+              "width": 102.784,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -2145,7 +2317,7 @@
         "x": 57,
         "y": 184.5,
         "w": 246,
-        "h": 115.5,
+        "h": 134.75,
         "lines": [
           [
             {
@@ -2153,7 +2325,7 @@
               "width": 243.837,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2162,65 +2334,75 @@
               "width": 230.571,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "cleanly. The constructs exercised here—firstPage ",
-              "width": 221.793,
+              "text": "cleanly. The constructs exercised here, firstPage ",
+              "width": 214.555,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "suppression, recto and verso selectors, per-page ",
-              "width": 214.39,
+              "text": "suppression, recto and verso selectors, strip-based logo",
+              "width": 244.046,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "overri-",
-              "width": 30.294,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "des, and token substitution—compose freely. Any ",
-              "width": 224.323,
+              "text": "headers, per-page overrides, logical folios, and ",
+              "width": 207.79,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "subset is sufficient; any combination is legal.",
-              "width": 200.2,
+              "text": "total-page token substitution, compose freely. Any ",
+              "width": 225.269,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "subset is sufficient and any combination is legal.",
+              "width": 216.744,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": ""
             }
           ]
         ]
       },
       {
-        "type": "rh-odd",
+        "type": "image",
         "x": 57,
         "y": 16,
-        "w": 246,
+        "w": 12,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "rh-odd",
+        "x": 81,
+        "y": 16,
+        "w": 222,
         "h": 13.655273,
         "lines": [
           [
             {
-              "text": "I · The Problem of Regions",
-              "width": 89.691992,
+              "text": "I - The Problem of Regions",
+              "width": 90.094824,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"

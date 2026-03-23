@@ -13,20 +13,20 @@
         "lines": [
           [
             {
-              "text": "Inline Object Rich-Text Regression (Multi-",
-              "width": 434.74707,
+              "text": "Inline Object Rich-Text Regression ",
+              "width": 368.779297,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "Page)",
-              "width": 59.90918,
+              "text": "(Multi-Page)",
+              "width": 125.876953,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -44,7 +44,7 @@
               "width": 429.539063,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -53,7 +53,7 @@
               "width": 249.492188,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -71,7 +71,7 @@
               "width": 88.037109,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -85,7 +85,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -99,7 +99,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -115,7 +115,7 @@
               "width": 111.416016,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -126,19 +126,19 @@
             },
             {
               "text": " for traceability. The inline objects above must stay ",
-              "width": 272.126953,
+              "width": 271.236328,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming",
-              "width": 465.609375,
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -147,7 +147,7 @@
               "width": 124.072266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -165,7 +165,7 @@
               "width": 88.037109,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -179,7 +179,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -193,7 +193,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -209,7 +209,7 @@
               "width": 111.416016,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -220,19 +220,19 @@
             },
             {
               "text": " for traceability. The inline objects above must stay ",
-              "width": 272.126953,
+              "width": 271.236328,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming",
-              "width": 465.609375,
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -241,7 +241,7 @@
               "width": 124.072266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -259,7 +259,7 @@
               "width": 88.037109,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -273,7 +273,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -287,7 +287,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -303,7 +303,7 @@
               "width": 111.416016,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -314,10 +314,10 @@
             },
             {
               "text": " for traceability. The inline objects above must stay ",
-              "width": 272.126953,
+              "width": 271.236328,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -338,11 +338,11 @@
         "lines": [
           [
             {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming",
-              "width": 465.609375,
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -351,7 +351,7 @@
               "width": 124.072266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -369,7 +369,7 @@
               "width": 88.037109,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -383,7 +383,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -397,7 +397,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -413,7 +413,7 @@
               "width": 111.416016,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -424,19 +424,19 @@
             },
             {
               "text": " for traceability. The inline objects above must stay ",
-              "width": 272.126953,
+              "width": 271.236328,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming",
-              "width": 465.609375,
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -445,7 +445,7 @@
               "width": 124.072266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -463,7 +463,7 @@
               "width": 88.037109,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -477,7 +477,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -491,7 +491,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -507,7 +507,7 @@
               "width": 111.416016,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -518,19 +518,19 @@
             },
             {
               "text": " for traceability. The inline objects above must stay ",
-              "width": 272.126953,
+              "width": 271.236328,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming",
-              "width": 465.609375,
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -539,7 +539,7 @@
               "width": 124.072266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -557,7 +557,7 @@
               "width": 88.037109,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -571,7 +571,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -585,7 +585,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -601,7 +601,7 @@
               "width": 111.416016,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -612,19 +612,19 @@
             },
             {
               "text": " for traceability. The inline objects above must stay ",
-              "width": 272.126953,
+              "width": 271.236328,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming",
-              "width": 465.609375,
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -633,7 +633,7 @@
               "width": 124.072266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -658,7 +658,7 @@
               "width": 88.037109,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -672,7 +672,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -686,7 +686,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -702,7 +702,7 @@
               "width": 111.416016,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -713,19 +713,19 @@
             },
             {
               "text": " for traceability. The inline objects above must stay ",
-              "width": 272.126953,
+              "width": 271.236328,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming",
-              "width": 465.609375,
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -734,7 +734,7 @@
               "width": 124.072266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -752,7 +752,7 @@
               "width": 88.037109,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -766,7 +766,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -780,7 +780,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -796,7 +796,7 @@
               "width": 111.416016,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -807,19 +807,19 @@
             },
             {
               "text": " for traceability. The inline objects above must stay ",
-              "width": 272.126953,
+              "width": 271.236328,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming",
-              "width": 465.609375,
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -828,7 +828,7 @@
               "width": 124.072266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -846,7 +846,7 @@
               "width": 88.037109,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -860,7 +860,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -874,7 +874,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -890,7 +890,7 @@
               "width": 111.416016,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -901,19 +901,19 @@
             },
             {
               "text": " for traceability. The inline objects above must stay ",
-              "width": 272.126953,
+              "width": 271.236328,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming",
-              "width": 465.609375,
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -922,7 +922,7 @@
               "width": 124.072266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -940,7 +940,7 @@
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -954,7 +954,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -968,7 +968,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -984,7 +984,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -995,10 +995,10 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1019,11 +1019,11 @@
         "lines": [
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1032,7 +1032,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1050,7 +1050,7 @@
               "width": 93.820313,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1064,7 +1064,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1078,7 +1078,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1094,7 +1094,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1105,19 +1105,19 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1126,7 +1126,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1144,7 +1144,7 @@
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1158,7 +1158,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1172,7 +1172,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1188,7 +1188,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1199,19 +1199,19 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1220,7 +1220,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1238,7 +1238,7 @@
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1252,7 +1252,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1266,7 +1266,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1282,7 +1282,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1293,19 +1293,19 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1314,7 +1314,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1339,7 +1339,7 @@
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1353,7 +1353,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1367,7 +1367,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1383,7 +1383,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1394,19 +1394,19 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1415,7 +1415,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1433,7 +1433,7 @@
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1447,7 +1447,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1461,7 +1461,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1477,7 +1477,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1488,19 +1488,19 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1509,7 +1509,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1527,7 +1527,7 @@
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1541,7 +1541,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1555,7 +1555,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1571,7 +1571,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1582,19 +1582,19 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1603,7 +1603,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1621,7 +1621,7 @@
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1635,7 +1635,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1649,7 +1649,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1665,7 +1665,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1676,10 +1676,10 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1700,11 +1700,11 @@
         "lines": [
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1713,7 +1713,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1731,7 +1731,7 @@
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1745,7 +1745,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1759,7 +1759,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1775,7 +1775,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1786,19 +1786,19 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1807,7 +1807,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1825,7 +1825,7 @@
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1839,7 +1839,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1853,7 +1853,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1869,7 +1869,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1880,19 +1880,19 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1901,7 +1901,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1919,7 +1919,7 @@
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1933,7 +1933,7 @@
               "width": 188.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1947,7 +1947,7 @@
               "width": 101.384766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1963,7 +1963,7 @@
               "width": 114.75,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "￼",
@@ -1974,19 +1974,19 @@
             },
             {
               "text": " for traceability. The inline objects above ",
-              "width": 217.447266,
+              "width": 216.556641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without",
-              "width": 464.923828,
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1995,7 +1995,7 @@
               "width": 179.4375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]

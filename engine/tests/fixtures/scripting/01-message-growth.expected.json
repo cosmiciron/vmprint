@@ -1,0 +1,21 @@
+{
+  "expectedTextIncludes": [
+    "Receiver element: waiting for incoming messages.",
+    "Incoming message from greeter.",
+    "Hello from another element!"
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "messageTarget",
+      "content": "Receiver element: waiting for incoming messages."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 2,
+    "createCalls": 1,
+    "messageSendCalls": 1,
+    "messageHandlerCalls": 1,
+    "setContentCalls": 1,
+    "insertCalls": 1
+  }
+}

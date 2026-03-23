@@ -17,7 +17,7 @@
               "width": 282.621094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -35,7 +35,7 @@
               "width": 456.914063,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -44,16 +44,16 @@
               "width": 440.894531,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "document exercises the fundamentals of that craft: paragraph flow, inline styling, ",
-              "width": 430.230469,
+              "width": 429.568359,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -62,7 +62,7 @@
               "width": 220.148438,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -80,7 +80,7 @@
               "width": 116.015625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -98,35 +98,35 @@
               "width": 119.378906,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "weight",
               "width": 37.998047,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": " through emphasis, ",
               "width": 105.392578,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "colour",
               "width": 32.683594,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": " through contrast, and rhythm ",
               "width": 160.083984,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -135,7 +135,7 @@
               "width": 268.816406,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -153,7 +153,7 @@
               "width": 220.702148,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -171,7 +171,7 @@
               "width": 451.552734,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -180,7 +180,7 @@
               "width": 462.28125,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -189,7 +189,7 @@
               "width": 445.359375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -198,7 +198,7 @@
               "width": 460.253906,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -207,7 +207,7 @@
               "width": 253.488281,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -225,7 +225,7 @@
               "width": 87.996094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -243,7 +243,7 @@
               "width": 253.476563,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -261,7 +261,7 @@
               "width": 282.814453,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -279,7 +279,7 @@
               "width": 272.15625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -297,7 +297,7 @@
               "width": 144.043945,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -315,7 +315,7 @@
               "width": 434.197266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -324,7 +324,7 @@
               "width": 421.5,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -333,16 +333,16 @@
               "width": 415.3125,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "deliberate test of boundary geometry.",
-              "width": 198.785156,
+              "width": 197.894531,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -367,7 +367,7 @@
               "width": 136.995117,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -385,7 +385,7 @@
               "width": 446.923828,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -394,16 +394,16 @@
               "width": 430.230469,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "baselines re-anchor, and flow continues as if the first page never ended.",
-              "width": 382.898438,
+              "width": 382.236328,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -425,10 +425,10 @@
           [
             {
               "text": "Page two. Paragraph flow, alignment, and line-height remain identical to page one. ",
-              "width": 442.277344,
+              "width": 441.615234,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -437,7 +437,7 @@
               "width": 462.949219,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -455,7 +455,7 @@
               "width": 454.242188,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -464,7 +464,7 @@
               "width": 242.132813,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]

@@ -1,0 +1,26 @@
+{
+  "expectedTextIncludes": [
+    "The authored placeholder was replaced through element().replace().",
+    "The replacement remained live for a follow-up append.",
+    "Tail paragraph: this should remain after the live replacement."
+  ],
+  "expectedTextExcludes": [
+    "This placeholder should be replaced without replay."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "placeholder",
+      "content": "This placeholder should be replaced without replay."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 2,
+    "readyCalls": 1,
+    "documentChangedCalls": 1,
+    "replaceCalls": 1,
+    "insertCalls": 1
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

@@ -3,46 +3,11 @@ import { ContextTextOptions } from '@vmprint/contracts';
 import { Renderer } from '../src/engine/renderer';
 import { LayoutConfig, Page } from '../src/engine/types';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
-import { loadLocalFontManager } from './harness/engine-harness';
+import { loadLocalFontManager, MockContext } from './harness/engine-harness';
+import { logStep } from './harness/test-utils';
 
-class MockContext {
-    public pagesAdded = 0;
-    public textCalls = 0;
-    public calls: Array<{ str: string; x: number; y: number }> = [];
-
-    addPage(): void { this.pagesAdded += 1; }
-    end(): void { }
-    async registerFont(_id: string, _buffer: Uint8Array): Promise<void> { }
-    font(_family: string, _size?: number): this { return this; }
-    fontSize(_size: number): this { return this; }
-    save(): void { }
-    restore(): void { }
-    translate(_x: number, _y: number): this { return this; }
-    rotate(_angle: number, _originX?: number, _originY?: number): this { return this; }
-    opacity(_opacity: number): this { return this; }
-    fillColor(_color: string): this { return this; }
-    strokeColor(_color: string): this { return this; }
-    lineWidth(_width: number): this { return this; }
-    dash(_length: number, _options?: { space: number }): this { return this; }
-    undash(): this { return this; }
-    moveTo(_x: number, _y: number): this { return this; }
-    lineTo(_x: number, _y: number): this { return this; }
-    bezierCurveTo(_cp1x: number, _cp1y: number, _cp2x: number, _cp2y: number, _x: number, _y: number): this { return this; }
-    rect(_x: number, _y: number, _w: number, _h: number): this { return this; }
-    roundedRect(_x: number, _y: number, _w: number, _h: number, _r: number): this { return this; }
-    fill(_rule?: 'nonzero' | 'evenodd'): this { return this; }
-    stroke(): this { return this; }
-    fillAndStroke(_fillColor?: string, _strokeColor?: string): this { return this; }
-    text(str: string, x: number, y: number, _options?: ContextTextOptions): this {
-        this.textCalls += 1;
-        this.calls.push({ str, x, y });
-        return this;
-    }
-    image(_source: string | Uint8Array, _x: number, _y: number, _options?: any): this { return this; }
-    getSize(): { width: number; height: number } {
-        return { width: 320, height: 220 };
-    }
-}
+const TEST_PREFIX = 'auto-direction.spec';
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
 
 function buildConfig(): LayoutConfig {
     return {
@@ -83,8 +48,8 @@ async function testAutoDirectionUsesParagraphBaseForNeutralLeadingLines() {
     }];
 
     await renderer.render(pages, context as any);
-    const neutral = context.calls.find((c) => c.str === '(123)');
-    const arabic = context.calls.find((c) => c.str === 'مرحبا');
+    const neutral = context.textTrace.find((c) => c.str === '(123)');
+    const arabic = context.textTrace.find((c) => c.str === 'مرحبا');
     assert.ok(neutral && arabic, 'expected both lines to render');
 
     const midpoint = paragraphX + (paragraphW / 2);
@@ -121,8 +86,8 @@ async function testMixedRtlRunReordersInsideLtrParagraph() {
     }];
 
     await renderer.render(pages, context as any);
-    const fi = context.calls.find((c) => c.str === 'في');
-    const albidaya = context.calls.find((c) => c.str === 'البداية');
+    const fi = context.textTrace.find((c) => c.str === 'في');
+    const albidaya = context.textTrace.find((c) => c.str === 'البداية');
     assert.ok(fi && albidaya, 'expected mixed bidi line to render Arabic segments');
     assert.ok(albidaya.x < fi.x, `expected RTL run to be visually reversed inside LTR paragraph; البداية.x=${albidaya.x}, في.x=${fi.x}`);
 }
@@ -132,10 +97,11 @@ async function run() {
     setDefaultEngineRuntime(createEngineRuntime({ fontManager: new LocalFontManager() }));
     await testAutoDirectionUsesParagraphBaseForNeutralLeadingLines();
     await testMixedRtlRunReordersInsideLtrParagraph();
-    console.log('[auto-direction.spec] OK');
+    log('OK');
 }
 
 run().catch((err) => {
-    console.error('[auto-direction.spec] FAILED', err);
+    console.error(`[${TEST_PREFIX}] FAILED`, err);
     process.exit(1);
 });
+

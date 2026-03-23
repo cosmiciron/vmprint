@@ -1,0 +1,182 @@
+import type { Box, Page, PageReservationSelector } from '../types';
+import type { EventDispatcher } from './event-dispatcher';
+import type { LayoutSession } from './layout-session';
+import type {
+    LayoutProfileMetrics,
+    PageExclusionIntent,
+    PageFinalizationState,
+    PageReservationIntent,
+    PageSurface,
+    RegionReservation,
+    SpatialExclusion
+} from './layout-session-types';
+import type {
+    SimulationArtifactKey,
+    SimulationArtifactMap,
+    SimulationArtifacts,
+    SimulationReport,
+    SimulationReportReader
+} from './simulation-report';
+import type { SimulationReportBridge } from './simulation-report-bridge';
+import type { LifecycleRuntime } from './lifecycle-runtime';
+import type { SessionWorldRuntime } from './session-world-runtime';
+
+export type SessionCollaborationRuntimeHost = {
+    getSession(): LayoutSession;
+    getCurrentPageIndex(): number;
+    getProfileSnapshot(): LayoutProfileMetrics;
+};
+
+export class SessionCollaborationRuntime {
+    constructor(
+        private readonly eventDispatcher: EventDispatcher,
+        private readonly lifecycleRuntime: LifecycleRuntime,
+        private readonly sessionWorldRuntime: SessionWorldRuntime,
+        private readonly simulationReportBridge: SimulationReportBridge,
+        private readonly host: SessionCollaborationRuntimeHost
+    ) { }
+
+    finalizeCommittedPage(pageIndex: number, width: number, height: number, boxes: readonly Box[]): Page {
+        const surface: PageSurface = {
+            pageIndex,
+            width,
+            height,
+            boxes: [...boxes],
+            debugZones: [],
+            finalize(): Page {
+                return {
+                    index: this.pageIndex,
+                    width: this.width,
+                    height: this.height,
+                    boxes: this.boxes,
+                    ...(this.debugZones.length > 0 ? { debugZones: this.debugZones.map((zone) => ({ ...zone })) } : {})
+                };
+            }
+        };
+        this.eventDispatcher.onPageFinalized(surface, this.host.getSession());
+        return surface.finalize();
+    }
+
+    closePagination(
+        pages: Page[],
+        currentPageBoxes: readonly Box[],
+        currentPageIndex: number,
+        pageWidth: number,
+        pageHeight: number
+    ): void {
+        this.lifecycleRuntime.closePagination(
+            pages,
+            currentPageBoxes,
+            currentPageIndex,
+            pageWidth,
+            pageHeight
+        );
+    }
+
+    finalizePages(pages: Page[]): Page[] {
+        this.lifecycleRuntime.setFinalizedPages(pages);
+        return this.simulationReportBridge.finalizePages(pages);
+    }
+
+    onSimulationComplete(): void {
+        this.eventDispatcher.onSimulationComplete(this.host.getSession());
+    }
+
+    publishArtifact<K extends SimulationArtifactKey>(key: K, value: SimulationArtifactMap[K]): void;
+    publishArtifact(key: string, value: unknown): void;
+    publishArtifact(key: string, value: unknown): void {
+        this.sessionWorldRuntime.publishArtifact(key, value);
+    }
+
+    buildSimulationArtifacts(): SimulationArtifacts {
+        return this.simulationReportBridge.buildSimulationArtifacts();
+    }
+
+    getFinalizedPages(): readonly Page[] {
+        return this.lifecycleRuntime.getFinalizedPages();
+    }
+
+    recordPageFinalization(state: PageFinalizationState): void {
+        this.lifecycleRuntime.recordPageFinalization(state);
+    }
+
+    resetLogicalPageNumbering(startAt: number): void {
+        this.lifecycleRuntime.resetLogicalPageNumbering(startAt);
+    }
+
+    allocateLogicalPageNumber(usesLogicalNumbering: boolean): number | null {
+        return this.lifecycleRuntime.allocateLogicalPageNumber(usesLogicalNumbering);
+    }
+
+    getPageFinalizationState(pageIndex: number): PageFinalizationState | undefined {
+        return this.lifecycleRuntime.getPageFinalizationState(pageIndex);
+    }
+
+    getPageFinalizationStates(): readonly PageFinalizationState[] {
+        return this.lifecycleRuntime.getPageFinalizationStates();
+    }
+
+    reservePageSpace(reservation: PageReservationIntent, pageIndex: number = this.host.getCurrentPageIndex()): void {
+        this.sessionWorldRuntime.reservePageSpace(reservation, pageIndex);
+    }
+
+    reserveCurrentPageSpace(reservation: RegionReservation): void {
+        this.sessionWorldRuntime.reservePageSpace(reservation, this.host.getCurrentPageIndex());
+    }
+
+    getCurrentPageReservations(): readonly RegionReservation[] {
+        return this.sessionWorldRuntime.getCurrentPageReservations();
+    }
+
+    getPageReservations(pageIndex: number): readonly RegionReservation[] {
+        return this.sessionWorldRuntime.getPageReservations(pageIndex);
+    }
+
+    getReservationPageIndices(): readonly number[] {
+        return this.sessionWorldRuntime.getReservationPageIndices();
+    }
+
+    excludePageSpace(exclusion: PageExclusionIntent, pageIndex: number = this.host.getCurrentPageIndex()): void {
+        this.sessionWorldRuntime.excludePageSpace(exclusion, pageIndex);
+    }
+
+    getPageExclusions(pageIndex: number): readonly SpatialExclusion[] {
+        return this.sessionWorldRuntime.getPageExclusions(pageIndex);
+    }
+
+    getExclusionPageIndices(): readonly number[] {
+        return this.sessionWorldRuntime.getExclusionPageIndices();
+    }
+
+    getSpatialConstraintPageIndices(): readonly number[] {
+        return this.sessionWorldRuntime.getSpatialConstraintPageIndices();
+    }
+
+    matchesPageSelector(pageIndex: number, selector: PageReservationSelector = 'first'): boolean {
+        return this.sessionWorldRuntime.matchesPageSelector(pageIndex, selector);
+    }
+
+    matchesPageReservationSelector(pageIndex: number, selector: PageReservationSelector = 'first'): boolean {
+        return this.matchesPageSelector(pageIndex, selector);
+    }
+
+    buildSimulationReport(): SimulationReport {
+        return this.simulationReportBridge.buildSimulationReport();
+    }
+
+    setSimulationReport(report: SimulationReport): void {
+        this.simulationReportBridge.setSimulationReport(report);
+    }
+
+    getSimulationReport(): SimulationReport | undefined {
+        return this.simulationReportBridge.getSimulationReport();
+    }
+
+    getSimulationReportReader(): SimulationReportReader {
+        return this.simulationReportBridge.getSimulationReportReader();
+    }
+
+    getProfileSnapshot(): LayoutProfileMetrics {
+        return this.host.getProfileSnapshot();
+    }
+}

@@ -1,0 +1,51 @@
+---
+methods:
+  onReady(): |
+    const placeholder = element("placeholder")
+    if (!placeholder) return
+    placeholder.replace([
+      {
+        type: "p",
+        name: "generatedBody",
+        content: "The authored placeholder was replaced through element().replace()."
+      }
+    ])
+
+  onChanged(): |
+    const generatedBody = element("generatedBody")
+    const generatedNote = element("generatedNote")
+    if (!generatedBody || generatedNote) return
+    generatedBody.append({
+      type: "p",
+      name: "generatedNote",
+      content: "The replacement remained live for a follow-up append."
+    })
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "placeholder",
+      "content": "This placeholder should be replaced without replay."
+    },
+    {
+      "type": "p",
+      "name": "tail",
+      "content": "Tail paragraph: this should remain after the live replacement.",
+      "properties": {
+        "style": {
+          "marginTop": 18
+        }
+      }
+    }
+  ]
+}

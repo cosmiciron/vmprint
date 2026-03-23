@@ -1,133 +1,133 @@
 {
-    "documentVersion": "1.0",
-    "layout": {
-        "pageSize": "LETTER",
-        "margins": {
-            "top": 72,
-            "right": 72,
-            "bottom": 72,
-            "left": 72
-        },
-        "fontFamily": "Arimo",
-        "fontSize": 20,
-        "lineHeight": 1.4
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": {
+      "top": 72,
+      "right": 72,
+      "bottom": 72,
+      "left": 72
     },
-    "fonts": {
-        "regular": "Arimo"
+    "fontFamily": "Arimo",
+    "fontSize": 20,
+    "lineHeight": 1.4
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "p": {
+      "marginBottom": 16,
+      "allowLineSplit": true
     },
-    "styles": {
-        "p": {
-            "marginBottom": 16,
-            "allowLineSplit": true
-        },
-        "h1": {
-            "fontSize": 32,
-            "fontWeight": "bold",
-            "marginBottom": 24,
-            "keepWithNext": true
-        },
-        "h2": {
-            "fontSize": 24,
-            "fontWeight": "bold",
-            "marginTop": 20,
-            "marginBottom": 16,
-            "keepWithNext": true
-        },
-        "largeText": {
-            "fontSize": 36,
-            "lineHeight": 1.5,
-            "marginBottom": 24
+    "h1": {
+      "fontSize": 32,
+      "fontWeight": "bold",
+      "marginBottom": 24,
+      "keepWithNext": true
+    },
+    "h2": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginTop": 20,
+      "marginBottom": 16,
+      "keepWithNext": true
+    },
+    "largeText": {
+      "fontSize": 36,
+      "lineHeight": 1.5,
+      "marginBottom": 24
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Arabic & Mixed BIDI Layout Tests"
+    },
+    {
+      "type": "p",
+      "content": "This fixture specifically tests the visual accuracy, fontkit shaping integration, and Unicode Bidi Algorithm implementation for complex RTL scripts."
+    },
+    {
+      "type": "h2",
+      "content": "1. Pure Arabic Shaping (RTL Mode)"
+    },
+    {
+      "type": "p",
+      "properties": {
+        "style": {
+          "direction": "rtl",
+          "fontFamily": "Noto Sans Arabic",
+          "fontSize": 36,
+          "lineHeight": 1.5,
+          "marginBottom": 24
         }
+      },
+      "content": "مرحبا بك في عالم الطباعة المبرمجة."
     },
-    "elements": [
-        {
-            "type": "h1",
-            "content": "Arabic & Mixed BIDI Layout Tests"
-        },
-        {
-            "type": "p",
-            "content": "This fixture specifically tests the visual accuracy, fontkit shaping integration, and Unicode Bidi Algorithm implementation for complex RTL scripts."
-        },
-        {
-            "type": "h2",
-            "content": "1. Pure Arabic Shaping (RTL Mode)"
-        },
-        {
-            "type": "p",
-            "properties": {
-                "style": {
-                    "direction": "rtl",
-                    "fontFamily": "Noto Sans Arabic",
-                    "fontSize": 36,
-                    "lineHeight": 1.5,
-                    "marginBottom": 24
-                }
-            },
-            "content": "مرحبا بك في عالم الطباعة المبرمجة."
-        },
-        {
-            "type": "p",
-            "content": "Notice how the letters connect smoothly. This confirms fontkit is receiving the 'arab' script tag and 'rtl' direction correctly."
-        },
-        {
-            "type": "h2",
-            "content": "2. Mixed Script - Arabic inside English (LTR Base)"
-        },
-        {
-            "type": "p",
-            "properties": {
-                "style": {
-                    "fontSize": 36,
-                    "lineHeight": 1.5,
-                    "marginBottom": 24
-                }
-            },
-            "content": "The word للنشر means 'for publishing' and مرحباً means 'welcome' in Arabic."
-        },
-        {
-            "type": "p",
-            "content": "The Arabic words should be shaped correctly, written right-to-left internally, but the overall sentence flows left-to-right."
-        },
-        {
-            "type": "h2",
-            "content": "3. Mixed Script - English inside Arabic (RTL Base)"
-        },
-        {
-            "type": "p",
-            "properties": {
-                "style": {
-                    "direction": "rtl",
-                    "fontSize": 36,
-                    "lineHeight": 1.5,
-                    "marginBottom": 24
-                }
-            },
-            "content": "تم تصميم VMPrint 0.1.0 لإنتاج مستندات PDF بدقة متناهية."
-        },
-        {
-            "type": "p",
-            "content": "The base paragraph direction is RTL. The English product name 'VMPrint 0.1.0' should flow LTR within the RTL stream."
-        },
-        {
-            "type": "h2",
-            "content": "4. Arabic Punctuation and Numbers"
-        },
-        {
-            "type": "p",
-            "properties": {
-                "style": {
-                    "direction": "rtl",
-                    "fontFamily": "Noto Sans Arabic",
-                    "fontSize": 36,
-                    "lineHeight": 1.5,
-                    "marginBottom": 24
-                }
-            },
-            "content": "تتطلب نسبة 100% من المشاريع دقة في الأرقام (مثل 123,456) وعلامات الترقيم؟ نعم، بالتأكيد!"
-        },
-        {
-            "type": "p",
-            "content": "The numbers '100%' and '123,456' must be ordered correctly despite being nested in RTL context."
+    {
+      "type": "p",
+      "content": "Notice how the letters connect smoothly. This confirms fontkit is receiving the 'arab' script tag and 'rtl' direction correctly."
+    },
+    {
+      "type": "h2",
+      "content": "2. Mixed Script - Arabic inside English (LTR Base)"
+    },
+    {
+      "type": "p",
+      "properties": {
+        "style": {
+          "fontSize": 36,
+          "lineHeight": 1.5,
+          "marginBottom": 24
         }
-    ]
+      },
+      "content": "The word للنشر means 'for publishing' and مرحباً means 'welcome' in Arabic."
+    },
+    {
+      "type": "p",
+      "content": "The Arabic words should be shaped correctly, written right-to-left internally, but the overall sentence flows left-to-right."
+    },
+    {
+      "type": "h2",
+      "content": "3. Mixed Script - English inside Arabic (RTL Base)"
+    },
+    {
+      "type": "p",
+      "properties": {
+        "style": {
+          "direction": "rtl",
+          "fontSize": 36,
+          "lineHeight": 1.5,
+          "marginBottom": 24
+        }
+      },
+      "content": "تم تصميم VMPrint 0.1.0 لإنتاج مستندات PDF بدقة متناهية."
+    },
+    {
+      "type": "p",
+      "content": "The base paragraph direction is RTL. The English product name 'VMPrint 0.1.0' should flow LTR within the RTL stream."
+    },
+    {
+      "type": "h2",
+      "content": "4. Arabic Punctuation and Numbers"
+    },
+    {
+      "type": "p",
+      "properties": {
+        "style": {
+          "direction": "rtl",
+          "fontFamily": "Noto Sans Arabic",
+          "fontSize": 36,
+          "lineHeight": 1.5,
+          "marginBottom": 24
+        }
+      },
+      "content": "تتطلب نسبة 100% من المشاريع دقة في الأرقام (مثل 123,456) وعلامات الترقيم؟ نعم، بالتأكيد!"
+    },
+    {
+      "type": "p",
+      "content": "The numbers '100%' and '123,456' must be ordered correctly despite being nested in RTL context."
+    }
+  ]
 }

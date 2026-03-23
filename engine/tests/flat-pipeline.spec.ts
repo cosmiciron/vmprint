@@ -1,69 +1,19 @@
 import assert from 'node:assert/strict';
+import { Context, ContextImageOptions, ContextTextOptions } from '@vmprint/contracts';
 import { LayoutEngine } from '../src/engine/layout-engine';
 import { Renderer } from '../src/engine/renderer';
-import { Context, ContextImageOptions, ContextTextOptions } from '@vmprint/contracts';
-import { Element, LayoutConfig, Page } from '../src/engine/types';
+import { Element, LayoutConfig, Page, DocumentInput } from '../src/engine/types';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
-import { loadLocalFontManager, snapshotPages } from './harness/engine-harness';
+import { CURRENT_DOCUMENT_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src';
+import { loadLocalFontManager, snapshotPages, MockContext } from './harness/engine-harness';
+import { logStep, check, checkAsync } from './harness/test-utils';
 
-function logStep(message: string): void {
-    console.log(`[flat-pipeline.spec] ${message}`);
-}
+const TEST_PREFIX = 'flat-pipeline.spec';
 
-function check(description: string, expected: string, assertion: () => void): void {
-    logStep(`CHECK: ${description}`);
-    logStep(`EXPECT: ${expected}`);
-    assertion();
-    logStep(`PASS: ${description}`);
-}
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
+const _check = (desc: string, exp: string, fn: () => void) => check(TEST_PREFIX, desc, exp, fn);
+const _checkAsync = (desc: string, exp: string, fn: () => Promise<void>) => checkAsync(TEST_PREFIX, desc, exp, fn);
 
-async function checkAsync(description: string, expected: string, assertion: () => Promise<void>): Promise<void> {
-    logStep(`CHECK: ${description}`);
-    logStep(`EXPECT: ${expected}`);
-    await assertion();
-    logStep(`PASS: ${description}`);
-}
-
-class MockContext implements Context {
-    public pagesAdded = 0;
-    public textCalls = 0;
-    public imageCalls = 0;
-
-    addPage(): void { this.pagesAdded += 1; }
-    end(): void { }
-    async registerFont(_id: string, _buffer: Uint8Array): Promise<void> { }
-    font(_family: string, _size?: number): this { return this; }
-    fontSize(_size: number): this { return this; }
-    save(): void { }
-    restore(): void { }
-    translate(_x: number, _y: number): this { return this; }
-    rotate(_angle: number, _originX?: number, _originY?: number): this { return this; }
-    opacity(_opacity: number): this { return this; }
-    fillColor(_color: string): this { return this; }
-    strokeColor(_color: string): this { return this; }
-    lineWidth(_width: number): this { return this; }
-    dash(_length: number, _options?: { space: number }): this { return this; }
-    undash(): this { return this; }
-    moveTo(_x: number, _y: number): this { return this; }
-    lineTo(_x: number, _y: number): this { return this; }
-    bezierCurveTo(_cp1x: number, _cp1y: number, _cp2x: number, _cp2y: number, _x: number, _y: number): this { return this; }
-    rect(_x: number, _y: number, _w: number, _h: number): this { return this; }
-    roundedRect(_x: number, _y: number, _w: number, _h: number, _r: number): this { return this; }
-    fill(_rule?: 'nonzero' | 'evenodd'): this { return this; }
-    stroke(): this { return this; }
-    fillAndStroke(_fillColor?: string, _strokeColor?: string): this { return this; }
-    text(_str: string, _x: number, _y: number, _options?: ContextTextOptions): this {
-        this.textCalls += 1;
-        return this;
-    }
-    image(_source: string | Uint8Array, _x: number, _y: number, _options?: ContextImageOptions): this {
-        this.imageCalls += 1;
-        return this;
-    }
-    getSize(): { width: number; height: number } {
-        return { width: 320, height: 220 };
-    }
-}
 
 function buildConfig(): LayoutConfig {
     return {
@@ -112,6 +62,13 @@ function collectMeasuredSegments(pages: Page[]) {
     return segments;
 }
 
+function getBoxText(box: any): string {
+    if (!Array.isArray(box.lines)) return '';
+    return box.lines
+        .map((line: any[]) => line.map((seg: any) => seg.text || '').join(''))
+        .join('\n');
+}
+
 function assertMatrixOnlyMeasurements(pages: Page[]) {
     const segments = collectMeasuredSegments(pages);
     assert.ok(segments.length > 0, 'expected measured text segments');
@@ -124,7 +81,7 @@ function assertMatrixOnlyMeasurements(pages: Page[]) {
 }
 
 async function testFlatPipeline() {
-    logStep('Scenario: keepWithNext + paragraph split + renderer matrix-only guards');
+    log('Scenario: keepWithNext + paragraph split + renderer matrix-only guards');
     const config = buildConfig();
     const engine = new LayoutEngine(config);
     await engine.waitForFonts();
@@ -137,8 +94,8 @@ async function testFlatPipeline() {
         { type: 'body', content: longText, properties: { sourceId: 'body-main' } }
     ];
 
-    const pages = engine.paginate(elements);
-    check(
+    const pages = engine.simulate(elements);
+    _check(
         'paginate returns a pages array',
         'an array with at least two pages',
         () => {
@@ -148,7 +105,7 @@ async function testFlatPipeline() {
     );
 
     const firstPageTypes = pages[0].boxes.map((b) => b.type);
-    check(
+    _check(
         'keepWithNext sequence placement',
         'hero stays with a split body fragment instead of leaving page 1 underfilled',
         () => {
@@ -159,7 +116,7 @@ async function testFlatPipeline() {
     );
 
     const bodyBoxes = pages.flatMap((p) => p.boxes.filter((b) => b.type === 'body'));
-    check(
+    _check(
         'long paragraph fragmentation',
         'body content is split into multiple flow fragments across pages',
         () => {
@@ -183,7 +140,7 @@ async function testFlatPipeline() {
         }
     );
 
-    check(
+    _check(
         'page index metadata',
         'every box carries pageIndex metadata matching the page that contains it',
         () => {
@@ -195,7 +152,7 @@ async function testFlatPipeline() {
         }
     );
 
-    check(
+    _check(
         'flat box structure and precomputed segment metrics',
         'no nested layout containers and all segments provide width/ascent/descent',
         () => {
@@ -208,7 +165,7 @@ async function testFlatPipeline() {
         }
     );
 
-    check(
+    _check(
         'input immutability',
         'source elements remain unchanged after paginate',
         () => {
@@ -219,7 +176,7 @@ async function testFlatPipeline() {
     const renderer = new Renderer(config, false, engine.getRuntime());
     const context = new MockContext();
     await renderer.render(pages, context);
-    check(
+    _check(
         'renderer consumes paginated output',
         'page count and text draw calls match expected non-empty render',
         () => {
@@ -232,7 +189,7 @@ async function testFlatPipeline() {
     const brokenSegment = collectMeasuredSegments(brokenPages)[0];
     if (brokenSegment) {
         delete brokenSegment.width;
-        await checkAsync(
+        await _checkAsync(
             'renderer guardrail for missing matrix width',
             'rendering rejects mutated segments that have no precomputed width',
             async () => {
@@ -247,7 +204,7 @@ async function testFlatPipeline() {
 }
 
 async function testEmbeddedImageFlowAndRender() {
-    logStep('Scenario: embedded base64 image is laid out and rendered in flow order');
+    log('Scenario: embedded base64 image is laid out and rendered in flow order');
     const config = buildConfig();
 
     const engine = new LayoutEngine(config);
@@ -258,15 +215,15 @@ async function testEmbeddedImageFlowAndRender() {
         {
             type: 'image',
             content: '',
+            image: {
+                data: onePixelPng,
+                mimeType: 'image/png',
+                fit: 'contain'
+            },
             properties: {
                 style: {
                     width: 80,
                     marginBottom: 8
-                },
-                image: {
-                    data: onePixelPng,
-                    mimeType: 'image/png',
-                    fit: 'contain'
                 }
             }
         },
@@ -276,9 +233,9 @@ async function testEmbeddedImageFlowAndRender() {
         }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const imageBoxes = pages.flatMap((p) => p.boxes.filter((b) => b.type === 'image'));
-    check(
+    _check(
         'embedded image flow layout',
         'image element produces a box with intrinsic-ratio-derived height when width is explicit',
         () => {
@@ -292,7 +249,7 @@ async function testEmbeddedImageFlowAndRender() {
     const renderer = new Renderer(config, false, engine.getRuntime());
     const context = new MockContext();
     await renderer.render(pages, context);
-    check(
+    _check(
         'embedded image render path',
         'renderer emits at least one image draw call for image boxes',
         () => {
@@ -302,7 +259,7 @@ async function testEmbeddedImageFlowAndRender() {
 }
 
 async function testInlineObjectsInsideRichTextFlow() {
-    logStep('Scenario: inline image and inline box behave as in-run rich-text segments');
+    log('Scenario: inline image and inline box behave as in-run rich-text segments');
     const config = buildConfig();
 
     const engine = new LayoutEngine(config);
@@ -319,6 +276,7 @@ async function testInlineObjectsInsideRichTextFlow() {
                 {
                     type: 'image',
                     content: '',
+                    image: { data: onePixelPng, mimeType: 'image/png', fit: 'contain' },
                     properties: {
                         style: {
                             width: 18,
@@ -329,8 +287,7 @@ async function testInlineObjectsInsideRichTextFlow() {
                             inlineOpticalInsetBottom: 2,
                             inlineMarginLeft: 1,
                             inlineMarginRight: 2
-                        },
-                        image: { data: onePixelPng, mimeType: 'image/png', fit: 'contain' }
+                        }
                     }
                 },
                 { type: 'text', content: ' and ' },
@@ -359,11 +316,11 @@ async function testInlineObjectsInsideRichTextFlow() {
         }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const firstPara = pages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     const segments = (firstPara?.lines || []).flat();
 
-    check(
+    _check(
         'inline rich object extraction + layout',
         'paragraph lines include inline image and inline box segments with measured dimensions',
         () => {
@@ -392,7 +349,7 @@ async function testInlineObjectsInsideRichTextFlow() {
     const renderer = new Renderer(config, false, engine.getRuntime());
     const context = new MockContext();
     await renderer.render(pages, context);
-    check(
+    _check(
         'inline rich object render path',
         'renderer emits at least one image draw call while still drawing text',
         () => {
@@ -403,7 +360,7 @@ async function testInlineObjectsInsideRichTextFlow() {
 }
 
 async function testMultilingualMatrixOnlyRegression() {
-    logStep('Scenario: deterministic multilingual measurement stability');
+    log('Scenario: deterministic multilingual measurement stability');
     const config = buildConfig();
     config.layout.pageSize = { width: 300, height: 240 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -414,10 +371,10 @@ async function testMultilingualMatrixOnlyRegression() {
     const mixed = 'Latin words wrapping with Ã¤Â¸Â­Ã¦â€“â€¡Ã¥Â­â€”Ã§Â¬Â¦ and Ã¯Â¿Â½ Ã Â¸Â²Ã Â¸Â©Ã Â¸Â²Ã Â¹â€žÃ Â¸â€”Ã Â¸Â¢ plus Ã­â€¢Å“ÃªÂµÂ­Ã¬â€“Â´ Ã«Â¬Â¸Ã¬Å¾Â¥ for matrix-only measurement stability. '.repeat(8);
     const elements: Element[] = [{ type: 'p', content: mixed }];
 
-    const pagesA = engine.paginate(elements);
-    const pagesB = engine.paginate(elements);
+    const pagesA = engine.simulate(elements);
+    const pagesB = engine.simulate(elements);
 
-    check(
+    _check(
         'multilingual pagination emits pages with measured segments',
         'at least one page and all segments include matrix-only metrics',
         () => {
@@ -428,7 +385,7 @@ async function testMultilingualMatrixOnlyRegression() {
 
     const widthsA = collectMeasuredSegments(pagesA).map((s) => Number(s.width).toFixed(6));
     const widthsB = collectMeasuredSegments(pagesB).map((s) => Number(s.width).toFixed(6));
-    check(
+    _check(
         'deterministic widths across repeated paginate runs',
         'identical multilingual input yields identical segment widths',
         () => {
@@ -438,7 +395,7 @@ async function testMultilingualMatrixOnlyRegression() {
 }
 
 async function testWidowOrphanEnforcement() {
-    logStep('Scenario: widow/orphan thresholds gate line splitting');
+    log('Scenario: widow/orphan thresholds gate line splitting');
     const config = buildConfig();
     config.layout.pageSize = { width: 300, height: 180 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -464,13 +421,13 @@ async function testWidowOrphanEnforcement() {
         }
     ];
 
-    const pagesAllowed = engine.paginate(splitAllowed);
-    const pagesBlocked = engine.paginate(splitBlocked);
+    const pagesAllowed = engine.simulate(splitAllowed);
+    const pagesBlocked = engine.simulate(splitBlocked);
 
     const allowedBoxes = pagesAllowed.flatMap((p) => p.boxes.filter((b) => b.type === 'p'));
     const blockedBoxes = pagesBlocked.flatMap((p) => p.boxes.filter((b) => b.type === 'p'));
 
-    check(
+    _check(
         'widow/orphan allows split with default thresholds',
         'paragraph emits multiple flow fragments when widow/orphan thresholds are satisfiable',
         () => {
@@ -480,7 +437,7 @@ async function testWidowOrphanEnforcement() {
         }
     );
 
-    check(
+    _check(
         'widow threshold blocks split when unsatisfiable',
         'paragraph remains a single oversized box when widow requirement cannot be met',
         () => {
@@ -492,7 +449,7 @@ async function testWidowOrphanEnforcement() {
 }
 
 async function testWidowOrphanBackletterSpacingAndMultilingual() {
-    logStep('Scenario: widow/orphan backtracking and multilingual splitting constraints');
+    log('Scenario: widow/orphan backtracking and multilingual splitting constraints');
     const config = buildConfig();
     config.layout.pageSize = { width: 300, height: 220 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -508,10 +465,10 @@ async function testWidowOrphanBackletterSpacingAndMultilingual() {
         properties: { style: { allowLineSplit: true, orphans, widows } }
     };
 
-    const paraPages = engine.paginate([element]);
+    const paraPages = engine.simulate([element]);
     const paraBoxes = paraPages.flatMap((p) => p.boxes.filter((b) => b.type === 'p'));
 
-    check(
+    _check(
         'paragraph splits across pages with orphans/widows configured',
         'long paragraph with allowLineSplit produces at least two fragments',
         () => {
@@ -519,7 +476,7 @@ async function testWidowOrphanBackletterSpacingAndMultilingual() {
         }
     );
 
-    check(
+    _check(
         'all continuation fragments satisfy widow minimum',
         'every continuation fragment carries at least widows lines, proving backtracking fires when needed',
         () => {
@@ -535,7 +492,7 @@ async function testWidowOrphanBackletterSpacingAndMultilingual() {
         }
     );
 
-    check(
+    _check(
         'first fragment satisfies orphan minimum',
         'first paragraph fragment carries at least orphans lines',
         () => {
@@ -552,10 +509,10 @@ async function testWidowOrphanBackletterSpacingAndMultilingual() {
         properties: { style: { allowLineSplit: true, orphans: 3, widows: 3 } }
     }];
 
-    const multiPages = engine.paginate(multilingual);
+    const multiPages = engine.simulate(multilingual);
     const multiBoxes = multiPages.flatMap((p) => p.boxes.filter((b) => b.type === 'p'));
 
-    check(
+    _check(
         'multilingual content respects widow/orphan control',
         'mixed-script paragraph splits across pages while preserving first/last fragment flags',
         () => {
@@ -567,7 +524,7 @@ async function testWidowOrphanBackletterSpacingAndMultilingual() {
 }
 
 async function testPerBoxOverflowPolicy() {
-    logStep('Scenario: explicit per-box overflowPolicy controls split fallback behavior');
+    log('Scenario: explicit per-box overflowPolicy controls split fallback behavior');
     const config = buildConfig();
     config.layout.pageSize = { width: 300, height: 180 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -577,13 +534,13 @@ async function testPerBoxOverflowPolicy() {
 
     const text = 'Overflow policy paragraph designed to exceed one page and trigger split or clipping behavior. '.repeat(34);
 
-    const defaultPolicyPages = engine.paginate([{
+    const defaultPolicyPages = engine.simulate([{
         type: 'p',
         content: text,
         properties: { style: { allowLineSplit: true, orphans: 2, widows: 2 } }
     }]);
 
-    const moveWholePages = engine.paginate([{
+    const moveWholePages = engine.simulate([{
         type: 'p',
         content: text,
         properties: { style: { allowLineSplit: true, orphans: 2, widows: 2, overflowPolicy: 'move-whole' } }
@@ -592,7 +549,7 @@ async function testPerBoxOverflowPolicy() {
     const defaultBoxes = defaultPolicyPages.flatMap((p) => p.boxes.filter((b) => b.type === 'p'));
     const moveWholeBoxes = moveWholePages.flatMap((p) => p.boxes.filter((b) => b.type === 'p'));
 
-    check(
+    _check(
         'unspecified overflowPolicy keeps existing split behavior',
         'long paragraph splits into multiple fragments under default clip behavior',
         () => {
@@ -601,7 +558,7 @@ async function testPerBoxOverflowPolicy() {
         }
     );
 
-    check(
+    _check(
         'move-whole is honored when explicitly set on the box',
         'same paragraph remains a single clipped box instead of splitting',
         () => {
@@ -611,13 +568,13 @@ async function testPerBoxOverflowPolicy() {
         }
     );
 
-    await checkAsync(
+    await _checkAsync(
         'invalid overflowPolicy value is rejected',
         'paginate throws a clear validation error for unsupported policy strings',
         async () => {
             assert.throws(
                 () => {
-                    engine.paginate([{
+                    engine.simulate([{
                         type: 'p',
                         content: 'bad overflowPolicy',
                         properties: { style: { overflowPolicy: 'invalid-policy' } }
@@ -631,7 +588,7 @@ async function testPerBoxOverflowPolicy() {
 }
 
 async function testPaginationContinuationMarkers() {
-    logStep('Scenario: split boxes can inject continuation markers before/after page break');
+    log('Scenario: split boxes can inject continuation markers before/after page break');
     const config = buildConfig();
     config.layout.pageSize = { width: 300, height: 180 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -666,10 +623,10 @@ async function testPaginationContinuationMarkers() {
         }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const allTypes = pages.flatMap((p) => p.boxes.map((b) => b.type));
 
-    check(
+    _check(
         'continuation markers are emitted around split dialogue',
         'split pagination yields at least one trailing "more" box and at least one continued cue',
         () => {
@@ -680,7 +637,7 @@ async function testPaginationContinuationMarkers() {
         }
     );
 
-    check(
+    _check(
         'continuation marker identity metadata',
         'generated marker boxes carry generated/continuation metadata linked to dialogue sourceId',
         () => {
@@ -703,7 +660,7 @@ async function testPaginationContinuationMarkers() {
         }
     );
 
-    check(
+    _check(
         'continued cue leads continuation page',
         'first non-page-number box on the continuation page is cue before resumed dialogue',
         () => {
@@ -725,7 +682,7 @@ async function testPaginationContinuationMarkers() {
 }
 
 async function testKeepWithNextChainMidPageSplitsTailUnit() {
-    logStep('Scenario: keepWithNext chain mid-page splits tail unit instead of forcing full-sequence push');
+    log('Scenario: keepWithNext chain mid-page splits tail unit instead of forcing full-sequence push');
     const config = buildConfig();
     config.layout.pageSize = { width: 300, height: 180 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -745,11 +702,11 @@ async function testKeepWithNextChainMidPageSplitsTailUnit() {
         { type: 'body', content: longText }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const firstPageTypes = pages[0].boxes.map((b) => b.type);
     const bodyBoxes = pages.flatMap((p) => p.boxes.filter((b) => b.type === 'body'));
 
-    check(
+    _check(
         'mid-page keepWithNext splitting',
         'page 1 includes lead/note/body instead of leaving only filler before the break',
         () => {
@@ -765,7 +722,7 @@ async function testKeepWithNextChainMidPageSplitsTailUnit() {
 }
 
 async function testKeepWithNextChainAtPageTopDoesNotStrandPrefixes() {
-    logStep('Scenario: keepWithNext chain at page top splits dialogue instead of stranding cue/parenthetical');
+    log('Scenario: keepWithNext chain at page top splits dialogue instead of stranding cue/parenthetical');
     const config = buildConfig();
     config.layout.pageSize = { width: 300, height: 200 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -787,10 +744,10 @@ async function testKeepWithNextChainAtPageTopDoesNotStrandPrefixes() {
         }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const nonPageTypesByPage = pages.map((page) => page.boxes.filter((b) => b.type !== 'page_number').map((b) => b.type));
 
-    check(
+    _check(
         'keepWithNext prefix chain is preserved at page top',
         'no page contains only a stranded cue or only a stranded parenthetical',
         () => {
@@ -803,7 +760,7 @@ async function testKeepWithNextChainAtPageTopDoesNotStrandPrefixes() {
 }
 
 async function testAdvancedJustifyAndHyphenation() {
-    logStep('Scenario: advanced justify engine and hyphenation precompute segment spacing/splits');
+    log('Scenario: advanced justify engine and hyphenation precompute segment spacing/splits');
     const config = buildConfig();
     config.layout.pageSize = { width: 280, height: 260 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -824,7 +781,7 @@ async function testAdvancedJustifyAndHyphenation() {
         }
     }];
 
-    const justifyPages = engine.paginate(justifyElements);
+    const justifyPages = engine.simulate(justifyElements);
     const justifyBox = justifyPages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     assert.ok(justifyBox?.lines && justifyBox.lines.length > 1, 'expected wrapped lines for advanced justification test');
 
@@ -832,7 +789,7 @@ async function testAdvancedJustifyAndHyphenation() {
     const hasExpandedBoundary = nonLastLines.some((line) => line.some((seg) => (seg.justifyAfter || 0) > 0));
     const lastLineExpanded = justifyBox!.lines![justifyBox!.lines!.length - 1].some((seg) => (seg.justifyAfter || 0) > 0);
 
-    check(
+    _check(
         'advanced justification precomputes per-boundary spacing',
         'non-final lines carry positive justifyAfter spacing while final line remains unexpanded',
         () => {
@@ -853,11 +810,11 @@ async function testAdvancedJustifyAndHyphenation() {
         }
     }];
 
-    const hardBreakPages = engine.paginate(hardBreakElements);
+    const hardBreakPages = engine.simulate(hardBreakElements);
     const hardBreakBox = hardBreakPages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     assert.ok(hardBreakBox?.lines && hardBreakBox.lines.length >= 2, 'expected multiple lines for hard break test');
 
-    check(
+    _check(
         'hard line breaks are tagged to suppress justification expansion',
         'line ended by explicit break carries forcedBreakAfter marker and no justifyAfter expansion',
         () => {
@@ -882,14 +839,14 @@ async function testAdvancedJustifyAndHyphenation() {
         }
     }];
 
-    const hyphenPages = engine.paginate(hyphenElements);
+    const hyphenPages = engine.simulate(hyphenElements);
     const hyphenBox = hyphenPages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     assert.ok(hyphenBox?.lines && hyphenBox.lines.length > 1, 'expected wrapped lines for hyphenation test');
 
     const lineTexts = hyphenBox!.lines!.map((line) => line.map((seg) => seg.text).join(''));
     const hasVisibleHyphenBreak = lineTexts.slice(0, -1).some((text) => text.endsWith('-'));
 
-    check(
+    _check(
         'auto hyphenation inserts discretionary break hyphen for long words',
         'at least one non-final wrapped line ends with a visible hyphen',
         () => {
@@ -908,13 +865,13 @@ async function testAdvancedJustifyAndHyphenation() {
         }
     }];
 
-    const softPages = engine.paginate(softHyphenElements);
+    const softPages = engine.simulate(softHyphenElements);
     const softBox = softPages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     assert.ok(softBox?.lines && softBox.lines.length > 1, 'expected wrapped lines for soft hyphen test');
     const softLineTexts = softBox!.lines!.map((line) => line.map((seg) => seg.text).join(''));
     const hasSoftBreak = softLineTexts.slice(0, -1).some((text) => text.endsWith('-'));
 
-    check(
+    _check(
         'soft hyphen mode respects discretionary break points',
         'lines break on supplied soft-hyphen points with visible trailing hyphen',
         () => {
@@ -924,7 +881,7 @@ async function testAdvancedJustifyAndHyphenation() {
 }
 
 async function testRendererRtlFlow() {
-    logStep('Scenario: renderer draws RTL lines from rtl origin');
+    log('Scenario: renderer draws RTL lines from rtl origin');
     const config = buildConfig();
     config.layout.direction = 'rtl';
 
@@ -963,7 +920,7 @@ async function testRendererRtlFlow() {
     const two = context.calls.find((c) => c.str === 'TWO');
     assert.ok(one && two, 'expected RTL renderer test to draw both segments');
 
-    check(
+    _check(
         'rtl draw order uses rtl x progression',
         'the second segment is drawn at a larger x than the first (LTR run preserved inside RTL base)',
         () => {
@@ -973,7 +930,7 @@ async function testRendererRtlFlow() {
 }
 
 async function testOrientationPageDimensions() {
-    logStep('Scenario: page orientation is reflected in paginated page dimensions');
+    log('Scenario: page orientation is reflected in paginated page dimensions');
 
     const config = buildConfig();
     config.layout.pageSize = 'LETTER';
@@ -982,9 +939,9 @@ async function testOrientationPageDimensions() {
     const engine = new LayoutEngine(config);
     await engine.waitForFonts();
 
-    const pages = engine.paginate([{ type: 'p', content: 'orientation test paragraph' }]);
+    const pages = engine.simulate([{ type: 'p', content: 'orientation test paragraph' }]);
 
-    check(
+    _check(
         'landscape orientation swaps letter dimensions',
         'paginated page reports width=792 and height=612 for LETTER landscape',
         () => {
@@ -996,7 +953,7 @@ async function testOrientationPageDimensions() {
 }
 
 async function testHyphenatedContinuationPreservesBoundaryWord() {
-    logStep('Scenario: hyphenated continuation preserves boundary word at page break');
+    log('Scenario: hyphenated continuation preserves boundary word at page break');
     const config = buildConfig();
     config.layout.pageSize = { width: 320, height: 220 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -1010,12 +967,12 @@ async function testHyphenatedContinuationPreservesBoundaryWord() {
     await engine.waitForFonts();
 
     const flowText = 'This demo forces a continuation onto page two while testing hyphenation boundaries across the split. '.repeat(12);
-    const pages = engine.paginate([{ type: 'p', content: flowText }]);
+    const pages = engine.simulate([{ type: 'p', content: flowText }]);
 
     const pageTwoFlow = pages.find((page) => page.index === 1)?.boxes.find((box) => box.type === 'p');
     const firstLine = pageTwoFlow?.lines?.[0]?.map((seg) => seg.text || '').join('') || '';
 
-    check(
+    _check(
         'hyphenated continuation keeps first boundary character',
         'first continuation line retains intact boundary token (no dropped leading character)',
         () => {
@@ -1029,7 +986,7 @@ async function testHyphenatedContinuationPreservesBoundaryWord() {
 }
 
 async function testRendererZIndexOrdering() {
-    logStep('Scenario: renderer draw order respects per-box zIndex');
+    log('Scenario: renderer draw order respects per-box zIndex');
 
     class ZOrderContext extends MockContext {
         drawOrder: string[] = [];
@@ -1082,7 +1039,7 @@ async function testRendererZIndexOrdering() {
 
     await renderer.render(pages, context);
 
-    check(
+    _check(
         'higher zIndex draws later',
         'lower-z box text is emitted before higher-z box text even when listed first in input',
         () => {
@@ -1095,7 +1052,7 @@ async function testRendererZIndexOrdering() {
 }
 
 async function testTablePaginationRepeatsHeaderRows() {
-    logStep('Scenario: table primitive paginates by rows and repeats headers on continuation pages');
+    log('Scenario: table primitive paginates by rows and repeats headers on continuation pages');
     const config = buildConfig();
     config.layout.pageSize = { width: 320, height: 220 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -1129,22 +1086,20 @@ async function testTablePaginationRepeatsHeaderRows() {
     const elements: Element[] = [{
         type: 'table',
         content: '',
-        properties: {
-            table: {
-                headerRows: 1,
-                repeatHeader: true,
-                columnGap: 0,
-                rowGap: 0,
-                columns: [
-                    { mode: 'fixed', value: 52 },
-                    { mode: 'flex', fr: 1 }
-                ]
-            }
+        table: {
+            headerRows: 1,
+            repeatHeader: true,
+            columnGap: 0,
+            rowGap: 0,
+            columns: [
+                { mode: 'fixed', value: 52 },
+                { mode: 'flex', fr: 1 }
+            ]
         },
         children: rows
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const headerRowIndex = 0;
     const rowIndexesByPage = pages.map((page) =>
         page.boxes
@@ -1153,7 +1108,7 @@ async function testTablePaginationRepeatsHeaderRows() {
             .filter((value) => Number.isFinite(value))
     );
 
-    check(
+    _check(
         'table row pagination emits multiple pages',
         'single table spans at least two pages and produces table_cell boxes',
         () => {
@@ -1163,7 +1118,7 @@ async function testTablePaginationRepeatsHeaderRows() {
         }
     );
 
-    check(
+    _check(
         'table continuation repeats header rows',
         'header row index appears on page 1 and also on continuation page',
         () => {
@@ -1172,7 +1127,7 @@ async function testTablePaginationRepeatsHeaderRows() {
         }
     );
 
-    check(
+    _check(
         'table body rows continue after repeated header',
         'continuation page includes both repeated header row and at least one non-header row',
         () => {
@@ -1180,10 +1135,63 @@ async function testTablePaginationRepeatsHeaderRows() {
             assert.ok(continuationRows.some((idx) => idx !== headerRowIndex), 'expected body rows after repeated header');
         }
     );
+
+    _check(
+        'table continuation exposes world-row vs viewport-row semantics',
+        'repeated header clones on continuation pages retain header world offset while resetting viewport row index to 0',
+        () => {
+            const firstPageHeaderCells = pages[0].boxes.filter((box) =>
+                box.type === 'table_cell'
+                && Number(box.properties?._tableRowIndex) === headerRowIndex
+            );
+            const continuationHeaderCells = pages[1].boxes.filter((box) =>
+                box.type === 'table_cell'
+                && Number(box.properties?._tableRowIndex) === headerRowIndex
+            );
+            const continuationBodyCells = pages[1].boxes.filter((box) =>
+                box.type === 'table_cell'
+                && Number(box.properties?._tableRowIndex) !== headerRowIndex
+            );
+
+            assert.ok(continuationHeaderCells.length > 0, 'expected repeated header cells on page 2');
+            assert.ok(continuationBodyCells.length > 0, 'expected body cells on page 2');
+            assert.ok(
+                firstPageHeaderCells.every((box) => Number(box.properties?._tableViewportWorldY) === 0),
+                'expected first-page header cells to report viewport worldY 0'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => box.properties?._tableIsRepeatedHeaderClone === true),
+                'expected repeated header cells to be marked as viewport clones'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => Number(box.properties?._tableViewportRowIndex) === 0),
+                'expected repeated header cells to restart at viewport row index 0'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => Number(box.properties?._tableWorldRowOffset) === 0),
+                'expected repeated header cells to retain world row offset 0'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => Number(box.properties?._tableViewportWorldY) === 220),
+                'expected repeated header cells on page 2 to report viewport worldY 220'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => Number(box.properties?._tableViewportHeight) === 220),
+                'expected repeated header cells to report the current viewport height'
+            );
+            assert.ok(
+                continuationHeaderCells.every((box) => Number(box.meta?.pageIndex) === 1),
+                'expected repeated header cells to carry continuation-page pageIndex metadata'
+            );
+
+            const firstContinuationBodyWorldOffset = Math.min(...continuationBodyCells.map((box) => Number(box.properties?._tableWorldRowOffset)));
+            assert.ok(firstContinuationBodyWorldOffset > 0, 'expected continued body rows to keep a positive world-row offset');
+        }
+    );
 }
 
 async function testTableColSpanMaterializesSpanWidth() {
-    logStep('Scenario: table cell colSpan expands rendered table_cell width across adjacent tracks');
+    log('Scenario: table cell colSpan expands rendered table_cell width across adjacent tracks');
     const config = buildConfig();
     config.layout.pageSize = { width: 320, height: 220 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -1196,18 +1204,16 @@ async function testTableColSpanMaterializesSpanWidth() {
     const elements: Element[] = [{
         type: 'table',
         content: '',
-        properties: {
-            table: {
-                headerRows: 1,
-                repeatHeader: true,
-                columnGap: 6,
-                rowGap: 0,
-                columns: [
-                    { mode: 'fixed', value: 60 },
-                    { mode: 'fixed', value: 90 },
-                    { mode: 'fixed', value: 70 }
-                ]
-            }
+        table: {
+            headerRows: 1,
+            repeatHeader: true,
+            columnGap: 6,
+            rowGap: 0,
+            columns: [
+                { mode: 'fixed', value: 60 },
+                { mode: 'fixed', value: 90 },
+                { mode: 'fixed', value: 70 }
+            ]
         },
         children: [
             {
@@ -1231,7 +1237,7 @@ async function testTableColSpanMaterializesSpanWidth() {
         ]
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const spanCell = pages
         .flatMap((page) => page.boxes)
         .find((box) =>
@@ -1242,7 +1248,7 @@ async function testTableColSpanMaterializesSpanWidth() {
         );
 
     const expectedSpanWidth = 60 + 90 + 6;
-    check(
+    _check(
         'table colSpan width mapping',
         'colSpan=2 cell width equals two track widths plus one inter-column gap',
         () => {
@@ -1254,8 +1260,83 @@ async function testTableColSpanMaterializesSpanWidth() {
     );
 }
 
+async function testTableSplitStopsBeforeFullWidthViewportBlocker() {
+    log('Scenario: table split honors the next full-width viewport blocker below the cursor');
+    const config = buildConfig();
+    config.layout.pageSize = { width: 320, height: 320 };
+    config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
+    config.layout.pageStartExclusionTop = 210;
+    config.layout.pageStartExclusionHeight = 40;
+    config.layout.pageStartExclusionSelector = 'all';
+    config.styles.table = { marginTop: 0, marginBottom: 8, padding: 0 };
+    config.styles['table-cell'] = { fontSize: 11, lineHeight: 1.25 };
+
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const makeRow = (index: number): Element => ({
+        type: 'table-row',
+        content: '',
+        children: [
+            { type: 'table-cell', content: `Row ${index} alpha beta gamma delta epsilon zeta eta theta iota kappa` },
+            { type: 'table-cell', content: `Row ${index} companion text with enough wrap to raise the row height` }
+        ]
+    });
+
+    const elements: Element[] = [{
+        type: 'table',
+        content: '',
+        table: {
+            headerRows: 1,
+            repeatHeader: true,
+            columnGap: 6,
+            rowGap: 0,
+            columns: [
+                { mode: 'flex', fr: 1 },
+                { mode: 'flex', fr: 1 }
+            ]
+        },
+        children: [
+            {
+                type: 'table-row',
+                content: '',
+                properties: { semanticRole: 'header' },
+                children: [
+                    { type: 'table-cell', content: 'Header A' },
+                    { type: 'table-cell', content: 'Header B' }
+                ]
+            },
+            makeRow(1),
+            makeRow(2),
+            makeRow(3),
+            makeRow(4),
+            makeRow(5),
+            makeRow(6),
+            makeRow(7),
+            makeRow(8)
+        ]
+    }];
+
+    const pages = engine.simulate(elements);
+    const firstPageCells = pages[0].boxes.filter((box) => box.type === 'table_cell');
+    const firstPageBottom = firstPageCells.reduce(
+        (max, box) => Math.max(max, Number(box.y || 0) + Number(box.h || 0)),
+        0
+    );
+
+    _check(
+        'table split stops before the next full-width viewport blocker',
+        'first page table cells end at or above the blocker top instead of projecting through it',
+        () => {
+            assert.ok(pages.length >= 2, `expected table to continue; pages=${pages.length}`);
+            assert.ok(firstPageCells.length > 0, 'expected table cells on page 1');
+            assert.ok(firstPageBottom <= 210 + 0.5, `expected first-page table bottom <= 210, got ${firstPageBottom}`);
+        }
+    );
+}
+
 async function testTableRowSpanStacksAcrossRows() {
-    logStep('Scenario: table rowSpan expands cell height across stacked rows without duplicate covered-column cells');
+    log('Scenario: table rowSpan expands cell height across stacked rows without duplicate covered-column cells');
     const config = buildConfig();
     config.layout.pageSize = { width: 320, height: 220 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -1269,17 +1350,15 @@ async function testTableRowSpanStacksAcrossRows() {
     const elements: Element[] = [{
         type: 'table',
         content: '',
-        properties: {
-            table: {
-                headerRows: 0,
-                repeatHeader: false,
-                columnGap: 0,
-                rowGap,
-                columns: [
-                    { mode: 'fixed', value: 70 },
-                    { mode: 'fixed', value: 170 }
-                ]
-            }
+        table: {
+            headerRows: 0,
+            repeatHeader: false,
+            columnGap: 0,
+            rowGap,
+            columns: [
+                { mode: 'fixed', value: 70 },
+                { mode: 'fixed', value: 170 }
+            ]
         },
         children: [
             {
@@ -1300,7 +1379,7 @@ async function testTableRowSpanStacksAcrossRows() {
         ]
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const cells = pages.flatMap((page) => page.boxes).filter((box) => box.type === 'table_cell');
     const rowSpanCell = cells.find((box) =>
         Number(box.properties?._tableRowIndex) === 0
@@ -1320,7 +1399,7 @@ async function testTableRowSpanStacksAcrossRows() {
         && Number(box.properties?._tableColStart) === 0
     );
 
-    check(
+    _check(
         'table rowSpan height + occupancy mapping',
         'rowSpan=2 cell covers both row heights plus rowGap, and covered column is not duplicated on next row',
         () => {
@@ -1336,7 +1415,7 @@ async function testTableRowSpanStacksAcrossRows() {
 }
 
 async function testTableCellSourceIdIntegrity() {
-    logStep('Scenario: table cells preserve their semantic sourceId without mangling');
+    log('Scenario: table cells preserve their semantic sourceId without mangling');
     const config = buildConfig();
     config.layout.pageSize = { width: 320, height: 220 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -1349,17 +1428,15 @@ async function testTableCellSourceIdIntegrity() {
     const elements: Element[] = [{
         type: 'table',
         content: '',
-        properties: {
-            table: {
-                headerRows: 0,
-                repeatHeader: false,
-                columnGap: 0,
-                rowGap: 0,
-                columns: [
-                    { mode: 'fixed', value: 80 },
-                    { mode: 'fixed', value: 160 }
-                ]
-            }
+        table: {
+            headerRows: 0,
+            repeatHeader: false,
+            columnGap: 0,
+            rowGap: 0,
+            columns: [
+                { mode: 'fixed', value: 80 },
+                { mode: 'fixed', value: 160 }
+            ]
         },
         children: [{
             type: 'table-row',
@@ -1371,12 +1448,12 @@ async function testTableCellSourceIdIntegrity() {
         }]
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const cells = pages.flatMap((page) => page.boxes).filter((box) => box.type === 'table_cell');
     const cellA = cells.find((box) => Number(box.properties?._tableColStart) === 0);
     const cellB = cells.find((box) => Number(box.properties?._tableColStart) === 1);
 
-    check(
+    _check(
         'table cell meta.sourceId is not mangled',
         'cell sourceId equals author-provided id and does not encode row/col coordinates',
         () => {
@@ -1388,7 +1465,7 @@ async function testTableCellSourceIdIntegrity() {
         }
     );
 
-    check(
+    _check(
         'table cell engineKey remains unique',
         'each table_cell box has a unique engineKey for client-side addressing',
         () => {
@@ -1400,7 +1477,7 @@ async function testTableCellSourceIdIntegrity() {
 }
 
 async function testPageOverridesSuppressHeaderAndLogicalNumbersSkipSuppressedPages() {
-    logStep('Scenario: first-page header suppression skips logical numbering until the first rendered token');
+    log('Scenario: first-page header suppression skips logical numbering until the first rendered token');
     const config = buildConfig();
     config.layout.pageSize = { width: 300, height: 180 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -1447,7 +1524,7 @@ async function testPageOverridesSuppressHeaderAndLogicalNumbersSkipSuppressedPag
         }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const headerBoxes = pages.map((page) =>
         page.boxes.find((box) => box.meta?.sourceType === 'header' && box.type === 'paragraph')
     );
@@ -1456,7 +1533,7 @@ async function testPageOverridesSuppressHeaderAndLogicalNumbersSkipSuppressedPag
         return box.lines[0].map((seg) => seg.text || '').join('');
     });
 
-    check(
+    _check(
         'cover suppression with screenplay-like numbering',
         'cover has no page number, first script page omitted, second script page shows 2',
         () => {
@@ -1469,7 +1546,7 @@ async function testPageOverridesSuppressHeaderAndLogicalNumbersSkipSuppressedPag
 }
 
 async function testInlineObjectJustificationIsolation() {
-    logStep('Scenario: justification does not distribute spacing into inline object segments');
+    log('Scenario: justification does not distribute spacing into inline object segments');
     const config = buildConfig();
 
     const engine = new LayoutEngine(config);
@@ -1485,20 +1562,20 @@ async function testInlineObjectJustificationIsolation() {
             {
                 type: 'image',
                 content: '',
+                image: { data: onePixelPng, mimeType: 'image/png', fit: 'contain' },
                 properties: {
-                    style: { width: 18, height: 18, verticalAlign: 'middle' },
-                    image: { data: onePixelPng, mimeType: 'image/png', fit: 'contain' }
+                    style: { width: 18, height: 18, verticalAlign: 'middle' }
                 }
             },
             { type: 'text', content: ' More trailing text to ensure the line containing the inline image is not the final line and is eligible for justification.' }
         ]
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const paraBox = pages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
     const allSegs = (paraBox?.lines || []).flat() as any[];
 
-    check(
+    _check(
         'justified paragraph emits justifyAfter on at least one text segment',
         'non-final wrapped lines carry positive justifyAfter spacing metadata',
         () => {
@@ -1509,7 +1586,7 @@ async function testInlineObjectJustificationIsolation() {
         }
     );
 
-    check(
+    _check(
         'inline object segments never carry justifyAfter spacing',
         'justification distributes space only to text boundaries, not around inline objects',
         () => {
@@ -1526,7 +1603,7 @@ async function testInlineObjectJustificationIsolation() {
 }
 
 async function testWidowOrphanKeepWithNextComposition() {
-    logStep('Scenario: widow/orphan constraints and keepWithNext compose without either being silently dropped');
+    log('Scenario: widow/orphan constraints and keepWithNext compose without either being silently dropped');
     const config = buildConfig();
     config.layout.pageSize = { width: 300, height: 180 };
     config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -1544,11 +1621,11 @@ async function testWidowOrphanKeepWithNextComposition() {
         { type: 'body', content: 'Body text for keep-with-next and widow/orphan composition test. '.repeat(30) }
     ];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const sectionEntries = pages.flatMap((p, pi) => p.boxes.filter((b) => b.type === 'section').map((b) => ({ b, pi })));
     const bodyEntries = pages.flatMap((p, pi) => p.boxes.filter((b) => b.type === 'body').map((b) => ({ b, pi })));
 
-    check(
+    _check(
         'keepWithNext: section heading stays with first body fragment',
         'section and first body fragment appear on the same page',
         () => {
@@ -1561,7 +1638,7 @@ async function testWidowOrphanKeepWithNextComposition() {
         }
     );
 
-    check(
+    _check(
         'widow constraint honored on all body continuation fragments',
         'every continuation body fragment carries at least widows lines',
         () => {
@@ -1574,7 +1651,7 @@ async function testWidowOrphanKeepWithNextComposition() {
         }
     );
 
-    check(
+    _check(
         'orphan constraint: first body fragment has at least orphans lines',
         'first body fragment satisfies orphan minimum even with preceding keepWithNext heading',
         () => {
@@ -1587,7 +1664,7 @@ async function testWidowOrphanKeepWithNextComposition() {
 }
 
 async function testGlobalStateIsolation() {
-    logStep('Scenario: laying out document A does not affect the layout of document B run on a separate engine instance');
+    log('Scenario: laying out document A does not affect the layout of document B run on a separate engine instance');
     const configA = buildConfig();
     const configB = buildConfig();
     configB.layout.pageSize = { width: 300, height: 200 };
@@ -1606,11 +1683,11 @@ async function testGlobalStateIsolation() {
         { type: 'p', content: 'Document B isolation verification paragraph text. '.repeat(25) }
     ];
 
-    engineA.paginate(elementsA);
-    const pagesB_afterA = engineB1.paginate(elementsB);
-    const pagesB_isolated = engineB2.paginate(elementsB);
+    engineA.simulate(elementsA);
+    const pagesB_afterA = engineB1.simulate(elementsB);
+    const pagesB_isolated = engineB2.simulate(elementsB);
 
-    check(
+    _check(
         'no residual state leaks between engine instances',
         'layout of document B after running A equals layout of B run in isolation',
         () => {
@@ -1624,7 +1701,7 @@ async function testGlobalStateIsolation() {
 }
 
 async function testBackgroundFillPaintersOrder() {
-    logStep('Scenario: background fill is drawn before the text it underlies (painter order)');
+    log('Scenario: background fill is drawn before the text it underlies (painter order)');
 
     class PaintOrderContext extends MockContext {
         events: Array<{ op: string; str?: string }> = [];
@@ -1687,12 +1764,12 @@ async function testBackgroundFillPaintersOrder() {
         ]
     }];
 
-    const pages = engine.paginate(elements);
+    const pages = engine.simulate(elements);
     const renderer = new Renderer(config, false, engine.getRuntime());
     const context = new PaintOrderContext();
     await renderer.render(pages, context);
 
-    check(
+    _check(
         'background fill precedes inline-box text in draw order',
         'a fill event appears before the BADGE text draw call in the renderer output stream',
         () => {
@@ -1701,6 +1778,214 @@ async function testBackgroundFillPaintersOrder() {
             assert.ok(fillIdx >= 0, 'expected at least one fill event (background was drawn)');
             assert.ok(badgeIdx >= 0, 'expected BADGE text draw call');
             assert.ok(fillIdx < badgeIdx, `fill (idx=${fillIdx}) must precede BADGE text draw (idx=${badgeIdx})`);
+        }
+    );
+}
+
+async function testScriptedHelloWorldMutation() {
+    log('Scenario: document-level onBeforeLayout script mutates a named element');
+    const document: DocumentInput = {
+        documentVersion: CURRENT_DOCUMENT_VERSION,
+        layout: {
+            pageSize: { width: 320, height: 220 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
+            fontFamily: 'Arimo',
+            fontSize: 12,
+            lineHeight: 1.2
+        },
+        fonts: {
+            regular: 'Arimo'
+        },
+        styles: {
+            p: { marginBottom: 8 }
+        },
+        methods: {
+            'onLoad()': [
+                'setContent("greeting", "Hello, world!");'
+            ]
+        },
+        elements: [
+            {
+                type: 'p',
+                content: 'Placeholder',
+                properties: {
+                    sourceId: 'greeting'
+                }
+            }
+        ]
+    };
+
+    const resolved = resolveDocumentPaths(document, 'memory://scripted-hello-world.json');
+    const config = toLayoutConfig(resolved, false);
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const pages = engine.simulate(document.elements);
+    const paragraphBoxes = pages.flatMap((page) => page.boxes.filter((box) => box.type === 'p'));
+    const renderedText = paragraphBoxes
+        .map((box) => getBoxText(box))
+        .join('\n');
+
+    _check(
+        'document-level onBeforeLayout script updates content before packager creation',
+        'rendered paragraph text changes from placeholder text to Hello, world!',
+        () => {
+            assert.match(renderedText, /Hello, world!/, 'expected scripted content to appear in rendered output');
+            assert.doesNotMatch(renderedText, /Placeholder/, 'expected placeholder text to be replaced before layout');
+        }
+    );
+
+    _check(
+        'scripted pre-layout mutation does not mutate caller-owned AST',
+        'the original document elements remain unchanged after simulation',
+        () => {
+            assert.equal(document.elements[0].content, 'Placeholder');
+        }
+    );
+}
+
+async function testElementLevelResolveHandler() {
+    log('Scenario: element-level onResolve handler mutates its own content');
+    const document: DocumentInput = {
+        documentVersion: CURRENT_DOCUMENT_VERSION,
+        layout: {
+            pageSize: { width: 320, height: 220 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
+            fontFamily: 'Arimo',
+            fontSize: 12,
+            lineHeight: 1.2
+        },
+        fonts: {
+            regular: 'Arimo'
+        },
+        styles: {
+            p: { marginBottom: 8 }
+        },
+        methods: {
+            'component-greeting_onCreate()': [
+                'setContent(self, "Hello from onResolve!");'
+            ]
+        },
+        elements: [
+            {
+                type: 'p',
+                content: 'Placeholder',
+                properties: {
+                    sourceId: 'component-greeting'
+                }
+            }
+        ]
+    };
+
+    const resolved = resolveDocumentPaths(document, 'memory://element-on-resolve.json');
+    const config = toLayoutConfig(resolved, false);
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const pages = engine.simulate(document.elements);
+    const paragraphBoxes = pages.flatMap((page) => page.boxes.filter((box) => box.type === 'p'));
+    const renderedText = paragraphBoxes
+        .map((box) => getBoxText(box))
+        .join('\n');
+
+    _check(
+        'element-level onCreate script updates its own content',
+        'rendered paragraph text changes from placeholder text to Hello from onResolve!',
+        () => {
+            assert.match(renderedText, /Hello from onResolve!/, 'expected onResolve scripted content to appear');
+            assert.doesNotMatch(renderedText, /Placeholder/, 'expected placeholder text to be replaced by onCreate');
+        }
+    );
+
+    _check(
+        'element-level scripting preserves caller-owned input immutability',
+        'the original element content remains unchanged after simulation',
+        () => {
+            assert.equal(document.elements[0].content, 'Placeholder');
+        }
+    );
+}
+
+async function testAfterSettleScriptWithReplay() {
+    log('Scenario: document-level onReady script reads settled headings and updates after first settlement');
+    const document: DocumentInput = {
+        documentVersion: CURRENT_DOCUMENT_VERSION,
+        layout: {
+            pageSize: { width: 320, height: 220 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
+            fontFamily: 'Arimo',
+            fontSize: 12,
+            lineHeight: 1.2
+        },
+        fonts: {
+            regular: 'Arimo'
+        },
+        styles: {
+            h1: { marginBottom: 8, fontSize: 18, fontWeight: 'bold' },
+            p: { marginBottom: 8 }
+        },
+        methods: {
+            'onReady()': [
+                'const headings = elementsByType("h1");',
+                'sendMessage("summary", {',
+                '  subject: "ready-summary",',
+                '  payload: { count: headings.length }',
+                '});'
+            ],
+            'summary_onMessage(from, msg)': [
+                'if (!from || from.name !== "doc") return;',
+                'if (!msg || msg.subject !== "ready-summary") return;',
+                'setContent(self, `Heading count: ${Number(msg.payload?.count || 0)}`);'
+            ]
+        },
+        elements: [
+            {
+                type: 'p',
+                content: 'Heading count: pending',
+                properties: {
+                    sourceId: 'summary'
+                }
+            },
+            {
+                type: 'h1',
+                content: 'Chapter One',
+                properties: {
+                    sourceId: 'chapter-one',
+                    semanticRole: 'h1'
+                }
+            },
+            {
+                type: 'p',
+                content: 'Body paragraph.'
+            }
+        ]
+    };
+
+    const resolved = resolveDocumentPaths(document, 'memory://after-settle-replay.json');
+    const config = toLayoutConfig(resolved, false);
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const pages = engine.simulate(document.elements);
+    const renderedText = pages
+        .flatMap((page) => page.boxes.filter((box) => box.type === 'p' || box.type === 'h1'))
+        .map((box) => getBoxText(box))
+        .join('\n');
+
+    _check(
+        'onReady can read settled structure and update summary',
+        'summary paragraph reflects settled heading count after the first ready cycle',
+        () => {
+            assert.match(renderedText, /Heading count: 1/, 'expected summary content to reflect one heading');
+            assert.doesNotMatch(renderedText, /Heading count: pending/, 'expected pending summary to be replaced after ready');
+        }
+    );
+
+    _check(
+        'post-settlement script replay keeps caller-owned input immutable',
+        'the original input document is unchanged after simulation',
+        () => {
+            assert.equal(document.elements[0].content, 'Heading count: pending');
         }
     );
 }
@@ -1726,6 +2011,7 @@ async function run() {
     await testRendererZIndexOrdering();
     await testTablePaginationRepeatsHeaderRows();
     await testTableColSpanMaterializesSpanWidth();
+    await testTableSplitStopsBeforeFullWidthViewportBlocker();
     await testTableRowSpanStacksAcrossRows();
     await testTableCellSourceIdIntegrity();
     await testPageOverridesSuppressHeaderAndLogicalNumbersSkipSuppressedPages();
@@ -1733,6 +2019,9 @@ async function run() {
     await testWidowOrphanKeepWithNextComposition();
     await testGlobalStateIsolation();
     await testBackgroundFillPaintersOrder();
+    await testScriptedHelloWorldMutation();
+    await testElementLevelResolveHandler();
+    await testAfterSettleScriptWithReplay();
     console.log('[flat-pipeline.spec] OK');
 }
 

@@ -1,0 +1,23 @@
+{
+  "expectedTextIncludes": [
+    "Lead paragraph: this should remain.",
+    "Tail paragraph: this should follow the lead directly after deletion."
+  ],
+  "expectedTextExcludes": [
+    "This paragraph should be deleted by a live document helper."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "vanishing",
+      "content": "This paragraph should be deleted by a live document helper."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "removeCalls": 1
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

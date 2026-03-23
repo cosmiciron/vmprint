@@ -1,0 +1,491 @@
+[
+  {
+    "index": 0,
+    "width": 340,
+    "height": 460,
+    "boxes": [
+      {
+        "type": "toc",
+        "x": 40,
+        "y": 40,
+        "w": 260,
+        "h": 124,
+        "lines": [
+          [
+            {
+              "text": "Contents",
+              "width": 44.026855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Chapter One: The Signal  1",
+              "width": 133.912109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "  Section 1.1: First Light  2",
+              "width": 127.783691,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Chapter Two: The Resettlement  2",
+              "width": 167.524414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Chapter Three: Settled Truth  3",
+              "width": 151.835449,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h1",
+        "x": 40,
+        "y": 180,
+        "w": 260,
+        "h": 25.509375,
+        "lines": [
+          [
+            {
+              "text": "Chapter One: The Signal",
+              "width": 210.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 217.509375,
+        "w": 260,
+        "h": 62.35625,
+        "lines": [
+          [
+            {
+              "text": "The first chapter opens with an argument that has no",
+              "width": 257.425781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "easy resolution. Every sentence carries the weight of",
+              "width": 257.409668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "what came before it, and the burden of what must ",
+              "width": 244.583496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "follow.",
+              "width": 30.572266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 289.865625,
+        "w": 260,
+        "h": 62.35625,
+        "lines": [
+          [
+            {
+              "text": "A second paragraph extends the chapter body, giving",
+              "width": 259.692383,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the layout engine enough content to push ",
+              "width": 204.885742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "subsequent headings onto later pages and make the ",
+              "width": 259.300293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "TOC page references meaningful.",
+              "width": 165.499512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 362.221875,
+        "w": 260,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "A third paragraph ensures this chapter occupies ",
+              "width": 236.634277,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "substantial vertical space before the next heading ",
+              "width": 244.599609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "appears.",
+              "width": 42.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 340,
+    "height": 460,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 40,
+        "y": 50,
+        "w": 260,
+        "h": 19.840625,
+        "lines": [
+          [
+            {
+              "text": "Section 1.1: First Light",
+              "width": 150.90332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 77.840625,
+        "w": 260,
+        "h": 62.35625,
+        "lines": [
+          [
+            {
+              "text": "The subsection adds depth to the chapter. Its ",
+              "width": 222.588867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "heading should appear in the TOC at a lower level ",
+              "width": 247.45166,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "than the chapter heading, demonstrating level ",
+              "width": 226.262695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "filtering works correctly.",
+              "width": 114.098145,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 150.196875,
+        "w": 260,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "More body text fills the section, ensuring this portion ",
+              "width": 256.185059,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "of the document takes meaningful vertical space ",
+              "width": 238.46582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "before the next chapter heading.",
+              "width": 158.393555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h1",
+        "x": 40,
+        "y": 206.964063,
+        "w": 260,
+        "h": 51.01875,
+        "lines": [
+          [
+            {
+              "text": "Chapter Two: The ",
+              "width": 155.663086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Resettlement",
+              "width": 113.036133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 269.982813,
+        "w": 260,
+        "h": 62.35625,
+        "lines": [
+          [
+            {
+              "text": "The second chapter begins. Its heading should ",
+              "width": 231.155762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "appear in the TOC on the correct page, which can ",
+              "width": 246.216309,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "only be determined after the full layout has settled. ",
+              "width": 248.869629,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "This is the live reactive proof.",
+              "width": 142.446777,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 342.339063,
+        "w": 260,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "Additional body text keeps the second chapter ",
+              "width": 228.094238,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "substantive enough to push the third chapter onto yet",
+              "width": 259.289551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "another page.",
+              "width": 67.890625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 340,
+    "height": 460,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 40,
+        "y": 40,
+        "w": 260,
+        "h": 25.509375,
+        "lines": [
+          [
+            {
+              "text": "Chapter Three: Settled Truth",
+              "width": 243.026367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 77.509375,
+        "w": 260,
+        "h": 62.35625,
+        "lines": [
+          [
+            {
+              "text": "The third chapter. Its presence in the TOC proves ",
+              "width": 243.750977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "that all three chapters were discovered during layout ",
+              "width": 258.032715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and that the TOC grew from committed heading ",
+              "width": 235.189453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "signals, not from a post-simulation artifact pass.",
+              "width": 232.321289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

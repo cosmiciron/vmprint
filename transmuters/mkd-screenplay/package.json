@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/transmuter-mkd-screenplay",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Markdown -> VMPrint DocumentInput transmuter with screenplay defaults.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
@@ -12,7 +12,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@vmprint/markdown-core": "file:../../markdown-core",
+    "@vmprint/markdown-core": "file:../markdown-core",
     "@vmprint/contracts": "file:../../contracts"
   },
   "devDependencies": {

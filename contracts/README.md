@@ -144,7 +144,7 @@ class DraftWatermark implements OverlayProvider {
 
 ### `Transmuter`
 
-The contract for source-to-AST conversion. Implement this to convert specific source formats (like Markdown) into VMPrint's `DocumentInput` AST.
+The contract for author-facing source conversion. Implement this to convert specific source formats (like Markdown) into VMPrint's `DocumentInput` AST.
 
 ```ts
 interface Transmuter<Input = string, Output = unknown, Options = TransmuterOptions> {
@@ -165,7 +165,7 @@ npm install @vmprint/contracts
 ```
 
 ```ts
-import type { FontManager, Context, OverlayProvider } from '@vmprint/contracts';
+import type { FontManager, Context, OverlayProvider, Transmuter } from '@vmprint/contracts';
 ```
 
 Because all exports are TypeScript interfaces, the import adds no runtime weight — types are fully erased at compile time. Importing `@vmprint/contracts` in a production build costs exactly zero bytes.

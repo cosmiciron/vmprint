@@ -6,9 +6,8 @@ import { OverlayProvider, VmprintOutputStream } from '@vmprint/contracts';
 import { LayoutEngine } from '@vmprint/engine';
 import { Renderer } from '@vmprint/engine';
 import { LayoutUtils } from '@vmprint/engine';
-import { resolveDocumentPaths, serializeDocumentIR, toLayoutConfig } from '@vmprint/engine';
 import { createEngineRuntime } from '@vmprint/engine';
-import { AnnotatedLayoutStream, DocumentIR, LayoutConfig, Page } from '@vmprint/engine';
+import { AnnotatedLayoutStream, LayoutConfig, Page, resolveDocumentSourceText, toLayoutConfig, type DocumentIR } from '@vmprint/engine';
 import { performance } from 'perf_hooks';
 import PdfContext from '@vmprint/context-pdf';
 
@@ -16,7 +15,6 @@ type CliOptions = {
     input?: string;
     output?: string;
     fontManager?: string;
-    dumpIr?: boolean | string;
     emitLayout?: boolean | string;
     renderFromLayout?: string;
     omitGlyphs?: boolean;
@@ -120,55 +118,6 @@ function ensureOverlayProvider(candidate: unknown, modulePath: string): OverlayP
     return overlay;
 }
 
-function pruneUnusedFallbacks(registry: any[], elements: any[]): void {
-  const usedCodePoints = new Set<number>();
-  
-  const extract = (els: any[]) => {
-    if (!els) return;
-    for (const el of els) {
-      if (typeof el.content === 'string') {
-        const text = el.content;
-        for (let i = 0; i < text.length; i++) {
-          const cp = text.codePointAt(i);
-          if (cp !== undefined) {
-            usedCodePoints.add(cp);
-            if (cp > 0xFFFF) i++;
-          }
-        }
-      }
-      if (el.children && Array.isArray(el.children)) {
-        extract(el.children);
-      }
-    }
-  };
-  
-  extract(elements);
-  
-  for (const font of registry) {
-    if (font.fallback && font.enabled && font.unicodeRange) {
-      let isUsed = false;
-      const ranges = font.unicodeRange.split(',').map((r: string) => r.trim());
-      for (const range of ranges) {
-        const match = range.match(/U\+([0-9A-Fa-f]+)(?:-([0-9A-Fa-f]+))?/i);
-        if (match) {
-          const start = parseInt(match[1], 16);
-          const end = match[2] ? parseInt(match[2], 16) : start;
-          for (const cp of usedCodePoints) {
-            if (cp >= start && cp <= end) {
-              isUsed = true;
-              break;
-            }
-          }
-        }
-        if (isUsed) break;
-      }
-      if (!isUsed) {
-        font.enabled = false;
-      }
-    }
-  }
-}
-
 async function run() {
     const cliVersion = process.env.npm_package_version || '0.1.0';
     const program = new Command();
@@ -180,7 +129,6 @@ async function run() {
         .option('-i, --input <path>', 'Input document JSON file')
         .option('-o, --output <path>', 'Output file (.pdf)')
         .option('--font-manager <path>', 'Path to a JS module exporting a FontManager class (default: bundled LocalFontManager)')
-        .option('--dump-ir [path]', 'Write canonical document IR JSON (default: <output>.ir.json)')
         .option('--emit-layout [path]', 'Output annotated layout stream JSON (default: <output>.layout.json)')
         .option('--render-from-layout <path>', 'Bypass layout engine and render directly from a layout JSON stream')
         .option('--omit-glyphs', 'Exclude precise character glyph positioning bounds when emitting layout stream')
@@ -224,39 +172,35 @@ async function run() {
             }
         }
         const inputRaw = fs.readFileSync(inputPath, 'utf-8');
-        document = resolveDocumentPaths(JSON.parse(inputRaw), inputPath);
-        pruneUnusedFallbacks(runtime.fontRegistry, document.elements);
-        config = toLayoutConfig(document, !!options.debug);
+        document = resolveDocumentSourceText(inputRaw, inputPath);
+        config = {
+            ...toLayoutConfig(document, false),
+            debug: !!options.debug
+        };
         const engine = new LayoutEngine(config, runtime);
         const t0 = options.profileLayout ? performance.now() : 0;
         await engine.waitForFonts();
-        const t1 = options.profileLayout ? performance.now() : 0;
-        pages = engine.paginate(document.elements);
+        pages = engine.simulate(document.elements);
         if (options.profileLayout) {
-            const t2 = performance.now();
-            const coldFontMs = t1 - t0;
-            const coldLayoutMs = t2 - t1;
+            const t1 = performance.now();
+            const coldPageMs = t1 - t0;
 
             const WARM_REPEATS = 2;
-            let warmFontSum = 0, warmLayoutSum = 0;
+            let warmPageSum = 0;
             for (let i = 0; i < WARM_REPEATS; i++) {
                 const warmEngine = new LayoutEngine(config, runtime);
                 const wt0 = performance.now();
                 await warmEngine.waitForFonts();
+                warmEngine.simulate(document.elements);
                 const wt1 = performance.now();
-                warmEngine.paginate(document.elements);
-                const wt2 = performance.now();
-                warmFontSum += wt1 - wt0;
-                warmLayoutSum += wt2 - wt1;
+                warmPageSum += wt1 - wt0;
             }
-            const avgWarmFontMs = warmFontSum / WARM_REPEATS;
-            const avgWarmLayoutMs = warmLayoutSum / WARM_REPEATS;
+            const avgWarmPageMs = warmPageSum / WARM_REPEATS;
 
-            console.log(`[vmprint] cold  fontMs: ${coldFontMs.toFixed(2)} | layoutMs: ${coldLayoutMs.toFixed(2)} | total: ${(coldFontMs + coldLayoutMs).toFixed(2)} (${pages.length} pages)`);
-            console.log(`[vmprint] warm  fontMs: ${avgWarmFontMs.toFixed(2)} | layoutMs: ${avgWarmLayoutMs.toFixed(2)} | total: ${(avgWarmFontMs + avgWarmLayoutMs).toFixed(2)} (avg ×${WARM_REPEATS})`);
+            console.log('[vmprint] cold  pageMs: ' + coldPageMs.toFixed(2) + ' (' + pages.length + ' pages)');
+            console.log('[vmprint] warm  pageMs: ' + avgWarmPageMs.toFixed(2) + ' (avg x' + WARM_REPEATS + ')');
         }
     }
-
     if (options.overlay) {
         overlayPath = path.resolve(options.overlay);
     }
@@ -308,15 +252,10 @@ async function run() {
     context.pipe(outputStream);
     await renderer.render(pages, context);
     await outputStream.waitForFinish();
-    if (options.dumpIr !== undefined && document) {
-        const irPath = options.dumpIr === true
-            ? outputPath.replace(/\.pdf$/i, '.ir.json')
-            : path.resolve(String(options.dumpIr));
-        fs.writeFileSync(irPath, serializeDocumentIR(document), 'utf8');
-    }
 }
 
 run().catch((error) => {
     console.error('[vmprint] Failed:', error);
     process.exit(1);
 });
+

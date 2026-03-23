@@ -47,6 +47,7 @@ Most of the interface is registry management — bookkeeping that any implementa
 | Package | Description |
 |---|---|
 | [`@vmprint/local-fonts`](local/) | Filesystem font manager with a bundled multilingual font set. The reference implementation. |
+| [`@vmprint/web-fonts`](web/) | Browser-first font manager for URL/data-URI/catalog-backed fonts, with lazy loading and optional IndexedDB caching. |
 | [`@vmprint/standard-fonts`](standard/) | Zero-asset font manager that emits standard-font sentinels (no embedded font binaries). |
 
 ## Writing a Custom Font Manager

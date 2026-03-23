@@ -26,6 +26,7 @@ So `mkd-mkd` is the Markdown → `DocumentInput` transmuter. The second `mkd` he
 
 | Directory | Package | Source |
 |---|---|---|
+| `markdown-core/` | `@vmprint/markdown-core` | Shared Markdown → `DocumentInput` compiler core |
 | `mkd-mkd/` | `@vmprint/transmuter-mkd-mkd` | Markdown → `DocumentInput` |
 | `mkd-academic/` | `@vmprint/transmuter-mkd-academic` | Markdown → `DocumentInput` (academic defaults) |
 | `mkd-literature/` | `@vmprint/transmuter-mkd-literature` | Markdown → `DocumentInput` (literature defaults) |

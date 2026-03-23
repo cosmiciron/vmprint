@@ -1,6 +1,6 @@
 import { TextProcessor } from './text-processor';
 import { LayoutUtils } from './layout-utils';
-import { Box, BoxImagePayload, BoxMeta, Element, ElementStyle, OverflowPolicy, Page, PageRegionContent, RichLine } from '../types';
+import { Box, BoxImagePayload, BoxMeta, Element, ElementStyle, OverflowPolicy, Page, PageRegionContent, RichLine, TextSegment } from '../types';
 import { getCachedFont } from '../../font-management/font-cache-loader';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
@@ -11,23 +11,148 @@ import {
     FlowMaterializationContext,
     ResolvedLinesResult
 } from './layout-core-types';
+import type { NormalizedFlowBlock } from './normalized-flow-block';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
-import { finalizePagesWithCallbacks } from './layout-page-finalization';
+import { ContinuationMarkerCollaborator } from './collaborators/continuation-marker-collaborator';
+import { PageReservationCollaborator } from './collaborators/page-reservation-collaborator';
+import { PageStartExclusionCollaborator } from './collaborators/page-start-exclusion-collaborator';
+import { PageStartReservationCollaborator } from './collaborators/page-start-reservation-collaborator';
+import { FragmentTransitionArtifactCollaborator } from './collaborators/fragment-transition-artifact-collaborator';
+import { createMorphedBoxMeta, freezeFlowFragment } from './flow-fragment-state';
+import { HeadingTelemetryCollaborator } from './collaborators/heading-telemetry-collaborator';
+import { HeadingSignalCollaborator } from './collaborators/heading-signal-collaborator';
+import { PageRegionCollaborator } from './layout-page-finalization';
+import { PageNumberArtifactCollaborator } from './collaborators/page-number-artifact-collaborator';
+import { PageOverrideArtifactCollaborator } from './collaborators/page-override-artifact-collaborator';
+import { PageExclusionArtifactCollaborator } from './collaborators/page-exclusion-artifact-collaborator';
+import { PageReservationArtifactCollaborator } from './collaborators/page-reservation-artifact-collaborator';
+import { PageSpatialConstraintArtifactCollaborator } from './collaborators/page-spatial-constraint-artifact-collaborator';
+import { PageRegionArtifactCollaborator } from './collaborators/page-region-artifact-collaborator';
+import type { Collaborator, LayoutProfileMetrics } from './layout-session-types';
+import { LayoutSession } from './layout-session';
+import {
+    createPrintPipelineSnapshot,
+    createSimulationReportReader,
+    PrintPipelineSnapshot,
+    SimulationReport,
+    SimulationReportReader
+} from './simulation-report';
+import { SourcePositionArtifactCollaborator } from './collaborators/source-position-artifact-collaborator';
+import { ScriptRuntimeCollaborator } from './collaborators/script-runtime-collaborator';
+import { ScriptRuntimeHost } from './script-runtime-host';
+import type { ScriptLifecycleState } from './script-runtime-host';
+import { TransformCapabilityArtifactCollaborator } from './collaborators/transform-capability-artifact-collaborator';
+import { TransformArtifactCollaborator } from './collaborators/transform-artifact-collaborator';
+import { ZoneDebugOverlayCollaborator } from './collaborators/zone-debug-overlay-collaborator';
 import {
     buildTableModel,
     isTableElement,
-    materializeTableFlowBox,
-    positionTableFlowBoxes,
-    splitTableFlowBox,
-    TableLayoutContext
+    materializeSpatialGridFlowBox,
+    positionSpatialGridFlowBoxes,
+    splitSpatialGridFlowBox,
+    SpatialGridLayoutContext
 } from './layout-table';
+import { buildTableModelFromNormalizedTable, normalizeTableElement } from './normalized-table';
 import { DropCapPackager } from './packagers/dropcap-packager';
-import { createPackagers } from './packagers/create-packagers';
-import { paginatePackagers } from './packagers/paginate-packagers';
+import { createPackagers, ExternalPackagerFactory } from './packagers/create-packagers';
+import { ScriptDocumentPackager } from './packagers/script-document-packager';
+import { executeSimulationMarch } from './packagers/execute-simulation-march';
+import type { PackagerContext } from './packagers/packager-types';
 
 
 export class LayoutProcessor extends TextProcessor {
     private static readonly REGION_LAYOUT_HEIGHT = 1000000;
+    private lastLayoutSession: LayoutSession | null = null;
+    private activeScriptRuntimeHost: ScriptRuntimeHost | null = null;
+    private packagerFactory: ExternalPackagerFactory | undefined = undefined;
+    private resolvedLinesCache = new WeakMap<Element, Map<string, ResolvedLinesResult>>();
+    private static readonly SCRIPT_PROFILE_KEYS: Array<keyof LayoutProfileMetrics> = [
+        'handlerCalls',
+        'handlerMs',
+        'loadCalls',
+        'loadMs',
+        'createCalls',
+        'createMs',
+        'readyCalls',
+        'readyMs',
+        'replayRequests',
+        'replayPasses',
+        'docQueryCalls',
+        'setContentCalls',
+        'replaceCalls',
+        'insertCalls',
+        'removeCalls',
+        'messageSendCalls',
+        'messageHandlerCalls'
+    ];
+
+    setPackagerFactory(factory: ExternalPackagerFactory | undefined): void {
+        this.packagerFactory = factory;
+    }
+
+    getActiveScriptRuntimeHost(): ScriptRuntimeHost | null {
+        return this.activeScriptRuntimeHost;
+    }
+
+    getPackagerFactory(): ExternalPackagerFactory | undefined {
+        return this.packagerFactory;
+    }
+
+    private cloneElementsForSimulation(elements: Element[]): Element[] {
+        return structuredClone(elements) as Element[];
+    }
+
+    private elementTreeHasPhaseHandler(
+        elements: Element[],
+        predicate: (element: Element) => boolean
+    ): boolean {
+        const stack = [...elements];
+        while (stack.length > 0) {
+            const element = stack.pop();
+            if (!element) continue;
+            if (predicate(element)) return true;
+            if (Array.isArray(element.children) && element.children.length > 0) {
+                stack.push(...element.children);
+            }
+            if (Array.isArray(element.zones)) {
+                for (const zone of element.zones) {
+                    if (Array.isArray(zone.elements) && zone.elements.length > 0) {
+                        stack.push(...zone.elements);
+                    }
+                }
+            }
+            if (Array.isArray(element.slots)) {
+                for (const slot of element.slots) {
+                    if (Array.isArray(slot.elements) && slot.elements.length > 0) {
+                        stack.push(...slot.elements);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private requiresSimulationClone(
+        elements: Element[],
+        scriptRuntimeHost: ScriptRuntimeHost | null
+    ): boolean {
+        if (!scriptRuntimeHost) return false;
+
+        const hasOnLoad = scriptRuntimeHost.getDocumentHandlerName('onLoad') !== null;
+        if (hasOnLoad) return true;
+
+        if (scriptRuntimeHost.hasDocumentAfterSettleHandler()) return true;
+
+        return this.elementTreeHasPhaseHandler(elements, (element) => {
+            const sourceId = typeof element.properties?.sourceId === 'string'
+                ? element.properties.sourceId
+                : null;
+            const explicitHandlerName = typeof element.properties?.onResolve === 'string'
+                ? element.properties.onResolve
+                : null;
+            return !!scriptRuntimeHost.getElementHandlerName(sourceId, 'onCreate', explicitHandlerName);
+        });
+    }
 
     private normalizeOverflowPolicy(value: unknown): OverflowPolicy {
         if (value === undefined || value === null || value === '') return LAYOUT_DEFAULTS.overflowPolicy;
@@ -43,12 +168,16 @@ export class LayoutProcessor extends TextProcessor {
     private createFlowMaterializationContext(
         pageIndex: number,
         cursorY: number,
-        _pageWidth: number
+        contentWidth: number
     ): FlowMaterializationContext {
-        return {
-            pageIndex,
-            cursorY
-        };
+        // Only propagate contentWidth when it is a valid non-negative finite number.
+        // Negative sentinel values (e.g. -1 = "unset") must not be propagated
+        // because getContextualContentWidth treats any finite value as authoritative.
+        const ctx: FlowMaterializationContext = { pageIndex, cursorY };
+        if (Number.isFinite(contentWidth) && contentWidth >= 0) {
+            ctx.contentWidth = contentWidth;
+        }
+        return ctx;
     }
 
     private getMaterializationContextKey(unit: FlowBox, context?: FlowMaterializationContext): string {
@@ -58,16 +187,146 @@ export class LayoutProcessor extends TextProcessor {
         return `${context.pageIndex}:${top}:${unit.type}:${widthKey}`;
     }
 
+    private hashTextContent(text: string): string {
+        let hash = 2166136261;
+        for (let index = 0; index < text.length; index += 1) {
+            hash ^= text.charCodeAt(index);
+            hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+        }
+        return `${text.length}:${(hash >>> 0).toString(36)}`;
+    }
+
+    private buildFlowResolveSignature(
+        unit: FlowBox,
+        element: Element,
+        style: ElementStyle,
+        fontSize: number,
+        lineHeight: number,
+        context?: FlowMaterializationContext
+    ): string {
+        const width = this.getContextualContentWidth(style, context, fontSize, lineHeight);
+        const widthKey = Number.isFinite(width) ? Number(width).toFixed(3) : 'auto';
+        const fontFamily = String(style.fontFamily || this.config.layout.fontFamily || '');
+        const fontWeight = String(style.fontWeight ?? 400);
+        const fontStyle = String(style.fontStyle || 'normal');
+        const letterSpacing = Number(style.letterSpacing || 0).toFixed(3);
+        const textIndent = Number(style.textIndent || 0).toFixed(3);
+        const lang = String(style.lang || this.config.layout.lang || '');
+        const direction = String(style.direction || this.config.layout.direction || '');
+        const hyphenation = String(style.hyphenation || this.config.layout.hyphenation || '');
+        const justifyEngine = String(style.justifyEngine || this.config.layout.justifyEngine || '');
+        const reflowKey = unit.meta?.reflowKey || unit.meta?.sourceId || unit.meta?.engineKey || '';
+        const textHash = this.hashTextContent(this.getElementText(element));
+        return [
+            reflowKey,
+            unit.type,
+            widthKey,
+            fontFamily,
+            fontWeight,
+            fontStyle,
+            Number(fontSize).toFixed(3),
+            Number(lineHeight).toFixed(3),
+            letterSpacing,
+            textIndent,
+            lang,
+            direction,
+            hyphenation,
+            justifyEngine,
+            textHash
+        ].join('|');
+    }
+
+    private buildResolvedLinesCacheKey(
+        element: Element,
+        style: ElementStyle,
+        fontSize: number,
+        lineHeight: number,
+        context?: FlowMaterializationContext
+    ): string {
+        const width = this.getContextualContentWidth(style, context, fontSize, lineHeight);
+        const widthKey = Number.isFinite(width) ? Number(width).toFixed(3) : 'auto';
+        const fontFamily = String(style.fontFamily || this.config.layout.fontFamily || '');
+        const fontWeight = String(style.fontWeight ?? 400);
+        const fontStyle = String(style.fontStyle || 'normal');
+        const letterSpacing = Number(style.letterSpacing || 0).toFixed(3);
+        const textIndent = Number(style.textIndent || 0).toFixed(3);
+        const lang = String(style.lang || this.config.layout.lang || '');
+        const direction = String(style.direction || this.config.layout.direction || '');
+        const hyphenation = String(style.hyphenation || this.config.layout.hyphenation || '');
+        const justifyEngine = String(style.justifyEngine || this.config.layout.justifyEngine || '');
+        const textHash = this.hashTextContent(this.getElementText(element));
+        return [
+            widthKey,
+            fontFamily,
+            fontWeight,
+            fontStyle,
+            Number(fontSize).toFixed(3),
+            Number(lineHeight).toFixed(3),
+            letterSpacing,
+            textIndent,
+            lang,
+            direction,
+            hyphenation,
+            justifyEngine,
+            textHash
+        ].join('|');
+    }
+
+    private cloneResolvedLinesResult(result: ResolvedLinesResult): ResolvedLinesResult {
+        return {
+            lines: result.lines.map((line) => line.map((segment) => ({
+                ...segment,
+                glyphs: Array.isArray(segment.glyphs)
+                    ? this.cloneGlyphs(segment.glyphs)
+                    : segment.glyphs,
+                shapedGlyphs: Array.isArray(segment.shapedGlyphs)
+                    ? segment.shapedGlyphs.map((glyph) => ({
+                        ...glyph,
+                        codePoints: Array.isArray(glyph.codePoints) ? [...glyph.codePoints] : glyph.codePoints
+                    }))
+                    : segment.shapedGlyphs,
+                inlineMetrics: segment.inlineMetrics
+                    ? { ...segment.inlineMetrics }
+                    : segment.inlineMetrics
+            }))),
+            lineOffsets: result.lineOffsets?.slice(),
+            lineWidths: result.lineWidths?.slice(),
+            lineYOffsets: result.lineYOffsets?.slice()
+        };
+    }
+
     private getContextualContentWidth(
         style: ElementStyle,
         _context: FlowMaterializationContext | undefined,
         _fontSize: number,
         _lineHeight: number
     ): number {
-        if (_context && Number.isFinite(_context.contentWidth)) {
-            return Math.max(0, Number(_context.contentWidth));
+        // style-based width: uses style.width when explicitly set, else falls back to
+        // page content width minus margins and insets.
+        const styleBasedWidth = this.getContentWidth(style);
+
+        if (!(_context && Number.isFinite(_context.contentWidth))) {
+            return styleBasedWidth;
         }
-        return this.getContentWidth(style);
+
+        // context.contentWidth is the available outer width from the surrounding
+        // context (zone column, story column, etc.). Subtract element margins and
+        // horizontal insets to derive the line-wrapping width.
+        const marginLeft = LayoutUtils.validateUnit((style as any).marginLeft ?? 0);
+        const marginRight = LayoutUtils.validateUnit((style as any).marginRight ?? 0);
+        const insets = LayoutUtils.getHorizontalInsets(style);
+        const contextWidth = Math.max(0, Number(_context.contentWidth) - marginLeft - marginRight - insets);
+
+        // When style.width is set explicitly, the element declares its desired box
+        // width. Use the more restrictive (smaller) of the two: this respects the
+        // element's declared width in normal flow while allowing a narrower context
+        // (e.g., drop-cap wrap) to constrain it further.
+        if (style.width !== undefined) {
+            return Math.min(styleBasedWidth, contextWidth);
+        }
+
+        // No explicit style.width: context is authoritative (zone/column layout).
+        return contextWidth;
     }
 
     private normalizeElementStyle(
@@ -104,7 +363,7 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 
-    private getTableLayoutContext(): TableLayoutContext {
+    private getSpatialGridLayoutContext(): SpatialGridLayoutContext {
         let tableDropCapIndex = 0;
         return {
             layoutFontSize: this.config.layout.fontSize,
@@ -121,23 +380,27 @@ export class LayoutProcessor extends TextProcessor {
             resolveMeasurementFontForStyle: (style) => this.resolveMeasurementFontForStyle(style),
             measureText: (text, font, fontSize, letterSpacing) => this.measureText(text, font, fontSize, letterSpacing),
             emitDropCapBoxes: (element, width, context) => {
-                const spec = element.properties?.dropCap;
+                const spec = element.dropCap;
                 if (!spec || spec.enabled === false) return null;
                 const packager = new DropCapPackager(this, element, tableDropCapIndex++, spec);
                 const pageDims = this.getPageDimensions();
-                const packagerContext = {
+                const packagerContext: PackagerContext = {
                     processor: this,
                     pageIndex: context?.pageIndex ?? 0,
                     cursorY: context?.cursorY ?? 0,
                     margins: { top: 0, right: 0, bottom: 0, left: 0 },
                     pageWidth: Number.isFinite(width) ? Math.max(0, Number(width)) : pageDims.width,
-                    pageHeight: pageDims.height
+                    pageHeight: pageDims.height,
+                    publishActorSignal: () => {
+                        throw new Error('[LayoutProcessor] Region-only drop-cap materialization cannot publish actor signals.');
+                    },
+                    readActorSignals: () => []
                 };
                 return packager.emitBoxes(
                     Number.isFinite(width) ? Math.max(0, Number(width)) : pageDims.width,
                     Number.POSITIVE_INFINITY,
                     packagerContext
-                ) as any;
+                );
             }
         };
     }
@@ -198,6 +461,45 @@ export class LayoutProcessor extends TextProcessor {
 
     private getJoinedLineText(lines: RichLine[]): string {
         return lines.map((line) => line.map((seg) => seg.text || '').join('')).join('');
+    }
+
+    private classifySimpleProseEligibility(richSegments: TextSegment[], text: string): keyof import('./layout-session-types').LayoutProfileMetrics {
+        if (richSegments.length === 0) {
+            return 'simpleProseEligibleCalls';
+        }
+
+        let baseStyleSignature: string | null = null;
+        for (const segment of richSegments) {
+            if (segment.inlineObject) {
+                return 'simpleProseIneligibleInlineObjectCalls';
+            }
+            if (segment.linkTarget) {
+                return 'simpleProseIneligibleRichStructureCalls';
+            }
+            const style = segment.style || {};
+            const signature = [
+                String(segment.fontFamily || ''),
+                String(style.fontFamily || ''),
+                String(style.fontWeight ?? ''),
+                String(style.fontStyle || ''),
+                String(style.textAlign || ''),
+                String(style.direction || ''),
+                String(style.lang || ''),
+                Number(style.letterSpacing || 0).toFixed(3),
+                Number(style.textIndent || 0).toFixed(3)
+            ].join('|');
+            if (baseStyleSignature === null) {
+                baseStyleSignature = signature;
+            } else if (baseStyleSignature !== signature) {
+                return 'simpleProseIneligibleMixedStyleCalls';
+            }
+        }
+
+        if (!/^[\u0009\u000A\u000D\u0020-\u007E\u00A0-\u00FF\u2010-\u201F\u2026]*$/u.test(text)) {
+            return 'simpleProseIneligibleComplexScriptCalls';
+        }
+
+        return 'simpleProseEligibleCalls';
     }
 
     private trimLeadingContinuationWhitespace(element: Element): Element {
@@ -329,7 +631,9 @@ export class LayoutProcessor extends TextProcessor {
             fragmentIndex,
             isContinuation: continuation,
             generated: !!seed?.generated,
-            originSourceId: seed?.originSourceId
+            originSourceId: seed?.originSourceId,
+            transformKind: seed?.transformKind,
+            clonedFromSourceId: seed?.clonedFromSourceId
         };
 
         if (reflowKey) meta.reflowKey = reflowKey;
@@ -349,17 +653,106 @@ export class LayoutProcessor extends TextProcessor {
      * Canonical flat pipeline:
      * input elements -> flow boxes -> paginated flow boxes -> positioned page boxes.
      */
-    paginate(elements: Element[]): Page[] {
-        const packagers = createPackagers(elements, this);
+    simulate(elements: Element[]): Page[] {
         const { height: pageHeight, width: pageWidth } = this.getPageDimensions();
-        const contextBase = {
-            processor: this,
-            pageWidth,
-            pageHeight,
-            margins: this.config.layout.margins
-        };
-        const pages = paginatePackagers(this, packagers, contextBase);
-        return this.finalizePages(pages);
+        const maxScriptReplayPasses = 3;
+        const aggregateScriptProfile = Object.fromEntries(
+            LayoutProcessor.SCRIPT_PROFILE_KEYS.map((key) => [key, 0])
+        ) as Record<keyof LayoutProfileMetrics, number>;
+        const scriptRuntimeHost = this.config.scripting
+            ? new ScriptRuntimeHost(this.config.scripting)
+            : null;
+        // Any scripting-capable simulation works against a cloned element tree so
+        // authored input remains immutable across pre-layout and post-settlement
+        // runtime mutations.
+        const simulationElements = this.requiresSimulationClone(elements, scriptRuntimeHost)
+            ? this.cloneElementsForSimulation(elements)
+            : elements;
+        const scriptLifecycleState = scriptRuntimeHost?.createLifecycleState() ?? null;
+
+        for (let pass = 0; pass < maxScriptReplayPasses; pass++) {
+            this.resolvedLinesCache = new WeakMap<Element, Map<string, ResolvedLinesResult>>();
+            const { collaborators, scriptRuntimeCollaborator, scriptRuntimeHost: activeScriptRuntimeHost } = this.createLayoutCollaborators(
+                simulationElements,
+                scriptLifecycleState,
+                scriptRuntimeHost ?? undefined
+            );
+            this.activeScriptRuntimeHost = activeScriptRuntimeHost;
+            const session = new LayoutSession({
+                runtime: this.getRuntime(),
+                collaborators
+            });
+            this.lastLayoutSession = session;
+            session.notifySimulationStart();
+            const packagers = createPackagers(simulationElements, this, this.packagerFactory);
+            let scriptDocumentPackager: ScriptDocumentPackager | null = null;
+            if (activeScriptRuntimeHost?.hasDocumentAfterSettleHandler()) {
+                scriptDocumentPackager = new ScriptDocumentPackager(activeScriptRuntimeHost, simulationElements, scriptLifecycleState!);
+                packagers.push(scriptDocumentPackager);
+            }
+            for (const packager of packagers) {
+                session.notifyActorSpawn(packager);
+            }
+            const contextBase = {
+                processor: this,
+                pageWidth,
+                pageHeight,
+                margins: this.config.layout.margins,
+                getPageExclusions: (pageIndex: number) => session.getPageExclusions(pageIndex),
+                publishActorSignal: (signal: any) => session.publishActorSignal(signal),
+                readActorSignals: (topic?: string) => session.getActorSignals(topic)
+            };
+            const pages = executeSimulationMarch(this, packagers, contextBase, session);
+            const finalized = session.finalizePages(pages);
+            for (const key of LayoutProcessor.SCRIPT_PROFILE_KEYS) {
+                aggregateScriptProfile[key] += Number(session.profile[key] || 0);
+            }
+
+            if (
+                scriptRuntimeCollaborator?.consumeReplayRequested()
+                || scriptDocumentPackager?.consumeReplayRequested()
+                || session.consumeScriptReplayRequested()
+            ) {
+                aggregateScriptProfile.replayPasses += 1;
+                if (pass >= maxScriptReplayPasses - 1) {
+                    throw new Error('[LayoutProcessor] Script requested replay more times than the current bounded limit allows.');
+                }
+                continue;
+            }
+
+            for (const key of LayoutProcessor.SCRIPT_PROFILE_KEYS) {
+                session.profile[key] = aggregateScriptProfile[key] as never;
+            }
+            const report = session.getSimulationReport();
+            if (report?.profile) {
+                for (const key of LayoutProcessor.SCRIPT_PROFILE_KEYS) {
+                    report.profile[key] = aggregateScriptProfile[key] as never;
+                }
+            }
+
+            return finalized;
+        }
+
+        throw new Error('[LayoutProcessor] Script replay loop exited unexpectedly.');
+    }
+
+    getLastSimulationReport(): SimulationReport | undefined {
+        return this.lastLayoutSession?.getSimulationReport();
+    }
+
+    getLastSimulationReportReader(): SimulationReportReader {
+        return this.lastLayoutSession?.getSimulationReportReader()
+            ?? createSimulationReportReader(undefined);
+    }
+
+    getLastPrintPipelineSnapshot(): PrintPipelineSnapshot {
+        const pages = this.lastLayoutSession?.getFinalizedPages() ?? [];
+        const report = this.lastLayoutSession?.getSimulationReport();
+        return createPrintPipelineSnapshot(pages, report);
+    }
+
+    getCurrentLayoutSession(): LayoutSession | null {
+        return this.lastLayoutSession;
     }
 
     private shapeTableElement(element: Element, identitySeed?: FlowIdentitySeed): FlowBox {
@@ -369,7 +762,9 @@ export class LayoutProcessor extends TextProcessor {
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
         const marginTop = LayoutUtils.validateUnit(element.properties?.marginTop ?? style.marginTop ?? 0);
         const marginBottom = LayoutUtils.validateUnit(element.properties?.marginBottom ?? style.marginBottom ?? 0);
-        const model = buildTableModel(element);
+        const normalizedTable = (element.properties?._normalizedTable as ReturnType<typeof normalizeTableElement> | undefined)
+            ?? normalizeTableElement(element);
+        const model = buildTableModelFromNormalizedTable(normalizedTable);
         const normalizedStyle = this.normalizeElementStyle(style, {
             fontSize,
             lineHeight
@@ -383,6 +778,7 @@ export class LayoutProcessor extends TextProcessor {
             properties: {
                 ...(element.properties || {}),
                 _tableModel: model,
+                _normalizedTable: normalizedTable,
                 _isFirstLine: true,
                 _isLastLine: true,
                 _isFirstFragmentInLine: true,
@@ -400,7 +796,8 @@ export class LayoutProcessor extends TextProcessor {
             heightOverride: style.height !== undefined ? LayoutUtils.validateUnit(style.height) : undefined,
             _materializationMode: 'reflowable',
             _sourceElement: element,
-            _unresolvedElement: element
+            _unresolvedElement: element,
+            _normalizedTable: normalizedTable
         };
     }
 
@@ -412,52 +809,81 @@ export class LayoutProcessor extends TextProcessor {
             return this.shapeTableElement(element, identitySeed);
         }
 
+        return this.shapeNormalizedFlowBlock(this.normalizeFlowBlock(element, identitySeed));
+    }
+
+    public normalizeFlowBlock(element: Element, identitySeed?: FlowIdentitySeed): NormalizedFlowBlock {
         const style = this.getStyle(element);
         const meta = this.buildFlowBoxMeta(element, identitySeed);
         const fontSize = Number(style.fontSize || this.config.layout.fontSize);
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
-
         const marginTop = LayoutUtils.validateUnit(element.properties?.marginTop ?? style.marginTop ?? 0);
         const marginBottom = LayoutUtils.validateUnit(element.properties?.marginBottom ?? style.marginBottom ?? 0);
-        const hasEmbeddedImage = !!element.properties?.image;
+        const hasEmbeddedImage = !!element.image;
         const allowLineSplit = hasEmbeddedImage ? false : style.allowLineSplit !== false;
         const normalizedStyle = this.normalizeElementStyle(style, {
             fontSize,
             lineHeight
         });
-
         const heightOverride = style.height !== undefined ? LayoutUtils.validateUnit(style.height) : undefined;
 
         return {
-            type: element.type,
+            kind: 'flow-block',
+            element,
+            sourceType: element.type,
             meta,
             style: normalizedStyle,
-            lines: undefined,
-            properties: {
-                ...(element.properties || {}),
-                _isFirstLine: true,
-                _isLastLine: true,
-                _isFirstFragmentInLine: true,
-                _isLastFragmentInLine: true
-            },
             marginTop,
             marginBottom,
             keepWithNext: !!(element.properties?.keepWithNext || style.keepWithNext),
             pageBreakBefore: !!style.pageBreakBefore,
             allowLineSplit,
             overflowPolicy: this.normalizeOverflowPolicy(style.overflowPolicy),
-            orphans: this.normalizeLineConstraint(LayoutUtils.validateUnit(style.orphans ?? LAYOUT_DEFAULTS.orphans), LAYOUT_DEFAULTS.orphans),
-            widows: this.normalizeLineConstraint(LayoutUtils.validateUnit(style.widows ?? LAYOUT_DEFAULTS.widows), LAYOUT_DEFAULTS.widows),
-            measuredContentHeight: heightOverride ?? 0,
+            orphans: this.normalizeLineConstraint(
+                LayoutUtils.validateUnit(style.orphans ?? LAYOUT_DEFAULTS.orphans),
+                LAYOUT_DEFAULTS.orphans
+            ),
+            widows: this.normalizeLineConstraint(
+                LayoutUtils.validateUnit(style.widows ?? LAYOUT_DEFAULTS.widows),
+                LAYOUT_DEFAULTS.widows
+            ),
             heightOverride,
+            identitySeed
+        };
+    }
+
+    public shapeNormalizedFlowBlock(block: NormalizedFlowBlock): FlowBox {
+        return {
+            type: block.sourceType,
+            meta: block.meta,
+            style: block.style,
+            lines: undefined,
+            properties: {
+                ...(block.element.properties || {}),
+                _isFirstLine: true,
+                _isLastLine: true,
+                _isFirstFragmentInLine: true,
+                _isLastFragmentInLine: true
+            },
+            marginTop: block.marginTop,
+            marginBottom: block.marginBottom,
+            keepWithNext: block.keepWithNext,
+            pageBreakBefore: block.pageBreakBefore,
+            allowLineSplit: block.allowLineSplit,
+            overflowPolicy: block.overflowPolicy,
+            orphans: block.orphans,
+            widows: block.widows,
+            measuredContentHeight: block.heightOverride ?? 0,
+            heightOverride: block.heightOverride,
             _materializationMode: 'reflowable',
-            _sourceElement: element,
-            _unresolvedElement: element
+            _sourceElement: block.element,
+            _unresolvedElement: block.element,
+            _normalizedFlowBlock: block
         };
     }
 
     private resolveEmbeddedImage(element: Element): BoxImagePayload | undefined {
-        const image = element.properties?.image;
+        const image = element.image;
         if (!image || typeof image !== 'object') return undefined;
         const parsed = parseEmbeddedImagePayloadCached(image);
         return {
@@ -517,9 +943,22 @@ export class LayoutProcessor extends TextProcessor {
     }
 
     protected materializeFlowBox(unit: FlowBox, context?: FlowMaterializationContext): FlowBox {
+        const session = this.lastLayoutSession;
+        const materializeStartedAt = performance.now();
+        session?.recordProfile('flowMaterializeCalls', 1);
         const contextKey = this.getMaterializationContextKey(unit, context);
         const canRematerialize = unit._materializationMode === 'reflowable' && !!unit._sourceElement;
-        if (!unit._unresolvedElement && (!canRematerialize || unit._materializationContextKey === contextKey)) return unit;
+        if (!unit._unresolvedElement && (!canRematerialize || unit._materializationContextKey === contextKey)) {
+            session?.recordProfile('flowMaterializeMs', performance.now() - materializeStartedAt);
+            return unit;
+        }
+
+        const previousContextKey = unit._materializationContextKey;
+        const isMorphTransition =
+            canRematerialize
+            && !!previousContextKey
+            && previousContextKey !== contextKey
+            && unit.meta?.transformKind === undefined;
 
         const element = unit._unresolvedElement || unit._sourceElement;
         if (!element) return unit;
@@ -528,9 +967,11 @@ export class LayoutProcessor extends TextProcessor {
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
 
         if (isTableElement(element)) {
-            materializeTableFlowBox(unit, element, context, fontSize, lineHeight, this.getTableLayoutContext());
+            materializeSpatialGridFlowBox(unit, element, context, fontSize, lineHeight, this.getSpatialGridLayoutContext());
+            if (isMorphTransition) unit.meta = createMorphedBoxMeta(unit.meta);
             unit._materializationContextKey = contextKey;
             unit._unresolvedElement = undefined;
+            session?.recordProfile('flowMaterializeMs', performance.now() - materializeStartedAt);
             return unit;
         }
 
@@ -538,14 +979,18 @@ export class LayoutProcessor extends TextProcessor {
         if (maybeImage) {
             unit.image = maybeImage;
             this.materializeImageFlowBox(unit, element, context, fontSize, lineHeight);
+            if (isMorphTransition) unit.meta = createMorphedBoxMeta(unit.meta);
             unit._materializationContextKey = contextKey;
             unit._unresolvedElement = undefined;
+            session?.recordProfile('flowMaterializeMs', performance.now() - materializeStartedAt);
             return unit;
         }
 
         unit.image = undefined;
         unit.measuredWidth = undefined;
 
+        const resolveSignature = this.buildFlowResolveSignature(unit, element, style, fontSize, lineHeight, context);
+        session?.recordFlowResolveSignature(resolveSignature, !!(unit.meta?.isContinuation || (unit.meta?.fragmentIndex || 0) > 0));
         const resolved = this.resolveLines(element, style, fontSize, context);
         const lines = resolved.lines;
         let contentHeight = lines.length > 0
@@ -577,8 +1022,10 @@ export class LayoutProcessor extends TextProcessor {
         } else {
             delete unit.properties._lineYOffsets;
         }
+        if (isMorphTransition) unit.meta = createMorphedBoxMeta(unit.meta);
         unit._materializationContextKey = contextKey;
         unit._unresolvedElement = undefined; // Mark as resolved
+        session?.recordProfile('flowMaterializeMs', performance.now() - materializeStartedAt);
 
         return unit;
     }
@@ -589,10 +1036,23 @@ export class LayoutProcessor extends TextProcessor {
         fontSize: number,
         context?: FlowMaterializationContext
     ): ResolvedLinesResult {
+        const session = this.lastLayoutSession;
+        const resolveStartedAt = performance.now();
+        session?.recordProfile('flowResolveLinesCalls', 1);
         const text = this.getElementText(element);
-        if (!text) return { lines: [] };
+        if (!text) {
+            session?.recordProfile('flowResolveLinesMs', performance.now() - resolveStartedAt);
+            return { lines: [] };
+        }
 
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
+        const cacheKey = this.buildResolvedLinesCacheKey(element, style, Number(fontSize), lineHeight, context);
+        const cachedByElement = this.resolvedLinesCache.get(element);
+        const cached = cachedByElement?.get(cacheKey);
+        if (cached) {
+            session?.recordProfile('flowResolveLinesMs', performance.now() - resolveStartedAt);
+            return this.cloneResolvedLinesResult(cached);
+        }
         const baseWidth = this.getContextualContentWidth(style, context, Number(fontSize), lineHeight);
         let measurementFont = this.font;
 
@@ -619,6 +1079,7 @@ export class LayoutProcessor extends TextProcessor {
         const textIndent = Number(style.textIndent || 0);
         const letterSpacing = Number(style.letterSpacing || 0);
         const richSegments = this.getRichSegments(element, style);
+        session?.recordProfile(this.classifySimpleProseEligibility(richSegments, text), 1);
         const wrapped = this.wrapRichSegments(
             richSegments,
             baseWidth,
@@ -629,7 +1090,14 @@ export class LayoutProcessor extends TextProcessor {
             undefined,
             undefined
         );
-        return { lines: wrapped };
+        session?.recordProfile('flowResolveLinesMs', performance.now() - resolveStartedAt);
+        const resolved = { lines: wrapped };
+        const cacheBucket = cachedByElement ?? new Map<string, ResolvedLinesResult>();
+        cacheBucket.set(cacheKey, this.cloneResolvedLinesResult(resolved));
+        if (!cachedByElement) {
+            this.resolvedLinesCache.set(element, cacheBucket);
+        }
+        return resolved;
     }
 
     protected splitFlowBox(
@@ -638,7 +1106,7 @@ export class LayoutProcessor extends TextProcessor {
         layoutBefore: number
     ): { partA: FlowBox; partB: FlowBox } | null {
         if (box.properties?._tableModel) {
-            return splitTableFlowBox(box, availableHeight, layoutBefore);
+            return splitSpatialGridFlowBox(box, availableHeight, layoutBefore);
         }
 
         return splitFlowBoxWithCallbacks(
@@ -674,17 +1142,13 @@ export class LayoutProcessor extends TextProcessor {
         );
         const insetsVertical = LayoutUtils.getVerticalInsets(style);
         let measuredContentHeight = lineHeight + insetsVertical;
-        return {
-            ...base,
+        return freezeFlowFragment(base, {
             meta,
             style,
             lines,
             properties,
-            measuredContentHeight,
-            _materializationMode: 'frozen',
-            _materializationContextKey: undefined,
-            _unresolvedElement: undefined
-        };
+            measuredContentHeight
+        });
     }
 
 
@@ -700,11 +1164,20 @@ export class LayoutProcessor extends TextProcessor {
         const glueOffset = LayoutUtils.validateUnit(unit.properties?._glueOffsetX ?? 0);
         const x = margins.left + LayoutUtils.validateUnit(style.marginLeft || 0) + glueOffset;
         const y = currentY + layoutBefore;
-        const w = Number.isFinite(unit.measuredWidth) ? Math.max(0, Number(unit.measuredWidth)) : LayoutUtils.getBoxWidth(this.config, style);
+        // Use measuredWidth when explicitly set (images, floats, fixed-width elements).
+        // For fluid text boxes (measuredWidth === undefined), derive width from the
+        // actual available width passed in — not from the page-level config — so that
+        // elements inside zone sub-sessions are sized to their zone column, not the
+        // full page content area.
+        const w = Number.isFinite(unit.measuredWidth)
+            ? Math.max(0, Number(unit.measuredWidth))
+            : style.width !== undefined
+                ? LayoutUtils.validateUnit(style.width)
+                : Math.max(0, _pageWidth - LayoutUtils.validateUnit(style.marginLeft || 0) - LayoutUtils.validateUnit(style.marginRight || 0));
         const h = Math.max(0, unit.measuredContentHeight);
 
         if (unit.properties?._tableModel) {
-            return positionTableFlowBoxes(unit, x, y, pageIndex, this.getTableLayoutContext());
+            return positionSpatialGridFlowBoxes(unit, x, y, pageIndex, this.getSpatialGridLayoutContext());
         }
 
         return {
@@ -727,17 +1200,58 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 
-    private finalizePages(pages: Page[]): Page[] {
-        return finalizePagesWithCallbacks(pages, this.config, {
-            layoutRegion: (content, rect, pageIndex, sourceType) => this.layoutRegion(content, rect, pageIndex, sourceType)
-        });
+    private createLayoutCollaborators(
+        elements: Element[],
+        scriptLifecycleState: ScriptLifecycleState | null,
+        existingScriptRuntimeHost?: ScriptRuntimeHost
+    ): {
+        collaborators: Collaborator[];
+        scriptRuntimeCollaborator: ScriptRuntimeCollaborator | null;
+        scriptRuntimeHost: ScriptRuntimeHost | null;
+    } {
+        const scriptRuntimeHost = existingScriptRuntimeHost
+            ?? (this.config.scripting
+                ? new ScriptRuntimeHost(this.config.scripting)
+                : null);
+        const scriptRuntimeCollaborator = scriptRuntimeHost
+            ? new ScriptRuntimeCollaborator(scriptRuntimeHost, elements, scriptLifecycleState ?? scriptRuntimeHost.createLifecycleState())
+            : null;
+        return {
+            scriptRuntimeHost,
+            scriptRuntimeCollaborator,
+            collaborators: [
+            new ContinuationMarkerCollaborator(),
+            new PageStartExclusionCollaborator(this.config),
+            new PageStartReservationCollaborator(this.config),
+            new PageReservationCollaborator(),
+            new FragmentTransitionArtifactCollaborator(),
+            new TransformCapabilityArtifactCollaborator(),
+            new TransformArtifactCollaborator(),
+            new PageExclusionArtifactCollaborator(),
+            new PageNumberArtifactCollaborator(),
+            new PageOverrideArtifactCollaborator(),
+            new PageReservationArtifactCollaborator(),
+            new PageSpatialConstraintArtifactCollaborator(),
+            new PageRegionArtifactCollaborator(),
+            new SourcePositionArtifactCollaborator(),
+            new HeadingTelemetryCollaborator(),
+            new HeadingSignalCollaborator(),
+            new ZoneDebugOverlayCollaborator(),
+            new PageRegionCollaborator(this.config, {
+                layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
+                    this.layoutRegion(content, rect, pageIndex, sourceType, actorId)
+            }),
+                ...(scriptRuntimeCollaborator ? [scriptRuntimeCollaborator] : [])
+            ]
+        };
     }
 
     private layoutRegion(
         content: PageRegionContent,
         rect: { x: number; y: number; w: number; h: number },
         pageIndex: number,
-        sourceType: 'header' | 'footer'
+        sourceType: 'header' | 'footer',
+        actorId?: string
     ): Box[] {
         if (!content || !Array.isArray(content.elements) || content.elements.length === 0) return [];
         if (!(rect.w > 0) || !(rect.h > 0)) return [];
@@ -769,7 +1283,7 @@ export class LayoutProcessor extends TextProcessor {
         };
 
         const regionProcessor = new LayoutProcessor(regionConfig, this.runtime);
-        const regionPages = regionProcessor.paginate(regionElements);
+        const regionPages = regionProcessor.simulate(regionElements);
         const firstRegionPage = regionPages[0];
         const contentBoxes = (firstRegionPage?.boxes || [])
             .filter((box) => (box.y + box.h) > 0 && box.y < innerHeight)
@@ -784,6 +1298,7 @@ export class LayoutProcessor extends TextProcessor {
                         fragmentIndex: 0,
                         isContinuation: false
                     }),
+                    ...(actorId ? { actorId } : {}),
                     pageIndex,
                     sourceType,
                     generated: true
@@ -804,6 +1319,7 @@ export class LayoutProcessor extends TextProcessor {
             meta: {
                 sourceId: `system:${sourceType}:region:${pageIndex}`,
                 engineKey: `system:${sourceType}:region:${pageIndex}`,
+                ...(actorId ? { actorId } : {}),
                 sourceType,
                 fragmentIndex: 0,
                 isContinuation: false,

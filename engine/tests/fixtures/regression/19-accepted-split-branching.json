@@ -1,0 +1,201 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 300
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.25
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 18,
+      "fontWeight": "bold",
+      "marginBottom": 10
+    },
+    "h2": {
+      "fontSize": 14,
+      "fontWeight": "bold",
+      "marginTop": 10,
+      "marginBottom": 6
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "note": {
+      "fontSize": 9,
+      "fontStyle": "italic",
+      "color": "#444444",
+      "marginTop": 4,
+      "marginBottom": 6
+    },
+    "probe": {
+      "fontWeight": "bold",
+      "color": "#0f4c81",
+      "marginBottom": 8
+    },
+    "split-marker": {
+      "fontSize": 9,
+      "fontStyle": "italic",
+      "fontWeight": "bold",
+      "color": "#8a4b2a",
+      "borderTopWidth": 1,
+      "borderTopColor": "#8a4b2a",
+      "paddingTop": 4,
+      "marginTop": 6,
+      "marginBottom": 6
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Accepted Split Branching Probe"
+    },
+    {
+      "type": "p",
+      "content": "This fixture stresses the accepted-split snapshot/branching seam twice in one run. Each long paragraph emits continuation markers and reserves extra space after its accepted fragment commits. If preview rollback leaks state, the second seam or its markers will be corrupted."
+    },
+    {
+      "type": "h2",
+      "content": "§1 — First Accepted Split",
+      "properties": {
+        "style": {
+          "pageBreakBefore": true
+        }
+      }
+    },
+    {
+      "type": "note",
+      "content": "Expected: the first long paragraph splits mid-page with exactly one A marker pair. The second seam that follows later must remain unaffected by the first seam's preview cycle."
+    },
+    {
+      "type": "p",
+      "content": "Setup A. This narrow paragraph consumes vertical space before the first accepted split arrives.",
+      "properties": {
+        "style": {
+          "width": 230,
+          "fontWeight": "bold",
+          "color": "#2d2d2d"
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Setup B. Another narrow paragraph closes the remaining gap so the first split lands mid-page rather than at the top.",
+      "properties": {
+        "style": {
+          "width": 210,
+          "fontWeight": "bold",
+          "color": "#2d2d2d"
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened. Branch seam A. The compositor accepts the split, settles continuation markers, and then continues with the next page as if nothing strange happened.",
+      "properties": {
+        "sourceId": "accepted-branch-a",
+        "pageReservationAfter": 18,
+        "style": {
+          "width": 230
+        },
+        "paginationContinuation": {
+          "enabled": true,
+          "markerAfterSplit": {
+            "type": "split-marker",
+            "content": "A continues on next page"
+          },
+          "markerBeforeContinuation": {
+            "type": "split-marker",
+            "content": "A continued from previous page"
+          }
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Interlude. The document resumes ordinary flow after the first accepted split and before the second one begins.",
+      "properties": {
+        "sourceId": "branch-interlude"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "§2 — Second Accepted Split",
+      "properties": {
+        "style": {
+          "pageBreakBefore": true
+        }
+      }
+    },
+    {
+      "type": "note",
+      "content": "Expected: the second split also emits exactly one B marker pair. If the first preview leaks queue, reservation, or split state, this section is where it should become visible."
+    },
+    {
+      "type": "p",
+      "content": "Setup C. This paragraph again consumes vertical space before the second seam is reached.",
+      "properties": {
+        "style": {
+          "width": 230,
+          "fontWeight": "bold",
+          "color": "#2d2d2d"
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Setup D. The second seam must negotiate the same bridge crossing after the first one has already exercised preview and rollback.",
+      "properties": {
+        "style": {
+          "width": 220,
+          "fontWeight": "bold",
+          "color": "#2d2d2d"
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions. Branch seam B. A second accepted fragment now crosses the same boundary, and its continuation settlement must not inherit duplicate markers, leaked reservations, or stale fragment transitions.",
+      "properties": {
+        "sourceId": "accepted-branch-b",
+        "pageReservationAfter": 18,
+        "style": {
+          "width": 230
+        },
+        "paginationContinuation": {
+          "enabled": true,
+          "markerAfterSplit": {
+            "type": "split-marker",
+            "content": "B continues on next page"
+          },
+          "markerBeforeContinuation": {
+            "type": "split-marker",
+            "content": "B continued from previous page"
+          }
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Postlude. Normal flow resumes after both accepted-split seams. If the snapshot/branching model generalizes, this closing paragraph should appear exactly once and without displaced continuation artifacts.",
+      "properties": {
+        "sourceId": "branch-postlude"
+      }
+    }
+  ]
+}

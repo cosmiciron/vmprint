@@ -1,0 +1,97 @@
+---
+methods:
+  onReady(): |
+    sendMessage("eventLog", {
+      subject: "record",
+      payload: {
+        line: "ready"
+      }
+    })
+
+    sendMessage("expander", {
+      subject: "expand",
+      payload: {
+        text: "The document grew after its first ready event. That extra content forces a later refresh cycle, which lets us prove that onReady stays one-shot while the later lifecycle events take over."
+      }
+    })
+
+  onChanged(): |
+    sendMessage("eventLog", {
+      subject: "record",
+      payload: {
+        line: "document changed"
+      }
+    })
+
+  onRefresh(): |
+    sendMessage("eventLog", {
+      subject: "record",
+      payload: {
+        line: "refresh"
+      }
+    })
+
+  eventLog_onMessage(from, msg): |
+    if (msg.subject !== "record") return
+
+    const nextLine = msg.payload && msg.payload.line ? String(msg.payload.line) : ""
+    if (!nextLine) return
+
+    const current = String(self.content || "")
+    const lines = current ? current.split("\n") : []
+    if (lines.includes(`- ${nextLine}`)) return
+
+    setContent(self, `${current}\n- ${nextLine}`.trim())
+
+  expander_onMessage(from, msg): |
+    if (from.name !== "doc") return
+    if (msg.subject !== "expand") return
+    if (String(self.content || "").includes("The document grew after its first ready event.")) return
+
+    const extraText = msg.payload && msg.payload.text ? String(msg.payload.text) : "Expanded."
+    setContent(self, `${self.content}\n\n${extraText}`)
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "eventLog",
+      "content": "Lifecycle log:",
+      "properties": {
+        "style": {
+          "fontSize": 17,
+          "lineHeight": 1.45,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "h1",
+      "name": "mainHeading",
+      "content": "Lifecycle Demonstration"
+    },
+    {
+      "type": "p",
+      "name": "expander",
+      "content": "This paragraph is waiting to receive extra content after the first ready event.",
+      "properties": {
+        "style": {
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The purpose of this fixture is not visual polish. It exists to prove that user-facing lifecycle names can stay intuitive even when the runtime performs more than one internal settlement."
+    }
+  ]
+}

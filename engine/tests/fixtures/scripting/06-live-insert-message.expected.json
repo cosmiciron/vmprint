@@ -1,0 +1,28 @@
+{
+  "expectedTextIncludes": [
+    "Prepended note: this block now sits before the original actor.",
+    "Original actor body: it should stay in the middle",
+    "and appended live inserts.",
+    "Insertion",
+    "Mode",
+    "Actor-local",
+    "Live append",
+    "Tail paragraph: the flow should keep going after the appended live actor."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "target",
+      "content": "Original actor body: it should stay in the middle, between the prepended and appended live inserts."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 2,
+    "createCalls": 1,
+    "messageSendCalls": 1,
+    "messageHandlerCalls": 1,
+    "insertCalls": 2
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

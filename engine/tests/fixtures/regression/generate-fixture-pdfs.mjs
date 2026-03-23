@@ -23,6 +23,7 @@ const __dirname  = path.dirname(__filename);
 // ── Paths ────────────────────────────────────────────────────────────────────
 const WORKSPACE_ROOT  = path.resolve(__dirname, '..', '..', '..', '..');
 const REGRESSION_DIR  = __dirname;
+const AST_FIXTURES_DIR = path.join(REGRESSION_DIR);
 const OUTPUT_DIR      = path.join(REGRESSION_DIR, 'output');
 const LOCAL_FONT_MANAGER    = path.join(WORKSPACE_ROOT, 'font-managers', 'local', 'src', 'index.ts');
 const STANDARD_FONT_MANAGER = path.join(WORKSPACE_ROOT, 'font-managers', 'standard', 'src', 'index.ts');
@@ -34,8 +35,9 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 }
 
 // ── Collect fixtures ──────────────────────────────────────────────────────────
-const fixtures = fs.readdirSync(REGRESSION_DIR)
-    .filter(f => f.endsWith('.json') && !f.endsWith('.snapshot.layout.json'))
+const fixtures = fs.readdirSync(AST_FIXTURES_DIR)
+    .filter(f => f.endsWith('.json'))
+    .filter(f => !f.endsWith('.snapshot.layout.json'))
     .sort((a, b) => a.localeCompare(b));
 
 console.log(`[generate-fixture-pdfs] Found ${fixtures.length} fixtures to render.\n`);
@@ -46,7 +48,7 @@ let failed = 0;
 const failures = [];
 
 for (const fixture of fixtures) {
-    const inputPath  = path.join(REGRESSION_DIR, fixture);
+    const inputPath  = path.join(AST_FIXTURES_DIR, fixture);
     const baseName   = fixture.replace(/\.json$/i, '');
     const outputPath = path.join(OUTPUT_DIR, `${baseName}.pdf`);
 

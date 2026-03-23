@@ -1,0 +1,594 @@
+[
+  {
+    "index": 0,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 50,
+        "y": 50,
+        "w": 500,
+        "h": 36.4125,
+        "lines": [
+          [
+            {
+              "text": "Zone Map: Independent Layout Regions",
+              "width": 456,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 98.4125,
+        "w": 500,
+        "h": 45.515625,
+        "lines": [
+          [
+            {
+              "text": "This fixture demonstrates the zone-map element. The two-column layout below uses a 70/30 split. Each zone is ",
+              "width": 495.805664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "an independent layout session — a bounded region on the page map. Neither zone knows about the other, and ",
+              "width": 494.243164,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "content in one zone never spills into the adjacent zone.",
+              "width": 243.496094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 50,
+        "y": 163.928125,
+        "w": 322.666667,
+        "h": 21.240625,
+        "lines": [
+          [
+            {
+              "text": "Main Article",
+              "width": 79.351563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 193.16875,
+        "w": 322.666667,
+        "h": 75.859375,
+        "lines": [
+          [
+            {
+              "text": "This is the main content zone. It occupies two-thirds of the available ",
+              "width": 302.37793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "width. Content flows top-to-bottom inside this region independently of the",
+              "width": 322.412109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sidebar. The zone packager runs a full layout pass — paragraphs, ",
+              "width": 294.614258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "headings, images, and nested stories are all handled by the same ",
+              "width": 294.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "block-layout machinery used throughout the engine.",
+              "width": 229.589844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 277.028125,
+        "w": 322.666667,
+        "h": 60.6875,
+        "lines": [
+          [
+            {
+              "text": "A second paragraph in the main zone. Because this zone is an ",
+              "width": 280.175781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "independent layout context, its content height has no structural coupling ",
+              "width": 320.209961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "to the sidebar. If this paragraph were removed, the sidebar would remain",
+              "width": 321.289063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "unchanged.",
+              "width": 52.270508,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 345.715625,
+        "w": 322.666667,
+        "h": 45.515625,
+        "lines": [
+          [
+            {
+              "text": "Third paragraph. The zone-map height in the document flow is the ",
+              "width": 295.166016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "maximum of all zone heights — the tallest column determines the space ",
+              "width": 321.264648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "consumed.",
+              "width": 48.916016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-label",
+        "x": 388.666667,
+        "y": 163.928125,
+        "w": 161.333333,
+        "h": 13.654687,
+        "lines": [
+          [
+            {
+              "text": "SIDEBAR",
+              "width": 40.504395,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-body",
+        "x": 388.666667,
+        "y": 181.582812,
+        "w": 161.333333,
+        "h": 40.964062,
+        "lines": [
+          [
+            {
+              "text": "This sidebar zone occupies one-third of ",
+              "width": 159.587402,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the available width. It runs its own ",
+              "width": 137.069824,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "independent layout pass.",
+              "width": 100.07666,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-body",
+        "x": 388.666667,
+        "y": 228.546875,
+        "w": 161.333333,
+        "h": 40.964062,
+        "lines": [
+          [
+            {
+              "text": "Column widths are resolved via ",
+              "width": 127.555664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "solveTrackSizing using flex (fr) units — ",
+              "width": 157.715332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the same solver used by tables.",
+              "width": 126.566895,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-label",
+        "x": 388.666667,
+        "y": 275.510937,
+        "w": 161.333333,
+        "h": 13.654687,
+        "lines": [
+          [
+            {
+              "text": "KEY FACT",
+              "width": 44.503418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-body",
+        "x": 388.666667,
+        "y": 293.165625,
+        "w": 161.333333,
+        "h": 40.964062,
+        "lines": [
+          [
+            {
+              "text": "Zones are parallel peers on the page ",
+              "width": 149.598633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "map, not hierarchical parent-child nodes",
+              "width": 160.088379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "in a tree.",
+              "width": 35.02002,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 399.23125,
+        "w": 500,
+        "h": 30.34375,
+        "lines": [
+          [
+            {
+              "text": "Content below the zone-map resumes in the normal document flow. The zone-map element occupies exactly the",
+              "width": 497.485352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "height of its tallest zone in the main timeline.",
+              "width": 196.21582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 50,
+        "y": 437.575,
+        "w": 500,
+        "h": 21.240625,
+        "lines": [
+          [
+            {
+              "text": "Equal Columns (default)",
+              "width": 161,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 466.815625,
+        "w": 500,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "A zone-map without a columns definition defaults to equal-width zones for however many regions are declared.",
+              "width": 490.825195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 50,
+        "y": 497.9875,
+        "w": 158.666667,
+        "h": 21.240625,
+        "lines": [
+          [
+            {
+              "text": "Region One",
+              "width": 78.558594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 527.228125,
+        "w": 158.666667,
+        "h": 45.515625,
+        "lines": [
+          [
+            {
+              "text": "First equal-width zone. Each region",
+              "width": 156.748047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "gets one-third of the available width",
+              "width": 157.319336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "minus gaps.",
+              "width": 53.916016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 220.666667,
+        "y": 497.9875,
+        "w": 158.666667,
+        "h": 21.240625,
+        "lines": [
+          [
+            {
+              "text": "Region Two",
+              "width": 78.285156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 220.666667,
+        "y": 527.228125,
+        "w": 158.666667,
+        "h": 30.34375,
+        "lines": [
+          [
+            {
+              "text": "Second equal-width zone. ",
+              "width": 117.856445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Independent layout pass.",
+              "width": 111.75293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 391.333333,
+        "y": 497.9875,
+        "w": 158.666667,
+        "h": 21.240625,
+        "lines": [
+          [
+            {
+              "text": "Region Three",
+              "width": 89.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 391.333333,
+        "y": 527.228125,
+        "w": 158.666667,
+        "h": 45.515625,
+        "lines": [
+          [
+            {
+              "text": "Third zone. The zone-map height ",
+              "width": 150.083008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "equals the tallest of these three ",
+              "width": 141.757813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "regions.",
+              "width": 35.576172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 580.74375,
+        "w": 500,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "Document flow continues normally after the three-column zone-map.",
+              "width": 302.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

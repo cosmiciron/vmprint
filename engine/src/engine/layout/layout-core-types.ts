@@ -1,4 +1,6 @@
 import { BoxImagePayload, BoxMeta, Element, ElementStyle, OverflowPolicy, RichLine } from '../types';
+import type { NormalizedFlowBlock } from './normalized-flow-block';
+import type { NormalizedTableGrid } from './normalized-table';
 
 export type FlowBox = {
     type: string;
@@ -25,6 +27,8 @@ export type FlowBox = {
     _materializationContextKey?: string;
     _sourceElement?: Element;
     _unresolvedElement?: Element;
+    _normalizedFlowBlock?: NormalizedFlowBlock;
+    _normalizedTable?: NormalizedTableGrid;
 };
 
 export type FlowMaterializationContext = {
@@ -51,6 +55,8 @@ export type FlowIdentitySeed = {
     isContinuation?: boolean;
     generated?: boolean;
     originSourceId?: string;
+    transformKind?: 'clone' | 'split' | 'morph';
+    clonedFromSourceId?: string;
 };
 
 export type ContinuationMarkerSpec = {

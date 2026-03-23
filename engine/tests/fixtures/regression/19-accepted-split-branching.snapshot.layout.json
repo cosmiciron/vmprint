@@ -1,0 +1,906 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Accepted Split Branching Probe",
+              "width": 275.044922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 62.609375,
+        "w": 364,
+        "h": 60.15625,
+        "lines": [
+          [
+            {
+              "text": "This fixture stresses the accepted-split snapshot/branching seam twice in ",
+              "width": 358.891113,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "one run. Each long paragraph emits continuation markers and reserves ",
+              "width": 349.749512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "extra space after its accepted fragment commits. If preview rollback leaks ",
+              "width": 360.088867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "state, the second seam or its markers will be corrupted.",
+              "width": 269.612793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "§1 — First Accepted Split",
+              "width": 168.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 28,
+        "y": 67.140625,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Expected: the first long paragraph splits mid-page with exactly one A marker pair. The ",
+              "width": 343.669922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "second seam that follows later must remain unaffected by the first seam's preview cycle.",
+              "width": 351.206543,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 97.75,
+        "w": 230,
+        "h": 45.117188,
+        "lines": [
+          [
+            {
+              "text": "Setup A. This narrow paragraph consumes ",
+              "width": 227.379883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "vertical space before the first accepted split",
+              "width": 229.254395,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "arrives.",
+              "width": 39.144531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 150.867188,
+        "w": 210,
+        "h": 60.15625,
+        "lines": [
+          [
+            {
+              "text": "Setup B. Another narrow paragraph ",
+              "width": 189.465332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "closes the remaining gap so the first ",
+              "width": 194.379883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "split lands mid-page rather than at the ",
+              "width": 202.307617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "top.",
+              "width": 20.157715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 230,
+        "h": 210.546875,
+        "lines": [
+          [
+            {
+              "text": "Branch seam A. The compositor accepts the ",
+              "width": 219.489746,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "split, settles continuation markers, and then ",
+              "width": 214.612793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continues with the next page as if nothing ",
+              "width": 204.858887,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "strange happened. Branch seam A. The ",
+              "width": 198.123535,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "compositor accepts the split, settles ",
+              "width": 176.6875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation markers, and then continues with ",
+              "width": 226.853516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the next page as if nothing strange happened. ",
+              "width": 226.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Branch seam A. The compositor accepts the ",
+              "width": 219.489746,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "split, settles continuation markers, and then ",
+              "width": 214.612793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continues with the next page as if nothing ",
+              "width": 204.858887,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "strange happened. Branch seam A. The ",
+              "width": 198.123535,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "compositor accepts the split, settles ",
+              "width": 176.6875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation markers, and then continues with ",
+              "width": 226.853516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the next page as if nothing strange happened. ",
+              "width": 226.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 244.546875,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "A continues on next page",
+              "width": 109.511719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "A continued from previous page",
+              "width": 138.014648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 230,
+        "h": 60.15625,
+        "lines": [
+          [
+            {
+              "text": "Branch seam A. The compositor accepts the ",
+              "width": 219.489746,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "split, settles continuation markers, and then ",
+              "width": 214.612793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continues with the next page as if nothing ",
+              "width": 204.858887,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "strange happened.",
+              "width": 91.743652,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 125.460938,
+        "w": 364,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Interlude. The document resumes ordinary flow after the first accepted ",
+              "width": 344.834961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "split and before the second one begins.",
+              "width": 192.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "§2 — Second Accepted Split",
+              "width": 189.047852,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "x": 28,
+        "y": 67.140625,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Expected: the second split also emits exactly one B marker pair. If the first preview leaks ",
+              "width": 353.658691,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "queue, reservation, or split state, this section is where it should become visible.",
+              "width": 314.657227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 97.75,
+        "w": 230,
+        "h": 45.117188,
+        "lines": [
+          [
+            {
+              "text": "Setup C. This paragraph again consumes ",
+              "width": 219.436035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "vertical space before the second seam is ",
+              "width": 217.045898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reached.",
+              "width": 45.246094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 150.867188,
+        "w": 220,
+        "h": 60.15625,
+        "lines": [
+          [
+            {
+              "text": "Setup D. The second seam must ",
+              "width": 172.374512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "negotiate the same bridge crossing after ",
+              "width": 215.166016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the first one has already exercised ",
+              "width": 183.41748,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "preview and rollback.",
+              "width": 111.874512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 230,
+        "h": 210.546875,
+        "lines": [
+          [
+            {
+              "text": "Branch seam B. A second accepted fragment ",
+              "width": 224.398926,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "now crosses the same boundary, and its ",
+              "width": 199.122559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation settlement must not inherit ",
+              "width": 194.438965,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "duplicate markers, leaked reservations, or ",
+              "width": 207.259766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "stale fragment transitions. Branch seam B. A ",
+              "width": 220.708984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "second accepted fragment now crosses the ",
+              "width": 215.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "same boundary, and its continuation settlement",
+              "width": 229.710938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "must not inherit duplicate markers, leaked ",
+              "width": 206.652832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reservations, or stale fragment transitions. ",
+              "width": 207.866699,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Branch seam B. A second accepted fragment ",
+              "width": 224.398926,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "now crosses the same boundary, and its ",
+              "width": 199.122559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation settlement must not inherit ",
+              "width": 194.438965,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "duplicate markers, leaked reservations, or ",
+              "width": 207.259766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "stale fragment transitions. Branch seam B. A ",
+              "width": 220.708984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 244.546875,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "B continues on next page",
+              "width": 109.511719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "B continued from previous page",
+              "width": 138.014648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 230,
+        "h": 135.351563,
+        "lines": [
+          [
+            {
+              "text": "second accepted fragment now crosses the ",
+              "width": 215.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "same boundary, and its continuation settlement",
+              "width": 229.710938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "must not inherit duplicate markers, leaked ",
+              "width": 206.652832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reservations, or stale fragment transitions. ",
+              "width": 207.866699,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Branch seam B. A second accepted fragment ",
+              "width": 224.398926,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "now crosses the same boundary, and its ",
+              "width": 199.122559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation settlement must not inherit ",
+              "width": 194.438965,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "duplicate markers, leaked reservations, or ",
+              "width": 207.259766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "stale fragment transitions.",
+              "width": 125.946777,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 200.65625,
+        "w": 364,
+        "h": 45.117188,
+        "lines": [
+          [
+            {
+              "text": "Postlude. Normal flow resumes after both accepted-split seams. If the ",
+              "width": 341.762695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "snapshot/branching model generalizes, this closing paragraph should ",
+              "width": 340.602539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "appear exactly once and without displaced continuation artifacts.",
+              "width": 314.305664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

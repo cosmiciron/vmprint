@@ -4,14 +4,28 @@ import { solveTrackSizing, TrackSizingDefinition } from './track-sizing';
 import { FlowBox, FlowMaterializationContext, ResolvedLinesResult } from './layout-core-types';
 import { LAYOUT_DEFAULTS } from './defaults';
 import {
+    createClonedBoxMeta,
+    createContinuationFragmentMeta,
+    createContinuationFragmentStyle,
+    createLeadingFragmentMeta,
+    createLeadingFragmentStyle,
+    freezeFlowFragment
+} from './flow-fragment-state';
+import {
     TableCellMaterialized,
     TableCellPlacement,
     TableModel,
     TableModelRow,
     TableResolvedLayout
 } from './layout-table-types';
+import {
+    buildTableModelFromNormalizedTable,
+    normalizeTableElement,
+    sliceNormalizedTable,
+    type NormalizedTableGrid
+} from './normalized-table';
 
-export type TableLayoutContext = {
+export type SpatialGridLayoutContext = {
     layoutFontSize: number;
     layoutLineHeight: number;
     getStyle: (element: Element) => ElementStyle;
@@ -33,13 +47,6 @@ export type TableLayoutContext = {
     emitDropCapBoxes?: (element: Element, width: number, context?: FlowMaterializationContext) => Box[] | null;
 };
 
-const TABLE_OPTION_DEFAULTS: Required<Pick<TableLayoutOptions, 'headerRows' | 'repeatHeader' | 'columnGap' | 'rowGap'>> = {
-    headerRows: 1,
-    repeatHeader: true,
-    columnGap: 0,
-    rowGap: 0
-};
-
 export function isTableElement(element: Element | undefined): boolean {
     return String(element?.type || '').trim().toLowerCase() === 'table';
 }
@@ -54,200 +61,23 @@ export function isTableCellElement(element: Element | undefined): boolean {
     return type === 'table-cell' || type === 'td' || type === 'th' || type === 'cell';
 }
 
-function normalizeTableOptions(raw: unknown): TableLayoutOptions {
-    if (!raw || typeof raw !== 'object') {
-        return { ...TABLE_OPTION_DEFAULTS };
-    }
-
-    const value = raw as TableLayoutOptions;
-    const headerRowsRaw = Number(value.headerRows ?? TABLE_OPTION_DEFAULTS.headerRows);
-    const headerRows = Number.isFinite(headerRowsRaw) ? Math.max(0, Math.floor(headerRowsRaw)) : TABLE_OPTION_DEFAULTS.headerRows;
-    return {
-        headerRows,
-        repeatHeader: value.repeatHeader !== false,
-        columnGap: Math.max(0, LayoutUtils.validateUnit(value.columnGap ?? TABLE_OPTION_DEFAULTS.columnGap)),
-        rowGap: Math.max(0, LayoutUtils.validateUnit(value.rowGap ?? TABLE_OPTION_DEFAULTS.rowGap)),
-        columns: Array.isArray(value.columns)
-            ? value.columns.map((column) => ({
-                mode: column.mode || 'auto',
-                value: column.value,
-                fr: column.fr,
-                min: column.min,
-                max: column.max,
-                basis: column.basis,
-                minContent: column.minContent,
-                maxContent: column.maxContent,
-                grow: column.grow,
-                shrink: column.shrink
-            }))
-            : undefined,
-        cellStyle: value.cellStyle,
-        headerCellStyle: value.headerCellStyle
-    };
-}
-
-function normalizeTableSpan(value: unknown, fallback: number = 1): number {
-    const numeric = Number(value ?? fallback);
-    if (!Number.isFinite(numeric)) return fallback;
-    return Math.max(1, Math.floor(numeric));
-}
-
-function resolveTableRows(element: Element): TableModelRow[] {
-    const candidateRows = Array.isArray(element.children)
-        ? element.children.filter((child) => isTableRowElement(child))
-        : [];
-    const rows = candidateRows.length > 0
-        ? candidateRows
-        : (Array.isArray(element.children) ? element.children : []);
-
-    const out: TableModelRow[] = [];
-    const occupiedUntilByColumn: number[] = [];
-    for (let idx = 0; idx < rows.length; idx++) {
-        const row = rows[idx];
-        const rawCells = Array.isArray(row.children)
-            ? row.children.filter((child) => isTableCellElement(child))
-            : [];
-        const cells = rawCells.length > 0
-            ? rawCells
-            : (Array.isArray(row.children) && row.children.length > 0
-                ? row.children
-                : [{
-                    type: 'table-cell',
-                    content: String(row.content || ''),
-                    children: [],
-                    properties: {
-                        ...(row.properties || {})
-                    }
-                } as Element]);
-
-        let colCursor = 0;
-        const placements: TableCellPlacement[] = [];
-        const isOccupied = (col: number): boolean => {
-            const occupiedUntil = Number(occupiedUntilByColumn[col] ?? -1);
-            return occupiedUntil >= idx;
-        };
-        const canPlaceSpanAt = (start: number, span: number): boolean => {
-            for (let col = start; col < start + span; col++) {
-                if (isOccupied(col)) return false;
-            }
-            return true;
-        };
-
-        for (const cell of cells) {
-            const colSpan = normalizeTableSpan(cell.properties?.colSpan ?? (cell.properties as any)?.colspan, 1);
-            const rowSpan = normalizeTableSpan(cell.properties?.rowSpan ?? (cell.properties as any)?.rowspan, 1);
-
-            while (isOccupied(colCursor)) colCursor += 1;
-            while (!canPlaceSpanAt(colCursor, colSpan)) colCursor += 1;
-
-            placements.push({
-                source: cell,
-                colStart: colCursor,
-                colSpan,
-                rowSpan
-            });
-
-            if (rowSpan > 1) {
-                const occupiedUntil = idx + rowSpan - 1;
-                for (let col = colCursor; col < colCursor + colSpan; col++) {
-                    const current = Number(occupiedUntilByColumn[col] ?? -1);
-                    occupiedUntilByColumn[col] = Math.max(current, occupiedUntil);
-                }
-            }
-            colCursor += colSpan;
-        }
-
-        let rowOccupiedColumnCount = 0;
-        for (let col = 0; col < occupiedUntilByColumn.length; col++) {
-            if (Number(occupiedUntilByColumn[col] ?? -1) >= idx) {
-                rowOccupiedColumnCount = col + 1;
-            }
-        }
-        const rowRole = String(row.properties?.semanticRole || '').toLowerCase();
-        const isHeader = rowRole === 'header' || rowRole === 'table-header' || rowRole === 'thead';
-        out.push({
-            rowIndex: idx,
-            rowElement: row,
-            placements,
-            columnSpanCount: Math.max(1, colCursor, rowOccupiedColumnCount),
-            isHeader
-        });
-    }
-
-    if (out.length === 0) {
-        const fallbackCell: Element = {
-            type: 'table-cell',
-            content: String(element.content || ''),
-            children: Array.isArray(element.children) ? element.children : [],
-            properties: {}
-        };
-        out.push({
-            rowIndex: 0,
-            rowElement: { type: 'table-row', content: '', children: [fallbackCell], properties: {} },
-            placements: [{
-                source: fallbackCell,
-                colStart: 0,
-                colSpan: 1,
-                rowSpan: 1
-            }],
-            columnSpanCount: 1,
-            isHeader: false
-        });
-    }
-
-    return out;
-}
-
 export function buildTableModel(element: Element): TableModel {
-    const options = normalizeTableOptions((element.properties || {}).table);
-    const rows = resolveTableRows(element);
-    const columnCount = Math.max(1, rows.reduce((max, row) => Math.max(max, row.columnSpanCount), 1));
-    const explicitHeaderRows = Math.min(rows.length, Math.max(0, Number(options.headerRows ?? TABLE_OPTION_DEFAULTS.headerRows)));
-    const headerRowIndices = rows
-        .filter((row, idx) => row.isHeader || idx < explicitHeaderRows)
-        .map((row) => row.rowIndex);
-    const dedupedHeaderIndices = Array.from(new Set(headerRowIndices)).sort((a, b) => a - b);
-    const headerSet = new Set<number>(dedupedHeaderIndices);
-    const hasRowSpan = rows.some((row) => row.placements.some((placement) => placement.rowSpan > 1));
-    const headerHasRowSpan = rows.some((row) =>
-        headerSet.has(row.rowIndex) && row.placements.some((placement) => placement.rowSpan > 1)
-    );
-    const rowIndices = rows.map((row) => row.rowIndex);
-    return {
-        rows,
-        rowIndices,
-        columnCount,
-        headerRowIndices: dedupedHeaderIndices,
-        headerRows: dedupedHeaderIndices.length,
-        hasRowSpan,
-        headerHasRowSpan,
-        repeatHeader: options.repeatHeader !== false && !headerHasRowSpan,
-        rowGap: options.rowGap ?? TABLE_OPTION_DEFAULTS.rowGap,
-        columnGap: options.columnGap ?? TABLE_OPTION_DEFAULTS.columnGap,
-        columns: options.columns as TrackSizingDefinition[] | undefined,
-        cellStyle: options.cellStyle,
-        headerCellStyle: options.headerCellStyle
-    };
+    return buildTableModelFromNormalizedTable(normalizeTableElement(element));
 }
 
 function doesTableBoundaryCrossRowSpan(model: TableModel, boundaryRowIndex: number): boolean {
-    for (const row of model.rows) {
-        for (const placement of row.placements) {
-            const rowSpan = Math.max(1, Math.floor(placement.rowSpan || 1));
-            if (rowSpan <= 1) continue;
-            const start = row.rowIndex;
-            const end = start + rowSpan - 1;
-            if (start < boundaryRowIndex && end >= boundaryRowIndex) return true;
-        }
+    if (!model.hasRowSpan) return false;
+    if (model.rowSpanBlockedBoundaryLookup) {
+        return model.rowSpanBlockedBoundaryLookup.has(boundaryRowIndex);
     }
-    return false;
+    return (model.rowSpanBlockedBoundaryIndices || []).includes(boundaryRowIndex);
 }
 
 function measureCellIntrinsicWidths(
     cell: Element,
     style: ElementStyle,
     fontSize: number,
-    tableContext: TableLayoutContext
+    tableContext: SpatialGridLayoutContext
 ): { minContent: number; maxContent: number } {
     const measurementFont = tableContext.resolveMeasurementFontForStyle(style);
     const letterSpacing = Number(style.letterSpacing || 0);
@@ -292,7 +122,7 @@ function materializeTableCell(
     baseStyle: ElementStyle,
     context: FlowMaterializationContext | undefined,
     placement: TableCellPlacement,
-    tableContext: TableLayoutContext
+    tableContext: SpatialGridLayoutContext
 ): TableCellMaterialized {
     const mergedStyle: ElementStyle = {
         ...baseStyle,
@@ -308,6 +138,8 @@ function materializeTableCell(
     const lineHeight = Number(mergedStyle.lineHeight || tableContext.layoutLineHeight);
     const insetsVertical = tableContext.getVerticalInsets(mergedStyle);
     const insetsHorizontal = tableContext.getHorizontalInsets(mergedStyle);
+    const text = tableContext.getElementText(cell);
+    const hasChildElements = Array.isArray(cell.children) && cell.children.length > 0;
     const image = tableContext.resolveEmbeddedImage(cell);
 
     if (image) {
@@ -326,7 +158,7 @@ function materializeTableCell(
         };
     }
 
-    const dropCapSpec = cell.properties?.dropCap;
+    const dropCapSpec = cell.dropCap;
     if (dropCapSpec?.enabled && typeof tableContext.emitDropCapBoxes === 'function') {
         const contentWidth = Math.max(0, width - insetsHorizontal);
         const dropCapElement: Element = {
@@ -372,12 +204,29 @@ function materializeTableCell(
         }
     }
 
-    const resolved = tableContext.resolveLines(cell, mergedStyle, fontSize, context);
+    // Fast path: blank structural cells, especially auto-fill placeholders used to
+    // preserve occupied grid topology around row/col spans, do not need the full
+    // line-resolution pipeline.
+    if (!text && !hasChildElements) {
+        return {
+            placement,
+            source: cell,
+            style: mergedStyle,
+            measuredHeight: insetsVertical,
+            content: undefined,
+            properties: { ...(cell.properties || {}) }
+        };
+    }
+
+    // Strip contentWidth from context: table cells use mergedStyle.width (= cellWidth)
+    // as the authoritative width. The table-level context.contentWidth is the full
+    // table available width and must not override the per-cell width here.
+    const cellContext = context ? { pageIndex: context.pageIndex, cursorY: context.cursorY } : undefined;
+    const resolved = tableContext.resolveLines(cell, mergedStyle, fontSize, cellContext);
     let measuredHeight = 0;
     if (resolved.lines.length > 0) {
         measuredHeight = tableContext.calculateLineBlockHeight(resolved.lines, mergedStyle, resolved.lineYOffsets);
     } else {
-        const text = tableContext.getElementText(cell);
         if (text) measuredHeight = fontSize * lineHeight;
     }
     measuredHeight += insetsVertical;
@@ -398,18 +247,24 @@ function materializeTableCell(
     };
 }
 
-export function materializeTableFlowBox(
+export function materializeSpatialGridFlowBox(
     unit: FlowBox,
     element: Element,
     context: FlowMaterializationContext | undefined,
     fontSize: number,
     lineHeight: number,
-    tableContext: TableLayoutContext
+    tableContext: SpatialGridLayoutContext
 ): FlowBox {
     const style = unit.style;
-    const model = ((unit.properties?._tableModel as TableModel | undefined) || buildTableModel(element));
+    const normalizedTable = (
+        unit._normalizedTable
+        || (unit.properties?._normalizedTable as NormalizedTableGrid | undefined)
+        || normalizeTableElement(element)
+    );
+    const model = ((unit.properties?._tableModel as TableModel | undefined) || buildTableModelFromNormalizedTable(normalizedTable));
     const allRows = model.rows;
     const columnCount = Math.max(1, Number(model.columnCount || 0), Number(model.columns?.length || 0));
+    const headerRowSet = new Set<number>(model.headerRowIndices || []);
     const horizontalInsets = tableContext.getHorizontalInsets(style);
     const verticalInsets = tableContext.getVerticalInsets(style);
     const tableWidth = tableContext.getContextualBoxWidth(style, context, fontSize, lineHeight);
@@ -425,7 +280,7 @@ export function materializeTableFlowBox(
             const colSpan = Math.max(1, Math.min(columnCount - colStart, Math.floor(placement.colSpan || 1)));
             const cell = placement.source;
             const roleStyle = tableContext.getStyle(cell);
-            const headerStyle = row.isHeader || model.headerRowIndices.includes(row.rowIndex)
+            const headerStyle = row.isHeader || headerRowSet.has(row.rowIndex)
                 ? (model.headerCellStyle || {})
                 : {};
             const combinedStyle = {
@@ -536,7 +391,7 @@ export function materializeTableFlowBox(
                 properties: {}
             };
             const roleStyle = tableContext.getStyle(sourceCell);
-            const headerStyle = row.isHeader || model.headerRowIndices.includes(row.rowIndex)
+            const headerStyle = row.isHeader || headerRowSet.has(row.rowIndex)
                 ? (model.headerCellStyle || {})
                 : {};
             const cellStyle: ElementStyle = {
@@ -588,6 +443,13 @@ export function materializeTableFlowBox(
     const rowIndices = Array.isArray(model.rowIndices) && model.rowIndices.length > 0
         ? model.rowIndices.slice()
         : allRows.map((row) => row.rowIndex);
+    const rowWorldOffsetsByIndex = new Array(allRows.length).fill(0);
+    let worldRowCursor = 0;
+    for (let idx = 0; idx < allRows.length; idx++) {
+        rowWorldOffsetsByIndex[idx] = worldRowCursor;
+        worldRowCursor += Number(rowHeightsByIndex[idx] || 0);
+        if (idx < allRows.length - 1) worldRowCursor += model.rowGap;
+    }
     const rowsHeight = rowIndices.reduce((sum, rowIndex, idx) => {
         const rowHeight = rowHeightsByIndex[rowIndex] || 0;
         return sum + rowHeight + (idx > 0 ? model.rowGap : 0);
@@ -597,10 +459,12 @@ export function materializeTableFlowBox(
         columnCount,
         columnWidths,
         rowHeightsByIndex,
+        rowWorldOffsetsByIndex,
         rowGap: model.rowGap,
         columnGap: model.columnGap,
         rowIndices,
         headerRowIndices: model.headerRowIndices.slice(),
+        clonedRowIndices: [],
         repeatHeader: model.repeatHeader,
         cellsByRowIndex
     };
@@ -615,6 +479,7 @@ export function materializeTableFlowBox(
     unit.properties = {
         ...unit.properties,
         _tableModel: model,
+        _normalizedTable: normalizedTable,
         _tableResolved: resolvedLayout
     };
     delete unit.properties._lineOffsets;
@@ -624,14 +489,27 @@ export function materializeTableFlowBox(
     return unit;
 }
 
-export function splitTableFlowBox(
+export function splitSpatialGridFlowBox(
     box: FlowBox,
     availableHeight: number,
-    layoutBefore: number
+    layoutBefore: number,
+    context?: FlowMaterializationContext & {
+        pageIndex?: number;
+        getPageExclusions?: (pageIndex: number) => ReadonlyArray<{
+            x: number;
+            y: number;
+            w: number;
+            h: number;
+        }>;
+    }
 ): { partA: FlowBox; partB: FlowBox } | null {
     const model = box.properties?._tableModel as TableModel | undefined;
     const resolved = box.properties?._tableResolved as TableResolvedLayout | undefined;
-    if (!model || !resolved) return null;
+    const normalizedTable = (
+        box._normalizedTable
+        || (box.properties?._normalizedTable as NormalizedTableGrid | undefined)
+    );
+    if (!model || !resolved || !normalizedTable) return null;
 
     const rowIndices = Array.isArray(resolved.rowIndices) ? resolved.rowIndices.slice() : [];
     if (rowIndices.length <= 1) return null;
@@ -643,7 +521,12 @@ export function splitTableFlowBox(
     const borderBottom = LayoutUtils.validateUnit(style.borderBottomWidth ?? style.borderWidth ?? 0);
     const verticalInsets = paddingTop + paddingBottom + borderTop + borderBottom;
 
-    const maxContentHeight = availableHeight - layoutBefore;
+    const maxContentHeight = resolveTableSplitMaxContentHeight(
+        box,
+        availableHeight,
+        layoutBefore,
+        context
+    );
     if (maxContentHeight <= verticalInsets + LAYOUT_DEFAULTS.wrapTolerance) return null;
 
     const headerSet = new Set<number>(resolved.headerRowIndices || []);
@@ -692,15 +575,23 @@ export function splitTableFlowBox(
 
     const partAResolved: TableResolvedLayout = {
         ...resolved,
-        rowIndices: partAIndices.slice()
+        rowIndices: partAIndices.slice(),
+        clonedRowIndices: []
+    };
+    const partBResolved: TableResolvedLayout = {
+        ...resolved,
+        rowIndices: partBIndices.slice(),
+        clonedRowIndices: resolved.repeatHeader ? resolved.headerRowIndices.slice() : []
     };
 
     const partAModel: TableModel = { ...model, rowIndices: partAIndices.slice() };
     const partBModel: TableModel = { ...model, rowIndices: partBIndices.slice() };
-    const partA: FlowBox = {
-        ...box,
+    const partANormalizedTable = sliceNormalizedTable(normalizedTable, partAIndices);
+    const partBNormalizedTable = sliceNormalizedTable(normalizedTable, partBIndices);
+    const partA = freezeFlowFragment(box, {
+        meta: createLeadingFragmentMeta(box.meta),
         style: {
-            ...box.style,
+            ...createLeadingFragmentStyle(box.style),
             marginBottom: 0
         },
         lines: Array.from({ length: Math.max(1, partAIndices.length) }, () => []),
@@ -710,43 +601,85 @@ export function splitTableFlowBox(
         properties: {
             ...box.properties,
             _tableModel: partAModel,
+            _normalizedTable: partANormalizedTable,
             _tableResolved: partAResolved,
             _isFirstLine: true,
             _isLastLine: false
         },
-        _materializationMode: 'frozen',
-        _materializationContextKey: undefined,
-        _unresolvedElement: undefined
-    };
+        _normalizedTable: partANormalizedTable
+    });
 
-    const partB: FlowBox = {
-        ...box,
-        meta: {
-            ...box.meta,
-            fragmentIndex: box.meta.fragmentIndex + 1,
-            isContinuation: true,
-            pageIndex: undefined
-        },
+    const partB = freezeFlowFragment(box, {
+        meta: createContinuationFragmentMeta(box.meta, box.meta.fragmentIndex + 1),
         style: {
-            ...box.style,
+            ...createContinuationFragmentStyle(box.style),
             marginTop: 0
         },
         lines: Array.from({ length: Math.max(1, partBIndices.length) }, () => []),
         marginTop: 0,
         allowLineSplit: partBIndices.length > 1,
-        measuredContentHeight: box.heightOverride ?? 0,
+        measuredContentHeight: box.heightOverride ?? computeFragmentHeight(partBIndices),
         properties: {
             ...box.properties,
             _tableModel: partBModel,
-            _tableResolved: undefined,
+            _normalizedTable: partBNormalizedTable,
+            _tableResolved: partBResolved,
             _isFirstLine: false,
             _isLastLine: true
         },
-        _materializationContextKey: undefined,
-        _unresolvedElement: box._sourceElement
-    };
+        _normalizedTable: partBNormalizedTable
+    });
 
     return { partA, partB };
+}
+
+function resolveTableSplitMaxContentHeight(
+    box: FlowBox,
+    availableHeight: number,
+    layoutBefore: number,
+    context?: FlowMaterializationContext & {
+        pageIndex?: number;
+        getPageExclusions?: (pageIndex: number) => ReadonlyArray<{
+            x: number;
+            y: number;
+            w: number;
+            h: number;
+        }>;
+    }
+): number {
+    const baseMaxContentHeight = availableHeight - layoutBefore;
+    if (!(baseMaxContentHeight > 0)) return baseMaxContentHeight;
+    if (!context?.getPageExclusions) return baseMaxContentHeight;
+
+    const pageIndex = Number.isFinite(context.pageIndex) ? Math.max(0, Math.floor(Number(context.pageIndex))) : 0;
+    const cursorY = Number.isFinite(context.cursorY) ? Number(context.cursorY) : 0;
+    const contentTop = cursorY + layoutBefore;
+    const tableWidth = Number.isFinite(box.measuredWidth) ? Math.max(0, Number(box.measuredWidth)) : 0;
+    if (!(tableWidth > 0)) return baseMaxContentHeight;
+
+    let nextBlockedTop: number | null = null;
+    for (const exclusion of context.getPageExclusions(pageIndex) || []) {
+        const exclusionTop = Number.isFinite(exclusion.y) ? Math.max(0, Number(exclusion.y)) : 0;
+        const exclusionHeight = Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0;
+        const exclusionBottom = exclusionTop + exclusionHeight;
+        if (exclusionBottom <= contentTop + LAYOUT_DEFAULTS.wrapTolerance) continue;
+        if (exclusionTop <= contentTop + LAYOUT_DEFAULTS.wrapTolerance) continue;
+
+        const exclusionLeft = Number.isFinite(exclusion.x) ? Number(exclusion.x) : 0;
+        const exclusionRight = exclusionLeft + (Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0);
+        const overlapsTableWidth =
+            exclusionLeft < tableWidth - LAYOUT_DEFAULTS.wrapTolerance &&
+            exclusionRight > LAYOUT_DEFAULTS.wrapTolerance;
+        if (!overlapsTableWidth) continue;
+
+        if (nextBlockedTop === null || exclusionTop < nextBlockedTop) {
+            nextBlockedTop = exclusionTop;
+        }
+    }
+
+    if (nextBlockedTop === null) return baseMaxContentHeight;
+
+    return Math.min(baseMaxContentHeight, Math.max(0, nextBlockedTop - contentTop));
 }
 
 function buildTableCellBorderStyle(
@@ -782,12 +715,12 @@ function buildTableCellBorderStyle(
     };
 }
 
-export function positionTableFlowBoxes(
+export function positionSpatialGridFlowBoxes(
     unit: FlowBox,
     x: number,
     y: number,
     pageIndex: number,
-    tableContext: TableLayoutContext
+    tableContext: SpatialGridLayoutContext
 ): Box[] {
     const resolved = unit.properties?._tableResolved as TableResolvedLayout | undefined;
     if (!resolved) {
@@ -813,6 +746,8 @@ export function positionTableFlowBoxes(
     const contentY = y + paddingTop + borderTop;
     const columnOffsets = getTableColumnOffsets(resolved.columnWidths, resolved.columnGap);
     const rowIndices = Array.isArray(resolved.rowIndices) ? resolved.rowIndices.slice() : [];
+    const clonedRowSet = new Set<number>(Array.isArray(resolved.clonedRowIndices) ? resolved.clonedRowIndices : []);
+    const headerRowSet = new Set<number>(Array.isArray(resolved.headerRowIndices) ? resolved.headerRowIndices : []);
     const rowDisplayIndexBySource = new Map<number, number>();
     for (let displayRowIndex = 0; displayRowIndex < rowIndices.length; displayRowIndex++) {
         rowDisplayIndexBySource.set(rowIndices[displayRowIndex], displayRowIndex);
@@ -875,6 +810,17 @@ export function positionTableFlowBoxes(
             };
 
             if (unit.meta.reflowKey) cellMeta.reflowKey = unit.meta.reflowKey;
+            const isRepeatedHeaderClone =
+                (clonedRowSet.has(sourceRowIndex) || (
+                    unit.meta.isContinuation
+                    && resolved.repeatHeader
+                    && headerRowSet.has(sourceRowIndex)
+                    && displayRowIndex < headerRowSet.size
+                ));
+            const rowWorldOffset = Number(resolved.rowWorldOffsetsByIndex?.[sourceRowIndex] || 0);
+            const emittedCellMeta = isRepeatedHeaderClone
+                ? createClonedBoxMeta(cellMeta, normalizedCellSourceId)
+                : cellMeta;
 
             out.push({
                 type: 'table_cell',
@@ -896,12 +842,15 @@ export function positionTableFlowBoxes(
                     _isLastFragmentInLine: true,
                     _tableCell: true,
                     _tableRowIndex: sourceRowIndex,
+                    _tableViewportRowIndex: displayRowIndex,
+                    _tableWorldRowOffset: rowWorldOffset,
+                    _tableIsRepeatedHeaderClone: isRepeatedHeaderClone,
                     _tableColIndex: colStart,
                     _tableColStart: colStart,
                     _tableColSpan: colSpan,
                     _tableRowSpan: effectiveRowSpan
                 },
-                meta: cellMeta
+                meta: emittedCellMeta
             });
 
             if (cell.childBoxes && cell.childBoxes.length > 0) {
@@ -913,11 +862,14 @@ export function positionTableFlowBoxes(
                 const offsetY = rowCursorY + cellPadTop + cellBorderTop;
                 for (const child of cell.childBoxes) {
                     const childMeta = child.meta ? { ...child.meta, pageIndex } : { pageIndex } as any;
+                    const emittedChildMeta = isRepeatedHeaderClone && childMeta.sourceId
+                        ? createClonedBoxMeta(childMeta, String(childMeta.sourceId))
+                        : childMeta;
                     out.push({
                         ...child,
                         x: Number(child.x || 0) + offsetX,
                         y: Number(child.y || 0) + offsetY,
-                        meta: childMeta
+                        meta: emittedChildMeta
                     });
                 }
             }
@@ -927,3 +879,8 @@ export function positionTableFlowBoxes(
 
     return out;
 }
+
+export type TableLayoutContext = SpatialGridLayoutContext;
+export const materializeTableFlowBox = materializeSpatialGridFlowBox;
+export const splitTableFlowBox = splitSpatialGridFlowBox;
+export const positionTableFlowBoxes = positionSpatialGridFlowBoxes;

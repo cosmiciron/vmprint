@@ -1,0 +1,331 @@
+[
+  {
+    "index": 0,
+    "width": 340,
+    "height": 400,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 40,
+        "y": 40,
+        "w": 260,
+        "h": 22.675,
+        "lines": [
+          [
+            {
+              "text": "Chapter One",
+              "width": 96.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 72.675,
+        "w": 260,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "This is the first paragraph of chapter one. It fills ",
+              "width": 231.719727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "vertical space so the document spans multiple ",
+              "width": 228.062012,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "pages.",
+              "width": 33.026855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 127.442188,
+        "w": 260,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "A second paragraph continues to build out the page. ",
+              "width": 258.075684,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "The footer on every page must read the correct total ",
+              "width": 256.802734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "once layout is complete.",
+              "width": 118.008301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 182.209375,
+        "w": 260,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "A third paragraph ensures we push content onto a ",
+              "width": 247.048828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "second page. Total pages can only be known after ",
+              "width": 247.666504,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation ends.",
+              "width": 79.486816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h1",
+        "x": 40,
+        "y": 236.976563,
+        "w": 260,
+        "h": 22.675,
+        "lines": [
+          [
+            {
+              "text": "Chapter Two",
+              "width": 95.703125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 269.651563,
+        "w": 260,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "Chapter two begins on page two or three depending ",
+              "width": 256.233398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "on content flow. The footer here must still show the ",
+              "width": 250.685059,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "same correct total.",
+              "width": 90.476074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 358,
+        "w": 260,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Page 1 of 2",
+              "width": 56.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 340,
+    "height": 400,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 40,
+        "y": 40,
+        "w": 260,
+        "h": 46.767188,
+        "lines": [
+          [
+            {
+              "text": "More body text pushes content further down the ",
+              "width": 236.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page, ensuring we reach at least two distinct pages ",
+              "width": 252.538086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "in the output.",
+              "width": 63.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h1",
+        "x": 40,
+        "y": 94.767188,
+        "w": 260,
+        "h": 22.675,
+        "lines": [
+          [
+            {
+              "text": "Chapter Three",
+              "width": 108.46875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 127.442188,
+        "w": 260,
+        "h": 62.35625,
+        "lines": [
+          [
+            {
+              "text": "Chapter three exists to ensure the document reaches",
+              "width": 259.257324,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a third page. Every footer must show the same total ",
+              "width": 254.348145,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page count: the final number determined after ",
+              "width": 225.639648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation, not a placeholder.",
+              "width": 142.479004,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 358,
+        "w": 260,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Page 2 of 2",
+              "width": 56.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

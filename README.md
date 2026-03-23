@@ -1,101 +1,302 @@
-﻿# VMPrint
-:: A deterministic, zero-DOM typesetting engine/VM in pure TypeScript.
+# VMPrint
 
-**VMPrint is not another HTML-to-PDF wrapper.** Instead, it is the crucial missing primitive you might need if you want to build one on your own -- from scratch.
+> **VMPrint now ships with a browser preview demo.**  
+> Render real VMPrint documents in-browser with multilingual layout, pagination, and high-fidelity canvas preview.  
+> The demo is a static, self-contained page you can open directly from a local folder, and its four core runtime bundles (shared fontkit + engine + web font manager + canvas context) weigh about **0.89 MiB** total minified.  
+> [Open the canvas demo](docs/examples/ast-to-canvas-webfonts/index.html) | [Browse all examples](docs/examples/index.html) | [Quickstart](QUICKSTART.md)
 
-If you want to build a custom edge-rendering pipeline, a better document generator, or an entirely new word processor without resorting to contenteditable hacks, hidden iframes, or sloppy DOM overlays -- VMPrint provides the low-level mathematical infrastructure to make it happen.
+You've been here before.
 
-It is a compact, zero-dependency layout Virtual Machine that completely bypasses the browser's HTML/CSS box model. Using interval-arithmetic and a custom morphable-box architecture, it calculates complex print layouts natively. It handles multi-column text wrapping, cross-gutter floats, strict baseline grids, and multilingual line-breaking directly from a semantic JSON AST, outputting a flat array of absolute X/Y coordinates.
+The HTML/CSS pipeline got you 80% of the way. Then the tables started fighting the page breaks. You needed the header to say "Page 1 of 12" — but you can't know it's 12 until you've finished laying out the whole document, and by then it's too late. You tried a second pass. The second pass introduced new problems. Someone suggested spinning up a headless Chromium. It worked, mostly, except on the edge runtime, and the Lambda with the tight memory limit, and that one machine where the fonts came out wrong.
 
-Because it operates purely on math and carries zero DOM dependencies, it runs identically everywhere: Cloudflare Workers, Lambda, Bun, Deno, or directly in the browser. It provides the missing primitives for true programmatic document layout.
-
-To see what this engine can build, view the beautifully typeset PDF version of this [README](documents/readme-assets/readme.pdf). It was compiled directly from this Markdown source file using `draft2final`, a fully-featured manuscript and screenplay compiler built entirely on top of the VMPrint API.
-
----
-
-![VMPrint manifesto](documents/readme-assets/manifesto-1.png)
-
-> The above image -- including annotations, measurement guides, legends, and script direction markers -- are all rendered entirely within VMPrint. The source documents can be found in the repository under /documents/readme-assets/.
-
-## Features at a Glance
-
-- **Deterministic Layout Engine**: Generates bit-for-bit identical layout across operating systems and runtimes. No more layout drift.
-- **Zero Environment Dependencies**: The core engine requires no headless browser, DOM, or Node.js built-ins. Runs seamlessly in browsers, Node.js, and edge environments like Cloudflare Workers and AWS Lambda.
-- **True Glyph-Based Measurement**: Reads intrinsic OpenType advance widths and kerning pairs from font files. Layout relies on absolute typographic math, not browser approximations.
-- **Fast Performance**: Renders complex, multi-page layouts in milliseconds. Global caches for glyph metrics and text segmentation ensure high throughput for batch pipelines.
-- **Multi-Column & Mixed Layouts**: Native support for DTP-style multi-column story regions. Seamlessly mix single-column headers, three-column articles, and pull-quotes on the same page. Floating obstacles naturally shape text across multiple column boundaries.
-- **Advanced Pagination & Features**: Floating elements, drop caps, widow/orphan control, and cross-page continuation markers.
-- **Header and Footer Regions**: Top-level `header` / `footer` document regions with page-selector support (`default`, `firstPage`, `odd`, `even`). Per-page suppression via element `pageOverrides`. Region content automatically clipped to margin bounds. See [Header and Footer Architecture](documents/HEADER-FOOTER.md) for full specification.
-- **Complex Table Support**: First-class handling for tables that span multiple pages, including smart row splitting, `colspan`, `rowspan`, and automatically repeated headers.
-- **Publishing-Grade Typography**: Grapheme-accurate line breaking using `Intl.Segmenter`, language-aware hyphenation, and mixed-script text runs with perfect baseline alignment.
-- **JSON-Based Layout Pipeline**: Layout output is a serializable object tree. Pre-compile layouts into JSON to rapidly distribute identical layouts that render instantly at runtime, snapshot them for CI regression testing, or inspect exact sub-point glyph measurements.
-- **Pluggable Architecture**: Swappable font managers and rendering backends (PDF provided). Easily extensible to SVG, Canvas, or custom contexts.
-- **Markdown Transmutation**: Standalone transmuters (`@vmprint/transmuter-mkd-mkd`, `@vmprint/transmuter-mkd-academic`, `@vmprint/transmuter-mkd-literature`, `@vmprint/transmuter-mkd-manuscript`, `@vmprint/transmuter-mkd-screenplay`) convert Markdown to VMPrint's `DocumentInput` AST — usable in browser, Node.js, or edge environments without touching the layout engine. Decouples source format from layout pipeline.
-- **Source-to-PDF/AST (`draft2final`)**: Thin transmuter-first orchestration that auto-selects transmuters (via CLI/frontmatter), loads config/theme defaults, and outputs either PDF or AST JSON.
+The stack stopped making sense. You kept patching.
 
 ---
 
-![VMPrint manifesto](documents/readme-assets/manifesto-2.png)
+VMPrint exists for that moment. Here is what it actually produces:
 
-> **Baselines, shaping, and directionality remain stable across mixed-language content.** The above image -- including annotations, measurement guides, legends, and script direction markers -- are all rendered within VMPrint. The source documents can be found in the repository under /documents/readme-assets/.
+**325 pages. 80,000 words. Markdown to publication-standard PDF. 2.32 seconds. Surface Pro 11 tablet, running on battery. No browser. No second pass. No auxiliary files.**
 
+Not because VMPrint is faster at doing what those tools do. Because it does something different.
 
-## Background
+---
 
-In the 1980s and 90s, serious software thought seriously about pages. TeX got hyphenation and justification right. Display PostScript gave NeXT workstations a real imaging model — every application had access to typographically precise, device-independent layout at the OS level. Desktop publishing software understood widows, orphans, and the subtle difference between a line break and a paragraph break.
+![VMPrint Specimen Blueprint - Actor-Based Spatial Simulation Engine](documents/readme-assets/blueprint-1.png)
 
-Then the web happened. Mostly great. But somewhere along the way, "generate a PDF" became either "run a headless Chromium instance" or "write your own pagination loop against a low-level drawing API." Neither of these is good. The thinking that went into document composition — the kind that made TeX and PostScript genuinely good — largely disappeared from the toolkit of the working developer.
+> Every element arrived through collision — geometry negotiated in a deterministic sweep. Each block, glyph, and inline span is an actor reporting its own origin and extent.
+> *All images in this README — including annotations, measurement guides, overlays, and script direction markers — are rendered entirely by VMPrint.*
 
-VMPrint is an attempt to recover some of what was lost.
+---
 
-## The Core Idea
+## A Different Kind of Engine
 
-VMPrint works in two stages, and keeping them separate is the whole point.
+VMPrint is a deterministic spatial simulation engine. Pages are bounded arenas. Document elements are autonomous actors with geometries. Layout is the process of reaching a stable world state.
 
-**Stage 1 — Layout.** You give it a document: structured JSON, or source text via `draft2final` (through transmuters producing `DocumentInput`). It measures glyphs, wraps lines, handles hyphenation, paginates tables, controls orphans and widows, places floats. It produces a `Page[]` stream — an array of pages, each containing a flat list of absolutely-positioned boxes.
+There is no DOM underneath. No browser. No HTML. No CSS box model. The engine doesn't know what a browser is. It knows what a constraint field is. It knows what a collision is. It knows what a snapshot is, what a rollback is, and what it means for a world to settle.
 
-**Stage 2 — Rendering.** A renderer walks those boxes and paints them to a context. Today that context is a PDF. Tomorrow it could be canvas, SVG, or a test spy.
+This isn't a metaphor. It is the literal architecture.
 
-The `Page[]` stream is the thing that makes this different. It's serializable JSON. You can diff it between versions. You can snapshot it for regression tests. You can inspect it to understand why something ended up where it did. Layout bugs become reproducible. This is not how PDF generation usually works.
+A drop cap isn't a character. It's an actor with rules about how nearby text must respond. A table isn't a grid. It's a formation that holds together across boundaries, splits under constraint, and reconstructs itself on the other side. Derived regions are runtime participants too — observing, reacting, growing, and settling with the rest of the document world.
 
-Layout is based on real font metrics. VMPrint loads actual font files, reads glyph advance widths and kerning data, and measures text the way a typesetting system does — not the way a browser estimates it from computed styles. There is no CSS box model underneath. Same font files, same input, same config: identical output, down to the sub-point position of every glyph.
+What this gives you is not just "better PDFs." It gives you a different substrate:
+
+- a document runtime that behaves identically on a Cloudflare Worker, a laptop, a Lambda, and a phone
+- a layout engine you can inspect, instrument, and participate in
+- a pagination model that is not approximate — the same input produces the same output, always, everywhere
+- a rendering output that is a flat, absolutely-positioned geometry list — no DOM, no layout re-traversal, just draw calls — and the right shape for GPU-accelerated rendering
+- a foundation for tools the web made people forget were possible
+
+Here is the part that makes the rest of this possible. When you hand the engine a document, each element — paragraph, table, heading, drop cap — gets compiled into a live actor. Think Lego Batman standing on the board. When Batman approaches a page boundary and doesn't fully fit, he doesn't get clipped and he doesn't get deferred. He disassembles into blocks. The blocks that fit commit to the current page. The remaining blocks reconstitute on the next page as the same Batman — same identity, same memory, same relationships — picking up exactly where he left off. A table that spans three pages is one actor that has split and reformed twice. A drop cap is an actor that claimed its territory and pushed the surrounding text to respond. None of this is post-processing. It is just what actors do when they run out of space.
+
+The output of all that activity is refreshingly simple: a flat list of absolutely-positioned boxes with exact coordinates and the story of how each one got there. No tree. No cascade. No layout to re-run at render time — just draw calls. That flatness is what makes rendering fast, output diffable, and the path to GPU acceleration a straight line.
+
+And then there is this: because the document is a *running simulation*, the output doesn't have to capture equilibrium. The engine can be told to capture the world at a specific tick instead — which means each page can represent a successive world state. The document becomes a valid print artifact *and* a temporal record of a running simulation. Pages that evolve. A flipbook whose frames are world states, not hand-drawn images. That has no equivalent in any prior art layout system.
+
+---
+
+![VMPrint Simulation Report - Actor States, Mixed Script, Baseline Stability](documents/readme-assets/blueprint-2.png)
+
+> Actors by name, origin, size, font, and settled state. Five writing systems on one computed baseline. A naive engine drifts; this one does not.
+
+---
+
+## Anti-Blackbox By Architecture
+
+Most layout systems are black boxes. Not because the source is closed, but because the architecture gives you no meaningful point of entry. You hand it input. It gives you output. What happened in between is not your concern.
+
+VMPrint was deliberately designed to be the opposite.
+
+![VMPrint Quarterly - debug overlay showing every actor, boundary, and measurement](documents/readme-assets/newsletter-debug.png)
+
+> The same document rendered with `--debug`. Every actor named. Every boundary measured. Every extent, margin, and origin labeled in place.
+
+The actor contract means you can introduce your own participants into the same simulation as native ones. The communication bus means those participants can publish and observe signals inside the same world. The overlay system means you can draw what the engine sees. The snapshot and rollback model means layout bugs become reproducible facts instead of spooky behavior. And if reactive actors ever drive the engine into a geometric oscillation loop, it doesn't silently spin — it stops deterministically and surfaces a diagnostic identifying the oscillating actor, the triggering signal, and the exact frontier where the cycle was detected. The failure mode is observable and reproducible, not a hung process.
+
+![VMPrint Quarterly - clean render, no debug overlay](documents/readme-assets/newsletter.png)
+
+> The same document, clean. What the reader sees. The machinery disappears. The precision does not.
+
+The output is a flat array of absolute coordinates with semantic provenance attached:
 
 ```ts
-const engine = new LayoutEngine(config, runtime);
-await engine.waitForFonts();
-
-// pages is a plain Page[] — inspect it, snapshot it, diff it
-const pages = engine.paginate(document.elements);
-
-const renderer = new Renderer(config, false, runtime);
-await renderer.render(pages, context);
+{ sourceId: 'ast-node-10', fragmentIndex: 2, transformKind: 'split', isContinuation: true }
 ```
 
-## Identical Output, Everywhere
+You can trace any pixel back to its source. You can diff layouts as JSON. You can replay a simulation deterministically. Transparency was designed in from the first commit.
 
-The core engine has no dependency on Node.js, the browser, or any specific JavaScript runtime. It doesn't call `fs`. It doesn't touch the DOM. It doesn't assume `Buffer` exists. Font loading and rendering are injected through well-defined interfaces — the engine itself is pure, environment-agnostic JavaScript.
+---
 
-In practice: run VMPrint in a browser extension, a Cloudflare Worker, a Lambda, and a Node.js server. The layout output is identical. Same page breaks. Same line wraps. Same glyph positions. The rendering context changes; the layout does not.
+## Built-In Scripting, Not Bolted-On Templating
 
-This is not a promise about "should work in theory." It's an architectural constraint that was enforced from the beginning.
+This is where the architecture starts to feel different from anything you've used before.
 
-## Why Not Just Use...
+Most document pipelines can't let a document respond to its own finished state. You don't know the total page count when you're authoring the footer. You don't know which headings survived layout when you're building the table of contents. You don't know what fits on page three until you've already committed to page three. So you guess, or you run two passes, or you inject values in post-processing. None of it feels clean because none of it is.
 
-**Headless Chrome / Puppeteer**: Works great until it doesn't. Cold starts are slow. Output drifts across browser versions. Edge runtimes typically can't run it at all. You're maintaining a Chromium dependency to produce text in a box — and Chromium is ~170 MB on disk. VMPrint's full dependency tree, including the font engine that makes real glyph measurement possible, is ~2 MiB packed and ~8.7 MiB unpacked.
+VMPrint includes a scripting layer that fires after the document has settled. The engine is the runtime. The document is a living world. Your script participates in it.
 
-**PDFKit / pdf-lib / react-pdf**: You're writing pagination. "If this paragraph doesn't fit, cut here, carry the rest to the next page" — by hand, for every element type, including tables that span pages and headings that must stay with what follows them.
+### The document knows how many pages it is
 
-**LaTeX**: Genuinely excellent at what it does. Also requires a TeX installation, a 1970s input format, and an afternoon of fighting package conflicts.
+```yaml
+---
+methods:
+  onReady(): |
+    setContent("colophon", `Settled across ${doc.getPageCount()} pages.`)
+---
+```
 
-VMPrint handles the pagination. You describe your document. It figures out where things break.
+`onReady` fires once — after layout has fully settled. By then, `doc.getPageCount()` returns the real answer. Not a guess. Not a pre-layout estimate. The actual settled page count, available to any element that wants it.
 
-## How It Started
+That is something template engines cannot do. That is something print CSS cannot do without a second pass. In VMPrint, it is two lines.
 
-> I'm a film director. I hated writing in screenplay software, so I started writing in plain text. Then I wrote a book in Markdown and wanted industry-standard manuscript output — and found no tool I trusted to get there without pain.
->
-> Low-level PDF libraries made me implement my own pagination. Headless browser pipelines were heavy and unpredictable. So I took a detour and built a layout engine first.
->
-> The manuscript is still waiting. The engine shipped instead.
+### Elements can observe the document's own structure
+
+```yaml
+---
+methods:
+  onReady(): |
+    const chapters = elementsByType("h1")
+    sendMessage("toc", {
+      subject: "populate",
+      payload: {
+        pageCount: doc.getPageCount(),
+        chapterCount: chapters.length,
+        opening: chapters[0] ? chapters[0].content : "none"
+      }
+    })
+
+  toc_onMessage(from, msg): |
+    if (msg.subject !== "populate") return
+    const p = msg.payload
+    setContent(self,
+      `${p.chapterCount} chapters · ${p.pageCount} pages · Opens: "${p.opening}"`)
+---
+```
+
+The `toc` element starts as a placeholder. After the document settles, the document itself queries its own heading structure, packages up real settled facts, and sends them as a message. The `toc` element receives the message and rewrites itself with content that could not have existed before layout.
+
+This is the pattern for building tables of contents, document summaries, indices, statistics blocks — anything that needs to know what the document actually contains rather than what you hoped it would contain.
+
+### An element can replace itself — mid-document, without replay
+
+```yaml
+---
+methods:
+  onReady(): |
+    sendMessage("statusTable", { subject: "populate" })
+
+  statusTable_onMessage(from, msg): |
+    if (msg.subject !== "populate") return
+    replace([
+      {
+        type: "table",
+        name: "statusGrid",
+        table: {
+          headerRows: 1,
+          repeatHeader: true,
+          columns: [{ mode: "flex", fr: 3 }, { mode: "flex", fr: 1 }]
+        },
+        children: [
+          {
+            type: "table-row",
+            properties: { semanticRole: "header" },
+            children: [
+              { type: "table-cell", content: "Metric", properties: { style: { fontWeight: 700 } } },
+              { type: "table-cell", content: "Value", properties: { style: { fontWeight: 700 } } }
+            ]
+          },
+          {
+            type: "table-row",
+            children: [
+              { type: "table-cell", content: "Total pages" },
+              { type: "table-cell", content: String(doc.getPageCount()) }
+            ]
+          }
+        ]
+      },
+      {
+        type: "p",
+        content: "Generated after layout settled."
+      }
+    ])
+---
+```
+
+Read that carefully. The `statusTable` element starts as a plain paragraph in the authored document. When `onReady` fires, the document sends it a message. The message handler calls `replace()` — and that paragraph becomes a table and a trailing paragraph, live, in the middle of a settled document.
+
+The document does not start over. The `statusTable` participant is removed from the live session queue. New participants — table, paragraph — are compiled from the replacement AST and spliced in at its position. Settlement resumes from the affected frontier. Everything downstream flows naturally around the new geometry.
+
+This is not post-processing. This is not a second render pass. The document is a world of live actors. Your script is one of them.
+
+Elements can also grow, shrink, coordinate:
+
+```yaml
+---
+methods:
+  greeter_onCreate(): |
+    sendMessage("body", {
+      subject: "decorate",
+      payload: { note: "Appended by a peer after its own creation." }
+    })
+
+  body_onMessage(from, msg): |
+    if (msg.subject !== "decorate") return
+    prepend({ type: "p", content: "[ lead-in added by peer ]", properties: { style: { fontStyle: "italic" } } })
+    append({ type: "p", content: msg.payload.note })
+---
+```
+
+One element fires. Another grows — before and after — in direct response. All of it participates in the same layout physics. Nothing is patched afterward.
+
+The scripting model is built around events, messages, and receiver-oriented mutation. Documents react to lifecycle events. Elements react to their own. Participants coordinate through direct messages. Structural change is a native runtime operation, not a workaround.
+
+For details, see [Scripting API](documents/SCRIPTING-API.md).
+
+---
+
+## In Practice
+
+![Draft2Final - converting markdown source to 325 pages of manuscript](documents/readme-assets/console.jpg)
+
+![Draft2Final - first chapter of Thus Spoke the Khan's Grand Advisor](documents/readme-assets/manuscript.jpg)
+
+> 325 pages. 80,000 words. Markdown to publication-standard PDF. 2.32 seconds. Surface Pro 11 tablet. Running on battery.
+> **No browser. No second pass. No auxiliary files.**
+
+![Writing systems of the world](documents/readme-assets/languages.jpg)
+
+> Full bidirectional text. Five writing systems. No HarfBuzz. No external shaping engine. Every script at its native baseline. Every line at the same distance from the next.
+
+## Full Torture Suite — 20 Regression Fixtures, 100+ Complex Pages
+
+| Scenario | Layout | Render | Total |
+|---|---:|---:|---:|
+| Warmed (shared runtime) | ~410 ms | ~29 ms | ~439 ms |
+
+Because the pipeline is synchronous and the footprint is minimal, VMPrint can run directly in edge environments where other solutions often exceed memory or cold-start limits. It is fast enough to serve PDFs synchronously in response to user requests, without background job queues.
+
+The engine runs identically in Cloudflare Workers, AWS Lambda, Bun, Deno, Node.js, and directly in the browser. Same input. Same fonts. Same config. Identical output — down to the sub-point position of every glyph.
+
+---
+
+## In the Browser
+
+PDF covers the obvious cases. The less obvious case is worth naming.
+
+If you need rich, publication-quality text layout in a browser — not inside a document iframe, not a blob URL workaround, actual layout running directly in JavaScript on a canvas — your choices are thin. HTML and CSS give you a layout engine, but it belongs to the browser. You can style; you cannot instrument, query, or reason about what the layout produced. Canvas gives you full control of the pixel surface but zero text layout primitives. The common workaround is to pipe through something like React-PDF, dump the result to a blob URL, and load it into a viewer. Three layers of indirection to get text on screen.
+
+VMPrint runs natively in the browser. The `WebFontManager` fetches fonts from any URL with an in-memory cache and optional persistent caching via IndexedDB or Cache Storage. The `CanvasContext` builds each page as an SVG scene and rasterizes it onto a canvas element at any scale and DPI. The engine — same spatial simulation, same packagers, same settlement loop — runs in the browser at sub-second layout times.
+
+```ts
+import { WebFontManager } from '@vmprint/web-fonts';
+import { CanvasContext } from '@vmprint/context-canvas';
+
+const fontManager = await WebFontManager.fromCatalogUrl('/fonts/catalog.json');
+const context = new CanvasContext({
+  size: 'LETTER',
+  margins: { top: 72, right: 72, bottom: 72, left: 72 },
+  autoFirstPage: false,
+  bufferPages: false
+});
+
+// ... engine.waitForFonts() + engine.simulate() + renderer.render() ...
+
+await context.renderPageToCanvas(0, canvasElement, { scale: 1, dpi: 144 });
+```
+
+Print preview without a viewer. Live page display embedded in your product. Thumbnails. Anything requiring publication-quality layout on a canvas surface — without spinning up a browser engine to do it.
+
+### Browser Demos
+
+The static demos in `docs/examples/` are self-contained single-page applications — no build step, no server required. Open them directly in a browser.
+
+**[AST JSON to Canvas](docs/examples/ast-to-canvas-webfonts/index.html)** — The full browser pipeline: `WebFontManager + Engine + CanvasContext`. Choose from built-in fixtures or upload your own JSON. Edit the AST live in the browser, hit render, navigate pages, adjust scale and DPI. The canvas demo is also a useful development tool — you can paste any document JSON and immediately see how it lays out, without running the CLI.
+
+**[AST JSON to PDF](docs/examples/ast-to-pdf-webfonts/index.html)** — Same pipeline, output is a PDF download. `WebFontManager + Engine + PdfLiteContext`.
+
+**[Markdown to AST](docs/examples/mkd-to-ast/index.html)** — The transmuter running standalone in the browser. Paste Markdown, get `DocumentInput` JSON. Useful for inspecting what a transmuter produces before feeding it to the engine.
+
+To build from source:
+
+```bash
+npm run docs:build
+# then open docs/examples/index.html in any browser
+```
+
+---
+
+## draft2final
+
+`draft2final` is a manuscript and screenplay compiler built entirely on the VMPrint API. It is also what VMPrint was originally built to produce: a tool that takes Markdown and returns publication-standard output without pain.
+
+```bash
+npx draft2final "manuscript.md"
+npx draft2final "screenplay.md" --as screenplay
+npx draft2final "paper.md" --as academic --style minimal
+```
+
+Supports `--as manuscript / screenplay / academic / literature` and style variants within those forms.
+
+---
 
 ## Getting Started
 
@@ -113,13 +314,15 @@ Render a JSON document to PDF:
 npm run dev --prefix cli -- --input engine/tests/fixtures/regression/00-all-capabilities.json --output out.pdf
 ```
 
-Source-to-PDF (screenplay transmuter):
+Source-to-PDF via `draft2final`:
 
 ```bash
 npm run dev --prefix draft2final -- samples/draft2final/source/screenplay/screenplay-sample.md --as screenplay --out screenplay.pdf
 ```
 
-## Full API Example
+---
+
+## API
 
 ```ts
 import fs from 'fs';
@@ -132,7 +335,7 @@ const config = toLayoutConfig(documentInput);
 const engine = new LayoutEngine(config, runtime);
 
 await engine.waitForFonts();
-const pages = engine.paginate(documentInput.elements);
+const pages = engine.simulate(documentInput.elements);
 
 const context = new PdfContext({
   size: [612, 792],
@@ -141,8 +344,6 @@ const context = new PdfContext({
   bufferPages: false
 });
 
-// Wire the context output to a Node.js write stream.
-// The caller owns I/O; the context owns rendering.
 const fileStream = fs.createWriteStream('output.pdf');
 context.pipe({
   write(chunk) { fileStream.write(chunk); },
@@ -150,7 +351,7 @@ context.pipe({
   waitForFinish() {
     return new Promise((resolve, reject) => {
       fileStream.once('finish', resolve);
-      fileStream.once('error',  reject);
+      fileStream.once('error', reject);
     });
   }
 });
@@ -159,158 +360,110 @@ const renderer = new Renderer(config, false, runtime);
 await renderer.render(pages, context);
 ```
 
-To produce a PDF with no embedded fonts — using only the 14 standard PDF fonts that every viewer guarantees — swap in `StandardFontManager`:
+To use only the 14 standard PDF fonts — no embedded font binaries, zero extra bytes:
 
 ```ts
 import { StandardFontManager } from '@vmprint/standard-fonts';
-
 const runtime = createEngineRuntime({ fontManager: new StandardFontManager() });
 ```
 
-The rest of the pipeline is identical. The engine detects the sentinel buffers that `StandardFontManager` returns and bypasses fontkit in favor of built-in AFM metrics. The PDF output carries font name references only — no binary font data. See [`font-managers/`](font-managers/README.md) for details.
+---
 
 ## What It Can Do
 
-**Pagination & Layout**
-- Desktop Publishing (DTP) style multi-column story regions with adjustable gutters
-- Seamless mixed-layout pages (e.g., full-width headers flowing directly into 3-column articles)
+**Simulation and layout**
+- DTP-style multi-column story regions with adjustable gutters
+- Mixed-layout pages — full-width headers flowing into three-column articles
 - `keepWithNext`, `pageBreakBefore`, orphan and widow controls
-- Tables that span pages: `colspan`, `rowspan`, row splitting, repeated header rows
+- Tables spanning pages: `colspan`, `rowspan`, row splitting, repeated header rows
 - Drop caps and continuation markers when content splits across pages
-- Story zones with text wrapping around complex floating obstacles (even spanning across columns)
+- Text wrapping around complex floating obstacles across column boundaries
 - Inline images and rich objects on text baselines
+- Runtime-driven derived regions and scripted document composition
 
-**Typography and Multilingual**
-
-Most libraries treat international text as an optional concern — get ASCII layout working first, bolt on Unicode support later. VMPrint's text pipeline was built correctly from the start, because the alternative produces subtly wrong output for most of the world's writing systems.
-
-- Text segmentation uses `Intl.Segmenter` for grapheme-accurate line breaking. A grapheme cluster spanning multiple Unicode code points is always treated as a single unit.
-- CJK text breaks correctly between characters, without needing spaces.
-- Indic scripts are measured and broken as grapheme units, not codepoints.
-- Language-aware hyphenation applies per text segment, so a document mixing English and French body text hyphenates each according to its own rules.
-- Mixed-script runs — Latin with embedded CJK, inline code within prose — share the same baseline and are measured correctly across font boundaries.
-- Two justification modes: space-based (standard for Latin) and inter-character (standard for CJK and some print conventions).
-
-![VMPrint manifesto](documents/readme-assets/languages-1.png)
-
-![VMPrint manifesto](documents/readme-assets/languages-2.png)
-
-![VMPrint manifesto](documents/readme-assets/languages-3.png)
-
-> **Multilingual Rendering.** The images above — including all annotations, measurement guides, legends, and script direction markers — are rendered entirely by VMPrint. Source document can be found in the repository under `engine\tests\fixtures\regression`.
+**Typography and multilingual**
+- Grapheme-accurate line breaking via `Intl.Segmenter`
+- Full bidirectional text support without external shaping engines
+- CJK text breaks correctly between characters without spaces
+- Indic scripts measured and broken as grapheme units, not codepoints
+- Language-aware hyphenation per text segment
+- Mixed-script runs sharing the same baseline across font boundaries
+- Optical scaling for mixed-script inline runs
+- Space-based and inter-character justification modes
 
 **Architecture**
-- Core engine is pure TypeScript with zero runtime environment dependencies — no Node.js APIs, no DOM, no native modules
-- One codebase runs in-browser, Node.js, serverless, and edge runtimes with identical layout output
+- Pure TypeScript, zero runtime environment dependencies
+- Identical layout output across browser, Node.js, serverless, and edge runtimes
+- Canvas rendering context for print preview, embedded page display, and thumbnails — no PDF viewer, no iframe
+- Web font manager with URL-based loading, memory cache, and persistent caching via IndexedDB or Cache Storage
 - Swappable font managers and rendering contexts via clean interfaces
-- Overlay hooks for watermarks, debug grids, and print marks
-- Input immutability and snapshot-friendly output for regression testing
+- Deterministic state snapshots and rollback for speculative layout pathfinding
+- Transactional inter-actor communication bus with branch-aware signal isolation
+- Targeted dirty-frontier resimulation with precision restore-point targeting
+- Live runtime scripting with actor-local replacement, insertion, and deletion
+- JSON-serializable `Page[]` output for regression testing and pre-compilation
+- Overlay hooks for instrumentation, debug grids, watermarks, and print marks
 
-## Performance & Footprint
-
-VMPrint is built for sustained throughput. The measurement cache, font cache, and glyph metrics cache are all shared across `LayoutEngine` instances that use the same `EngineRuntime` — so batch pipelines get faster as the runtime warms up, not slower.
-
-On a 9-watt low-power i7, the engine's most complex regression fixture — 8 pages of mixed-script typography, floated images, and multi-page tables — completes in:
-
-| Scenario | font load | layout | total |
-|---|---|---|---|
-| **Warm** (shared runtime, batch pipeline) | ~10 ms | ~66 ms | ~87 ms |
-| **Cold** (fresh process, first invocation) | ~53 ms | ~239 ms | ~292 ms |
-
-The warm figure is what batch PDF generation looks like after the first document has been processed: fonts are already parsed, text measurements are cached, and `paginate()` spends its time on composition rather than measurement. The cold figure is what a fresh CLI invocation sees — fonts parsed from disk, measurement cache empty, JIT compilation running through the hot paths for the first time.
-
-Run the full benchmark suite yourself:
-
-```bash
-cd engine && npm run test:perf -- --repeat=5
-```
-
-Or profile a specific document with the CLI's `--profile-layout` flag, which runs the document cold then twice more warm and reports both:
-
-```
-[vmprint] cold  fontMs: 53.07 | layoutMs: 239.21 | total: 292.28 (8 pages)
-[vmprint] warm  fontMs: 0.21  | layoutMs: 68.44  | total: 68.65  (avg ×2)
-```
-
-**Footprint:** The core engine package is measured by npm tarball size (`npm pack --dry-run --json` in `engine/`). At the time of writing this README, `@vmprint/engine` packs to **136,449 bytes (~133 KiB)**. This is distinct from browser bundle size, which depends on bundler target/format and whether code is minified/compressed.
-
-**Static standard-font bundle snapshot (2026-03-06):**
-
-| Artifact | Raw | Gzip | Brotli |
-|---|---:|---:|---:|
-| `docs/examples/ast-to-pdf` runtime (`index.html` + `styles.css` + `assets/*.js`) | 727,383 B (~710 KiB) | 227,878 B (~223 KiB) | 186,547 B (~182 KiB) |
-| Same runtime + built-in fixtures (`fixtures/*.js`) | 3,441,750 B (~3.28 MiB) | 2,242,504 B (~2.14 MiB) | 2,182,080 B (~2.08 MiB) |
-
-The large jump is from `fixtures/14-flow-images-multipage.js`, which embeds a large base64 image payload and is not required for the core runtime path.
-
-**NPM packed sizes (2026-03-06, `npm pack --dry-run --json`):**
-
-| Package | Tarball size | Unpacked size |
-|---|---:|---:|
-| `@vmprint/engine` | 136,449 B | 713,077 B |
-| `@vmprint/context-pdf-lite` | 5,101 B | 20,001 B |
-| `@vmprint/standard-fonts` | 3,553 B | 11,232 B |
-
-The full dependency tree, including `fontkit` for OpenType parsing, is **~2 MiB** packed and **~8.7 MiB** unpacked — versus Chromium's **~170 MB**. The largest single dependency is `fontkit` (~1.1 MiB packed), which is the cost of reading real glyph metrics rather than approximating them from computed styles. Among headless PDF tools, that's not bloat — it's the price of correctness.
-
-Because the pipeline is synchronous and the footprint is minimal, VMPrint can run directly in edge environments (Cloudflare Workers, Vercel Edge, AWS Lambda) where other solutions often exceed memory or cold-start limits. It is fast enough to serve PDFs synchronously in response to user requests, without background job queues.
+---
 
 ## Packages
-
-This is a monorepo:
 
 | Package | Purpose |
 |---|---|
 | `@vmprint/contracts` | Shared interfaces |
-| `@vmprint/engine` | Deterministic typesetting core |
+| `@vmprint/engine` | Deterministic layout simulation core |
 | `@vmprint/context-pdf` | PDF output context |
-| `@vmprint/local-fonts` | Filesystem font loading |
-| `@vmprint/standard-fonts` | Sentinel-based standard font manager (no font assets) |
 | `@vmprint/context-pdf-lite` | Lightweight jsPDF-based PDF context |
-| `@vmprint/transmuter-mkd-mkd` | Markdown → DocumentInput transmuter |
-| `@vmprint/transmuter-mkd-academic` | Markdown → DocumentInput transmuter (academic defaults) |
-| `@vmprint/transmuter-mkd-literature` | Markdown → DocumentInput transmuter (literature defaults) |
-| `@vmprint/transmuter-mkd-manuscript` | Markdown → DocumentInput transmuter (manuscript defaults) |
-| `@vmprint/transmuter-mkd-screenplay` | Markdown → DocumentInput transmuter (screenplay defaults) |
-| `@vmprint/cli` | `vmprint` JSON → bit-perfect PDF CLI |
-| `@draft2final/cli` | Transmuter-first source → bit-perfect PDF or AST CLI |
+| `@vmprint/context-canvas` | Browser canvas context — page preview, thumbnails, embedded display |
+| `@vmprint/local-fonts` | Filesystem font loading |
+| `@vmprint/standard-fonts` | Standard font manager (no font assets) |
+| `@vmprint/web-fonts` | Browser font manager — fetch from URL, persistent cache |
+| `@vmprint/transmuter-mkd-mkd` | Markdown -> DocumentInput |
+| `@vmprint/transmuter-mkd-academic` | Markdown -> DocumentInput (academic defaults) |
+| `@vmprint/transmuter-mkd-literature` | Markdown -> DocumentInput (literature defaults) |
+| `@vmprint/transmuter-mkd-manuscript` | Markdown -> DocumentInput (manuscript defaults) |
+| `@vmprint/transmuter-mkd-screenplay` | Markdown -> DocumentInput (screenplay defaults) |
+| `@vmprint/cli` | `vmprint` JSON -> PDF CLI |
+| `@draft2final/cli` | Source -> PDF or AST CLI |
 
-## Standalone Browser Bundle (Standard Fonts)
+---
 
-VMPrint also supports a fully static, self-contained browser pipeline:
+## Footprint
 
-- `StandardFontManager + Engine + PdfLiteContext`
-- No Node.js runtime required at usage time
-- No server required (`file://` works)
-- Programmatic/batch-friendly in browser or embedded webview contexts
+The headline number is the browser bundle with standard fonts: engine core plus the BiDi algorithm, no fontkit, no binary font assets — a fully functional layout engine that can typeset real documents across five writing systems, delivered in **~85 KiB over the wire**.
 
-This is demonstrated in [`docs/examples/ast-to-pdf/`](docs/examples/ast-to-pdf/README.md), where AST JSON is rendered directly to downloadable PDF with plain static assets. 
+**Browser bundles (minified, Brotli-compressed):**
 
-Additionally, the standalone Markdown Transmuter can similarly run in the browser without node dependencies, as demonstrated in [`docs/examples/mkd-to-ast/`](docs/examples/mkd-to-ast/README.md).
+| Bundle | What's included | Raw | Brotli |
+|---|---|---:|---:|
+| Engine + BiDi, standard fonts | Engine core + bidi-js. Pairs with `@vmprint/standard-fonts` (the 14 standard PDF fonts; no embedded font binaries). Full layout, full bidirectional text, grapheme-accurate line breaking. | 398,671 B (~390 KiB) | 87,264 B (~85 KiB) |
+| Engine + BiDi + fontkit | Adds fontkit for parsing any TTF/OTF file. Required for custom embedded fonts. | 764,677 B (~747 KiB) | 219,806 B (~215 KiB) |
 
-**Deployable runtime footprint (2026-03-06):**
+The difference between the two is almost entirely fontkit — the OpenType parser. For environments where the 14 standard PDF fonts are sufficient, it is not needed.
 
-| Bundle | Raw | Gzip | Brotli |
-|---|---:|---:|---:|
-| `index.html` + `styles.css` + `assets/*.js` | 727,383 B (~710 KiB) | 227,878 B (~223 KiB) | 186,547 B (~182 KiB) |
+**npm package sizes:**
 
-This mode uses PDF standard fonts (PDF-14), but the capability is still full VMPrint layout + pagination, not a toy export path. You get the same deterministic engine primitives (flow composition, pagination rules, multi-column behavior, table pagination, inline objects) in a tiny static bundle that runs with no backend.
+| Package | Tarball | Unpacked |
+|---|---:|---:|
+| `@vmprint/engine` | 254,331 B (~248 KiB) | 1,384,942 B (~1.32 MiB) |
+| `@vmprint/context-canvas` | 7,687 B (~7.5 KiB) | 29,055 B (~28.4 KiB) |
+| `@vmprint/web-fonts` | 6,650 B (~6.5 KiB) | 26,420 B (~25.8 KiB) |
+| `@vmprint/context-pdf-lite` | 7,209 B (~7.0 KiB) | 26,102 B (~25.5 KiB) |
+| `@vmprint/standard-fonts` | 3,552 B (~3.5 KiB) | 11,125 B (~10.9 KiB) |
+| `@vmprint/context-pdf` | 4,741 B (~4.6 KiB) | 16,072 B (~15.7 KiB) |
+| `@vmprint/local-fonts` | 6,025,162 B (~5.75 MiB) | 12,125,265 B (~11.6 MiB) |
 
-For many product surfaces, this opens a practical alternative to heavyweight client PDF stacks or hand-authored jsPDF logic: fully client-side PDF generation with predictable output and a small transfer/runtime footprint. It is especially useful for offline-first apps, embedded webviews, hybrid mobile apps, kiosk software, and constrained environments where shipping a browser server/runtime is not realistic.
+The `@vmprint/local-fonts` size is almost entirely the bundled font binaries. Full dependency tree including fontkit: **~2 MiB packed / ~8.7 MiB unpacked** — versus Chromium's ~170 MB.
 
-Tradeoff: you are constrained to PDF-14 coverage. If you need custom fonts, wide Unicode script support, or advanced shaping beyond standard-font coverage, switch to a font-binary workflow (`LocalFontManager`/custom font manager + fontkit path).
+---
 
 ## Contributing
 
-The monorepo is layered so that getting involved at any depth is straightforward.
+**Engine** (`engine/`): Layout algorithms, simulation, text shaping, the packager system. This is where the hard problems live. Regression snapshot tests verify that changes haven't broken existing behavior.
 
-**Engine** (`engine/`): Layout algorithms, pagination, text shaping, the packager system. This is where the hard problems live — and where a well-placed contribution has the most leverage. Regression snapshot tests make it possible to verify that changes haven't broken existing behavior.
+**Contexts and font managers** (`contexts/`, `font-managers/`): Concrete implementations of well-defined interfaces. A new context for canvas or SVG. A font manager that loads from a CDN. The contracts are clear, the surface area is contained.
 
-**Contexts and Font Managers** (`contexts/`, `font-managers/`): Concrete implementations of well-defined interfaces. A new context for canvas or SVG output. A font manager that loads from a CDN or a bundled asset. The contracts are clear, the surface area is contained, and a working implementation is immediately useful to anyone on that platform.
-
-**Transmuters** (`transmuters/`): Source semantics live here. Each transmuter maps source text to `DocumentInput` with minimal runtime coupling, so behavior is testable and portable across browser, Node.js, and edge runtimes.
-
-**Draft2Final orchestration**: The CLI is intentionally thin. It resolves transmuter selection (including frontmatter), loads default config/theme files, then emits either PDF (`--out *.pdf`) or AST JSON (`--out *.json`).
+**Transmuters** (`transmuters/`): Source semantics live here. Each transmuter maps source text to `DocumentInput`. Testable and portable across browser, Node.js, and edge runtimes.
 
 ```bash
 npm run test --prefix engine
@@ -319,16 +472,18 @@ npm run build --workspace=draft2final
 npm run test:packaged-integration
 ```
 
+---
+
 ## Status
 
-Version `0.1.0`. The core layout pipeline is working and covered by regression fixtures. PDF output is the production-ready path. RTL/bidi support is partial — full Unicode bidirectional behavior is on the roadmap for v1.x.
+The core layout pipeline is working and covered by regression fixtures. PDF output is the production-ready path. Full bidirectional text support shipped without external shaping dependencies. Scripting Series 1 is now complete as a focused dynamic document-content layer with live runtime composition for its core structural operations. A provisional patent application has been filed covering the spatiotemporal simulation architecture.
 
-This is pre-1.0 software. The API may change.
+The API may evolve. The fundamentals will not.
 
-[Architecture](documents/ARCHITECTURE.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html)
+---
+
+[Authoring Guide](documents/authoring/README.md) · [Architecture](documents/ARCHITECTURE.md) · [Engine Internals](documents/ENGINE-INTERNALS.md) · [Scripting API](documents/SCRIPTING-API.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html) · [Substack](https://substack.com/@cosmiciron)
 
 ## License
 
 Apache 2.0. See [LICENSE](LICENSE).
-
-

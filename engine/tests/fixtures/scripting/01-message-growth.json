@@ -1,0 +1,70 @@
+---
+methods:
+  greeter_onCreate(): |
+    sendMessage("messageTarget", {
+      subject: "greet",
+      payload: {
+        text: "Hello from another element!"
+      }
+    })
+
+  messageTarget_onMessage(from, msg): |
+    if ((from.name == "greeter") && (msg.subject === "greet")) {
+      const originalText = self.content
+      setContent(self, `${originalText}\n\nIncoming message from ${from.name || "doc"}.`)
+
+      append({
+        type: "p",
+        name: "messageTargetReply",
+        content: msg.payload && msg.payload.text ? String(msg.payload.text) : "Hello!",
+        properties: {
+          style: {
+            marginTop: 16,
+            paddingTop: 12,
+            paddingRight: 14,
+            paddingBottom: 12,
+            paddingLeft: 14,
+            backgroundColor: "#f4efe6",
+            borderWidth: 1,
+            borderColor: "#cda96a",
+            fontSize: 15,
+            lineHeight: 1.35
+          }
+        }
+      })    
+    }
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 18,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "messageTarget",
+      "content": "Receiver element: waiting for incoming messages.",
+      "properties": {
+        "style": {
+          "fontSize": 19,
+          "lineHeight": 1.5
+        }
+      }
+    },
+    {
+      "type": "p",
+      "name": "greeter",
+      "content": "Sender element: it dispatches a greeting as soon as it is created.",
+      "properties": {
+        "style": {
+          "marginBottom": 28
+        }
+      }
+    }
+  ]
+}

@@ -25,6 +25,12 @@ type ScriptSegment = { text: string; fontName?: string; fontObject?: any };
 type ScriptRun = { text: string; isCJK: boolean };
 type BidiDirectionRun = { text: string; direction: 'ltr' | 'rtl' };
 
+const SIMPLE_LATIN_WRAP_RE = /^[\u0009\u0020-\u007E\u00A0-\u00FF\u2010-\u201F\u2026]*$/u;
+
+function tokenizeSimpleLatinSegment(text: string): string[] {
+    return text.match(/\s+|[^\s]+/g) ?? [];
+}
+
 export function buildRichWrapTokens(params: {
     flattenedSegments: TextSegment[];
     defaultFontSize: number;
@@ -44,6 +50,9 @@ export function buildRichWrapTokens(params: {
     hasRtlScript: (text: string) => boolean;
     isAdvancedJustifyEnabled: (style?: ElementStyle | Record<string, any>) => boolean;
     resolveRichFontInfo: (seg: TextSegment, defaultFontSize: number) => { font: any; fontSize: number };
+    onBidiSplit?: (durationMs: number) => void;
+    onScriptSplit?: (durationMs: number) => void;
+    onWordSegment?: (durationMs: number) => void;
 }): WrapToken[] {
     const tokens: WrapToken[] = [];
 
@@ -68,15 +77,51 @@ export function buildRichWrapTokens(params: {
         }
 
         const locale = params.getSegmenterLocale((seg.style || params.primaryStyle) as ElementStyle);
+        const canUseSimpleLatinPath =
+            !params.advancedJustify &&
+            !params.preserveDirectionalBoundaries &&
+            params.baseDirection === 'ltr' &&
+            SIMPLE_LATIN_WRAP_RE.test(seg.text);
+
+        if (canUseSimpleLatinPath) {
+            const simpleSubSegments = tokenizeSimpleLatinSegment(seg.text);
+            if (simpleSubSegments.length > 0) {
+                for (const segment of simpleSubSegments) {
+                    const richSubSeg = params.transformSegment({
+                        ...seg,
+                        text: segment
+                    }, seg.fontFamily);
+                    const resolved = params.resolveRichFontInfo(richSubSeg, params.defaultFontSize);
+                    tokens.push({
+                        kind: 'segment',
+                        segment: richSubSeg,
+                        font: resolved.font,
+                        fontSize: resolved.fontSize,
+                        locale,
+                        allowMerge: true,
+                        hyphenationStyle: (richSubSeg.style || seg.style || params.primaryStyle) as ElementStyle,
+                        noLineStart: isForbiddenLineStart(richSubSeg.text || '')
+                    });
+                }
+                continue;
+            }
+        }
+
         const scriptSegments = params.segmentTextByFont(seg.text, seg.fontFamily, locale);
         for (const scriptSeg of scriptSegments) {
+            const bidiT0 = params.onBidiSplit ? performance.now() : 0;
             const bidiRuns = params.splitByBidiDirection(scriptSeg.text, params.baseDirection);
+            if (params.onBidiSplit) params.onBidiSplit(performance.now() - bidiT0);
             for (const bidiRun of bidiRuns) {
+                const scriptT0 = params.onScriptSplit ? performance.now() : 0;
                 const scriptRuns = params.splitByScriptType(bidiRun.text);
+                if (params.onScriptSplit) params.onScriptSplit(performance.now() - scriptT0);
 
                 for (const run of scriptRuns) {
                     const segmenter = params.makeWordSegmenter(locale, run.isCJK);
+                    const wordT0 = params.onWordSegment ? performance.now() : 0;
                     const subSegments = segmenter.segment(run.text);
+                    if (params.onWordSegment) params.onWordSegment(performance.now() - wordT0);
 
                     for (const { segment } of subSegments) {
                         const rawSubSeg = {
@@ -156,6 +201,9 @@ export function wrapTokenStream(params: {
     splitToGraphemes: (text: string, locale?: string) => string[];
     transformSegment: (segment: TextSegment, fontFamily?: string) => TextSegment;
     resolveRichFontInfo: (seg: TextSegment, defaultFontSize: number) => { font: any; fontSize: number };
+    onOverflowToken?: (durationMs: number) => void;
+    onHyphenationAttempt?: (durationMs: number, succeeded: boolean) => void;
+    onGraphemeFallback?: (durationMs: number, graphemeCount: number) => void;
 }): RichLine[] {
     const fitsWidth = (lineWidth: number, segWidth: number, limit: number) =>
         (lineWidth + segWidth) <= (limit + LAYOUT_DEFAULTS.wrapTolerance);
@@ -200,8 +248,10 @@ export function wrapTokenStream(params: {
             continue;
         }
 
+        const overflowT0 = params.onOverflowToken ? performance.now() : 0;
         if (params.hyphenate) {
             const remainingWidth = lineWidthLimit - currentLineWidth;
+            const hyphenT0 = params.onHyphenationAttempt ? performance.now() : 0;
             const hyphenated = params.tryHyphenateSegmentToFit(
                 token.segment,
                 token.font,
@@ -210,6 +260,7 @@ export function wrapTokenStream(params: {
                 remainingWidth,
                 token.hyphenationStyle
             );
+            if (params.onHyphenationAttempt) params.onHyphenationAttempt(performance.now() - hyphenT0, !!hyphenated);
 
             if (hyphenated) {
                 pushSegmentToLine(hyphenated.head, hyphenated.headWidth, false);
@@ -221,7 +272,9 @@ export function wrapTokenStream(params: {
                     currentLine = [hyphenated.tail];
                     currentLineWidth = hyphenated.tailWidth;
                 } else {
-                    for (const grapheme of params.splitToGraphemes(hyphenated.tail.text, token.locale)) {
+                    const graphemeT0 = params.onGraphemeFallback ? performance.now() : 0;
+                    const graphemes = params.splitToGraphemes(hyphenated.tail.text, token.locale);
+                    for (const grapheme of graphemes) {
                         const graphemeSegment = params.transformSegment({ ...hyphenated.tail, text: grapheme }, hyphenated.tail.fontFamily);
                         const graphemeFont = params.resolveRichFontInfo(graphemeSegment, token.fontSize);
                         const graphemeWidth = params.measureText(
@@ -237,7 +290,9 @@ export function wrapTokenStream(params: {
                         }
                         pushSegmentToLine(graphemeSegment, graphemeWidth, false);
                     }
+                    if (params.onGraphemeFallback) params.onGraphemeFallback(performance.now() - graphemeT0, graphemes.length);
                 }
+                if (params.onOverflowToken) params.onOverflowToken(performance.now() - overflowT0);
                 continue;
             }
         }
@@ -260,7 +315,9 @@ export function wrapTokenStream(params: {
         }
 
         if (segmentWidth > getCurrentLineWidthLimit()) {
-            for (const grapheme of params.splitToGraphemes(token.segment.text, token.locale)) {
+            const graphemeT0 = params.onGraphemeFallback ? performance.now() : 0;
+            const graphemes = params.splitToGraphemes(token.segment.text, token.locale);
+            for (const grapheme of graphemes) {
                 const graphemeSegment = params.transformSegment({ ...token.segment, text: grapheme }, token.segment.fontFamily);
                 const graphemeFont = params.resolveRichFontInfo(graphemeSegment, token.fontSize);
                 const graphemeWidth = params.measureText(
@@ -276,13 +333,15 @@ export function wrapTokenStream(params: {
                 }
                 pushSegmentToLine(graphemeSegment, graphemeWidth, token.allowMerge);
             }
+            if (params.onGraphemeFallback) params.onGraphemeFallback(performance.now() - graphemeT0, graphemes.length);
         } else {
             currentLine = [token.segment];
             currentLineWidth = segmentWidth;
         }
+        if (params.onOverflowToken) params.onOverflowToken(performance.now() - overflowT0);
     }
 
-    if (currentLine.length > 0) finalLines.push(currentLine);
+    if (currentLine.length > 0) pushCurrentLine();
     return finalLines.length > 0 ? finalLines : [[params.createEmptyMeasuredSegment(params.fallbackFont)]];
 }
 

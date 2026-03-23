@@ -5,7 +5,7 @@ import { transmute as transmuteAcademic } from '../transmuters/mkd-academic/src/
 import { transmute as transmuteLiterature } from '../transmuters/mkd-literature/src/index';
 import { transmute as transmuteManuscript } from '../transmuters/mkd-manuscript/src/index';
 import { transmute as transmuteScreenplay } from '../transmuters/mkd-screenplay/src/index';
-import type { DocumentInput, ResolvedImage } from '../markdown-core/src';
+import type { DocumentInput, ResolvedImage } from '../transmuters/markdown-core/src';
 
 type TransmuterName = 'mkd-mkd' | 'mkd-academic' | 'mkd-literature' | 'mkd-manuscript' | 'mkd-screenplay';
 

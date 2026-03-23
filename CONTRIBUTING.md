@@ -20,7 +20,7 @@ See the [Quickstart](QUICKSTART.md) guide for instructions on setting up the mon
 
 ## Architecture
 
-Before making significant changes to the engine, please review the [Architecture Documentation](documents/ARCHITECTURE.md).
+Before making significant changes to the engine, please review the [Engine Internals Documentation](documents/ENGINE-INTERNALS.md).
 
 ## License
 

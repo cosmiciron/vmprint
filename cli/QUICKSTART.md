@@ -21,13 +21,13 @@ npm run dev --prefix cli -- --help
 vmprint --input document.json --output out.pdf
 ```
 
+If you are authoring AST `1.1` documents from scratch, use the guide first:
+
+- [VMPrint Authoring Guide](c:\Users\cosmic\Projects\vmprint\documents\authoring\README.md)
+
 ## Inspect the pipeline
 
 ```bash
-# Dump the document IR (pre-layout, normalized and path-resolved)
-vmprint --input document.json --output out.pdf --dump-ir
-# → writes out.ir.json
-
 # Emit the annotated layout stream (post-layout, pre-render)
 vmprint --input document.json --output out.pdf --emit-layout
 # → writes out.layout.json
@@ -81,7 +81,6 @@ vmprint --input document.json --output out.pdf --profile-layout
 | `-i, --input <path>` | Input document JSON |
 | `-o, --output <path>` | Output PDF path |
 | `--font-manager <path>` | JS module exporting a custom `FontManager` class |
-| `--dump-ir [path]` | Write canonical document IR JSON (default: `<output>.ir.json`) |
 | `--emit-layout [path]` | Write annotated layout stream JSON (default: `<output>.layout.json`) |
 | `--render-from-layout <path>` | Render from a saved layout stream, bypassing layout |
 | `--omit-glyphs` | Exclude glyph positioning data from the layout stream |

@@ -17,7 +17,7 @@
               "width": 254.273438,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -35,7 +35,7 @@
               "width": 456.246094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -44,14 +44,14 @@
               "width": 406.869141,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "bidirection-",
               "width": 58.693359,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -60,16 +60,16 @@
               "width": 456.228516,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "be deterministic regardless of platform or run order.",
-              "width": 272.783203,
+              "width": 272.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -87,7 +87,7 @@
               "width": 382.104492,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -102,17 +102,17 @@
           [
             {
               "text": "LEGACY: This paragraph uses the legacy ",
-              "width": 226.119141,
+              "width": 225.457031,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "justifi-",
               "width": 31.335938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -121,7 +121,7 @@
               "width": 249.492188,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -130,7 +130,7 @@
               "width": 243.474609,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -139,7 +139,7 @@
               "width": 162.082031,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -566,7 +566,7 @@
               "width": 239.000977,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1453,7 +1453,7 @@
               "width": 269.041992,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1878,7 +1878,7 @@
               "width": 314.991211,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1932,7 +1932,7 @@
               "width": 174.014648,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1950,7 +1950,7 @@
               "width": 110.044922,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1959,14 +1959,14 @@
               "width": 36.011719,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             },
             {
               "text": "extraordinary-",
               "width": 74.027344,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -1975,7 +1975,7 @@
               "width": 68.695313,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1993,7 +1993,7 @@
               "width": 190.96875,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -2255,7 +2255,7 @@
               "width": 317.030273,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]

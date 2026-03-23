@@ -1,0 +1,900 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "kicker",
+        "x": 50,
+        "y": 50,
+        "w": 512,
+        "h": 10.620312,
+        "lines": [
+          [
+            {
+              "text": "LAYOUT ENGINE · FEATURE SHOWCASE",
+              "width": 185.422852,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "x": 50,
+        "y": 68.620312,
+        "w": 512,
+        "h": 33.378125,
+        "lines": [
+          [
+            {
+              "text": "Block Floats and Column Spans",
+              "width": 336.155273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "body",
+        "x": 50,
+        "y": 113.998437,
+        "w": 161.333333,
+        "h": 197.171875,
+        "lines": [
+          [
+            {
+              "text": "The layout engine now supports ",
+              "width": 144.536133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "floating any block element within a ",
+              "width": 155.087891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "story, not just images. A pull-quote, ",
+              "width": 158.222656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "call-out, or sidebar can anchor at ",
+              "width": 148.413086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the current text cursor and let ",
+              "width": 132.841797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "surrounding body copy wrap around",
+              "width": 159.545898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "it naturally. Obstacle registration ",
+              "width": 144.87793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "works identically to image floats: the",
+              "width": 160.073242,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "block's bounding box is recorded in ",
+              "width": 158.671875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the SpatialMap, and the per-line ",
+              "width": 144.536133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "interval resolver carves out the ",
+              "width": 138.950195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "appropriate horizontal space for ",
+              "width": 143.417969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "every line that overlaps the float ",
+              "width": 143.969727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "vertically.",
+              "width": 40.932617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "pull-quote",
+        "x": 50,
+        "y": 321.170313,
+        "w": 108,
+        "h": 58,
+        "lines": [
+          [
+            {
+              "text": "Text wraps around ",
+              "width": 80.262939,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "any block element, ",
+              "width": 81.849365,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "not just images.",
+              "width": 66.532471,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "body",
+        "x": 50,
+        "y": 321.170313,
+        "w": 161.333333,
+        "h": 267.171875,
+        "lines": [
+          [
+            {
+              "text": "Once the ",
+              "width": 43.359375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "text ",
+              "width": 18.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "cursor ",
+              "width": 30.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "clears the",
+              "width": 43.354492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "bottom of ",
+              "width": 44.467773,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the float, the full column width is ",
+              "width": 144.516602,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "restored and the layout continues as",
+              "width": 161.21582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "normal. The line-width variance ",
+              "width": 141.728516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "visible in the wrapped lines versus ",
+              "width": 154.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the lines below the float confirms ",
+              "width": 147.851563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "that the SpatialMap is correctly ",
+              "width": 139.506836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reporting a narrowed interval only ",
+              "width": 151.191406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for the lines that coexist vertically ",
+              "width": 149.506836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "with the obstacle. No element ",
+              "width": 133.959961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boundary coincides with the float ",
+              "width": 147.866211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boundary: the same text box holds ",
+              "width": 155.649414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "both narrow and full-width lines, ",
+              "width": 143.408203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "distinguished only by per-line data ",
+              "width": 153.984375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "in the _lineWidths array.",
+              "width": 106.52832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "body",
+        "x": 50,
+        "y": 598.342188,
+        "w": 161.333333,
+        "h": 57.171875,
+        "lines": [
+          [
+            {
+              "text": "A second paragraph confirms the ",
+              "width": 150.083008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "spatial state is cleanly reset after ",
+              "width": 147.84668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the float clears and the subsequent ",
+              "width": 158.442383,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "content sees no residual narrowing.",
+              "width": 157.871094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "section-break",
+        "x": 50,
+        "y": 669.514063,
+        "w": 512,
+        "h": 30.689062,
+        "lines": [
+          [
+            {
+              "text": "Column Span",
+              "width": 70.887695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "body",
+        "x": 50,
+        "y": 704.203125,
+        "w": 161.333333,
+        "h": 28,
+        "lines": [
+          [
+            {
+              "text": "This paragraph appears after the ",
+              "width": 148.422852,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "full-width column-span element ",
+              "width": 140.620117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "body",
+        "x": 225.333333,
+        "y": 113.998437,
+        "w": 161.333333,
+        "h": 155.171875,
+        "lines": [
+          [
+            {
+              "text": "above. Column flow resets to ",
+              "width": 131.728516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "column one below the span: content",
+              "width": 160.107422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "begins a fresh three-column ",
+              "width": 126.733398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "arrangement whose top edge aligns",
+              "width": 158.994141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "with the bottom of the section-break ",
+              "width": 161.196289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "banner. The story packager emits ",
+              "width": 151.186523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the spanning element at the full ",
+              "width": 141.762695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "story width and then resumes the ",
+              "width": 150.078125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "per-column layout loop from column",
+              "width": 158.959961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zero, using the span bottom as the ",
+              "width": 156.206055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "new cursor origin.",
+              "width": 78.920898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "body",
+        "x": 225.333333,
+        "y": 279.170313,
+        "w": 161.333333,
+        "h": 141.171875,
+        "lines": [
+          [
+            {
+              "text": "A second paragraph after the span ",
+              "width": 156.772461,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "confirms that multi-paragraph flow ",
+              "width": 153.393555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continues correctly across all three ",
+              "width": 156.733398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "columns. The spanning element ",
+              "width": 144.526367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "does not discard or restart any ",
+              "width": 137.84668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "column state beyond advancing the ",
+              "width": 160.107422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "cursor: obstacles registered before ",
+              "width": 156.743164,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the span remain correctly projected ",
+              "width": 158.964844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "to their columns, and the column ",
+              "width": 147.299805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "count is unchanged.",
+              "width": 89.511719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "body",
+        "x": 225.333333,
+        "y": 430.342188,
+        "w": 161.333333,
+        "h": 29.171875,
+        "lines": [
+          [
+            {
+              "text": "Block floats also work on the right ",
+              "width": 151.738281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "margin, as shown below.",
+              "width": 109.501953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "pull-quote",
+        "x": 278.666667,
+        "y": 469.514063,
+        "w": 108,
+        "h": 60,
+        "lines": [
+          [
+            {
+              "text": "Right-margin block ",
+              "width": 81.835449,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "floats behave ",
+              "width": 59.152344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "symmetrically to ",
+              "width": 70.730469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "left-margin ones.",
+              "width": 70.753662,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "body",
+        "x": 225.333333,
+        "y": 469.514063,
+        "w": 161.333333,
+        "h": 197.171875,
+        "lines": [
+          [
+            {
+              "text": "Text fills ",
+              "width": 38.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the left ",
+              "width": 32.797852,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "portion of ",
+              "width": 44.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "this ",
+              "width": 18.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "column ",
+              "width": 35.014648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "as it wraps around the ",
+              "width": 101.166992,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "right-anchored pull-quote. The float ",
+              "width": 158.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "alignment system works ",
+              "width": 109.477539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "symmetrically for non-image content",
+              "width": 160.615234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "just as it does for images: ",
+              "width": 116.162109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "resolveFloatX produces the correct ",
+              "width": 157.851563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "column-local X for left, right, and ",
+              "width": 146.176758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "center alignment modes without any",
+              "width": 160.087891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "special-casing for the element type.",
+              "width": 157.304688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

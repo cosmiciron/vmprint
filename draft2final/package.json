@@ -1,6 +1,6 @@
 {
   "name": "draft2final",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Professional manuscript and screenplay compiler. Turn Markdown into publication-grade PDFs.",
   "keywords": [
     "typesetting",
@@ -46,6 +46,7 @@
     "build": "tsup",
     "postbuild": "node bundle-assets.mjs",
     "dev": "tsx --conditions tsx src/cli.ts",
+    "profile:document": "tsx --conditions tsx scripts/profile-document.ts",
     "clean": "rimraf dist"
   },
   "devDependencies": {

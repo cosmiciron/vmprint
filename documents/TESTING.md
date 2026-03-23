@@ -1,4 +1,4 @@
-﻿# Testing
+# Testing
 
 VMPrint's test suite is built around one conviction: layout must be deterministic. Same document, same fonts, same configuration — identical output, down to the sub-point position of every glyph, every time. Everything else in the test design follows from that.
 
@@ -12,7 +12,7 @@ From that foundation, the tests pursue four further guarantees:
 
 **Grapheme boundaries are respected.** Line breaks and segment boundaries must never split a grapheme cluster. A combining mark, a variation selector, or a multi-codepoint emoji may not be separated across segments or wrapped lines.
 
-**Input is never mutated.** The engine must not attach internal state (e.g. layout annotations) to the input elements it receives. The same `DocumentInput` must be safely reusable across multiple paginate calls without accumulating side effects.
+**Input is never mutated.** The engine must not attach internal state (e.g. layout annotations) to the input elements it receives. The same `DocumentInput` must be safely reusable across multiple simulate calls without accumulating side effects.
 
 **Structural invariants hold for complex content.** Row-spanned table cells must not split across page boundaries. Drop caps must not repeat on continuation fragments. Continuation markers (MORE / CONT'D) must appear at the correct positions. Floated images must produce non-uniform line widths in the surrounding text. These are verified explicitly, not left to visual inspection.
 
@@ -37,11 +37,11 @@ npm run test:engine  --prefix engine      # regression suite only
 
 **`engine-regression.spec.ts`** — The main regression suite. For each fixture it:
 1. Loads the fixture twice and verifies the canonical IR is identical across loads.
-2. Runs `engine.paginate(elements)` twice and deep-compares the results. If pagination is not deterministic, the test fails immediately.
+2. Runs `engine.simulate(elements)` twice and deep-compares the results. If simulation is not deterministic, the test fails immediately.
 3. Applies fixture-specific structural assertions (described below).
 4. Checks the god fixture against its stored snapshot.
 5. Renders the pages through a `MockContext` and verifies draw call counts and, for selected fixtures, specific rendering signals.
-6. Verifies input immutability after pagination.
+6. Verifies input immutability after simulation.
 
 ### The Harness
 
@@ -68,14 +68,14 @@ Fixtures live in `engine/tests/fixtures/regression/`. Each is a `DocumentInput` 
 | `04-multilingual-scripts` | Mixed-script runs: Latin, CJK, Arabic, Devanagari, Thai |
 | `05-page-size-letter-landscape` | Letter landscape orientation |
 | `06-page-size-custom-landscape` | Custom page dimensions |
-| `07-pagination-fragments` | Block splitting, keepWithNext, orphan/widow controls |
-| `08-dropcap-pagination` | Drop cap sizing, drop cap pagination, no-repeat on continuation |
-| `09-tables-spans-pagination` | colspan, rowspan, row splitting, repeated header rows, span boundary correctness |
+| `07-simulation-fragments` | Block splitting, keepWithNext, orphan/widow controls |
+| `08-dropcap-simulation` | Drop cap sizing, drop cap simulation, no-repeat on continuation |
+| `09-tables-spans-simulation` | colspan, rowspan, row splitting, repeated header rows, span boundary correctness |
 | `10-packager-split-scenarios` | keepWithNext, mid-page table, page-top overflow splits |
 | `11-story-image-floats` | Story zones, image floats, non-uniform line widths, optical underhang |
 | `12-inline-baseline-alignment` | All verticalAlign variants, baseline shift, optical inset metrics |
 | `13-inline-rich-objects` | Inline images on text baselines, multi-page continuation |
-| `14-flow-images-multipage` | Flow-positioned images, multi-page image pagination |
+| `14-flow-images-multipage` | Flow-positioned images, multi-page image simulation |
 
 Many fixtures have a sidecar `.overlay.mjs` file that draws debug annotations — margin rules, box outlines, grid lines — when the fixture is rendered to a PDF using the `generate-fixture-pdfs.mjs` script. These are purely for visual inspection during development; they play no role in the tests.
 
@@ -100,9 +100,9 @@ VMPRINT_UPDATE_LAYOUT_SNAPSHOTS=1 npm run test --prefix engine
 Several fixtures trigger additional checks beyond the universal invariants. These are written against the layout output directly — no pixels, no rendering, just the `Page[]` structure:
 
 - **`02-text-layout-advanced`**: Verifies that advanced-mode justified lines carry `justifyAfter` spacing. Verifies that soft-hyphen breaks produce visible hyphens but no literal `\u00AD` characters in rendered output. Verifies RTL drawing progression (x coordinate decreases across consecutive RTL segments on the same line).
-- **`09-tables-spans-pagination`**: Verifies colspan and rowspan cells are present. Verifies no rowSpan cell is split across a page boundary. Verifies the header row repeats on each continuation page.
+- **`09-tables-spans-simulation`**: Verifies colspan and rowspan cells are present. Verifies no rowSpan cell is split across a page boundary. Verifies the header row repeats on each continuation page.
 - **`10-packager-split-scenarios`**: Verifies the `keep-split` element spans pages and that its keepWithNext lead stays on the first page. Verifies the mid-page table starts after other content. Verifies the page-top overflow element starts at the top of its page.
-- **`08-dropcap-pagination`**: Verifies the dropcap box appears only on the first fragment page, not on continuation pages.
+- **`08-dropcap-simulation`**: Verifies the dropcap box appears only on the first fragment page, not on continuation pages.
 - **`11-story-image-floats`**: Verifies multi-page output with at least six image boxes. Verifies text boxes adjacent to floated images have non-uniform line widths. Verifies optical underhang: lines resume full width once clear of the float obstacle.
 - **`12-inline-baseline-alignment`**: Verifies all five `verticalAlign` modes are present in the output. Verifies `baselineShift` metrics are numeric. Verifies total inline width includes margins.
 - **`14-flow-images-multipage`**: Verifies exactly three flow image boxes across at least two pages.

@@ -1,0 +1,26 @@
+{
+  "expectedTextIncludes": [
+    "Actor",
+    "State",
+    "Swapper",
+    "Live replaced",
+    "This paragraph was created by actor-local replace().",
+    "Tail paragraph: the flow should continue naturally after the replacement."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "swapper",
+      "content": "This actor should be replaced in place."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 2,
+    "createCalls": 1,
+    "messageSendCalls": 1,
+    "messageHandlerCalls": 1,
+    "replaceCalls": 1
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

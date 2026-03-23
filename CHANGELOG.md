@@ -6,6 +6,68 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.0.0] - 2026-03-23
+
+### Added
+
+#### Simulation Runtime and Collaborator Architecture
+- Rebuilt the engine around an explicit simulation kernel, session world, placement runtime, collision runtime, physics runtime, transition runtime, and lifecycle/event dispatch infrastructure instead of a paginator-centered control loop.
+- Introduced the collaborator model for engine-owned coordination concerns such as keep-with-next planning, continuation artifacts, page reservations/exclusions, page regions, heading telemetry, transform capabilities, script runtime integration, and debug overlays.
+- Added simulation reports and report readers so benchmarks, diagnostics, and downstream tooling can consume post-layout facts without reaching into layout-session internals.
+- Added restore-point and snapshot machinery that makes speculative layout, rollback, and deterministic replay first-class engine behavior.
+
+#### Scripting Series 1
+- Added a post-settlement scripting runtime with document and element lifecycle hooks, direct messaging, receiver-oriented mutation, and structural replacement, insertion, and deletion flows.
+- Added script-focused packagers and fixtures covering ready/refresh timing, live replacement, insertion, deletion, and cross-actor interactions.
+- Added a dedicated `documents/SCRIPTING-API.md` reference and expanded authoring documentation for runtime document behavior.
+
+#### Spatial Layout Features
+- Added block-level floats for non-image content inside stories when explicit dimensions are provided.
+- Added story column spanning via `properties.columnSpan`, including full-width spans inside multi-column stories.
+- Added `zone-map` as a first-class layout primitive for bounded side-by-side regions with independent strip layout.
+- Added strip-layout and zone continuation coverage, plus new regression fixtures for nested-table continuation, nested-story continuation, live TOC reactivity, and total-pages footer scenarios.
+
+#### AST 1.1 and Authoring Surface
+- Upgraded the document model to AST 1.1 and refreshed engine fixtures plus transmuters to emit and consume the newer shape consistently.
+- Formalized blueprint preprocessing so `onLoad` and `onCreate` run as a distinct preprocessing phase before layout settlement.
+- Kept AST-driven authoring first-class while aligning the engine internals with the new simulation runtime.
+
+#### Browser and Platform Support
+- Added `@vmprint/context-canvas`, which builds SVG-backed page scenes and renders them into canvas targets for live browser preview.
+- Added `@vmprint/web-fonts`, a browser-first font manager with remote font loading and optional persistent caching.
+- Added browser demos for AST-to-canvas and AST-to-pdf web-font workflows, and expanded the docs examples index to showcase them.
+
+### Changed
+
+#### Engine Internals
+- Made actor formation, splitting, continuation ownership, and placement negotiation explicit in the substrate instead of inferred late in pagination.
+- Moved geometry authority toward the spatial subsystem and session runtime, reducing special-case orchestration in packagers.
+- Unified flow, table, drop-cap, and continuation behavior around shared fragment-state and session-managed artifact generation.
+- Reworked text, image, and table layout paths to cooperate with the simulation runtime while preserving deterministic output.
+
+#### Documentation and Positioning
+- Rewrote the README around the simulation model, scripting surface, browser story, and architecture direction for the 1.0 release.
+- Added `documents/ENGINE-INTERNALS.md`, a multi-part authoring guide under `documents/authoring/`, and broader architecture/API refreshes across the docs set.
+- Updated examples, fixtures, and authoring references to match AST 1.1, zone maps, column spans, scripting, canvas rendering, and web fonts.
+
+#### Release Versions
+- Promoted the workspace packages, including `@vmprint/engine`, to `1.0.0`.
+- Corrected `draft2final` from an accidental rollback to `1.0.0` on 2026-03-18 and released it as `1.0.3`.
+
+### Fixed
+
+#### Release and Packaging Hygiene
+- Restored the intended `draft2final` version progression after the cleanup-pass regression from `1.0.2` to `1.0.0`.
+- Fixed transmuter compatibility with AST 1.1 and resolved the mkd-to-ast version mismatch in the browser demo pipeline.
+- Optimized static-demo payloads and canvas/browser packaging so the browser examples are viable release artifacts rather than experimental leftovers.
+
+#### Layout Stability
+- Fixed long-document snapshot handling during the simulation overhaul.
+- Fixed `finalizePagesWithCallbacks` during the late 1.0 cleanup cycle.
+- Preserved deterministic regression coverage across the architecture rewrite with expanded engine, scripting, strip-layout, spatial-IR, and browser-facing test assets.
+
+---
+
 ## [0.3.1] - 2026-03-12
 
 ### Fixed
@@ -103,7 +165,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Complete implementation of Unicode Bidirectional Algorithm (UAX #9) for proper RTL/LTR text handling
 - New `bidi-js` dependency added to engine for embedding level calculation
 - New `splitByBidiDirection()` function in `text-script-segmentation.ts` for BIDI run segmentation
-- Intelligent neutral character handling — spaces and punctuation between LTR/RTL runs are now properly assigned based on neighboring strong characters
+- Intelligent neutral character handling - spaces and punctuation between LTR/RTL runs are now properly assigned based on neighboring strong characters
 - New engine test fixture: `18-multilingual-arabic` with comprehensive Arabic and mixed bidi layout coverage
 
 ### Fixed
@@ -120,12 +182,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 #### Engine Bidirectional Text Processing
 - `reorderItemsForRtl()` now respects pre-computed BIDI direction from layout engine instead of re-sniffing text
 - Text processor measurement cache keys now include direction and script class for context-aware caching
-- Font shaping integration improved — script tags (`arab`, `deva`, `thai`, etc.) and direction (`ltr`/`rtl`) now properly passed to fontkit
+- Font shaping integration improved - script tags (`arab`, `deva`, `thai`, etc.) and direction (`ltr`/`rtl`) now properly passed to fontkit
 - RTL runs now use explicit OpenType feature list for consistent shaping across measurement and rendering
 - All layout snapshot fixtures regenerated to reflect the improved bidi handling
 
 #### Documentation
-- README updated to remove note about partial RTL/bidi support — full support is now implemented
+- README updated to remove note about partial RTL/bidi support - full support is now implemented
 - All language showcase images regenerated with improved bidi rendering
 
 ## [0.1.2] - 2026-03-07
@@ -190,7 +252,7 @@ A zero-asset `FontManager` that supports all 14 PDF standard fonts without requi
 - New `@vmprint/font-managers/standard` package with `StandardFontManager`
 - Alias table covering all 14 standard fonts plus metric-compatible families: Arimo, Tinos, Cousine, Carlito, Caladea, Noto Sans, and Courier Prime
 - Engine: sentinel detection in the font cache loader; `AfmFontProxy` backed by static AFM metric tables (generated from PDFKit's `.afm` files); per-glyph advance widths and bounding boxes
-- AFM tables keyed by Unicode codepoint (not Adobe Standard Encoding) so extended characters — en-dash, em-dash, smart quotes, etc. — resolve correctly
+- AFM tables keyed by Unicode codepoint (not Adobe Standard Encoding) so extended characters - en-dash, em-dash, smart quotes, etc. - resolve correctly
 - `contexts/pdf`: suppresses font embedding for standard fonts and passes the PostScript name directly to PDFKit using WinAnsiEncoding
 - `font-managers/local`: added Symbol and ZapfDingbats aliases pointing to Noto Sans Symbols 2
 - Architecture documentation: `documents/STANDARD-FONTS.md`
@@ -205,7 +267,7 @@ A zero-asset `FontManager` that supports all 14 PDF standard fonts without requi
 - Smart quotes and smart dashes applied automatically within manuscript documents
 - Manuscript format includes its own config defaults, validator, and theme YAML files
 - New layout snapshot fixtures: `manuscript-layout-sample` and `manuscript-classic-layout-sample`
-- `draft2final/MANUSCRIPT.md` — authoring and format reference
+- `draft2final/MANUSCRIPT.md` - authoring and format reference
 
 #### `VmprintOutputStream` contract
 - New `VmprintOutputStream` interface in `@vmprint/contracts`: a portable `write` / `end` / `waitForFinish` abstraction that callers implement against their own I/O transport
@@ -217,19 +279,19 @@ A zero-asset `FontManager` that supports all 14 PDF standard fonts without requi
 #### draft2final Architecture Overhaul
 The `draft2final` package was substantially restructured to make creating new formats straightforward and reduce per-format boilerplate.
 
-- **"Flavor" renamed to "Theme"** throughout the codebase — themes are now the canonical term for format variants
+- **"Flavor" renamed to "Theme"** throughout the codebase - themes are now the canonical term for format variants
 - Each format (`academic`, `literature`, `markdown`, `screenplay`) was extracted from a monolithic index file into a dedicated `format.ts` module with a `config.defaults.yaml` and a `themes/` directory containing per-theme YAML
 - New shared compiler infrastructure under `draft2final/src/formats/compiler/`:
-  - `compile.ts` — orchestrates format compilation
-  - `config-resolver.ts` — resolves layered configuration (defaults → theme → user overrides)
-  - `format-context.ts` — shared format rendering context
-  - `format-handler.ts` — base handler interface
-  - `inline.ts` — shared inline element compilation
-  - `image.ts` — image handling utilities
-  - `numbering.ts` — numbering utilities
-  - `theme-loader.ts` — theme YAML loading
-  - `markdown-base-format.ts` — shared base for Markdown-derived formats
-  - `rule-based-handler.ts` — declarative rule-based element dispatcher
+  - `compile.ts` - orchestrates format compilation
+  - `config-resolver.ts` - resolves layered configuration (defaults -> theme -> user overrides)
+  - `format-context.ts` - shared format rendering context
+  - `format-handler.ts` - base handler interface
+  - `inline.ts` - shared inline element compilation
+  - `image.ts` - image handling utilities
+  - `numbering.ts` - numbering utilities
+  - `theme-loader.ts` - theme YAML loading
+  - `markdown-base-format.ts` - shared base for Markdown-derived formats
+  - `rule-based-handler.ts` - declarative rule-based element dispatcher
 - `build.ts` and `cli.ts` updated to use the new format registry
 - `format-loader.ts` (previously `flavor-loader.ts`) removed in favour of the new `formats/index.ts` registry
 
@@ -239,7 +301,7 @@ Margin behaviour changed from **collapsing** to **additive** across the engine a
 - Adjacent block margins now sum rather than collapse, matching standard typesetting conventions
 - All `draft2final` format themes (academic, literature, markdown, screenplay) updated with recalibrated margin values
 - All layout snapshot fixtures regenerated to reflect the new behaviour
-- Engine: `paginate-packagers.ts` updated with the new margin accumulation logic
+- Engine: `execute-simulation-march.ts` updated with the new margin accumulation logic
 
 #### Removed Variable Font Support
 Variable font (`.wdf` / `wght`-axis) support has been removed from the engine and context to simplify font handling and make writing new contexts easier.
@@ -247,7 +309,7 @@ Variable font (`.wdf` / `wght`-axis) support has been removed from the engine an
 - Engine: variable-font axis resolution removed from `layout-utils.ts`, `text-processor.ts`, and `font-registration.ts`
 - `contexts/pdf`: variable font subsetting code removed; `fontkit.d.ts` shim removed; `pdfkit-fontkit` dependency dropped
 - `font-managers/local`: variable font assets (ArimoVariable) replaced with four static TTF files (Regular, Bold, Italic, BoldItalic)
-- `contracts`: `FontManager` interface simplified — variable-font fields removed
+- `contracts`: `FontManager` interface simplified - variable-font fields removed
 - Engine font-management ops simplified accordingly
 
 #### CLI: Removed `--context` flag
@@ -266,8 +328,8 @@ The `--context` flag has been removed from the CLI.
 ### Reorganized
 
 - `samples/` directory restructured for discoverability:
-  - `samples/draft2final/source/` — source documents grouped by format
-  - `samples/engine/tests/` — all engine regression PDFs
-  - `samples/overlay/` — overlay pipeline outputs
-- `documents/readme-assets/` — README images and hero assets moved out of `documents/readme/`
+  - `samples/draft2final/source/` - source documents grouped by format
+  - `samples/engine/tests/` - all engine regression PDFs
+  - `samples/overlay/` - overlay pipeline outputs
+- `documents/readme-assets/` - README images and hero assets moved out of `documents/readme/`
 - Removed stale `documents/ROADMAP.md` and `documents/PERFORMANCE_OPTIMIZATION_LOG.md`

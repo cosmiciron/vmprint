@@ -1,13 +1,23 @@
-import { DocumentIR, DocumentInput, Element, ElementProperties, LayoutConfig, VmprintDocumentVersion, VmprintIRVersion } from './types';
+import type {
+    DocumentIR,
+    DocumentInput,
+    Element,
+    ElementProperties,
+    LayoutConfig,
+    VmprintDocumentVersion,
+    VmprintIRVersion
+} from './types';
 
-export const CURRENT_DOCUMENT_VERSION: VmprintDocumentVersion = '1.0';
+export const CURRENT_DOCUMENT_VERSION: VmprintDocumentVersion = '1.1';
 export const CURRENT_IR_VERSION: VmprintIRVersion = '1.0';
+const YAML_FRONT_MATTER_OPEN = '---';
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
     return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
-const ROOT_KEYS = new Set(['documentVersion', 'layout', 'fonts', 'styles', 'elements', 'header', 'footer', 'debug']);
+const ROOT_KEYS = new Set(['documentVersion', 'layout', 'fonts', 'styles', 'elements', 'header', 'footer', 'printPipeline', 'methods', 'scriptVars', 'onBeforeLayout', 'onAfterSettle', 'debug']);
+const PAGE_RESERVATION_SELECTOR_VALUES = new Set(['first', 'odd', 'even', 'all']);
 const LAYOUT_KEYS = new Set([
     'pageSize',
     'orientation',
@@ -21,6 +31,17 @@ const LAYOUT_KEYS = new Set([
     'headerInsetBottom',
     'footerInsetTop',
     'footerInsetBottom',
+    'pageReservationOnFirstPageStart',
+    'pageStartReservationSelector',
+    'pageStartExclusionTop',
+    'pageStartExclusionHeight',
+    'pageStartExclusionX',
+    'pageStartExclusionWidth',
+    'pageStartExclusionX2',
+    'pageStartExclusionWidth2',
+    'pageStartExclusionLeftWidth',
+    'pageStartExclusionRightWidth',
+    'pageStartExclusionSelector',
     'pageNumberStart',
     'lang',
     'direction',
@@ -35,39 +56,46 @@ const LAYOUT_KEYS = new Set([
 ]);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
-const ELEMENT_KEYS = new Set(['type', 'content', 'children', 'columns', 'gutter', 'balance', 'properties']);
+const ELEMENT_KEYS = new Set(['type', 'name', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
+const ZONE_DEFINITION_KEYS = new Set(['id', 'region', 'elements', 'style']);
+const ZONE_REGION_KEYS = new Set(['x', 'y', 'width', 'height']);
+const STRIP_SLOT_KEYS = new Set(['id', 'elements', 'style']);
 const ELEMENT_PROPERTIES_KEYS = new Set([
     'style',
-    'image',
-    'table',
     'colSpan',
     'rowSpan',
     'sourceId',
     'linkTarget',
     'semanticRole',
-    'dropCap',
-    'layout',
     'reflowKey',
     'keepWithNext',
+    'onResolve',
+    'onMessage',
     'marginTop',
     'marginBottom',
     'paginationContinuation',
     'pageOverrides',
     'sourceRange',
     'sourceSyntax',
-    'language'
+    'language',
+    'pageReservationAfter',
+    'toc'
 ]);
 const PAGINATION_CONTINUATION_KEYS = new Set(['enabled', 'markerAfterSplit', 'markerBeforeContinuation', 'markersBeforeContinuation']);
 const CONTINUATION_MARKER_KEYS = new Set(['type', 'content', 'style', 'properties']);
 const SOURCE_RANGE_KEYS = new Set(['lineStart', 'colStart', 'lineEnd', 'colEnd']);
 const IMAGE_PAYLOAD_KEYS = new Set(['data', 'mimeType', 'fit']);
 const TABLE_LAYOUT_KEYS = new Set(['headerRows', 'repeatHeader', 'columnGap', 'rowGap', 'columns', 'cellStyle', 'headerCellStyle']);
+const ZONE_LAYOUT_KEYS = new Set(['columns', 'gap', 'frameOverflow', 'worldBehavior']);
+const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
 const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap']);
 const PAGE_REGION_DEFINITION_KEYS = new Set(['default', 'firstPage', 'odd', 'even']);
 const PAGE_REGION_CONTENT_KEYS = new Set(['elements', 'style']);
 const PAGE_OVERRIDES_KEYS = new Set(['header', 'footer']);
+const PRINT_PIPELINE_KEYS = new Set(['tableOfContents']);
+const TABLE_OF_CONTENTS_KEYS = new Set(['reservedPageCount', 'title', 'titleType', 'entryType', 'indentPerLevel', 'includeTitle']);
 const STYLE_KEYS = new Set([
     'fontFamily',
     'fontSize',
@@ -235,6 +263,53 @@ function validateLayout(layout: unknown, documentPath: string): void {
     if (obj.headerInsetBottom !== undefined) assertFiniteNumberAt(obj.headerInsetBottom, 'layout.headerInsetBottom', documentPath);
     if (obj.footerInsetTop !== undefined) assertFiniteNumberAt(obj.footerInsetTop, 'layout.footerInsetTop', documentPath);
     if (obj.footerInsetBottom !== undefined) assertFiniteNumberAt(obj.footerInsetBottom, 'layout.footerInsetBottom', documentPath);
+    if (obj.pageReservationOnFirstPageStart !== undefined) {
+        assertFiniteNumberAt(obj.pageReservationOnFirstPageStart, 'layout.pageReservationOnFirstPageStart', documentPath);
+    }
+    if (obj.pageStartReservationSelector !== undefined) {
+        assertStringAt(obj.pageStartReservationSelector, 'layout.pageStartReservationSelector', documentPath);
+        if (!PAGE_RESERVATION_SELECTOR_VALUES.has(String(obj.pageStartReservationSelector))) {
+            contractError(
+                documentPath,
+                'layout.pageStartReservationSelector',
+                'expected one of "first", "odd", "even", or "all".'
+            );
+        }
+    }
+    if (obj.pageStartExclusionTop !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionTop, 'layout.pageStartExclusionTop', documentPath);
+    }
+    if (obj.pageStartExclusionHeight !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionHeight, 'layout.pageStartExclusionHeight', documentPath);
+    }
+    if (obj.pageStartExclusionX !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionX, 'layout.pageStartExclusionX', documentPath);
+    }
+    if (obj.pageStartExclusionWidth !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionWidth, 'layout.pageStartExclusionWidth', documentPath);
+    }
+    if (obj.pageStartExclusionX2 !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionX2, 'layout.pageStartExclusionX2', documentPath);
+    }
+    if (obj.pageStartExclusionWidth2 !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionWidth2, 'layout.pageStartExclusionWidth2', documentPath);
+    }
+    if (obj.pageStartExclusionLeftWidth !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionLeftWidth, 'layout.pageStartExclusionLeftWidth', documentPath);
+    }
+    if (obj.pageStartExclusionRightWidth !== undefined) {
+        assertFiniteNumberAt(obj.pageStartExclusionRightWidth, 'layout.pageStartExclusionRightWidth', documentPath);
+    }
+    if (obj.pageStartExclusionSelector !== undefined) {
+        assertStringAt(obj.pageStartExclusionSelector, 'layout.pageStartExclusionSelector', documentPath);
+        if (!PAGE_RESERVATION_SELECTOR_VALUES.has(String(obj.pageStartExclusionSelector))) {
+            contractError(
+                documentPath,
+                'layout.pageStartExclusionSelector',
+                'expected one of "first", "odd", "even", or "all".'
+            );
+        }
+    }
     if (obj.pageNumberStart !== undefined) assertFiniteNumberAt(obj.pageNumberStart, 'layout.pageNumberStart', documentPath);
     if (obj.lang !== undefined) assertStringAt(obj.lang, 'layout.lang', documentPath);
     if (obj.hyphenateCaps !== undefined) assertBooleanAt(obj.hyphenateCaps, 'layout.hyphenateCaps', documentPath);
@@ -251,6 +326,26 @@ function validateLayout(layout: unknown, documentPath: string): void {
                 continue;
             }
             assertFiniteNumberAt(value, `layout.opticalScaling.${key}`, documentPath);
+        }
+    }
+}
+
+function validatePrintPipeline(printPipeline: unknown, documentPath: string): void {
+    const pipeline = assertPlainObjectAt(printPipeline, 'printPipeline', documentPath);
+    assertAllowedKeys(pipeline, PRINT_PIPELINE_KEYS, 'printPipeline', documentPath);
+
+    if (pipeline.tableOfContents !== undefined) {
+        const toc = assertPlainObjectAt(pipeline.tableOfContents, 'printPipeline.tableOfContents', documentPath);
+        assertAllowedKeys(toc, TABLE_OF_CONTENTS_KEYS, 'printPipeline.tableOfContents', documentPath);
+        assertFiniteNumberAt(toc.reservedPageCount, 'printPipeline.tableOfContents.reservedPageCount', documentPath);
+        if (toc.title !== undefined) assertStringAt(toc.title, 'printPipeline.tableOfContents.title', documentPath);
+        if (toc.titleType !== undefined) assertStringAt(toc.titleType, 'printPipeline.tableOfContents.titleType', documentPath);
+        if (toc.entryType !== undefined) assertStringAt(toc.entryType, 'printPipeline.tableOfContents.entryType', documentPath);
+        if (toc.indentPerLevel !== undefined) {
+            assertFiniteNumberAt(toc.indentPerLevel, 'printPipeline.tableOfContents.indentPerLevel', documentPath);
+        }
+        if (toc.includeTitle !== undefined) {
+            assertBooleanAt(toc.includeTitle, 'printPipeline.tableOfContents.includeTitle', documentPath);
         }
     }
 }
@@ -459,13 +554,107 @@ function validateTableLayoutOptions(value: unknown, path: string, documentPath: 
     }
 }
 
-function validateElementProperties(properties: unknown, path: string, documentPath: string): void {
+function validateZoneDefinition(value: unknown, path: string, documentPath: string): void {
+    const zone = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(zone, ZONE_DEFINITION_KEYS, path, documentPath);
+
+    if (zone.id !== undefined) assertStringAt(zone.id, `${path}.id`, documentPath);
+    if (zone.region !== undefined) {
+        const region = assertPlainObjectAt(zone.region, `${path}.region`, documentPath);
+        assertAllowedKeys(region, ZONE_REGION_KEYS, `${path}.region`, documentPath);
+        assertFiniteNumberAt(region.x, `${path}.region.x`, documentPath);
+        assertFiniteNumberAt(region.y, `${path}.region.y`, documentPath);
+        assertFiniteNumberAt(region.width, `${path}.region.width`, documentPath);
+        if (Number(region.width) < 0) {
+            contractError(documentPath, `${path}.region.width`, 'must be >= 0.');
+        }
+        if (region.height !== undefined) {
+            assertFiniteNumberAt(region.height, `${path}.region.height`, documentPath);
+            if (Number(region.height) < 0) {
+                contractError(documentPath, `${path}.region.height`, 'must be >= 0.');
+            }
+        }
+    }
+    if (zone.style !== undefined) validateStyleObject(zone.style, `${path}.style`, documentPath);
+
+    if (zone.elements === undefined || !Array.isArray(zone.elements)) {
+        contractError(documentPath, `${path}.elements`, 'expected an array of block elements.');
+    } else {
+        zone.elements.forEach((child: unknown, index: number) =>
+            validateElementNode(child, `${path}.elements[${index}]`, documentPath)
+        );
+    }
+}
+
+function validateZoneLayoutOptions(value: unknown, path: string, documentPath: string): void {
+    const options = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(options, ZONE_LAYOUT_KEYS, path, documentPath);
+
+    if (options.gap !== undefined) assertFiniteNumberAt(options.gap, `${path}.gap`, documentPath);
+    if (options.frameOverflow !== undefined) {
+        assertEnumAt(options.frameOverflow, ['move-whole', 'continue'], `${path}.frameOverflow`, documentPath);
+    }
+    if (options.worldBehavior !== undefined) {
+        assertEnumAt(options.worldBehavior, ['fixed', 'spanning', 'expandable'], `${path}.worldBehavior`, documentPath);
+    }
+
+    if (options.columns !== undefined) {
+        if (!Array.isArray(options.columns)) {
+            contractError(documentPath, `${path}.columns`, 'expected an array.');
+        }
+        options.columns.forEach((entry, index) => {
+            validateTableColumnDefinition(entry, `${path}.columns[${index}]`, documentPath);
+        });
+    }
+}
+
+function validateStripSlot(value: unknown, path: string, documentPath: string): void {
+    const slot = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(slot, STRIP_SLOT_KEYS, path, documentPath);
+
+    if (slot.id !== undefined) assertStringAt(slot.id, `${path}.id`, documentPath);
+    if (slot.style !== undefined) validateStyleObject(slot.style, `${path}.style`, documentPath);
+
+    if (slot.elements === undefined || !Array.isArray(slot.elements)) {
+        contractError(documentPath, `${path}.elements`, 'expected an array of block elements.');
+    } else {
+        slot.elements.forEach((child: unknown, index: number) =>
+            validateElementNode(child, `${path}.elements[${index}]`, documentPath)
+        );
+    }
+}
+
+function validateStripLayoutOptions(value: unknown, path: string, documentPath: string): void {
+    const options = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(options, STRIP_LAYOUT_KEYS, path, documentPath);
+
+    if (options.gap !== undefined) assertFiniteNumberAt(options.gap, `${path}.gap`, documentPath);
+
+    if (options.tracks !== undefined) {
+        if (!Array.isArray(options.tracks)) {
+            contractError(documentPath, `${path}.tracks`, 'expected an array.');
+        }
+        options.tracks.forEach((entry, index) => {
+            validateTableColumnDefinition(entry, `${path}.tracks[${index}]`, documentPath);
+        });
+    }
+}
+
+function validateColumnSpanValue(value: unknown, path: string, documentPath: string): void {
+    if (value !== 'all' && (typeof value !== 'number' || !Number.isFinite(value) || value < 2)) {
+        contractError(documentPath, path, "expected 'all' or a finite number >= 2.");
+    }
+}
+
+function validateElementProperties(
+    properties: unknown,
+    path: string,
+    documentPath: string
+): void {
     const props = assertPlainObjectAt(properties, path, documentPath);
     assertAllowedKeys(props, ELEMENT_PROPERTIES_KEYS, path, documentPath, { allowUnderscore: true });
 
     if (props.style !== undefined) validateStyleObject(props.style, `${path}.style`, documentPath);
-    if (props.image !== undefined) validateEmbeddedImagePayload(props.image, `${path}.image`, documentPath);
-    if (props.table !== undefined) validateTableLayoutOptions(props.table, `${path}.table`, documentPath);
     if (props.paginationContinuation !== undefined) validatePaginationContinuation(props.paginationContinuation, `${path}.paginationContinuation`, documentPath);
     if (props.pageOverrides !== undefined) validatePageOverrides(props.pageOverrides, `${path}.pageOverrides`, documentPath);
     if (props.colSpan !== undefined) assertFiniteNumberAt(props.colSpan, `${path}.colSpan`, documentPath);
@@ -474,8 +663,8 @@ function validateElementProperties(properties: unknown, path: string, documentPa
     if (props.sourceId !== undefined) assertStringAt(props.sourceId, `${path}.sourceId`, documentPath);
     if (props.linkTarget !== undefined) assertStringAt(props.linkTarget, `${path}.linkTarget`, documentPath);
     if (props.semanticRole !== undefined) assertStringAt(props.semanticRole, `${path}.semanticRole`, documentPath);
-    if (props.dropCap !== undefined) validateDropCapSpec(props.dropCap, `${path}.dropCap`, documentPath);
-    if (props.layout !== undefined) validateStoryLayoutDirective(props.layout, `${path}.layout`, documentPath);
+    if (props.onResolve !== undefined) assertStringAt(props.onResolve, `${path}.onResolve`, documentPath);
+    if (props.onMessage !== undefined) assertStringAt(props.onMessage, `${path}.onMessage`, documentPath);
     if (props.reflowKey !== undefined) assertStringAt(props.reflowKey, `${path}.reflowKey`, documentPath);
     if (props.sourceSyntax !== undefined) assertStringAt(props.sourceSyntax, `${path}.sourceSyntax`, documentPath);
     if (props.language !== undefined) assertStringAt(props.language, `${path}.language`, documentPath);
@@ -499,12 +688,15 @@ function validateEmbeddedImagePayload(value: unknown, path: string, documentPath
     }
 }
 
-function validateElementNode(node: unknown, path: string, documentPath: string): void {
+function validateElementNode(node: unknown, path: string, documentPath: string, parentType?: string): void {
     const element = assertPlainObjectAt(node, path, documentPath);
     assertAllowedKeys(element, ELEMENT_KEYS, path, documentPath);
 
     if (typeof element.type !== 'string' || element.type.trim().length === 0) {
         contractError(documentPath, `${path}.type`, 'expected a non-empty string.');
+    }
+    if (element.name !== undefined && typeof element.name !== 'string') {
+        contractError(documentPath, `${path}.name`, 'expected a string.');
     }
     if (element.content !== undefined && typeof element.content !== 'string') {
         contractError(documentPath, `${path}.content`, 'expected a string.');
@@ -515,6 +707,30 @@ function validateElementNode(node: unknown, path: string, documentPath: string):
     if (element.gutter !== undefined) {
         assertFiniteNumberAt(element.gutter, `${path}.gutter`, documentPath);
     }
+    if (element.image !== undefined) {
+        validateEmbeddedImagePayload(element.image, `${path}.image`, documentPath);
+    }
+    if (element.table !== undefined) {
+        validateTableLayoutOptions(element.table, `${path}.table`, documentPath);
+    }
+    if (element.zoneLayout !== undefined) {
+        validateZoneLayoutOptions(element.zoneLayout, `${path}.zoneLayout`, documentPath);
+    }
+    if (element.stripLayout !== undefined) {
+        validateStripLayoutOptions(element.stripLayout, `${path}.stripLayout`, documentPath);
+    }
+    if (element.dropCap !== undefined) {
+        validateDropCapSpec(element.dropCap, `${path}.dropCap`, documentPath);
+    }
+    if (element.columnSpan !== undefined) {
+        validateColumnSpanValue(element.columnSpan, `${path}.columnSpan`, documentPath);
+    }
+    if (element.placement !== undefined) {
+        if (parentType !== 'story') {
+            contractError(documentPath, `${path}.placement`, 'is only allowed on direct children of story elements.');
+        }
+        validateStoryLayoutDirective(element.placement, `${path}.placement`, documentPath);
+    }
     if (String(element.type).trim() === 'story') {
         if (element.columns !== undefined && Number(element.columns) < 1) {
             contractError(documentPath, `${path}.columns`, 'must be >= 1 for story elements.');
@@ -524,11 +740,31 @@ function validateElementNode(node: unknown, path: string, documentPath: string):
         }
     }
 
+    if (element.zones !== undefined) {
+        if (!Array.isArray(element.zones)) {
+            contractError(documentPath, `${path}.zones`, 'expected an array of zone definitions.');
+        } else {
+            element.zones.forEach((zone: unknown, index: number) =>
+                validateZoneDefinition(zone, `${path}.zones[${index}]`, documentPath)
+            );
+        }
+    }
+
+    if (element.slots !== undefined) {
+        if (!Array.isArray(element.slots)) {
+            contractError(documentPath, `${path}.slots`, 'expected an array of strip slots.');
+        } else {
+            element.slots.forEach((slot: unknown, index: number) =>
+                validateStripSlot(slot, `${path}.slots[${index}]`, documentPath)
+            );
+        }
+    }
+
     if (element.children !== undefined) {
         if (!Array.isArray(element.children)) {
             contractError(documentPath, `${path}.children`, 'expected an array.');
         }
-        element.children.forEach((child, index) => validateElementNode(child, `${path}.children[${index}]`, documentPath));
+        element.children.forEach((child, index) => validateElementNode(child, `${path}.children[${index}]`, documentPath, String(element.type)));
     }
 
     if (element.properties !== undefined) {
@@ -536,10 +772,23 @@ function validateElementNode(node: unknown, path: string, documentPath: string):
     }
 
     if (String(element.type).trim() === 'image') {
-        const props = element.properties as Record<string, unknown> | undefined;
-        if (!props || props.image === undefined) {
-            contractError(documentPath, `${path}.properties.image`, 'is required when element.type is "image".');
+        if (element.image === undefined) {
+            contractError(documentPath, `${path}.image`, 'is required when element.type is "image".');
         }
+    }
+
+    if (String(element.type).trim() === 'strip') {
+        if (element.children !== undefined) {
+            contractError(documentPath, `${path}.children`, 'is not allowed on strip elements. Use slots[].elements instead.');
+        }
+        if (element.zones !== undefined) {
+            contractError(documentPath, `${path}.zones`, 'is not allowed on strip elements.');
+        }
+        if (element.slots === undefined || !Array.isArray(element.slots)) {
+            contractError(documentPath, `${path}.slots`, 'is required on strip elements.');
+        }
+    } else if (element.slots !== undefined) {
+        contractError(documentPath, `${path}.slots`, 'is only allowed on strip elements.');
     }
 }
 
@@ -572,6 +821,24 @@ function validateDocumentContract(document: DocumentInput, documentPath: string)
     });
     if (document.header !== undefined) validatePageRegionDefinition(document.header, 'header', documentPath);
     if (document.footer !== undefined) validatePageRegionDefinition(document.footer, 'footer', documentPath);
+    if (document.printPipeline !== undefined) validatePrintPipeline(document.printPipeline, documentPath);
+    if (document.onBeforeLayout !== undefined) {
+        assertStringAt(document.onBeforeLayout, 'onBeforeLayout', documentPath);
+    }
+    if (document.onAfterSettle !== undefined) {
+        assertStringAt(document.onAfterSettle, 'onAfterSettle', documentPath);
+    }
+    if (document.methods !== undefined) {
+        const methods = assertPlainObjectAt(document.methods, 'methods', documentPath);
+        for (const [methodName, methodValue] of Object.entries(methods)) {
+            if (typeof methodValue === 'string') continue;
+            if (Array.isArray(methodValue) && methodValue.every((entry) => typeof entry === 'string')) continue;
+            contractError(documentPath, `methods.${methodName}`, 'expected a string or string array.');
+        }
+    }
+    if (document.scriptVars !== undefined) {
+        assertPlainObjectAt(document.scriptVars, 'scriptVars', documentPath);
+    }
 }
 
 function deepSortObject<T>(value: T): T {
@@ -590,9 +857,56 @@ function deepSortObject<T>(value: T): T {
     return out as T;
 }
 
+function normalizePageRegionContent(content: Record<string, unknown>): Record<string, unknown> {
+    const normalized: Record<string, unknown> = {};
+    if (Array.isArray(content.elements)) {
+        normalized.elements = content.elements.map((element) => normalizeElementNode(element as Element));
+    }
+    if (content.style !== undefined) {
+        normalized.style = deepSortObject(content.style);
+    }
+    return normalized;
+}
+
+function normalizePageRegionDefinition(
+    definition: Record<string, unknown> | undefined
+): Record<string, unknown> | undefined {
+    if (!isPlainObject(definition)) return undefined;
+    const normalized: Record<string, unknown> = {};
+    for (const key of ['default', 'firstPage', 'odd', 'even'] as const) {
+        const entry = definition[key];
+        if (entry === undefined) continue;
+        if (entry === null) {
+            normalized[key] = null;
+            continue;
+        }
+        if (isPlainObject(entry)) {
+            normalized[key] = normalizePageRegionContent(entry);
+        }
+    }
+    return Object.keys(normalized).length > 0 ? deepSortObject(normalized) : undefined;
+}
+
 function normalizeElementProperties(properties: ElementProperties | undefined): ElementProperties | undefined {
     if (!isPlainObject(properties)) return undefined;
     const normalized = deepSortObject(properties) as ElementProperties;
+    if (isPlainObject(normalized.pageOverrides)) {
+        const pageOverrides = normalized.pageOverrides as Record<string, unknown>;
+        const normalizedOverrides: Record<string, unknown> = {};
+        if (pageOverrides.header === null) {
+            normalizedOverrides.header = null;
+        } else if (isPlainObject(pageOverrides.header)) {
+            normalizedOverrides.header = normalizePageRegionContent(pageOverrides.header);
+        }
+        if (pageOverrides.footer === null) {
+            normalizedOverrides.footer = null;
+        } else if (isPlainObject(pageOverrides.footer)) {
+            normalizedOverrides.footer = normalizePageRegionContent(pageOverrides.footer);
+        }
+        normalized.pageOverrides = Object.keys(normalizedOverrides).length > 0
+            ? deepSortObject(normalizedOverrides) as any
+            : undefined;
+    }
     return Object.keys(normalized).length > 0 ? normalized : undefined;
 }
 
@@ -606,10 +920,46 @@ function normalizeElementNode(element: Element): Element {
         ? element.children.map((child) => normalizeElementNode(child))
         : undefined;
     const normalizedProperties = normalizeElementProperties(element?.properties);
+    const normalizedName = typeof element?.name === 'string' && element.name.trim()
+        ? element.name.trim()
+        : (
+            typeof element?.properties?.name === 'string' && String(element.properties.name).trim()
+                ? String(element.properties.name).trim()
+                : undefined
+        );
     const normalized: Element = {
         type,
         content: typeof element?.content === 'string' ? element.content : ''
     };
+    if (normalizedName) {
+        normalized.name = normalizedName;
+    }
+
+    if (element.image !== undefined) {
+        normalized.image = deepSortObject(element.image as any);
+    }
+    if (element.table !== undefined) {
+        normalized.table = deepSortObject(element.table as any);
+    }
+    if (element.zoneLayout !== undefined) {
+        const normalizedZoneLayout = deepSortObject(element.zoneLayout as any) as Record<string, unknown>;
+        if (normalizedZoneLayout.worldBehavior === undefined) {
+            normalizedZoneLayout.worldBehavior = 'fixed';
+        }
+        normalized.zoneLayout = normalizedZoneLayout as any;
+    }
+    if (element.stripLayout !== undefined) {
+        normalized.stripLayout = deepSortObject(element.stripLayout as any);
+    }
+    if (element.dropCap !== undefined) {
+        normalized.dropCap = deepSortObject(element.dropCap as any);
+    }
+    if (element.columnSpan !== undefined) {
+        normalized.columnSpan = element.columnSpan;
+    }
+    if (element.placement !== undefined) {
+        normalized.placement = deepSortObject(element.placement as any);
+    }
     if (element.columns !== undefined && Number.isFinite(Number(element.columns))) {
         normalized.columns = Number(element.columns);
     }
@@ -623,11 +973,250 @@ function normalizeElementNode(element: Element): Element {
     if (normalizedChildren && normalizedChildren.length > 0) {
         normalized.children = normalizedChildren;
     }
+    if (Array.isArray(element.zones)) {
+        normalized.zones = element.zones.map((zone) => ({
+            ...(zone.id !== undefined ? { id: String(zone.id) } : {}),
+            ...(zone.region !== undefined
+                ? {
+                    region: deepSortObject({
+                        x: Number(zone.region.x),
+                        y: Number(zone.region.y),
+                        width: Number(zone.region.width),
+                        ...(zone.region.height !== undefined ? { height: Number(zone.region.height) } : {})
+                    })
+                }
+                : {}),
+            elements: Array.isArray(zone.elements)
+                ? zone.elements.map((e) => normalizeElementNode(e))
+                : [],
+            ...(zone.style !== undefined ? { style: zone.style } : {})
+        }));
+    }
     if (normalizedProperties) {
+        if (normalizedName && !normalizedProperties.sourceId) {
+            normalizedProperties.sourceId = normalizedName;
+        }
         normalized.properties = normalizedProperties;
+        if (Object.keys(normalized.properties).length === 0) {
+            delete normalized.properties;
+        }
+    } else if (normalizedName) {
+        normalized.properties = { sourceId: normalizedName };
+    }
+    if (type === 'strip') {
+        const slots = Array.isArray(element.slots)
+            ? element.slots.map((slot) => ({
+                id: slot.id !== undefined ? String(slot.id) : undefined,
+                elements: Array.isArray(slot.elements)
+                    ? slot.elements.map((child) => normalizeElementNode(child))
+                    : [],
+                style: slot.style
+            }))
+            : [];
+        const stripOptions = isPlainObject(normalized.stripLayout)
+            ? (normalized.stripLayout as Record<string, unknown>)
+            : {};
+        return {
+            type: 'zone-map',
+            content: '',
+            zoneLayout: {
+                columns: Array.isArray(stripOptions.tracks) ? stripOptions.tracks as any[] : [],
+                gap: stripOptions.gap !== undefined ? stripOptions.gap as number : 0,
+                worldBehavior: 'fixed'
+            },
+            zones: slots.map((slot) => ({
+                ...(slot.id !== undefined ? { id: slot.id } : {}),
+                elements: slot.elements,
+                ...(slot.style !== undefined ? { style: slot.style } : {})
+            })),
+            properties: Object.keys(normalized.properties || {}).length > 0 ? normalized.properties : undefined
+        };
     }
 
     return normalized;
+}
+
+function parseYamlScalar(raw: string): unknown {
+    const value = raw.trim();
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    if (value === 'null') return null;
+    if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
+    if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith('\'') && value.endsWith('\''))
+    ) {
+        return value.slice(1, -1);
+    }
+    return value;
+}
+
+function countLeadingSpaces(value: string): number {
+    let count = 0;
+    while (count < value.length && value[count] === ' ') count += 1;
+    return count;
+}
+
+function parseYamlBlock(
+    lines: string[],
+    startIndex: number,
+    parentIndent: number,
+    documentPath: string
+): { value: Record<string, unknown>; nextIndex: number } {
+    const output: Record<string, unknown> = {};
+    let index = startIndex;
+
+    while (index < lines.length) {
+        const rawLine = lines[index];
+        if (!rawLine.trim() || rawLine.trimStart().startsWith('#')) {
+            index += 1;
+            continue;
+        }
+
+        const indent = countLeadingSpaces(rawLine);
+        if (indent <= parentIndent) break;
+        if (indent !== parentIndent + 2) {
+            throw new Error(
+                `[document] Front matter in "${documentPath}" is invalid at line ${index + 1}: unexpected indentation.`
+            );
+        }
+
+        const line = rawLine.slice(indent);
+        const separatorIndex = line.indexOf(':');
+        if (separatorIndex <= 0) {
+            throw new Error(
+                `[document] Front matter in "${documentPath}" is invalid at line ${index + 1}: expected "key: value".`
+            );
+        }
+
+        const key = line.slice(0, separatorIndex).trim();
+        const remainder = line.slice(separatorIndex + 1).trim();
+        if (!key) {
+            throw new Error(
+                `[document] Front matter in "${documentPath}" is invalid at line ${index + 1}: empty key.`
+            );
+        }
+
+        if (remainder === '|') {
+            const blockIndent = indent + 2;
+            const blockLines: string[] = [];
+            index += 1;
+            while (index < lines.length) {
+                const candidate = lines[index];
+                if (!candidate.trim()) {
+                    blockLines.push('');
+                    index += 1;
+                    continue;
+                }
+                const candidateIndent = countLeadingSpaces(candidate);
+                if (candidateIndent < blockIndent) break;
+                blockLines.push(candidate.slice(blockIndent));
+                index += 1;
+            }
+            output[key] = blockLines.join('\n');
+            continue;
+        }
+
+        if (remainder === '') {
+            const nested = parseYamlBlock(lines, index + 1, indent, documentPath);
+            output[key] = nested.value;
+            index = nested.nextIndex;
+            continue;
+        }
+
+        output[key] = parseYamlScalar(remainder);
+        index += 1;
+    }
+
+    return { value: output, nextIndex: index };
+}
+
+function extractYamlFrontMatter(
+    source: string,
+    documentPath: string
+): { frontMatter: Record<string, unknown>; body: string } {
+    const normalized = source.replace(/^\uFEFF/, '');
+    if (!normalized.startsWith(`${YAML_FRONT_MATTER_OPEN}\n`) && !normalized.startsWith(`${YAML_FRONT_MATTER_OPEN}\r\n`)) {
+        return { frontMatter: {}, body: normalized };
+    }
+
+    const lines = normalized.replace(/\r\n/g, '\n').split('\n');
+    let closingIndex = -1;
+    for (let index = 1; index < lines.length; index += 1) {
+        if (lines[index].trim() === YAML_FRONT_MATTER_OPEN) {
+            closingIndex = index;
+            break;
+        }
+    }
+    if (closingIndex < 0) {
+        throw new Error(`[document] Front matter in "${documentPath}" is missing a closing "---" line.`);
+    }
+
+    const frontMatterLines = lines.slice(1, closingIndex);
+    const parsed = parseYamlBlock(frontMatterLines, 0, -2, documentPath).value;
+    const body = lines.slice(closingIndex + 1).join('\n').trim();
+    return {
+        frontMatter: parsed,
+        body
+    };
+}
+
+export function parseDocumentSourceText(source: string, documentPath: string = '<memory>'): DocumentInput {
+    const { frontMatter, body } = extractYamlFrontMatter(source, documentPath);
+    if (!body) {
+        throw new Error(`[document] Document source "${documentPath}" does not contain a JSON document body.`);
+    }
+
+    let parsedBody: unknown;
+    try {
+        parsedBody = JSON.parse(body);
+    } catch (error) {
+        throw new Error(
+            `[document] Document source "${documentPath}" contains invalid JSON body: ${error instanceof Error ? error.message : String(error)}`
+        );
+    }
+
+    if (!isPlainObject(parsedBody)) {
+        throw new Error(`[document] Document source "${documentPath}" must parse to a root object.`);
+    }
+
+    if (!isPlainObject(frontMatter)) {
+        return parsedBody as unknown as DocumentInput;
+    }
+
+    const bodyObject = parsedBody as Record<string, unknown>;
+    const frontMatterObject = frontMatter as Record<string, unknown>;
+    const scriptVars: Record<string, unknown> = {
+        ...(isPlainObject(bodyObject.scriptVars) ? bodyObject.scriptVars as Record<string, unknown> : {})
+    };
+
+    for (const [key, value] of Object.entries(frontMatterObject)) {
+        if (ROOT_KEYS.has(key)) continue;
+        scriptVars[key] = value;
+    }
+
+    const merged = {
+        ...bodyObject,
+        ...Object.fromEntries(Object.entries(frontMatterObject).filter(([key]) => ROOT_KEYS.has(key))),
+        methods: {
+            ...(isPlainObject(bodyObject.methods) ? bodyObject.methods as Record<string, unknown> : {}),
+            ...(isPlainObject(frontMatterObject.methods) ? frontMatterObject.methods as Record<string, unknown> : {})
+        }
+    } as Record<string, unknown>;
+
+    if (Object.keys(scriptVars).length > 0) {
+        merged.scriptVars = scriptVars;
+    }
+
+    if (!isPlainObject(frontMatterObject.methods) && merged.methods && Object.keys(merged.methods).length === 0) {
+        delete merged.methods;
+    }
+
+    return merged as unknown as DocumentInput;
+}
+
+export function resolveDocumentSourceText(source: string, documentPath: string): DocumentIR {
+    return resolveDocumentPaths(parseDocumentSourceText(source, documentPath), documentPath);
 }
 
 export function normalizeDocumentToIR(document: DocumentInput, documentPath: string): DocumentIR {
@@ -684,8 +1273,13 @@ export function normalizeDocumentToIR(document: DocumentInput, documentPath: str
         }) as LayoutConfig['fonts'],
         styles: normalizedStyles,
         elements: normalizedElements,
-        header: document.header ? deepSortObject(document.header) as any : undefined,
-        footer: document.footer ? deepSortObject(document.footer) as any : undefined
+        header: normalizePageRegionDefinition(document.header as Record<string, unknown> | undefined) as any,
+        footer: normalizePageRegionDefinition(document.footer as Record<string, unknown> | undefined) as any,
+        printPipeline: document.printPipeline ? deepSortObject(document.printPipeline) as any : undefined,
+        methods: document.methods ? deepSortObject(document.methods) as any : undefined,
+        scriptVars: document.scriptVars ? deepSortObject(document.scriptVars) as any : undefined,
+        onBeforeLayout: document.onBeforeLayout,
+        onAfterSettle: document.onAfterSettle
     };
 }
 
@@ -705,7 +1299,7 @@ export function toLayoutConfig(document: DocumentIR, debug: boolean): LayoutConf
             for (const node of nodes || []) {
                 const family = String(node?.properties?.style?.fontFamily || '').trim();
                 if (family) families.add(family);
-                const dropCapFamily = String(node?.properties?.dropCap?.characterStyle?.fontFamily || '').trim();
+                const dropCapFamily = String(node?.dropCap?.characterStyle?.fontFamily || '').trim();
                 if (dropCapFamily) families.add(dropCapFamily);
                 if (Array.isArray(node?.children) && node.children.length > 0) {
                     visit(node.children);
@@ -739,6 +1333,13 @@ export function toLayoutConfig(document: DocumentIR, debug: boolean): LayoutConf
         styles: document.styles,
         header: document.header,
         footer: document.footer,
+        printPipeline: document.printPipeline,
+        scripting: document.methods || document.scriptVars || document.onBeforeLayout || document.onAfterSettle ? {
+            methods: document.methods,
+            vars: document.scriptVars,
+            onBeforeLayout: document.onBeforeLayout,
+            onAfterSettle: document.onAfterSettle
+        } : undefined,
         preloadFontFamilies: Array.from(new Set([
             ...collectElementFontFamilies(document.elements),
             ...collectRegionFontFamilies(document.header),

@@ -1,0 +1,23 @@
+{
+  "expectedTextIncludes": [
+    "Item",
+    "Value",
+    "Replacement",
+    "Works",
+    "The placeholder became a table and a paragraph.",
+    "onChanged appended this note after replacement."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "placeholder",
+      "content": "This placeholder should disappear."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 2,
+    "readyCalls": 1,
+    "documentChangedCalls": 1,
+    "replaceCalls": 1,
+    "insertCalls": 1
+  }
+}

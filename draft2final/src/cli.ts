@@ -8,7 +8,13 @@ import LocalFontManager from '@vmprint/local-fonts';
 import { transmuter as transmuterMkd, transmute as transmuteMkd } from '@vmprint/transmuter-mkd-mkd';
 import { transmuter as transmuterAcademic, transmute as transmuteAcademic } from '@vmprint/transmuter-mkd-academic';
 import { transmuter as transmuterLiterature, transmute as transmuteLiterature } from '@vmprint/transmuter-mkd-literature';
-import { transmuter as transmuterManuscript, transmute as transmuteManuscript } from '@vmprint/transmuter-mkd-manuscript';
+import {
+  transmuter as transmuterManuscript,
+  transmute as transmuteManuscript,
+  transmuteWithArtifacts as transmuteManuscriptWithArtifacts,
+  type ManuscriptExpandingProbeAst,
+  type ManuscriptTocAst
+} from '@vmprint/transmuter-mkd-manuscript';
 import { transmuter as transmuterScreenplay, transmute as transmuteScreenplay } from '@vmprint/transmuter-mkd-screenplay';
 
 import pkg from '../package.json';
@@ -25,6 +31,8 @@ type CliOptions = {
   inputPath?: string;
   as?: TransmuterName;
   outputPath?: string;
+  tocJsonPath?: string;
+  manuscriptArtifactsJsonPath?: string;
   stylePath?: string;
   onlineGuide?: boolean;
   version?: boolean;
@@ -155,6 +163,8 @@ function printHelp(): void {
       '  --as <format>        The type of document (manuscript, screenplay, academic, literature)',
       '  --style <name>       Choose a visual style/theme (e.g. "classic", "standard")',
       '  --output <path>      Write output file (.pdf or .json)',
+      '  --toc-json <path>    Write manuscript TOC sidecar JSON',
+      '  --manuscript-artifacts-json <path>  Write manuscript live-artifacts sidecar JSON',
       '  --online-guide       Open the user guide in your browser',
       '  --version            Show version',
       '  --help               Show this help',
@@ -259,6 +269,14 @@ function parseArgs(argv: string[]): CliOptions {
     }
     if (arg === '--output' || arg === '--out') {
       options.outputPath = argv[++i];
+      continue;
+    }
+    if (arg === '--toc-json') {
+      options.tocJsonPath = argv[++i];
+      continue;
+    }
+    if (arg === '--manuscript-artifacts-json') {
+      options.manuscriptArtifactsJsonPath = argv[++i];
       continue;
     }
     if (arg === '--style' || arg === '--theme') {
@@ -466,10 +484,39 @@ function runTransmuter(
   return transmuteScreenplay(markdown, options);
 }
 
+function runManuscriptTransmuterWithArtifacts(
+  markdown: string,
+  resolveImage?: (src: string) => ResolvedImage | null,
+  theme?: string
+): { document: unknown; tocAst: ManuscriptTocAst; expandingProbeAst: ManuscriptExpandingProbeAst } {
+  const options = {
+    ...(resolveImage ? { resolveImage } : {}),
+    ...(theme ? { theme } : {})
+  };
+  const result = transmuteManuscriptWithArtifacts(markdown, options);
+  return {
+    document: result.document,
+    tocAst: result.artifacts.tocAst,
+    expandingProbeAst: result.artifacts.expandingProbeAst
+  };
+}
+
 function resolveOutputPdfPath(inputPath: string, outPath?: string): string {
   if (outPath) return path.resolve(outPath);
   const parsed = path.parse(inputPath);
   return path.resolve(parsed.dir, `${parsed.name}.pdf`);
+}
+
+function resolveTocJsonPath(inputPath: string, tocJsonPath?: string): string {
+  if (tocJsonPath) return path.resolve(tocJsonPath);
+  const parsed = path.parse(inputPath);
+  return path.resolve(parsed.dir, `${parsed.name}.toc.json`);
+}
+
+function resolveManuscriptArtifactsJsonPath(inputPath: string, artifactsJsonPath?: string): string {
+  if (artifactsJsonPath) return path.resolve(artifactsJsonPath);
+  const parsed = path.parse(inputPath);
+  return path.resolve(parsed.dir, `${parsed.name}.manuscript-artifacts.json`);
 }
 
 function getOutputMode(outputPath: string): 'pdf' | 'json' {
@@ -540,7 +587,7 @@ async function renderPdf(ir: unknown, inputPath: string, outputPath: string): Pr
 
   process.stdout.write(`[draft2final] Loading fonts and paginating...\n`);
   await engine.waitForFonts();
-  const pages = engine.paginate(documentIR.elements);
+  const pages = engine.simulate(documentIR.elements);
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 
@@ -642,9 +689,35 @@ async function main(): Promise<void> {
   }).find(([_, v]) => v === options.as)?.[0] || 'plain markdown';
 
   process.stdout.write(`[draft2final] Transmuting as ${humanName}...\n`);
-  const ir = runTransmuter(options.as, markdown, resolveImage, theme);
+  const manuscriptResult = options.as === 'mkd-manuscript'
+    ? runManuscriptTransmuterWithArtifacts(markdown, resolveImage, theme)
+    : null;
+  const ir = manuscriptResult?.document ?? runTransmuter(options.as, markdown, resolveImage, theme);
   const outputPath = resolveOutputPdfPath(inputPath, options.outputPath);
   const mode = getOutputMode(outputPath);
+
+  if (options.tocJsonPath) {
+    if (!manuscriptResult) {
+      throw new Error('--toc-json is currently only supported for manuscript format.');
+    }
+    const tocJsonPath = resolveTocJsonPath(inputPath, options.tocJsonPath);
+    fs.mkdirSync(path.dirname(tocJsonPath), { recursive: true });
+    fs.writeFileSync(tocJsonPath, JSON.stringify(manuscriptResult.tocAst, null, 2), 'utf8');
+    process.stdout.write(`[draft2final] Wrote TOC sidecar ${tocJsonPath}\n`);
+  }
+
+  if (options.manuscriptArtifactsJsonPath) {
+    if (!manuscriptResult) {
+      throw new Error('--manuscript-artifacts-json is currently only supported for manuscript format.');
+    }
+    const artifactsJsonPath = resolveManuscriptArtifactsJsonPath(inputPath, options.manuscriptArtifactsJsonPath);
+    fs.mkdirSync(path.dirname(artifactsJsonPath), { recursive: true });
+    fs.writeFileSync(artifactsJsonPath, JSON.stringify({
+      tocAst: manuscriptResult.tocAst,
+      expandingProbeAst: manuscriptResult.expandingProbeAst
+    }, null, 2), 'utf8');
+    process.stdout.write(`[draft2final] Wrote manuscript artifacts sidecar ${artifactsJsonPath}\n`);
+  }
 
   if (mode === 'json') {
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });

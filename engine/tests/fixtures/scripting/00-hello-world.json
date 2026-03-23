@@ -1,0 +1,24 @@
+---
+TITLE: "Hello, world!"
+methods:
+  onLoad(): |
+    setContent("greeting", TITLE)
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 20,
+    "lineHeight": 1.4
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "greeting",
+      "content": "Waiting for script..."
+    }
+  ]
+}

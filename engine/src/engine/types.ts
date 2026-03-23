@@ -4,8 +4,17 @@ export type HyphenationMode = 'off' | 'auto' | 'soft';
 export type JustifyEngineMode = 'legacy' | 'advanced';
 export type JustifyStrategy = 'auto' | 'space' | 'inter-character';
 export type ImageFitMode = 'contain' | 'fill';
-export type VmprintDocumentVersion = '1.0';
+export type PageReservationSelector = 'first' | 'odd' | 'even' | 'all';
+export type VmprintDocumentVersion = '1.1';
 export type VmprintIRVersion = '1.0';
+export type ScriptMethodSource = string | string[];
+
+export interface LayoutScriptingConfig {
+    methods?: Record<string, ScriptMethodSource>;
+    vars?: Record<string, unknown>;
+    onBeforeLayout?: string;
+    onAfterSettle?: string;
+}
 
 export type ShapedGlyph = {
     id: number;
@@ -75,11 +84,61 @@ export interface InlineObjectMetrics {
 }
 
 export type OverflowPolicy = 'clip' | 'move-whole' | 'error';
+export type ZoneFrameOverflow = 'move-whole' | 'continue';
+export type ZoneWorldBehavior = 'fixed' | 'spanning' | 'expandable';
+
+export interface ZoneRegionRect {
+    x: number;
+    y: number;
+    width: number;
+    height?: number;
+}
+
+/**
+ * A spatial region on a `zone-map` element.
+ *
+ * A ZoneDefinition is NOT an Element — it is a region descriptor. It has no
+ * `type`, no `children`, and no DOM-style nesting semantics. It describes a
+ * bounded area on the page map and the actors (`elements`) assigned to inhabit
+ * that area. Each zone runs an independent, non-paginating layout pass.
+ */
+export interface ZoneDefinition {
+    /** Optional identifier for the zone (for debugging and future linked-frame support). */
+    id?: string;
+    /** Optional explicit region geometry in zone-field local/world coordinates. */
+    region?: ZoneRegionRect;
+    /** Block-level elements assigned to this zone. Laid out independently of all other zones. */
+    elements: Element[];
+    /** Per-zone style overrides (e.g. backgroundColor for the zone cell background). */
+    style?: Record<string, any>;
+}
+
+/**
+ * A compact horizontal slot on a `strip` element.
+ *
+ * A StripSlot is not a DOM child node. It is a bounded authored region used
+ * for one-row horizontal composition.
+ */
+export interface StripSlot {
+    id?: string;
+    elements: Element[];
+    style?: Record<string, any>;
+}
 
 export interface Element {
     type: ElementType;
+    name?: string;
     content: string;
     children?: Element[];
+    /** Embedded image payload. Required on `type: "image"` elements. */
+    image?: EmbeddedImagePayload;
+    /** Table layout model. Required on `type: "table"` elements. */
+    table?: TableLayoutOptions;
+    /**
+     * Strip slots. Each entry is an independent compact region in a one-row
+     * horizontal composition band. Only meaningful for `type: "strip"`.
+     */
+    slots?: StripSlot[];
     /** Story-level multi-column count (only meaningful for `type: "story"`). */
     columns?: number;
     /** Story-level inter-column gap in points (only for `type: "story"`). */
@@ -91,6 +150,27 @@ export interface Element {
      * Only meaningful for `type: "story"` with `columns > 1`.
      */
     balance?: boolean;
+    /**
+     * Zone-map spatial regions. Each entry is an independent layout context
+     * (a room on the map). Only meaningful for `type: "zone-map"`.
+     * Column widths and gap are declared in `zoneLayout`.
+     */
+    zones?: ZoneDefinition[];
+    /** Zone-map layout model. Preferred on AST 1.1+. */
+    zoneLayout?: ZoneLayoutOptions;
+    /** Strip track model. Preferred on AST 1.1+. */
+    stripLayout?: StripLayoutOptions;
+    /** Drop-cap configuration. */
+    dropCap?: DropCapSpec;
+    /** Story-local full-width span directive. */
+    columnSpan?: 'all' | number;
+    /**
+     * Story-local placement directive. Declares how this element participates
+     * in a story's spatial layout — as a float anchored to the text cursor,
+     * or as an absolutely positioned element pinned within the story area.
+     * Only meaningful for direct children of a `story` element.
+     */
+    placement?: StoryLayoutDirective;
     properties?: ElementProperties;
 }
 
@@ -143,23 +223,58 @@ export interface TableLayoutOptions {
     headerCellStyle?: Record<string, any>;
 }
 
+/**
+ * Layout options for a `zone-map` element.
+ * Column widths are resolved via `solveTrackSizing` (same solver as tables).
+ */
+export interface ZoneLayoutOptions {
+    /** Column track definitions. Reuses `TableColumnSizing` (fixed/auto/flex modes). */
+    columns?: TableColumnSizing[];
+    /** Gap between columns in points. Defaults to 0. */
+    gap?: number;
+    /**
+     * How the zone field behaves at page boundaries.
+     * `move-whole` preserves the shipped V1 behavior.
+     * `continue` is reserved for future page-framed zone continuation.
+     */
+    frameOverflow?: ZoneFrameOverflow;
+    /**
+     * Authored world behavior for this zone field.
+     * `fixed` is the conservative default.
+     */
+    worldBehavior?: ZoneWorldBehavior;
+}
+
+/**
+ * Layout options for a `strip` element.
+ * Track sizing reuses the same vocabulary as tables and zone maps.
+ */
+export interface StripLayoutOptions {
+    tracks?: TableColumnSizing[];
+    gap?: number;
+}
+
 export interface ElementProperties extends Record<string, any> {
     style?: Record<string, any>;
-    image?: EmbeddedImagePayload;
-    table?: TableLayoutOptions;
     colSpan?: number;
     rowSpan?: number;
     sourceId?: string;
     linkTarget?: string;
     semanticRole?: string;
-    dropCap?: DropCapSpec;
-    /** Story layout directive: declared on children of a `story` element. */
-    layout?: StoryLayoutDirective;
     reflowKey?: string;
     keepWithNext?: boolean;
+    onResolve?: string;
+    onMessage?: string;
     marginTop?: number;
     marginBottom?: number;
     paginationContinuation?: Record<string, any>;
+    pageReservationAfter?: number;
+    /** Table of Contents options. Declared on `toc` elements. */
+    toc?: {
+        title?: string;
+        levelFilter?: number[];
+        style?: Record<string, unknown>;
+    };
     pageOverrides?: {
         header?: PageRegionContent | null;
         footer?: PageRegionContent | null;
@@ -289,6 +404,17 @@ export interface LayoutConfig {
         headerInsetBottom?: number;
         footerInsetTop?: number;
         footerInsetBottom?: number;
+        pageReservationOnFirstPageStart?: number;
+        pageStartReservationSelector?: PageReservationSelector;
+        pageStartExclusionTop?: number;
+        pageStartExclusionHeight?: number;
+        pageStartExclusionX?: number;
+        pageStartExclusionWidth?: number;
+        pageStartExclusionX2?: number;
+        pageStartExclusionWidth2?: number;
+        pageStartExclusionLeftWidth?: number;
+        pageStartExclusionRightWidth?: number;
+        pageStartExclusionSelector?: PageReservationSelector;
         pageNumberStart?: number;
         lang?: string;
         direction?: TextDirection;
@@ -321,6 +447,17 @@ export interface LayoutConfig {
     styles: Partial<Record<string, ElementStyle>>;
     header?: PageRegionDefinition;
     footer?: PageRegionDefinition;
+    printPipeline?: {
+        tableOfContents?: {
+            reservedPageCount: number;
+            title?: string;
+            titleType?: string;
+            entryType?: string;
+            indentPerLevel?: number;
+            includeTitle?: boolean;
+        };
+    };
+    scripting?: LayoutScriptingConfig;
     preloadFontFamilies?: string[];
     debug?: boolean;
 }
@@ -333,6 +470,11 @@ export interface DocumentInput {
     elements: Element[];
     header?: PageRegionDefinition;
     footer?: PageRegionDefinition;
+    printPipeline?: LayoutConfig['printPipeline'];
+    methods?: Record<string, ScriptMethodSource>;
+    scriptVars?: Record<string, unknown>;
+    onBeforeLayout?: string;
+    onAfterSettle?: string;
     debug?: boolean;
 }
 
@@ -358,6 +500,7 @@ export interface Box {
 }
 
 export interface BoxMeta {
+    actorId?: string;
     sourceId: string;
     engineKey: string;
     sourceType: string;
@@ -368,6 +511,21 @@ export interface BoxMeta {
     pageIndex?: number;
     generated?: boolean;
     originSourceId?: string;
+    transformKind?: 'clone' | 'split' | 'morph';
+    clonedFromSourceId?: string;
+}
+
+export interface DebugZoneRegion {
+    fieldActorId: string;
+    fieldSourceId: string;
+    zoneId?: string;
+    zoneIndex: number;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    frameOverflowMode: 'move-whole' | 'continue';
+    worldBehaviorMode: ZoneWorldBehavior;
 }
 
 export interface Page {
@@ -375,6 +533,7 @@ export interface Page {
     boxes: Box[];
     width: number;
     height: number;
+    debugZones?: DebugZoneRegion[];
 }
 
 export interface AnnotatedLayoutStream {

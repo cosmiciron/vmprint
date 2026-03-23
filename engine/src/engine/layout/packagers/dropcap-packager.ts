@@ -3,8 +3,22 @@ import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import { LayoutUtils } from '../layout-utils';
 import { LAYOUT_DEFAULTS } from '../defaults';
+import {
+    createContinuationFragmentMeta,
+    createContinuationFragmentStyle,
+    createLeadingFragmentMeta,
+    createLeadingFragmentStyle
+} from '../flow-fragment-state';
 import { FlowBoxPackager } from './flow-box-packager';
-import { LayoutBox, PackagerContext, PackagerUnit } from './packager-types';
+import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
+import {
+    LayoutBox,
+    PackagerContext,
+    PackagerPlacementPreference,
+    PackagerSplitResult,
+    PackagerTransformProfile,
+    PackagerUnit
+} from './packager-types';
 
 type DropCapParts = {
     dropCap: FlowBox;
@@ -23,6 +37,12 @@ class DropCapFragmentPackager implements PackagerUnit {
     private unifiedLayoutBefore: number;
     private requiredHeight: number;
 
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
     get pageBreakBefore(): boolean | undefined { return this.wrap.pageBreakBefore; }
     get keepWithNext(): boolean | undefined { return this.wrap.keepWithNext; }
 
@@ -32,7 +52,8 @@ class DropCapFragmentPackager implements PackagerUnit {
         wrap: FlowBox,
         body: FlowBox | null,
         wrapOffsetX: number,
-        unifiedLayoutBefore: number
+        unifiedLayoutBefore: number,
+        identity: PackagerIdentity
     ) {
         this.processor = processor;
         this.dropCap = dropCap;
@@ -40,6 +61,11 @@ class DropCapFragmentPackager implements PackagerUnit {
         this.body = body;
         this.wrapOffsetX = wrapOffsetX;
         this.unifiedLayoutBefore = unifiedLayoutBefore;
+        this.actorId = identity.actorId;
+        this.sourceId = identity.sourceId;
+        this.actorKind = identity.actorKind;
+        this.fragmentIndex = identity.fragmentIndex;
+        this.continuationOf = identity.continuationOf;
 
         const capHeight = Math.max(0, this.dropCap.measuredContentHeight);
         const wrapHeight = Math.max(0, this.wrap.measuredContentHeight);
@@ -54,6 +80,25 @@ class DropCapFragmentPackager implements PackagerUnit {
 
     prepare(_availableWidth: number, _availableHeight: number, _context: PackagerContext): void {
         // Fragment geometry is fully determined at construction time.
+    }
+
+    getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference {
+        return {
+            minimumWidth: fullAvailableWidth,
+            acceptsFrame: true
+        };
+    }
+
+    getTransformProfile(): PackagerTransformProfile {
+        return {
+            capabilities: [
+                {
+                    kind: 'split',
+                    preservesIdentity: true,
+                    producesContinuation: true
+                }
+            ]
+        };
     }
 
     emitBoxes(availableWidth: number, _availableHeight: number, context: PackagerContext): Box[] {
@@ -103,8 +148,8 @@ class DropCapFragmentPackager implements PackagerUnit {
         return boxes;
     }
 
-    split(_availableHeight: number, _context: PackagerContext): [PackagerUnit | null, PackagerUnit | null] {
-        return [null, this];
+    split(_availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+        return { currentFragment: null, continuationFragment: this };
     }
 
     getRequiredHeight(): number {
@@ -255,14 +300,26 @@ export class DropCapPackager implements PackagerUnit {
     private cachedAvailableWidth: number = -1;
     private requiredHeight: number = 0;
 
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
     get pageBreakBefore(): boolean | undefined { return this.cachedParts?.wrap.pageBreakBefore ?? false; }
     get keepWithNext(): boolean | undefined { return this.cachedParts?.wrap.keepWithNext ?? false; }
 
-    constructor(processor: LayoutProcessor, element: Element, index: number, spec: DropCapSpec) {
+    constructor(processor: LayoutProcessor, element: Element, index: number, spec: DropCapSpec, identity?: PackagerIdentity) {
         this.processor = processor;
         this.element = element;
         this.index = index;
         this.spec = spec;
+        const resolvedIdentity = identity ?? createElementPackagerIdentity(element, [index]);
+        this.actorId = resolvedIdentity.actorId;
+        this.sourceId = resolvedIdentity.sourceId;
+        this.actorKind = resolvedIdentity.actorKind;
+        this.fragmentIndex = resolvedIdentity.fragmentIndex;
+        this.continuationOf = resolvedIdentity.continuationOf;
     }
 
     private materialize(availableWidth: number, context: PackagerContext): void {
@@ -503,14 +560,10 @@ export class DropCapPackager implements PackagerUnit {
         }
 
         const wrapStyle: ElementStyle = elementB
-            ? { ...baseFlow.style, borderBottomWidth: 0, paddingBottom: 0, marginBottom: 0 }
+            ? createLeadingFragmentStyle(baseFlow.style)
             : { ...baseFlow.style };
 
-        const wrapMeta = {
-            ...baseFlow.meta,
-            isContinuation: baseFlow.meta.isContinuation || baseFlow.meta.fragmentIndex > 0,
-            pageIndex: undefined
-        };
+        const wrapMeta = createLeadingFragmentMeta(baseFlow.meta);
         const wrapProps = {
             ...baseFlow.properties,
             _isFirstLine: true,
@@ -523,7 +576,7 @@ export class DropCapPackager implements PackagerUnit {
 
         let bodyFlow: FlowBox | null = null;
         if (elementB && (this.processor as any).getElementText(elementB)) {
-            const bodyStyle: ElementStyle = { ...baseFlow.style, borderTopWidth: 0, paddingTop: 0, marginTop: 0, textIndent: 0 };
+            const bodyStyle: ElementStyle = createContinuationFragmentStyle(baseFlow.style);
             const bodyLinesResult = (this.processor as any).resolveLines(
                 elementB,
                 bodyStyle,
@@ -531,7 +584,7 @@ export class DropCapPackager implements PackagerUnit {
                 { pageIndex: 0, cursorY: 0, contentWidth: availableWidth }
             );
             if (bodyLinesResult.lines && bodyLinesResult.lines.length > 0) {
-                const bodyMeta = { ...baseFlow.meta, fragmentIndex: baseFlow.meta.fragmentIndex + 1, isContinuation: true, pageIndex: undefined };
+                const bodyMeta = createContinuationFragmentMeta(baseFlow.meta, baseFlow.meta.fragmentIndex + 1);
                 const bodyProps = { ...baseFlow.properties, _isFirstLine: false, _isLastLine: true };
                 bodyFlow = (this.processor as any).rebuildFlowBox(baseFlow, bodyLinesResult.lines, bodyStyle, bodyMeta, bodyProps) as FlowBox;
                 bodyFlow.marginTop = 0;
@@ -564,10 +617,44 @@ export class DropCapPackager implements PackagerUnit {
         this.materialize(availableWidth, context);
     }
 
+    getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference {
+        return {
+            minimumWidth: fullAvailableWidth,
+            acceptsFrame: true
+        };
+    }
+
+    getTransformProfile(): PackagerTransformProfile {
+        return {
+            capabilities: [
+                {
+                    kind: 'split',
+                    preservesIdentity: true,
+                    producesContinuation: true
+                },
+                {
+                    kind: 'morph',
+                    preservesIdentity: true,
+                    reflowsContent: true
+                }
+            ]
+        };
+    }
+
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] | null {
         this.prepare(availableWidth, availableHeight, context);
         if (!this.cachedParts) {
-            const fallback = new FlowBoxPackager(this.processor, (this.processor as any).shapeElement(this.element, { path: [this.index] }));
+            const fallback = new FlowBoxPackager(
+                this.processor,
+                (this.processor as any).shapeElement(this.element, { path: [this.index] }),
+                {
+                    actorId: this.actorId,
+                    sourceId: this.sourceId,
+                    actorKind: this.actorKind,
+                    fragmentIndex: this.fragmentIndex,
+                    continuationOf: this.continuationOf
+                }
+            );
             fallback.prepare(availableWidth, availableHeight, context);
             return fallback.emitBoxes(availableWidth, availableHeight, context) as LayoutBox[];
         }
@@ -578,21 +665,22 @@ export class DropCapPackager implements PackagerUnit {
             this.cachedParts.wrap,
             this.cachedParts.body,
             this.cachedParts.wrapOffsetX,
-            this.cachedParts.unifiedLayoutBefore
+            this.cachedParts.unifiedLayoutBefore,
+            this
         );
         return fragment.emitBoxes(availableWidth, availableHeight, context);
     }
 
-    split(availableHeight: number, context: PackagerContext): [PackagerUnit | null, PackagerUnit | null] {
+    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
         if (this.isUnbreakable(availableHeight)) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
         const availableWidth = this.cachedAvailableWidth > 0
             ? this.cachedAvailableWidth
             : (context.pageWidth - context.margins.left - context.margins.right);
         this.prepare(availableWidth, availableHeight, context);
         if (!this.cachedParts) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         const { dropCap, wrap, body, wrapOffsetX, unifiedLayoutBefore } = this.cachedParts;
@@ -601,17 +689,17 @@ export class DropCapPackager implements PackagerUnit {
         const firstBlockHeight = unifiedLayoutBefore + Math.max(capHeight, wrapHeight);
 
         if (availableHeight <= firstBlockHeight + LAYOUT_DEFAULTS.wrapTolerance) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         if (!body) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         const splitAvailable = availableHeight - firstBlockHeight;
         const splitResult = (this.processor as any).splitFlowBox(body, splitAvailable, 0);
         if (!splitResult) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         const partA = splitResult.partA as FlowBox;
@@ -622,10 +710,15 @@ export class DropCapPackager implements PackagerUnit {
             wrap,
             partA,
             wrapOffsetX,
-            unifiedLayoutBefore
+            unifiedLayoutBefore,
+            this
         );
-        const pushedNext = new FlowBoxPackager(this.processor, partB);
-        return [fitsCurrent, pushedNext];
+        const pushedNext = new FlowBoxPackager(
+            this.processor,
+            partB,
+            createContinuationIdentity(this, partB.meta?.fragmentIndex)
+        );
+        return { currentFragment: fitsCurrent, continuationFragment: pushedNext };
     }
 
     getRequiredHeight(): number {

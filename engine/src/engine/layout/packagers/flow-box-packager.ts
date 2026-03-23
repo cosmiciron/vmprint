@@ -1,7 +1,32 @@
 import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
-import { FlowBox } from '../layout-core-types';
-import { PackagerContext, PackagerUnit } from './packager-types';
+import { FlowBox, type FlowMaterializationContext } from '../layout-core-types';
+import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
+import {
+    PackagerContext,
+    PackagerPlacementPreference,
+    PackagerSplitResult,
+    PackagerTransformProfile,
+    PackagerUnit
+} from './packager-types';
+
+type FlowBoxProcessor = {
+    createFlowMaterializationContext(pageIndex: number, cursorY: number, availableWidth: number): FlowMaterializationContext;
+    materializeFlowBox(flowBox: FlowBox, context?: FlowMaterializationContext): void;
+    positionFlowBox(
+        flowBox: FlowBox,
+        currentY: number,
+        layoutBefore: number,
+        margins: PackagerContext['margins'],
+        availableWidth: number,
+        pageIndex: number
+    ): Box | Box[];
+    splitFlowBox(
+        flowBox: FlowBox,
+        availableHeight: number,
+        layoutBefore: number
+    ): { partA: FlowBox; partB: FlowBox } | null;
+};
 
 /**
  * A basic packager for standard reflowable layout boxes (e.g. paragraph, header, normal image).
@@ -10,27 +35,44 @@ export class FlowBoxPackager implements PackagerUnit {
     private processor: LayoutProcessor;
     private flowBox: FlowBox;
     private lastAvailableWidth: number = -1;
+    private lastContentWidth: number = -1;
     private lastAvailableHeight: number = -1;
     private cachedBoxes: Box[] | null = null;
     private requiredHeight: number = 0;
     private isMaterialized: boolean = false;
 
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
     get pageBreakBefore(): boolean | undefined { return this.flowBox.pageBreakBefore; }
     get keepWithNext(): boolean | undefined { return this.flowBox.keepWithNext; }
 
-    constructor(processor: LayoutProcessor, flowBox: FlowBox) {
+    constructor(processor: LayoutProcessor, flowBox: FlowBox, identity?: PackagerIdentity) {
         this.processor = processor;
         this.flowBox = flowBox;
+        const resolvedIdentity = createFlowBoxPackagerIdentity(flowBox, identity);
+        this.actorId = resolvedIdentity.actorId;
+        this.sourceId = resolvedIdentity.sourceId;
+        this.actorKind = resolvedIdentity.actorKind;
+        this.fragmentIndex = resolvedIdentity.fragmentIndex;
+        this.continuationOf = resolvedIdentity.continuationOf;
     }
 
-    private materialize(availableWidth: number) {
-        if (this.isMaterialized && this.lastAvailableWidth === availableWidth) return;
+    private materialize(availableWidth: number, contentWidth: number = -1) {
+        const processor = this.processor as unknown as FlowBoxProcessor;
+        if (this.isMaterialized && this.lastAvailableWidth === availableWidth && this.lastContentWidth === contentWidth) return;
 
-        // Use a dummy pageIndex=0 and cursorY=0 for materialization measurements
-        const context = (this.processor as any).createFlowMaterializationContext(0, 0, availableWidth);
-        (this.processor as any).materializeFlowBox(this.flowBox, context);
+        // Use a dummy pageIndex=0 and cursorY=0 for materialization measurements.
+        // Pass contentWidth (derived from the packer context) for correct line-wrapping
+        // width in zone sub-sessions and story columns.
+        const context = processor.createFlowMaterializationContext(0, 0, contentWidth);
+        processor.materializeFlowBox(this.flowBox, context);
 
         this.lastAvailableWidth = availableWidth;
+        this.lastContentWidth = contentWidth;
         this.cachedBoxes = null;
         this.isMaterialized = true;
 
@@ -40,36 +82,62 @@ export class FlowBoxPackager implements PackagerUnit {
         this.requiredHeight = top + height + bottom;
     }
 
-    prepare(availableWidth: number, availableHeight: number, _context: PackagerContext): void {
-        this.materialize(availableWidth);
+    prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
+        // Use context.contentWidthOverride (set by zone sub-sessions) when present.
+        // Falls back to -1 so createFlowMaterializationContext skips contentWidth,
+        // causing getContextualContentWidth to use the style-based default width
+        // (pageContentWidth) rather than the narrowed lane/available width.
+        const contentWidth = context.contentWidthOverride ?? -1;
+        this.materialize(availableWidth, contentWidth);
         this.lastAvailableHeight = availableHeight;
     }
 
+    getPlacementPreference(_fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference | null {
+        if (this.flowBox.image) {
+            return { minimumWidth: Math.max(0, Number(this.flowBox.measuredWidth || 0)) };
+        }
+        if (!this.flowBox.allowLineSplit || this.flowBox.overflowPolicy === 'move-whole') {
+            return { minimumWidth: Math.max(0, Number(this.flowBox.measuredWidth || 0)) };
+        }
+        return null;
+    }
+
+    getTransformProfile(): PackagerTransformProfile {
+        const capabilities: NonNullable<PackagerTransformProfile['capabilities']> = [
+            {
+                kind: 'split',
+                preservesIdentity: true,
+                producesContinuation: true
+            }
+        ];
+        if (this.flowBox._materializationMode === 'reflowable' && !!this.flowBox._sourceElement) {
+            capabilities.push({
+                kind: 'morph',
+                preservesIdentity: true,
+                reflowsContent: true
+            });
+        }
+        return { capabilities };
+    }
+
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): Box[] {
+        const processor = this.processor as unknown as FlowBoxProcessor;
         this.prepare(availableWidth, availableHeight, context);
 
-        // Position at y=0, with layoutBefore matching marginTop
-        // The orchestration loop will shift box's .y by the current page Y.
-        // We pretend page index is 0 and we are positioning at (margins.left, 0).
-        const positioned = (this.processor as any).positionFlowBox(
+        // Position at y=0 in local flow-box space, with layoutBefore matching
+        // marginTop. The orchestration loop applies the outer page/frame
+        // placement later when the fragment is committed.
+        const positioned = processor.positionFlowBox(
             this.flowBox,
             0, // currentY
             this.flowBox.marginTop, // layoutBefore
             context.margins,
             availableWidth,
-            0 // pageIndex
+            0 // local page index for a single flow-box materialization pass
         );
 
         const boxes = Array.isArray(positioned) ? positioned : [positioned];
         this.cachedBoxes = boxes;
-
-        // Reset absolute coordinates for the paginator to shift properly
-        // positionFlowBox adds padding left/top. We keep the relative X, but normalize Y.
-        for (const box of boxes) {
-            // keep box.y relative to the packager's bounds
-            // box.y includes marginTop (layoutBefore).
-            box.meta = { ...box.meta };
-        }
 
         return boxes;
     }
@@ -97,26 +165,37 @@ export class FlowBoxPackager implements PackagerUnit {
         return this.flowBox.marginBottom;
     }
 
-    split(availableHeight: number, context: PackagerContext): [PackagerUnit | null, PackagerUnit | null] {
-        this.materialize(this.lastAvailableWidth);
+    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+        const processor = this.processor as unknown as FlowBoxProcessor;
+        this.materialize(this.lastAvailableWidth, this.lastContentWidth);
         if (this.isUnbreakable(availableHeight)) {
-            return [null, this];
+            return { currentFragment: null, continuationFragment: this };
         }
 
         // Defer to LayoutProcessor's split logic
-        const splitResult = (this.processor as any).splitFlowBox(
+        const splitResult = processor.splitFlowBox(
             this.flowBox,
             availableHeight,
             this.flowBox.marginTop // layoutBefore
         );
 
         if (!splitResult) {
-            return [null, this]; // Couldn't split neatly
+            return { currentFragment: null, continuationFragment: this }; // Couldn't split neatly
         }
 
         // We successfully split
-        const partA = new FlowBoxPackager(this.processor, splitResult.partA);
-        const partB = new FlowBoxPackager(this.processor, splitResult.partB);
-        return [partA, partB];
+        const partA = new FlowBoxPackager(this.processor, splitResult.partA, {
+            actorId: this.actorId,
+            sourceId: this.sourceId,
+            actorKind: this.actorKind,
+            fragmentIndex: this.fragmentIndex,
+            continuationOf: this.continuationOf
+        });
+        const partB = new FlowBoxPackager(
+            this.processor,
+            splitResult.partB,
+            createContinuationIdentity(this, splitResult.partB.meta?.fragmentIndex)
+        );
+        return { currentFragment: partA, continuationFragment: partB };
     }
 }

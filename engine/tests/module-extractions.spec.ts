@@ -15,7 +15,7 @@ import { applyAdvancedJustification } from '../src/engine/layout/text-justificat
 import { tryHyphenateSegmentToFit } from '../src/engine/layout/text-hyphenation';
 import { getRichSegments } from '../src/engine/layout/rich-text-extractor';
 import { TextSegment } from '../src/engine/types';
-import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src/engine/document';
+import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { solveTrackSizing } from '../src/engine/layout/track-sizing';
 import { createEngineRuntime } from '../src/engine/runtime';
@@ -26,16 +26,10 @@ import { createStandardFontSentinelBuffer, getStandardFontMetadata } from '../sr
 
 let LocalFontManager: any;
 
-function logStep(message: string): void {
-    console.log(`[module-extractions.spec] ${message}`);
-}
-
-function check(description: string, expected: string, assertion: () => void): void {
-    logStep(`CHECK: ${description}`);
-    logStep(`EXPECT: ${expected}`);
-    assertion();
-    logStep(`PASS: ${description}`);
-}
+import { logStep, check } from './harness/test-utils';
+const TEST_PREFIX = 'module-extractions.spec';
+const log = (msg: string) => logStep(TEST_PREFIX, msg);
+const _check = (desc: string, exp: string, fn: () => void) => check(TEST_PREFIX, desc, exp, fn);
 
 function assertNear(actual: number, expected: number, epsilon: number = 0.001): void {
     assert.ok(Math.abs(actual - expected) <= epsilon, `expected ${actual} ~= ${expected} (±${epsilon})`);
@@ -46,7 +40,7 @@ function testStyleSignatureCache(): void {
     const styleA = { fontSize: 12, fontWeight: 700, nested: { a: 1, b: 2 } };
     const styleB = { nested: { b: 2, a: 1 }, fontWeight: 700, fontSize: 12 };
 
-    check(
+    _check(
         'style signature normalization',
         'equivalent style objects with different key order compare equal',
         () => {
@@ -73,7 +67,7 @@ function testAppendSegmentMerge(): void {
         glyphs: [{ char: 'l', x: 0, y: 0 }, { char: 'o', x: 3, y: 0 }]
     };
 
-    check(
+    _check(
         'segment line merge',
         'compatible adjacent segments are merged into one segment',
         () => {
@@ -87,7 +81,7 @@ function testAppendSegmentMerge(): void {
 }
 
 function testScriptSegmentationHelpers(): void {
-    check(
+    _check(
         'script char helpers',
         'CJK/Thai/RTL detector helpers classify representative code points',
         () => {
@@ -98,7 +92,7 @@ function testScriptSegmentationHelpers(): void {
         }
     );
 
-    check(
+    _check(
         'splitByScriptType',
         'mixed CJK/Latin text splits into at least two script runs',
         () => {
@@ -113,7 +107,7 @@ function testScriptSegmentationHelpers(): void {
         }
     );
 
-    check(
+    _check(
         'getScriptClass',
         'dominant-script classifier reports cjk for CJK-leading text',
         () => {
@@ -122,7 +116,7 @@ function testScriptSegmentationHelpers(): void {
         }
     );
 
-    check(
+    _check(
         'locale-aware fallback preference',
         'Japanese locale prioritizes JP fallback for Han text when multiple CJK fallbacks support the glyph',
         () => {
@@ -148,7 +142,7 @@ function testScriptSegmentationHelpers(): void {
         }
     );
 
-    check(
+    _check(
         'neutral whitespace inherits active run font',
         'spaces between Arabic words stay in the Arabic font run to avoid bidi fragmentation',
         () => {
@@ -188,7 +182,7 @@ function testAdvancedJustification(): void {
         ]
     ];
 
-    check(
+    _check(
         'advanced justification spacing',
         'non-final lines receive positive justifyAfter while final line remains unchanged',
         () => {
@@ -217,7 +211,7 @@ function testAdvancedJustificationSkipsForcedBreakLines(): void {
         ]
     ];
 
-    check(
+    _check(
         'advanced justification ignores forced hard-break lines',
         'line marked with forcedBreakAfter does not receive expansion metadata',
         () => {
@@ -243,7 +237,7 @@ function testHyphenationSoftBreak(): void {
 
     const segment: TextSegment = { text: 'trans\u00ADform', style: {} };
 
-    check(
+    _check(
         'hyphenation soft break',
         'soft hyphen point is selected when head fits available width',
         () => {
@@ -276,7 +270,7 @@ function testHyphenationSoftBreak(): void {
 }
 
 function testDocumentContractNormalization(): void {
-    check(
+    _check(
         'document contract normalization',
         'fonts.regular-only documents are accepted and layout.fontFamily is canonicalized',
         () => {
@@ -307,7 +301,7 @@ function testDocumentContractNormalization(): void {
         }
     );
 
-    check(
+    _check(
         'document contract validation',
         'documents without layout.fontFamily and fonts.regular are rejected',
         () => {
@@ -329,7 +323,7 @@ function testDocumentContractNormalization(): void {
         }
     );
 
-    check(
+    _check(
         'document version validation',
         'documents with unsupported documentVersion are rejected',
         () => {
@@ -346,12 +340,12 @@ function testDocumentContractNormalization(): void {
                     styles: {},
                     elements: []
                 } as any, 'inline-doc'),
-                /must set "documentVersion" to "1\.0"/
+                /must set "documentVersion" to "1\.1"/
             );
         }
     );
 
-    check(
+    _check(
         'strict layout key validation',
         'legacy/unknown layout keys are rejected with a precise error',
         () => {
@@ -374,7 +368,7 @@ function testDocumentContractNormalization(): void {
         }
     );
 
-    check(
+    _check(
         'strict style key validation',
         'legacy/unknown style keys are rejected with a precise error',
         () => {
@@ -400,7 +394,7 @@ function testDocumentContractNormalization(): void {
         }
     );
 
-    check(
+    _check(
         'strict element properties key validation',
         'domain-specific or unknown element properties are rejected with a precise error',
         () => {
@@ -432,7 +426,7 @@ function testDocumentContractNormalization(): void {
 }
 
 function testRichTextStyleInheritance(): void {
-    check(
+    _check(
         'rich text style inheritance',
         'nested text leaves inherit parent heading style unless explicitly overridden',
         () => {
@@ -462,7 +456,7 @@ function testRichTextStyleInheritance(): void {
 }
 
 function testOrientationDimensions(): void {
-    check(
+    _check(
         'orientation dimension resolution',
         'landscape swaps width/height for named and custom page sizes',
         () => {
@@ -501,7 +495,7 @@ function testOrientationDimensions(): void {
 }
 
 function testTrackSizingFoundation(): void {
-    check(
+    _check(
         'track sizing fixed + flex growth',
         'remaining width is distributed by flex weight after fixed track allocation',
         () => {
@@ -526,7 +520,7 @@ function testTrackSizingFoundation(): void {
         }
     );
 
-    check(
+    _check(
         'track sizing shrink to minima',
         'overflowing basis widths shrink proportionally while respecting per-track min',
         () => {
@@ -547,7 +541,7 @@ function testTrackSizingFoundation(): void {
         }
     );
 
-    check(
+    _check(
         'track sizing auto-content cap + flex spillover',
         'auto tracks grow to content caps first, then remaining space goes to flex tracks',
         () => {
@@ -570,7 +564,7 @@ function testTrackSizingFoundation(): void {
         }
     );
 
-    check(
+    _check(
         'track sizing flex max cap',
         'max-capped flex track stops growing and surplus flows to uncapped flex siblings',
         () => {
@@ -592,7 +586,7 @@ function testTrackSizingFoundation(): void {
 
 function testFontWeightMatching(): void {
     const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
-    check(
+    _check(
         'numeric font weight nearest matching',
         'weights resolve to nearest static Arimo instances with style preservation',
         () => {
@@ -617,9 +611,9 @@ function testFontWeightMatching(): void {
 function testEmbeddedImageContract(): void {
     const onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO9Wl9kAAAAASUVORK5CYII=';
 
-    check(
+    _check(
         'embedded image contract acceptance',
-        'type=image with properties.image payload is accepted by strict contract validation',
+        'type=image with top-level image payload is accepted by strict contract validation in AST 1.1',
         () => {
             const resolved = resolveDocumentPaths({
                 documentVersion: CURRENT_DOCUMENT_VERSION,
@@ -637,27 +631,25 @@ function testEmbeddedImageContract(): void {
                     {
                         type: 'image',
                         content: '',
-                        properties: {
-                            image: {
-                                data: onePixelPng,
-                                mimeType: 'image/png',
-                                fit: 'contain'
-                            }
+                        image: {
+                            data: onePixelPng,
+                            mimeType: 'image/png',
+                            fit: 'contain'
                         }
                     }
                 ]
             } as any, 'inline-doc');
 
-            const image = resolved.elements[0].properties?.image as any;
+            const image = resolved.elements[0].image as any;
             assert.equal(typeof image?.data, 'string');
             assert.equal(image?.mimeType, 'image/png');
             assert.equal(image?.fit, 'contain');
         }
     );
 
-    check(
+    _check(
         'embedded image required for image element',
-        'type=image without properties.image is rejected',
+        'type=image without top-level image is rejected in AST 1.1',
         () => {
             assert.throws(
                 () => resolveDocumentPaths({
@@ -674,12 +666,41 @@ function testEmbeddedImageContract(): void {
                         { type: 'image', content: '' }
                     ]
                 } as any, 'inline-doc'),
-                /properties\.image/
+                /elements\[0\]\.image/
             );
         }
     );
 
-    check(
+    _check(
+        'embedded image in properties rejected',
+        'image field in properties is not allowed; it must be a first-class element field',
+        () => {
+            assert.throws(
+                () => resolveDocumentPaths({
+                    documentVersion: CURRENT_DOCUMENT_VERSION,
+                    layout: {
+                        pageSize: 'A4',
+                        margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                        fontFamily: 'Arimo',
+                        fontSize: 12,
+                        lineHeight: 1.2
+                    },
+                    styles: {},
+                    elements: [
+                        {
+                            type: 'image',
+                            content: '',
+                            image: { data: onePixelPng, mimeType: 'image/png' },
+                            properties: { image: { data: onePixelPng, mimeType: 'image/png' } }
+                        }
+                    ]
+                } as any, 'inline-doc'),
+                /unexpected key.*image|image.*not allowed/i
+            );
+        }
+    );
+
+    _check(
         'embedded image fit validation',
         'unsupported fit values are rejected with a precise error',
         () => {
@@ -698,12 +719,10 @@ function testEmbeddedImageContract(): void {
                         {
                             type: 'image',
                             content: '',
-                            properties: {
-                                image: {
-                                    data: onePixelPng,
-                                    mimeType: 'image/png',
-                                    fit: 'cover' as any
-                                }
+                            image: {
+                                data: onePixelPng,
+                                mimeType: 'image/png',
+                                fit: 'cover' as any
                             }
                         }
                     ]
@@ -715,9 +734,9 @@ function testEmbeddedImageContract(): void {
 }
 
 function testTableLayoutContract(): void {
-    check(
+    _check(
         'table layout contract acceptance',
-        'element.properties.table with track definitions is accepted by strict contract validation',
+        'top-level element.table with track definitions is accepted by strict contract validation in AST 1.1',
         () => {
             const resolved = resolveDocumentPaths({
                 documentVersion: CURRENT_DOCUMENT_VERSION,
@@ -733,17 +752,15 @@ function testTableLayoutContract(): void {
                     {
                         type: 'table',
                         content: '',
-                        properties: {
-                            table: {
-                                headerRows: 1,
-                                repeatHeader: true,
-                                columnGap: 2,
-                                rowGap: 1,
-                                columns: [
-                                    { mode: 'fixed', value: 120 },
-                                    { mode: 'flex', fr: 1, min: 80 }
-                                ]
-                            }
+                        table: {
+                            headerRows: 1,
+                            repeatHeader: true,
+                            columnGap: 2,
+                            rowGap: 1,
+                            columns: [
+                                { mode: 'fixed', value: 120 },
+                                { mode: 'flex', fr: 1, min: 80 }
+                            ]
                         },
                         children: [
                             {
@@ -759,7 +776,7 @@ function testTableLayoutContract(): void {
                 ]
             } as any, 'inline-doc');
 
-            const table = resolved.elements[0].properties?.table as any;
+            const table = resolved.elements[0].table as any;
             const firstCell = resolved.elements[0]?.children?.[0]?.children?.[0] as any;
             assert.equal(table.headerRows, 1);
             assert.equal(table.columns.length, 2);
@@ -768,7 +785,36 @@ function testTableLayoutContract(): void {
         }
     );
 
-    check(
+    _check(
+        'table layout in properties rejected',
+        'table field in properties is not allowed; it must be a first-class element field',
+        () => {
+            assert.throws(
+                () => resolveDocumentPaths({
+                    documentVersion: CURRENT_DOCUMENT_VERSION,
+                    layout: {
+                        pageSize: 'A4',
+                        margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                        fontFamily: 'Arimo',
+                        fontSize: 12,
+                        lineHeight: 1.2
+                    },
+                    styles: {},
+                    elements: [
+                        {
+                            type: 'table',
+                            content: '',
+                            table: { columns: [{ mode: 'fixed', value: 100 }] },
+                            properties: { table: { columns: [{ mode: 'fixed', value: 100 }] } }
+                        }
+                    ]
+                } as any, 'inline-doc'),
+                /unexpected key.*table|table.*not allowed/i
+            );
+        }
+    );
+
+    _check(
         'table layout contract validation',
         'invalid table column mode is rejected with a precise error',
         () => {
@@ -787,12 +833,10 @@ function testTableLayoutContract(): void {
                         {
                             type: 'table',
                             content: '',
-                            properties: {
-                                table: {
-                                    columns: [
-                                        { mode: 'elastic' as any, value: 100 }
-                                    ]
-                                }
+                            table: {
+                                columns: [
+                                    { mode: 'elastic' as any, value: 100 }
+                                ]
                             }
                         }
                     ]
@@ -803,8 +847,179 @@ function testTableLayoutContract(): void {
     );
 }
 
+function testAst11PromotedFieldsContract(): void {
+    const onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO9Wl9kAAAAASUVORK5CYII=';
+
+    _check(
+        'AST 1.1 promoted fields acceptance',
+        'zoneLayout, zone frame overflow, zone world behavior, stripLayout, dropCap, columnSpan, placement, and top-level image payload normalize cleanly in AST 1.1',
+        () => {
+            const resolved = resolveDocumentPaths({
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: 'A4',
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                },
+                styles: {},
+                elements: [
+                    {
+                        type: 'zone-map',
+                        content: '',
+                        zoneLayout: {
+                            columns: [
+                                { mode: 'flex', fr: 2 },
+                                { mode: 'flex', fr: 1 }
+                            ],
+                            gap: 12,
+                            frameOverflow: 'continue',
+                            worldBehavior: 'expandable'
+                        },
+                        zones: [
+                            {
+                                id: 'main',
+                                elements: [
+                                    {
+                                        type: 'story',
+                                        content: '',
+                                        columns: 2,
+                                        gutter: 10,
+                                        children: [
+                                            {
+                                                type: 'p',
+                                                content: 'Lead paragraph',
+                                                dropCap: { enabled: true, lines: 3, gap: 4 }
+                                            },
+                                            {
+                                                type: 'image',
+                                                content: '',
+                                                image: {
+                                                    data: onePixelPng,
+                                                    mimeType: 'image/png',
+                                                    fit: 'contain'
+                                                },
+                                                placement: { mode: 'float', align: 'right', wrap: 'around', gap: 8 },
+                                                properties: {
+                                                    style: { width: 40, height: 40 }
+                                                }
+                                            },
+                                            {
+                                                type: 'h2',
+                                                content: 'Span heading',
+                                                columnSpan: 'all'
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                id: 'side',
+                                elements: [
+                                    {
+                                        type: 'strip',
+                                        content: '',
+                                        stripLayout: {
+                                            tracks: [
+                                                { mode: 'flex', fr: 1 },
+                                                { mode: 'fixed', value: 32 }
+                                            ],
+                                            gap: 6
+                                        },
+                                        slots: [
+                                            { id: 'left', elements: [{ type: 'label', content: 'Info' }] },
+                                            { id: 'right', elements: [{ type: 'folio', content: '{pageNumber}' }] }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            } as any, 'inline-doc');
+
+            const zoneMap = resolved.elements[0] as any;
+            assert.equal(zoneMap.zoneLayout?.gap, 12);
+            assert.equal(zoneMap.zoneLayout?.frameOverflow, 'continue');
+            assert.equal(zoneMap.zoneLayout?.worldBehavior, 'expandable');
+            const story = zoneMap.zones?.[0]?.elements?.[0] as any;
+            assert.equal(story.children?.[0]?.dropCap?.lines, 3);
+            assert.equal(story.children?.[1]?.image?.mimeType, 'image/png');
+            assert.equal(story.children?.[1]?.placement?.mode, 'float');
+            assert.equal(story.children?.[2]?.columnSpan, 'all');
+            const stripAsZoneMap = zoneMap.zones?.[1]?.elements?.[0] as any;
+            assert.equal(stripAsZoneMap.type, 'zone-map');
+            assert.equal(stripAsZoneMap.zoneLayout?.gap, 6);
+            assert.equal(stripAsZoneMap.zoneLayout?.frameOverflow, undefined);
+            assert.equal(stripAsZoneMap.zoneLayout?.worldBehavior, 'fixed');
+        }
+    );
+
+    _check(
+        'story placement scope validation',
+        'placement is rejected outside direct story children',
+        () => {
+            assert.throws(
+                () => resolveDocumentPaths({
+                    documentVersion: CURRENT_DOCUMENT_VERSION,
+                    layout: {
+                        pageSize: 'A4',
+                        margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                        fontFamily: 'Arimo',
+                        fontSize: 12,
+                        lineHeight: 1.2
+                    },
+                    styles: {},
+                    elements: [
+                        { type: 'box', content: 'oops', placement: { mode: 'float', align: 'left' } }
+                    ]
+                } as any, 'inline-doc'),
+                /placement.*only allowed on direct children of story/i
+            );
+        }
+    );
+
+    _check(
+        'story placement non-image absolute acceptance',
+        'a non-image direct child of story may use story-absolute placement',
+        () => {
+            const resolved = resolveDocumentPaths({
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: 'A4',
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                },
+                styles: {},
+                elements: [
+                    {
+                        type: 'story',
+                        content: '',
+                        children: [
+                            {
+                                type: 'box',
+                                content: 'Pinned note',
+                                placement: { mode: 'story-absolute', x: 24, y: 36, wrap: 'around', gap: 6 },
+                                properties: { style: { width: 80, height: 40 } }
+                            }
+                        ]
+                    }
+                ]
+            } as any, 'inline-doc');
+
+            const child = (resolved.elements[0] as any).children?.[0];
+            assert.equal(child?.placement?.mode, 'story-absolute');
+            assert.equal(child?.placement?.x, 24);
+            assert.equal(child?.placement?.y, 36);
+        }
+    );
+}
+
 function testRuntimeIsolation(): void {
-    check(
+    _check(
         'runtime state isolation',
         'font registry writes in one runtime do not leak into another runtime',
         () => {
@@ -828,7 +1043,7 @@ function testRuntimeIsolation(): void {
 }
 
 function testEmbeddedImageCacheCollisionSafety(): void {
-    check(
+    _check(
         'embedded image cache collision safety',
         'distinct payloads that share the compact sampled cache key do not alias to the same parsed object',
         () => {
@@ -863,7 +1078,7 @@ function testEmbeddedImageCacheCollisionSafety(): void {
 }
 
 function testLocalFontManagerOverride(): void {
-    check(
+    _check(
         'local font manager override',
         'runtime font manager can be overridden with a custom local manager',
         () => {
@@ -894,7 +1109,7 @@ function testLocalFontManagerOverride(): void {
 }
 
 function testEngineCoreDomainAgnosticBoundary(): void {
-    check(
+    _check(
         'engine core boundary guard',
         'non-test engine source files do not contain screenplay/domain-specific vocabulary',
         () => {
@@ -992,6 +1207,7 @@ async function run() {
     testDocumentContractNormalization();
     testEmbeddedImageContract();
     testTableLayoutContract();
+    testAst11PromotedFieldsContract();
     testOrientationDimensions();
     testTrackSizingFoundation();
     testFontWeightMatching();

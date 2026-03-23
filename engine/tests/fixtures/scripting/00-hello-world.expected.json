@@ -1,0 +1,16 @@
+{
+  "expectedTextIncludes": [
+    "Hello, world!"
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "greeting",
+      "content": "Waiting for script..."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "loadCalls": 1,
+    "setContentCalls": 1
+  }
+}

@@ -1,5 +1,5 @@
 import { Context } from '@vmprint/contracts';
-import { Box } from '../types';
+import { Box, DebugZoneRegion } from '../types';
 
 type DebugStyle = {
     color: string;
@@ -7,6 +7,16 @@ type DebugStyle = {
     lineWidth: number;
     fillOpacity: number;
     strokeOpacity: number;
+    dash: [number, number];
+};
+
+type ZoneDebugStyle = {
+    fill: string;
+    stroke: string;
+    label: string;
+    fillOpacity: number;
+    strokeOpacity: number;
+    accentOpacity: number;
     dash: [number, number];
 };
 
@@ -24,6 +34,28 @@ const getDebugStyle = (type: string): DebugStyle => {
         lineWidth: 0.7,
         fillOpacity: 0.04,
         strokeOpacity: 0.55,
+        dash: [dashA, dashB]
+    };
+};
+
+const getZoneDebugStyle = (zone: DebugZoneRegion): ZoneDebugStyle => {
+    const signature = `${zone.fieldSourceId}:${zone.zoneId || zone.zoneIndex}`;
+    const seed = Array.from(signature).reduce((acc, ch) => ((acc * 33) + ch.charCodeAt(0)) >>> 0, 17);
+    const baseHues = [164, 206, 28, 332, 48, 262];
+    const hue = (baseHues[seed % baseHues.length] + ((seed >> 3) % 11) - 5 + 360) % 360;
+    const fill = `hsl(${hue}, 58%, 46%)`;
+    const stroke = `hsl(${hue}, 52%, 38%)`;
+    const label = `hsl(${hue}, 44%, 24%)`;
+    const dashA = 4 + (seed % 3);
+    const dashB = 3 + ((seed >> 4) % 3);
+
+    return {
+        fill,
+        stroke,
+        label,
+        fillOpacity: 0.035,
+        strokeOpacity: 0.28,
+        accentOpacity: 0.55,
         dash: [dashA, dashB]
     };
 };
@@ -104,5 +136,46 @@ export const drawDebugPageMargins = (
     context.text(`margin right: ${margins.right.toFixed(1)}`, rightLabelX, top + 2, { ascent: labelFontAscent });
     context.text(`margin bottom: ${margins.bottom.toFixed(1)}`, left + 2, Math.max(2, bottom + 2), { ascent: labelFontAscent });
 
+    context.restore();
+};
+
+export const drawDebugZoneOverlay = (
+    context: Context,
+    zone: DebugZoneRegion,
+    labelFontId: string,
+    labelFontAscent: number
+): void => {
+    const zoneStyle = getZoneDebugStyle(zone);
+    const title = zone.zoneId ? `zone:${zone.zoneId}` : `zone#${zone.zoneIndex + 1}`;
+    const subtitle = `${zone.frameOverflowMode}/${zone.worldBehaviorMode}`;
+
+    context.save();
+    context.opacity(zoneStyle.fillOpacity)
+        .fillColor(zoneStyle.fill)
+        .rect(zone.x, zone.y, zone.w, zone.h)
+        .fill();
+
+    context.opacity(zoneStyle.strokeOpacity)
+        .lineWidth(0.8)
+        .strokeColor(zoneStyle.stroke)
+        .dash(zoneStyle.dash[0], { space: zoneStyle.dash[1] })
+        .rect(zone.x, zone.y, zone.w, zone.h)
+        .stroke()
+        .undash();
+
+    context.opacity(zoneStyle.accentOpacity)
+        .lineWidth(0.45)
+        .strokeColor(zoneStyle.stroke)
+        .moveTo(zone.x, zone.y)
+        .lineTo(zone.x + Math.min(18, zone.w), zone.y)
+        .moveTo(zone.x, zone.y)
+        .lineTo(zone.x, zone.y + Math.min(18, zone.h))
+        .stroke();
+
+    context.font(labelFontId).fontSize(5.5);
+    context.opacity(0.82).fillColor(zoneStyle.label);
+    context.text(title, Math.max(2, zone.x + 3), Math.max(2, zone.y + 4), { ascent: labelFontAscent });
+    context.opacity(0.58).fillColor(zoneStyle.label);
+    context.text(subtitle, Math.max(2, zone.x + 3), Math.max(2, zone.y + 10), { ascent: labelFontAscent });
     context.restore();
 };

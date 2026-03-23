@@ -1,0 +1,243 @@
+type VmprintDocument = Record<string, unknown>;
+type FixturePreset = {
+    id: string;
+    label: string;
+    description: string;
+    scriptFile: string;
+};
+
+type EngineBundle = {
+    LayoutEngine: new (config: any, runtime: any) => {
+        waitForFonts(): Promise<void>;
+        simulate(elements: any[]): any[];
+    };
+    Renderer: new (config: any, debug: boolean, runtime: any) => {
+        render(pages: any[], context: any): Promise<void>;
+    };
+    createEngineRuntime(options: { fontManager: unknown }): unknown;
+    resolveDocumentPaths(document: VmprintDocument, documentPath: string): any;
+    toLayoutConfig(document: any, debug: boolean): any;
+    LayoutUtils: {
+        getPageDimensions(config: any): { width: number; height: number };
+    };
+};
+
+type WebFontsBundle = {
+    createDefaultWebFontManager(): unknown;
+    createDocumentWebFontManager(documentInput: unknown, config: unknown): unknown;
+};
+
+type CanvasContextInstance = {
+    getSize(): { width: number; height: number };
+    getPageCount(): number;
+    renderPageToCanvas(
+        pageIndex: number,
+        target: HTMLCanvasElement,
+        options?: { scale?: number; clear?: boolean; backgroundColor?: string }
+    ): Promise<void>;
+};
+
+type CanvasTextRenderMode = 'text' | 'glyph-path';
+
+type CanvasContextBundle = {
+    CanvasContext: new (options: any) => CanvasContextInstance;
+};
+
+type CanvasPreviewSession = {
+    pageCount: number;
+    pageSize: { width: number; height: number };
+    layoutMs: number;
+    renderPage(pageIndex: number, target: HTMLCanvasElement, scale?: number, dpi?: number): Promise<void>;
+};
+
+declare global {
+    interface Window {
+        VMPrintEngine: EngineBundle;
+        VMPrintWebFonts: WebFontsBundle;
+        VMPrintCanvasContext: CanvasContextBundle;
+        VMPrintFixtureStore?: Record<string, VmprintDocument>;
+    }
+}
+
+const BUILTIN_FIXTURES: FixturePreset[] = [
+    {
+        id: '08-dropcap-pagination',
+        label: '08: Dropcap + Pagination',
+        description: 'Typography-heavy fixture with drop cap and paging behavior.',
+        scriptFile: '08-dropcap-pagination.js'
+    },
+    {
+        id: '11-story-image-floats',
+        label: '11: Story Flow + Image Floats',
+        description: 'Story wrapping around float obstacles across pages.',
+        scriptFile: '11-story-image-floats.js'
+    },
+    {
+        id: '14-flow-images-multipage',
+        label: '14: Flow Images Multipage',
+        description: 'Multipage flow with embedded images.',
+        scriptFile: '14-flow-images-multipage.js'
+    },
+    {
+        id: '15-story-multi-column',
+        label: '15: Story Multi-Column',
+        description: 'Multi-column story composition and flow behaviors.',
+        scriptFile: '15-story-multi-column.js'
+    },
+    {
+        id: '26-strip-layout',
+        label: '26: Strip Composition (v1.1)',
+        description: 'Metadata bands and horizontal composition with strips.',
+        scriptFile: '26-strip-layout.js'
+    },
+    {
+        id: '21-zone-map-sidebar',
+        label: '21: Zone Maps (v1.1)',
+        description: 'Independent layout regions and parallel zones.',
+        scriptFile: '21-zone-map-sidebar.js'
+    },
+    {
+        id: '09-tables-spans-pagination',
+        label: '09: Tables Spans Pagination',
+        description: 'Complex table spanning and pagination stress test.',
+        scriptFile: '09-tables-spans-pagination.js'
+    }
+];
+
+const SAMPLE_DOCUMENT: VmprintDocument = {
+    documentVersion: '1.1',
+    elements: []
+};
+const fixtureLoadPromises = new Map<string, Promise<void>>();
+
+const cloneDocument = (document: VmprintDocument): VmprintDocument =>
+    JSON.parse(JSON.stringify(document)) as VmprintDocument;
+
+function getFixtureScriptUrl(scriptFile: string): string {
+    return new URL(`./fixtures/${scriptFile}`, document.baseURI).toString();
+}
+
+function ensureFixtureLoaded(fixture: FixturePreset): Promise<void> {
+    if (window.VMPrintFixtureStore?.[fixture.id]) {
+        return Promise.resolve();
+    }
+
+    const existingPromise = fixtureLoadPromises.get(fixture.id);
+    if (existingPromise) {
+        return existingPromise;
+    }
+
+    const loadPromise = new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = getFixtureScriptUrl(fixture.scriptFile);
+        script.async = true;
+
+        script.onload = () => {
+            if (window.VMPrintFixtureStore?.[fixture.id]) {
+                resolve();
+                return;
+            }
+            reject(new Error(`Fixture script "${fixture.id}" loaded but no document was registered.`));
+        };
+
+        script.onerror = () => {
+            reject(new Error(`Failed to load built-in fixture "${fixture.id}".`));
+        };
+
+        document.head.appendChild(script);
+    }).finally(() => {
+        fixtureLoadPromises.delete(fixture.id);
+    });
+
+    fixtureLoadPromises.set(fixture.id, loadPromise);
+    return loadPromise;
+}
+
+function getBuiltinFixturePresets(): Array<Pick<FixturePreset, 'id' | 'label' | 'description'>> {
+    return BUILTIN_FIXTURES.map((fixture) => ({
+        id: fixture.id,
+        label: fixture.label,
+        description: fixture.description
+    }));
+}
+
+async function getBuiltinFixtureDocument(id: string): Promise<VmprintDocument> {
+    const fixture = BUILTIN_FIXTURES.find((entry) => entry.id === id);
+    if (!fixture) {
+        throw new Error(`Unknown built-in fixture "${id}".`);
+    }
+    await ensureFixtureLoaded(fixture);
+    const loadedDocument = window.VMPrintFixtureStore?.[fixture.id];
+    if (!loadedDocument) {
+        throw new Error(`Built-in fixture "${id}" is unavailable after loading.`);
+    }
+    return cloneDocument(loadedDocument);
+}
+
+function parseDocumentJson(jsonText: string): VmprintDocument {
+    const parsed = JSON.parse(jsonText);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        throw new Error('Expected a JSON object as VMPrint document input.');
+    }
+    return parsed as VmprintDocument;
+}
+
+async function createCanvasPreviewSession(
+    documentInput: VmprintDocument,
+    options: { textRenderMode?: CanvasTextRenderMode } = {}
+): Promise<CanvasPreviewSession> {
+    if (!window.VMPrintEngine || !window.VMPrintWebFonts || !window.VMPrintCanvasContext) {
+        throw new Error('VMPrint browser bundles are missing. Rebuild docs assets and reload.');
+    }
+
+    const engineApi = window.VMPrintEngine;
+    const fontsApi = window.VMPrintWebFonts;
+    const contextApi = window.VMPrintCanvasContext;
+
+    const documentIr = engineApi.resolveDocumentPaths(documentInput, 'browser-input.json');
+    const config = engineApi.toLayoutConfig(documentIr, false);
+    const runtime = engineApi.createEngineRuntime({
+        fontManager: fontsApi.createDocumentWebFontManager(documentIr, config)
+    });
+
+    const engine = new engineApi.LayoutEngine(config, runtime);
+    await engine.waitForFonts();
+    const layoutStartMs = performance.now();
+    const pages = engine.simulate(documentIr.elements);
+    const layoutMs = performance.now() - layoutStartMs;
+
+    const { width, height } = engineApi.LayoutUtils.getPageDimensions(config);
+    const context = new contextApi.CanvasContext({
+        size: [width, height],
+        margins: { top: 0, right: 0, bottom: 0, left: 0 },
+        autoFirstPage: false,
+        bufferPages: false,
+        textRenderMode: options.textRenderMode || 'text'
+    });
+
+    const renderer = new engineApi.Renderer(config, false, runtime);
+    await renderer.render(pages, context as unknown as any);
+
+    return {
+        pageCount: context.getPageCount(),
+        pageSize: context.getSize(),
+        layoutMs,
+        renderPage: async (pageIndex: number, target: HTMLCanvasElement, scale = 1, dpi?: number) => {
+            await context.renderPageToCanvas(pageIndex, target, {
+                scale,
+                dpi,
+                clear: true,
+                backgroundColor: '#ffffff'
+            });
+        }
+    };
+}
+
+export {
+    BUILTIN_FIXTURES,
+    SAMPLE_DOCUMENT,
+    createCanvasPreviewSession,
+    getBuiltinFixtureDocument,
+    getBuiltinFixturePresets,
+    parseDocumentJson
+};

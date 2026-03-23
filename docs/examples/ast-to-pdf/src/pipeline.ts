@@ -9,7 +9,7 @@ type FixturePreset = {
 type EngineBundle = {
     LayoutEngine: new (config: any, runtime: any) => {
         waitForFonts(): Promise<void>;
-        paginate(elements: any[]): any[];
+        simulate(elements: any[]): any[];
     };
     Renderer: new (config: any, debug: boolean, runtime: any) => {
         render(pages: any[], context: any): Promise<void>;
@@ -115,6 +115,18 @@ const BUILTIN_FIXTURES: FixturePreset[] = [
         scriptFile: '15-story-multi-column.js'
     },
     {
+        id: '26-strip-layout',
+        label: '26: Strip Composition (v1.1)',
+        description: 'Metadata bands and horizontal composition with strips.',
+        scriptFile: '26-strip-layout.js'
+    },
+    {
+        id: '21-zone-map-sidebar',
+        label: '21: Zone Maps (v1.1)',
+        description: 'Independent layout regions and parallel zones.',
+        scriptFile: '21-zone-map-sidebar.js'
+    },
+    {
         id: '09-tables-spans-pagination',
         label: '09: Tables Spans Pagination',
         description: 'Complex table spanning and pagination stress test.',
@@ -218,7 +230,7 @@ async function renderDocumentToPdfBytes(documentInput: VmprintDocument): Promise
 
     const engine = new engineApi.LayoutEngine(config, runtime);
     await engine.waitForFonts();
-    const pages = engine.paginate(documentIr.elements);
+    const pages = engine.simulate(documentIr.elements);
 
     const { width, height } = engineApi.LayoutUtils.getPageDimensions(config);
     const context = new contextApi.PdfLiteContext({
