@@ -1,6 +1,6 @@
 # vmprint CLI
 
-**Package:** `vmprint` · **Install:** `npm install -g vmprint`
+**Package:** `@vmprint/cli` · **Install:** `npm install -g @vmprint/cli`
 
 *The JSON → PDF command-line interface for VMPrint.*
 

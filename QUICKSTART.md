@@ -132,6 +132,6 @@ npm run test:packaged-integration
 | `contexts/pdf-lite/` | `@vmprint/context-pdf-lite` | Lightweight PDF output context |
 | `font-managers/local/` | `@vmprint/local-fonts` | Local filesystem font manager |
 | `font-managers/standard/` | `@vmprint/standard-fonts` | Standard PDF font manager |
-| `cli/` | `vmprint` | `vmprint` CLI |
+| `cli/` | `@vmprint/cli` | `vmprint` CLI |
 | `draft2final/` | `draft2final` | Markdown-first authoring CLI |
 | `transmuters/` | VMPrint transmuters | Source-to-DocumentInput converters |
