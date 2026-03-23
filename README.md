@@ -423,7 +423,7 @@ const runtime = createEngineRuntime({ fontManager: new StandardFontManager() });
 | `@vmprint/transmuter-mkd-literature` | Markdown -> DocumentInput (literature defaults) |
 | `@vmprint/transmuter-mkd-manuscript` | Markdown -> DocumentInput (manuscript defaults) |
 | `@vmprint/transmuter-mkd-screenplay` | Markdown -> DocumentInput (screenplay defaults) |
-| `@vmprint/cli` | `vmprint` JSON -> PDF CLI |
+| `vmprint` | `vmprint` JSON -> PDF CLI |
 | `@draft2final/cli` | Source -> PDF or AST CLI |
 
 ---

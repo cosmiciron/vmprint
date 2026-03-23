@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-npm install -g @vmprint/cli
+npm install -g vmprint
 ```
 
 ## Run from source

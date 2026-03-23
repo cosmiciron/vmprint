@@ -12,6 +12,7 @@ import { createEngineRuntime } from '@vmprint/engine';
 import { AnnotatedLayoutStream, LayoutConfig, Page, resolveDocumentSourceText, toLayoutConfig, type DocumentIR } from '@vmprint/engine';
 import { performance } from 'perf_hooks';
 import PdfContext from '@vmprint/context-pdf';
+import LocalFontManager from '@vmprint/local-fonts';
 
 type CliOptions = {
     input?: string;
@@ -64,13 +65,6 @@ function resolveOutputPath(options: CliOptions): string {
     }
 
     return 'output.pdf';
-}
-
-function resolveBuiltin(bundledRelPath: string, packageName: string): string {
-    const bundledPath = path.join(__dirname, 'bundled', bundledRelPath);
-    if (fs.existsSync(bundledPath)) return bundledPath;
-    // Dev mode (tsx src/): bundled dir not present, resolve from workspace package
-    return require.resolve(packageName);
 }
 
 function resolveModulePath(modulePath: string): string {
@@ -146,8 +140,9 @@ async function run() {
         throw new Error('You must specify either --input <path> or --render-from-layout <path>');
     }
 
-    const builtinFontManager = resolveBuiltin('font-managers/local/index.js', '@vmprint/local-fonts');
-    const FontManagerClass = await loadImplementation<new (...args: any[]) => any>(options.fontManager, builtinFontManager);
+    const FontManagerClass = options.fontManager
+        ? await loadImplementation<new (...args: any[]) => any>(options.fontManager, '')
+        : LocalFontManager;
 
     const runtime = createEngineRuntime({ fontManager: new FontManagerClass() });
 

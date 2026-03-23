@@ -1,9 +1,10 @@
 {
-  "name": "vmprint",
+  "name": "vmprint-workspace",
   "version": "1.0.0",
   "description": "Deterministic typesetting engine for the programmable web. Pure-JS, zero-browser document composition with bit-perfect PDF output.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cosmiciron/vmprint.git"
