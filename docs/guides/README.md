@@ -1,19 +1,24 @@
+---
+title: VMPrint Authoring Guide
+permalink: /guides/
+---
+
 # VMPrint Authoring Guide
 
 This directory is the practical guide to authoring VMPrint documents with AST `1.1`.
 
 Use it in this order:
 
-1. [01-your-first-document.md](01-your-first-document.md)
-2. [02-styles-and-text.md](02-styles-and-text.md)
-3. [03-stories-strips-and-zones.md](03-stories-strips-and-zones.md)
-4. [04-headers-footers-and-page-control.md](04-headers-footers-and-page-control.md)
-5. [05-images-tables-and-overlays.md](05-images-tables-and-overlays.md)
-6. [06-scripting.md](06-scripting.md)
+1. [01-your-first-document](01-your-first-document.html)
+2. [02-styles-and-text](02-styles-and-text.html)
+3. [03-stories-strips-and-zones](03-stories-strips-and-zones.html)
+4. [04-headers-footers-and-page-control](04-headers-footers-and-page-control.html)
+5. [05-images-tables-and-overlays](05-images-tables-and-overlays.html)
+6. [06-scripting](06-scripting.html)
 
 How this guide differs from the reference:
 
-- [AST-REFERENCE.md](../AST-REFERENCE.md) is the contract
+- [AST Reference](../reference/ast.html) is the contract
 - this guide is the teaching path
 - the examples here prefer AST `1.1`
 

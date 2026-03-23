@@ -1,3 +1,6 @@
+---
+---
+
 # 04. Headers, Footers, And Page Control
 
 VMPrint supports running page regions and a few important pagination controls.
@@ -108,4 +111,4 @@ Use page regions for repeated composition; keep ordinary document content in `el
 
 Next:
 
-- [05-images-tables-and-overlays.md](05-images-tables-and-overlays.md)
+- [05-images-tables-and-overlays](05-images-tables-and-overlays.html)

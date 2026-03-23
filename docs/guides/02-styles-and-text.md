@@ -1,3 +1,6 @@
+---
+---
+
 # 02. Styles And Text
 
 VMPrint’s default authoring model is still simple document flow.
@@ -87,4 +90,4 @@ Use plain flow as long as you can. Reach for spatial constructs only when flow s
 
 Next:
 
-- [03-stories-strips-and-zones.md](03-stories-strips-and-zones.md)
+- [03-stories-strips-and-zones](03-stories-strips-and-zones.html)

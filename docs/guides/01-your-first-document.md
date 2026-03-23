@@ -1,3 +1,6 @@
+---
+---
+
 # 01. Your First Document
 
 This is the smallest useful VMPrint document in AST `1.1`.
@@ -63,4 +66,4 @@ Rules of thumb:
 
 Next:
 
-- [02-styles-and-text.md](02-styles-and-text.md)
+- [02-styles-and-text](02-styles-and-text.html)

@@ -1,0 +1,8 @@
+markdown: GFM
+include:
+  - api/classes
+  - api/functions
+  - api/interfaces
+  - api/modules
+  - api/types
+  - api/variables

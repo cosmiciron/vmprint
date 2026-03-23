@@ -1,3 +1,6 @@
+---
+---
+
 # VMPrint AST Reference
 
 This document is the reference for the public **VMPrint document input format**: the JSON/object tree you author and hand to the VMPrint pipeline.
@@ -6,7 +9,7 @@ The AST is the canonical public source format. The engine internally normalizes 
 
 If you want the guided teaching path instead of the full contract, start with the authoring guide:
 
-- [authoring/README.md](c:\Users\cosmic\Projects\vmprint\documents\authoring\README.md)
+- [Authoring Guide](../guides/)
 
 ---
 
@@ -613,9 +616,9 @@ interface PageRegionContent {
 | AST normalization | [engine/src/engine/document.ts](https://github.com/cosmiciron/vmprint/blob/main/engine/src/engine/document.ts) |
 | Spatial fixture normalization helper | [engine/tests/harness/spatialize.ts](https://github.com/cosmiciron/vmprint/blob/main/engine/tests/harness/spatialize.ts) |
 | Architecture and Runtime Internals | [ENGINE-INTERNALS.md](https://github.com/cosmiciron/vmprint/blob/main/documents/ENGINE-INTERNALS.md) |
-| Scripting API | [scripting.md](./scripting.md) |
-| Overlay system | [overlay.md](./overlay.md) |
-| Standard fonts | [standard-fonts.md](./standard-fonts.md) |
+| Scripting API | [scripting.html](./scripting.html) |
+| Overlay system | [overlay.html](./overlay.html) |
+| Standard fonts | [standard-fonts.html](./standard-fonts.html) |
 | Testing guide | [TESTING.md](https://github.com/cosmiciron/vmprint/blob/main/documents/TESTING.md) |
 | Markdown compilation core | [transmuters/markdown-core/src/index.ts](https://github.com/cosmiciron/vmprint/blob/main/transmuters/markdown-core/src/index.ts) |
 | Transmuters | [transmuters/](https://github.com/cosmiciron/vmprint/tree/main/transmuters) |

@@ -1,3 +1,6 @@
+---
+---
+
 # VMPrint Scripting API
 
 This document formalizes the public API for VMPrint Scripting Series 1.

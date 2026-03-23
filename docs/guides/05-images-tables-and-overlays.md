@@ -1,3 +1,6 @@
+---
+---
+
 # 05. Images, Tables, And Overlays
 
 This chapter covers the remaining common authoring tools.
@@ -87,13 +90,13 @@ The built-in debug overlay is especially useful now for `zone-map` work because 
 
 See also:
 
-- [OVERLAY.md](../OVERLAY.md)
+- [Overlay System](../reference/overlay.html)
 
 Next:
 
-- [06-scripting.md](06-scripting.md)
+- [06-scripting](06-scripting.html)
 
 After this point, use the references as needed:
 
-- [AST-REFERENCE.md](../AST-REFERENCE.md)
-- [SCRIPTING-API.md](../SCRIPTING-API.md)
+- [AST Reference](../reference/ast.html)
+- [Scripting API](../reference/scripting.html)

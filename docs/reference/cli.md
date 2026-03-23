@@ -1,3 +1,6 @@
+---
+---
+
 # vmprint CLI
 
 **Package:** `@vmprint/cli` · **Install:** `npm install -g @vmprint/cli`
@@ -87,7 +90,7 @@ export default {
 };
 ```
 
-See [Overlay System](./overlay.md) for the full interface reference.
+See [Overlay System](./overlay.html) for the full interface reference.
 
 ---
 

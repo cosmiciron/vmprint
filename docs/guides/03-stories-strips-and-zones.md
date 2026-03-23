@@ -1,3 +1,6 @@
+---
+---
+
 # 03. Stories, Strips, And Zones
 
 This is where VMPrint becomes spatial.
@@ -334,4 +337,4 @@ Common mistake:
 
 Next:
 
-- [04-headers-footers-and-page-control.md](04-headers-footers-and-page-control.md)
+- [04-headers-footers-and-page-control](04-headers-footers-and-page-control.html)

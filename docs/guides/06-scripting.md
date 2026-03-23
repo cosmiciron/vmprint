@@ -1,3 +1,6 @@
+---
+---
+
 # 06. Scripting
 
 VMPrint documents can participate in their own layout lifecycle. Elements can
@@ -5,7 +8,7 @@ react to events, query the settled document, and change each other's content
 through messages — all without a second rendering pass.
 
 This guide covers the practical authoring model. For the full API contract, see
-[SCRIPTING-API.md](../SCRIPTING-API.md).
+[Scripting API](../reference/scripting.html).
 
 ---
 
@@ -352,4 +355,4 @@ methods:
 For the full API — all handlers, all helpers, all objects, variable scope rules,
 and what this version does not include:
 
-- [SCRIPTING-API.md](../SCRIPTING-API.md)
+- [Scripting API](../reference/scripting.html)
