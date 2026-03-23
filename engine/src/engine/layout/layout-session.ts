@@ -373,10 +373,7 @@ export class LayoutSession {
         this.eventDispatcher = new EventDispatcher(this.collaborators);
         this.actorCommunicationRuntime = new ActorCommunicationRuntime({
             recordObserverCheckpointSweep: () => this.recordProfile('observerCheckpointSweepCalls', 1),
-            recordProfile: (metric, delta) => this.recordProfile(metric, delta),
-            recordKeepWithNextPrepare: (actorKind, durationMs) => this.recordKeepWithNextPrepare(actorKind, durationMs),
-            getSplitMarkerReserve: (actor) => this.getSplitMarkerReserve(actor),
-            getActorSignalSequence: () => this.getActorSignalSequence()
+            recordProfile: (metric, delta) => this.recordProfile(metric, delta)
         });
         this.fragmentSessionRuntime = new FragmentSessionRuntime(this.kernel, {
             notifyActorSpawn: (actor) => this.notifyActorSpawn(actor),

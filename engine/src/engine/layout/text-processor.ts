@@ -34,7 +34,7 @@ export class TextProcessor extends FontProcessor {
     private styleSignatureCache = new StyleSignatureCache();
 
 
-    private cloneGlyphs(glyphs: Array<{ char: string; x: number; y: number }>): Array<{ char: string; x: number; y: number }> {
+    protected cloneGlyphs(glyphs: Array<{ char: string; x: number; y: number }>): Array<{ char: string; x: number; y: number }> {
         const out = new Array(glyphs.length);
         for (let i = 0; i < glyphs.length; i++) {
             const glyph = glyphs[i];

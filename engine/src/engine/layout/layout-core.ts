@@ -132,7 +132,7 @@ export class LayoutProcessor extends TextProcessor {
         return false;
     }
 
-    private requiresBlueprintPreprocessingClone(
+    private requiresSimulationClone(
         elements: Element[],
         scriptRuntimeHost: ScriptRuntimeHost | null
     ): boolean {
@@ -140,6 +140,8 @@ export class LayoutProcessor extends TextProcessor {
 
         const hasOnLoad = scriptRuntimeHost.getDocumentHandlerName('onLoad') !== null;
         if (hasOnLoad) return true;
+
+        if (scriptRuntimeHost.hasDocumentAfterSettleHandler()) return true;
 
         return this.elementTreeHasPhaseHandler(elements, (element) => {
             const sourceId = typeof element.properties?.sourceId === 'string'
@@ -660,11 +662,10 @@ export class LayoutProcessor extends TextProcessor {
         const scriptRuntimeHost = this.config.scripting
             ? new ScriptRuntimeHost(this.config.scripting)
             : null;
-        // Blueprint-preprocessing phases (`onLoad`/`onCreate`) still operate on
-        // the authored element structure. Clone only for those phases so live
-        // runtime scripting can work directly against instantiated participants
-        // without paying the full-tree copy cost on every simulation.
-        const simulationElements = this.requiresBlueprintPreprocessingClone(elements, scriptRuntimeHost)
+        // Any scripting-capable simulation works against a cloned element tree so
+        // authored input remains immutable across pre-layout and post-settlement
+        // runtime mutations.
+        const simulationElements = this.requiresSimulationClone(elements, scriptRuntimeHost)
             ? this.cloneElementsForSimulation(elements)
             : elements;
         const scriptLifecycleState = scriptRuntimeHost?.createLifecycleState() ?? null;

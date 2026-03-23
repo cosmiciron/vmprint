@@ -54,7 +54,7 @@ async function main() {
     const pdfLite = await import(pathToFileURL(pdfLiteDist).href);
 
     const documentInput = {
-        documentVersion: '1.0',
+        documentVersion: '1.1',
         layout: {
             pageSize: 'LETTER',
             margins: { top: 54, right: 54, bottom: 54, left: 54 },
@@ -69,7 +69,7 @@ async function main() {
             boldItalic: 'Helvetica-BoldOblique'
         },
         styles: {
-            paragraph: {
+            p: {
                 fontFamily: 'Helvetica',
                 fontSize: 12,
                 lineHeight: 1.4
@@ -77,7 +77,7 @@ async function main() {
         },
         elements: [
             {
-                type: 'paragraph',
+                type: 'p',
                 content: 'VMPrint packaged integration smoke test.',
                 properties: {
                     sourceId: 'smoke-paragraph'

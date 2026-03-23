@@ -17,7 +17,7 @@
               "width": 275.044922,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -35,7 +35,7 @@
               "width": 358.891113,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -44,7 +44,7 @@
               "width": 349.749512,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -53,7 +53,7 @@
               "width": 360.088867,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -62,7 +62,7 @@
               "width": 269.612793,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -87,7 +87,7 @@
               "width": 168.820313,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -102,10 +102,10 @@
           [
             {
               "text": "Expected: the first long paragraph splits mid-page with exactly one A marker pair. The ",
-              "width": 344.166504,
+              "width": 343.669922,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -114,7 +114,7 @@
               "width": 351.206543,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -132,7 +132,7 @@
               "width": 227.379883,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -141,7 +141,7 @@
               "width": 229.254395,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -150,7 +150,7 @@
               "width": 39.144531,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -168,7 +168,7 @@
               "width": 189.465332,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -177,7 +177,7 @@
               "width": 194.379883,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -186,7 +186,7 @@
               "width": 202.307617,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -195,7 +195,7 @@
               "width": 20.157715,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -220,7 +220,7 @@
               "width": 219.489746,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -229,7 +229,7 @@
               "width": 214.612793,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -238,7 +238,7 @@
               "width": 204.858887,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -247,7 +247,7 @@
               "width": 198.123535,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -256,7 +256,7 @@
               "width": 176.6875,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -265,7 +265,7 @@
               "width": 226.853516,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -274,7 +274,7 @@
               "width": 226.896484,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -283,7 +283,7 @@
               "width": 219.489746,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -292,7 +292,7 @@
               "width": 214.612793,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -301,7 +301,7 @@
               "width": 204.858887,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -310,7 +310,7 @@
               "width": 198.123535,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -319,7 +319,7 @@
               "width": 176.6875,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -328,7 +328,7 @@
               "width": 226.853516,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -337,7 +337,7 @@
               "width": 226.896484,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -355,7 +355,7 @@
               "width": 109.511719,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -380,7 +380,7 @@
               "width": 138.014648,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -398,7 +398,7 @@
               "width": 219.489746,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -407,7 +407,7 @@
               "width": 214.612793,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -416,7 +416,7 @@
               "width": 204.858887,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -425,7 +425,7 @@
               "width": 91.743652,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -443,7 +443,7 @@
               "width": 344.834961,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -452,7 +452,7 @@
               "width": 192.027344,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -477,7 +477,7 @@
               "width": 189.047852,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -492,10 +492,10 @@
           [
             {
               "text": "Expected: the second split also emits exactly one B marker pair. If the first preview leaks ",
-              "width": 354.155273,
+              "width": 353.658691,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -504,7 +504,7 @@
               "width": 314.657227,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -522,7 +522,7 @@
               "width": 219.436035,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -531,7 +531,7 @@
               "width": 217.045898,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -540,7 +540,7 @@
               "width": 45.246094,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -558,7 +558,7 @@
               "width": 172.374512,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -567,7 +567,7 @@
               "width": 215.166016,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -576,7 +576,7 @@
               "width": 183.41748,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -585,7 +585,7 @@
               "width": 111.874512,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -610,16 +610,16 @@
               "width": 224.398926,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "now crosses the same boundary, and its ",
-              "width": 199.938965,
+              "width": 199.122559,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -628,7 +628,7 @@
               "width": 194.438965,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -637,7 +637,7 @@
               "width": 207.259766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -646,7 +646,7 @@
               "width": 220.708984,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -655,70 +655,25 @@
               "width": 215.230469,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "same boundary, and its continuation ",
-              "width": 179.78125,
+              "text": "same boundary, and its continuation settlement",
+              "width": 229.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "settlement must not inherit duplicate markers, ",
-              "width": 224.984375,
+              "text": "must not inherit duplicate markers, leaked ",
+              "width": 206.652832,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
-            }
-          ],
-          [
-            {
-              "text": "leaked reservations, or stale fragment ",
-              "width": 187.091309,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            }
-          ],
-          [
-            {
-              "text": "transitions. Branch seam B. A second ",
-              "width": 186.479004,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            }
-          ],
-          [
-            {
-              "text": "accepted fragment now crosses the same ",
-              "width": 206.658203,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            }
-          ],
-          [
-            {
-              "text": "boundary, and its continuation settlement must",
-              "width": 227.46582,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            }
-          ],
-          [
-            {
-              "text": "not inherit duplicate markers, leaked ",
-              "width": 179.759766,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -727,7 +682,52 @@
               "width": 207.866699,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Branch seam B. A second accepted fragment ",
+              "width": 224.398926,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "now crosses the same boundary, and its ",
+              "width": 199.122559,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation settlement must not inherit ",
+              "width": 194.438965,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "duplicate markers, leaked reservations, or ",
+              "width": 207.259766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "stale fragment transitions. Branch seam B. A ",
+              "width": 220.708984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
             }
           ]
         ]
@@ -745,7 +745,7 @@
               "width": 109.511719,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -770,7 +770,7 @@
               "width": 138.014648,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -780,24 +780,60 @@
         "x": 28,
         "y": 57.304688,
         "w": 230,
-        "h": 150.390625,
+        "h": 135.351563,
         "lines": [
+          [
+            {
+              "text": "second accepted fragment now crosses the ",
+              "width": 215.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "same boundary, and its continuation settlement",
+              "width": 229.710938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "must not inherit duplicate markers, leaked ",
+              "width": 206.652832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reservations, or stale fragment transitions. ",
+              "width": 207.866699,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
           [
             {
               "text": "Branch seam B. A second accepted fragment ",
               "width": 224.398926,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "now crosses the same boundary, and its ",
-              "width": 199.938965,
+              "width": 199.122559,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -806,7 +842,7 @@
               "width": 194.438965,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -815,76 +851,24 @@
               "width": 207.259766,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "stale fragment transitions. Branch seam B. A ",
-              "width": 220.708984,
+              "text": "stale fragment transitions.",
+              "width": 125.946777,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
-            }
-          ],
-          [
-            {
-              "text": "second accepted fragment now crosses the ",
-              "width": 215.230469,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            }
-          ],
-          [
-            {
-              "text": "same boundary, and its continuation ",
-              "width": 179.78125,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            }
-          ],
-          [
-            {
-              "text": "settlement must not inherit duplicate markers, ",
-              "width": 224.984375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            }
-          ],
-          [
-            {
-              "text": "leaked reservations, or stale fragment ",
-              "width": 187.091309,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            }
-          ],
-          [
-            {
-              "text": "transitions.",
-              "width": 53.189941,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
-      }
-    ]
-  },
-  {
-    "index": 7,
-    "width": 420,
-    "height": 300,
-    "boxes": [
+      },
       {
         "type": "p",
         "x": 28,
-        "y": 28,
+        "y": 200.65625,
         "w": 364,
         "h": 45.117188,
         "lines": [
@@ -894,7 +878,7 @@
               "width": 341.762695,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -903,7 +887,7 @@
               "width": 340.602539,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -912,7 +896,7 @@
               "width": 314.305664,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]

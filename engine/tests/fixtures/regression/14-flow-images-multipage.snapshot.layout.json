@@ -17,7 +17,7 @@
               "width": 426.714844,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -26,7 +26,7 @@
               "width": 130.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -40,29 +40,29 @@
         "lines": [
           [
             {
-              "text": "This regression fixture validates flow-image behavior in normal document flow (Top-and-",
-              "width": 467.542969,
+              "text": "This regression fixture validates flow-image behavior in normal document flow ",
+              "width": 416.185547,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "Bottom style): images should move with text and paginate deterministically across ",
-              "width": 437.53125,
+              "text": "(Top-and-Bottom style): images should move with text and paginate deterministically ",
+              "width": 450.210938,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "multiple pages.",
-              "width": 80.712891,
+              "text": "across multiple pages.",
+              "width": 119.390625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -80,7 +80,7 @@
               "width": 433.201172,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -106,7 +106,7 @@
               "width": 464.888672,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -115,7 +115,7 @@
               "width": 466.904297,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -124,7 +124,7 @@
               "width": 444.908203,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -142,16 +142,16 @@
               "width": 462.064453,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "something about scientific destiny. The lab lights flicker, coffee vibrates ominously, and ",
-              "width": 464.015625,
+              "width": 461.572266,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -160,7 +160,7 @@
               "width": 426.234375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -185,7 +185,7 @@
               "width": 372.140625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -194,7 +194,7 @@
               "width": 101.991699,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -220,25 +220,25 @@
               "width": 463.582031,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "chaotic but oddly charming explosion of all things nerdy. Graph paper erupts from vents.",
-              "width": 467.583984,
+              "width": 466.693359,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "Action figures achieve temporary orbit. A dramatic choir appears to sing in binary.",
-              "width": 432.205078,
+              "width": 431.314453,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -256,16 +256,16 @@
               "width": 402.867188,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "observations with impressive precision: \"loud noises, unusual sparkle density, and ",
-              "width": 438.486328,
+              "width": 437.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -274,7 +274,7 @@
               "width": 395.115234,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -299,7 +299,7 @@
               "width": 402.421875,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -325,7 +325,7 @@
               "width": 459.181641,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -334,7 +334,7 @@
               "width": 467.578125,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -343,16 +343,16 @@
               "width": 449.583984,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "powers responsibly.",
-              "width": 106.048828,
+              "width": 105.158203,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -377,7 +377,7 @@
               "width": 464.226563,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -386,25 +386,25 @@
               "width": 416.25,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 462.257813,
+              "width": 461.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 466.271484,
+              "width": 465.609375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -413,16 +413,16 @@
               "width": 446.267578,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.896484,
+              "width": 426.234375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -431,25 +431,25 @@
               "width": 416.25,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 462.257813,
+              "width": 461.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 466.271484,
+              "width": 465.609375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -458,16 +458,16 @@
               "width": 446.267578,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.896484,
+              "width": 426.234375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -476,25 +476,25 @@
               "width": 416.25,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 462.257813,
+              "width": 461.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 466.271484,
+              "width": 465.609375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -503,16 +503,16 @@
               "width": 446.267578,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.896484,
+              "width": 426.234375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -521,25 +521,25 @@
               "width": 416.25,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 462.257813,
+              "width": 461.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 466.271484,
+              "width": 465.609375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -548,16 +548,16 @@
               "width": 446.267578,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.896484,
+              "width": 426.234375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -566,25 +566,25 @@
               "width": 416.25,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 462.257813,
+              "width": 461.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 466.271484,
+              "width": 465.609375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -593,16 +593,16 @@
               "width": 446.267578,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.896484,
+              "width": 426.234375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -611,25 +611,25 @@
               "width": 416.25,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 462.257813,
+              "width": 461.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 466.271484,
+              "width": 465.609375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -638,16 +638,16 @@
               "width": 446.267578,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.896484,
+              "width": 426.234375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -656,25 +656,25 @@
               "width": 416.25,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 462.257813,
+              "width": 461.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 466.271484,
+              "width": 465.609375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -683,16 +683,16 @@
               "width": 446.267578,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.896484,
+              "width": 426.234375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -701,25 +701,25 @@
               "width": 416.25,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 462.257813,
+              "width": 461.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 466.271484,
+              "width": 465.609375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -744,16 +744,16 @@
               "width": 446.267578,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.896484,
+              "width": 426.234375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -762,25 +762,25 @@
               "width": 416.25,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 462.257813,
+              "width": 461.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "sentence intentionally repeats to enforce multi-page continuation behavior. ",
-              "width": 398.917969,
+              "width": 398.255859,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]

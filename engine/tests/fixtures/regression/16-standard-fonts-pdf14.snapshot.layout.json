@@ -17,7 +17,7 @@
               "width": 295.566406,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Helvetica"
+              "fontFamily": ""
             }
           ]
         ]
@@ -35,7 +35,7 @@
               "width": 370.189453,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Helvetica"
+              "fontFamily": ""
             }
           ],
           [
@@ -44,7 +44,7 @@
               "width": 360.84375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Helvetica"
+              "fontFamily": ""
             }
           ]
         ]
@@ -62,7 +62,7 @@
               "width": 70.019531,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Helvetica"
+              "fontFamily": ""
             }
           ]
         ]
@@ -152,7 +152,7 @@
               "width": 55.742188,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Helvetica"
+              "fontFamily": ""
             }
           ]
         ]
@@ -167,7 +167,7 @@
           [
             {
               "text": "Times Roman: Sphinx of black quartz, judge my vow.",
-              "width": 260.203125,
+              "width": 259.423828,
               "ascent": 891.113281,
               "descent": 216.308594,
               "fontFamily": "Times"
@@ -185,7 +185,7 @@
           [
             {
               "text": "Times Bold: Sphinx of black quartz, judge my vow.",
-              "width": 262.482422,
+              "width": 261.820313,
               "ascent": 891.113281,
               "descent": 216.308594,
               "fontFamily": "Times"
@@ -203,7 +203,7 @@
           [
             {
               "text": "Times Italic: Sphinx of black quartz, judge my vow.",
-              "width": 250.189453,
+              "width": 249.410156,
               "ascent": 891.113281,
               "descent": 216.308594,
               "fontFamily": "Times"
@@ -221,7 +221,7 @@
           [
             {
               "text": "Times BoldItalic: Sphinx of black quartz, judge my vow.",
-              "width": 289.142578,
+              "width": 288.480469,
               "ascent": 891.113281,
               "descent": 216.308594,
               "fontFamily": "Times"
@@ -242,7 +242,7 @@
               "width": 61.679688,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Helvetica"
+              "fontFamily": ""
             }
           ]
         ]
@@ -332,7 +332,7 @@
               "width": 104.21875,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Helvetica"
+              "fontFamily": ""
             }
           ]
         ]

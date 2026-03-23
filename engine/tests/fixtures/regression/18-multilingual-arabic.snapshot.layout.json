@@ -17,7 +17,7 @@
               "width": 426.734375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -26,7 +26,7 @@
               "width": 81.21875,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -41,10 +41,10 @@
           [
             {
               "text": "This fixture specifically tests the visual accuracy, ",
-              "width": 434.599609,
+              "width": 433.115234,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -53,7 +53,7 @@
               "width": 395.810547,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -62,7 +62,7 @@
               "width": 446.455078,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -80,7 +80,7 @@
               "width": 401.367188,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -192,28 +192,28 @@
           [
             {
               "text": "Notice how the letters connect smoothly. This ",
-              "width": 407.958984,
+              "width": 406.474609,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "confirms fontkit is receiving the 'arab' script tag and '",
-              "width": 461.660156,
+              "text": "confirms fontkit is receiving the 'arab' script tag and ",
+              "width": 457.841797,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "rtl' direction correctly.",
-              "width": 188.310547,
+              "text": "'rtl' direction correctly.",
+              "width": 190.644531,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -234,20 +234,20 @@
         "lines": [
           [
             {
-              "text": "2. Mixed Script - Arabic inside English (",
-              "width": 449.425781,
+              "text": "2. Mixed Script - Arabic inside English ",
+              "width": 441.433594,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "LTR Base)",
-              "width": 116.90625,
+              "text": "(LTR Base)",
+              "width": 124.898438,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -340,28 +340,28 @@
           [
             {
               "text": "The Arabic words should be shaped correctly, ",
-              "width": 411.318359,
+              "width": 409.833984,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "written right-to-left internally, but the overall ",
-              "width": 387.949219,
+              "text": "written right-to-left internally, but the overall sentence",
+              "width": 467.636719,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "sentence flows left-to-right.",
-              "width": 238.994141,
+              "text": "flows left-to-right.",
+              "width": 152.265625,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -382,20 +382,20 @@
         "lines": [
           [
             {
-              "text": "3. Mixed Script - English inside Arabic (",
-              "width": 449.425781,
+              "text": "3. Mixed Script - English inside Arabic ",
+              "width": 441.433594,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "RTL Base)",
-              "width": 118.6875,
+              "text": "(RTL Base)",
+              "width": 126.679688,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -552,7 +552,7 @@
               "width": 446.542969,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -561,7 +561,7 @@
               "width": 466.367188,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -570,7 +570,7 @@
               "width": 143.017578,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -595,7 +595,7 @@
               "width": 406.734375,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]
@@ -859,7 +859,7 @@
               "width": 463.339844,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ],
           [
@@ -868,7 +868,7 @@
               "width": 405.410156,
               "ascent": 905.273438,
               "descent": 211.914063,
-              "fontFamily": "Arimo"
+              "fontFamily": ""
             }
           ]
         ]

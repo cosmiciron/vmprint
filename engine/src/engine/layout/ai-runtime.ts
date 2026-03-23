@@ -10,6 +10,7 @@ import {
 import { buildKeepWithNextPlanSignature, computeKeepWithNextPlan } from './collaborators/keep-with-next-collaborator';
 import {
     type KeepWithNextOverflowActionInput,
+    type LayoutProfileMetrics,
     type KeepWithNextPlanningResolution,
     type PaginationLoopAction,
     type PaginationState,
@@ -65,7 +66,7 @@ export type AIRuntimeHost = {
         positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[]
     ): TailSplitFormationSettlementOutcome;
     recordProfile(
-        metric: 'keepWithNextBranchCalls' | 'keepWithNextBranchMs' | 'keepWithNextPlanCalls' | 'keepWithNextPlanMs',
+        metric: keyof LayoutProfileMetrics,
         delta: number
     ): void;
     recordKeepWithNextPrepare(actorKind: string, durationMs: number): void;

@@ -17,7 +17,7 @@
               "width": 187.328,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -35,16 +35,16 @@
               "width": 230.494,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "with deliberate quiet. The first page invites the eye to ",
-              "width": 239.393,
+              "width": 239.558,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -53,7 +53,7 @@
               "width": 236.918,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -62,7 +62,7 @@
               "width": 237.776,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -71,7 +71,7 @@
               "width": 233.717,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -80,7 +80,7 @@
               "width": 84.194,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -95,69 +95,62 @@
           [
             {
               "text": "The firstPage selector takes highest priority. It applies ",
-              "width": 243.034,
+              "width": 242.121,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "only to page index zero and always wins over odd, even,",
-              "width": 246.818,
+              "text": "only to page index zero and always wins over odd, ",
+              "width": 223.883,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": " and default. It is the author's signal that this page ",
-              "width": 226.963,
+              "text": "even, and default. It is the author's signal that this ",
+              "width": 226.974,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page stands apart, whether it is a chapter opener, a ",
+              "width": 229.13,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "title page, or any opening that should inhabit its ",
+              "width": 217.734,
+              "ascent": 900,
+              "descent": 250,
+              "fontFamily": ""
             },
             {
-              "text": "sta-",
-              "width": 16.676,
+              "text": "marg-",
+              "width": 27.06,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "nds apart, whether it is a chapter opener, a title page, ",
-              "width": 239.69,
+              "text": "in in silence.",
+              "width": 56.287,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            }
-          ],
-          [
-            {
-              "text": "or any opening that should inhabit its margin in ",
-              "width": 218.592,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "sile-",
-              "width": 18.81,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
-            }
-          ],
-          [
-            {
-              "text": "nce.",
-              "width": 17.886,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -182,16 +175,16 @@
               "width": 231.143,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "take effect. The even selector governs left-hand pages; ",
-              "width": 242.088,
+              "width": 242.253,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -200,7 +193,7 @@
               "width": 239.646,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -209,23 +202,23 @@
               "width": 245.52,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "page count, so the reader sees Page x of y after ",
-              "width": 207.977,
+              "width": 208.142,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "paginat-",
               "width": 37.488,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -234,7 +227,7 @@
               "width": 58.795,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -252,16 +245,16 @@
               "width": 238.26,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "whole work. The reader glancing left finds an anchor, ",
-              "width": 241.274,
+              "width": 240.196,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -270,16 +263,16 @@
               "width": 229.405,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "where within it. This document renders the string A ",
-              "width": 235.015,
+              "width": 235.18,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -288,7 +281,7 @@
               "width": 232.694,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -297,7 +290,7 @@
               "width": 242.44,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -306,7 +299,7 @@
               "width": 46.2,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -324,23 +317,23 @@
               "width": 208.263,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "glanci-",
               "width": 30.558,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "ng right finds their position within the argument. ",
-              "width": 224.191,
+              "width": 224.356,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -349,7 +342,7 @@
               "width": 237.336,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -472,7 +465,7 @@
               "width": 240.196,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -481,7 +474,7 @@
               "width": 225.313,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -490,7 +483,7 @@
               "width": 100.529,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -505,19 +498,19 @@
           [
             {
               "text": "The footer anchors position numerically. Centered in ",
-              "width": 238.37,
+              "width": 237.457,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "the footer strip, the folio line renders Page x of y. The x",
-              "width": 243.815,
+              "text": "the footer strip, the folio line renders Page x of y. The x ",
+              "width": 245.322,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -526,7 +519,7 @@
               "width": 228.459,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -535,7 +528,7 @@
               "width": 245.762,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -544,16 +537,16 @@
               "width": 245.025,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "final page count.",
-              "width": 74.184,
+              "width": 74.349,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -571,16 +564,16 @@
               "width": 231.814,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "body text. Any style, inline token, or image that is legal",
-              "width": 243.606,
+              "width": 243.771,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -589,16 +582,16 @@
               "width": 242.209,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "footer. This fixture uses a strip rather than a table to ",
-              "width": 236.522,
+              "width": 235.444,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -607,7 +600,7 @@
               "width": 242.704,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -616,7 +609,7 @@
               "width": 192.17,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -739,7 +732,7 @@
               "width": 119.515,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -757,7 +750,7 @@
               "width": 240.119,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -766,7 +759,7 @@
               "width": 237.534,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -775,7 +768,7 @@
               "width": 237.765,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -784,23 +777,23 @@
               "width": 218.009,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "neith-",
               "width": 27.324,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "er matches, the engine falls back to default.",
-              "width": 193.16,
+              "width": 193.325,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -818,34 +811,34 @@
               "width": 234.179,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "header rather than default. Had this document defined",
-              "width": 245.542,
+              "width": 245.707,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "only a default header, all pages except the first would ",
-              "width": 239.459,
+              "width": 238.381,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "render identically. The two-path model keeps the ",
-              "width": 222.035,
+              "width": 221.122,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -854,7 +847,7 @@
               "width": 241.12,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -863,7 +856,7 @@
               "width": 89.782,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -881,7 +874,7 @@
               "width": 230.758,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -890,7 +883,7 @@
               "width": 237.82,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -899,7 +892,7 @@
               "width": 225.258,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1022,7 +1015,7 @@
               "width": 239.283,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1031,16 +1024,16 @@
               "width": 225.61,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "normally.",
-              "width": 43.197,
+              "width": 42.284,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1163,7 +1156,7 @@
               "width": 47.307,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1188,7 +1181,7 @@
               "width": 198.272,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1206,7 +1199,7 @@
               "width": 233.915,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1215,7 +1208,7 @@
               "width": 229.482,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1224,41 +1217,34 @@
               "width": 225.885,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "ove-",
-              "width": 18.535,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "rride: the recto running head on this page shows the ",
-              "width": 236.5,
+              "text": "override: the recto running head on this page shows ",
+              "width": 234.476,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "chapter-specific title rather than the chapter-one title ",
-              "width": 242.495,
+              "text": "the chapter-specific title rather than the chapter-one ",
+              "width": 238.986,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "inherited from the global odd selector definition.",
-              "width": 217.591,
+              "text": "title inherited from the global odd selector definition.",
+              "width": 238.04,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1273,10 +1259,10 @@
           [
             {
               "text": "The replacement is self-contained content, expressed ",
-              "width": 238.942,
+              "width": 239.107,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1285,16 +1271,16 @@
               "width": 243.375,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "content. It is not a reference to one of the four global ",
-              "width": 236.456,
+              "width": 236.621,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1303,7 +1289,7 @@
               "width": 236.412,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1312,7 +1298,7 @@
               "width": 67.287,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1435,7 +1421,7 @@
               "width": 245.333,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1444,7 +1430,7 @@
               "width": 233.53,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1453,7 +1439,7 @@
               "width": 241.351,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1462,14 +1448,14 @@
               "width": 213.169,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "Conti-",
               "width": 27.368,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1478,14 +1464,14 @@
               "width": 213.884,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "stand-",
               "width": 28.534,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1494,7 +1480,7 @@
               "width": 88.341,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1512,14 +1498,14 @@
               "width": 218.526,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "pag-",
               "width": 19.558,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1528,7 +1514,7 @@
               "width": 239.844,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1537,7 +1523,7 @@
               "width": 231.308,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1546,7 +1532,7 @@
               "width": 242.319,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1555,7 +1541,7 @@
               "width": 244.64,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1564,7 +1550,7 @@
               "width": 79.464,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1582,14 +1568,14 @@
               "width": 218.504,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "supp-",
               "width": 25.377,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1598,7 +1584,7 @@
               "width": 231.737,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1607,7 +1593,7 @@
               "width": 245.069,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1730,7 +1716,7 @@
               "width": 230.791,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1739,7 +1725,7 @@
               "width": 67.364,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1757,7 +1743,7 @@
               "width": 245.476,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1766,16 +1752,16 @@
               "width": 234.498,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "page unconditionally. The logical pageNumber token ",
-              "width": 238.381,
+              "width": 237.468,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1784,23 +1770,16 @@
               "width": 220.77,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "reg-",
-              "width": 17.71,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "ion, so pages with suppressed folios do not advance ",
-              "width": 230.307,
+              "text": "region, so pages with suppressed folios do not advance ",
+              "width": 244.398,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1809,14 +1788,14 @@
               "width": 227.348,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "ref-",
               "width": 16.104,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1825,7 +1804,7 @@
               "width": 185.108,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -1843,7 +1822,7 @@
               "width": 238.04,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1852,25 +1831,25 @@
               "width": 229.603,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "footer, neither contributed an increment to the logical ",
-              "width": 243.969,
+              "width": 242.891,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "counter. The folio on this page reflects the count of ",
-              "width": 228.998,
+              "width": 227.92,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1879,7 +1858,7 @@
               "width": 233.079,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -1888,23 +1867,16 @@
               "width": 208.23,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "docum-",
-              "width": 34.199,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "ent.",
-              "width": 16.83,
+              "text": "document.",
+              "width": 47.575,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -2027,7 +1999,7 @@
               "width": 62.576,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -2045,16 +2017,16 @@
               "width": 228.514,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "that renders the physicalPageNumber token directly, ",
-              "width": 238.546,
+              "width": 237.633,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2063,7 +2035,7 @@
               "width": 232.265,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2072,7 +2044,7 @@
               "width": 233.486,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2081,7 +2053,7 @@
               "width": 237.138,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2090,7 +2062,7 @@
               "width": 207.823,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -2108,16 +2080,16 @@
               "width": 238.139,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "output. The first pass places flow content into pages; ",
-              "width": 236.676,
+              "width": 236.841,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2126,23 +2098,16 @@
               "width": 224.873,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "ove-",
-              "width": 18.535,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "rrides. This sequencing allows regions to reference ",
-              "width": 227.953,
+              "text": "overrides. This sequencing allows regions to reference ",
+              "width": 242.869,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2151,7 +2116,7 @@
               "width": 238.535,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2160,7 +2125,7 @@
               "width": 46.64,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -2283,14 +2248,14 @@
               "width": 187.902,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "pageOverri-",
               "width": 52.437,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2299,14 +2264,14 @@
               "width": 214.929,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             },
             {
               "text": "eleme-",
               "width": 30.096,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2315,7 +2280,7 @@
               "width": 245.344,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2324,25 +2289,25 @@
               "width": 232.221,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "page count, however, remains the same final physical ",
-              "width": 240.306,
+              "width": 239.393,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "total for the document.",
-              "width": 102.619,
+              "width": 102.784,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
@@ -2360,7 +2325,7 @@
               "width": 243.837,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
@@ -2369,73 +2334,52 @@
               "width": 230.571,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
               "text": "cleanly. The constructs exercised here, firstPage ",
-              "width": 215.468,
+              "width": 214.555,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "suppr-",
-              "width": 29.733,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "ession, recto and verso selectors, strip-based logo ",
-              "width": 220.517,
+              "text": "suppression, recto and verso selectors, strip-based logo",
+              "width": 244.046,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "head-",
-              "width": 25.454,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "ers, per-page overrides, logical folios, and total-page ",
-              "width": 233.145,
+              "text": "headers, per-page overrides, logical folios, and ",
+              "width": 207.79,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "token substitution, compose freely. Any subset is ",
-              "width": 219.967,
+              "text": "total-page token substitution, compose freely. Any ",
+              "width": 225.269,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
-            },
-            {
-              "text": "suffi-",
-              "width": 23.87,
-              "ascent": 900,
-              "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ],
           [
             {
-              "text": "cient and any combination is legal.",
-              "width": 155.518,
+              "text": "subset is sufficient and any combination is legal.",
+              "width": 216.744,
               "ascent": 900,
               "descent": 250,
-              "fontFamily": "Caladea"
+              "fontFamily": ""
             }
           ]
         ]
