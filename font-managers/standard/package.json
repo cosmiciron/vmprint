@@ -1,7 +1,7 @@
 {
   "name": "@vmprint/standard-fonts",
   "version": "1.0.0",
-  "description": "Standard-font FontManager for vmprint. Emits sentinel buffers for PDF standard fonts with zero binary font assets.",
+  "description": "Standard-font FontManager for VMPrint. Emits sentinel buffers for PDF standard fonts with zero binary font assets.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
   "main": "dist/index.js",

@@ -1,7 +1,7 @@
 {
   "name": "@vmprint/context-pdf",
   "version": "1.0.0",
-  "description": "PDF rendering context for vmprint, powered by pdfkit.",
+  "description": "PDF rendering context for VMPrint, powered by pdfkit.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
   "main": "dist/index.js",

@@ -1,7 +1,7 @@
 {
   "name": "@vmprint/context-pdf-lite",
   "version": "1.0.0",
-  "description": "Lightweight PDF rendering context for vmprint, powered by jsPDF.",
+  "description": "Lightweight PDF rendering context for VMPrint, powered by jsPDF.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
   "main": "dist/index.js",

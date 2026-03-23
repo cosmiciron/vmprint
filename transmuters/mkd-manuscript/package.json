@@ -1,7 +1,7 @@
 {
   "name": "@vmprint/transmuter-mkd-manuscript",
   "version": "1.0.0",
-  "description": "Markdown -> VMPrint DocumentInput transmuter with manuscript defaults.",
+  "description": "Markdown → VMPrint DocumentInput transmuter with manuscript defaults.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
   "main": "dist/index.js",

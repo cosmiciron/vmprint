@@ -1,7 +1,7 @@
 {
   "name": "@vmprint/transmuter-mkd-screenplay",
   "version": "1.0.0",
-  "description": "Markdown -> VMPrint DocumentInput transmuter with screenplay defaults.",
+  "description": "Markdown → VMPrint DocumentInput transmuter with screenplay defaults.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
   "main": "dist/index.js",

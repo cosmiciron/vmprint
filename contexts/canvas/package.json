@@ -1,7 +1,7 @@
 {
   "name": "@vmprint/context-canvas",
   "version": "1.0.0",
-  "description": "Canvas-oriented browser display context for vmprint, backed internally by SVG page scenes.",
+  "description": "Canvas-oriented browser display context for VMPrint, backed internally by SVG page scenes.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
   "main": "dist/index.js",
