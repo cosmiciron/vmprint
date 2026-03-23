@@ -1,5 +1,10 @@
 # VMPrint
 
+> **VMPrint now ships with a browser preview demo.**  
+> Render real VMPrint documents in-browser with multilingual layout, pagination, and high-fidelity canvas preview.  
+> The demo is a static, self-contained page you can open directly from a local folder, and its four core runtime bundles (shared fontkit + engine + web font manager + canvas context) weigh about **0.89 MiB** total minified.  
+> [Open the canvas demo](docs/examples/ast-to-canvas-webfonts/index.html) | [Browse all examples](docs/examples/index.html) | [Quickstart](QUICKSTART.md)
+
 You've been here before.
 
 The HTML/CSS pipeline got you 80% of the way. Then the tables started fighting the page breaks. You needed the header to say "Page 1 of 12" — but you can't know it's 12 until you've finished laying out the whole document, and by then it's too late. You tried a second pass. The second pass introduced new problems. Someone suggested spinning up a headless Chromium. It worked, mostly, except on the edge runtime, and the Lambda with the tight memory limit, and that one machine where the fonts came out wrong.
@@ -440,9 +445,11 @@ The difference between the two is almost entirely fontkit — the OpenType parse
 
 | Package | Tarball | Unpacked |
 |---|---:|---:|
-| `@vmprint/engine` | 206,699 B (~202 KiB) | 1,109,042 B (~1.08 MiB) |
+| `@vmprint/engine` | 254,331 B (~248 KiB) | 1,384,942 B (~1.32 MiB) |
+| `@vmprint/context-canvas` | 7,687 B (~7.5 KiB) | 29,055 B (~28.4 KiB) |
+| `@vmprint/web-fonts` | 6,650 B (~6.5 KiB) | 26,420 B (~25.8 KiB) |
 | `@vmprint/context-pdf-lite` | 7,209 B (~7.0 KiB) | 26,102 B (~25.5 KiB) |
-| `@vmprint/standard-fonts` | 3,546 B (~3.5 KiB) | 11,126 B (~10.9 KiB) |
+| `@vmprint/standard-fonts` | 3,552 B (~3.5 KiB) | 11,125 B (~10.9 KiB) |
 | `@vmprint/context-pdf` | 4,741 B (~4.6 KiB) | 16,072 B (~15.7 KiB) |
 | `@vmprint/local-fonts` | 6,025,162 B (~5.75 MiB) | 12,125,265 B (~11.6 MiB) |
 

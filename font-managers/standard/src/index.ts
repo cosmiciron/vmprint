@@ -1,6 +1,5 @@
 import { FontConfig, FallbackFontSource, FontManager } from '@vmprint/contracts';
 import {
-    cloneFontRegistry,
     createStandardFontSentinelBuffer,
     getStandardFontMetadataById,
     StandardFontId
@@ -14,6 +13,8 @@ import {
 } from './config.js';
 
 const normalizeSrcKey = (src: string): string => String(src || '').trim();
+const cloneFontConfig = (font: FontConfig): FontConfig => ({ ...font });
+const cloneFontRegistry = (fonts: FontConfig[]): FontConfig[] => fonts.map(cloneFontConfig);
 
 export class StandardFontManager implements FontManager {
     private readonly seedFonts: FontConfig[];

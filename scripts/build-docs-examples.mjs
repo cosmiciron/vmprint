@@ -123,14 +123,33 @@ async function buildAstToPdfExample(exampleRoot) {
 }
 
 async function buildAstToPdfWebfontsExample(exampleRoot) {
+    const webfontsAliases = {
+        ...aliases,
+        fontkit: path.join(exampleRoot, 'src', 'shims', 'fontkit.ts')
+    };
+
     await buildAstLikeExample(exampleRoot, {
         entryPoints: [path.join(exampleRoot, 'src', 'entries', 'vmprint-web-fonts-browser.ts')],
         outfile: path.join(exampleRoot, 'assets', 'vmprint-web-fonts.js'),
         globalName: 'VMPrintWebFonts',
+        alias: webfontsAliases
+    });
+    await esbuild.build({
+        bundle: true,
+        entryPoints: [path.join(exampleRoot, 'src', 'entries', 'vmprint-fontkit.ts')],
+        outfile: path.join(exampleRoot, 'assets', 'vmprint-fontkit.js'),
+        format: 'iife',
+        globalName: 'VMPrintFontkit',
+        platform: 'browser',
+        target: ['es2020'],
+        minify: true,
+        legalComments: 'none',
+        logLevel: 'info',
         alias: {
             ...aliases,
             fontkit: path.join(repoRoot, 'node_modules', 'fontkit', 'dist', 'browser-module.mjs')
-        }
+        },
+        loader: { '.yaml': 'text' }
     });
 }
 
@@ -143,10 +162,19 @@ async function buildAstToCanvasWebfontsExample(exampleRoot) {
 
     const canvasAliases = {
         ...aliases,
-        fontkit: path.join(repoRoot, 'node_modules', 'fontkit', 'dist', 'browser-module.mjs')
+        fontkit: path.join(exampleRoot, 'src', 'shims', 'fontkit.ts')
     };
 
     await buildBrowserBundleSet([
+        {
+            entryPoints: [path.join(srcDir, 'entries', 'vmprint-fontkit.ts')],
+            outfile: path.join(assetsDir, 'vmprint-fontkit.js'),
+            globalName: 'VMPrintFontkit',
+            alias: {
+                ...aliases,
+                fontkit: path.join(repoRoot, 'node_modules', 'fontkit', 'dist', 'browser-module.mjs')
+            }
+        },
         {
             entryPoints: [path.join(srcDir, 'entries', 'vmprint-engine.ts')],
             outfile: path.join(assetsDir, 'vmprint-engine.js'),

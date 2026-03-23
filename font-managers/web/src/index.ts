@@ -1,11 +1,13 @@
 import { FontConfig, FallbackFontSource, FontManager } from '@vmprint/contracts';
-import { cloneFontRegistry } from '@vmprint/engine';
 
 const normalizeFamilyKey = (family: string): string => String(family || '')
     .trim()
     .toLowerCase()
     .replace(/["']/g, '')
     .replace(/\s+/g, ' ');
+
+const cloneFontConfig = (font: FontConfig): FontConfig => ({ ...font });
+const cloneFontRegistry = (fonts: FontConfig[]): FontConfig[] => fonts.map(cloneFontConfig);
 
 const copyArrayBuffer = (buffer: ArrayBuffer): ArrayBuffer => buffer.slice(0);
 

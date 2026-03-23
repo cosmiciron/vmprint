@@ -9,6 +9,7 @@ declare const VMPrintPipeline: {
     ): Promise<{
         pageCount: number;
         pageSize: { width: number; height: number };
+        layoutMs: number;
         renderPage(pageIndex: number, target: HTMLCanvasElement, scale?: number, dpi?: number): Promise<void>;
     }>;
 };
@@ -66,6 +67,7 @@ function installUi(): void {
     const statusNode = byId<HTMLElement>('status');
     const pagesNode = byId<HTMLElement>('page-count');
     const bootNode = byId<HTMLElement>('boot-ms');
+    const layoutNode = byId<HTMLElement>('layout-ms');
     const renderNode = byId<HTMLElement>('render-ms');
     const fixturePicker = byId<HTMLLabelElement>('fixture-picker-label');
 
@@ -93,6 +95,7 @@ function installUi(): void {
         previewCanvas.width = 1;
         previewCanvas.height = 1;
         pagesNode.textContent = '';
+        layoutNode.textContent = '-';
         syncPager();
     };
 
@@ -278,11 +281,13 @@ function installUi(): void {
             await renderCurrentPage();
             const renderElapsedMs = performance.now() - renderStartMs;
             pagesNode.textContent = `${currentSession.pageCount} page${currentSession.pageCount === 1 ? '' : 's'}`;
+            layoutNode.textContent = `${currentSession.layoutMs.toFixed(1)} ms`;
             renderNode.textContent = `${renderElapsedMs.toFixed(1)} ms`;
             const fontSummary = activeFontStatus ? ` ${activeFontStatus}.` : '';
             setStatus(statusNode, 'success', `Render complete. Single-page canvas preview is ready.${fontSummary}`);
         } catch (error) {
             const renderElapsedMs = performance.now() - renderStartMs;
+            layoutNode.textContent = '-';
             renderNode.textContent = `${renderElapsedMs.toFixed(1)} ms (failed)`;
             setStatus(statusNode, 'error', String(error));
             resetPreview();

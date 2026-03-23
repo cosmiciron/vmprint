@@ -46,6 +46,7 @@ type CanvasContextBundle = {
 type CanvasPreviewSession = {
     pageCount: number;
     pageSize: { width: number; height: number };
+    layoutMs: number;
     renderPage(pageIndex: number, target: HTMLCanvasElement, scale?: number, dpi?: number): Promise<void>;
 };
 
@@ -201,7 +202,9 @@ async function createCanvasPreviewSession(
 
     const engine = new engineApi.LayoutEngine(config, runtime);
     await engine.waitForFonts();
+    const layoutStartMs = performance.now();
     const pages = engine.simulate(documentIr.elements);
+    const layoutMs = performance.now() - layoutStartMs;
 
     const { width, height } = engineApi.LayoutUtils.getPageDimensions(config);
     const context = new contextApi.CanvasContext({
@@ -218,6 +221,7 @@ async function createCanvasPreviewSession(
     return {
         pageCount: context.getPageCount(),
         pageSize: context.getSize(),
+        layoutMs,
         renderPage: async (pageIndex: number, target: HTMLCanvasElement, scale = 1, dpi?: number) => {
             await context.renderPageToCanvas(pageIndex, target, {
                 scale,

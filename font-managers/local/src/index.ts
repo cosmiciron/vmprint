@@ -1,5 +1,4 @@
 import { FontConfig, FontManager, FallbackFontSource } from '@vmprint/contracts';
-import { cloneFontRegistry } from '@vmprint/engine';
 import { LOCAL_FONT_ALIASES, LOCAL_FONT_REGISTRY } from './config.js';
 
 const normalizeFamilyKey = (family: string): string => String(family || '')
@@ -7,6 +6,9 @@ const normalizeFamilyKey = (family: string): string => String(family || '')
     .toLowerCase()
     .replace(/["']/g, '')
     .replace(/\s+/g, ' ');
+
+const cloneFontConfig = (font: FontConfig): FontConfig => ({ ...font });
+const cloneFontRegistry = (fonts: FontConfig[]): FontConfig[] => fonts.map(cloneFontConfig);
 
 const _downloadTracker = {
     active: new Map<string, number>(),
