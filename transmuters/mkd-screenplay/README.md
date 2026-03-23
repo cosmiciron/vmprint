@@ -37,3 +37,7 @@ type ScreenplayTransmuteOptions = {
 
 function transmute(markdown: string, options?: ScreenplayTransmuteOptions): DocumentInput;
 ```
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).

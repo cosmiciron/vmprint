@@ -104,4 +104,4 @@ For the complete guide on syntax, advanced styles, and theme customization, visi
 
 ## License
 
-Apache-2.0
+Licensed under the [Apache License 2.0](LICENSE).

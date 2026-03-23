@@ -39,5 +39,9 @@ Weight and style variants (bold, italic) resolve to the correct PostScript varia
 - **No kerning.** AFM tables do not include kern pairs.
 - **No CJK or multilingual fallback.** Use `@vmprint/local-fonts` for multilingual documents.
 
-See [`documents/STANDARD-FONTS.md`](../../documents/STANDARD-FONTS.md) for the full architectural specification.
+See [`docs/reference/standard-fonts.md`](../../docs/reference/standard-fonts.md) for the full architectural specification.
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).
 

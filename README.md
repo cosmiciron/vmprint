@@ -209,7 +209,7 @@ One element fires. Another grows — before and after — in direct response. Al
 
 The scripting model is built around events, messages, and receiver-oriented mutation. Documents react to lifecycle events. Elements react to their own. Participants coordinate through direct messages. Structural change is a native runtime operation, not a workaround.
 
-For details, see [Scripting API](documents/SCRIPTING-API.md).
+For details, see [Scripting API](docs/reference/scripting.md).
 
 ---
 
@@ -482,7 +482,7 @@ The API may evolve. The fundamentals will not.
 
 ---
 
-[Authoring Guide](documents/authoring/README.md) · [Architecture](documents/ARCHITECTURE.md) · [Engine Internals](documents/ENGINE-INTERNALS.md) · [Scripting API](documents/SCRIPTING-API.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html) · [Substack](https://substack.com/@cosmiciron)
+[Authoring Guide](docs/guides/README.md) · [Architecture](documents/ARCHITECTURE.md) · [Engine Internals](documents/ENGINE-INTERNALS.md) · [Scripting API](docs/reference/scripting.md) · [Quickstart](QUICKSTART.md) · [Contributing](CONTRIBUTING.md) · [Testing](documents/TESTING.md) · [Examples](docs/examples/index.html) · [Substack](https://substack.com/@cosmiciron)
 
 ## License
 

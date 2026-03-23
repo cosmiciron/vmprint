@@ -103,4 +103,8 @@ Custom font manager classes must be the default export of their module and imple
 
 ---
 
-See [QUICKSTART.md](QUICKSTART.md) for install instructions and the full options reference.
+See the [CLI Reference](https://cosmiciron.github.io/vmprint/reference/cli) for the full options reference, and [QUICKSTART.md](../QUICKSTART.md) for install and build instructions.
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).

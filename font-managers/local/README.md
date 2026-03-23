@@ -101,3 +101,7 @@ const manager = new LocalFontManager({
 ```
 
 Fonts added this way participate in the same resolution, alias, and fallback logic as the bundled fonts. Set `fallback: true` and declare a `unicodeRange` to add a script-specific fallback that the engine will engage automatically.
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).

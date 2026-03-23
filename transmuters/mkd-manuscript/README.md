@@ -45,3 +45,7 @@ type ManuscriptTransmuteOptions = {
 
 function transmute(markdown: string, options?: ManuscriptTransmuteOptions): DocumentInput;
 ```
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).

@@ -47,3 +47,7 @@ await context.renderPageToCanvas(0, canvasElement, {
 - Recommended mode guidance:
   - `text`: simpler Latin or single-script documents
   - `glyph-path`: multilingual fidelity and lowest perceived first-view latency on heavy documents
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).

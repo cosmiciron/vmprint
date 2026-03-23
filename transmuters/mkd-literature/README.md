@@ -42,3 +42,7 @@ type LiteratureTransmuteOptions = {
 
 function transmute(markdown: string, options?: LiteratureTransmuteOptions): DocumentInput;
 ```
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).

@@ -90,3 +90,7 @@ Catalog shape:
 - transport problems: the font was declared, but its URL failed, timed out, or returned an empty body
 
 Transport failures surface as source-specific errors from `loadFontBuffer()`, preserving the current vmprint fail-fast behavior.
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).

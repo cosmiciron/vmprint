@@ -169,3 +169,7 @@ import type { FontManager, Context, OverlayProvider, Transmuter } from '@vmprint
 ```
 
 Because all exports are TypeScript interfaces, the import adds no runtime weight — types are fully erased at compile time. Importing `@vmprint/contracts` in a production build costs exactly zero bytes.
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).

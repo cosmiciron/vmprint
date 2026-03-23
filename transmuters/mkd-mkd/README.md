@@ -112,3 +112,7 @@ The returned `DocumentInput` is a plain JSON-serializable object:
   ]
 }
 ```
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).

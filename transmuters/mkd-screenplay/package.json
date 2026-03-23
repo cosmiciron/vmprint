@@ -6,10 +6,25 @@
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "source": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "tsx": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "clean": "rimraf dist"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@vmprint/markdown-core": "file:../markdown-core",

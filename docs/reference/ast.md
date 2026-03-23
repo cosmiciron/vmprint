@@ -609,16 +609,14 @@ interface PageRegionContent {
 
 | What | Where |
 |---|---|
-| Type definitions | [engine/src/engine/types.ts](c:\Users\cosmic\Projects\vmprint\engine\src\engine\types.ts) |
-| AST normalization | [engine/src/engine/document.ts](c:\Users\cosmic\Projects\vmprint\engine\src\engine\document.ts) |
-| Spatial fixture normalization helper | [engine/tests/harness/spatialize.ts](c:\Users\cosmic\Projects\vmprint\engine\tests\harness\spatialize.ts) |
-| Architecture and Runtime Internals | [documents/ENGINE-INTERNALS.md](c:\Users\cosmic\Projects\vmprint\documents\ENGINE-INTERNALS.md) |
-| Scripting API | [documents/SCRIPTING-API.md](c:\Users\cosmic\Projects\vmprint\documents\SCRIPTING-API.md) |
-| VPX architecture | [documents/VPX-ARCHITECTURE.md](c:\Users\cosmic\Projects\vmprint\documents\VPX-ARCHITECTURE.md) |
-| TOC and VPX design note | [documents/TOC-VPX.md](c:\Users\cosmic\Projects\vmprint\documents\TOC-VPX.md) |
-| Overlay system | [documents/OVERLAY.md](c:\Users\cosmic\Projects\vmprint\documents\OVERLAY.md) |
-| Standard fonts | [documents/STANDARD-FONTS.md](c:\Users\cosmic\Projects\vmprint\documents\STANDARD-FONTS.md) |
-| Testing guide | [documents/TESTING.md](c:\Users\cosmic\Projects\vmprint\documents\TESTING.md) |
-| Markdown compilation core | [transmuters/markdown-core/src/index.ts](../transmuters/markdown-core/src/index.ts) |
-| Transmuters | [transmuters](c:\Users\cosmic\Projects\vmprint\transmuters) |
-| Regression fixtures | [engine/tests/fixtures](c:\Users\cosmic\Projects\vmprint\engine\tests\fixtures) |
+| Type definitions | [engine/src/engine/types.ts](https://github.com/cosmiciron/vmprint/blob/main/engine/src/engine/types.ts) |
+| AST normalization | [engine/src/engine/document.ts](https://github.com/cosmiciron/vmprint/blob/main/engine/src/engine/document.ts) |
+| Spatial fixture normalization helper | [engine/tests/harness/spatialize.ts](https://github.com/cosmiciron/vmprint/blob/main/engine/tests/harness/spatialize.ts) |
+| Architecture and Runtime Internals | [ENGINE-INTERNALS.md](https://github.com/cosmiciron/vmprint/blob/main/documents/ENGINE-INTERNALS.md) |
+| Scripting API | [scripting.md](./scripting.md) |
+| Overlay system | [overlay.md](./overlay.md) |
+| Standard fonts | [standard-fonts.md](./standard-fonts.md) |
+| Testing guide | [TESTING.md](https://github.com/cosmiciron/vmprint/blob/main/documents/TESTING.md) |
+| Markdown compilation core | [transmuters/markdown-core/src/index.ts](https://github.com/cosmiciron/vmprint/blob/main/transmuters/markdown-core/src/index.ts) |
+| Transmuters | [transmuters/](https://github.com/cosmiciron/vmprint/tree/main/transmuters) |
+| Regression fixtures | [engine/tests/fixtures](https://github.com/cosmiciron/vmprint/tree/main/engine/tests/fixtures) |

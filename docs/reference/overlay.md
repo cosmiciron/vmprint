@@ -168,7 +168,7 @@ Expected overlay module shape:
 
 Runnable samples are available under:
 
-- `documents/ideas/overlay-samples/`
+- [`documents/ideas/overlay-samples/`](https://github.com/cosmiciron/vmprint/tree/main/documents/ideas/overlay-samples)
 
 Includes:
 
@@ -178,7 +178,7 @@ Includes:
 - `overlay-cut-marks.mjs`
 - generated output PDFs
 
-See `documents/ideas/overlay-samples/README.md` for commands.
+See the [`overlay-samples` README](https://github.com/cosmiciron/vmprint/blob/main/documents/ideas/overlay-samples/README.md) for commands.
 
 ## Summary
 

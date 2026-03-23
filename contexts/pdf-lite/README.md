@@ -43,3 +43,7 @@ await renderer.render(pages, context);
 ## Browser Examples
 
 Looking to test this in the browser quickly? See [docs/examples/ast-to-pdf](../../docs/examples/ast-to-pdf) for a self-contained static showcase using the pdf-lite stack.
+
+---
+
+Licensed under the [Apache License 2.0](LICENSE).

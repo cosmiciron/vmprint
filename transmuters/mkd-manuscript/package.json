@@ -15,10 +15,16 @@
     "./package.json": "./package.json"
   },
   "source": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "clean": "rimraf dist"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@vmprint/markdown-core": "file:../markdown-core",
