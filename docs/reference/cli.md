@@ -1,6 +1,3 @@
----
----
-
 # vmprint CLI
 
 **Package:** `@vmprint/cli` · **Install:** `npm install -g @vmprint/cli`

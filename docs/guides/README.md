@@ -1,8 +1,3 @@
----
-title: VMPrint Authoring Guide
-permalink: /guides/
----
-
 # VMPrint Authoring Guide
 
 This directory is the practical guide to authoring VMPrint documents with AST `1.1`.

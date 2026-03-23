@@ -1,6 +1,3 @@
----
----
-
 # Overlay Architecture
 
 A lightweight extension layer for custom programmatic drawing in vmprint.

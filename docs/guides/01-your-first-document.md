@@ -1,6 +1,3 @@
----
----
-
 # 01. Your First Document
 
 This is the smallest useful VMPrint document in AST `1.1`.

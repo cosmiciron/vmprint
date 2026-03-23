@@ -1,6 +1,3 @@
----
----
-
 # 02. Styles And Text
 
 VMPrint’s default authoring model is still simple document flow.

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>02. Styles And Text | VMPrint Docs</title>
+  <meta name="description" content="VMPrint documentation">
+  <link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="../index.html">VMPrint Docs</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="../index.html">Home</a>
+        <a class="nav-link is-active" href="../guides/">Guides</a>
+        <a class="nav-link" href="../reference/ast.html">Reference</a>
+        <a class="nav-link" href="../api/">API</a>
+        <a class="nav-link" href="../examples/">Examples</a>
+        <a class="nav-link" href="https://github.com/cosmiciron/vmprint">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page-shell">
+    <article class="markdown-body">
+<h1>02. Styles And Text</h1>
+<p>VMPrint’s default authoring model is still simple document flow.</p>
+<h2>Styles</h2>
+<p><code>styles</code> is a named table keyed by element <code>type</code>.</p>
+<pre><code class="language-json">{
+  &quot;styles&quot;: {
+    &quot;headline&quot;: {
+      &quot;fontFamily&quot;: &quot;Tinos&quot;,
+      &quot;fontSize&quot;: 30,
+      &quot;fontWeight&quot;: &quot;bold&quot;,
+      &quot;lineHeight&quot;: 1.08,
+      &quot;marginBottom&quot;: 8
+    },
+    &quot;deck&quot;: {
+      &quot;fontFamily&quot;: &quot;Tinos&quot;,
+      &quot;fontSize&quot;: 12,
+      &quot;fontStyle&quot;: &quot;italic&quot;,
+      &quot;lineHeight&quot;: 1.4,
+      &quot;marginBottom&quot;: 10
+    },
+    &quot;body&quot;: {
+      &quot;fontSize&quot;: 10,
+      &quot;lineHeight&quot;: 1.45,
+      &quot;textAlign&quot;: &quot;justify&quot;,
+      &quot;allowLineSplit&quot;: true,
+      &quot;orphans&quot;: 2,
+      &quot;widows&quot;: 2,
+      &quot;marginBottom&quot;: 10
+    }
+  }
+}
+</code></pre>
+<p>Then author elements against those style names:</p>
+<pre><code class="language-json">[
+  { &quot;type&quot;: &quot;headline&quot;, &quot;content&quot;: &quot;A Better Authored Surface&quot; },
+  { &quot;type&quot;: &quot;deck&quot;, &quot;content&quot;: &quot;Keep the source simple. Let the engine do the heavy spatial work.&quot; },
+  { &quot;type&quot;: &quot;body&quot;, &quot;content&quot;: &quot;Paragraph one...&quot; },
+  { &quot;type&quot;: &quot;body&quot;, &quot;content&quot;: &quot;Paragraph two...&quot; }
+]
+</code></pre>
+<h2>Rich text</h2>
+<p>Use nested <code>children</code> when you need inline emphasis or mixed inline objects.</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;body&quot;,
+  &quot;children&quot;: [
+    { &quot;type&quot;: &quot;text&quot;, &quot;content&quot;: &quot;VMPrint supports &quot; },
+    { &quot;type&quot;: &quot;text&quot;, &quot;content&quot;: &quot;rich inline text&quot;, &quot;properties&quot;: { &quot;style&quot;: { &quot;fontWeight&quot;: &quot;bold&quot; } } },
+    { &quot;type&quot;: &quot;text&quot;, &quot;content&quot;: &quot; without making the whole AST DOM-like.&quot; }
+  ]
+}
+</code></pre>
+<h2>Drop caps</h2>
+<p>AST <code>1.1</code> promotes drop-cap structure to a first-class field.</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;body&quot;,
+  &quot;content&quot;: &quot;Every element in a VMPrint document is measured with sub-point precision...&quot;,
+  &quot;dropCap&quot;: {
+    &quot;enabled&quot;: true,
+    &quot;lines&quot;: 3,
+    &quot;gap&quot;: 8,
+    &quot;characterStyle&quot;: {
+      &quot;fontFamily&quot;: &quot;Tinos&quot;,
+      &quot;fontSize&quot;: 44,
+      &quot;fontWeight&quot;: &quot;bold&quot;
+    }
+  }
+}
+</code></pre>
+<p>Use plain flow as long as you can. Reach for spatial constructs only when flow stops matching the page’s intent.</p>
+<p>Next:</p>
+<ul>
+<li><a href="03-stories-strips-and-zones.html">03-stories-strips-and-zones</a></li>
+</ul>
+
+    </article>
+  </main>
+</body>
+</html>

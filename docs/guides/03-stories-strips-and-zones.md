@@ -1,6 +1,3 @@
----
----
-
 # 03. Stories, Strips, And Zones
 
 This is where VMPrint becomes spatial.

@@ -36,6 +36,7 @@
     "test": "npm run test --prefix engine && npm run docs:build && npm run test:packaged-integration",
     "transmute": "tsx scripts/transmute.ts",
     "docs:build": "node scripts/build-docs-examples.mjs",
+    "docs:site": "node scripts/build-static-docs.mjs",
     "docs:api": "typedoc",
     "test:boundary-imports": "npm run build --workspace=draft2final",
     "test:packaged-integration": "node scripts/test-packaged-vmprint-integration.mjs"

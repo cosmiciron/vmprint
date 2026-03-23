@@ -1,6 +1,3 @@
----
----
-
 # VMPrint AST Reference
 
 This document is the reference for the public **VMPrint document input format**: the JSON/object tree you author and hand to the VMPrint pipeline.

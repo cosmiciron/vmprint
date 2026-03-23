@@ -1,6 +1,3 @@
----
----
-
 # 05. Images, Tables, And Overlays
 
 This chapter covers the remaining common authoring tools.

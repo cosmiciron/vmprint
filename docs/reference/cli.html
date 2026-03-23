@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>vmprint CLI | VMPrint Docs</title>
+  <meta name="description" content="VMPrint documentation">
+  <link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="../index.html">VMPrint Docs</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="../index.html">Home</a>
+        <a class="nav-link" href="../guides/">Guides</a>
+        <a class="nav-link is-active" href="../reference/ast.html">Reference</a>
+        <a class="nav-link" href="../api/">API</a>
+        <a class="nav-link" href="../examples/">Examples</a>
+        <a class="nav-link" href="https://github.com/cosmiciron/vmprint">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page-shell">
+    <article class="markdown-body">
+<h1>vmprint CLI</h1>
+<p><strong>Package:</strong> <code>@vmprint/cli</code> · <strong>Install:</strong> <code>npm install -g @vmprint/cli</code></p>
+<p><em>The JSON → PDF command-line interface for VMPrint.</em></p>
+<p>The CLI is more than a convenience wrapper. It serves four distinct roles, and understanding them clarifies what the tool is actually for.</p>
+<h2>Development companion</h2>
+<p>When working on the layout engine — adding a feature, fixing a rendering bug, tuning typography — you need to run real documents through the pipeline and see the result immediately. The CLI gives you that loop without any build step:</p>
+<pre><code class="language-bash">npm run dev --prefix cli -- --input document.json --output out.pdf
+</code></pre>
+<p>Change engine code. Re-run. Inspect the PDF. The <code>--conditions tsx</code> dev mode loads everything — engine, context, font manager — from TypeScript source directly. <code>--profile-layout</code> measures and prints the layout pipeline duration, which is useful when evaluating the performance impact of engine changes.</p>
+<h2>Experiment bench</h2>
+<p>The <code>--font-manager</code> flag accepts any JS module that exports a default class implementing the <code>FontManager</code> interface. Testing a new font manager against real documents requires exactly one flag — no integration scaffolding, no test harness:</p>
+<pre><code class="language-bash">vmprint --input document.json --output out.pdf --font-manager ./my-font-manager.js
+</code></pre>
+<p>The module is loaded with <code>import()</code> at runtime. You can develop and iterate on a font manager entirely through the CLI before integrating it anywhere else.</p>
+<h2>Reference design</h2>
+<p>The CLI is approximately 225 lines of TypeScript. It demonstrates the complete, correct pattern for integrating VMPrint: load a source document, normalize the authored AST into the engine-ready form, configure the engine runtime, wait for fonts, paginate, render, handle the output stream. If you’re embedding VMPrint into a larger application, the <a href="https://github.com/cosmiciron/vmprint/blob/main/cli/src/index.ts">CLI source</a> is the clearest available example of how to do it.</p>
+<h2>Production batch processing</h2>
+<p>The CLI works as a production pipeline. Write a driver script that generates <code>DocumentInput</code> JSON and shells out to <code>vmprint</code>, or use the <code>--render-from-layout</code> flag to separate the layout and rendering passes across processes or machines:</p>
+<ul>
+<li>Run layout on CPU-bound infrastructure and save the layout stream.</li>
+<li>Render from the saved stream on separate workers — in parallel, or with different contexts.</li>
+<li>Cache layout results and re-render without re-running the layout pass when only the output format changes.</li>
+</ul>
+<hr>
+<h2>Key Capabilities</h2>
+<h3>Layout stream — the output of layout, before rendering</h3>
+<pre><code class="language-bash">vmprint --input document.json --output out.pdf --emit-layout
+# Writes: out.layout.json
+</code></pre>
+<p><code>--emit-layout</code> writes the full <code>Page[]</code> as annotated JSON after layout completes and before rendering begins. Each page contains every box, its absolute position, its type, its text content, and glyph-level positioning data.</p>
+<p>The layout stream is serializable, diffable, and re-renderable. It is the basis of VMPrint’s own regression test infrastructure — snapshot it, change something, diff it. <code>--omit-glyphs</code> drops per-character positioning data for smaller output; <code>--quantize</code> rounds coordinates to three decimal places for stable diffs.</p>
+<h3>Render from layout — skip the layout pass entirely</h3>
+<pre><code class="language-bash">vmprint --render-from-layout out.layout.json --output out.pdf
+</code></pre>
+<p><code>--render-from-layout</code> bypasses the layout engine and renders directly from a saved layout stream. This separates the two pipeline stages physically: layout once, render many times; cache layout results server-side and re-render on demand; move rendering to a different process, machine, or runtime.</p>
+<h3>Overlay system</h3>
+<pre><code class="language-bash">vmprint --input document.json --output out.pdf --overlay ./watermark.js
+</code></pre>
+<p>The overlay system lets you draw before and after page content without touching the document. If <code>--overlay</code> is omitted, the CLI looks for a sidecar file automatically: if the input is <code>document.json</code>, it checks for <code>document.overlay.mjs</code>, <code>.js</code>, <code>.cjs</code>, or <code>.ts</code> alongside the input and loads it silently if found.</p>
+<p>The overlay module exports an object with a <code>backdrop()</code> method, an <code>overlay()</code> method, or both. Both receive the page geometry and the full box tree from the layout pass. Pages include header and footer region boxes alongside standard page content if defined in the document.</p>
+<pre><code class="language-js">// document.overlay.mjs — loaded automatically alongside document.json
+export default {
+  overlay(page, ctx) {
+    ctx.save();
+    ctx.opacity(0.07);
+    ctx.fillColor('#000000');
+    ctx.font('Helvetica', 64);
+    ctx.translate(page.width / 2, page.height / 2);
+    ctx.rotate(-45);
+    ctx.text('DRAFT', -100, -32);
+    ctx.restore();
+  }
+};
+</code></pre>
+<p>See <a href="./overlay.html">Overlay System</a> for the full interface reference.</p>
+<hr>
+<h2>What Ships Bundled</h2>
+<p>The CLI uses <code>@vmprint/context-pdf</code> for PDF output and <code>@vmprint/local-fonts</code> for font loading. Both can be replaced without rebuilding or forking.</p>
+<p>To produce a PDF using only the 14 standard PDF fonts with no embedded font data:</p>
+<pre><code class="language-bash">vmprint --input document.json --output out.pdf --font-manager @vmprint/standard-fonts
+</code></pre>
+<p>Custom font manager classes must be the default export of their module and implement the <code>FontManager</code> interface from <code>@vmprint/contracts</code>. Custom contexts can be integrated programmatically — see the <a href="https://github.com/cosmiciron/vmprint/blob/main/contexts/README.md">contexts overview</a>.</p>
+<hr>
+<h2>Options Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--input &lt;file&gt;</code></td>
+<td>Input <code>DocumentInput</code> JSON file</td>
+</tr>
+<tr>
+<td><code>--output &lt;file&gt;</code></td>
+<td>Output PDF path</td>
+</tr>
+<tr>
+<td><code>--render-from-layout &lt;file&gt;</code></td>
+<td>Render from a saved layout stream, skipping the layout pass</td>
+</tr>
+<tr>
+<td><code>--emit-layout</code></td>
+<td>Write the layout stream to <code>&lt;output&gt;.layout.json</code> after layout</td>
+</tr>
+<tr>
+<td><code>--omit-glyphs</code></td>
+<td>Omit per-character glyph positioning from the layout stream</td>
+</tr>
+<tr>
+<td><code>--quantize</code></td>
+<td>Round layout coordinates to 3 decimal places (stable diffs)</td>
+</tr>
+<tr>
+<td><code>--font-manager &lt;module&gt;</code></td>
+<td>Path or package name of a custom <code>FontManager</code> implementation</td>
+</tr>
+<tr>
+<td><code>--overlay &lt;module&gt;</code></td>
+<td>Path to an overlay module (<code>backdrop</code>/<code>overlay</code> hooks)</td>
+</tr>
+<tr>
+<td><code>--debug</code></td>
+<td>Render debug overlay: page margins, zone bounds, box labels</td>
+</tr>
+<tr>
+<td><code>--profile-layout</code></td>
+<td>Print layout pipeline timing after completion</td>
+</tr>
+</tbody>
+</table>
+
+    </article>
+  </main>
+</body>
+</html>

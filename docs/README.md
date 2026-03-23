@@ -1,8 +1,3 @@
----
-title: VMPrint Documentation
-permalink: /
----
-
 # VMPrint Documentation
 
 VMPrint is a deterministic spatial simulation engine for document generation. It has no knowledge of browsers or the DOM - pages are bounded arenas, elements are autonomous actors, and layout is the process of reaching a stable world state. The same input always produces the exact same output, to the sub-point, across every runtime: Node.js, Cloudflare Workers, Lambda, and the browser.

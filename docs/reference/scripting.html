@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VMPrint Scripting API | VMPrint Docs</title>
+  <meta name="description" content="VMPrint documentation">
+  <link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="../index.html">VMPrint Docs</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="../index.html">Home</a>
+        <a class="nav-link" href="../guides/">Guides</a>
+        <a class="nav-link is-active" href="../reference/ast.html">Reference</a>
+        <a class="nav-link" href="../api/">API</a>
+        <a class="nav-link" href="../examples/">Examples</a>
+        <a class="nav-link" href="https://github.com/cosmiciron/vmprint">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page-shell">
+    <article class="markdown-body">
+<h1>VMPrint Scripting API</h1>
+<p>This document formalizes the public API for VMPrint Scripting Series 1.</p>
+<p>Series 1 is about one thing:</p>
+<ul>
+<li>dynamic document content manipulation</li>
+</ul>
+<p>It is intentionally not about page scripting, animation, rich world interaction, or open-ended runtime state systems.</p>
+<h2>Core Model</h2>
+<p>Series 1 is built around two supporting structures:</p>
+<ul>
+<li>Events</li>
+<li>Messages</li>
+</ul>
+<p>Together they form the basic paradigm of the scripting system.</p>
+<ul>
+<li>events tell the script what happened — they are raised by the engine at defined lifecycle moments</li>
+<li>messages let document participants coordinate directly with each other — they are raised by other elements, not by the engine</li>
+</ul>
+<p>The split is intentional. Events describe system-level moments. Messages are how elements build more complex logic between themselves without needing a central coordinator. A well-written VMPrint script uses events to react to the world and messages to coordinate participants.</p>
+<p>Series 1 is therefore not procedural-first.
+A scripter can still write procedural code inside a handler, but the public model is organized around:</p>
+<ul>
+<li>receivers</li>
+<li>events</li>
+<li>messages</li>
+<li>content mutation</li>
+</ul>
+<h2>Authoring Format</h2>
+<p>Script code lives in YAML front matter.
+The document body remains ordinary JSON.</p>
+<pre><code class="language-yaml">---
+TITLE: &quot;Hello World&quot;
+
+methods:
+  onLoad(): |
+    setContent(&quot;greeting&quot;, &quot;Hello, world!&quot;)
+---
+{
+  &quot;documentVersion&quot;: &quot;1.1&quot;,
+  &quot;layout&quot;: {
+    &quot;pageSize&quot;: &quot;LETTER&quot;,
+    &quot;margins&quot;: { &quot;top&quot;: 72, &quot;right&quot;: 72, &quot;bottom&quot;: 72, &quot;left&quot;: 72 },
+    &quot;fontFamily&quot;: &quot;Times New Roman&quot;,
+    &quot;fontSize&quot;: 20,
+    &quot;lineHeight&quot;: 1.4
+  },
+  &quot;styles&quot;: {},
+  &quot;elements&quot;: [
+    {
+      &quot;type&quot;: &quot;p&quot;,
+      &quot;name&quot;: &quot;greeting&quot;,
+      &quot;content&quot;: &quot;Waiting for script...&quot;
+    }
+  ]
+}
+</code></pre>
+<p>The engine parses this front matter itself. This is not delegated to the CLI.</p>
+<h2>Implied Scopes</h2>
+<p>Series 1 relies heavily on implied scope.</p>
+<h3>Document Scope</h3>
+<p>The top-level scope is the document scope.</p>
+<p>Its representative object is:</p>
+<ul>
+<li><code>doc</code></li>
+</ul>
+<p>Top-level handlers belong to the document by default.
+They do not need an explicit <code>doc_</code> prefix.</p>
+<p>Examples:</p>
+<ul>
+<li><code>onLoad()</code></li>
+<li><code>onReady()</code></li>
+<li><code>onChanged()</code></li>
+<li><code>onRefresh()</code></li>
+<li><code>onMessage(from, msg)</code></li>
+</ul>
+<p>So this:</p>
+<pre><code class="language-yaml">methods:
+  onLoad(): |
+    append({
+      type: &quot;p&quot;,
+      content: &quot;Loaded.&quot;
+    })
+</code></pre>
+<p>means the handler belongs to the document and <code>append(...)</code> applies to the document.</p>
+<h3>Element Scope</h3>
+<p>Named element handlers are bound by convention:</p>
+<ul>
+<li><code>&lt;elementName&gt;_onCreate()</code></li>
+<li><code>&lt;elementName&gt;_onChanged()</code></li>
+<li><code>&lt;elementName&gt;_onMessage(from, msg)</code></li>
+</ul>
+<p>Inside those handlers, <code>self</code> is that element.</p>
+<p>So:</p>
+<pre><code class="language-yaml">methods:
+  summary_onMessage(from, msg): |
+    append({
+      type: &quot;p&quot;,
+      content: &quot;Updated from message.&quot;
+    })
+</code></pre>
+<p>means the new content is appended to <code>summary</code>, not to the document.</p>
+<h2>Variable Scope</h2>
+<p>Series 1 defines scope in scripting terms, not engine terms.</p>
+<h3>Top-Level Variables</h3>
+<p>Variables declared in YAML front matter outside function bodies belong to the document scope.</p>
+<p>They are implicitly document variables.</p>
+<p>They may be accessed:</p>
+<ul>
+<li>implicitly by name</li>
+<li>explicitly through <code>doc.vars.&lt;NAME&gt;</code></li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-yaml">---
+TITLE: &quot;Hello World&quot;
+ACCENT: &quot;#8A5A2B&quot;
+
+methods:
+  onLoad(): |
+    append({
+      type: &quot;p&quot;,
+      content: TITLE
+    })
+---
+</code></pre>
+<p>By convention, authors may use <code>ALL_CAPS</code> for these bindings, but that is only a convention.</p>
+<h3>Handler-Local Variables</h3>
+<p>Variables declared inside a handler are local to that handler call only.</p>
+<p>Example:</p>
+<pre><code class="language-js">onReady(): |
+  const titles = elementsByType(&quot;h1&quot;)
+  const count = titles.length
+</code></pre>
+<h3>Not Supported In Series 1</h3>
+<p>Series 1 does not formally support:</p>
+<ul>
+<li>free-floating script globals</li>
+<li>persistent local variables</li>
+<li>shared mutable state bags beyond document-scoped bindings</li>
+</ul>
+<p>That limitation is intentional. Series 1 is about dynamic content manipulation, not open-ended runtime state design.</p>
+<h2>Identity</h2>
+<p>Use top-level <code>name</code> as the public identity for elements.</p>
+<p>Example:</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;p&quot;,
+  &quot;name&quot;: &quot;summary&quot;,
+  &quot;content&quot;: &quot;&quot;
+}
+</code></pre>
+<p>Internally the engine may map this into its own identity system.
+That is not part of the public scripting language.</p>
+<h2>Handlers</h2>
+<h3>Document Handlers</h3>
+<p>Series 1 document handlers:</p>
+<ul>
+<li><code>onLoad()</code></li>
+<li><code>onReady()</code></li>
+<li><code>onChanged()</code></li>
+<li><code>onRefresh()</code></li>
+<li><code>onMessage(from, msg)</code></li>
+</ul>
+<p>These handlers are declared directly at top level.
+They are document handlers by implication, not by a <code>doc_</code> naming prefix.</p>
+<p>Lifecycle meaning:</p>
+<ul>
+<li><code>onLoad()</code>
+Called once before layout.</li>
+<li><code>onReady()</code>
+Called once, the first time the document becomes ready.</li>
+<li><code>onChanged()</code>
+Called later when the document content or structure changed.</li>
+<li><code>onRefresh()</code>
+Called later when the realized document refreshed.</li>
+<li><code>onMessage(from, msg)</code>
+Called when the document receives a message.</li>
+</ul>
+<p>This distinction is intentional. The public lifecycle follows user perception, not internal settlement terminology.</p>
+<h3>Element Handlers</h3>
+<p>Series 1 element handlers:</p>
+<ul>
+<li><code>&lt;name&gt;_onCreate()</code></li>
+<li><code>&lt;name&gt;_onChanged()</code></li>
+<li><code>&lt;name&gt;_onMessage(from, msg)</code></li>
+</ul>
+<p>The current receiver is always available as:</p>
+<ul>
+<li><code>self</code></li>
+</ul>
+<p>Event parameters are only for event payload. The receiver itself is not passed positionally.</p>
+<h2>Public Objects</h2>
+<p>Series 1 currently exposes these primary objects:</p>
+<ul>
+<li><code>doc</code></li>
+<li><code>self</code></li>
+</ul>
+<h3><code>doc</code></h3>
+<p>The document participant.</p>
+<p>Current document members:</p>
+<ul>
+<li><code>doc.vars</code></li>
+<li><code>doc.getPageCount()</code></li>
+</ul>
+<h3><code>self</code></h3>
+<p>The current receiver.</p>
+<p>Typical element-facing members:</p>
+<ul>
+<li><code>self.name</code></li>
+<li><code>self.type</code></li>
+<li><code>self.content</code></li>
+<li><code>self.replace(...)</code></li>
+<li><code>self.append(...)</code></li>
+<li><code>self.prepend(...)</code></li>
+<li><code>self.setContent(...)</code></li>
+<li><code>self.sendMessage(recipient, msg)</code></li>
+</ul>
+<p>For document handlers, <code>self</code> is the document.</p>
+<h2>Global Helpers</h2>
+<p>These helpers are available directly inside handlers.</p>
+<ul>
+<li><code>element(name)</code></li>
+<li><code>elementsByType(type)</code></li>
+<li><code>sendMessage(recipient, msg)</code></li>
+<li><code>setContent(target, value)</code></li>
+<li><code>replace(value)</code></li>
+<li><code>append(value)</code></li>
+<li><code>prepend(value)</code></li>
+<li><code>replaceElement(target, value)</code></li>
+<li><code>insertBefore(target, value)</code></li>
+<li><code>insertAfter(target, value)</code></li>
+<li><code>deleteElement(target)</code></li>
+</ul>
+<h3>Helper Meaning</h3>
+<p><code>replace(...)</code> is receiver-oriented.</p>
+<p>It means:</p>
+<ul>
+<li>replace the current receiver with entirely new AST</li>
+</ul>
+<p><code>append(...)</code> and <code>prepend(...)</code> are receiver-oriented.</p>
+<p>They mean:</p>
+<ul>
+<li>append/prepend to the current receiver</li>
+</ul>
+<p>So:</p>
+<ul>
+<li>inside <code>summary_onMessage(...)</code>, <code>replace(...)</code> replaces <code>summary</code></li>
+<li>inside <code>onLoad()</code>, they affect the document</li>
+<li>inside <code>summary_onMessage(...)</code>, they affect <code>summary</code></li>
+</ul>
+<p>Explicit targeted forms are also valid through the receiver object, for example:</p>
+<ul>
+<li><code>element(&quot;summary&quot;).replace(...)</code></li>
+<li><code>element(&quot;summary&quot;).append(...)</code></li>
+<li><code>element(&quot;summary&quot;).prepend(...)</code></li>
+</ul>
+<h3>Value Shape</h3>
+<p><code>append(...)</code> and <code>prepend(...)</code> may accept:</p>
+<ul>
+<li>a single element</li>
+<li>a block of AST</li>
+</ul>
+<p>The runtime is responsible for normalizing that input.</p>
+<p><code>replace(...)</code> accepts the same shapes.</p>
+<p>This is the preferred structural mutation primitive for compound or ambiguous elements, where <code>setContent(...)</code> may not have a clear meaning.</p>
+<h3>Recipient / Target Resolution</h3>
+<p>A target or recipient can be:</p>
+<ul>
+<li>an element name string</li>
+<li>a resolved element reference</li>
+<li><code>doc</code></li>
+</ul>
+<p>Examples:</p>
+<pre><code class="language-js">sendMessage(&quot;summary&quot;, { subject: &quot;refresh&quot; })
+sendMessage(doc, { subject: &quot;refreshAll&quot; })
+
+element(&quot;chapterTitle&quot;).append({
+  type: &quot;p&quot;,
+  content: &quot;Act I&quot;
+})
+</code></pre>
+<h2>Queries</h2>
+<p>Series 1 keeps queries intentionally small and generic.</p>
+<p>Supported now:</p>
+<ul>
+<li><code>element(name)</code></li>
+<li><code>elementsByType(type)</code></li>
+</ul>
+<p>This is deliberate. Series 1 should not grow into a catalog of hard-coded document semantics.</p>
+<h2>Messages</h2>
+<p>Sending:</p>
+<pre><code class="language-js">sendMessage(&quot;summary&quot;, {
+  subject: &quot;refresh&quot;,
+  payload: {
+    total: 3
+  }
+})
+</code></pre>
+<p>Receiving:</p>
+<pre><code class="language-js">summary_onMessage(from, msg)
+</code></pre>
+<p>Document receiving:</p>
+<pre><code class="language-js">onMessage(from, msg)
+</code></pre>
+<p><code>msg</code> is the full message object, not just raw payload.</p>
+<p>Current expected shape:</p>
+<ul>
+<li><code>msg.subject</code></li>
+<li><code>msg.payload</code></li>
+</ul>
+<p><code>from</code> is the sender reference.</p>
+<p>When the document sends a message, <code>from.name</code> is <code>doc</code>.</p>
+<h2>Update Model</h2>
+<p>The public scripting model does not ask the author to think about replay.</p>
+<p>Authors should think in terms of:</p>
+<ul>
+<li>changing content</li>
+<li>reacting to events</li>
+<li>reacting to messages</li>
+</ul>
+<p>The engine is responsible for mapping those changes onto its native update model:</p>
+<ul>
+<li><code>none</code></li>
+<li><code>content-only</code></li>
+<li><code>geometry</code></li>
+</ul>
+<p>Manual refresh control is not part of the intended public Series 1 surface.</p>
+<p>For the core Series 1 structural helpers, the runtime now prefers live participant composition over replay-oriented document mutation.</p>
+<h2>Examples</h2>
+<h3>Minimal Hello World</h3>
+<pre><code class="language-yaml">---
+methods:
+  onLoad(): |
+    setContent(&quot;greeting&quot;, &quot;Hello, world!&quot;)
+---
+{
+  &quot;documentVersion&quot;: &quot;1.1&quot;,
+  &quot;layout&quot;: {
+    &quot;pageSize&quot;: &quot;LETTER&quot;,
+    &quot;margins&quot;: { &quot;top&quot;: 72, &quot;right&quot;: 72, &quot;bottom&quot;: 72, &quot;left&quot;: 72 },
+    &quot;fontFamily&quot;: &quot;Times New Roman&quot;,
+    &quot;fontSize&quot;: 20,
+    &quot;lineHeight&quot;: 1.4
+  },
+  &quot;styles&quot;: {},
+  &quot;elements&quot;: [
+    {
+      &quot;type&quot;: &quot;p&quot;,
+      &quot;name&quot;: &quot;greeting&quot;,
+      &quot;content&quot;: &quot;Waiting for script...&quot;
+    }
+  ]
+}
+</code></pre>
+<h3>Message-Driven Element Growth</h3>
+<pre><code class="language-yaml">---
+methods:
+  greeter_onCreate(): |
+    sendMessage(&quot;messageTarget&quot;, {
+      subject: &quot;greet&quot;,
+      payload: {
+        text: &quot;Hello from another element!&quot;
+      }
+    })
+
+  messageTarget_onMessage(from, msg): |
+    if (from.name !== &quot;greeter&quot;) return
+    if (msg.subject !== &quot;greet&quot;) return
+
+    append({
+      type: &quot;p&quot;,
+      content: msg.payload.text
+    })
+---
+</code></pre>
+<h2>What This Version Does Not Include</h2>
+<p>The following are intentional boundaries for this release, not gaps to work around.</p>
+<p><strong>Page scripting</strong> — <code>page</code> is not part of the public scripting surface. Scripts operate on document elements, not on individual pages.</p>
+<p><strong>Semantic document helpers</strong> — there is no built-in <code>getHeadings()</code>, <code>getFootnotes()</code>, or similar catalog of document-type-specific queries. Use <code>elementsByType(type)</code> with the element types you author. This keeps the scripting layer generic and usable across any document structure.</p>
+<p><strong>Persistent inter-handler state</strong> — variables declared inside a handler live only for that handler call. Document-scoped bindings (<code>TITLE</code>, <code>ACCENT</code>, etc. declared in the YAML front matter) are available across all handlers and persist for the document’s lifetime. There is no mutable state bag beyond that.</p>
+<p><strong>Animation and ticking</strong> — scripting does not run on a continuous tick. It runs at defined lifecycle moments. Document elements do not animate.</p>
+<p><strong>User-managed refresh control</strong> — you do not instruct the engine when to re-render or re-settle. The engine classifies the effect of each change and responds at the minimum necessary cost. This is by design: scripts that reason about rendering internals are fragile; scripts that reason about content and structure are not.</p>
+<h2>Notes</h2>
+<ul>
+<li><code>name</code> is the preferred authored identity for elements; use it consistently</li>
+<li><code>page</code> is not part of the public scripting surface</li>
+</ul>
+
+    </article>
+  </main>
+</body>
+</html>

@@ -1,6 +1,3 @@
----
----
-
 # 04. Headers, Footers, And Page Control
 
 VMPrint supports running page regions and a few important pagination controls.

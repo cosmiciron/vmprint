@@ -1,6 +1,3 @@
----
----
-
 # 06. Scripting
 
 VMPrint documents can participate in their own layout lifecycle. Elements can

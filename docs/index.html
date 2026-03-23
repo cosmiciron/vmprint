@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VMPrint Documentation | VMPrint Docs</title>
+  <meta name="description" content="VMPrint documentation">
+  <link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="index.html">VMPrint Docs</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link is-active" href="index.html">Home</a>
+        <a class="nav-link" href="guides/">Guides</a>
+        <a class="nav-link" href="reference/ast.html">Reference</a>
+        <a class="nav-link" href="api/">API</a>
+        <a class="nav-link" href="examples/">Examples</a>
+        <a class="nav-link" href="https://github.com/cosmiciron/vmprint">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page-shell">
+    <article class="markdown-body">
+<h1>VMPrint Documentation</h1>
+<p>VMPrint is a deterministic spatial simulation engine for document generation. It has no knowledge of browsers or the DOM - pages are bounded arenas, elements are autonomous actors, and layout is the process of reaching a stable world state. The same input always produces the exact same output, to the sub-point, across every runtime: Node.js, Cloudflare Workers, Lambda, and the browser.</p>
+<hr>
+<h2>API Reference</h2>
+<p>Complete type-level documentation for all public packages, generated from source:</p>
+<p><strong><a href="./api/">API Reference -&gt;</a></strong></p>
+<p>Covers <code>@vmprint/engine</code>, <code>@vmprint/contracts</code>, all contexts, all font managers, and all transmuters - every class, interface, and type, cross-linked between packages.</p>
+<hr>
+<h2>Guides</h2>
+<p>A progressive six-chapter authoring guide, from first document to scripting:</p>
+<table>
+<thead>
+<tr>
+<th>Chapter</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="./guides/">Introduction</a></td>
+<td>Overview and reading path</td>
+</tr>
+<tr>
+<td><a href="./guides/01-your-first-document.html">01 - Your First Document</a></td>
+<td>Document structure, layout config, a minimal working example</td>
+</tr>
+<tr>
+<td><a href="./guides/02-styles-and-text.html">02 - Styles and Text</a></td>
+<td>The style system, typography, inline formatting</td>
+</tr>
+<tr>
+<td><a href="./guides/03-stories-strips-and-zones.html">03 - Stories, Strips, and Zones</a></td>
+<td>Multi-column layout, strips, zone maps</td>
+</tr>
+<tr>
+<td><a href="./guides/04-headers-footers-and-page-control.html">04 - Headers, Footers, and Page Control</a></td>
+<td>Running regions, page numbering, pagination control</td>
+</tr>
+<tr>
+<td><a href="./guides/05-images-tables-and-overlays.html">05 - Images, Tables, and Overlays</a></td>
+<td>Embedded images, table layout, overlay system</td>
+</tr>
+<tr>
+<td><a href="./guides/06-scripting.html">06 - Scripting</a></td>
+<td>Document and element lifecycle hooks, messaging, mutations</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Reference</h2>
+<p>Detailed specifications for the document format and runtime APIs:</p>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="./reference/ast.html">AST Reference</a></td>
+<td>Complete <code>DocumentInput</code> schema - layout config, all element types, style properties</td>
+</tr>
+<tr>
+<td><a href="./reference/scripting.html">Scripting API</a></td>
+<td>All lifecycle methods, element addressing, messaging, mutation API</td>
+</tr>
+<tr>
+<td><a href="./reference/overlay.html">Overlay System</a></td>
+<td><code>OverlayProvider</code> interface, render lifecycle, backdrop and overlay hooks</td>
+</tr>
+<tr>
+<td><a href="./reference/standard-fonts.html">Standard Fonts</a></td>
+<td>The 14 built-in PDF fonts, Win-ANSI encoding, sentinel buffer mechanism</td>
+</tr>
+<tr>
+<td><a href="./reference/cli.html">CLI Reference</a></td>
+<td><code>vmprint</code> CLI - flags, layout stream, render-from-layout, overlay sidecar</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Live Examples</h2>
+<p>Each example is a complete VMPrint pipeline running entirely client-side - no backend, no server, no headless browser. Download the folder, open <code>index.html</code>, and it works immediately from <code>file://</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="./examples/ast-to-pdf/">AST -&gt; PDF</a></td>
+<td><code>StandardFontManager</code> + <code>PdfLiteContext</code>. Zero font files in the pipeline. ~182 KiB Brotli for the full runtime.</td>
+</tr>
+<tr>
+<td><a href="./examples/ast-to-pdf-webfonts/">AST -&gt; PDF with web fonts</a></td>
+<td>Same pipeline with <code>@vmprint/web-fonts</code> for remote font loading, enabling custom typography and broad multilingual shaping.</td>
+</tr>
+<tr>
+<td><a href="./examples/ast-to-canvas-webfonts/">AST -&gt; Canvas with web fonts</a></td>
+<td><code>@vmprint/context-canvas</code> renders SVG-backed page scenes into a live browser canvas - the basis for document preview UIs.</td>
+</tr>
+<tr>
+<td><a href="./examples/mkd-to-ast/">Markdown -&gt; AST</a></td>
+<td>Full Markdown transmutation in the browser, producing a VMPrint <code>DocumentInput</code> you can inspect.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Packages</h2>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@vmprint/engine</code></td>
+<td>Core layout engine: <code>LayoutEngine</code>, <code>Renderer</code>, element AST, layout config, simulation output types</td>
+</tr>
+<tr>
+<td><code>@vmprint/contracts</code></td>
+<td>Interface definitions: <code>Context</code>, <code>FontManager</code>, <code>Transmuter</code>, <code>OverlayProvider</code></td>
+</tr>
+<tr>
+<td><code>@vmprint/standard-fonts</code></td>
+<td>The 14 built-in PDF fonts with zero binary data - Win-ANSI metrics served from AFM tables</td>
+</tr>
+<tr>
+<td><code>@vmprint/context-pdf-lite</code></td>
+<td>jsPDF-backed PDF output, browser-native, zero Node.js dependencies</td>
+</tr>
+<tr>
+<td><code>@vmprint/context-pdf</code></td>
+<td>pdf-lib-backed PDF output with full streaming, shaped-glyph fidelity, and image embedding</td>
+</tr>
+<tr>
+<td><code>@vmprint/context-canvas</code></td>
+<td>Canvas/SVG rendering context for live browser preview</td>
+</tr>
+<tr>
+<td><code>@vmprint/web-fonts</code></td>
+<td>Font manager for remote OpenType loading in the browser</td>
+</tr>
+<tr>
+<td><code>@vmprint/local-fonts</code></td>
+<td>Font manager for local <code>.ttf</code>/<code>.otf</code> files in Node.js</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Further Reading</h2>
+<ul>
+<li><a href="https://github.com/cosmiciron/vmprint/blob/main/documents/ARCHITECTURE.md">System Architecture</a> - how the engine, contexts, and font managers fit together</li>
+<li><a href="https://github.com/cosmiciron/vmprint/blob/main/documents/ENGINE-INTERNALS.md">Engine Internals</a> - actor simulation, pagination, scripting replay</li>
+<li><a href="https://github.com/cosmiciron/vmprint/blob/main/QUICKSTART.md">Quickstart</a> - get a PDF out in under five minutes</li>
+<li><a href="https://github.com/cosmiciron/vmprint">GitHub Repository</a></li>
+</ul>
+<hr>
+<p>Licensed under the <a href="https://github.com/cosmiciron/vmprint/blob/main/LICENSE">Apache License 2.0</a>.</p>
+
+    </article>
+  </main>
+</body>
+</html>

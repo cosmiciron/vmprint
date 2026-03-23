@@ -1,6 +1,3 @@
----
----
-
 # Standard Font Architecture
 
 This document describes the design and rationale for VMPrint's standard font system — a mechanism for producing documents that require no font embedding, using fonts the rendering target is expected to know about.
