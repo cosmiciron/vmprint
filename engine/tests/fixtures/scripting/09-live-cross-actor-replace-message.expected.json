@@ -1,0 +1,26 @@
+{
+  "expectedTextIncludes": [
+    "Cross-actor replacement used element(\"target\").replace() without replay.",
+    "Controller element: it reacts to the incoming message.",
+    "Tail paragraph: this should still follow the replacement naturally."
+  ],
+  "expectedTextExcludes": [
+    "This target should be replaced by another actor."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "target",
+      "content": "This target should be replaced by another actor."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 2,
+    "createCalls": 1,
+    "messageSendCalls": 1,
+    "messageHandlerCalls": 1,
+    "replaceCalls": 1
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

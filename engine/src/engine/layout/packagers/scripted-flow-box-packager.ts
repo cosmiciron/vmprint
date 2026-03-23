@@ -16,7 +16,8 @@ import type {
     PackagerPlacementPreference,
     PackagerSplitResult,
     PackagerTransformProfile,
-    PackagerUnit
+    PackagerUnit,
+    SpatialFrontier
 } from './packager-types';
 
 type ScriptMessage = {
@@ -280,6 +281,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
     private lastObservedPageIndex = 0;
     private lastObservedActorIndex = 0;
     private pendingLiveStructuralChange = false;
+    private pendingLiveFrontier: SpatialFrontier | null = null;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -324,6 +326,12 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const replacedIndex = session.replaceActorInLiveQueue(this, replacements);
         if (replacedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
+        this.pendingLiveFrontier = {
+            pageIndex: this.lastObservedPageIndex,
+            actorIndex: replacedIndex,
+            actorId: replacements[0]?.actorId ?? this.actorId,
+            sourceId: replacements[0]?.sourceId ?? this.sourceId
+        };
         return true;
     }
 
@@ -339,6 +347,86 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const insertedIndex = session.insertActorsInLiveQueue(this, insertions, position);
         if (insertedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
+        this.pendingLiveFrontier = {
+            pageIndex: this.lastObservedPageIndex,
+            actorIndex: insertedIndex,
+            actorId: insertions[0]?.actorId,
+            sourceId: insertions[0]?.sourceId
+        };
+        return true;
+    }
+
+    private resolveLiveActor(session: LayoutSession, target: unknown): PackagerUnit | null {
+        const sourceId = this.resolveSourceId(target);
+        if (!sourceId || sourceId === 'doc') return null;
+        const normalized = LayoutUtils.normalizeAuthorSourceId(sourceId) || sourceId;
+        const actor = session.getRegisteredActors().find((entry) =>
+            (entry.sourceId === sourceId || entry.sourceId === normalized)
+        );
+        return actor ?? null;
+    }
+
+    private replaceLiveActor(session: LayoutSession, target: unknown, elements: Element[]): boolean {
+        const actor = this.resolveLiveActor(session, target);
+        if (!actor) return false;
+        if (actor.actorId === this.actorId) {
+            return this.replaceLiveSelf(session, elements);
+        }
+        const processorWithFactory = this.processor as unknown as ScriptPackagerFactoryProvider;
+        const packagerFactory = processorWithFactory.getPackagerFactory?.();
+        const replacements = createPackagers(elements, this.processor, packagerFactory);
+        if (replacements.length === 0) return false;
+        const replacedIndex = session.replaceActorInLiveQueue(actor, replacements);
+        if (replacedIndex === null) return false;
+        this.pendingLiveStructuralChange = true;
+        this.pendingLiveFrontier = {
+            pageIndex: this.lastObservedPageIndex,
+            actorIndex: replacedIndex,
+            actorId: replacements[0]?.actorId ?? actor.actorId,
+            sourceId: replacements[0]?.sourceId ?? actor.sourceId
+        };
+        return true;
+    }
+
+    private insertLiveRelative(
+        session: LayoutSession,
+        target: unknown,
+        elements: Element[],
+        position: InsertPosition
+    ): boolean {
+        const actor = this.resolveLiveActor(session, target);
+        if (!actor) return false;
+        if (actor.actorId === this.actorId) {
+            return this.insertLiveRelativeToSelf(session, elements, position);
+        }
+        const processorWithFactory = this.processor as unknown as ScriptPackagerFactoryProvider;
+        const packagerFactory = processorWithFactory.getPackagerFactory?.();
+        const insertions = createPackagers(elements, this.processor, packagerFactory);
+        if (insertions.length === 0) return false;
+        const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position);
+        if (insertedIndex === null) return false;
+        this.pendingLiveStructuralChange = true;
+        this.pendingLiveFrontier = {
+            pageIndex: this.lastObservedPageIndex,
+            actorIndex: insertedIndex,
+            actorId: insertions[0]?.actorId,
+            sourceId: insertions[0]?.sourceId
+        };
+        return true;
+    }
+
+    private deleteLiveActor(session: LayoutSession, target: unknown): boolean {
+        const actor = this.resolveLiveActor(session, target);
+        if (!actor) return false;
+        const deletedIndex = session.deleteActorInLiveQueue(actor);
+        if (deletedIndex === null) return false;
+        this.pendingLiveStructuralChange = true;
+        this.pendingLiveFrontier = {
+            pageIndex: this.lastObservedPageIndex,
+            actorIndex: deletedIndex,
+            actorId: actor.actorId,
+            sourceId: actor.sourceId
+        };
         return true;
     }
 
@@ -420,6 +508,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             replace: (value: unknown) => {
                 if (!sourceId) return false;
                 const elements = normalizeScriptElements(value);
+                const liveReplaced = this.replaceLiveActor(session, sourceId, elements);
+                if (liveReplaced) {
+                    session.recordProfile('replaceCalls', 1);
+                    return true;
+                }
                 if (element === this.sourceElement) {
                     const replaced = this.replaceLiveSelf(session, elements);
                     if (!replaced) return false;
@@ -436,6 +529,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 if (!sourceId) return false;
                 const elements = normalizeScriptElements(value);
                 if (elements.length === 0) return false;
+                const liveInserted = this.insertLiveRelative(session, sourceId, elements, 'after');
+                if (liveInserted) {
+                    session.recordProfile('insertCalls', 1);
+                    return true;
+                }
                 if (element === this.sourceElement) {
                     const inserted = this.insertLiveRelativeToSelf(session, elements, 'after');
                     if (!inserted) return false;
@@ -452,6 +550,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 if (!sourceId) return false;
                 const elements = normalizeScriptElements(value);
                 if (elements.length === 0) return false;
+                const liveInserted = this.insertLiveRelative(session, sourceId, elements, 'before');
+                if (liveInserted) {
+                    session.recordProfile('insertCalls', 1);
+                    return true;
+                }
                 if (element === this.sourceElement) {
                     const inserted = this.insertLiveRelativeToSelf(session, elements, 'before');
                     if (!inserted) return false;
@@ -560,6 +663,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
                 const normalizedElements = normalizeScriptElements(elements);
+                const liveReplaced = this.replaceLiveActor(session, sourceId, normalizedElements);
+                if (liveReplaced) {
+                    session.recordProfile('replaceCalls', 1);
+                    return true;
+                }
                 const result = replaceBySourceId(this.elements, sourceId, normalizedElements);
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
@@ -570,6 +678,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
                 const normalizedElements = normalizeScriptElements(elements);
+                const liveInserted = this.insertLiveRelative(session, sourceId, normalizedElements, 'before');
+                if (liveInserted) {
+                    session.recordProfile('insertCalls', 1);
+                    return true;
+                }
                 const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'before');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
@@ -580,6 +693,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
                 const normalizedElements = normalizeScriptElements(elements);
+                const liveInserted = this.insertLiveRelative(session, sourceId, normalizedElements, 'after');
+                if (liveInserted) {
+                    session.recordProfile('insertCalls', 1);
+                    return true;
+                }
                 const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'after');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
@@ -589,6 +707,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             deleteElement: (target: unknown) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
+                const liveDeleted = this.deleteLiveActor(session, sourceId);
+                if (liveDeleted) {
+                    session.recordProfile('removeCalls', 1);
+                    return true;
+                }
                 const result = deleteBySourceId(this.elements, sourceId);
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
@@ -601,6 +724,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
                 const normalizedElements = normalizeScriptElements(elements);
+                const liveInserted = this.insertLiveRelative(session, sourceId, normalizedElements, 'before');
+                if (liveInserted) {
+                    session.recordProfile('insertCalls', 1);
+                    return true;
+                }
                 const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'before');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
@@ -611,6 +739,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
                 const normalizedElements = normalizeScriptElements(elements);
+                const liveInserted = this.insertLiveRelative(session, sourceId, normalizedElements, 'after');
+                if (liveInserted) {
+                    session.recordProfile('insertCalls', 1);
+                    return true;
+                }
                 const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'after');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
@@ -690,16 +823,18 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.lastHandledMessageSequence = highestSequence;
         if (this.pendingLiveStructuralChange) {
             this.pendingLiveStructuralChange = false;
+            const frontier = this.pendingLiveFrontier || {
+                pageIndex: this.lastObservedPageIndex,
+                actorIndex: this.lastObservedActorIndex,
+                actorId: this.actorId,
+                sourceId: this.sourceId
+            };
+            this.pendingLiveFrontier = null;
             return {
                 changed: true,
                 geometryChanged: true,
                 updateKind: 'geometry',
-                earliestAffectedFrontier: {
-                    pageIndex: this.lastObservedPageIndex,
-                    actorIndex: this.lastObservedActorIndex,
-                    actorId: this.actorId,
-                    sourceId: this.sourceId
-                }
+                earliestAffectedFrontier: frontier
             };
         }
         if (!changed) {

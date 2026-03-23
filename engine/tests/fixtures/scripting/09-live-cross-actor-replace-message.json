@@ -1,0 +1,53 @@
+---
+methods:
+  controller_onMessage(from, msg): |
+    if ((from.name === "sender") && (msg.subject === "mutate")) {
+      const target = element("target")
+      if (!target) return
+      target.replace([
+        {
+          type: "p",
+          name: "replacement",
+          content: "Cross-actor replacement used element(\"target\").replace() without replay."
+        }
+      ])
+    }
+
+  sender_onCreate(): |
+    sendMessage("controller", {
+      subject: "mutate"
+    })
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "target",
+      "content": "This target should be replaced by another actor."
+    },
+    {
+      "type": "p",
+      "name": "controller",
+      "content": "Controller element: it reacts to the incoming message."
+    },
+    {
+      "type": "p",
+      "name": "sender",
+      "content": "Sender element: it triggers the cross-actor replacement."
+    },
+    {
+      "type": "p",
+      "name": "tail",
+      "content": "Tail paragraph: this should still follow the replacement naturally."
+    }
+  ]
+}

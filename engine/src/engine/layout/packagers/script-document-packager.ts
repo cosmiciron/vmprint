@@ -387,7 +387,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return null;
     }
 
-    private createElementRef(session: LayoutSession, element: Element): Record<string, unknown> {
+    private createElementRef(
+        session: LayoutSession,
+        element: Element,
+        context?: PackagerContext
+    ): Record<string, unknown> {
         const sourceId = typeof element.properties?.sourceId === 'string' ? element.properties.sourceId : null;
         return {
             name: sourceId,
@@ -397,6 +401,13 @@ export class ScriptDocumentPackager implements PackagerUnit {
             },
             replace: (value: unknown) => {
                 if (!sourceId) return false;
+                const liveReplaced = context
+                    ? this.replaceLiveActor(session, context, sourceId, value)
+                    : false;
+                if (liveReplaced) {
+                    session.recordProfile('replaceCalls', 1);
+                    return true;
+                }
                 const elements = normalizeScriptElements(value);
                 const result = replaceBySourceId(this.elements, sourceId, elements);
                 if (!result.replaced) return false;
@@ -406,6 +417,13 @@ export class ScriptDocumentPackager implements PackagerUnit {
             },
             append: (value: unknown) => {
                 if (!sourceId) return false;
+                const liveInserted = context
+                    ? this.insertLiveRelative(session, context, sourceId, value, 'after')
+                    : false;
+                if (liveInserted) {
+                    session.recordProfile('insertCalls', 1);
+                    return true;
+                }
                 const elements = normalizeScriptElements(value);
                 if (elements.length === 0) return false;
                 const result = insertBySourceId(this.elements, sourceId, elements, 'after');
@@ -416,6 +434,13 @@ export class ScriptDocumentPackager implements PackagerUnit {
             },
             prepend: (value: unknown) => {
                 if (!sourceId) return false;
+                const liveInserted = context
+                    ? this.insertLiveRelative(session, context, sourceId, value, 'before')
+                    : false;
+                if (liveInserted) {
+                    session.recordProfile('insertCalls', 1);
+                    return true;
+                }
                 const elements = normalizeScriptElements(value);
                 if (elements.length === 0) return false;
                 const result = insertBySourceId(this.elements, sourceId, elements, 'before');
@@ -435,14 +460,14 @@ export class ScriptDocumentPackager implements PackagerUnit {
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
-                if (node) return this.createElementRef(session, node);
+                if (node) return this.createElementRef(session, node, context);
                 if (!context) return null;
                 const liveActor = this.resolveLiveActor(session, name);
                 return liveActor ? this.createLiveActorRef(session, context, liveActor) : null;
             },
             findElementsByType: (type: string) => {
                 session.recordProfile('docQueryCalls', 1);
-                return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
+                return findByType(this.elements, type).map((node) => this.createElementRef(session, node, context));
             },
             getPageCount: () => {
                 session.recordProfile('docQueryCalls', 1);
@@ -474,13 +499,13 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const element = (name: string) => {
             session.recordProfile('docQueryCalls', 1);
             const node = findBySourceId(this.elements, name);
-            if (node) return this.createElementRef(session, node);
+            if (node) return this.createElementRef(session, node, context);
             const liveActor = this.resolveLiveActor(session, name);
             return liveActor ? this.createLiveActorRef(session, context, liveActor) : null;
         };
         const elementsByType = (type: string) => {
             session.recordProfile('docQueryCalls', 1);
-            return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
+            return findByType(this.elements, type).map((node) => this.createElementRef(session, node, context));
         };
         const append = (value: unknown) => {
             const elements = normalizeScriptElements(value);

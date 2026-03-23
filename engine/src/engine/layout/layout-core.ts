@@ -102,6 +102,56 @@ export class LayoutProcessor extends TextProcessor {
         return structuredClone(elements) as Element[];
     }
 
+    private elementTreeHasPhaseHandler(
+        elements: Element[],
+        predicate: (element: Element) => boolean
+    ): boolean {
+        const stack = [...elements];
+        while (stack.length > 0) {
+            const element = stack.pop();
+            if (!element) continue;
+            if (predicate(element)) return true;
+            if (Array.isArray(element.children) && element.children.length > 0) {
+                stack.push(...element.children);
+            }
+            if (Array.isArray(element.zones)) {
+                for (const zone of element.zones) {
+                    if (Array.isArray(zone.elements) && zone.elements.length > 0) {
+                        stack.push(...zone.elements);
+                    }
+                }
+            }
+            if (Array.isArray(element.slots)) {
+                for (const slot of element.slots) {
+                    if (Array.isArray(slot.elements) && slot.elements.length > 0) {
+                        stack.push(...slot.elements);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private requiresBlueprintPreprocessingClone(
+        elements: Element[],
+        scriptRuntimeHost: ScriptRuntimeHost | null
+    ): boolean {
+        if (!scriptRuntimeHost) return false;
+
+        const hasOnLoad = scriptRuntimeHost.getDocumentHandlerName('onLoad') !== null;
+        if (hasOnLoad) return true;
+
+        return this.elementTreeHasPhaseHandler(elements, (element) => {
+            const sourceId = typeof element.properties?.sourceId === 'string'
+                ? element.properties.sourceId
+                : null;
+            const explicitHandlerName = typeof element.properties?.onResolve === 'string'
+                ? element.properties.onResolve
+                : null;
+            return !!scriptRuntimeHost.getElementHandlerName(sourceId, 'onCreate', explicitHandlerName);
+        });
+    }
+
     private normalizeOverflowPolicy(value: unknown): OverflowPolicy {
         if (value === undefined || value === null || value === '') return LAYOUT_DEFAULTS.overflowPolicy;
         if (value === 'clip' || value === 'move-whole' || value === 'error') return value;
@@ -535,21 +585,29 @@ export class LayoutProcessor extends TextProcessor {
      */
     simulate(elements: Element[]): Page[] {
         const { height: pageHeight, width: pageWidth } = this.getPageDimensions();
-        const simulationElements = this.cloneElementsForSimulation(elements);
         const maxScriptReplayPasses = 3;
         const aggregateScriptProfile = Object.fromEntries(
             LayoutProcessor.SCRIPT_PROFILE_KEYS.map((key) => [key, 0])
         ) as Record<keyof LayoutProfileMetrics, number>;
-        const scriptLifecycleState = this.config.scripting
-            ? new ScriptRuntimeHost(this.config.scripting).createLifecycleState()
+        const scriptRuntimeHost = this.config.scripting
+            ? new ScriptRuntimeHost(this.config.scripting)
             : null;
+        // Blueprint-preprocessing phases (`onLoad`/`onCreate`) still operate on
+        // the authored element structure. Clone only for those phases so live
+        // runtime scripting can work directly against instantiated participants
+        // without paying the full-tree copy cost on every simulation.
+        const simulationElements = this.requiresBlueprintPreprocessingClone(elements, scriptRuntimeHost)
+            ? this.cloneElementsForSimulation(elements)
+            : elements;
+        const scriptLifecycleState = scriptRuntimeHost?.createLifecycleState() ?? null;
 
         for (let pass = 0; pass < maxScriptReplayPasses; pass++) {
-            const { collaborators, scriptRuntimeCollaborator, scriptRuntimeHost } = this.createLayoutCollaborators(
+            const { collaborators, scriptRuntimeCollaborator, scriptRuntimeHost: activeScriptRuntimeHost } = this.createLayoutCollaborators(
                 simulationElements,
-                scriptLifecycleState
+                scriptLifecycleState,
+                scriptRuntimeHost ?? undefined
             );
-            this.activeScriptRuntimeHost = scriptRuntimeHost;
+            this.activeScriptRuntimeHost = activeScriptRuntimeHost;
             const session = new LayoutSession({
                 runtime: this.getRuntime(),
                 collaborators
@@ -558,8 +616,8 @@ export class LayoutProcessor extends TextProcessor {
             session.notifySimulationStart();
             const packagers = createPackagers(simulationElements, this, this.packagerFactory);
             let scriptDocumentPackager: ScriptDocumentPackager | null = null;
-            if (scriptRuntimeHost?.hasDocumentAfterSettleHandler()) {
-                scriptDocumentPackager = new ScriptDocumentPackager(scriptRuntimeHost, simulationElements, scriptLifecycleState!);
+            if (activeScriptRuntimeHost?.hasDocumentAfterSettleHandler()) {
+                scriptDocumentPackager = new ScriptDocumentPackager(activeScriptRuntimeHost, simulationElements, scriptLifecycleState!);
                 packagers.push(scriptDocumentPackager);
             }
             for (const packager of packagers) {
@@ -1059,14 +1117,19 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 
-    private createLayoutCollaborators(elements: Element[], scriptLifecycleState: ScriptLifecycleState | null): {
+    private createLayoutCollaborators(
+        elements: Element[],
+        scriptLifecycleState: ScriptLifecycleState | null,
+        existingScriptRuntimeHost?: ScriptRuntimeHost
+    ): {
         collaborators: Collaborator[];
         scriptRuntimeCollaborator: ScriptRuntimeCollaborator | null;
         scriptRuntimeHost: ScriptRuntimeHost | null;
     } {
-        const scriptRuntimeHost = this.config.scripting
-            ? new ScriptRuntimeHost(this.config.scripting)
-            : null;
+        const scriptRuntimeHost = existingScriptRuntimeHost
+            ?? (this.config.scripting
+                ? new ScriptRuntimeHost(this.config.scripting)
+                : null);
         const scriptRuntimeCollaborator = scriptRuntimeHost
             ? new ScriptRuntimeCollaborator(scriptRuntimeHost, elements, scriptLifecycleState ?? scriptRuntimeHost.createLifecycleState())
             : null;
