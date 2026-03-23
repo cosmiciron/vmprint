@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Deterministic typesetting CLI for the programmable web. Convert JSON document streams to bit-perfect PDFs.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
@@ -14,7 +14,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "npm run clean && tsup && node fix-shebang.mjs && node copy-local-font-assets.mjs",
+    "build": "npm run clean && tsup && node fix-shebang.mjs && node copy-pdfkit-data.mjs && node copy-local-font-assets.mjs",
     "clean": "rimraf dist",
     "dev": "tsx --conditions tsx src/index.ts"
   },
