@@ -121,7 +121,8 @@ for (const entry of packages) {
 
     const stagedPackageJsonPath = path.join(entry.stageDir, 'package.json');
     const stagedPkg = JSON.parse(fs.readFileSync(stagedPackageJsonPath, 'utf8'));
-    stagedPkg.version = process.env.VMPRINT_RELEASE_VERSION || stagedPkg.version || defaultVersion;
+    stagedPkg.name = entry.name;
+    stagedPkg.version = process.env.VMPRINT_RELEASE_VERSION || entry.version || defaultVersion;
     rewriteInternalDeps(stagedPkg);
     fs.writeFileSync(stagedPackageJsonPath, `${JSON.stringify(stagedPkg, null, 2)}\n`);
 

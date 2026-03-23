@@ -9,6 +9,5 @@ export default defineConfig({
     noExternal: [/(.*)/],
     outExtension() {
         return { js: '.js' };
-    },
-    banner: { js: '#!/usr/bin/env node' }
+    }
 });
