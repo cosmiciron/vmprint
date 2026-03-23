@@ -3,7 +3,7 @@
 > **VMPrint now ships with a browser preview demo.**  
 > Render real VMPrint documents in-browser with multilingual layout, pagination, and high-fidelity canvas preview.  
 > The demo is a static, self-contained page you can open directly from a local folder, and its four core runtime bundles (shared fontkit + engine + web font manager + canvas context) weigh about **0.89 MiB** total minified.  
-> [Open the canvas demo](docs/examples/ast-to-canvas-webfonts/index.html) | [Browse all examples](docs/examples/index.html) | [Quickstart](QUICKSTART.md)
+> [Open the canvas demo](https://cosmiciron.github.io/vmprint/examples/ast-to-canvas-webfonts/index.html) | [Browse all examples](https://cosmiciron.github.io/vmprint/examples/index.html) | [Quickstart](QUICKSTART.md)
 
 You've been here before.
 
