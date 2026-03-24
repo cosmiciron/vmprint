@@ -1195,6 +1195,58 @@ export class StoryPackager implements PackagerUnit {
                     break outer;
                 }
 
+                // keepWithNext: if set on the spanning element and the span is not
+                // already at the top of the page (to avoid infinite push loops),
+                // ensure there is room for at least the minimum height of the next
+                // flow child below the span before committing it to this page.
+                const spanKeepWithNext = !!(
+                    child.element.properties?.keepWithNext
+                    ?? (child.element.properties?.style as ElementStyle | undefined)?.keepWithNext
+                );
+                if (spanKeepWithNext && spanTopY > 0.1) {
+                    let nextFlowChild: NormalizedStoryChild | null = null;
+                    for (let j = i + 1; j < children.length; j++) {
+                        const c = children[j];
+                        if (c.kind === 'story-absolute') continue;
+                        if (c.kind === 'column-span') break; // another span handles its own constraint
+                        nextFlowChild = c;
+                        break;
+                    }
+                    if (nextFlowChild !== null) {
+                        const resumeY = spanTopY + spanH;
+                        const resumeRegion = regions[0];
+                        const remainingAfterSpan = Math.max(0, availableHeight - resumeY);
+                        const nextCtx: PackagerContext = {
+                            ...this.createLocalFrameContext(
+                                context,
+                                resumeRegion.w,
+                                {
+                                    cursorY: resumeY,
+                                    margins: { ...margins, left: margins.left + resumeRegion.x },
+                                    pageHeight: availableHeight
+                                },
+                                resumeY,
+                                remainingAfterSpan
+                            )
+                        };
+                        const nextPkg = buildPackagerForElement(
+                            nextFlowChild.element, nextFlowChild.childIndex, this.processor
+                        );
+                        if (nextPkg.prepareLookahead) {
+                            nextPkg.prepareLookahead(resumeRegion.w, remainingAfterSpan, nextCtx);
+                        } else {
+                            nextPkg.prepare(resumeRegion.w, remainingAfterSpan, nextCtx);
+                        }
+                        const nextMinH = nextPkg.getRequiredHeight();
+                        if (resumeY + nextMinH > availableHeight + 0.1) {
+                            // Next child won't fit after the span — push span to next page.
+                            hasOverflow = true;
+                            nextChildIndex = i;
+                            break outer;
+                        }
+                    }
+                }
+
                 const emitted = (pkg.emitBoxes(availableWidth, availableHeight - spanTopY, spanContext) || []) as Box[];
                 for (const b of emitted) b.y = (b.y || 0) + spanTopY;
                 for (const b of emitted) allBoxes.push(b);

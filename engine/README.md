@@ -146,7 +146,7 @@ A few features worth knowing about as you build with the engine:
 - **Deterministic pagination** with configurable orphan/widow control, keep-together groups, and overflow policies (`clip`, `move-whole`, `error`).
 - **Zone maps** (`type: "zone-map"`): declare a row of independent layout regions — each column runs its own non-paginating flow pass and is composited into page space. Column widths support fixed, auto, and flex (`fr`) tracks via the same solver used for tables.
 - **Tables**: full grid layout with row/column sizing, spanning cells, header repetition, and per-cell styling.
-- **Multi-column stories**, drop-caps, floats, and absolute positioning.
+- **Multi-column stories**, drop-caps, floats, absolute positioning, and full-width column spans. Column-spanning elements support `keepWithNext: true` to prevent a section banner from being stranded at the bottom of a page without its following column content.
 - **Page regions**: headers and footers with per-page content overrides and spatial constraints.
 - **Scripting hooks**: `onBeforeLayout`, `onAfterSettle`, `onCreate`, `onResolve` — element-level message passing and up to three bounded replay passes.
 - **Debug mode**: pass `true` as the second argument to `Renderer` to overlay page margins, zone boundaries, and per-box labels onto the output.

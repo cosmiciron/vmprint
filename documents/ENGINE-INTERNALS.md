@@ -34,7 +34,7 @@ Each spatial IR element is compiled into a **Packager** — the live actor that 
 
 - `FlowBoxPackager` — handles paragraphs, headings, images, and any block that flows
 - `TablePackager` / `SpatialGridPackager` — handles tables with colspan, rowspan, and page-spanning rows
-- `StoryPackager` — manages multi-column flows, floats, and wrap geometry
+- `StoryPackager` — manages multi-column flows, floats, wrap geometry, and column-spanning elements. When a spanning element carries `keepWithNext: true`, the packager performs a lookahead against the next flow child: if the child's minimum height would not fit in the remaining page space after the span, the span is overflowed to the next page rather than being stranded at the page bottom.
 - `DropCapPackager` — a first-class actor that claims space and pushes neighboring text around it
 - `TocPackager` — a reactive actor that observes committed heading signals and reflows its own content
 - `ZonePackager` — runs independent sub-sessions for each authored zone
