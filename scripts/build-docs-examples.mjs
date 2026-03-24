@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import esbuild from 'esbuild';
+import { zipSync, strToU8 } from 'fflate';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
@@ -24,6 +25,9 @@ const examples = [
         root: path.join(repoRoot, 'docs', 'examples', 'mkd-to-ast')
     }
 ];
+
+const exampleArchiveName = 'vmprint-static-examples.zip';
+const exampleArchiveRoot = 'vmprint-static-examples';
 
 const aliases = {
     '@vmprint/contracts': path.join(repoRoot, 'contracts', 'src', 'index.ts'),
@@ -239,6 +243,47 @@ async function buildMkdToAstExample(exampleRoot) {
     ]);
 }
 
+function addDirectoryToArchive(entries, sourceDir, archiveDir, options = {}) {
+    const { exclude = new Set() } = options;
+    const items = fs.readdirSync(sourceDir, { withFileTypes: true });
+
+    for (const item of items) {
+        if (exclude.has(item.name)) {
+            continue;
+        }
+
+        const sourcePath = path.join(sourceDir, item.name);
+        const archivePath = `${archiveDir}/${item.name}`;
+
+        if (item.isDirectory()) {
+            addDirectoryToArchive(entries, sourcePath, archivePath, options);
+            continue;
+        }
+
+        entries[archivePath] = fs.readFileSync(sourcePath);
+    }
+}
+
+function buildExamplesArchive() {
+    const archiveEntries = {
+        [`${exampleArchiveRoot}/index.html`]: strToU8(
+            fs.readFileSync(path.join(repoRoot, 'docs', 'examples', 'index.html'), 'utf8')
+        )
+    };
+
+    for (const example of examples) {
+        addDirectoryToArchive(
+            archiveEntries,
+            example.root,
+            `${exampleArchiveRoot}/${example.name}`,
+            { exclude: new Set(['src']) }
+        );
+    }
+
+    const zipBytes = zipSync(archiveEntries, { level: 9 });
+    fs.writeFileSync(path.join(repoRoot, 'docs', 'examples', exampleArchiveName), zipBytes);
+}
+
 async function main() {
     for (const example of examples) {
         if (example.name === 'ast-to-pdf') {
@@ -251,6 +296,7 @@ async function main() {
             await buildMkdToAstExample(example.root);
         }
     }
+    buildExamplesArchive();
     console.log('[docs:build] Built docs examples.');
 }
 

@@ -36,6 +36,33 @@
       margin: 0 0 1.2rem;
       color: var(--muted);
     }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin: 0 0 1.5rem;
+      align-items: center;
+    }
+    .download-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.72rem 1rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: 0 10px 24px rgba(15, 76, 92, 0.14);
+    }
+    .download-all:hover,
+    .download-all:focus-visible {
+      background: #0c3e4a;
+    }
+    .download-note {
+      margin: 0;
+      font-size: 0.94rem;
+    }
     .grid {
       display: grid;
       gap: 0.9rem;
@@ -68,6 +95,12 @@
   <main>
     <h1>VMPrint Examples</h1>
     <p>Standalone static demos for embeddable VMPrint workflows.</p>
+    <div class="actions">
+      <a class="download-all" href="./vmprint-static-examples.zip" download>
+        Download All 4 Static Examples
+      </a>
+      <p class="download-note">Open the zip locally and start from <code>index.html</code>.</p>
+    </div>
     <section class="grid">
       <a class="card" href="./ast-to-pdf/index.html">
         <h2>AST JSON to PDF</h2>
