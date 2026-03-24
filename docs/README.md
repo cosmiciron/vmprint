@@ -53,6 +53,7 @@ Each example is a complete VMPrint pipeline running entirely client-side - no ba
 | [AST -> PDF](./examples/ast-to-pdf/) | `StandardFontManager` + `PdfLiteContext`. Zero font files in the pipeline. ~182 KiB Brotli for the full runtime. |
 | [AST -> PDF with web fonts](./examples/ast-to-pdf-webfonts/) | Same pipeline with `@vmprint/web-fonts` for remote font loading, enabling custom typography and broad multilingual shaping. |
 | [AST -> Canvas with web fonts](./examples/ast-to-canvas-webfonts/) | `@vmprint/context-canvas` renders SVG-backed page scenes into a live browser canvas - the basis for document preview UIs. |
+| [Preview Package](./examples/preview/) | Full canvas preview, PDF export, and SVG export via the standalone `@vmprint/preview` bundle. |
 | [Markdown -> AST](./examples/mkd-to-ast/) | Full Markdown transmutation in the browser, producing a VMPrint `DocumentInput` you can inspect. |
 
 ---
@@ -68,6 +69,7 @@ Each example is a complete VMPrint pipeline running entirely client-side - no ba
 | `@vmprint/context-pdf` | pdf-lib-backed PDF output with full streaming, shaped-glyph fidelity, and image embedding |
 | `@vmprint/context-canvas` | Canvas/SVG rendering context for live browser preview |
 | `@vmprint/web-fonts` | Font manager for remote OpenType loading in the browser |
+| `@vmprint/preview` | Standalone browser controller: layout engine + canvas preview + PDF/SVG export in one bundle |
 | `@vmprint/local-fonts` | Font manager for local `.ttf`/`.otf` files in Node.js |
 
 ---

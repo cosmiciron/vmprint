@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VMPrint Preview Package Example</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script>
+    window.process = window.process || { env: {} };
+    window.global = window;
+  </script>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">VMPrint</p>
+      <h1>Preview Package Example</h1>
+      <p class="lede">A small standalone example living inside <code>preview/</code>. No docs demo shell, just the package.</p>
+    </header>
+
+    <section class="panel controls">
+      <div class="toolbar">
+        <button id="render-button" type="button" class="primary">Render</button>
+        <button id="pdf-button" type="button">Export PDF</button>
+        <button id="svg-button" type="button">Export SVG Page</button>
+        <button id="prev-button" type="button">Previous</button>
+        <button id="next-button" type="button">Next</button>
+      </div>
+      <p id="status" class="status">Ready. This sample uses the native VMPrint preview pipeline with the hosted fallback font repo.</p>
+      <p id="pager" class="pager">No pages rendered</p>
+    </section>
+
+    <section class="workspace">
+      <label class="editor">
+        <span>Document AST JSON</span>
+        <textarea id="ast-input" spellcheck="false" aria-label="Document AST JSON"></textarea>
+      </label>
+
+      <section class="preview">
+        <div class="preview-frame">
+          <canvas id="preview-canvas" aria-label="Rendered document preview"></canvas>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="./assets/demo.js"></script>
+</body>
+</html>

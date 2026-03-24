@@ -1,0 +1,161 @@
+:root {
+  color-scheme: light;
+  --bg: #f3efe6;
+  --panel: #fffdf8;
+  --ink: #1e1d1a;
+  --muted: #6e675c;
+  --line: #d8cfbe;
+  --accent: #134d37;
+  --accent-strong: #0e3d2b;
+  --shadow: 0 18px 50px rgba(25, 24, 20, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top, rgba(19, 77, 55, 0.08), transparent 34rem),
+    linear-gradient(180deg, #f8f4eb 0%, var(--bg) 100%);
+}
+
+.shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3rem;
+}
+
+.hero {
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1;
+}
+
+.lede {
+  max-width: 52rem;
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+
+.controls {
+  margin-bottom: 1.2rem;
+  padding: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+button {
+  appearance: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  font: inherit;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #f7f3eb;
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+
+.status,
+.pager {
+  margin: 0.85rem 0 0;
+  color: var(--muted);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(280px, 440px) minmax(320px, 1fr);
+  gap: 1.2rem;
+}
+
+.editor,
+.preview {
+  min-width: 0;
+}
+
+.editor span {
+  display: block;
+  margin: 0 0 0.6rem;
+  font-weight: 600;
+}
+
+textarea {
+  width: 100%;
+  min-height: 38rem;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 1rem;
+  font: 0.95rem/1.5 "Courier New", Courier, monospace;
+  background: #fffdfa;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.preview-frame {
+  display: grid;
+  place-items: start center;
+  min-height: 38rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(19, 77, 55, 0.05), rgba(255, 255, 255, 0)),
+    #f7f1e4;
+  box-shadow: var(--shadow);
+  overflow: auto;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
+  background: #fff;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  textarea,
+  .preview-frame {
+    min-height: 28rem;
+  }
+}
