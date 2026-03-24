@@ -56,6 +56,8 @@
     let autoRenderTimer = null;
     let previewRenderToken = 0;
     let silentRenderActive = false;
+    let activeBuiltinFixtureId = null;
+    let documentSource = "builtin";
 
     function setInlineError(message) {
       inlineError.textContent = message ?? "";
@@ -63,7 +65,7 @@
     }
 
     function updateDispatchCallout() {
-      dispatchCallout.hidden = fixtureSelect.value !== "daily-dispatch";
+      dispatchCallout.hidden = !(documentSource === "builtin" && activeBuiltinFixtureId === "daily-dispatch");
     }
 
     function updatePaginationUi() {
@@ -215,14 +217,14 @@
 
       if (!silent) {
         setDisabled([uploadButton], true);
+        const initialStatus = activeBuiltinFixtureId === "daily-dispatch"
+          ? "Rendering sample document… first visit may take longer while fonts download and cache."
+          : "Rendering pages to canvas…";
+        setStatus(status, "rendering", initialStatus);
       }
 
       if (shouldClearPreview) {
         clearPreview(false);
-      }
-
-      if (!silent) {
-        setStatus(status, "rendering", "Rendering pages to canvas…");
       }
 
       const startedAt = performance.now();
@@ -289,10 +291,19 @@
 
     async function loadFixture(fixtureId) {
       const requestId = ++fixtureRequestId;
+      documentSource = "builtin";
+      activeBuiltinFixtureId = fixtureId;
+      updateDispatchCallout();
       fixturePickerLabel.dataset.loading = "true";
       fixtureSelect.disabled = true;
       setDisabled([uploadButton], true);
-      setStatus(status, "rendering", `Loading “${fixtureId}”…`);
+      setStatus(
+        status,
+        "rendering",
+        fixtureId === "daily-dispatch"
+          ? "Loading the sample newspaper… first visit may take a little longer while example fonts download and cache."
+          : `Loading “${fixtureId}”…`
+      );
       removeCustomOption();
 
       try {
@@ -303,6 +314,8 @@
 
         astInput.value = formatDocumentJson(documentJson);
         setInlineError(null);
+        documentSource = "builtin";
+        activeBuiltinFixtureId = fixtureId;
         updateDispatchCallout();
       } catch (error) {
         if (requestId !== fixtureRequestId) {
@@ -390,7 +403,13 @@
 
       trackFontProgress(customEvent.detail);
       if (status.dataset.state === "rendering" && !silentRenderActive) {
-        setStatus(status, "rendering", fontProgressMessage || "Rendering pages to canvas…");
+        const prefix = activeBuiltinFixtureId === "daily-dispatch"
+          ? "Loading sample assets… "
+          : "Preparing preview… ";
+        const fallback = activeBuiltinFixtureId === "daily-dispatch"
+          ? "Loading fonts for the sample — first visit may take a moment."
+          : "Rendering pages to canvas…";
+        setStatus(status, "rendering", `${prefix}${fontProgressMessage || fallback}`);
       }
     });
 
@@ -407,7 +426,10 @@
         const fileText = await file.text();
         astInput.value = `${fileText.trim()}\n`;
         setInlineError(null);
+        documentSource = "custom";
+        activeBuiltinFixtureId = null;
         ensureCustomOption(`↑ ${file.name}`);
+        updateDispatchCallout();
         await renderDocument({ silent: false, preservePage: false, clearPreview: true });
       } catch (error) {
         setStatus(status, "error", `Failed to read file: ${String(error)}`);
@@ -416,7 +438,10 @@
 
     astInput.addEventListener("paste", () => {
       setTimeout(() => {
+        documentSource = "custom";
+        activeBuiltinFixtureId = null;
         ensureCustomOption("↑ Custom (pasted)");
+        updateDispatchCallout();
       }, 0);
     });
 

@@ -76,6 +76,8 @@ function installUi(): void {
     let currentPageIndex = 0;
     let isRendering = false;
     let editDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+    let activeBuiltinFixtureId: string | null = null;
+    let documentSource: 'builtin' | 'custom' = 'builtin';
 
     // --- Helpers ---
 
@@ -85,7 +87,7 @@ function installUi(): void {
     };
 
     const updateDispatchCallout = () => {
-        dispatchCallout.hidden = fixtureSelect.value !== 'daily-dispatch';
+        dispatchCallout.hidden = !(documentSource === 'builtin' && activeBuiltinFixtureId === 'daily-dispatch');
     };
 
     const syncPager = () => {
@@ -168,7 +170,10 @@ function installUi(): void {
 
         if (!quiet) {
             setBusy([uploadButton], true);
-            setStatus(statusNode, 'rendering', 'Rendering pages to canvas\u2026');
+            const initialStatus = activeBuiltinFixtureId === 'daily-dispatch'
+                ? 'Rendering sample document… first visit may take longer while fonts download and cache.'
+                : 'Rendering pages to canvas\u2026';
+            setStatus(statusNode, 'rendering', initialStatus);
             resetPreview();
         }
 
@@ -230,16 +235,27 @@ function installUi(): void {
 
     const setBuiltinFixture = async (fixtureId: string) => {
         const loadVersion = ++fixtureLoadVersion;
+        documentSource = 'builtin';
+        activeBuiltinFixtureId = fixtureId;
+        updateDispatchCallout();
         fixturePicker.dataset.loading = 'true';
         fixtureSelect.disabled = true;
         setBusy([uploadButton], true);
-        setStatus(statusNode, 'rendering', `Loading \u201c${fixtureId}\u201d\u2026`);
+        setStatus(
+            statusNode,
+            'rendering',
+            fixtureId === 'daily-dispatch'
+                ? 'Loading the sample newspaper… first visit may take a little longer while example fonts download and cache.'
+                : `Loading \u201c${fixtureId}\u201d\u2026`
+        );
         removeCustomFixtureOption();
         try {
             const fixture = await VMPrintPipeline.getBuiltinFixtureDocument(fixtureId);
             if (loadVersion !== fixtureLoadVersion) return;
             input.value = prettyJson(fixture);
             showInlineError(null);
+            documentSource = 'builtin';
+            activeBuiltinFixtureId = fixtureId;
             updateDispatchCallout();
             resetPreview();
         } catch (error) {
@@ -310,7 +326,13 @@ function installUi(): void {
         if (!customEvent.detail) return;
         setFontStatus(customEvent.detail);
         if (statusNode.dataset.state === 'rendering') {
-            setStatus(statusNode, 'rendering', activeFontStatus || 'Rendering pages to canvas\u2026');
+            const prefix = activeBuiltinFixtureId === 'daily-dispatch'
+                ? 'Loading sample assets… '
+                : 'Preparing preview… ';
+            const fallback = activeBuiltinFixtureId === 'daily-dispatch'
+                ? 'Loading fonts for the sample — first visit may take a moment.'
+                : 'Rendering pages to canvas\u2026';
+            setStatus(statusNode, 'rendering', `${prefix}${activeFontStatus || fallback}`);
         }
     });
 
@@ -323,7 +345,10 @@ function installUi(): void {
             const text = await file.text();
             input.value = `${text.trim()}\n`;
             showInlineError(null);
+            documentSource = 'custom';
+            activeBuiltinFixtureId = null;
             setCustomFixtureOption(`\u2191 ${file.name}`);
+            updateDispatchCallout();
             resetPreview();
             await performRender(false);
         } catch (error) {
@@ -334,7 +359,10 @@ function installUi(): void {
     // When the user pastes new content, mark as custom.
     input.addEventListener('paste', () => {
         setTimeout(() => {
+            documentSource = 'custom';
+            activeBuiltinFixtureId = null;
             setCustomFixtureOption('\u2191 Custom (pasted)');
+            updateDispatchCallout();
         }, 0);
     });
 

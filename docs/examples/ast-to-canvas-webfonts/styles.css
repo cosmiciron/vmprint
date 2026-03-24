@@ -171,6 +171,10 @@ h1 {
   overflow: hidden;
 }
 
+.dispatch-callout[hidden] {
+  display: none;
+}
+
 .callout-accent {
   width: 5px;
   flex-shrink: 0;
