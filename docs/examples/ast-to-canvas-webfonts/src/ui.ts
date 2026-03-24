@@ -10,6 +10,7 @@ declare const VMPrintPipeline: {
         pageCount: number;
         pageSize: { width: number; height: number };
         layoutMs: number;
+        renderMs: number;
         renderPage(pageIndex: number, target: HTMLCanvasElement, scale?: number, dpi?: number): Promise<void>;
     }>;
 };
@@ -50,7 +51,6 @@ function prettyJson(value: unknown): string {
 function installUi(): void {
     const input = byId<HTMLTextAreaElement>('ast-input');
     const fixtureSelect = byId<HTMLSelectElement>('fixture-select');
-    const rerenderButton = byId<HTMLButtonElement>('rerender');
     const uploadButton = byId<HTMLButtonElement>('upload-button');
     const copyButton = byId<HTMLButtonElement>('copy-json');
     const uploadInput = byId<HTMLInputElement>('upload-json');
@@ -167,7 +167,7 @@ function installUi(): void {
         isRendering = true;
 
         if (!quiet) {
-            setBusy([rerenderButton, uploadButton], true);
+            setBusy([uploadButton], true);
             setStatus(statusNode, 'rendering', 'Rendering pages to canvas\u2026');
             resetPreview();
         }
@@ -183,10 +183,9 @@ function installUi(): void {
             currentSession = newSession;
             currentPageIndex = 0;
             await renderCurrentPage();
-            const renderElapsedMs = performance.now() - renderStartMs;
             pagesNode.textContent = `${currentSession.pageCount} page${currentSession.pageCount === 1 ? '' : 's'}`;
             layoutNode.textContent = `${currentSession.layoutMs.toFixed(1)} ms`;
-            renderNode.textContent = `${renderElapsedMs.toFixed(1)} ms`;
+            renderNode.textContent = `${currentSession.renderMs.toFixed(1)} ms`;
             const fontSummary = activeFontStatus ? ` ${activeFontStatus}.` : '';
             setStatus(statusNode, 'success', `Render complete. Single-page canvas preview is ready.${fontSummary}`);
         } catch (error) {
@@ -199,12 +198,12 @@ function installUi(): void {
                 resetPreview();
             } else {
                 // Keep last good render; note error in status bar.
-                setStatus(statusNode, 'error', `Re-render failed: ${msg}`);
+                setStatus(statusNode, 'error', `Auto-refresh failed: ${msg}`);
             }
         } finally {
             isRendering = false;
             if (!quiet) {
-                setBusy([rerenderButton, uploadButton], false);
+                setBusy([uploadButton], false);
             }
         }
     };
@@ -233,7 +232,7 @@ function installUi(): void {
         const loadVersion = ++fixtureLoadVersion;
         fixturePicker.dataset.loading = 'true';
         fixtureSelect.disabled = true;
-        setBusy([rerenderButton, uploadButton], true);
+        setBusy([uploadButton], true);
         setStatus(statusNode, 'rendering', `Loading \u201c${fixtureId}\u201d\u2026`);
         removeCustomFixtureOption();
         try {
@@ -251,7 +250,7 @@ function installUi(): void {
             if (loadVersion !== fixtureLoadVersion) return;
             fixturePicker.dataset.loading = 'false';
             fixtureSelect.disabled = false;
-            setBusy([rerenderButton, uploadButton], false);
+            setBusy([uploadButton], false);
         }
         await performRender(false);
     };
@@ -278,10 +277,6 @@ function installUi(): void {
     });
 
     uploadButton.addEventListener('click', () => uploadInput.click());
-
-    rerenderButton.addEventListener('click', () => {
-        void performRender(false);
-    });
 
     scaleSelect.addEventListener('change', () => {
         if (!currentSession) return;

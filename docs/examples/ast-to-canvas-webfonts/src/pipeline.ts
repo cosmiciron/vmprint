@@ -47,6 +47,7 @@ type CanvasPreviewSession = {
     pageCount: number;
     pageSize: { width: number; height: number };
     layoutMs: number;
+    renderMs: number;
     renderPage(pageIndex: number, target: HTMLCanvasElement, scale?: number, dpi?: number): Promise<void>;
 };
 
@@ -222,12 +223,15 @@ async function createCanvasPreviewSession(
     });
 
     const renderer = new engineApi.Renderer(config, false, runtime);
+    const renderStartMs = performance.now();
     await renderer.render(pages, context as unknown as any);
+    const renderMs = performance.now() - renderStartMs;
 
     return {
         pageCount: context.getPageCount(),
         pageSize: context.getSize(),
         layoutMs,
+        renderMs,
         renderPage: async (pageIndex: number, target: HTMLCanvasElement, scale = 1, dpi?: number) => {
             await context.renderPageToCanvas(pageIndex, target, {
                 scale,

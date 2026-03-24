@@ -241,26 +241,6 @@ button:disabled {
   color: var(--accent);
 }
 
-.rerender-btn {
-  margin-left: auto;
-  padding: 0.3rem 0.85rem;
-  font-size: 0.85rem;
-  border-color: var(--accent);
-  background: var(--accent);
-  color: #fff;
-}
-
-.rerender-btn:hover,
-.rerender-btn:focus-visible {
-  background: var(--accent-strong);
-  border-color: var(--accent-strong);
-}
-
-.rerender-btn:disabled {
-  opacity: 0.7;
-  cursor: wait;
-}
-
 #upload-json {
   display: none;
 }
