@@ -18,6 +18,7 @@ const packageDirs = [
     'font-managers/local',
     'font-managers/standard',
     'font-managers/web',
+    'preview',
     'cli'
 ];
 

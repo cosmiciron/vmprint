@@ -8,9 +8,44 @@ import {
     resolveDocumentPaths,
     toLayoutConfig
 } from '@vmprint/engine';
-import type { FontConfig, VmprintOutputStream } from '@vmprint/contracts';
-import { LOCAL_FONT_ALIASES, LOCAL_FONT_REGISTRY } from '@vmprint/local-fonts/config';
-import { WebFontManager, type WebFontCatalogLoadOptions, type WebFontProgressEvent } from '@vmprint/web-fonts';
+import { FONT_ALIASES, FONT_REGISTRY } from './font-registry.js';
+import { WebFontManager } from '@vmprint/web-fonts';
+
+// -- Public interfaces for standalone @vmprint/preview package -----------------------------
+
+/**
+ * Common font configuration used by VMPrint components.
+ */
+export interface FontConfig {
+    name: string;
+    family: string;
+    weight: number;
+    style: 'normal' | 'italic';
+    src: string;
+    unicodeRange?: string;
+    enabled: boolean;
+    fallback: boolean;
+}
+
+/**
+ * Stream-like target for VMPrint output contexts.
+ */
+export interface VmprintOutputStream {
+    write(chunk: Uint8Array | string): void;
+    end(): void;
+}
+
+/**
+ * Status event emitted during web font loading.
+ */
+export interface WebFontProgressEvent {
+    src: string;
+    resolvedSrc: string;
+    loadedBytes: number;
+    totalBytes?: number;
+    percent?: number;
+    phase: 'cache-hit' | 'downloading' | 'finalizing' | 'caching' | 'complete';
+}
 
 export type CanvasTarget =
     | HTMLCanvasElement
@@ -81,7 +116,7 @@ const normalizeFamilyKeyLocal = (family: string): string =>
 
 const resolveLocalAlias = (family: string): string => {
     const normalized = normalizeFamilyKeyLocal(family);
-    return LOCAL_FONT_ALIASES[normalized] || family;
+    return FONT_ALIASES[normalized] || family;
 };
 
 const collectStrings = (value: unknown, bucket: string[]): void => {
@@ -161,14 +196,14 @@ const buildFilteredFontRegistry = (
 
     const codePoints = collectDocumentCodePoints(documentInput);
     const selectedFallbackFamilies = new Set<string>();
-    for (const font of LOCAL_FONT_REGISTRY) {
+    for (const font of FONT_REGISTRY) {
         if (!font.fallback || !font.enabled) continue;
         if (unicodeRangeContainsAny(font.unicodeRange, codePoints)) {
             selectedFallbackFamilies.add(font.family);
         }
     }
 
-    return LOCAL_FONT_REGISTRY
+    return FONT_REGISTRY
         .filter((font) => font.enabled && (requiredFamilies.has(font.family) || selectedFallbackFamilies.has(font.family)))
         .map((font) => toRemoteFontConfig(font, primaryBase, fallbackBase));
 };
@@ -287,10 +322,11 @@ const createPreviewFontManager = async (documentInput: VmprintDocument, config: 
     const fontOptions = options.fonts;
 
     if (fontOptions?.catalogUrl) {
-        const catalogOptions: WebFontCatalogLoadOptions = {
+        // We use any for catalog options to avoid complicated Omit-based type imports
+        const catalogOptions: any = {
             cache: fontOptions.cache,
             aliases: {
-                ...LOCAL_FONT_ALIASES,
+                ...FONT_ALIASES,
                 ...(fontOptions.aliases || {})
             },
             repositoryBaseUrl: fontOptions.repositoryBaseUrl
@@ -311,7 +347,7 @@ const createPreviewFontManager = async (documentInput: VmprintDocument, config: 
     return new WebFontManager({
         fonts: mergedFonts,
         aliases: {
-            ...LOCAL_FONT_ALIASES,
+            ...FONT_ALIASES,
             ...(fontOptions?.aliases || {})
         },
         repositoryBaseUrl: primaryBase,
