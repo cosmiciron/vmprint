@@ -125,6 +125,13 @@ for (const entry of packages) {
     stagedPkg.name = entry.name;
     stagedPkg.version = process.env.VMPRINT_RELEASE_VERSION || entry.version || defaultVersion;
     rewriteInternalDeps(stagedPkg);
+
+    // Clean up scripts that shouldn't run during publish from the staging dir
+    if (stagedPkg.scripts) {
+        delete stagedPkg.scripts.prepublishOnly;
+        delete stagedPkg.scripts.prepare;
+    }
+
     fs.writeFileSync(stagedPackageJsonPath, `${JSON.stringify(stagedPkg, null, 2)}\n`);
 
     ensureCliShebang(entry.stageDir, stagedPkg);
