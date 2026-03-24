@@ -2,6 +2,7 @@
   "entryPoints": [
     "contracts",
     "engine",
+    "preview",
     "font-managers/local",
     "font-managers/web",
     "font-managers/standard",

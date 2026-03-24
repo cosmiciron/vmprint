@@ -89,14 +89,13 @@ export class FontProcessor extends BaseLayout {
                     .filter(({ result }) => result.status === 'rejected');
 
                 if (failures.length > 0) {
-                    const details = failures.map(({ result, font }) => {
+                    failures.forEach(({ result, font }) => {
                         const reason = (result as PromiseRejectedResult).reason;
                         const renderedReason = reason instanceof Error
                             ? `${reason.message}${(reason as Error & { cause?: unknown }).cause ? ` | cause: ${String((reason as Error & { cause?: unknown }).cause)}` : ''}`
                             : String(reason);
-                        return `${font.name} (${font.src}): ${renderedReason}`;
-                    }).join(' || ');
-                    throw new Error(`[FontProcessor] Failed to load fallback fonts: ${details}`);
+                        console.warn(`[FontProcessor] Failed to load fallback font "${font.name}" (${font.src}): ${renderedReason}`);
+                    });
                 }
 
                 const newFallbacks = results

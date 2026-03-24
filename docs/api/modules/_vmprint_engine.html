@@ -100,7 +100,7 @@
 <li><strong>Deterministic pagination</strong> with configurable orphan/widow control, keep-together groups, and overflow policies (<code>clip</code>, <code>move-whole</code>, <code>error</code>).</li>
 <li><strong>Zone maps</strong> (<code>type: &quot;zone-map&quot;</code>): declare a row of independent layout regions — each column runs its own non-paginating flow pass and is composited into page space. Column widths support fixed, auto, and flex (<code>fr</code>) tracks via the same solver used for tables.</li>
 <li><strong>Tables</strong>: full grid layout with row/column sizing, spanning cells, header repetition, and per-cell styling.</li>
-<li><strong>Multi-column stories</strong>, drop-caps, floats, and absolute positioning.</li>
+<li><strong>Multi-column stories</strong>, drop-caps, floats, absolute positioning, and full-width column spans. Column-spanning elements support <code>keepWithNext: true</code> to prevent a section banner from being stranded at the bottom of a page without its following column content.</li>
 <li><strong>Page regions</strong>: headers and footers with per-page content overrides and spatial constraints.</li>
 <li><strong>Scripting hooks</strong>: <code>onBeforeLayout</code>, <code>onAfterSettle</code>, <code>onCreate</code>, <code>onResolve</code> — element-level message passing and up to three bounded replay passes.</li>
 <li><strong>Debug mode</strong>: pass <code>true</code> as the second argument to <code>Renderer</code> to overlay page margins, zone boundaries, and per-box labels onto the output.</li>

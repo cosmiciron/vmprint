@@ -23,6 +23,10 @@ const examples = [
     {
         name: 'mkd-to-ast',
         root: path.join(repoRoot, 'docs', 'examples', 'mkd-to-ast')
+    },
+    {
+        name: 'preview',
+        root: path.join(repoRoot, 'docs', 'examples', 'preview')
     }
 ];
 
@@ -211,6 +215,48 @@ async function buildAstToCanvasWebfontsExample(exampleRoot) {
     ]);
 }
 
+async function buildPreviewExample(exampleRoot) {
+    const previewPackageRoot = path.join(repoRoot, 'preview');
+    const sourceDemoRoot = path.join(previewPackageRoot, 'example');
+
+    fs.rmSync(exampleRoot, { recursive: true, force: true });
+    fs.mkdirSync(path.join(exampleRoot, 'assets'), { recursive: true });
+
+    // Copy static files from preview/example/
+    fs.copyFileSync(path.join(sourceDemoRoot, 'index.html'), path.join(exampleRoot, 'index.html'));
+    fs.copyFileSync(path.join(sourceDemoRoot, 'styles.css'), path.join(exampleRoot, 'styles.css'));
+    fs.copyFileSync(path.join(sourceDemoRoot, 'assets', 'pdf.worker.mjs'), path.join(exampleRoot, 'assets', 'pdf.worker.mjs'));
+
+    const previewAliases = {
+        '@vmprint/preview': path.join(previewPackageRoot, 'src', 'index.ts'),
+        '@vmprint/contracts': path.join(repoRoot, 'contracts', 'src', 'index.ts'),
+        '@vmprint/engine': path.join(repoRoot, 'engine', 'src', 'index.ts'),
+        '@vmprint/context-canvas': path.join(repoRoot, 'contexts', 'canvas', 'src', 'index.ts'),
+        '@vmprint/context-pdf-lite': path.join(repoRoot, 'contexts', 'pdf-lite', 'src', 'index.ts'),
+        '@vmprint/local-fonts/config': path.join(repoRoot, 'font-managers', 'local', 'src', 'config.ts'),
+        '@vmprint/web-fonts': path.join(repoRoot, 'font-managers', 'web', 'src', 'index.ts'),
+        fontkit: path.join(repoRoot, 'node_modules', 'fontkit', 'dist', 'browser-module.mjs'),
+        'node:perf_hooks': path.join(repoRoot, 'docs', 'examples', 'ast-to-canvas-webfonts', 'src', 'shims', 'perf-hooks.ts'),
+        html2canvas: path.join(repoRoot, 'docs', 'examples', 'ast-to-canvas-webfonts', 'src', 'shims', 'html2canvas.ts'),
+        canvg: path.join(repoRoot, 'docs', 'examples', 'ast-to-canvas-webfonts', 'src', 'shims', 'canvg.ts'),
+        dompurify: path.join(repoRoot, 'docs', 'examples', 'ast-to-canvas-webfonts', 'src', 'shims', 'dompurify.ts')
+    };
+
+    await esbuild.build({
+        bundle: true,
+        entryPoints: [path.join(sourceDemoRoot, 'src', 'demo.ts')],
+        outfile: path.join(exampleRoot, 'assets', 'demo.js'),
+        format: 'iife',
+        platform: 'browser',
+        target: ['es2020'],
+        minify: true,
+        legalComments: 'none',
+        logLevel: 'info',
+        alias: previewAliases,
+        loader: { '.yaml': 'text' }
+    });
+}
+
 async function buildMkdToAstExample(exampleRoot) {
     const transmutterRoot = path.join(repoRoot, 'transmuters', 'mkd-mkd');
     const srcDir = path.join(exampleRoot, 'src');
@@ -294,6 +340,8 @@ async function main() {
             await buildAstToCanvasWebfontsExample(example.root);
         } else if (example.name === 'mkd-to-ast') {
             await buildMkdToAstExample(example.root);
+        } else if (example.name === 'preview') {
+            await buildPreviewExample(example.root);
         }
     }
     buildExamplesArchive();
