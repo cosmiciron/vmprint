@@ -1,5 +1,4 @@
-import { createVMPrintPreview, type PreviewSession } from '../../src/index';
-import type { WebFontProgressEvent } from '@vmprint/web-fonts';
+import { createVMPrintPreview, type PreviewSession, type WebFontProgressEvent } from '@vmprint/preview';
 
 const SAMPLE_DOCUMENT = {
     documentVersion: '1.1',

@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/preview",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Script-first browser preview controller for VMPrint. Renders document pages to caller-owned canvases and supports PDF/SVG export.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
@@ -46,14 +46,16 @@
     "demo:build": "node scripts/build-demo.mjs",
     "demo:serve": "node scripts/serve-demo.mjs"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@vmprint/contracts": "^1.0.1"
+  },
   "devDependencies": {
     "@types/node": "^22.13.1",
-    "@vmprint/context-canvas": "file:../contexts/canvas",
-    "@vmprint/context-pdf-lite": "file:../contexts/pdf-lite",
+    "@vmprint/context-canvas": "latest",
+    "@vmprint/context-pdf-lite": "latest",
     "@vmprint/engine": "file:../engine",
-    "@vmprint/web-fonts": "file:../font-managers/web",
-    "@vmprint/contracts": "file:../contracts",
+    "@vmprint/web-fonts": "latest",
+    "@vmprint/local-fonts": "latest",
     "esbuild": "^0.25.10",
     "rimraf": "^6.1.3",
     "tsx": "^4.20.5",

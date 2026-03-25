@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const sourceDir = path.resolve(__dirname, '..', 'font-managers', 'local', 'assets');
+const sourceDir = path.resolve(__dirname, '..', 'node_modules', '@vmprint', 'local-fonts', 'assets');
 const targetDir = path.join(__dirname, 'dist', 'assets');
 
 if (!fs.existsSync(sourceDir)) {

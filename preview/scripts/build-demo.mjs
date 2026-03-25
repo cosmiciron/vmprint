@@ -12,12 +12,8 @@ const assetsDir = path.join(demoRoot, 'assets');
 fs.mkdirSync(assetsDir, { recursive: true });
 
 const aliases = {
-    '@vmprint/contracts': path.join(repoRoot, 'contracts', 'src', 'index.ts'),
-    '@vmprint/engine': path.join(repoRoot, 'engine', 'src', 'index.ts'),
-    '@vmprint/context-canvas': path.join(repoRoot, 'contexts', 'canvas', 'src', 'index.ts'),
-    '@vmprint/context-pdf-lite': path.join(repoRoot, 'contexts', 'pdf-lite', 'src', 'index.ts'),
-    '@vmprint/local-fonts/config': path.join(repoRoot, 'font-managers', 'local', 'src', 'config.ts'),
-    '@vmprint/web-fonts': path.join(repoRoot, 'font-managers', 'web', 'src', 'index.ts'),
+    // Only keep shims needed for browser environments.
+    // We let esbuild resolve @vmprint/preview from its own dist/ folder or node_modules.
     fontkit: path.join(repoRoot, 'node_modules', 'fontkit', 'dist', 'browser-module.mjs'),
     'node:perf_hooks': path.join(repoRoot, 'docs', 'examples', 'ast-to-canvas-webfonts', 'src', 'shims', 'perf-hooks.ts'),
     html2canvas: path.join(repoRoot, 'docs', 'examples', 'ast-to-canvas-webfonts', 'src', 'shims', 'html2canvas.ts'),

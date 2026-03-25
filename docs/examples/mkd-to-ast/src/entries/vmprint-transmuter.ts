@@ -1,1 +1,1 @@
-export { transmute } from '@vmprint/transmuter-mkd-mkd';
+export { transmute } from '@vmprint/mkd-mkd';

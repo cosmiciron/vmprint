@@ -14,16 +14,18 @@
     "README.md"
   ],
   "scripts": {
-    "build": "npm run clean && tsup && node fix-shebang.mjs && node copy-pdfkit-data.mjs && node copy-local-font-assets.mjs",
+    "build": "npm run clean && tsup && node fix-shebang.mjs && node copy-local-font-assets.mjs",
     "clean": "rimraf dist",
     "dev": "tsx --conditions tsx src/index.ts"
   },
+  "dependencies": {
+    "@vmprint/context-pdf": "*",
+    "@vmprint/local-fonts": "*"
+  },
   "devDependencies": {
     "@types/node": "^22.13.1",
-    "@vmprint/context-pdf": "file:../contexts/pdf",
     "@vmprint/contracts": "file:../contracts",
     "@vmprint/engine": "file:../engine",
-    "@vmprint/local-fonts": "file:../font-managers/local",
     "rimraf": "^6.1.3",
     "commander": "^14.0.3",
     "tsup": "^8.5.1",

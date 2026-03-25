@@ -12,12 +12,6 @@ const stageRoot = process.env.VMPRINT_RELEASE_DIR
 const packageDirs = [
     'contracts',
     'engine',
-    'contexts/pdf',
-    'contexts/pdf-lite',
-    'contexts/canvas',
-    'font-managers/local',
-    'font-managers/standard',
-    'font-managers/web',
     'preview',
     'cli'
 ];

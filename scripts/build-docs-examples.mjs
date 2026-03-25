@@ -33,14 +33,12 @@ const examples = [
 const exampleArchiveName = 'vmprint-static-examples.zip';
 const exampleArchiveRoot = 'vmprint-static-examples';
 
+// Only alias the packages that remain as local workspaces in this repo.
+// All others (contexts, font-managers, transmuters) are published npm packages
+// and will be resolved naturally from node_modules.
 const aliases = {
     '@vmprint/contracts': path.join(repoRoot, 'contracts', 'src', 'index.ts'),
     '@vmprint/engine': path.join(repoRoot, 'engine', 'src', 'index.ts'),
-    '@vmprint/markdown-core': path.join(repoRoot, 'transmuters', 'markdown-core', 'src', 'index.ts'),
-    '@vmprint/standard-fonts': path.join(repoRoot, 'font-managers', 'standard', 'src', 'index.ts'),
-    '@vmprint/web-fonts': path.join(repoRoot, 'font-managers', 'web', 'src', 'index.ts'),
-    '@vmprint/context-canvas': path.join(repoRoot, 'contexts', 'canvas', 'src', 'index.ts'),
-    '@vmprint/context-pdf-lite': path.join(repoRoot, 'contexts', 'pdf-lite', 'src', 'index.ts'),
     fontkit: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'fontkit.ts'),
     'node:perf_hooks': path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'perf-hooks.ts'),
     html2canvas: path.join(repoRoot, 'docs', 'examples', 'ast-to-pdf', 'src', 'shims', 'html2canvas.ts'),
@@ -231,10 +229,6 @@ async function buildPreviewExample(exampleRoot) {
         '@vmprint/preview': path.join(previewPackageRoot, 'src', 'index.ts'),
         '@vmprint/contracts': path.join(repoRoot, 'contracts', 'src', 'index.ts'),
         '@vmprint/engine': path.join(repoRoot, 'engine', 'src', 'index.ts'),
-        '@vmprint/context-canvas': path.join(repoRoot, 'contexts', 'canvas', 'src', 'index.ts'),
-        '@vmprint/context-pdf-lite': path.join(repoRoot, 'contexts', 'pdf-lite', 'src', 'index.ts'),
-        '@vmprint/local-fonts/config': path.join(repoRoot, 'font-managers', 'local', 'src', 'config.ts'),
-        '@vmprint/web-fonts': path.join(repoRoot, 'font-managers', 'web', 'src', 'index.ts'),
         fontkit: path.join(repoRoot, 'node_modules', 'fontkit', 'dist', 'browser-module.mjs'),
         'node:perf_hooks': path.join(repoRoot, 'docs', 'examples', 'ast-to-canvas-webfonts', 'src', 'shims', 'perf-hooks.ts'),
         html2canvas: path.join(repoRoot, 'docs', 'examples', 'ast-to-canvas-webfonts', 'src', 'shims', 'html2canvas.ts'),
@@ -258,33 +252,28 @@ async function buildPreviewExample(exampleRoot) {
 }
 
 async function buildMkdToAstExample(exampleRoot) {
-    const transmutterRoot = path.join(repoRoot, 'transmuters', 'mkd-mkd');
     const srcDir = path.join(exampleRoot, 'src');
     const assetsDir = path.join(exampleRoot, 'assets');
     fs.rmSync(assetsDir, { recursive: true, force: true });
     fs.mkdirSync(assetsDir, { recursive: true });
-
-    const transmutterAliases = {
-        '@vmprint/transmuter-mkd-mkd': path.join(transmutterRoot, 'src', 'index.ts')
-    };
 
     await buildBrowserBundleSet([
         {
             entryPoints: [path.join(srcDir, 'entries', 'vmprint-transmuter.ts')],
             outfile: path.join(assetsDir, 'vmprint-transmuter.js'),
             globalName: 'VMPrintTransmuter',
-            alias: { ...aliases, ...transmutterAliases }
+            alias: aliases
         },
         {
             entryPoints: [path.join(srcDir, 'pipeline.ts')],
             outfile: path.join(assetsDir, 'pipeline.js'),
             globalName: 'MkdToAstPipeline',
-            alias: { ...aliases, ...transmutterAliases }
+            alias: aliases
         },
         {
             entryPoints: [path.join(srcDir, 'ui.ts')],
             outfile: path.join(assetsDir, 'ui.js'),
-            alias: { ...aliases, ...transmutterAliases }
+            alias: aliases
         }
     ]);
 }

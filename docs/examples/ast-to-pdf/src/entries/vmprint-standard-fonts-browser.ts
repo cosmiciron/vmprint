@@ -4,7 +4,7 @@ import {
     STANDARD_FONT_REGISTRY,
     STANDARD_FONT_SRC_PREFIX,
     STANDARD_FONT_SRC_TO_ID
-} from '../../../../../font-managers/standard/src/config';
+} from '@vmprint/standard-fonts/config';
 
 declare global {
     interface Window {

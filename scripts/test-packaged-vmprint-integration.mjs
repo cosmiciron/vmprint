@@ -42,8 +42,8 @@ class MemoryOutputStream {
 
 async function main() {
     const engineDist = path.join(repoRoot, 'engine', 'dist', 'index.js');
-    const standardFontsDist = path.join(repoRoot, 'font-managers', 'standard', 'dist', 'index.js');
-    const pdfLiteDist = path.join(repoRoot, 'contexts', 'pdf-lite', 'dist', 'index.js');
+    const standardFontsDist = path.join(repoRoot, 'node_modules', '@vmprint', 'standard-fonts', 'dist', 'index.js');
+    const pdfLiteDist = path.join(repoRoot, 'node_modules', '@vmprint', 'context-pdf-lite', 'dist', 'index.js');
 
     requireFile(engineDist);
     requireFile(standardFontsDist);

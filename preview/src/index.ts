@@ -8,7 +8,7 @@ import {
     resolveDocumentPaths,
     toLayoutConfig
 } from '@vmprint/engine';
-import { FONT_ALIASES, FONT_REGISTRY } from './font-registry.js';
+import { LOCAL_FONT_ALIASES as FONT_ALIASES, LOCAL_FONT_REGISTRY as FONT_REGISTRY } from '@vmprint/local-fonts/config';
 import { WebFontManager } from '@vmprint/web-fonts';
 
 // -- Public interfaces for standalone @vmprint/preview package -----------------------------

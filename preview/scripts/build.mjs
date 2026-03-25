@@ -17,9 +17,6 @@ fs.mkdirSync(distDir, { recursive: true });
 const aliases = {
     '@vmprint/contracts': path.join(repoRoot, 'contracts', 'src', 'index.ts'),
     '@vmprint/engine': path.join(repoRoot, 'engine', 'src', 'index.ts'),
-    '@vmprint/context-canvas': path.join(repoRoot, 'contexts', 'canvas', 'src', 'index.ts'),
-    '@vmprint/context-pdf-lite': path.join(repoRoot, 'contexts', 'pdf-lite', 'src', 'index.ts'),
-    '@vmprint/web-fonts': path.join(repoRoot, 'font-managers', 'web', 'src', 'index.ts'),
     'node:perf_hooks': path.join(repoRoot, 'docs', 'examples', 'ast-to-canvas-webfonts', 'src', 'shims', 'perf-hooks.ts'),
     'fontkit': path.join(repoRoot, 'node_modules', 'fontkit', 'dist', 'browser-module.mjs'),
 };
@@ -38,7 +35,7 @@ async function build() {
         sourcemap: true,
         minify: true,
         alias: aliases,
-        external: [], // Add 3rd party to externals if we want them as regular dependencies
+        external: ['@vmprint/contracts'],
     });
 
     // Build CJS
@@ -52,7 +49,7 @@ async function build() {
         sourcemap: true,
         minify: true,
         alias: aliases,
-        external: [],
+        external: ['@vmprint/contracts'],
     });
 
     console.log('[preview] Bundle complete.');

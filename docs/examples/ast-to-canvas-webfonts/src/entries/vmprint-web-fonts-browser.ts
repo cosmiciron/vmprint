@@ -1,5 +1,5 @@
 import { WebFontManager } from '@vmprint/web-fonts';
-import { LOCAL_FONT_ALIASES, LOCAL_FONT_REGISTRY } from '../../../../../font-managers/local/src/config';
+import { LOCAL_FONT_ALIASES, LOCAL_FONT_REGISTRY } from '@vmprint/local-fonts/config';
 import type { FontConfig } from '@vmprint/contracts';
 
 const PRIMARY_FONT_BASE_URL = 'https://cdn.jsdelivr.net/gh/cosmiciron/vmprint@main/font-managers/local/';

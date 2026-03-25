@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.0] - 2026-03-25
+
+### Added
+- **Standalone Package Infrastructure**: Successfully decoupled the repository into a set of independent, publishable npm packages for contexts, font managers, and transmuters.
+- **Local Theme Assets**: Added self-contained YAML themes to `docs/examples/mkd-to-ast` to ensure the browser demonstration is fully functional without external repository dependencies.
+- **Zero-Config Browser Preview**: Introduced a standalone browser preview example in `docs/examples/preview` that demonstrates the complete `@vmprint/preview` workflow.
+
+### Changed
+- **Repository Cleanup**: Removed obsolete local directories (`contexts/`, `font-managers/`, `transmuters/`) that are now published as independent packages in the `@vmprint` organization.
+- **Standardized Documentation Examples**: Updated all examples in `docs/examples/` to resolve dependencies from `node_modules` instead of internal source aliases, matching real-world usage patterns.
+- **Dual-Mode Package Updates**: Updated `@vmprint/preview` (v1.0.1) and other core packages for robust dual-mode (ESM and CommonJS) support.
+- **Externalized Contracts**: Standardized `@vmprint/contracts` as a shared external dependency across the bundling pipeline to prevent code duplication in browser environments.
+- **Streamlined Build Process**: Simplified `scripts/build-docs-examples.mjs` and `preview/scripts/build-demo.mjs` by removing complex workspace workarounds in favor of standard npm resolution.
+
+### Fixed
+- **Doc Build Resolution**: Resolved a build failure in the Markdown-to-AST example caused by missing external theme references.
+- **Static Examples Archive**: Fixed the `vmprint-static-examples.zip` build process to correctly include all required assets for the new decoupled architecture.
+
+---
+
 ## [1.0.0] - 2026-03-23
 
 ### Added
