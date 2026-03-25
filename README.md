@@ -1,5 +1,14 @@
 # VMPrint
 
+> [!IMPORTANT]
+> **The VMPrint ecosystem is now modular.**  
+> Core components have been decoupled into standalone repositories for independent development and distribution. You can find the specialized packages here:
+> - **Draft2Final**: [github.com/cosmiciron/draft2final.git](https://github.com/cosmiciron/draft2final.git)
+> - **Transmuters**: [github.com/cosmiciron/vmprint-transmuters.git](https://github.com/cosmiciron/vmprint-transmuters.git)
+> - **Font Managers**: [github.com/cosmiciron/vmprint-font-managers.git](https://github.com/cosmiciron/vmprint-font-managers.git)
+> - **Contexts**: [github.com/cosmiciron/vmprint-contexts.git](https://github.com/cosmiciron/vmprint-contexts.git)
+> - **Contracts**: [github.com/cosmiciron/vmprint-contracts.git](https://github.com/cosmiciron/vmprint-contracts.git)
+
 > **VMPrint now ships with a browser preview demo.**  
 > Render real VMPrint documents in-browser with multilingual layout, pagination, and high-fidelity canvas preview.  
 > The demo is a static, self-contained page you can open directly from a local folder, and its four core runtime bundles (shared fontkit + engine + web font manager + canvas context) weigh about **0.89 MiB** total minified.  
