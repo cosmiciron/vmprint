@@ -50,9 +50,23 @@ The HTML/CSS pipeline got you 80% of the way. Then the tables started fighting t
 
 The stack stopped making sense. You kept patching.
 
+Here is what that looks like in practice.
+
+While putting together this README, I asked Claude to generate a sample quarterly financial report — but forgot to tell it to use VMPrint. So it produced the following in HTML:
+
+![Claude-generated quarterly financial report — HTML, page 1](documents/readme-assets/html1.png)
+
+Clean enough to send. So the next step was obvious: print it to PDF.
+
+![The same report, printed to PDF via the browser](documents/readme-assets/html-pdf.png)
+
+> The file path stamped across the top is the print header the browser added. The layout destruction is the pipeline doing what pipelines do. And that poor little drop cap.
+
+I asked Claude to try again, this time with VMPrint. That's the render at the top of this page.
+
 ---
 
-VMPrint exists for that moment. Here is what it actually produces:
+## Something else is going on here.
 
 **325 pages. 80,000 words. Markdown to publication-standard PDF. 2.32 seconds. Surface Pro 11 tablet, running on battery. No browser. No second pass. No auxiliary files.**
 
