@@ -20,8 +20,8 @@ The engine has real weight. Its dependency tree includes fontkit (~1.1 MiB packe
 @vmprint/contracts    (no dependencies)
        │
        ├── @vmprint/engine          (depends on contracts)
-       ├── @vmprint/context-pdf     (depends on contracts)
-       └── @vmprint/local-fonts     (depends on contracts + engine)
+       ├── @vmprint/context-*       (depends on contracts)
+       └── @vmprint/font-managers   (depends on contracts)
 ```
 
 ## Interfaces
@@ -43,7 +43,7 @@ interface FontManager {
 }
 ```
 
-See [`font-managers/`](../font-managers/README.md) for the reference implementation and a guide to writing custom font managers.
+See the [standalone font managers repository](https://github.com/cosmiciron/vmprint-font-managers) for the reference implementation and a guide to writing custom font managers.
 
 ### `VmprintOutputStream`
 
@@ -94,7 +94,7 @@ interface Context {
 
 `pipe()` is required on the interface but may be a no-op. Contexts that manage their own output (e.g. accumulate bytes in memory and expose them through their own API) simply implement it as `pipe(_stream) {}`. Contexts that support streaming — like `PdfContext` — write rendered output into the stream as pages are produced. The caller owns the stream and calls `waitForFinish()` on it after rendering is complete.
 
-See [`contexts/`](../contexts/README.md) for the reference implementation and a guide to writing custom contexts.
+See the [standalone contexts repository](https://github.com/cosmiciron/vmprint-contexts) for the reference implementation and a guide to writing custom contexts.
 
 ### `OverlayProvider`
 

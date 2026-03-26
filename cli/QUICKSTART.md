@@ -52,7 +52,7 @@ vmprint --input document.json --output out.pdf --emit-layout --quantize
 vmprint --input document.json --output out.pdf --font-manager ./my-font-manager.js
 ```
 
-The module must export the class as the default export and implement the `FontManager` interface from `@vmprint/contracts`. See [`font-managers/`](../font-managers/README.md) for the interface contract and implementation guide.
+The module must export the class as the default export and implement the `FontManager` interface from `@vmprint/contracts`. See the [standalone font managers repository](https://github.com/cosmiciron/vmprint-font-managers) for the interface contract and implementation guide.
 
 ## Overlay
 

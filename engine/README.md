@@ -80,9 +80,7 @@ const pdf: Uint8Array = context.getOutput();
 
 ---
 
-## The Portable Pair: Standard Fonts + PDF Lite
-
-When bundle size or cold-start latency matters — Edge functions, Lambda, the browser — the recommended stack is `@vmprint/standard-fonts` paired with `@vmprint/context-pdf-lite`. Together they produce a PDF **with zero font files in the pipeline**.
+When bundle size or cold-start latency matters — Edge functions, Lambda, the browser — the recommended stack is `@vmprint/standard-fonts` paired with `@vmprint/context-pdf-lite`. These are maintained in the standalone [font managers](https://github.com/cosmiciron/vmprint-font-managers) and [contexts](https://github.com/cosmiciron/vmprint-contexts) repositories. Together they produce a PDF **with zero font files in the pipeline**.
 
 ### `@vmprint/standard-fonts` — StandardFontManager
 
@@ -160,5 +158,8 @@ A few features worth knowing about as you build with the engine:
 - [System Architecture](https://github.com/cosmiciron/vmprint/blob/main/documents/ARCHITECTURE.md)
 - [Engine Internals](https://github.com/cosmiciron/vmprint/blob/main/documents/ENGINE-INTERNALS.md)
 - [Contributing](https://github.com/cosmiciron/vmprint/blob/main/CONTRIBUTING.md)
+- [Contexts Repository](https://github.com/cosmiciron/vmprint-contexts)
+- [Font Managers Repository](https://github.com/cosmiciron/vmprint-font-managers)
+- [Transmuters Repository](https://github.com/cosmiciron/vmprint-transmuters)
 
 Licensed under the [Apache License 2.0](LICENSE).

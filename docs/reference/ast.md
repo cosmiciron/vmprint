@@ -14,18 +14,7 @@ If you want the guided teaching path instead of the full contract, start with th
 ## 1. Pipeline Overview
 
 ```text
-Markdown string
-  -> [remark / semantic.ts]
-SemanticDocument                (draft2final intermediate layer)
-  -> [FormatHandler / FormatContext]
-DocumentInput / Element tree    <- public authored source
-  -> [normalize()]
-SpatialDocument / runtime config
-  -> [LayoutEngine]
-Page[] of Box[]                 (flat, positioned output)
-```
-
-Direct callers usually construct **`DocumentInput`**. The `SemanticDocument` layer is only relevant when using `draft2final`.
+Direct callers usually construct **`DocumentInput`**. The `SemanticDocument` layer is only relevant when using the [draft2final](https://github.com/cosmiciron/draft2final) standalone CLI.
 
 ---
 
@@ -617,6 +606,6 @@ interface PageRegionContent {
 | Overlay system | [overlay.html](./overlay.html) |
 | Standard fonts | [standard-fonts.html](./standard-fonts.html) |
 | Testing guide | [TESTING.md](https://github.com/cosmiciron/vmprint/blob/main/documents/TESTING.md) |
-| Markdown compilation core | [transmuters/markdown-core/src/index.ts](https://github.com/cosmiciron/vmprint/blob/main/transmuters/markdown-core/src/index.ts) |
-| Transmuters | [transmuters/](https://github.com/cosmiciron/vmprint/tree/main/transmuters) |
+| Markdown compilation core | [External](https://github.com/cosmiciron/vmprint-transmuters/blob/main/markdown-core/src/index.ts) |
+| Transmuters | [External](https://github.com/cosmiciron/vmprint-transmuters) |
 | Regression fixtures | [engine/tests/fixtures](https://github.com/cosmiciron/vmprint/tree/main/engine/tests/fixtures) |

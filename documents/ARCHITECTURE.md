@@ -29,16 +29,14 @@ VMPrint was designed from the start around four clean contracts. The engine know
 ## Package Map
 
 ```
-contracts/              @vmprint/contracts         Shared TypeScript interfaces
-engine/                 @vmprint/engine            Deterministic layout engine
-contexts/pdf/           @vmprint/context-pdf       PDF output (pdf-lib, browser-compatible)
-contexts/pdf-lite/      @vmprint/context-pdf-lite  Lightweight PDF output
-font-managers/local/    @vmprint/local-fonts       Load fonts from the local filesystem
-font-managers/standard/ @vmprint/standard-fonts    Built-in standard PDF fonts
-font-managers/web/      @vmprint/web-fonts         Load fonts in browser environments
-transmuters/            (per-transmuter packages)  Source → DocumentInput converters
-cli/                    @vmprint/cli               vmprint CLI (JSON → PDF)
-draft2final/            draft2final                Markdown-first authoring CLI
+contracts/              @vmprint/contracts            Shared TypeScript interfaces
+engine/                 @vmprint/engine               Deterministic layout engine
+cli/                    @vmprint/cli                  vmprint CLI (JSON → PDF)
+preview/                @vmprint/preview              Browser preview runtime
+(External)              @vmprint/context-*            PDF, SVG, Canvas contexts
+(External)              @vmprint/font-managers        Local, standard, and web font managers
+(External)              @vmprint/transmuters          Markdown → DocumentInput converters
+(External)              draft2final                   Markdown-first authoring CLI
 ```
 
 The dependency graph is intentionally shallow:
@@ -104,16 +102,7 @@ Options accept `config` and `theme` paths, which transmuters use to control outp
 
 Transmuters have no dependency on the engine, the context, or the font manager. They are pure source transformers — testable standalone and portable across Node.js, browser, and edge environments. A transmuter test is just: "given this Markdown, does the resulting AST look right?" No fonts, no pages, no PDF output required. The semantic rules for each source format are fully auditable in isolation.
 
-Available transmuters:
-
-| Package | Handles |
-|---|---|
-| `transmuters/markdown-core` | Shared Markdown parsing primitives |
-| `transmuters/mkd-mkd` | General Markdown → DocumentInput |
-| `transmuters/mkd-academic` | Academic paper format |
-| `transmuters/mkd-literature` | Literary / fiction format |
-| `transmuters/mkd-manuscript` | Submission manuscript format |
-| `transmuters/mkd-screenplay` | Screenplay format |
+Available transmuters include `@vmprint/mkd-mkd` (general Markdown), `@vmprint/mkd-academic`, `@vmprint/mkd-literature`, `@vmprint/mkd-manuscript`, and `@vmprint/mkd-screenplay`. All are now hosted in the [standalone transmuters repository](https://github.com/cosmiciron/vmprint-transmuters).
 
 ### `OverlayProvider`
 
@@ -298,7 +287,7 @@ Implement `FontManager` from `@vmprint/contracts`. The engine calls `getFontsByF
 
 ### Write a new transmuter
 
-Implement `Transmuter` from `@vmprint/contracts`. Return a valid `DocumentInput`. Your transmuter can read a config YAML and a theme YAML to control output behavior and style — or ignore them if your format does not need them. See the `transmuters/` directory for working examples across five source formats.
+Implement `Transmuter` from `@vmprint/contracts`. Return a valid `DocumentInput`. Your transmuter can read a config YAML and a theme YAML to control output behavior and style — or ignore them if your format does not need them. See the [standalone transmuters repository](https://github.com/cosmiciron/vmprint-transmuters) for working examples.
 
 ### Write a debug overlay
 

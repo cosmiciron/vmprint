@@ -1,6 +1,6 @@
 # Quickstart
 
-This monorepo contains the VMPrint engine, the `vmprint` CLI for JSON-to-PDF workflows, and the `draft2final` CLI for Markdown-first authoring workflows.
+This monorepo contains the VMPrint engine, the `vmprint` CLI for JSON-to-PDF workflows, and the browser preview runtime.
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ npm run build
 
 ## Run From Source
 
-The repo uses `tsx` for source-mode development, so you can run both CLIs without building first.
+The repo uses `tsx` for source-mode development, so you can run the CLI without building first.
 
 ### `vmprint` CLI
 
@@ -51,53 +51,16 @@ Enable layout debug boxes:
 npm run dev --prefix cli -- --input document.json --output output.pdf --debug
 ```
 
-### `draft2final` CLI
 
-Render Markdown using the default Markdown transmuter:
-
-```bash
-npm run dev --prefix draft2final -- input.md
-```
-
-Render with an explicit form:
-
-```bash
-npm run dev --prefix draft2final -- input.md --as manuscript --out output.pdf
-npm run dev --prefix draft2final -- input.md --as screenplay --out screenplay.pdf
-```
-
-Emit transmuted AST JSON instead of PDF:
-
-```bash
-npm run dev --prefix draft2final -- input.md --as literature --out output.json
-```
-
-Prepare an existing Markdown file with front matter and recommended boilerplate:
-
-```bash
-npm run dev --prefix draft2final -- --prepare story.md --as manuscript
-```
-
-Scaffold a starter file:
-
-```bash
-npm run dev --prefix draft2final -- --new story.md --as manuscript
-```
 
 ### Repo Transmute Helper
 
-Use the repo helper when you want raw AST JSON from a transmuter, including direct config/theme overrides:
-
-```bash
-npm run transmute -- input.md --using mkd-academic --out output.ast.json
-npm run transmute -- input.md --using mkd-mkd --theme my.theme.yaml --config my.config.yaml
-```
+Use the standalone [Transmuters](https://github.com/cosmiciron/vmprint-transmuters) repository for raw AST generation from Markdown.
 
 ## Run From Built Output
 
 ```bash
 node cli/dist/index.js --input document.json --output output.pdf
-node draft2final/dist/cli.js input.md --as manuscript --out output.pdf
 ```
 
 ## Browser Examples
@@ -128,10 +91,10 @@ npm run test:packaged-integration
 | --- | --- | --- |
 | `contracts/` | `@vmprint/contracts` | Shared TypeScript interfaces |
 | `engine/` | `@vmprint/engine` | Deterministic layout engine |
-| `contexts/pdf/` | `@vmprint/context-pdf` | PDF output context |
-| `contexts/pdf-lite/` | `@vmprint/context-pdf-lite` | Lightweight PDF output context |
-| `font-managers/local/` | `@vmprint/local-fonts` | Local filesystem font manager |
-| `font-managers/standard/` | `@vmprint/standard-fonts` | Standard PDF font manager |
 | `cli/` | `@vmprint/cli` | `vmprint` CLI |
-| `draft2final/` | `draft2final` | Markdown-first authoring CLI |
-| `transmuters/` | VMPrint transmuters | Source-to-DocumentInput converters |
+| `preview/` | `@vmprint/preview` | Browser canvas preview runtime |
+| (External) | `@vmprint/context-*` | PDF, SVG, Canvas output contexts |
+| (External) | `@vmprint/local-fonts` | Filesystem font manager |
+| (External) | `@vmprint/standard-fonts` | Standard PDF font manager |
+| (External) | `@vmprint/web-fonts` | Browser font manager |
+| (External) | `draft2final` | Markdown-first authoring CLI |

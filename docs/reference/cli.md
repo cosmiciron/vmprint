@@ -101,7 +101,7 @@ To produce a PDF using only the 14 standard PDF fonts with no embedded font data
 vmprint --input document.json --output out.pdf --font-manager @vmprint/standard-fonts
 ```
 
-Custom font manager classes must be the default export of their module and implement the `FontManager` interface from `@vmprint/contracts`. Custom contexts can be integrated programmatically — see the [contexts overview](https://github.com/cosmiciron/vmprint/blob/main/contexts/README.md).
+Custom font manager classes must be the default export of their module and implement the `FontManager` interface from `@vmprint/contracts`. Custom contexts can be integrated programmatically — see the [standalone contexts repository](https://github.com/cosmiciron/vmprint-contexts).
 
 ---
 

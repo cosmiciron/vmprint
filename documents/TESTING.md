@@ -109,27 +109,16 @@ Several fixtures trigger additional checks beyond the universal invariants. Thes
 
 ---
 
-## draft2final Tests
+## Standalone Tool Testing
 
-`draft2final` is intentionally thin orchestration. Heavy regression coverage belongs in transmuters (semantic/source behavior) and engine (layout/render determinism).
+Testing for standalone components like `draft2final`, contexts, font managers, and transmuters is now managed within their respective repositories.
 
-For the orchestrator itself, keep only smoke-level checks:
+- **[draft2final](https://github.com/cosmiciron/draft2final)**: CLI orchestration, frontmatter detection, and output routing.
+- **[Transmuters](https://github.com/cosmiciron/vmprint-transmuters)**: Source-to-AST conversion correctness and regression.
+- **[Contexts](https://github.com/cosmiciron/vmprint-contexts)**: Drawing primitive correctness and output format fidelity.
+- **[Font Managers](https://github.com/cosmiciron/vmprint-font-managers)**: Font loading, registry management, and metric accuracy.
 
-- CLI argument parsing and failure modes.
-- Frontmatter transmuter auto-detection (`using`, `transmuter`, `format`).
-- Output mode routing by extension (`--out *.pdf` vs `--out *.json`).
-- Config/theme resolution behavior, including theme-name shortcuts.
-- End-to-end invocation that proves non-empty outputs are produced.
-
-The orchestrator implementation lives at `draft2final/`.
-
-```bash
-npm run build --workspace=draft2final
-npm run dev --prefix draft2final -- ../samples/draft2final/source/markdown/markdown-sample.md --using mkd-mkd --out ../.tmp/smoke.pdf
-npm run dev --prefix draft2final -- ../samples/draft2final/source/markdown/markdown-sample.md --using mkd-mkd --out ../.tmp/smoke.json
-```
-
-Avoid duplicating transmuter-level regression tests in this layer.
+Heavy regression coverage for the layout and rendering remains in the core engine suite within this repository.
 
 ---
 

@@ -91,7 +91,7 @@ export default {
 
 The CLI uses `PdfContext` for PDF output and `LocalFontManager` for font loading. The font manager can be replaced via `--font-manager` without rebuilding or forking anything. 
 
-If you need a different output format or constrained-environment context (e.g. `PdfLiteContext`, SVG, Canvas), see [contexts/](../contexts/README.md) to learn how to integrate custom renderers programmatically.
+If you need a different output format or constrained-environment context (e.g. `PdfLiteContext`, SVG, Canvas), see the [standalone contexts repository](https://github.com/cosmiciron/vmprint-contexts) to learn how to integrate custom renderers programmatically.
 
 To produce a PDF that uses only the 14 standard PDF fonts with no embedded font data, pass `StandardFontManager` directly:
 
@@ -99,7 +99,7 @@ To produce a PDF that uses only the 14 standard PDF fonts with no embedded font 
 vmprint --input document.json --output out.pdf --font-manager @vmprint/standard-fonts
 ```
 
-Custom font manager classes must be the default export of their module and implement the `FontManager` interface from `@vmprint/contracts`. See [`font-managers/`](../font-managers/README.md) for the interface contract and implementation guide.
+Custom font manager classes must be the default export of their module and implement the `FontManager` interface from `@vmprint/contracts`. See the [standalone font managers repository](https://github.com/cosmiciron/vmprint-font-managers) for the interface contract and implementation guide.
 
 ---
 

@@ -282,25 +282,19 @@ The static demos in `docs/examples/` are self-contained single-page applications
 
 **[AST JSON to PDF](docs/examples/ast-to-pdf-webfonts/index.html)** — Same pipeline, output is a PDF download. `WebFontManager + Engine + PdfLiteContext`.
 
-**[Markdown to AST](docs/examples/mkd-to-ast/index.html)** — The transmuter running standalone in the browser. Paste Markdown, get `DocumentInput` JSON. Useful for inspecting what a transmuter produces before feeding it to the engine.
-
-To build from source:
+**[Markdown to AST](https://cosmiciron.github.io/vmprint-transmuters/mkd-to-ast/index.html)** — The transmuter running standalone in the browser. Paste Markdown, get `DocumentInput` JSON. Useful for inspecting what a transmuter produces before feeding it to the engine.
 
 ```bash
-npm run docs:build
+npm run build
 # then open docs/examples/index.html in any browser
 ```
 
 ---
 
-## draft2final
-
-`draft2final` is a manuscript and screenplay compiler built entirely on the VMPrint API. It is also what VMPrint was originally built to produce: a tool that takes Markdown and returns publication-standard output without pain.
+`draft2final` is a manuscript and screenplay compiler built entirely on the VMPrint API. It is now a standalone tool: [github.com/cosmiciron/draft2final](https://github.com/cosmiciron/draft2final).
 
 ```bash
-npx draft2final "manuscript.md"
-npx draft2final "screenplay.md" --as screenplay
-npx draft2final "paper.md" --as academic --style minimal
+npx @draft2final/cli "manuscript.md"
 ```
 
 Supports `--as manuscript / screenplay / academic / literature` and style variants within those forms.
@@ -320,13 +314,7 @@ npm install
 Render a JSON document to PDF:
 
 ```bash
-npm run dev --prefix cli -- --input engine/tests/fixtures/regression/00-all-capabilities.json --output out.pdf
-```
-
-Source-to-PDF via `draft2final`:
-
-```bash
-npm run dev --prefix draft2final -- samples/draft2final/source/screenplay/screenplay-sample.md --as screenplay --out screenplay.pdf
+npm run dev --prefix cli -- --input engine/tests/fixtures/regression/08-dropcap-pagination.json --output out.pdf
 ```
 
 ---
@@ -415,25 +403,19 @@ const runtime = createEngineRuntime({ fontManager: new StandardFontManager() });
 
 ---
 
-## Packages
-
-| Package | Purpose |
-|---|---|
-| `@vmprint/contracts` | Shared interfaces |
-| `@vmprint/engine` | Deterministic layout simulation core |
-| `@vmprint/context-pdf` | PDF output context |
-| `@vmprint/context-pdf-lite` | Lightweight jsPDF-based PDF context |
-| `@vmprint/context-canvas` | Browser canvas context — page preview, thumbnails, embedded display |
-| `@vmprint/local-fonts` | Filesystem font loading |
-| `@vmprint/standard-fonts` | Standard font manager (no font assets) |
-| `@vmprint/web-fonts` | Browser font manager — fetch from URL, persistent cache |
-| `@vmprint/transmuter-mkd-mkd` | Markdown -> DocumentInput |
-| `@vmprint/transmuter-mkd-academic` | Markdown -> DocumentInput (academic defaults) |
-| `@vmprint/transmuter-mkd-literature` | Markdown -> DocumentInput (literature defaults) |
-| `@vmprint/transmuter-mkd-manuscript` | Markdown -> DocumentInput (manuscript defaults) |
-| `@vmprint/transmuter-mkd-screenplay` | Markdown -> DocumentInput (screenplay defaults) |
-| `@vmprint/cli` | `vmprint` JSON -> PDF CLI |
-| `@draft2final/cli` | Source -> PDF or AST CLI |
+| Package | Location | Purpose |
+|---|---|---|
+| `@vmprint/contracts` | `contracts/` | Shared interfaces |
+| `@vmprint/engine` | `engine/` | Deterministic layout simulation core |
+| `@vmprint/cli` | `cli/` | `vmprint` JSON -> PDF CLI |
+| `@vmprint/preview` | `preview/` | Browser canvas preview runtime |
+| `@vmprint/context-pdf` | [External](https://github.com/cosmiciron/vmprint-contexts) | PDF output context |
+| `@vmprint/context-canvas` | [External](https://github.com/cosmiciron/vmprint-contexts) | Browser canvas context |
+| `@vmprint/local-fonts` | [External](https://github.com/cosmiciron/vmprint-font-managers) | Filesystem font loading |
+| `@vmprint/standard-fonts` | [External](https://github.com/cosmiciron/vmprint-font-managers) | Standard font manager (no font assets) |
+| `@vmprint/web-fonts` | [External](https://github.com/cosmiciron/vmprint-font-managers) | Browser font manager |
+| `@vmprint/transmuters` | [External](https://github.com/cosmiciron/vmprint-transmuters) | Markdown -> DocumentInput |
+| `@draft2final/cli` | [External](https://github.com/cosmiciron/draft2final) | Source -> PDF authoring CLI |
 
 ---
 
@@ -470,14 +452,15 @@ The `@vmprint/local-fonts` size is almost entirely the bundled font binaries. Fu
 
 **Engine** (`engine/`): Layout algorithms, simulation, text shaping, the packager system. This is where the hard problems live. Regression snapshot tests verify that changes haven't broken existing behavior.
 
-**Contexts and font managers** (`contexts/`, `font-managers/`): Concrete implementations of well-defined interfaces. A new context for canvas or SVG. A font manager that loads from a CDN. The contracts are clear, the surface area is contained.
+**CLI** (`cli/`): The primary developer tool and production batch-processor. It demonstrates the complete pattern for integrating the engine, contexts, and font managers.
 
-**Transmuters** (`transmuters/`): Source semantics live here. Each transmuter maps source text to `DocumentInput`. Testable and portable across browser, Node.js, and edge runtimes.
+**Preview** (`preview/`): The core runtime and UI components for high-fidelity browser previews.
+
+**External Packages**: If you are looking to contribute to a specific context, font manager, or transmuter, please visit their respective repositories (see the [Modular Ecosystem notice](#vmprint) at the top of this file).
 
 ```bash
+npm run build
 npm run test --prefix engine
-npm run test:update-layout-snapshots --prefix engine
-npm run build --workspace=draft2final
 npm run test:packaged-integration
 ```
 
