@@ -2,9 +2,9 @@
 
 <div align="center">
 
-An alternative to React-PDF — render multi-page documents in the browser and export to PDF/SVG from the same layout.
-No PDF.js. No React. No server. Pure JavaScript, no dependencies. Works from a static HTML file. ~1.7MB.
-**The preview IS the final document — not a simulation.**
+You have the data. Your CFO needs a clean PDF in five minutes. Don’t panic. Just write this:
+
+</div>
 
 ```js
 import { createVMPrintPreview } from '@vmprint/preview';
@@ -16,7 +16,18 @@ const pdf = await preview.exportPdf();              // exact same layout → PDF
 const svg = await preview.exportSvgPage(0);         // or SVG
 ```
 
-**[Open live demo →](https://cosmiciron.github.io/vmprint/examples/ast-to-canvas-webfonts/index.html)**
+<div align="center">
+
+Preview is the final document. No separate rendering step. 
+
+No PDF.js. No React. No server. No dependencies.
+
+Pure JavaScript. ~1.7MB.
+
+![Meridian Capital Group Q4 2025 Financial Report — rendered by VMPrint](documents/readme-assets/report.png)
+
+**[Try the live demo →](https://cosmiciron.github.io/vmprint/examples/ast-to-canvas-webfonts/index.html)**
+The code behind these publication-grade pages is open in the demo. Static HTML. No dependencies. Works on your phone.
 
 </div>
 

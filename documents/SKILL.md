@@ -1237,6 +1237,19 @@ For a banner that *opens* a new story with nothing before it, placing it outside
 { "type": "story", "columns": 3, "children": [ ... ] }
 ```
 
+### Use `marginTop`/`marginBottom` for inter-element spacing, not `paddingTop`/`paddingBottom`
+`paddingTop` on a zone-map (or any container) adds space *inside* the element, before its first child. It does **not** create space between the container and the preceding sibling. Use `marginTop` on `properties.style` to push a zone-map away from the element above it:
+
+```json
+// WRONG — paddingTop does not separate the zone-map from a preceding section-flag:
+{ "type": "zone-map", "properties": { "style": { "paddingTop": 16 } }, ... }
+
+// CORRECT — marginTop creates space between the section-flag and the zone-map:
+{ "type": "zone-map", "properties": { "style": { "marginTop": 16 } }, ... }
+```
+
+This applies to any block element: if you want space *before* an element, set `marginTop` on it (or `marginBottom` on the preceding one).
+
 ### `keepWithNext` chains stop working across page boundaries
 A chain of `keepWithNext` elements must fit together on a single page. Check that the total height fits `contentHeight`.
 
