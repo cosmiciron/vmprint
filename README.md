@@ -33,6 +33,17 @@ The code behind these publication-grade pages is open in the demo. Static HTML. 
 
 ---
 
+> **The VMPrint ecosystem is modular** — core components published as standalone npm packages:
+>
+> - **Preview** — Browser canvas preview + PDF/SVG export from a single session · `@vmprint/preview` · [github](https://github.com/cosmiciron/vmprint)
+> - **Engine** — Deterministic layout simulation core · `@vmprint/engine` · [github](https://github.com/cosmiciron/vmprint)
+> - **Rendering Contexts** — PDF and canvas output · `@vmprint/context-pdf` `@vmprint/context-canvas` · [github](https://github.com/cosmiciron/vmprint-contexts)
+> - **Font Managers** — Web, local, and standard PDF font loading · `@vmprint/web-fonts` `@vmprint/local-fonts` `@vmprint/standard-fonts` · [github](https://github.com/cosmiciron/vmprint-font-managers)
+> - **Transmuters** — Markdown to VMPrint document input · `@vmprint/transmuters` · [github](https://github.com/cosmiciron/vmprint-transmuters)
+> - **Draft2Final** — Manuscript and screenplay compiler · `@draft2final/cli` · [github](https://github.com/cosmiciron/draft2final)
+
+---
+
 You've been here before.
 
 The HTML/CSS pipeline got you 80% of the way. Then the tables started fighting the page breaks. You needed the header to say "Page 1 of 12" — but you can't know it's 12 until you've finished laying out the whole document, and by then it's too late. You tried a second pass. The second pass introduced new problems. Someone suggested spinning up a headless Chromium. It worked, mostly, except on the edge runtime, and the Lambda with the tight memory limit, and that one machine where the fonts came out wrong.
