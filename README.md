@@ -1,18 +1,26 @@
 # VMPrint
 
-> [!IMPORTANT]
-> **The VMPrint ecosystem is now modular.**  
-> Core components have been decoupled into standalone repositories for independent development and distribution. You can find the specialized packages here:
-> - **Draft2Final**: [github.com/cosmiciron/draft2final.git](https://github.com/cosmiciron/draft2final.git)
-> - **Transmuters**: [github.com/cosmiciron/vmprint-transmuters.git](https://github.com/cosmiciron/vmprint-transmuters.git)
-> - **Font Managers**: [github.com/cosmiciron/vmprint-font-managers.git](https://github.com/cosmiciron/vmprint-font-managers.git)
-> - **Contexts**: [github.com/cosmiciron/vmprint-contexts.git](https://github.com/cosmiciron/vmprint-contexts.git)
-> - **Contracts**: [github.com/cosmiciron/vmprint-contracts.git](https://github.com/cosmiciron/vmprint-contracts.git)
+<div align="center">
 
-> **VMPrint now ships with a browser preview demo.**  
-> Render real VMPrint documents in-browser with multilingual layout, pagination, and high-fidelity canvas preview.  
-> The demo is a static, self-contained page you can open directly from a local folder, and its four core runtime bundles (shared fontkit + engine + web font manager + canvas context) weigh about **0.89 MiB** total minified.  
-> [Open the canvas demo](https://cosmiciron.github.io/vmprint/examples/ast-to-canvas-webfonts/index.html) | [Browse all examples](https://cosmiciron.github.io/vmprint/examples/index.html) | [Quickstart](QUICKSTART.md)
+An alternative to React-PDF — render multi-page documents in the browser and export to PDF/SVG from the same layout.
+No PDF.js. No React. No server. Pure JavaScript, no dependencies. Works from a static HTML file. ~1.7MB.
+**The preview IS the final document — not a simulation.**
+
+```js
+import { createVMPrintPreview } from '@vmprint/preview';
+
+const preview = await createVMPrintPreview(quarterlyReport);
+
+await preview.renderPageToCanvas(0, canvasElement); // live preview
+const pdf = await preview.exportPdf();              // exact same layout → PDF
+const svg = await preview.exportSvgPage(0);         // or SVG
+```
+
+**[Open live demo →](https://cosmiciron.github.io/vmprint/examples/ast-to-canvas-webfonts/index.html)**
+
+</div>
+
+---
 
 You've been here before.
 
@@ -448,6 +456,18 @@ The `@vmprint/local-fonts` size is almost entirely the bundled font binaries. Fu
 
 ---
 
+## Modular Ecosystem
+
+Core components have been decoupled into standalone repositories for independent development and distribution:
+
+- **Draft2Final**: [github.com/cosmiciron/draft2final.git](https://github.com/cosmiciron/draft2final.git)
+- **Transmuters**: [github.com/cosmiciron/vmprint-transmuters.git](https://github.com/cosmiciron/vmprint-transmuters.git)
+- **Font Managers**: [github.com/cosmiciron/vmprint-font-managers.git](https://github.com/cosmiciron/vmprint-font-managers.git)
+- **Contexts**: [github.com/cosmiciron/vmprint-contexts.git](https://github.com/cosmiciron/vmprint-contexts.git)
+- **Contracts**: [github.com/cosmiciron/vmprint-contracts.git](https://github.com/cosmiciron/vmprint-contracts.git)
+
+---
+
 ## Contributing
 
 **Engine** (`engine/`): Layout algorithms, simulation, text shaping, the packager system. This is where the hard problems live. Regression snapshot tests verify that changes haven't broken existing behavior.
@@ -456,7 +476,7 @@ The `@vmprint/local-fonts` size is almost entirely the bundled font binaries. Fu
 
 **Preview** (`preview/`): The core runtime and UI components for high-fidelity browser previews.
 
-**External Packages**: If you are looking to contribute to a specific context, font manager, or transmuter, please visit their respective repositories (see the [Modular Ecosystem notice](#vmprint) at the top of this file).
+**External Packages**: If you are looking to contribute to a specific context, font manager, or transmuter, please visit their respective repositories (see [Modular Ecosystem](#modular-ecosystem) above).
 
 ```bash
 npm run build
