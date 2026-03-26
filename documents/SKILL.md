@@ -13,6 +13,8 @@ user-invocable: false
 
 A practitioner's guide to constructing sophisticated layouts with the VMPrint JSON AST **version 1.1**. Use this alongside the regression fixtures in `engine/tests/fixtures/regression/` and `engine/tests/fixtures/scripting/` (working examples for every feature).
 
+> **Schema authority**: The interfaces embedded in this skill (§ "Exact … interface" blocks) are the canonical contracts for allowed keys. Do not guess at key names — if a key is not listed in one of those interface blocks, it does not exist. The pitfalls section documents keys that have been hallucinated in the past.
+
 > **AST 1.1 breaking changes from 1.0**: `placement` replaces `properties.layout`; `image`, `dropCap`, `columnSpan`, `table` are now top-level element keys instead of nested inside `properties`.
 
 ---
@@ -196,6 +198,27 @@ In AST 1.1, several configuration objects moved out of `properties` and became *
 | `stripLayout` | `"strip"` | Track sizing + gap config |
 | `properties` | all | `style`, `sourceId`, `colSpan`, `rowSpan`, `semanticRole`, etc. |
 
+**Exact `ElementProperties` interface** (no other keys are valid):
+```typescript
+interface ElementProperties {
+    style?: Partial<ElementStyle>;   // inline style overrides
+    colSpan?: number;                // table-cell only
+    rowSpan?: number;                // table-cell only
+    sourceId?: string;
+    linkTarget?: string;             // inline text/inline elements
+    semanticRole?: string;           // "header" on table-row
+    reflowKey?: string;
+    keepWithNext?: boolean;
+    marginTop?: number;
+    marginBottom?: number;
+    pageOverrides?: {
+        header?: PageRegionContent | null;
+        footer?: PageRegionContent | null;
+    };
+    language?: string;               // code blocks
+}
+```
+
 `colSpan` and `rowSpan` remain inside `properties` (not top-level).
 
 ---
@@ -370,6 +393,8 @@ The float element goes in `story.children`. Exclusion field = `style.width + gap
 `wrap` options: `"around"` (text wraps both sides), `"top-bottom"` (no side wrap), `"none"`.
 `align` options: `"left"`, `"right"`, `"center"`.
 
+> **COLUMN WIDTH WARNING**: Before floating an element with `wrap: "around"`, verify that `columnWidth - floatWidth - gap` leaves at least ~80 pt for the wrapping text. In a 3-column layout on a 612 pt page with 60 pt margins and 16 pt gutters, each column is only ~154 pt wide — a 128 pt float leaves ~14 pt, causing single-character line breaks. **For pull-quotes in multi-column stories, split the story into two `story` blocks and place the pull-quote as a standalone element between them** (see the `columnSpan` pitfalls section). Only use `wrap: "around"` floats when the float width is well under half the column width.
+
 > **CRITICAL ORDERING RULE**: If you combine a drop cap paragraph with a float obstacle, the drop cap paragraph MUST be the FIRST child of the story, and the float obstacle MUST come AFTER it. Reversing this causes both to anchor at the same y coordinate (visual overlap).
 
 ```json
@@ -519,6 +544,23 @@ Key details:
 - Column `mode`: `"fixed"` (exact `value` pt), `"flex"` (fractional share via `fr`), `"auto"` (size to content)
 - Table cells can have `children` (inline runs) instead of `content`, same as paragraphs
 
+**Exact `table` config interface** (no other keys are valid):
+```typescript
+interface TableLayoutOptions {
+    headerRows?: number;
+    repeatHeader?: boolean;
+    columnGap?: number;
+    rowGap?: number;
+    columns?: TableColumnSizing[];
+    cellStyle?: Partial<ElementStyle>;
+    headerCellStyle?: Partial<ElementStyle>;
+}
+```
+- `alternateRowStyle`, `borderWidth`, `borderColor`, `width`, `height` do **not** exist in this interface.
+- To add borders or dimensions to the table element, use `properties.style` on the `table` element itself: `"properties": { "style": { "borderWidth": 0.4, "borderColor": "#ccc" } }`.
+- To stripe alternate rows, use `"properties": { "style": { "backgroundColor": "..." } }` on individual `table-row` elements.
+- Column definitions use `TableColumnSizing` objects — `{ "mode": "fixed", "value": 110 }`, never `{ "width": 110 }`.
+
 **Section rows** (full-width label row spanning all columns):
 
 ```json
@@ -580,8 +622,18 @@ A `zone-map` divides a horizontal strip of the page into independent layout colu
 }
 ```
 
+**Exact `ZoneLayoutOptions` interface** (no other keys are valid — `tracks` does not exist here, use `columns`):
+```typescript
+interface ZoneLayoutOptions {
+    columns?: TableColumnSizing[];   // same objects as table/strip; NOT "tracks"
+    gap?: number;
+    frameOverflow?: 'move-whole' | 'continue';
+    worldBehavior?: 'fixed' | 'spanning' | 'expandable';
+}
+```
+
 - `zones[]` — region descriptors. Each carries `id` (optional) and `elements[]`.
-- `zoneLayout.columns` — track sizing array (same `mode`/`fr`/`value` as tables). Omit for equal-width columns.
+- `zoneLayout.columns` — track sizing array (same `TableColumnSizing` objects as tables and strips). Omit for equal-width columns.
 - `zoneLayout.gap` — gap between columns in points (default `0`).
 - Zone height: the tallest zone determines the `zone-map`'s height in the document flow.
 
@@ -642,7 +694,30 @@ A `strip` divides a row into horizontally-sized slots with independent layout co
 }
 ```
 
-- `stripLayout.tracks` — array of column sizing objects (same `mode`/`fr`/`value` as tables)
+- `stripLayout.tracks` — array of `TableColumnSizing` objects (shared with `table.columns`); **never use CSS-like strings** such as `"1fr"` or `"auto"` — these are invalid and will cause a validation error
+
+  **Exact `StripLayoutOptions` interface** (no other keys are valid — `height` does not exist here):
+  ```typescript
+  interface StripLayoutOptions { tracks?: TableColumnSizing[]; gap?: number; }
+  ```
+
+  **Exact `TableColumnSizing` interface** (no other keys are valid):
+  ```typescript
+  interface TableColumnSizing {
+      mode?: 'fixed' | 'auto' | 'flex';
+      value?: number;   // points, used with mode: 'fixed'
+      fr?: number;      // fractional share, used with mode: 'flex'
+      min?: number;
+      max?: number;
+      basis?: number;
+      minContent?: number;
+      maxContent?: number;
+      grow?: number;
+      shrink?: number;
+  }
+  ```
+  Common patterns: `{ "mode": "flex", "fr": 1 }`, `{ "mode": "fixed", "value": 86 }`, `{ "mode": "auto" }`
+
 - `stripLayout.gap` — inter-slot gap in points
 - `slots[]` — each carries `id` (optional) and `elements[]`
 - Each slot is an independent layout context; content does not flow between slots
@@ -1119,6 +1194,18 @@ Use `balance: false` (the default) whenever a story contains float elements.
 
 ### `columnSpan` interacts with `balance: true`
 Use `balance: false` in stories that contain spanning elements.
+
+### Do NOT use `columnSpan: "all"` inside a story for pull-quotes
+`columnSpan` inside a story positions the span at the cursor in the current column, but other columns do not update their cursor, so post-span content in columns 2+ starts at Y=0 (page top), overlapping the span visually.
+
+**For a full-width pull-quote between paragraphs, split the story and place the pull-quote as a standalone element in `elements`:**
+```json
+{ "type": "story", "columns": 3, "gutter": 16, "balance": false, "children": [ ...paragraphs before... ] },
+{ "type": "pull-quote", "content": "..." },
+{ "type": "story", "columns": 3, "gutter": 16, "balance": false, "children": [ ...paragraphs after... ] }
+```
+
+**Critical: keep story 1 short enough that column 1 does NOT fill to the page bottom.** After a multi-column story ends, the page cursor advances to `max(col1_bottom, col2_bottom, col3_bottom)`. If column 1 is full (page-height exhausted), the pull-quote is pushed to the next page. Size story 1 so the total content height in column 1 is well under `contentHeight − headerHeight − footerHeight`. A single opening paragraph is usually ideal. Story 2 receives all remaining paragraphs and flows across pages normally.
 
 ### `columnSpan` must NOT appear in the `styles` block
 `columnSpan` is a top-level element key, not a style property. Place it on the element itself, never inside a style definition.
