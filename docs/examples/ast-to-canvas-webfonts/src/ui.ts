@@ -1,4 +1,5 @@
 declare const VMPrintPipeline: {
+    AI_GENERATED_FIXTURE_IDS: ReadonlySet<string>;
     getBuiltinFixturePresets(): Array<{ id: string; label: string; description: string }>;
     getBuiltinFixtureDocument(id: string): Promise<Record<string, unknown>>;
     SAMPLE_DOCUMENT: Record<string, unknown>;
@@ -86,8 +87,13 @@ function installUi(): void {
         inlineError.hidden = !msg;
     };
 
+    const isAiGeneratedFixture = () =>
+        documentSource === 'builtin' &&
+        activeBuiltinFixtureId !== null &&
+        VMPrintPipeline.AI_GENERATED_FIXTURE_IDS.has(activeBuiltinFixtureId);
+
     const updateDispatchCallout = () => {
-        dispatchCallout.hidden = !(documentSource === 'builtin' && activeBuiltinFixtureId === 'daily-dispatch');
+        dispatchCallout.hidden = !isAiGeneratedFixture();
     };
 
     const syncPager = () => {
@@ -170,7 +176,7 @@ function installUi(): void {
 
         if (!quiet) {
             setBusy([uploadButton], true);
-            const initialStatus = activeBuiltinFixtureId === 'daily-dispatch'
+            const initialStatus = isAiGeneratedFixture()
                 ? 'Rendering sample document… first visit may take longer while fonts download and cache.'
                 : 'Rendering pages to canvas\u2026';
             setStatus(statusNode, 'rendering', initialStatus);
@@ -244,8 +250,8 @@ function installUi(): void {
         setStatus(
             statusNode,
             'rendering',
-            fixtureId === 'daily-dispatch'
-                ? 'Loading the sample newspaper… first visit may take a little longer while example fonts download and cache.'
+            VMPrintPipeline.AI_GENERATED_FIXTURE_IDS.has(fixtureId)
+                ? 'Loading the sample document… first visit may take a little longer while example fonts download and cache.'
                 : `Loading \u201c${fixtureId}\u201d\u2026`
         );
         removeCustomFixtureOption();
@@ -326,10 +332,10 @@ function installUi(): void {
         if (!customEvent.detail) return;
         setFontStatus(customEvent.detail);
         if (statusNode.dataset.state === 'rendering') {
-            const prefix = activeBuiltinFixtureId === 'daily-dispatch'
+            const prefix = isAiGeneratedFixture()
                 ? 'Loading sample assets… '
                 : 'Preparing preview… ';
-            const fallback = activeBuiltinFixtureId === 'daily-dispatch'
+            const fallback = isAiGeneratedFixture()
                 ? 'Loading fonts for the sample — first visit may take a moment.'
                 : 'Rendering pages to canvas\u2026';
             setStatus(statusNode, 'rendering', `${prefix}${activeFontStatus || fallback}`);
