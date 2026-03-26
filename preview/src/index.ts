@@ -103,7 +103,7 @@ export type PreviewSession = {
 type VmprintDocument = Record<string, unknown>;
 
 const DEFAULT_DOCUMENT_PATH = 'browser-input.json';
-const DEFAULT_PRIMARY_FONT_REPOSITORY_BASE_URL = 'https://cdn.jsdelivr.net/gh/cosmiciron/vmprint@main/font-managers/local/';
+const DEFAULT_PRIMARY_FONT_REPOSITORY_BASE_URL = 'https://cdn.jsdelivr.net/gh/cosmiciron/vmprint@assets/font-managers/local/';
 const DEFAULT_FALLBACK_FONT_REPOSITORY_BASE_URL = 'https://cdn.jsdelivr.net/gh/cosmiciron/vmprint@assets/font-managers/local/';
 const FALLBACK_MAIN_BRANCH_PREFIXES = [
     'assets/fonts/NotoSansSymbol/'

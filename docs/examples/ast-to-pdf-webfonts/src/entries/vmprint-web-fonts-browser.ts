@@ -2,7 +2,7 @@ import { WebFontManager } from '@vmprint/web-fonts';
 import { LOCAL_FONT_ALIASES, LOCAL_FONT_REGISTRY } from '@vmprint/local-fonts/config';
 import type { FontConfig } from '@vmprint/contracts';
 
-const PRIMARY_FONT_BASE_URL = 'https://cdn.jsdelivr.net/gh/cosmiciron/vmprint@main/font-managers/local/';
+const PRIMARY_FONT_BASE_URL = 'https://cdn.jsdelivr.net/gh/cosmiciron/vmprint@assets/font-managers/local/';
 const FALLBACK_FONT_BASE_URL = 'https://cdn.jsdelivr.net/gh/cosmiciron/vmprint@assets/font-managers/local/';
 const FALLBACK_MAIN_BRANCH_PREFIXES = [
     'assets/fonts/NotoSansSymbol/'
