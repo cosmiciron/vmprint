@@ -110,6 +110,7 @@ import {
     type ViewportTerrain,
     type WorldSpace
 } from './layout-session-types';
+import type { SimulationProgressionPolicy, SimulationStopReason } from '../types';
 
 export {
     ConstraintField,
@@ -349,6 +350,8 @@ export class LayoutSession {
     };
     private paginationLoopState: PaginationLoopState | null = null;
     private speculativeBranchSequence = 0;
+    private simulationProgressionPolicy: SimulationProgressionPolicy = 'until-settled';
+    private simulationStopReason: SimulationStopReason = 'settled';
     private readonly flowResolveSignaturesSeen = new Set<string>();
     private scriptReplayRequested = false;
 
@@ -1047,6 +1050,18 @@ export class LayoutSession {
         return this.simulationClock.tick;
     }
 
+    setSimulationProgressionPolicy(policy: SimulationProgressionPolicy): void {
+        this.simulationProgressionPolicy = policy;
+    }
+
+    getSimulationProgressionPolicy(): SimulationProgressionPolicy {
+        return this.simulationProgressionPolicy;
+    }
+
+    getSimulationStopReason(): SimulationStopReason {
+        return this.simulationStopReason;
+    }
+
     isSimulationProgressionStopped(): boolean {
         return this.simulationClock.isStopped;
     }
@@ -1060,8 +1075,9 @@ export class LayoutSession {
         return nextTick;
     }
 
-    stopSimulationProgression(): void {
+    stopSimulationProgression(reason: SimulationStopReason = 'settled'): void {
         if (this.simulationClock.isStopped) return;
+        this.simulationStopReason = reason;
         this.simulationClock.stop();
         this.recordProfile('progressionStopCalls', 1);
     }

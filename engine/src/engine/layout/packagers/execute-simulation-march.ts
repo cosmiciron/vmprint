@@ -23,6 +23,7 @@ export function executeSimulationMarch(
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
     session: LayoutSession
 ): Page[] {
+    const progression = processor.getSimulationProgressionConfig();
     const maxReactiveResettlementCycles = resolveReactiveResettlementCycleCap();
     const snapshotsEnabled = process.env.VMPRINT_DISABLE_SAFE_CHECKPOINTS !== '1';
     const reactiveCheckpointsEnabled = () =>
@@ -35,6 +36,7 @@ export function executeSimulationMarch(
     let i = 0;
     let reactiveResettlementCycles = 0;
     const reactiveResettlementSignatures = new Set<string>();
+    let initialPlacementPass = true;
 
     const margins = contextBase.margins;
     let currentY = margins.top;
@@ -64,6 +66,7 @@ export function executeSimulationMarch(
     const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
         prevAfter + marginTop;
 
+    session.setSimulationProgressionPolicy(progression.policy);
     session.resumeSimulationProgression();
     session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
     if (reactiveCheckpointsEnabled()) {
@@ -218,8 +221,11 @@ export function executeSimulationMarch(
     };
 
     while (true) {
-        session.advanceSimulationTick();
-        maybeAdvanceSteppedActorsAtTick();
+        if (!initialPlacementPass) {
+            session.advanceSimulationTick();
+            maybeAdvanceSteppedActorsAtTick();
+        }
+        initialPlacementPass = false;
         while (i < packagers.length) {
             const actorIndexBeforeAction = i;
             const packager = packagers[i];
@@ -522,7 +528,16 @@ export function executeSimulationMarch(
         });
 
         if (!maybeSettleAtCheckpoint()) {
+            const fixedTickHorizonReached =
+                progression.policy === 'fixed-tick-count'
+                && session.getSimulationTick() >= progression.maxTicks;
+
+            if (!fixedTickHorizonReached && progression.policy === 'fixed-tick-count') {
+                continue;
+            }
             if (
+                !fixedTickHorizonReached
+                &&
                 steppedActorsEnabled()
                 && session.hasActiveSteppedActors(
                     {
@@ -535,7 +550,9 @@ export function executeSimulationMarch(
             ) {
                 continue;
             }
-            session.stopSimulationProgression();
+            session.stopSimulationProgression(
+                fixedTickHorizonReached ? 'fixed-tick-count' : 'settled'
+            );
             break;
         }
     }

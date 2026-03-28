@@ -20,6 +20,8 @@ import {
     simulationArtifactKeys
 } from '../src/engine/layout/simulation-report';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
+import { LayoutSession } from '../src/engine/layout/layout-session';
+import { reactiveProofPackagerFactory } from './support/reactive-proof-packager-factory';
 
 const UPDATE_LAYOUT_SNAPSHOTS =
     process.argv.includes('--update-layout-snapshots') || process.env.VMPRINT_UPDATE_LAYOUT_SNAPSHOTS === '1';
@@ -29,6 +31,61 @@ const log = (msg: string) => logStep(TEST_PREFIX, msg);
 const _check = (desc: string, exp: string, fn: () => void) => check(TEST_PREFIX, desc, exp, fn);
 const _checkAsync = (desc: string, exp: string, fn: () => Promise<void>) => checkAsync(TEST_PREFIX, desc, exp, fn);
 const assertNoInputMutation = (elements: any[], fixtureName: string) => _assertNoInputMutation(assert, elements, fixtureName);
+
+function flattenBoxText(box: any): string {
+    if (typeof box?.text === 'string' && box.text.length > 0) return box.text;
+    if (!Array.isArray(box?.lines)) return '';
+    return box.lines
+        .flatMap((line: any[]) => line || [])
+        .map((segment: any) => String(segment?.text || ''))
+        .join('');
+}
+
+function boxesForSourceId(pages: any[], sourceId: string): any[] {
+    return pages.flatMap((page: any) =>
+        (page.boxes || []).filter((box: any) => {
+            const actual = String(box.meta?.sourceId || '');
+            return actual === sourceId || actual.endsWith(`:${sourceId}`);
+        })
+    );
+}
+
+function longParagraph(seed: string, repeatCount = 40): string {
+    return `${seed} `.repeat(repeatCount).trim();
+}
+
+function repeatedParagraph(seed: string, repeatCount: number): string {
+    return `${seed} `.repeat(repeatCount).trim();
+}
+
+function createReactiveProofEngine(overrides: Record<string, unknown> = {}): LayoutEngine {
+    const layoutOverrides = (overrides.layout as Record<string, unknown>) || {};
+    const engine = new LayoutEngine({
+        layout: {
+            pageSize: 'LETTER',
+            margins: { top: 72, right: 72, bottom: 72, left: 72 },
+            fontFamily: 'Helvetica',
+            fontSize: 12,
+            lineHeight: 1.2,
+            ...layoutOverrides
+        },
+        fonts: {
+            regular: 'Helvetica'
+        },
+        styles: {},
+        ...overrides,
+        layout: {
+            pageSize: 'LETTER',
+            margins: { top: 72, right: 72, bottom: 72, left: 72 },
+            fontFamily: 'Helvetica',
+            fontSize: 12,
+            lineHeight: 1.2,
+            ...layoutOverrides
+        }
+    } as any);
+    engine.setPackagerFactory(reactiveProofPackagerFactory);
+    return engine;
+}
 
 function assertTableMixedSpanFixtureSignals(
 
@@ -1966,6 +2023,1185 @@ async function run() {
     );
 
     await _checkAsync(
+        'reactive content-only redraw board',
+        'a committed wake that changes only observer content should redraw in place without replaying downstream actors',
+        async () => {
+            const engine = createReactiveProofEngine();
+            await engine.waitForFonts();
+
+            const pages = engine.simulate([
+                {
+                    type: 'test-signal-observer',
+                    content: '',
+                    properties: {
+                        sourceId: 'content-only-observer',
+                        _actorSignalObserve: {
+                            topic: 'activation-content-only-entry',
+                            title: 'Pinned Observer',
+                            baseHeight: 96,
+                            growthPerSignal: 0
+                        }
+                    }
+                },
+                {
+                    type: 'test-replay-marker',
+                    content: '',
+                    properties: {
+                        sourceId: 'content-only-replay-marker',
+                        _testReplayMarker: {
+                            title: 'Replay Marker',
+                            height: 48
+                        }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: 'Spacer region should remain committed while the later event source comes online.',
+                    properties: {
+                        sourceId: 'content-only-spacer'
+                    }
+                },
+                {
+                    type: 'test-signal-publisher',
+                    content: 'Event source tile',
+                    properties: {
+                        sourceId: 'activation-content-only-source',
+                        _actorSignalPublish: {
+                            topic: 'activation-content-only-entry',
+                            payload: {
+                                label: 'Quiet Update'
+                            }
+                        }
+                    }
+                }
+            ] as any);
+
+            const observerText = boxesForSourceId(pages, 'content-only-observer').map(flattenBoxText).join('\n');
+            const replayMarkerText = boxesForSourceId(pages, 'content-only-replay-marker').map(flattenBoxText).join('\n');
+
+            assert.match(observerText, /Quiet Update/, 'content-only board should redraw observer content with the committed label');
+            assert.match(observerText, /Count:\s*1/, 'content-only board should report the committed signal count');
+            assert.match(replayMarkerText, /Render Count:\s*1/, 'content-only board should not replay the downstream marker');
+        }
+    );
+
+    await _checkAsync(
+        'reactive geometry replay board',
+        'a geometry-changing wake should preserve upstream state and replay only the downstream region',
+        async () => {
+            const engine = createReactiveProofEngine();
+            await engine.waitForFonts();
+
+            const pages = engine.simulate([
+                {
+                    type: 'test-replay-marker',
+                    content: '',
+                    properties: {
+                        sourceId: 'geometry-upstream-marker',
+                        _testReplayMarker: {
+                            title: 'Upstream Marker',
+                            height: 48
+                        }
+                    }
+                },
+                {
+                    type: 'test-signal-observer',
+                    content: '',
+                    properties: {
+                        sourceId: 'geometry-observer',
+                        _actorSignalObserve: {
+                            topic: 'activation-geometry-entry',
+                            title: 'Pinned Geometry Actor',
+                            baseHeight: 96,
+                            growthPerSignal: 72
+                        }
+                    }
+                },
+                {
+                    type: 'test-replay-marker',
+                    content: '',
+                    properties: {
+                        sourceId: 'geometry-downstream-marker',
+                        _testReplayMarker: {
+                            title: 'Downstream Marker',
+                            height: 48
+                        }
+                    }
+                },
+                {
+                    type: 'test-signal-publisher',
+                    content: 'Wake the actor',
+                    properties: {
+                        sourceId: 'activation-geometry-source',
+                        _actorSignalPublish: {
+                            topic: 'activation-geometry-entry',
+                            payload: {
+                                label: 'Wake the actor'
+                            }
+                        }
+                    }
+                }
+            ] as any);
+
+            const upstreamText = boxesForSourceId(pages, 'geometry-upstream-marker').map(flattenBoxText).join('\n');
+            const downstreamText = boxesForSourceId(pages, 'geometry-downstream-marker').map(flattenBoxText).join('\n');
+            const observerText = boxesForSourceId(pages, 'geometry-observer').map(flattenBoxText).join('\n');
+
+            assert.match(observerText, /Wake the actor/, 'geometry board should redraw observer content after the committed wake');
+            assert.match(upstreamText, /Render Count:\s*1/, 'geometry board should leave the upstream marker untouched');
+            assert.match(downstreamText, /Render Count:\s*2/, 'geometry board should replay the downstream marker after resettlement');
+        }
+    );
+
+    await _checkAsync(
+        'reactive oscillation hard stop board',
+        'an observer that keeps proposing new geometry on unchanged committed facts should stop deterministically',
+        async () => {
+            const engine = createReactiveProofEngine();
+            await engine.waitForFonts();
+
+            assert.throws(() => {
+                engine.simulate([
+                    {
+                        type: 'test-signal-observer',
+                        content: '',
+                        properties: {
+                            sourceId: 'activation-oscillation-observer',
+                            _actorSignalObserve: {
+                                topic: 'activation-oscillation-entry',
+                                title: 'Oscillation Observer',
+                                baseHeight: 96,
+                                growthPerSignal: 0,
+                                oscillateHeights: [168, 96]
+                            }
+                        }
+                    },
+                    {
+                        type: 'test-signal-publisher',
+                        content: 'Kick the oscillation',
+                        properties: {
+                            sourceId: 'activation-oscillation-source',
+                            _actorSignalPublish: {
+                                topic: 'activation-oscillation-entry',
+                                payload: {
+                                    label: 'Start loop'
+                                }
+                            }
+                        }
+                    }
+                ] as any);
+            }, /Reactive geometry resettlement exceeded the cycle cap|Reactive geometry oscillation detected/, 'oscillation board should fail with a deterministic hard-stop diagnostic');
+        }
+    );
+
+    await _checkAsync(
+        'clock cooking board',
+        'a stepped actor should keep cooking across kernel ticks and expose the final cooked state through the main report path',
+        async () => {
+            const engine = createReactiveProofEngine({
+                layout: {
+                    progression: {
+                        policy: 'fixed-tick-count',
+                        maxTicks: 10
+                    }
+                }
+            });
+            await engine.waitForFonts();
+
+            const pages = engine.simulate([
+                {
+                    type: 'test-clock-cooking',
+                    content: '',
+                    properties: {
+                        sourceId: 'clock-cooking-board',
+                        _clockCooking: {
+                            title: 'UFO WAVE TRACK',
+                            baseHeight: 288,
+                            growthPerStage: 8,
+                            maxStages: 10,
+                            pathStages: 10,
+                            sceneMode: 'ascii-diorama',
+                            sceneWidth: 62,
+                            sceneHeight: 16,
+                            fontFamily: 'Helvetica'
+                        }
+                    }
+                },
+                {
+                    type: 'test-replay-marker',
+                    content: '',
+                    properties: {
+                        sourceId: 'clock-cooking-replay-marker',
+                        _testReplayMarker: {
+                            title: 'Downstream Replay',
+                            height: 36
+                        }
+                    }
+                }
+            ] as any);
+
+            const cookingText = boxesForSourceId(pages, 'clock-cooking-board').map(flattenBoxText).join('\n');
+            const replayMarkerText = boxesForSourceId(pages, 'clock-cooking-replay-marker').map(flattenBoxText).join('\n');
+            const reader = engine.getLastSimulationReportReader();
+
+            assert.match(cookingText, /DOS FLIPBOOK MODE/, 'clock cooking board should expose the recovered flipbook-mode rendering');
+            assert.match(cookingText, /Ticks Cooked:\s*10\s*\/\s*10/, 'clock cooking board should reach the declared cooking horizon');
+            assert.match(replayMarkerText, /Render Count:\s*11/, 'clock cooking board should replay downstream content across the cooked ticks');
+            assert.equal(reader.progression?.policy, 'fixed-tick-count', 'clock cooking board should run through the restored fixed-tick progression path');
+            assert.equal(reader.progression?.finalTick, 10, 'clock cooking board should capture at tick 10');
+        }
+    );
+
+    await _checkAsync(
+        'actor event bus rollback',
+        'speculative actor signals should disappear completely when the local signal snapshot is restored',
+        async () => {
+            const engine = createReactiveProofEngine();
+            await engine.waitForFonts();
+
+            const session = new LayoutSession({ runtime: engine.getRuntime() });
+            session.notifySimulationStart();
+
+            const snapshot = session.captureLocalActorSignalSnapshot();
+            session.publishActorSignal({
+                topic: 'probe-heading',
+                publisherActorId: 'actor:speculative',
+                publisherSourceId: 'source:speculative',
+                publisherActorKind: 'test-signal-publisher',
+                fragmentIndex: 0,
+                pageIndex: 4,
+                payload: { label: 'Speculative' }
+            });
+
+            assert.equal(session.getActorSignals('probe-heading').length, 1, 'rollback proof should see the speculative signal before restore');
+
+            session.restoreLocalActorSignalSnapshot(snapshot);
+
+            assert.equal(session.getActorSignals('probe-heading').length, 0, 'rollback proof should remove speculative signal after restore');
+        }
+    );
+
+    await _checkAsync(
+        'reactive collector board',
+        'a collector-style observer should accumulate numbered entries from many publishers and push trailing flow after its final fragment',
+        async () => {
+            const engine = createReactiveProofEngine({
+                layout: {
+                    pageSize: { width: 360, height: 260 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Helvetica',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                }
+            });
+            await engine.waitForFonts();
+
+            const labels = [
+                'Chapter 1: Signal Fire',
+                'Chapter 2: Echo Valley',
+                'Chapter 3: Lantern Shore',
+                'Chapter 4: Ridge of Glass',
+                'Chapter 5: Hollow Drum',
+                'Chapter 6: Cedar Crossing',
+                'Chapter 7: The Quiet Port',
+                'Chapter 8: Ember Rain'
+            ];
+
+            const elements: any[] = [];
+            labels.forEach((label, index) => {
+                elements.push({
+                    type: 'test-signal-publisher',
+                    content: `Heading Publisher ${index + 1}\n${label}`,
+                    properties: {
+                        sourceId: `collector-publisher-${index + 1}`,
+                        style: {
+                            height: 64,
+                            marginBottom: 10,
+                            paddingTop: 10,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            paddingBottom: 10,
+                            backgroundColor: '#e0f2fe',
+                            borderColor: '#0891b2',
+                            borderWidth: 1
+                        },
+                        _actorSignalPublish: {
+                            topic: 'collector-entry',
+                            payload: { label }
+                        }
+                    }
+                });
+                elements.push({
+                    type: 'p',
+                    content: longParagraph(`Collector proof filler ${index + 1}.`),
+                    properties: { sourceId: `collector-filler-${index + 1}` }
+                });
+            });
+
+            elements.push({
+                type: 'test-signal-observer',
+                content: '',
+                properties: {
+                    sourceId: 'synthetic-collector',
+                    style: {
+                        marginTop: 10,
+                        marginBottom: 12
+                    },
+                    _actorSignalObserve: {
+                        topic: 'collector-entry',
+                        title: 'Synthetic Collector',
+                        renderMode: 'collector-list',
+                        backgroundColor: '#f8fafc',
+                        borderColor: '#475569',
+                        color: '#0f172a',
+                        baseHeight: 100,
+                        growthPerSignal: 34
+                    }
+                }
+            });
+            elements.push({
+                type: 'p',
+                content: longParagraph('Trailing aftermath proof text should be displaced by the collector list and appear after its final fragment.'),
+                properties: { sourceId: 'collector-aftermath' }
+            });
+
+            const pages = engine.simulate(elements);
+            const collectorBoxes = boxesForSourceId(pages, 'synthetic-collector');
+            const collectorText = collectorBoxes.map((box) => flattenBoxText(box)).join('\n');
+            const aftermathBoxes = boxesForSourceId(pages, 'collector-aftermath');
+
+            assert.ok(collectorBoxes.length >= 2, 'collector board should span multiple fragments under aggregate label load');
+            assert.match(collectorText, /Synthetic Collector/, 'collector board should render the collector title');
+            assert.match(collectorText, /1\.\s+Chapter 1: Signal Fire/, 'collector board should include the first numbered entry');
+            assert.match(collectorText, /8\.\s+Chapter 8: Ember Rain/, 'collector board should include the last numbered entry');
+
+            assert.ok(aftermathBoxes.length > 0, 'collector board should preserve the trailing aftermath box');
+            const lastCollector = collectorBoxes[collectorBoxes.length - 1];
+            const firstAftermath = aftermathBoxes[0];
+            assert.ok(
+                firstAftermath.meta?.pageIndex >= lastCollector.meta?.pageIndex,
+                'collector board should push the aftermath onto or after the collector page'
+            );
+            if (firstAftermath.meta?.pageIndex === lastCollector.meta?.pageIndex) {
+                assert.ok(firstAftermath.y > lastCollector.y, 'collector board should place the aftermath below the collector on a shared page');
+            }
+        }
+    );
+
+    await _checkAsync(
+        'in-flow collector late-signal settle board',
+        'an early in-flow collector should learn later mature signals and reclaim space from a later actor-boundary settle',
+        async () => {
+            const engine = createReactiveProofEngine();
+            await engine.waitForFonts();
+
+            const labels = [
+                'Chapter 1: Signal Fire',
+                'Chapter 2: Echo Valley',
+                'Chapter 3: Lantern Shore',
+                'Chapter 4: Ridge of Glass'
+            ];
+
+            const elements: any[] = [
+                {
+                    type: 'p',
+                    content: 'This fixture places ordinary flow before the collector so the dirty frontier resolves to an actor checkpoint instead of a page-start checkpoint.',
+                    properties: { sourceId: 'inflow-intro' }
+                },
+                {
+                    type: 'test-signal-observer',
+                    content: '',
+                    properties: {
+                        sourceId: 'inflow-collector',
+                        style: {
+                            marginTop: 8,
+                            marginBottom: 10
+                        },
+                        _actorSignalObserve: {
+                            topic: 'inflow-collector-entry',
+                            title: 'In-Flow Collector',
+                            renderMode: 'collector-list',
+                            backgroundColor: '#f8fafc',
+                            borderColor: '#475569',
+                            color: '#0f172a',
+                            baseHeight: 72,
+                            growthPerSignal: 28
+                        }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: longParagraph('Aftermath body should be pushed downward once the collector grows from mature signals discovered later in the run.'),
+                    properties: { sourceId: 'inflow-aftermath-1' }
+                },
+                {
+                    type: 'p',
+                    content: longParagraph('More aftermath body keeps the early pages occupied so the collector has real downstream consequences.'),
+                    properties: { sourceId: 'inflow-aftermath-2' }
+                },
+                {
+                    type: 'p',
+                    content: longParagraph('Still more aftermath body extends the early region before the late publishers are encountered.'),
+                    properties: { sourceId: 'inflow-aftermath-3' }
+                }
+            ];
+
+            labels.forEach((label, index) => {
+                elements.push({
+                    type: 'test-signal-publisher',
+                    content: `Heading Publisher ${index + 1}\n${label}`,
+                    properties: {
+                        sourceId: `inflow-publisher-${index + 1}`,
+                        style: {
+                            height: 64,
+                            marginBottom: 10,
+                            paddingTop: 10,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            paddingBottom: 10,
+                            backgroundColor: '#ede9fe',
+                            borderColor: '#7c3aed',
+                            borderWidth: 1
+                        },
+                        _actorSignalPublish: {
+                            topic: 'inflow-collector-entry',
+                            signalKey: `inflow-collector-entry:${index + 1}`,
+                            payload: { label }
+                        }
+                    }
+                });
+                elements.push({
+                    type: 'p',
+                    content: longParagraph(`Late publisher filler ${index + 1} keeps the collector proof marching across later pages.`),
+                    properties: { sourceId: `inflow-publisher-filler-${index + 1}` }
+                });
+                elements.push({
+                    type: 'p',
+                    content: longParagraph(`Additional late filler ${index + 1} keeps the publishers meaningfully downstream from the collector.`),
+                    properties: { sourceId: `inflow-publisher-filler-extra-${index + 1}` }
+                });
+            });
+
+            const pages = engine.simulate(elements);
+            const snapshot = engine.getLastPrintPipelineSnapshot();
+            const profile = snapshot.report?.profile;
+            const collectorBoxes = boxesForSourceId(pages, 'inflow-collector');
+            const publisherBoxes = labels.flatMap((_, index) => boxesForSourceId(pages, `inflow-publisher-${index + 1}`));
+            const collectorText = collectorBoxes.map((box) => flattenBoxText(box)).join('\n');
+            const firstCollectorPage = Number(collectorBoxes[0]?.meta?.pageIndex ?? -1);
+            const firstPublisherPage = Math.min(...publisherBoxes.map((box) => Number(box.meta?.pageIndex ?? 9999)));
+
+            assert.ok(collectorBoxes.length > 0, 'in-flow collector board should render collector boxes');
+            assert.ok(firstCollectorPage <= 1, `in-flow collector should begin near the front, got page ${firstCollectorPage}`);
+            assert.ok(firstPublisherPage > firstCollectorPage, `in-flow collector should start before its publishers, got collector page ${firstCollectorPage} and publisher page ${firstPublisherPage}`);
+            assert.match(collectorText, /1\.\s+Chapter 1: Signal Fire/, 'in-flow collector should absorb the first later label');
+            assert.match(collectorText, /4\.\s+Chapter 4: Ridge of Glass/, 'in-flow collector should absorb the last later label');
+            assert.ok((profile?.observerSettleCalls || 0) > 0, 'in-flow collector board should record at least one observer settle');
+        }
+    );
+
+    await _checkAsync(
+        'same-page collector checkpoint board',
+        'a collector and its publisher should settle on the same page at an actor-boundary checkpoint before any page turn',
+        async () => {
+            const engine = createReactiveProofEngine({
+                layout: {
+                    pageSize: { width: 320, height: 520 },
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                }
+            });
+            await engine.waitForFonts();
+
+            const pages = engine.simulate([
+                {
+                    type: 'test-signal-observer',
+                    content: '',
+                    properties: {
+                        sourceId: 'same-page-collector',
+                        style: { marginTop: 8, marginBottom: 10 },
+                        _actorSignalObserve: {
+                            topic: 'same-page-entry',
+                            title: 'Same-Page Collector',
+                            renderMode: 'collector-list',
+                            backgroundColor: '#f8fafc',
+                            borderColor: '#475569',
+                            color: '#0f172a',
+                            baseHeight: 56,
+                            growthPerSignal: 28
+                        }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: repeatedParagraph('Early aftermath occupies the same page so the collector must reclaim space before the page boundary.', 8),
+                    properties: { sourceId: 'same-page-aftermath-1' }
+                },
+                {
+                    type: 'test-signal-publisher',
+                    content: 'Heading Publisher\nSame Page Entry',
+                    properties: {
+                        sourceId: 'same-page-publisher',
+                        style: {
+                            height: 64,
+                            marginBottom: 10,
+                            paddingTop: 10,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            paddingBottom: 10,
+                            backgroundColor: '#dbeafe',
+                            borderColor: '#2563eb',
+                            borderWidth: 1,
+                            color: '#1e3a8a',
+                            fontWeight: 700
+                        },
+                        _actorSignalPublish: {
+                            topic: 'same-page-entry',
+                            signalKey: 'same-page-entry:1',
+                            payload: { label: 'Same Page Entry' }
+                        }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: repeatedParagraph('Late aftermath should still live on the first page after the actor-boundary settle happens.', 6),
+                    properties: { sourceId: 'same-page-aftermath-2' }
+                }
+            ]);
+
+            const snapshot = engine.getLastPrintPipelineSnapshot();
+            const profile = snapshot.report?.profile;
+            const collectorBoxes = boxesForSourceId(pages, 'same-page-collector');
+            const publisherBoxes = boxesForSourceId(pages, 'same-page-publisher');
+            const collectorText = collectorBoxes.map((box) => flattenBoxText(box)).join('\n');
+
+            assert.ok(collectorBoxes.length > 0, 'same-page checkpoint board should render the collector');
+            assert.ok(publisherBoxes.length > 0, 'same-page checkpoint board should render the publisher');
+            assert.equal(Number(collectorBoxes[0].meta?.pageIndex ?? -1), 0, 'same-page checkpoint board should keep collector on page 0');
+            assert.equal(Number(publisherBoxes[0].meta?.pageIndex ?? -1), 0, 'same-page checkpoint board should keep publisher on page 0');
+            assert.match(collectorText, /1\.\s+Same Page Entry/, 'same-page checkpoint board should settle the same-page label into the collector');
+            assert.ok((profile?.observerSettleCalls || 0) > 0, 'same-page checkpoint board should record an intra-page settle');
+        }
+    );
+
+    await _checkAsync(
+        'anchored restore precision board',
+        'a later collector settle should preserve a locked prelude marker while still learning the later mature signal',
+        async () => {
+            const engine = createReactiveProofEngine();
+            await engine.waitForFonts();
+
+            const pages = engine.simulate([
+                {
+                    type: 'test-replay-marker',
+                    content: '',
+                    properties: {
+                        sourceId: 'locked-prelude-marker',
+                        style: { marginTop: 6, marginBottom: 8 },
+                        _testReplayMarker: {
+                            title: 'Locked Prelude',
+                            backgroundColor: '#fee2e2',
+                            borderColor: '#dc2626',
+                            color: '#7f1d1d',
+                            height: 56
+                        }
+                    }
+                },
+                {
+                    type: 'test-signal-observer',
+                    content: '',
+                    properties: {
+                        sourceId: 'locked-prelude-collector',
+                        style: { marginTop: 8, marginBottom: 8 },
+                        _actorSignalObserve: {
+                            topic: 'locked-prelude-entry',
+                            title: 'Precision Collector',
+                            renderMode: 'collector-list',
+                            backgroundColor: '#f8fafc',
+                            borderColor: '#475569',
+                            color: '#0f172a',
+                            baseHeight: 54,
+                            growthPerSignal: 28
+                        }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: repeatedParagraph('Early aftermath should remain below the collector while the locked prelude stays untouched if restore precision is correct.', 7),
+                    properties: { sourceId: 'locked-prelude-aftermath-1' }
+                },
+                {
+                    type: 'test-signal-publisher',
+                    content: 'Heading Publisher\nAnchored Entry',
+                    properties: {
+                        sourceId: 'locked-prelude-publisher',
+                        style: {
+                            height: 64,
+                            marginBottom: 8,
+                            paddingTop: 10,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            paddingBottom: 10,
+                            backgroundColor: '#dbeafe',
+                            borderColor: '#2563eb',
+                            borderWidth: 2,
+                            color: '#1e3a8a',
+                            fontWeight: 700
+                        },
+                        _actorSignalPublish: {
+                            topic: 'locked-prelude-entry',
+                            signalKey: 'locked-prelude-entry:1',
+                            payload: { label: 'Anchored Entry' }
+                        }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: repeatedParagraph('Late aftermath proves the world resumed after the collector learned the later mature signal.', 5),
+                    properties: { sourceId: 'locked-prelude-aftermath-2' }
+                }
+            ]);
+
+            const snapshot = engine.getLastPrintPipelineSnapshot();
+            const profile = snapshot.report?.profile;
+            const markerBoxes = boxesForSourceId(pages, 'locked-prelude-marker');
+            const collectorBoxes = boxesForSourceId(pages, 'locked-prelude-collector');
+            const markerText = markerBoxes.map((box) => flattenBoxText(box)).join('\n');
+            const collectorText = collectorBoxes.map((box) => flattenBoxText(box)).join('\n');
+
+            assert.ok(markerBoxes.length > 0, 'anchored restore board should render the locked prelude marker');
+            assert.ok(collectorBoxes.length > 0, 'anchored restore board should render the collector');
+            assert.match(markerText, /Locked Prelude/, 'anchored restore board should preserve the locked prelude marker');
+            assert.match(markerText, /Render Count:\s*1/, 'anchored restore board should keep the prelude marker at a single render');
+            assert.match(collectorText, /1\.\s+Anchored Entry/, 'anchored restore board should still learn the later anchored entry');
+            assert.ok(markerBoxes[0].y < collectorBoxes[0].y, 'anchored restore board should keep the marker above the collector');
+            assert.ok((profile?.observerSettleCalls || 0) > 0, 'anchored restore board should still record a settle');
+        }
+    );
+
+    await _checkAsync(
+        'cross-page bulletin board board',
+        'multiple publishers should emit committed signals across pages into one downstream observer with aggregate page provenance',
+        async () => {
+            const engine = createReactiveProofEngine({
+                layout: {
+                    pageSize: { width: 320, height: 220 },
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                }
+            });
+            await engine.waitForFonts();
+
+            const publisherStyle = {
+                height: 150,
+                marginBottom: 12,
+                paddingTop: 12,
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingBottom: 12,
+                backgroundColor: '#dbeafe',
+                borderColor: '#2563eb',
+                borderWidth: 1
+            };
+
+            const pages = engine.simulate([
+                {
+                    type: 'test-signal-publisher',
+                    content: 'Publisher Alpha',
+                    properties: {
+                        sourceId: 'pub-alpha',
+                        style: publisherStyle,
+                        _actorSignalPublish: {
+                            topic: 'probe-heading',
+                            payload: { label: 'Alpha' }
+                        }
+                    }
+                },
+                {
+                    type: 'test-signal-publisher',
+                    content: 'Publisher Beta',
+                    properties: {
+                        sourceId: 'pub-beta',
+                        style: publisherStyle,
+                        _actorSignalPublish: {
+                            topic: 'probe-heading',
+                            payload: { label: 'Beta' }
+                        }
+                    }
+                },
+                {
+                    type: 'test-signal-publisher',
+                    content: 'Publisher Gamma',
+                    properties: {
+                        sourceId: 'pub-gamma',
+                        style: publisherStyle,
+                        _actorSignalPublish: {
+                            topic: 'probe-heading',
+                            payload: { label: 'Gamma' }
+                        }
+                    }
+                },
+                {
+                    type: 'test-signal-observer',
+                    content: '',
+                    properties: {
+                        sourceId: 'observer-main',
+                        style: {
+                            marginTop: 8,
+                            marginBottom: 8
+                        },
+                        _actorSignalObserve: {
+                            topic: 'probe-heading',
+                            title: 'Observed Publishers',
+                            backgroundColor: '#fde68a',
+                            borderColor: '#b45309',
+                            baseHeight: 80,
+                            growthPerSignal: 36
+                        }
+                    }
+                }
+            ]);
+
+            const publisherBoxes = ['pub-alpha', 'pub-beta', 'pub-gamma'].flatMap((sourceId) => boxesForSourceId(pages, sourceId));
+            const publisherPages = new Set(publisherBoxes.map((box) => Number(box.meta?.pageIndex ?? -1)));
+            const observerBoxes = boxesForSourceId(pages, 'observer-main');
+            const observerText = observerBoxes.map((box) => flattenBoxText(box)).join('\n');
+
+            assert.ok(publisherPages.size >= 2, 'cross-page bulletin board should place publishers on multiple pages');
+            assert.ok(observerBoxes.length >= 2, 'cross-page bulletin board should grow observer into multiple fragments');
+            assert.ok(Number(observerBoxes[0].meta?.pageIndex ?? -1) >= 2, 'cross-page bulletin board observer should land on a later page');
+            assert.match(observerText, /Count:\s*3/, 'cross-page bulletin board should report all three signals');
+            assert.match(observerText, /Pages:\s*1,\s*2,\s*3/, 'cross-page bulletin board should preserve page provenance');
+        }
+    );
+
+    await _checkAsync(
+        'observer summary follower board',
+        'an observer should publish an aggregate summary that a downstream follower consumes as both content and geometry',
+        async () => {
+            const engine = createReactiveProofEngine({
+                layout: {
+                    pageSize: { width: 320, height: 220 },
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                }
+            });
+            await engine.waitForFonts();
+
+            const publisherStyle = {
+                height: 110,
+                marginBottom: 12,
+                paddingTop: 12,
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingBottom: 12,
+                backgroundColor: '#dbeafe',
+                borderColor: '#2563eb',
+                borderWidth: 1
+            };
+
+            const pages = engine.simulate([
+                {
+                    type: 'test-signal-publisher',
+                    content: 'Publisher Alpha',
+                    properties: {
+                        sourceId: 'chain-pub-alpha',
+                        style: publisherStyle,
+                        _actorSignalPublish: {
+                            topic: 'probe-heading',
+                            payload: { label: 'Alpha' }
+                        }
+                    }
+                },
+                { type: 'p', content: longParagraph('Alpha filler for chained follower proof.', 90) },
+                {
+                    type: 'test-signal-publisher',
+                    content: 'Publisher Beta',
+                    properties: {
+                        sourceId: 'chain-pub-beta',
+                        style: publisherStyle,
+                        _actorSignalPublish: {
+                            topic: 'probe-heading',
+                            payload: { label: 'Beta' }
+                        }
+                    }
+                },
+                { type: 'p', content: longParagraph('Beta filler for chained follower proof.', 90) },
+                {
+                    type: 'test-signal-publisher',
+                    content: 'Publisher Gamma',
+                    properties: {
+                        sourceId: 'chain-pub-gamma',
+                        style: publisherStyle,
+                        _actorSignalPublish: {
+                            topic: 'probe-heading',
+                            payload: { label: 'Gamma' }
+                        }
+                    }
+                },
+                {
+                    type: 'test-signal-observer',
+                    content: '',
+                    properties: {
+                        sourceId: 'chain-observer',
+                        style: {
+                            marginTop: 8,
+                            marginBottom: 8
+                        },
+                        _actorSignalObserve: {
+                            topic: 'probe-heading',
+                            title: 'Observed Publishers',
+                            publishTopic: 'observer-summary',
+                            backgroundColor: '#dcfce7',
+                            borderColor: '#15803d',
+                            baseHeight: 80,
+                            growthPerSignal: 28
+                        }
+                    }
+                },
+                {
+                    type: 'test-signal-follower',
+                    content: '',
+                    properties: {
+                        sourceId: 'chain-follower',
+                        style: {
+                            marginTop: 10,
+                            marginBottom: 8
+                        },
+                        _actorSignalFollow: {
+                            topic: 'observer-summary',
+                            title: 'Follower Shift',
+                            backgroundColor: '#ede9fe',
+                            borderColor: '#7c3aed',
+                            baseHeight: 72,
+                            indentPerSignal: 18
+                        }
+                    }
+                }
+            ]);
+
+            const observerBoxes = boxesForSourceId(pages, 'chain-observer');
+            const followerBoxes = boxesForSourceId(pages, 'chain-follower');
+            const followerText = followerBoxes.map((box) => flattenBoxText(box)).join('\n');
+
+            assert.ok(observerBoxes.length > 0, 'observer summary follower board should render observer');
+            assert.ok(followerBoxes.length > 0, 'observer summary follower board should render follower');
+            assert.match(followerText, /Observer Count:\s*3/, 'observer summary follower board should pass aggregate count downstream');
+            assert.match(followerText, /Alpha/, 'observer summary follower board should pass Alpha label downstream');
+            assert.match(followerText, /Beta/, 'observer summary follower board should pass Beta label downstream');
+            assert.match(followerText, /Gamma/, 'observer summary follower board should pass Gamma label downstream');
+            assert.ok(Number(followerBoxes[0].x || 0) > 40, 'observer summary follower board should shift follower geometry to the right');
+        }
+    );
+
+    await _checkAsync(
+        'dual in-flow collectors board',
+        'two early collectors should resettle independently from interleaved later signals without cross-topic contamination',
+        async () => {
+            const engine = createReactiveProofEngine({
+                layout: {
+                    pageSize: { width: 320, height: 220 },
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                }
+            });
+            await engine.waitForFonts();
+
+            const collectors = [
+                {
+                    topic: 'inflow-collector-alpha-entry',
+                    sourceId: 'dual-inflow-collector-alpha',
+                    title: 'In-Flow Collector Alpha',
+                    firstLabel: 'Alpha 1: Signal Fire',
+                    lastLabel: 'Alpha 3: Ridge Walk',
+                    backgroundColor: '#eff6ff',
+                    borderColor: '#2563eb',
+                    color: '#1e3a8a'
+                },
+                {
+                    topic: 'inflow-collector-beta-entry',
+                    sourceId: 'dual-inflow-collector-beta',
+                    title: 'In-Flow Collector Beta',
+                    firstLabel: 'Beta 1: Echo Vale',
+                    lastLabel: 'Beta 3: Quiet Port',
+                    backgroundColor: '#fefce8',
+                    borderColor: '#ca8a04',
+                    color: '#854d0e'
+                }
+            ];
+
+            const elements: any[] = [
+                {
+                    type: 'test-signal-observer',
+                    content: '',
+                    properties: {
+                        sourceId: collectors[0].sourceId,
+                        style: { marginTop: 8, marginBottom: 10 },
+                        _actorSignalObserve: {
+                            topic: collectors[0].topic,
+                            title: collectors[0].title,
+                            renderMode: 'collector-list',
+                            backgroundColor: collectors[0].backgroundColor,
+                            borderColor: collectors[0].borderColor,
+                            color: collectors[0].color,
+                            baseHeight: 60,
+                            growthPerSignal: 22
+                        }
+                    }
+                },
+                {
+                    type: 'test-signal-observer',
+                    content: '',
+                    properties: {
+                        sourceId: collectors[1].sourceId,
+                        style: { marginTop: 8, marginBottom: 10 },
+                        _actorSignalObserve: {
+                            topic: collectors[1].topic,
+                            title: collectors[1].title,
+                            renderMode: 'collector-list',
+                            backgroundColor: collectors[1].backgroundColor,
+                            borderColor: collectors[1].borderColor,
+                            color: collectors[1].color,
+                            baseHeight: 60,
+                            growthPerSignal: 22
+                        }
+                    }
+                },
+                {
+                    type: 'p',
+                    content: longParagraph('Shared early aftermath keeps the first region occupied so both collectors must claim real space when later signals mature.'),
+                    properties: { sourceId: 'dual-inflow-aftermath-1' }
+                },
+                {
+                    type: 'p',
+                    content: longParagraph('Additional early aftermath extends the downstream region so dual collector settling becomes visible in ordinary flow.'),
+                    properties: { sourceId: 'dual-inflow-aftermath-2' }
+                },
+                {
+                    type: 'p',
+                    content: longParagraph('Still more early aftermath keeps the front pages meaningfully occupied before later publishers are encountered.'),
+                    properties: { sourceId: 'dual-inflow-aftermath-3' }
+                }
+            ];
+
+            [
+                {
+                    sourceId: 'dual-alpha-1',
+                    topic: collectors[0].topic,
+                    signalKey: 'dual-alpha-1',
+                    label: collectors[0].firstLabel,
+                    backgroundColor: '#dbeafe',
+                    borderColor: '#2563eb',
+                    color: '#1e3a8a'
+                },
+                {
+                    sourceId: 'dual-beta-1',
+                    topic: collectors[1].topic,
+                    signalKey: 'dual-beta-1',
+                    label: collectors[1].firstLabel,
+                    backgroundColor: '#fef3c7',
+                    borderColor: '#d97706',
+                    color: '#92400e'
+                },
+                {
+                    sourceId: 'dual-alpha-2',
+                    topic: collectors[0].topic,
+                    signalKey: 'dual-alpha-2',
+                    label: 'Alpha 2: Lantern Shore',
+                    backgroundColor: '#dbeafe',
+                    borderColor: '#2563eb',
+                    color: '#1e3a8a'
+                },
+                {
+                    sourceId: 'dual-beta-2',
+                    topic: collectors[1].topic,
+                    signalKey: 'dual-beta-2',
+                    label: 'Beta 2: Hollow Drum',
+                    backgroundColor: '#fef3c7',
+                    borderColor: '#d97706',
+                    color: '#92400e'
+                },
+                {
+                    sourceId: 'dual-alpha-3',
+                    topic: collectors[0].topic,
+                    signalKey: 'dual-alpha-3',
+                    label: collectors[0].lastLabel,
+                    backgroundColor: '#dbeafe',
+                    borderColor: '#2563eb',
+                    color: '#1e3a8a'
+                },
+                {
+                    sourceId: 'dual-beta-3',
+                    topic: collectors[1].topic,
+                    signalKey: 'dual-beta-3',
+                    label: collectors[1].lastLabel,
+                    backgroundColor: '#fef3c7',
+                    borderColor: '#d97706',
+                    color: '#92400e'
+                }
+            ].forEach((publisher, index) => {
+                elements.push({
+                    type: 'test-signal-publisher',
+                    content: `Heading Publisher\n${publisher.label}`,
+                    properties: {
+                        sourceId: publisher.sourceId,
+                        style: {
+                            height: 64,
+                            marginBottom: 10,
+                            paddingTop: 10,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            paddingBottom: 10,
+                            borderWidth: 1,
+                            backgroundColor: publisher.backgroundColor,
+                            borderColor: publisher.borderColor,
+                            color: publisher.color
+                        },
+                        _actorSignalPublish: {
+                            topic: publisher.topic,
+                            signalKey: publisher.signalKey,
+                            payload: { label: publisher.label }
+                        }
+                    }
+                });
+                elements.push({
+                    type: 'p',
+                    content: longParagraph(`${publisher.label} filler keeps later publishers interleaved so both collectors receive mature traffic at different moments.`),
+                    properties: { sourceId: `dual-interleaved-filler-${index + 1}` }
+                });
+            });
+
+            elements.push({
+                type: 'p',
+                content: longParagraph('Late aftermath proves both collector invalidations have settled and the forward march resumed normally.'),
+                properties: { sourceId: 'dual-inflow-late-aftermath' }
+            });
+
+            const pages = engine.simulate(elements);
+            const alphaBoxes = boxesForSourceId(pages, collectors[0].sourceId);
+            const betaBoxes = boxesForSourceId(pages, collectors[1].sourceId);
+            const alphaText = alphaBoxes.map((box) => flattenBoxText(box)).join('\n');
+            const betaText = betaBoxes.map((box) => flattenBoxText(box)).join('\n');
+            const lateAftermath = boxesForSourceId(pages, 'dual-inflow-late-aftermath');
+
+            assert.ok(alphaBoxes.length > 0 && betaBoxes.length > 0, 'dual in-flow collectors board should render both collectors');
+            assert.ok(Number(alphaBoxes[0].meta?.pageIndex ?? -1) === 0, 'dual in-flow collectors board should place alpha near the front');
+            assert.ok(Number(betaBoxes[0].meta?.pageIndex ?? -1) <= 1, 'dual in-flow collectors board should place beta near the front');
+            assert.match(alphaText, /1\.\s+Alpha 1: Signal Fire/, 'dual in-flow collectors board should retain alpha first label');
+            assert.match(alphaText, /3\.\s+Alpha 3: Ridge Walk/, 'dual in-flow collectors board should retain alpha last label');
+            assert.doesNotMatch(alphaText, /Beta 1: Echo Vale/, 'dual in-flow collectors board should keep beta labels out of alpha collector');
+            assert.match(betaText, /1\.\s+Beta 1: Echo Vale/, 'dual in-flow collectors board should retain beta first label');
+            assert.match(betaText, /3\.\s+Beta 3: Quiet Port/, 'dual in-flow collectors board should retain beta last label');
+            assert.doesNotMatch(betaText, /Alpha 1: Signal Fire/, 'dual in-flow collectors board should keep alpha labels out of beta collector');
+            assert.ok(lateAftermath.length > 0, 'dual in-flow collectors board should keep late aftermath');
+        }
+    );
+
+    await _checkAsync(
+        'saucer flipbook board',
+        'the recovered cooking actor should support the historical multi-frame saucer flipbook capture path',
+        async () => {
+            const frameCount = 10;
+            const engine = createReactiveProofEngine({
+                layout: {
+                    pageSize: { width: 720, height: 420 },
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Courier',
+                    fontSize: 12,
+                    lineHeight: 1.2
+                },
+                fonts: {
+                    regular: 'Courier'
+                }
+            });
+            await engine.waitForFonts();
+
+            const flipbookPages: any[] = [];
+            for (let currentFrame = 1; currentFrame <= frameCount; currentFrame++) {
+                const framePages = engine.simulate([
+                    {
+                        type: 'test-clock-cooking',
+                        content: '',
+                        properties: {
+                            sourceId: `clock-cooking-actor-${currentFrame}`,
+                            style: {
+                                marginTop: 4,
+                                marginBottom: 6
+                            },
+                            _clockCooking: {
+                                title: `UFO WAVE TRACK  FRAME ${currentFrame.toString().padStart(2, '0')}/${frameCount.toString().padStart(2, '0')}  [DOS FLIPBOOK MODE]`,
+                                emptyLabel: 'Scene is dormant.',
+                                baseHeight: 288,
+                                growthPerStage: 8,
+                                maxStages: currentFrame,
+                                pathStages: frameCount,
+                                sceneMode: 'ascii-diorama',
+                                sceneWidth: 62,
+                                sceneHeight: 16,
+                                fontFamily: 'Courier'
+                            }
+                        }
+                    },
+                    {
+                        type: 'test-replay-marker',
+                        content: '',
+                        properties: {
+                            sourceId: `clock-cooking-downstream-${currentFrame}`,
+                            _testReplayMarker: {
+                                title: 'DOWNSTREAM REPLAY',
+                                backgroundColor: '#eef2ff',
+                                borderColor: '#4338ca',
+                                color: '#312e81',
+                                height: 32
+                            }
+                        }
+                    },
+                    {
+                        type: 'p',
+                        content: 'telemetry ballast keeps a committed downstream region available for replay',
+                        properties: {
+                            sourceId: `clock-cooking-ballast-${currentFrame}`,
+                            style: {
+                                fontFamily: 'Courier',
+                                fontSize: 8,
+                                lineHeight: 1.05,
+                                color: '#64748b',
+                                marginTop: 4,
+                                marginBottom: 0
+                            }
+                        }
+                    },
+                    { type: 'p', content: longParagraph(`Frame ${currentFrame} ballast one keeps pagination finalization meaningful while the UFO cooker accumulates later committed state.`, 90) },
+                    { type: 'p', content: longParagraph(`Frame ${currentFrame} ballast two preserves downstream replay pressure so the visual frame reflects a deeper settled slice.`, 90) },
+                    { type: 'p', content: longParagraph(`Frame ${currentFrame} ballast three prevents the proof from collapsing into a trivial one-pass single-page layout.`, 90) }
+                ]);
+
+                const cookerPage = framePages.find((page) => page.boxes.some((box) => box.type === 'test-clock-cooking')) || framePages[0];
+                flipbookPages.push(cookerPage);
+            }
+
+            assert.equal(flipbookPages.length, 10, 'saucer flipbook board should capture ten visual frames');
+
+            const firstText = flattenBoxText((flipbookPages[0].boxes || []).find((box: any) => box.type === 'test-clock-cooking'));
+            const lastText = flattenBoxText((flipbookPages[flipbookPages.length - 1].boxes || []).find((box: any) => box.type === 'test-clock-cooking'));
+
+            assert.match(firstText, /UFO WAVE TRACK\s+FRAME 01\/10/, 'saucer flipbook board should preserve the first frame title');
+            assert.match(firstText, /Ticks Cooked:\s*1\s*\/\s*1/, 'saucer flipbook board should settle the first frame at one cooked tick');
+            assert.match(lastText, /UFO WAVE TRACK\s+FRAME 10\/10/, 'saucer flipbook board should preserve the last frame title');
+            assert.match(lastText, /Ticks Cooked:\s*10\s*\/\s*10/, 'saucer flipbook board should settle the last frame at ten cooked ticks');
+            assert.match(lastText, /DOS FLIPBOOK MODE/, 'saucer flipbook board should expose the historical flipbook mode banner');
+        }
+    );
+
+    await _checkAsync(
         'transformable actor cloning probe',
         'two independent multi-page tables each emit their own repeated-header clones and clone summaries without leaking into each other',
         async () => {
@@ -2041,4 +3277,3 @@ run().catch((err) => {
     console.error('[engine-regression.spec] FAILED', err);
     process.exit(1);
 });
-

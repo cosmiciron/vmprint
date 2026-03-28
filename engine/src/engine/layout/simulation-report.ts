@@ -11,6 +11,7 @@ import type { SourcePositionSummary } from './collaborators/source-position-arti
 import type { HeadingTelemetrySummary } from './collaborators/heading-telemetry-collaborator';
 import type { LayoutProfileMetrics } from './layout-session-types';
 import type { Page } from '../types';
+import type { SimulationProgressionPolicy, SimulationStopReason } from '../types';
 
 export type SimulationArtifactMap = {
     fragmentationSummary?: FragmentationSummary[];
@@ -67,13 +68,11 @@ export type SimulationReport = {
     artifacts: SimulationArtifacts;
 };
 
-export type SimulationProgressionPolicy = 'until-settled';
-
 export type SimulationCaptureKind = 'finalized-pages';
 
 export type SimulationProgressionSummary = {
     policy: SimulationProgressionPolicy;
-    stopReason: 'settled';
+    stopReason: SimulationStopReason;
     captureKind: SimulationCaptureKind;
     finalTick: number;
     progressionStopped: boolean;

@@ -8,6 +8,13 @@ export type PageReservationSelector = 'first' | 'odd' | 'even' | 'all';
 export type VmprintDocumentVersion = '1.1';
 export type VmprintIRVersion = '1.0';
 export type ScriptMethodSource = string | string[];
+export type SimulationProgressionPolicy = 'until-settled' | 'fixed-tick-count';
+export type SimulationStopReason = 'settled' | 'fixed-tick-count';
+
+export interface SimulationProgressionConfig {
+    policy?: SimulationProgressionPolicy;
+    maxTicks?: number;
+}
 
 export interface LayoutScriptingConfig {
     methods?: Record<string, ScriptMethodSource>;
@@ -425,6 +432,7 @@ export interface LayoutConfig {
         hyphenMinSuffix?: number;
         justifyEngine?: JustifyEngineMode;
         justifyStrategy?: JustifyStrategy;
+        progression?: SimulationProgressionConfig;
         opticalScaling?: {
             enabled?: boolean;
             cjk?: number;

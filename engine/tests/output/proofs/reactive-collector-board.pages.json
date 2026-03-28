@@ -1,0 +1,638 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "chapter-heading",
+        "x": 24,
+        "y": 24,
+        "w": 372,
+        "h": 23.709375,
+        "lines": [
+          [
+            {
+              "text": "Synthetic Collector Visual Proof",
+              "width": 273.726563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 65.709375,
+        "w": 372,
+        "h": 63.225,
+        "lines": [
+          [
+            {
+              "text": "This proof document shows a synthetic TOC-like collector built ",
+              "width": 334.582031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "entirely from proof actors. The collector gathers labels from several ",
+              "width": 358.810547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "publishers, grows into a numbered list, and pushes trailing body text ",
+              "width": 364.201172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "downward.",
+              "width": 58.03125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-signal-publisher",
+        "x": 24,
+        "y": 136.934375,
+        "w": 372,
+        "h": 82,
+        "lines": [
+          [
+            {
+              "text": "Heading Publisher",
+              "width": 105.351563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Chapter 1: Signal Fire",
+              "width": 124.025391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 228.934375,
+        "w": 372,
+        "h": 56.41875,
+        "lines": [
+          [
+            {
+              "text": "Chapter 1: Signal Fire filler text keeps the collector test moving ",
+              "width": 336.152344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "forward. Chapter 1: Signal Fire filler text keeps the collector test ",
+              "width": 340.816406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "moving forward. Chapter 1: Signal Fire filler text keeps the ",
+              "width": 312.140625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 372,
+        "h": 72.225,
+        "lines": [
+          [
+            {
+              "text": "collector test moving forward. Chapter 1: Signal Fire filler text ",
+              "width": 327.462891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keeps the collector test moving forward. Chapter 1: Signal Fire ",
+              "width": 334.822266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "filler text keeps the collector test moving forward. Chapter 1: ",
+              "width": 322.142578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Signal Fire filler text keeps the collector test moving forward.",
+              "width": 320.132813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-signal-publisher",
+        "x": 24,
+        "y": 106.225,
+        "w": 372,
+        "h": 82,
+        "lines": [
+          [
+            {
+              "text": "Heading Publisher",
+              "width": 105.351563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Chapter 2: Echo Valley",
+              "width": 129.380859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 198.225,
+        "w": 372,
+        "h": 88.03125,
+        "lines": [
+          [
+            {
+              "text": "Chapter 2: Echo Valley filler text keeps the collector test moving ",
+              "width": 341.273438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "forward. Chapter 2: Echo Valley filler text keeps the collector test ",
+              "width": 345.9375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "moving forward. Chapter 2: Echo Valley filler text keeps the ",
+              "width": 317.261719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "collector test moving forward. Chapter 2: Echo Valley filler text ",
+              "width": 332.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keeps the collector test moving forward. Chapter 2: Echo Valley ",
+              "width": 339.943359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 372,
+        "h": 40.6125,
+        "lines": [
+          [
+            {
+              "text": "filler text keeps the collector test moving forward. Chapter 2: Echo ",
+              "width": 352.828125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Valley filler text keeps the collector test moving forward.",
+              "width": 294.568359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-signal-publisher",
+        "x": 24,
+        "y": 74.6125,
+        "w": 372,
+        "h": 82,
+        "lines": [
+          [
+            {
+              "text": "Heading Publisher",
+              "width": 105.351563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Chapter 3: Lantern Shore",
+              "width": 144.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 166.6125,
+        "w": 372,
+        "h": 88.03125,
+        "lines": [
+          [
+            {
+              "text": "Chapter 3: Lantern Shore filler text keeps the collector test moving",
+              "width": 351.515625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "forward. Chapter 3: Lantern Shore filler text keeps the collector ",
+              "width": 336.837891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "test moving forward. Chapter 3: Lantern Shore filler text keeps the ",
+              "width": 353.513672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "collector test moving forward. Chapter 3: Lantern Shore filler text ",
+              "width": 346.160156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keeps the collector test moving forward. Chapter 3: Lantern Shore ",
+              "width": 353.519531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 372,
+        "h": 40.6125,
+        "lines": [
+          [
+            {
+              "text": "filler text keeps the collector test moving forward. Chapter 3: ",
+              "width": 322.142578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Lantern Shore filler text keeps the collector test moving forward.",
+              "width": 338.830078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-signal-observer",
+        "x": 24,
+        "y": 86.6125,
+        "w": 372,
+        "h": 46.8125,
+        "lines": [
+          [
+            {
+              "text": "Synthetic Collector",
+              "width": 100.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "1. Chapter 1: Signal Fire",
+              "width": 130.066406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "test-signal-observer",
+        "x": 24,
+        "y": 24,
+        "w": 372,
+        "h": 46.8125,
+        "lines": [
+          [
+            {
+              "text": "2. Chapter 2: Echo Valley",
+              "width": 135.1875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "3. Chapter 3: Lantern Shore",
+              "width": 148.763672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 82.8125,
+        "w": 372,
+        "h": 205.48125,
+        "lines": [
+          [
+            {
+              "text": "Trailing aftermath text should appear only after the collector has ",
+              "width": 341.736328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "finished claiming space, proving that the collector has real spatial ",
+              "width": 348.855469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "consequence in ordinary flow. Trailing aftermath text should appear ",
+              "width": 359.759766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "only after the collector has finished claiming space, proving that the ",
+              "width": 360.199219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "collector has real spatial consequence in ordinary flow. Trailing ",
+              "width": 335.730469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "aftermath text should appear only after the collector has finished ",
+              "width": 344.197266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "claiming space, proving that the collector has real spatial ",
+              "width": 304.160156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "consequence in ordinary flow. Trailing aftermath text should appear ",
+              "width": 359.759766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "only after the collector has finished claiming space, proving that the ",
+              "width": 360.199219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "collector has real spatial consequence in ordinary flow. Trailing ",
+              "width": 335.730469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "aftermath text should appear only after the collector has finished ",
+              "width": 344.197266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "claiming space, proving that the collector has real spatial ",
+              "width": 304.160156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "consequence in ordinary flow. Trailing aftermath text should appear ",
+              "width": 359.759766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 372,
+        "h": 31.6125,
+        "lines": [
+          [
+            {
+              "text": "only after the collector has finished claiming space, proving that the ",
+              "width": 360.199219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "collector has real spatial consequence in ordinary flow.",
+              "width": 290.162109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

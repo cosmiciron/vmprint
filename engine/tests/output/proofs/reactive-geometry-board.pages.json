@@ -1,0 +1,286 @@
+[
+  {
+    "index": 0,
+    "width": 520,
+    "height": 460,
+    "boxes": [
+      {
+        "type": "chapter-heading",
+        "x": 20,
+        "y": 20,
+        "w": 480,
+        "h": 23.709375,
+        "lines": [
+          [
+            {
+              "text": "Actor Activation Board: Geometry",
+              "width": 291.049805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 57.709375,
+        "w": 480,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "Pinned actor grows after wake. Upstream stays fixed. Downstream replays.",
+              "width": 399.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 87.515625,
+        "w": 480,
+        "h": 60,
+        "lines": [
+          [
+            {
+              "text": "Upstream Marker",
+              "width": 98.044922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Must stay at Render Count: 1",
+              "width": 166.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 1",
+              "width": 93.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-signal-observer",
+        "x": 20,
+        "y": 163.515625,
+        "w": 480,
+        "h": 116,
+        "lines": [
+          [
+            {
+              "text": "Pinned Geometry Actor",
+              "width": 124.722656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "State: grows after wake",
+              "width": 125.390625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Update: geometry",
+              "width": 95.384766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "1. Wake the actor",
+              "width": 93.597656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 293.515625,
+        "w": 480,
+        "h": 60,
+        "lines": [
+          [
+            {
+              "text": "Downstream Marker",
+              "width": 114.708984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Should replay after settle",
+              "width": 143.373047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 2",
+              "width": 93.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 520,
+    "height": 460,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 20,
+        "y": 20,
+        "w": 480,
+        "h": 76,
+        "lines": [
+          [
+            {
+              "text": "Downstream Region",
+              "width": 108.714844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "This zone should shift after resettlement.",
+              "width": 216.105469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Replay marker below proves the shift happened.",
+              "width": 257.478516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-signal-publisher",
+        "x": 20,
+        "y": 104,
+        "w": 480,
+        "h": 78,
+        "lines": [
+          [
+            {
+              "text": "Event Source Tile",
+              "width": 100.482422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Topic: activation-geometry-entry",
+              "width": 185.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Committed Label: Wake the actor",
+              "width": 189.585938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 190,
+        "w": 480,
+        "h": 70,
+        "lines": [
+          [
+            {
+              "text": "Expected Result",
+              "width": 87.380859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Geometry actor grows.",
+              "width": 121.371094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Upstream marker stays at 1.",
+              "width": 150.708984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Downstream marker increments.",
+              "width": 173.378906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

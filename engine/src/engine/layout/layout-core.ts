@@ -1,6 +1,7 @@
 import { TextProcessor } from './text-processor';
 import { LayoutUtils } from './layout-utils';
 import { Box, BoxImagePayload, BoxMeta, Element, ElementStyle, OverflowPolicy, Page, PageRegionContent, RichLine, TextSegment } from '../types';
+import type { SimulationProgressionConfig } from '../types';
 import { getCachedFont } from '../../font-management/font-cache-loader';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
@@ -96,6 +97,17 @@ export class LayoutProcessor extends TextProcessor {
 
     getPackagerFactory(): ExternalPackagerFactory | undefined {
         return this.packagerFactory;
+    }
+
+    getSimulationProgressionConfig(): Required<SimulationProgressionConfig> {
+        const configured = this.config.layout.progression;
+        const policy = configured?.policy === 'fixed-tick-count'
+            ? 'fixed-tick-count'
+            : 'until-settled';
+        const maxTicks = policy === 'fixed-tick-count'
+            ? Math.max(1, Math.floor(Number(configured?.maxTicks || 1)))
+            : 0;
+        return { policy, maxTicks };
     }
 
     private cloneElementsForSimulation(elements: Element[]): Element[] {
@@ -1359,7 +1371,6 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 }
-
 
 
 

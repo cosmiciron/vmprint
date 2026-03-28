@@ -1,4 +1,5 @@
 import type { Page } from '../types';
+import type { SimulationProgressionPolicy, SimulationStopReason } from '../types';
 import type {
     SimulationArtifactKey,
     SimulationArtifactMap,
@@ -17,6 +18,8 @@ export type SimulationReportBridgeHost = {
     getPublishedArtifacts(): ReadonlyMap<string, unknown>;
     getProfileSnapshot(): LayoutProfileMetrics;
     getSimulationTick(): number;
+    getSimulationProgressionPolicy(): SimulationProgressionPolicy;
+    getSimulationStopReason(): SimulationStopReason;
     isSimulationProgressionStopped(): boolean;
     onSimulationComplete(): void;
 };
@@ -68,8 +71,8 @@ export class SimulationReportBridge {
         }, 0);
         const profile = this.host.getProfileSnapshot();
         const progression: SimulationProgressionSummary = {
-            policy: 'until-settled',
-            stopReason: 'settled',
+            policy: this.host.getSimulationProgressionPolicy(),
+            stopReason: this.host.getSimulationStopReason(),
             captureKind: 'finalized-pages',
             finalTick: this.host.getSimulationTick(),
             progressionStopped: this.host.isSimulationProgressionStopped()

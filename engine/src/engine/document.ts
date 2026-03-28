@@ -52,8 +52,10 @@ const LAYOUT_KEYS = new Set([
     'hyphenMinSuffix',
     'justifyEngine',
     'justifyStrategy',
+    'progression',
     'opticalScaling'
 ]);
+const PROGRESSION_KEYS = new Set(['policy', 'maxTicks']);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
 const ELEMENT_KEYS = new Set(['type', 'name', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
@@ -239,6 +241,20 @@ function validateLayout(layout: unknown, documentPath: string): void {
     assertEnumAt(obj.hyphenation, ['off', 'auto', 'soft'], 'layout.hyphenation', documentPath);
     assertEnumAt(obj.justifyEngine, ['legacy', 'advanced'], 'layout.justifyEngine', documentPath);
     assertEnumAt(obj.justifyStrategy, ['auto', 'space', 'inter-character'], 'layout.justifyStrategy', documentPath);
+    if (obj.progression !== undefined) {
+        const progression = assertPlainObjectAt(obj.progression, 'layout.progression', documentPath);
+        assertAllowedKeys(progression, PROGRESSION_KEYS, 'layout.progression', documentPath);
+        assertEnumAt(progression.policy, ['until-settled', 'fixed-tick-count'], 'layout.progression.policy', documentPath);
+        if (progression.maxTicks !== undefined) {
+            assertFiniteNumberAt(progression.maxTicks, 'layout.progression.maxTicks', documentPath);
+            if (Number(progression.maxTicks) < 1 || !Number.isInteger(progression.maxTicks)) {
+                contractError(documentPath, 'layout.progression.maxTicks', 'expected an integer greater than or equal to 1.');
+            }
+        }
+        if (progression.policy === 'fixed-tick-count' && progression.maxTicks === undefined) {
+            contractError(documentPath, 'layout.progression.maxTicks', 'is required when policy is "fixed-tick-count".');
+        }
+    }
 
     if (obj.margins === undefined) {
         contractError(documentPath, 'layout.margins', 'is required.');
@@ -1348,4 +1364,3 @@ export function toLayoutConfig(document: DocumentIR, debug: boolean): LayoutConf
         debug
     };
 }
-
