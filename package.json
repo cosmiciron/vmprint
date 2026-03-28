@@ -41,7 +41,11 @@
     "tsx": "^4.21.0",
     "typedoc": "^0.28.18"
   },
+  "overrides": {
+    "typescript": "~5.7.3"
+  },
   "dependencies": {
+    "@vmprint/context-pdf": "^1.0.1",
     "bidi-js": "^1.0.3"
   }
 }
