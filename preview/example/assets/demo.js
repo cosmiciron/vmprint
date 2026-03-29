@@ -50269,6 +50269,7 @@ ${end.comment}` : end.comment;
 
   // ../node_modules/@vmprint/markdown-core/dist/index.mjs
   var KEEP_WITH_NEXT_PATTERN = /^\s*<!--\s*keep-with-next\s*-->\s*$/i;
+  var DROP_CAP_PATTERN = /^\s*<!--\s*dropcap(?:\s+([\w-]+)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+))*\s*-->\s*$/i;
   function parseMarkdownAst(markdown) {
     const processor = remark().use(remarkParse).use(remarkGfm);
     return processor.parse(markdown);
@@ -50441,9 +50442,12 @@ ${end.comment}` : end.comment;
   function mapBlocks(nodes, defs) {
     const out = [];
     let pendingKeepWithNext = false;
+    let pendingDropCap = null;
     for (const node2 of nodes) {
       if (node2.type === "html") {
         if (KEEP_WITH_NEXT_PATTERN.test(node2.value || "")) pendingKeepWithNext = true;
+        const dropCap = parseDropCapComment(node2.value || "");
+        if (dropCap) pendingDropCap = dropCap;
         continue;
       }
       const mapped = mapBlock(node2, defs);
@@ -50451,9 +50455,30 @@ ${end.comment}` : end.comment;
         mapped[0] = { ...mapped[0], keepWithNext: true };
         pendingKeepWithNext = false;
       }
+      if (pendingDropCap && mapped.length > 0) {
+        mapped[0] = { ...mapped[0], dropCap: pendingDropCap };
+        pendingDropCap = null;
+      }
       out.push(...mapped);
     }
     return out;
+  }
+  function parseDropCapComment(value) {
+    if (!DROP_CAP_PATTERN.test(value)) return null;
+    const spec = { enabled: true };
+    const attrPattern = /([\w-]+)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/g;
+    let match;
+    while (match = attrPattern.exec(value)) {
+      const key = match[1].toLowerCase();
+      const raw = match[2].replace(/^['"]|['"]$/g, "");
+      if (key === "lines" || key === "chars" || key === "characters" || key === "gap") {
+        const num = Number(raw);
+        if (!Number.isFinite(num)) continue;
+        if (key === "chars") spec.characters = num;
+        else spec[key === "characters" ? "characters" : key] = num;
+      }
+    }
+    return spec;
   }
   function normalizeToSemantic(ast) {
     if (ast.type !== "root") {
@@ -50873,8 +50898,11 @@ ${end.comment}` : end.comment;
           if (rule.action.role) {
             const mergedProperties = { ...rule.action.properties || {} };
             if (rule.action.role === "paragraph") {
-              const openingDropCap = this.getOpeningDropCapProperties(node2, ctx);
-              if (openingDropCap) Object.assign(mergedProperties, openingDropCap);
+              if (node2.dropCap) mergedProperties.dropCap = node2.dropCap;
+              else {
+                const openingDropCap = this.getOpeningDropCapProperties(node2, ctx);
+                if (openingDropCap) Object.assign(mergedProperties, openingDropCap);
+              }
             }
             ctx.emit(rule.action.role, node2.children || [], {
               sourceRange: node2.sourceRange,
@@ -51583,6 +51611,12 @@ The preview you see on the right is powered by **@vmprint/preview**, a thin wrap
 
 Try switching the **Style Preset** dropdown. The same markdown instantly reflows into a completely different document\u2014different page size, font, column count, margins\u2014without touching a single word.
 
+### Under The Hood
+
+![VMPrint simulation blueprint](https://github.com/cosmiciron/vmprint/blob/main/documents/readme-assets/blueprint-2.png)
+
+The illustration here is a real engine artifact: actor placement, float settlement, drop-cap resolution, and mixed-script baseline alignment captured from an actual document simulation pass.
+
 ### Setting Up the Preview
 
 \`\`\`typescript
@@ -51817,6 +51851,158 @@ That is what VMPrint is for.
 `;
   var THEMES = {
     "tech-manual": void 0,
+    "blueprint": `
+layout:
+  fontFamily: Carlito
+  fontSize: 11.2
+  lineHeight: 1.66
+  pageSize: A4
+  pageBackground: "#f5efdf"
+  margins:
+    top: 82
+    right: 72
+    bottom: 84
+    left: 72
+  hyphenation: soft
+  justifyEngine: advanced
+  justifyStrategy: auto
+footer:
+  default:
+    elements:
+      - type: paragraph
+        content: "{pageNumber}"
+        properties:
+          style:
+            textAlign: center
+            fontFamily: Carlito
+            fontSize: 8.8
+            color: "#907a61"
+            letterSpacing: 1.6
+            marginTop: 24
+styles:
+  heading-1:
+    fontFamily: Caladea
+    fontSize: 29
+    lineHeight: 1.14
+    color: "#2b221b"
+    textAlign: center
+    hyphenation: "off"
+    marginTop: 18
+    marginBottom: 10
+    keepWithNext: true
+  subheading:
+    fontFamily: Carlito
+    fontSize: 9.6
+    lineHeight: 1.3
+    color: "#6e8392"
+    letterSpacing: 1.8
+    textAlign: center
+    marginTop: -2
+    marginBottom: 28
+    keepWithNext: true
+  heading-2:
+    fontFamily: Carlito
+    fontSize: 12.2
+    fontWeight: 700
+    color: "#47657b"
+    hyphenation: "off"
+    letterSpacing: 0.8
+    marginTop: 16
+    marginBottom: 9
+    keepWithNext: true
+  heading-3:
+    fontFamily: Caladea
+    fontSize: 12
+    fontStyle: italic
+    color: "#7b5a3d"
+    hyphenation: "off"
+    marginTop: 10
+    marginBottom: 6
+    keepWithNext: true
+  paragraph:
+    textAlign: justify
+    hyphenation: soft
+    lineHeight: 1.68
+    color: "#33281f"
+    marginBottom: 11.5
+  unordered-list:
+    color: "#33281f"
+  ordered-list:
+    color: "#33281f"
+  list-item:
+    color: "#33281f"
+  inline-code:
+    fontFamily: Cousine
+    fontSize: 9.6
+    color: "#1f485c"
+    backgroundColor: "#e7edf0"
+    borderRadius: 2
+  code-block:
+    fontFamily: Cousine
+    fontSize: 9.5
+    lineHeight: 1.38
+    allowLineSplit: true
+    overflowPolicy: clip
+    color: "#203341"
+    backgroundColor: "#edf1f2"
+    borderWidth: 0.8
+    borderColor: "#c6d0d5"
+    borderRadius: 3
+    paddingTop: 8
+    paddingBottom: 8
+    paddingLeft: 11
+    paddingRight: 11
+    marginTop: 2
+    marginBottom: 14
+  blockquote:
+    textAlign: left
+    hyphenation: "off"
+    fontFamily: Caladea
+    fontStyle: italic
+    fontSize: 12.3
+    lineHeight: 1.54
+    color: "#2e261f"
+    backgroundColor: "#fbf7ee"
+    borderLeftWidth: 2
+    borderLeftColor: "#9eb4c2"
+    paddingLeft: 16
+    paddingRight: 14
+    paddingTop: 7
+    paddingBottom: 7
+    marginTop: 4
+    marginBottom: 16
+  blockquote-attribution:
+    textAlign: right
+    fontFamily: Carlito
+    fontSize: 9.4
+    color: "#7f7566"
+    marginTop: 3
+    marginBottom: 8
+  thematic-break:
+    width: 160
+    marginLeft: 0
+    borderTopWidth: 0.7
+    borderTopColor: "#c7b69a"
+    marginTop: 18
+    marginBottom: 22
+  definition-term:
+    fontWeight: 700
+    color: "#47657b"
+    keepWithNext: true
+    marginTop: 0
+    marginBottom: 2
+  definition-desc:
+    paddingLeft: 15
+    marginBottom: 9
+  table-cell:
+    fontFamily: Carlito
+    paddingTop: 5
+    paddingBottom: 5
+    paddingLeft: 6
+    paddingRight: 6
+    borderWidth: 0.55
+    borderColor: "#c2b59f"
+`,
     "open-source": `
 layout:
   fontFamily: Carlito
@@ -52189,6 +52375,19 @@ styles:
     marginBottom: 21
 `
   };
+  var DEMO_CONFIG = `
+images:
+  blockStyle:
+    marginTop: 4
+    marginBottom: 18
+  frame:
+    mode: "off"
+
+captions:
+  style:
+    marginTop: 3
+    marginBottom: 14
+`;
   var byId = (id) => {
     const el2 = document.getElementById(id);
     if (!el2) throw new Error(`Missing #${id}`);
@@ -52221,11 +52420,76 @@ styles:
   var zoomLevel = 1;
   var renderTimer = null;
   var currentDocumentAst = null;
+  var imageCache = /* @__PURE__ */ new Map();
   var offscreenCanvas = document.createElement("canvas");
   var isDragging = false;
   var startX = 0;
   var startY = 0;
   var scrollLeftTop = { left: 0, top: 0 };
+  var MARKDOWN_IMAGE_PATTERN = /!\[[^\]]*?\]\(([^)\s]+)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\)/g;
+  var toBase64 = (blob) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === "string" ? reader.result : "";
+      const comma = result.indexOf(",");
+      resolve(comma >= 0 ? result.slice(comma + 1) : result);
+    };
+    reader.onerror = () => reject(reader.error ?? new Error("Failed to read image blob."));
+    reader.readAsDataURL(blob);
+  });
+  var normalizeImageSrc = (src) => {
+    const trimmed = src.trim().replace(/^<|>$/g, "");
+    if (!trimmed) return trimmed;
+    try {
+      const resolved = new URL(trimmed, window.location.href);
+      if (resolved.hostname === "github.com" && resolved.pathname.includes("/blob/")) {
+        const parts = resolved.pathname.split("/").filter(Boolean);
+        if (parts.length >= 5 && parts[2] === "blob") {
+          const [owner, repo, , branch, ...rest] = parts;
+          return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${rest.join("/")}`;
+        }
+      }
+      return resolved.href;
+    } catch {
+      return trimmed;
+    }
+  };
+  var extractMarkdownImageSources = (markdown) => {
+    const out = /* @__PURE__ */ new Set();
+    let match;
+    while (match = MARKDOWN_IMAGE_PATTERN.exec(markdown)) {
+      const normalized = normalizeImageSrc(match[1] || "");
+      if (!normalized || /^data:/i.test(normalized)) continue;
+      out.add(normalized);
+    }
+    return [...out];
+  };
+  var fetchResolvedImage = async (src) => {
+    try {
+      const response = await fetch(src);
+      if (!response.ok) return null;
+      const blob = await response.blob();
+      const mimeType = blob.type === "image/png" ? "image/png" : blob.type === "image/jpeg" ? "image/jpeg" : null;
+      if (!mimeType) return null;
+      return {
+        data: await toBase64(blob),
+        mimeType
+      };
+    } catch {
+      return null;
+    }
+  };
+  var primeImageCache = async (markdown) => {
+    const sources = extractMarkdownImageSources(markdown);
+    await Promise.all(sources.map(async (src) => {
+      if (imageCache.has(src)) return;
+      imageCache.set(src, await fetchResolvedImage(src));
+    }));
+  };
+  var resolveImageFromCache = (src) => {
+    const normalized = normalizeImageSrc(src);
+    return imageCache.get(normalized) ?? null;
+  };
   var onFontProgress = (event) => {
     if (event.phase === "complete") {
       fontProgressContainer.classList.add("hidden");
@@ -52279,7 +52543,12 @@ styles:
       const markdown = markdownInput.value;
       const themeKey = styleSelect.value;
       const theme = THEMES[themeKey];
-      const docAst = transmute(markdown, { theme });
+      await primeImageCache(markdown);
+      const docAst = transmute(markdown, {
+        theme,
+        config: DEMO_CONFIG,
+        resolveImage: resolveImageFromCache
+      });
       currentDocumentAst = docAst;
       astOutput.textContent = JSON.stringify(docAst, null, 2);
       if (!preview) {
@@ -52315,7 +52584,7 @@ styles:
     const usableW = renderViewport.clientWidth - px;
     const usableH = renderViewport.clientHeight - py2;
     if (usableW <= 0 || usableH <= 0) return;
-    zoomLevel = Math.min(usableW / pageWidth, usableH / pageHeight) * 0.96;
+    zoomLevel = Math.min(usableW / pageWidth, usableH / pageHeight) * 0.99;
     updateUI();
     requestAnimationFrame(() => {
       renderViewport.scrollTop = 0;

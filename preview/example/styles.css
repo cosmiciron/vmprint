@@ -265,9 +265,10 @@ select:focus { outline: none; border-color: var(--accent-primary); }
 #render-viewport {
   flex: 1;
   overflow: auto;
-  padding: 4rem;
+  padding: 1.25rem 2rem;
   display: grid;
-  place-items: center;
+  justify-items: center;
+  align-items: start;
   position: relative;
   cursor: grab;
   user-select: none;
