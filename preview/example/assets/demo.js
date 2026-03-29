@@ -51553,62 +51553,267 @@ styles:
   }
 
   // example/src/demo.ts
-  var DEFAULT_MARKDOWN = `# VMPrint: High-Fidelity Document Engineering
+  var DEFAULT_MARKDOWN = `# VMPrint Preview
 
-> Stop fighting with "Print-to-PDF" and start building professional documents.
+> You are reading this document inside a live layout engine. Every word, every page break, every justified line\u2014rendered in real-time by the same engine that produces your final PDF.
 
-For too long, developers have been forced to choose between impossible manual layouting with libraries like jsPDF, "fake" print-to-image workarounds, or massive components like react-pdf that lock you into a single framework. VMPrint is a professional alternative that brings desktop-publishing-grade layout directly to your application\u2014browser, server, or edge.
+## Why Another PDF Library?
 
-### The Infinite Pain of Web-to-PDF
-- **jsPDF**: Manually calculating X/Y coordinates for every line is impossible for complex documents.
-- **Headless Browsers**: Puppeteer and Chromium are huge dependencies (170MB+), slow to start, and prone to "layout drift" where your PDF font spacing or page breaks never match the screen.
-- **react-pdf**: Powerful but tied strictly to React, making it heavy and inflexible for modern multi-environment apps.
+The honest answer: because every existing option forces you to make a painful trade-off.
 
----
+| Library | The Problem |
+|---|---|
+| jsPDF | Manually place every element at X/Y coordinates. Impossible to maintain. |
+| Puppeteer | Ships a 170MB headless Chromium. Cold starts take seconds. Page breaks drift unpredictably. |
+| react-pdf | React-only. JSX-only. No server rendering without a React tree. Doesn't compose with your stack. |
+| WeasyPrint | Python dependency. Docker required. No browser preview. |
 
-### A New Standard in Quality
-Powered by a patent-pending spatial-temporal settlement approach, VMPrint ensures that what you see on this preview canvas is exactly what you get in the final PDF.
-
-1. **Desktop Publishing Grade**: Every element respects vertical rhythm and precise baseline alignment. It produces documents that look like they were made in InDesign, not a web browser.
-2. **Extreme Speed**: Render 300+ pages of complex technical manuals in under 2 seconds\u2014even on a battery-powered laptop.
-3. **JIT Font Loading**: Supply your own OpenType fonts for absolutely perfect typography and 100% brand consistency.
-4. **Zero Dependencies**: No browser required. No React required. Tiny footprint (~1.7MB) allows it to run seamlessly on Edge functions.
+VMPrint was designed from the ground up to eliminate all of these trade-offs. It is a **self-contained layout engine**\u2014no browser, no framework, no server\u2014that produces publication-quality documents.
 
 ---
 
-### Simple to Implement
+## What You Get
 
-Building a high-fidelity preview like the one you see here takes only a few lines of code:
+The preview you see on the right is powered by **@vmprint/preview**, a thin wrapper around the VMPrint engine that renders directly to an HTML5 canvas. Every control here is a live demonstration of the API:
+
+1. **Page navigation** \u2014 \`preview.getPageCount()\`, \`renderPageToCanvas(index, canvas)\`
+2. **PDF export** \u2014 \`preview.exportPdf()\` returns a \`Uint8Array\`, fully in-browser, no upload required
+3. **SVG export** \u2014 \`preview.exportSvgPage(index, { textMode: 'text' })\` for selectable text
+4. **Live re-render** \u2014 \`preview.updateDocument(newAst)\` replaces the document with zero flicker
+
+Try switching the **Style Preset** dropdown. The same markdown instantly reflows into a completely different document\u2014different page size, font, column count, margins\u2014without touching a single word.
+
+### Setting Up the Preview
 
 \`\`\`typescript
 import { createVMPrintPreview } from '@vmprint/preview';
+import { transmute } from '@vmprint/mkd-mkd';
 
-// Initialize the engine with your document AST
-const preview = await createVMPrintPreview(docAst, { 
-    onFontProgress: (e) => updateProgressbar(e)
+// Step 1: convert markdown to a DocumentInput AST
+const docAst = transmute(markdownSource);
+
+// Step 2: create a preview session
+const preview = await createVMPrintPreview(docAst, {
+  onFontProgress: (e) => updateProgressBar(e.percent)
 });
 
-// Render any page to a standard HTML5 canvas
-await preview.renderPageToCanvas(0, myCanvas);
+// Step 3: render a page to any canvas element
+await preview.renderPageToCanvas(0, myCanvas, {
+  scale: 2,         // retina sharpness
+  dpi: 144,
+  backgroundColor: '#ffffff'
+});
 \`\`\`
 
-You can add @vmprint/mkd-mkd to immediately render Markdown with professional styles:
+The engine handles fonts asynchronously\u2014OpenType files are fetched on demand, cached, and re-settled into the layout automatically. The \`onFontProgress\` callback lets you show a progress indicator while it happens (you can see ours in the footer bar below).
+
+---
+
+## The Architecture: Transmuters
+
+Here is where VMPrint diverges from every other library.
+
+Most document tools mix two concerns: *what the document contains* and *how to render it*. VMPrint separates them entirely. The engine speaks one language: a JSON structure called **DocumentInput**. It does not understand Markdown, nor HTML, nor any other source format. It understands only layout.
+
+**Transmuters** are the bridge. A transmuter is a pure function:
+
+\`\`\`typescript
+type Transmuter = (source: string, options?: Options) => DocumentInput
+\`\`\`
+
+That is the entire contract. No I/O, no side effects, no framework imports. This means a transmuter runs identically in a browser, a Node.js server, a Cloudflare Worker, or a build-time Vite plugin.
+
+### What You Are Looking At Right Now
+
+This document\u2014the one you are reading\u2014is not a static string embedded in the application. It is a Markdown file being processed live by the **@vmprint/mkd-mkd** transmuter. Every time you edit the source in the left panel, this happens:
+
+\`\`\`
+Your Markdown \u2192 @vmprint/mkd-mkd \u2192 DocumentInput AST \u2192 Layout Engine \u2192 Canvas
+\`\`\`
+
+Click the **{}** button to open the AST drawer. You will see the full DocumentInput JSON that the transmuter produced from this markdown. The engine has no knowledge that the source was Markdown\u2014it only sees a list of typed elements with style properties.
+
+---
+
+## Styling With YAML Themes
+
+The default transmuters accept a **theme** as a YAML string. A theme is a complete description of your document's visual identity: page size, fonts, margins, line height, and a named style for every semantic element.
+
+\`\`\`yaml
+layout:
+  pageSize: LETTER
+  fontFamily: Caladea
+  fontSize: 11.5
+  lineHeight: 1.52
+  margins: { top: 76, right: 80, bottom: 76, left: 80 }
+  hyphenation: soft
+  justifyEngine: advanced
+
+footer:
+  default:
+    elements:
+      - type: paragraph
+        content: "{pageNumber}"
+        properties:
+          style: { textAlign: center, fontSize: 9, color: "#999" }
+
+styles:
+  heading-1:
+    fontSize: 22
+    fontWeight: bold
+    color: "#1a1a2e"
+    marginTop: 32
+    marginBottom: 16
+    keepWithNext: true
+  paragraph:
+    marginBottom: 10
+    textAlign: justify
+  blockquote:
+    borderLeftWidth: 3
+    borderLeftColor: "#10b981"
+    paddingLeft: 14
+    fontStyle: italic
+  code-block:
+    fontFamily: JetBrains Mono
+    fontSize: 9.5
+    backgroundColor: "#f4f4f8"
+    padding: 10
+\`\`\`
+
+Pass this YAML directly into the transmuter\u2014no JavaScript object transformation, no build step:
 
 \`\`\`typescript
 import { transmute } from '@vmprint/mkd-mkd';
+import themeYaml from './my-brand.theme.yaml?raw';
 
-// Convert markdown to high-fidelity AST
-const docAst = transmute(markdownText, { 
-    styles: myStylePreset,
-    layout: { pageSize: 'LETTER' }
-});
+const docAst = transmute(markdownSource, { theme: themeYaml });
+\`\`\`
 
-// Pass this to the preview session
-await preview.updateDocument(docAst);
+Your designers can own the theme file. Your engineers never need to touch it.
+
+---
+
+## Specialized Transmuters
+
+The **@vmprint/mkd-mkd** transmuter is the general-purpose default. But the transmuter ecosystem includes formats built for specific document types:
+
+| Package | What It Does |
+|---|---|
+| @vmprint/mkd-academic | Academic papers with footnotes, citations, and reference lists |
+| @vmprint/mkd-literature | Literary prose with soft paragraph indents and chapter styling |
+| @vmprint/mkd-manuscript | Novel and memoir formatting with automatic table-of-contents generation |
+| @vmprint/mkd-screenplay | Fountain-style screenplay syntax with proper scene headings and action lines |
+
+Switching a document between transmuters is a one-line change. The markdown source stays the same; only the interpretation changes.
+
+---
+
+## Building Your Own Transmuter
+
+This is the capability that has no equivalent elsewhere.
+
+Because the engine's input is a plain data structure\u2014just a JSON object\u2014you can write a transmuter for absolutely any source format. The only requirement is that your function returns a valid **DocumentInput**.
+
+\`\`\`typescript
+import type { DocumentInput } from '@vmprint/engine';
+
+export function transmute(source: string, options?: MyOptions): DocumentInput {
+  // Parse your format however you like
+  const parsed = parseMyFormat(source);
+
+  // Build layout and styles from your theme or defaults
+  return {
+    documentVersion: '1.1',
+    layout: {
+      pageSize: 'A4',
+      fontFamily: 'Arimo',
+      fontSize: 11,
+      lineHeight: 1.5,
+      margins: { top: 72, right: 72, bottom: 72, left: 72 }
+    },
+    styles: {
+      'heading-1': { fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
+      'paragraph': { marginBottom: 10 }
+    },
+    elements: parsed.sections.map(section => ({
+      type: 'paragraph',
+      children: [{ type: 'text', content: section.text }]
+    }))
+  };
+}
+\`\`\`
+
+No dependencies. No framework. Pass this to \`createVMPrintPreview\` and you have a live, paginated, exportable preview of your custom format\u2014indistinguishable from anything built with the official transmuters.
+
+### What This Actually Means
+
+Consider what you can build:
+
+- A **contract generation system** where a YAML data file and a template produce a fully-formatted legal document
+- A **report builder** where a JSON export from your database flows through a transmuter and becomes a boardroom-ready PDF in milliseconds
+- A **book publishing pipeline** where a single markdown manuscript is transmuted into a print-ready PDF, an e-reader EPUB, and a web preview\u2014all from the same source
+- A **custom DSL** for your domain\u2014medical records, architectural specifications, academic transcripts\u2014with layout rules baked into the transmuter, invisible to the author
+
+react-pdf can produce beautiful PDFs. But it requires a React tree, JSX syntax, and a developer to maintain the layout code forever. A VMPrint transmuter is a pure function that any developer can understand in an afternoon\u2014and a YAML theme that a designer can own entirely.
+
+---
+
+## The draft2final CLI
+
+For document workflows outside the browser, **draft2final** is a command-line tool that wraps all transmuters into a single interface:
+
+\`\`\`bash
+# Render a markdown file to PDF using the default transmuter
+draft2final report.md
+
+# Use a specialized transmuter
+draft2final story.md --as manuscript
+
+# Apply a custom theme
+draft2final report.md --style my-brand.yaml
+
+# Output the DocumentInput AST as JSON instead of rendering
+draft2final report.md --output report.ast.json
+
+# Scaffold a new document with the recommended frontmatter boilerplate
+draft2final --new screenplay.md --as screenplay
+\`\`\`
+
+The frontmatter in your markdown can declare the transmuter directly, so the command stays simple:
+
+\`\`\`markdown
+---
+as: academic
+style: ieee-conference
+author: Dr. Ada Lovelace
+---
+
+# On the Analytical Engine
+
+## Abstract
+
+This paper presents...
+\`\`\`
+
+\`\`\`bash
+draft2final lovelace-paper.md   # automatically uses mkd-academic + ieee-conference theme
 \`\`\`
 
 ---
-*Powered by @vmprint/preview*
+
+## What This Preview Is Showing You
+
+Before you close this tab, consider what is happening in this browser window:
+
+A markdown document is being parsed, semantically analyzed, flowed through a full desktop-publishing layout engine with optical margin alignment, advanced justification, JIT font loading, and multi-pass pagination\u2014then rasterized to a retina-quality canvas\u2014in **under a second**, with **no server**, **no plugin**, and **~1.7MB** of JavaScript.
+
+The same code that runs here runs on a Cloudflare Worker. The same code runs in a CI pipeline. The same code runs in a VS Code extension. The document you export is not a screenshot of a web page\u2014it is a geometrically precise, font-embedded, fully archival PDF.
+
+That is what VMPrint is for.
+
+---
+
+*Edit this document in the left panel. Flip through the pages. Export to PDF. Open the AST drawer. Then imagine what you would build with it.*
 `;
   var PRESETS = {
     financial: {
