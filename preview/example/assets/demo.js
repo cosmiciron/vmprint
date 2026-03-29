@@ -51815,65 +51815,379 @@ That is what VMPrint is for.
 
 *Edit this document in the left panel. Flip through the pages. Export to PDF. Open the AST drawer. Then imagine what you would build with it.*
 `;
-  var PRESETS = {
-    financial: {
-      layout: {
-        pageSize: "LETTER",
-        margins: { top: 72, right: 72, bottom: 72, left: 72 },
-        fontFamily: "Arimo",
-        fontSize: 11,
-        lineHeight: 1.4
-      },
-      styles: {
-        "heading-1": { fontSize: 26, fontWeight: "bold", marginBottom: 16, color: "#10b981" },
-        "heading-2": { fontSize: 18, fontWeight: "bold", marginTop: 20, marginBottom: 12, borderBottomWidth: 1, borderBottomColor: "#d1d5db" },
-        "paragraph": { marginBottom: 12, textAlign: "justify" },
-        "blockquote": { borderLeftWidth: 4, borderLeftColor: "#10b981", paddingLeft: 16, fontStyle: "italic", marginBottom: 16 }
-      }
-    },
-    manuscript: {
-      layout: {
-        pageSize: "A5",
-        margins: { top: 80, right: 80, bottom: 80, left: 80 },
-        fontFamily: "Tinos",
-        fontSize: 12,
-        lineHeight: 1.6
-      },
-      styles: {
-        "heading-1": { fontSize: 32, textAlign: "center", marginTop: 100, marginBottom: 60 },
-        "heading-2": { fontSize: 18, textAlign: "center", marginTop: 40, marginBottom: 20 },
-        "paragraph": { textIndent: 20, marginBottom: 0 }
-      }
-    },
-    newsletter: {
-      layout: {
-        pageSize: "LETTER",
-        columnCount: 2,
-        columnGutter: 24,
-        margins: { top: 54, right: 54, bottom: 54, left: 54 },
-        fontFamily: "Arimo",
-        fontSize: 10,
-        lineHeight: 1.3
-      },
-      styles: {
-        "heading-1": { fontSize: 36, fontWeight: 800, color: "#0f172a", marginBottom: 24, columns: 1 },
-        "heading-2": { fontSize: 14, fontWeight: 700, textTransform: "uppercase", color: "#10b981", marginTop: 12, marginBottom: 8 },
-        "paragraph": { marginBottom: 8, textAlign: "left" }
-      }
-    },
-    minimal: {
-      layout: {
-        pageSize: "A4",
-        margins: { top: 120, right: 120, bottom: 120, left: 120 },
-        fontFamily: "Inter",
-        fontSize: 11,
-        lineHeight: 1.5
-      },
-      styles: {
-        "heading-1": { fontSize: 24, fontWeight: 400, color: "#000", marginBottom: 40 },
-        "paragraph": { marginBottom: 20, color: "#444" }
-      }
-    }
+  var THEMES = {
+    "tech-manual": void 0,
+    "open-source": `
+layout:
+  fontFamily: Carlito
+  fontSize: 11.1
+  lineHeight: 1.68
+  pageSize: A4
+  margins:
+    top: 84
+    right: 76
+    bottom: 86
+    left: 76
+  hyphenation: soft
+  justifyEngine: advanced
+  justifyStrategy: auto
+styles:
+  heading-1:
+    fontFamily: Caladea
+    fontSize: 27
+    lineHeight: 1.2
+    color: "#101622"
+    marginTop: 26.2
+    marginBottom: 22
+    hyphenation: "off"
+    textAlign: center
+    keepWithNext: true
+  subheading:
+    fontFamily: Carlito
+    fontSize: 10.2
+    lineHeight: 1.36
+    color: "#6f7785"
+    letterSpacing: 0.9
+    textAlign: center
+    marginTop: -8
+    marginBottom: 28
+    keepWithNext: true
+  heading-2:
+    fontFamily: Carlito
+    fontSize: 12
+    fontWeight: 700
+    color: "#2f3d52"
+    marginTop: 18.2
+    marginBottom: 12
+    hyphenation: "off"
+    textAlign: left
+  heading-3:
+    fontFamily: Carlito
+    fontSize: 10.8
+    fontWeight: 700
+    color: "#506079"
+    marginTop: 8.2
+    marginBottom: 8
+    hyphenation: "off"
+    textAlign: left
+  paragraph:
+    textAlign: left
+    hyphenation: soft
+    lineHeight: 1.7
+    marginBottom: 11.8
+  inline-code:
+    fontFamily: Cousine
+    fontSize: 9.6
+    color: "#1f3550"
+    backgroundColor: "#f0f3f8"
+    borderRadius: 2
+  code-block:
+    fontFamily: Cousine
+    fontSize: 9.7
+    lineHeight: 1.36
+    allowLineSplit: true
+    overflowPolicy: clip
+    color: "#1f2937"
+    backgroundColor: "#f8fafc"
+    borderWidth: 0.8
+    borderColor: "#d7deea"
+    borderRadius: 4
+    paddingTop: 8
+    paddingBottom: 8
+    paddingLeft: 11
+    paddingRight: 11
+    marginTop: 0
+    marginBottom: 14
+  blockquote:
+    textAlign: left
+    hyphenation: "off"
+    fontFamily: Caladea
+    fontStyle: italic
+    fontSize: 12
+    lineHeight: 1.56
+    color: "#2a3344"
+    paddingLeft: 18
+    paddingRight: 18
+    borderLeftWidth: 0
+    backgroundColor: "#ffffff"
+    marginTop: 2.2
+    marginBottom: 16
+  blockquote-attribution:
+    textAlign: right
+    fontStyle: normal
+    fontFamily: Carlito
+    fontSize: 9.8
+    color: "#677185"
+    marginTop: 3
+    marginBottom: 10
+  thematic-break:
+    width: 132
+    marginLeft: 0
+    borderTopWidth: 0.45
+    borderTopColor: "#aeb9ca"
+    opacity: 0.9
+    marginTop: 16.2
+    marginBottom: 24
+  definition-term:
+    fontWeight: 700
+    color: "#2f3d52"
+    keepWithNext: true
+    marginTop: 0
+    marginBottom: 2
+  definition-desc:
+    paddingLeft: 14
+    marginBottom: 8
+  table-cell:
+    fontFamily: Carlito
+    paddingTop: 5
+    paddingBottom: 5
+    paddingLeft: 6
+    paddingRight: 6
+    borderWidth: 0.6
+    borderColor: "#bfc9d8"
+`,
+    "novel": `
+layout:
+  fontFamily: Caladea
+  fontSize: 11.8
+  lineHeight: 1.5
+  pageSize:
+    width: 432
+    height: 648
+  margins:
+    top: 72
+    right: 64
+    bottom: 68
+    left: 64
+  hyphenation: auto
+  justifyEngine: advanced
+  justifyStrategy: auto
+footer:
+  default:
+    elements:
+      - type: paragraph
+        content: "\\u2014 {pageNumber} \\u2014"
+        properties:
+          style:
+            textAlign: center
+            fontSize: 9
+            color: "#8a7d6e"
+            fontFamily: Caladea
+            marginTop: 31
+styles:
+  heading-1:
+    fontSize: 22
+    lineHeight: 1.25
+    textAlign: center
+    fontStyle: italic
+    hyphenation: "off"
+    marginTop: 54
+    marginBottom: 34
+    letterSpacing: 0.4
+    keepWithNext: true
+  heading-2:
+    fontSize: 10.4
+    lineHeight: 1.3
+    textAlign: center
+    fontWeight: 400
+    hyphenation: "off"
+    letterSpacing: 2.4
+    marginTop: 22
+    marginBottom: 18
+    keepWithNext: true
+  heading-3:
+    fontSize: 11.8
+    fontStyle: italic
+    textAlign: left
+    hyphenation: "off"
+    marginTop: 12
+    marginBottom: 6
+    keepWithNext: true
+  paragraph:
+    textAlign: justify
+    hyphenation: auto
+    lineHeight: 1.5
+    textIndent: 18
+    marginBottom: 0
+  inline-code:
+    fontFamily: Caladea
+    fontStyle: italic
+    color: "#2a2218"
+    backgroundColor: "#ffffff"
+  code-block:
+    fontFamily: Cousine
+    fontSize: 9.6
+    lineHeight: 1.42
+    color: "#2a2218"
+    backgroundColor: "#f8f5ef"
+    borderWidth: 0
+    borderRadius: 0
+    paddingTop: 10
+    paddingBottom: 10
+    paddingLeft: 14
+    paddingRight: 14
+    marginTop: 10
+    marginBottom: 10
+  blockquote:
+    textAlign: left
+    hyphenation: "off"
+    fontStyle: italic
+    fontSize: 11
+    lineHeight: 1.52
+    color: "#2e2618"
+    paddingLeft: 30
+    paddingRight: 30
+    borderLeftWidth: 0
+    marginTop: 12
+    marginBottom: 12
+  blockquote-attribution:
+    textAlign: right
+    fontStyle: normal
+    fontSize: 9.4
+    color: "#7a6e5e"
+    marginTop: 3
+    marginBottom: 10
+  thematic-break:
+    width: 48
+    marginLeft: 128
+    borderTopWidth: 0.5
+    borderTopColor: "#c0b09a"
+    marginTop: 18
+    marginBottom: 18
+  table-cell:
+    paddingTop: 5
+    paddingBottom: 5
+    paddingLeft: 6
+    paddingRight: 6
+    borderWidth: 0.45
+    borderColor: "#b0a08a"
+`,
+    "tutorial": `
+layout:
+  fontFamily: Carlito
+  fontSize: 11.4
+  lineHeight: 1.7
+  pageSize: A4
+  margins:
+    top: 86
+    right: 74
+    bottom: 88
+    left: 74
+  hyphenation: soft
+  justifyEngine: advanced
+  justifyStrategy: auto
+footer:
+  default:
+    elements:
+      - type: paragraph
+        content: "Page {pageNumber}"
+        properties:
+          style:
+            textAlign: center
+            fontFamily: Carlito
+            fontSize: 8.7
+            color: "#8a93a1"
+            marginTop: 26
+styles:
+  heading-1:
+    fontFamily: Caladea
+    fontSize: 27
+    lineHeight: 1.18
+    color: "#1c2430"
+    textAlign: center
+    hyphenation: "off"
+    marginTop: 18
+    marginBottom: 22
+    letterSpacing: 0.2
+    keepWithNext: true
+  heading-2:
+    fontFamily: Carlito
+    fontSize: 13.6
+    fontWeight: 700
+    color: "#1f3f68"
+    hyphenation: "off"
+    borderBottomWidth: 0.7
+    borderBottomColor: "#cad5e5"
+    paddingBottom: 2
+    marginTop: 20
+    marginBottom: 10.5
+    keepWithNext: true
+  heading-3:
+    fontFamily: Carlito
+    fontSize: 11.6
+    fontWeight: 700
+    color: "#2f547f"
+    hyphenation: "off"
+    marginTop: 9
+    marginBottom: 7.5
+    keepWithNext: true
+  paragraph:
+    textAlign: left
+    hyphenation: soft
+    lineHeight: 1.74
+    marginBottom: 11.8
+  blockquote:
+    textAlign: left
+    hyphenation: "off"
+    fontFamily: Caladea
+    fontStyle: italic
+    fontSize: 12.2
+    lineHeight: 1.58
+    color: "#2a3240"
+    backgroundColor: "#f6f8fc"
+    borderLeftWidth: 2.2
+    borderLeftColor: "#9eacc4"
+    paddingLeft: 15
+    paddingRight: 11
+    paddingTop: 7
+    paddingBottom: 7
+    marginTop: 4.5
+    marginBottom: 15
+  blockquote-attribution:
+    textAlign: right
+    fontFamily: Carlito
+    fontSize: 9.6
+    color: "#677488"
+    marginTop: 2
+    marginBottom: 8
+  inline-code:
+    fontFamily: Cousine
+    fontSize: 9.7
+    color: "#173657"
+    backgroundColor: "#eef3f8"
+    borderRadius: 2
+  code-block:
+    fontFamily: Cousine
+    fontSize: 9.9
+    lineHeight: 1.39
+    allowLineSplit: true
+    overflowPolicy: clip
+    color: "#172133"
+    backgroundColor: "#f2f6fb"
+    borderWidth: 1
+    borderColor: "#c7d2e3"
+    borderRadius: 5
+    paddingTop: 10
+    paddingBottom: 10
+    paddingLeft: 12
+    paddingRight: 12
+    marginTop: 2
+    marginBottom: 15
+  table-cell:
+    fontFamily: Carlito
+    paddingTop: 5.5
+    paddingBottom: 5.5
+    paddingLeft: 6
+    paddingRight: 6
+    borderWidth: 0.6
+    borderColor: "#c6d0df"
+  thematic-break:
+    width: 154
+    borderTopWidth: 0.8
+    borderTopColor: "#9eabc0"
+    marginTop: 17
+    marginBottom: 21
+`
   };
   var byId = (id) => {
     const el2 = document.getElementById(id);
@@ -51963,12 +52277,9 @@ That is what VMPrint is for.
     saveStatus.textContent = "Updating...";
     try {
       const markdown = markdownInput.value;
-      const presetKey = styleSelect.value;
-      const preset = PRESETS[presetKey] || PRESETS.financial;
-      const docAst = transmute(markdown, {
-        styles: preset.styles,
-        layout: preset.layout
-      });
+      const themeKey = styleSelect.value;
+      const theme = THEMES[themeKey];
+      const docAst = transmute(markdown, { theme });
       currentDocumentAst = docAst;
       astOutput.textContent = JSON.stringify(docAst, null, 2);
       if (!preview) {
