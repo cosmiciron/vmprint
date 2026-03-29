@@ -99,6 +99,52 @@ body {
   z-index: 100;
 }
 
+.samples-link {
+  display: block;
+  padding: 0.95rem 1.5rem 0.9rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--gray-100);
+  text-decoration: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.samples-link::before {
+  content: "\2197";
+  display: inline-block;
+  margin-right: 0.55rem;
+  color: var(--accent-bright);
+  font-size: 0.82rem;
+  transform: translateY(-0.02rem);
+}
+
+.samples-link-label {
+  display: inline-block;
+  font-size: 0.83rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.samples-link-meta {
+  display: block;
+  margin-top: 0.22rem;
+  margin-left: 1.35rem;
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.samples-link:hover {
+  color: #ffffff;
+  border-bottom-color: rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(16, 185, 129, 0.05));
+}
+
+.samples-link:hover .samples-link-meta {
+  color: var(--gray-300);
+}
+
 .sidebar-brand {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border-subtle);
@@ -285,6 +331,13 @@ canvas {
   display: block;
   background-color: white;
   box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+  opacity: 1;
+  transition: opacity 0.18s ease;
+}
+
+canvas.canvas-pending {
+  opacity: 0;
+  box-shadow: none;
 }
 
 /* Toolbar & Pager */

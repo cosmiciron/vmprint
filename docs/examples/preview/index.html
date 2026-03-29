@@ -3,46 +3,122 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VMPrint Preview Package Example</title>
+  <title>VMPrint Preview &bull; Modern Document Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
   <script>
     window.process = window.process || { env: {} };
     window.global = window;
   </script>
 </head>
-<body>
-  <main class="shell">
-    <header class="hero">
-      <p class="eyebrow">VMPrint</p>
-      <h1>Preview Package Example</h1>
-      <p class="lede">A small standalone example living inside <code>preview/</code>. No docs demo shell, just the package.</p>
-    </header>
+<body class="theme-dark">
+  <div id="app-shell">
+    <main id="main-workspace">
+      <!-- Left sidebar with all controls to maximize preview real estate -->
+      <section id="sidebar">
+        <a
+          class="samples-link"
+          href="https://cosmiciron.github.io/vmprint/examples/ast-to-canvas-webfonts/index.html"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span class="samples-link-label">Explore Layout Samples</span>
+          <span class="samples-link-meta">Open the advanced examples gallery</span>
+        </a>
+        <header class="sidebar-brand">
+          <div class="brand">
+            <span class="logo">VM</span>
+            <span class="product">Print <span class="component">Preview</span></span>
+          </div>
+        </header>
 
-    <section class="panel controls">
-      <div class="toolbar">
-        <button id="render-button" type="button" class="primary">Render</button>
-        <button id="pdf-button" type="button">Export PDF</button>
-        <button id="svg-button" type="button">Export SVG Page</button>
-        <button id="prev-button" type="button">Previous</button>
-        <button id="next-button" type="button">Next</button>
-      </div>
-      <p id="status" class="status">Ready. This sample uses the native VMPrint preview pipeline with the hosted fallback font repo.</p>
-      <p id="pager" class="pager">No pages rendered</p>
-    </section>
+        <section class="controls-section">
+          <div class="control-group">
+            <label class="section-label">Style Preset</label>
+            <div class="select-wrapper">
+              <select id="style-preset" aria-label="Style Template">
+                <option value="tech-manual">Tech Manual</option>
+                <option value="annual-report">Annual Report</option>
+                <option value="blueprint">Blueprint Atelier</option>
+                <option value="open-source">Open Source</option>
+                <option value="novel">Novel</option>
+                <option value="tutorial">Tutorial</option>
+              </select>
+            </div>
+          </div>
 
-    <section class="workspace">
-      <label class="editor">
-        <span>Document AST JSON</span>
-        <textarea id="ast-input" spellcheck="false" aria-label="Document AST JSON"></textarea>
-      </label>
+          <div class="control-group">
+            <label class="section-label">Export & View</label>
+            <div class="button-row">
+              <button id="pdf-button" class="btn-primary" title="Export to PDF">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:0.4rem"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                <span>PDF</span>
+              </button>
+              <button id="svg-button" class="btn-secondary" title="Export to SVG">
+                <span>SVG</span>
+              </button>
+              <button id="toggle-ast-btn" class="btn-secondary" title="View Document AST">
+                <span>{}</span>
+              </button>
+            </div>
+          </div>
+        </section>
 
-      <section class="preview">
-        <div class="preview-frame">
-          <canvas id="preview-canvas" aria-label="Rendered document preview"></canvas>
-        </div>
+        <section id="editor-section">
+          <div class="pane-header">
+            <span class="label">Markdown Source</span>
+            <span id="save-status" class="status-indicator">Saved</span>
+          </div>
+          <div class="editor-container">
+            <textarea id="markdown-input" spellcheck="false" placeholder="Write your markdown here..."></textarea>
+          </div>
+        </section>
       </section>
-    </section>
-  </main>
+
+      <!-- Preview Section takes maximum space -->
+      <section id="preview-pane">
+        <div class="pane-header">
+          <div class="pager-controls">
+            <button id="prev-button" class="icon-btn" title="Previous Page" disabled>&larr;</button>
+            <span id="pager-text">Page 1 of --</span>
+            <button id="next-button" class="icon-btn" title="Next Page" disabled>&rarr;</button>
+          </div>
+          <div class="zoom-controls">
+            <button id="zoom-out" class="icon-btn" title="Zoom Out">-</button>
+            <button id="zoom-fit" class="icon-btn" title="Fit to Page">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            </button>
+            <span id="zoom-text">100%</span>
+            <button id="zoom-in" class="icon-btn" title="Zoom In">+</button>
+          </div>
+        </div>
+        <div id="render-viewport" class="grab-cursor">
+          <div id="rendering-loader" class="loader hidden"></div>
+          <div class="canvas-center">
+            <canvas id="preview-canvas"></canvas>
+          </div>
+        </div>
+        <footer id="preview-footer">
+          <div id="status-bar">Ready</div>
+          <div id="font-progress-container" class="hidden">
+            <div id="font-progress-bar"></div>
+          </div>
+        </footer>
+      </section>
+    </main>
+
+    <aside id="ast-drawer" class="collapsed">
+      <div class="drawer-header">
+        <span>Document AST</span>
+        <button id="toggle-ast" class="icon-btn">&times;</button>
+      </div>
+      <div class="ast-content">
+        <pre id="ast-output"></pre>
+      </div>
+    </aside>
+  </div>
 
   <script src="./assets/demo.js"></script>
 </body>

@@ -3,14 +3,56 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VMPrint Documentation | VMPrint Docs</title>
-  <meta name="description" content="VMPrint documentation">
+  <title>VMPrint | Markdown to PDF Preview, Browser Document Engine, and Layout Examples</title>
+  <meta
+    name="description"
+    content="If React-based PDF tools feel too code-heavy and print CSS feels too fragile, VMPrint is the serious alternative: live preview, publication-grade layout, and exportable PDFs from structured content."
+  >
+  <meta property="og:title" content="VMPrint | Markdown to PDF Preview and Browser Document Engine">
+  <meta
+    property="og:description"
+    content="If React-based PDF tools feel too code-heavy and print CSS feels too fragile, VMPrint is the serious alternative: live preview, publication-grade layout, and exportable PDFs from structured content."
+  >
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cosmiciron.github.io/vmprint/">
+  <meta property="og:image" content="https://cosmiciron.github.io/vmprint/assets/og-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="VMPrint homepage share image showing Markdown to PDF preview and a live preview card">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VMPrint | Markdown to PDF Preview and Browser Document Engine">
+  <meta
+    name="twitter:description"
+    content="If React-based PDF tools feel too code-heavy and print CSS feels too fragile, VMPrint is the serious alternative: live preview, publication-grade layout, and exportable PDFs from structured content."
+  >
+  <meta name="twitter:image" content="https://cosmiciron.github.io/vmprint/assets/og-preview.png">
   <link rel="stylesheet" href="assets/docs.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "VMPrint",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "url": "https://cosmiciron.github.io/vmprint/",
+    "softwareVersion": "1.x",
+    "description": "VMPrint is a browser-capable document engine for Markdown to PDF, paginated preview, AST-driven layout, and publication-grade document rendering.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "sameAs": [
+      "https://github.com/cosmiciron/vmprint",
+      "https://www.npmjs.com/search?q=%40vmprint"
+    ]
+  }
+  </script>
 </head>
 <body>
   <header class="site-header">
     <div class="site-header__inner">
-      <a class="brand" href="index.html">VMPrint Docs</a>
+      <a class="brand" href="index.html">VMPrint</a>
       <nav class="site-nav" aria-label="Primary">
         <a class="nav-link is-active" href="index.html">Home</a>
         <a class="nav-link" href="guides/">Guides</a>
@@ -21,182 +63,102 @@
       </nav>
     </div>
   </header>
-  <main class="page-shell">
-    <article class="markdown-body">
-<h1>VMPrint Documentation</h1>
-<p>VMPrint is a deterministic spatial simulation engine for document generation. It has no knowledge of browsers or the DOM - pages are bounded arenas, elements are autonomous actors, and layout is the process of reaching a stable world state. The same input always produces the exact same output, to the sub-point, across every runtime: Node.js, Cloudflare Workers, Lambda, and the browser.</p>
-<hr>
-<h2>API Reference</h2>
-<p>Complete type-level documentation for all public packages, generated from source:</p>
-<p><strong><a href="./api/">API Reference -&gt;</a></strong></p>
-<p>Covers <code>@vmprint/engine</code>, <code>@vmprint/contracts</code>, all contexts, all font managers, and all transmuters - every class, interface, and type, cross-linked between packages.</p>
-<hr>
-<h2>Guides</h2>
-<p>A progressive six-chapter authoring guide, from first document to scripting:</p>
-<table>
-<thead>
-<tr>
-<th>Chapter</th>
-<th>Topic</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="./guides/">Introduction</a></td>
-<td>Overview and reading path</td>
-</tr>
-<tr>
-<td><a href="./guides/01-your-first-document.html">01 - Your First Document</a></td>
-<td>Document structure, layout config, a minimal working example</td>
-</tr>
-<tr>
-<td><a href="./guides/02-styles-and-text.html">02 - Styles and Text</a></td>
-<td>The style system, typography, inline formatting</td>
-</tr>
-<tr>
-<td><a href="./guides/03-stories-strips-and-zones.html">03 - Stories, Strips, and Zones</a></td>
-<td>Multi-column layout, strips, zone maps</td>
-</tr>
-<tr>
-<td><a href="./guides/04-headers-footers-and-page-control.html">04 - Headers, Footers, and Page Control</a></td>
-<td>Running regions, page numbering, pagination control</td>
-</tr>
-<tr>
-<td><a href="./guides/05-images-tables-and-overlays.html">05 - Images, Tables, and Overlays</a></td>
-<td>Embedded images, table layout, overlay system</td>
-</tr>
-<tr>
-<td><a href="./guides/06-scripting.html">06 - Scripting</a></td>
-<td>Document and element lifecycle hooks, messaging, mutations</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2>Reference</h2>
-<p>Detailed specifications for the document format and runtime APIs:</p>
-<table>
-<thead>
-<tr>
-<th>Document</th>
-<th>Contents</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="./reference/ast.html">AST Reference</a></td>
-<td>Complete <code>DocumentInput</code> schema - layout config, all element types, style properties</td>
-</tr>
-<tr>
-<td><a href="./reference/scripting.html">Scripting API</a></td>
-<td>All lifecycle methods, element addressing, messaging, mutation API</td>
-</tr>
-<tr>
-<td><a href="./reference/overlay.html">Overlay System</a></td>
-<td><code>OverlayProvider</code> interface, render lifecycle, backdrop and overlay hooks</td>
-</tr>
-<tr>
-<td><a href="./reference/standard-fonts.html">Standard Fonts</a></td>
-<td>The 14 built-in PDF fonts, Win-ANSI encoding, sentinel buffer mechanism</td>
-</tr>
-<tr>
-<td><a href="./reference/cli.html">CLI Reference</a></td>
-<td><code>vmprint</code> CLI - flags, layout stream, render-from-layout, overlay sidecar</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2>Live Examples</h2>
-<p>Each example is a complete VMPrint pipeline running entirely client-side - no backend, no server, no headless browser. Download the folder, open <code>index.html</code>, and it works immediately from <code>file://</code>.</p>
-<table>
-<thead>
-<tr>
-<th>Example</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="./examples/ast-to-pdf/">AST -&gt; PDF</a></td>
-<td><code>StandardFontManager</code> + <code>PdfLiteContext</code>. Zero font files in the pipeline. ~182 KiB Brotli for the full runtime.</td>
-</tr>
-<tr>
-<td><a href="./examples/ast-to-pdf-webfonts/">AST -&gt; PDF with web fonts</a></td>
-<td>Same pipeline with <code>@vmprint/web-fonts</code> for remote font loading, enabling custom typography and broad multilingual shaping.</td>
-</tr>
-<tr>
-<td><a href="./examples/ast-to-canvas-webfonts/">AST -&gt; Canvas with web fonts</a></td>
-<td><code>@vmprint/context-canvas</code> renders SVG-backed page scenes into a live browser canvas - the basis for document preview UIs.</td>
-</tr>
-<tr>
-<td><a href="./examples/preview/">Preview Package</a></td>
-<td>Full canvas preview, PDF export, and SVG export via the standalone <code>@vmprint/preview</code> bundle.</td>
-</tr>
-<tr>
-<td><a href="./examples/mkd-to-ast/">Markdown -&gt; AST</a></td>
-<td>Full Markdown transmutation in the browser, producing a VMPrint <code>DocumentInput</code> you can inspect.</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2>Packages</h2>
-<table>
-<thead>
-<tr>
-<th>Package</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>@vmprint/engine</code></td>
-<td>Core layout engine: <code>LayoutEngine</code>, <code>Renderer</code>, element AST, layout config, simulation output types</td>
-</tr>
-<tr>
-<td><code>@vmprint/contracts</code></td>
-<td>Interface definitions: <code>Context</code>, <code>FontManager</code>, <code>Transmuter</code>, <code>OverlayProvider</code></td>
-</tr>
-<tr>
-<td><code>@vmprint/standard-fonts</code></td>
-<td>The 14 built-in PDF fonts with zero binary data - Win-ANSI metrics served from AFM tables</td>
-</tr>
-<tr>
-<td><code>@vmprint/context-pdf-lite</code></td>
-<td>jsPDF-backed PDF output, browser-native, zero Node.js dependencies</td>
-</tr>
-<tr>
-<td><code>@vmprint/context-pdf</code></td>
-<td>pdf-lib-backed PDF output with full streaming, shaped-glyph fidelity, and image embedding</td>
-</tr>
-<tr>
-<td><code>@vmprint/context-canvas</code></td>
-<td>Canvas/SVG rendering context for live browser preview</td>
-</tr>
-<tr>
-<td><code>@vmprint/web-fonts</code></td>
-<td>Font manager for remote OpenType loading in the browser</td>
-</tr>
-<tr>
-<td><code>@vmprint/preview</code></td>
-<td>Standalone browser controller: layout engine + canvas preview + PDF/SVG export in one bundle</td>
-</tr>
-<tr>
-<td><code>@vmprint/local-fonts</code></td>
-<td>Font manager for local <code>.ttf</code>/<code>.otf</code> files in Node.js</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2>Further Reading</h2>
-<ul>
-<li><a href="https://github.com/cosmiciron/vmprint/blob/main/documents/ARCHITECTURE.md">System Architecture</a> - how the engine, contexts, and font managers fit together</li>
-<li><a href="https://github.com/cosmiciron/vmprint/blob/main/documents/ENGINE-INTERNALS.md">Engine Internals</a> - actor simulation, pagination, scripting replay</li>
-<li><a href="https://github.com/cosmiciron/vmprint/blob/main/QUICKSTART.md">Quickstart</a> - get a PDF out in under five minutes</li>
-<li><a href="https://github.com/cosmiciron/vmprint">GitHub Repository</a></li>
-</ul>
-<hr>
-<p>Licensed under the <a href="https://github.com/cosmiciron/vmprint/blob/main/LICENSE">Apache License 2.0</a>.</p>
 
-    </article>
+  <main class="page-shell landing-shell">
+    <section class="hero-panel">
+      <div class="hero-copy">
+        <p class="eyebrow">Publication-Grade Layout In The Browser</p>
+        <h1>VMPrint turns Markdown and structured content into real documents, not screenshots of web pages.</h1>
+        <p class="hero-lede">
+          VMPrint is a deterministic browser document engine for Markdown to PDF, paginated preview, AST-driven layout,
+          webfont-aware typography, and precise export pipelines across browser, CI, and server environments.
+        </p>
+        <p class="hero-body">
+          If React-based PDF tools feel too code-heavy and print CSS feels too fragile, VMPrint is the serious
+          alternative. The demo below runs entirely client-side and shows the same publication-grade layout engine
+          family you can use in production.
+        </p>
+        <div class="hero-actions">
+          <a class="button-link button-link--primary" href="#live-preview">Try The Live Preview</a>
+          <a class="button-link button-link--secondary" href="examples/ast-to-canvas-webfonts/index.html">See Advanced Layout Samples</a>
+        </div>
+      </div>
+
+      <div class="hero-aside">
+        <div class="proof-card">
+          <h2>Why It Matters</h2>
+          <ul class="proof-list">
+            <li>Browser-native paginated preview with exportable PDF and SVG.</li>
+            <li>Real layout engine behavior instead of print-CSS approximations.</li>
+            <li>Same document model across browser tools, CI jobs, and server runtimes.</li>
+            <li>Markdown transmuters plus direct AST authoring when you need full control.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="metrics-strip" aria-label="VMPrint highlights">
+      <article class="metric-card">
+        <h2>Deterministic</h2>
+        <p>Identical input produces identical geometry, to the sub-point, across supported runtimes.</p>
+      </article>
+      <article class="metric-card">
+        <h2>Embeddable</h2>
+        <p>Use the same engine family for preview UIs, pipeline rendering, and custom document products.</p>
+      </article>
+      <article class="metric-card">
+        <h2>Inspectable</h2>
+        <p>Work from structured AST documents, themeable transmuters, and debuggable layout output.</p>
+      </article>
+    </section>
+
+    <section id="live-preview" class="demo-section">
+      <div class="section-heading">
+        <p class="eyebrow">Live Demo</p>
+        <h2>Write Markdown on the left. Watch a paginated document settle on the right.</h2>
+        <p>
+          This live Markdown preview supports theme presets, AST inspection, PDF export, SVG export, image links,
+          and live paginated layout updates in the browser.
+        </p>
+      </div>
+
+      <div class="demo-frame">
+        <iframe
+          class="demo-embed"
+          src="./examples/preview/"
+          title="VMPrint Preview Demo"
+          loading="lazy"
+        ></iframe>
+      </div>
+
+      <div class="demo-links">
+        <a href="./examples/preview/">Open the preview demo directly</a>
+        <a href="./examples/ast-to-canvas-webfonts/index.html">Browse advanced layout samples</a>
+      </div>
+    </section>
+
+    <section class="resource-grid" aria-label="Further resources">
+      <article class="resource-card">
+        <h2>Documentation</h2>
+        <p>Start with the authoring guides, then drop into the reference when you need exact schema and API detail.</p>
+        <a href="./guides/">Read the guides</a>
+      </article>
+      <article class="resource-card">
+        <h2>Reference</h2>
+        <p>Browse the full `DocumentInput` schema, scripting model, overlay system, fonts, and CLI behaviors.</p>
+        <a href="./reference/ast.html">Open the reference</a>
+      </article>
+      <article class="resource-card">
+        <h2>Examples</h2>
+        <p>See AST-to-PDF, AST-to-canvas, preview package, and Markdown transmutation examples running client-side.</p>
+        <a href="./examples/">Explore examples</a>
+      </article>
+      <article class="resource-card">
+        <h2>Source</h2>
+        <p>Inspect the engine, contexts, preview package, and transmuters on GitHub.</p>
+        <a href="https://github.com/cosmiciron/vmprint">View the repository</a>
+      </article>
+    </section>
   </main>
 </body>
 </html>

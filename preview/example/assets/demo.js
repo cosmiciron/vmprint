@@ -51851,6 +51851,161 @@ That is what VMPrint is for.
 `;
   var THEMES = {
     "tech-manual": void 0,
+    "annual-report": `
+layout:
+  fontFamily: Carlito
+  fontSize: 11.2
+  lineHeight: 1.64
+  pageSize: A4
+  pageBackground: "#fcfbf7"
+  margins:
+    top: 80
+    right: 74
+    bottom: 82
+    left: 74
+  hyphenation: soft
+  justifyEngine: advanced
+  justifyStrategy: auto
+footer:
+  default:
+    elements:
+      - type: paragraph
+        content: "VMPRINT REPORT / {pageNumber}"
+        properties:
+          style:
+            textAlign: center
+            fontFamily: Carlito
+            fontSize: 8.6
+            color: "#7a8694"
+            letterSpacing: 1.4
+            marginTop: 24
+styles:
+  heading-1:
+    fontFamily: Caladea
+    fontSize: 30
+    lineHeight: 1.12
+    color: "#1f2430"
+    textAlign: center
+    hyphenation: "off"
+    marginTop: 20
+    marginBottom: 10
+    keepWithNext: true
+  subheading:
+    fontFamily: Carlito
+    fontSize: 9.5
+    lineHeight: 1.3
+    color: "#6f8090"
+    letterSpacing: 1.7
+    textAlign: center
+    marginTop: -2
+    marginBottom: 26
+    keepWithNext: true
+  heading-2:
+    fontFamily: Carlito
+    fontSize: 13
+    fontWeight: 700
+    color: "#1f4b6e"
+    hyphenation: "off"
+    borderBottomWidth: 0.8
+    borderBottomColor: "#cfd6de"
+    paddingBottom: 2.5
+    marginTop: 18
+    marginBottom: 11
+    keepWithNext: true
+  heading-3:
+    fontFamily: Carlito
+    fontSize: 11.1
+    fontWeight: 700
+    color: "#7d6750"
+    hyphenation: "off"
+    letterSpacing: 0.2
+    marginTop: 10
+    marginBottom: 7
+    keepWithNext: true
+  paragraph:
+    textAlign: left
+    hyphenation: soft
+    lineHeight: 1.68
+    color: "#2b313c"
+    marginBottom: 11.5
+  unordered-list:
+    color: "#2b313c"
+  ordered-list:
+    color: "#2b313c"
+  list-item:
+    color: "#2b313c"
+  inline-code:
+    fontFamily: Cousine
+    fontSize: 9.6
+    color: "#214664"
+    backgroundColor: "#edf3f7"
+    borderRadius: 2
+  code-block:
+    fontFamily: Cousine
+    fontSize: 9.5
+    lineHeight: 1.38
+    allowLineSplit: true
+    overflowPolicy: clip
+    color: "#22303f"
+    backgroundColor: "#f4f7fa"
+    borderWidth: 0.8
+    borderColor: "#d7dee6"
+    borderRadius: 3
+    paddingTop: 8
+    paddingBottom: 8
+    paddingLeft: 11
+    paddingRight: 11
+    marginTop: 2
+    marginBottom: 14
+  blockquote:
+    textAlign: left
+    hyphenation: "off"
+    fontFamily: Caladea
+    fontStyle: italic
+    fontSize: 12.5
+    lineHeight: 1.55
+    color: "#233244"
+    backgroundColor: "#f5f7f8"
+    borderLeftWidth: 2.2
+    borderLeftColor: "#b79a6a"
+    paddingLeft: 16
+    paddingRight: 14
+    paddingTop: 7
+    paddingBottom: 7
+    marginTop: 4
+    marginBottom: 16
+  blockquote-attribution:
+    textAlign: right
+    fontFamily: Carlito
+    fontSize: 9.4
+    color: "#7c8791"
+    marginTop: 3
+    marginBottom: 8
+  thematic-break:
+    width: 148
+    marginLeft: 0
+    borderTopWidth: 0.75
+    borderTopColor: "#c7b697"
+    marginTop: 18
+    marginBottom: 22
+  definition-term:
+    fontWeight: 700
+    color: "#1f4b6e"
+    keepWithNext: true
+    marginTop: 0
+    marginBottom: 2
+  definition-desc:
+    paddingLeft: 15
+    marginBottom: 9
+  table-cell:
+    fontFamily: Carlito
+    paddingTop: 5.5
+    paddingBottom: 5.5
+    paddingLeft: 6
+    paddingRight: 6
+    borderWidth: 0.6
+    borderColor: "#c7d0d9"
+`,
     "blueprint": `
 layout:
   fontFamily: Carlito
@@ -52415,6 +52570,9 @@ captions:
   var astDrawer = byId("ast-drawer");
   var saveStatus = byId("save-status");
   var loader = byId("rendering-loader");
+  previewCanvas.classList.add("canvas-pending");
+  previewCanvas.style.width = "0px";
+  previewCanvas.style.height = "0px";
   var preview = null;
   var currentPageIndex = 0;
   var zoomLevel = 1;
@@ -52532,6 +52690,7 @@ captions:
         if (ctx) {
           ctx.drawImage(offscreenCanvas, 0, 0);
         }
+        previewCanvas.classList.remove("canvas-pending");
       });
     } finally {
       loader.classList.add("hidden");
@@ -52558,10 +52717,10 @@ captions:
       }
       const maxPage = preview.getPageCount() - 1;
       if (currentPageIndex > maxPage) currentPageIndex = maxPage;
-      await renderCurrentPage();
       if (resetZoom) {
         handleFitZoom();
       }
+      await renderCurrentPage();
       saveStatus.textContent = "Rendered";
       statusNode.textContent = `Document settled across ${preview.getPageCount()} pages.`;
     } catch (err) {
