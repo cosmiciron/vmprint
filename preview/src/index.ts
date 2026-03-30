@@ -153,6 +153,53 @@ export type PreviewLayoutSnapshotPage = {
     boxes: PreviewLayoutSnapshotBox[];
 };
 
+export type PreviewTextCharBox = {
+    x0: number;
+    x1: number;
+    y0: number;
+    y1: number;
+    lineIndex: number;
+    charIndex: number;
+    absoluteOffset: number;
+    char: string;
+};
+
+export type PreviewTextLayoutModel = {
+    sourceId: string;
+    box: PreviewLayoutSnapshotBox;
+    charBoxes: PreviewTextCharBox[];
+    totalLength: number;
+};
+
+export type PreviewTextSelectionPoint = {
+    sourceId: string;
+    x: number;
+    y: number;
+    absoluteOffset: number;
+};
+
+export type PreviewTextSelectionState = {
+    sourceId: string;
+    selectedOffsets: number[];
+    caretOffset: number;
+};
+
+export type PreviewSelectionOverlayOptions = {
+    selectedSourceId?: string | null;
+    selection?: PreviewTextSelectionState | null;
+    strokeColor?: string;
+    outlineColor?: string;
+    selectionFill?: string;
+    caretColor?: string;
+    lineWidth?: number;
+};
+
+export type PreviewTextLayoutDefaults = {
+    fontFamily?: string;
+    fontSize?: number;
+    lineHeight?: number;
+};
+
 export type PreviewSession = {
     getPageCount(): number;
     getPageSize(): { width: number; height: number };
@@ -293,6 +340,291 @@ const ensureDocumentObject = (documentInput: unknown): VmprintDocument => {
 };
 
 const textEncoder = new TextEncoder();
+
+const normalizePreviewSourceId = (value: unknown): string => String(value || '');
+const stripPreviewSourcePrefixes = (value: string): string => value.replace(/^gen:/, '').replace(/^author:/, '');
+
+const matchesPreviewSourceId = (actual: unknown, target: string): boolean => {
+    const value = normalizePreviewSourceId(actual);
+    const normalizedValue = stripPreviewSourcePrefixes(value);
+    const normalizedTarget = stripPreviewSourcePrefixes(normalizePreviewSourceId(target));
+    return (
+        value === target ||
+        value.endsWith(`:${target}`) ||
+        target.endsWith(`:${value}`) ||
+        normalizedValue === normalizedTarget ||
+        normalizedValue.endsWith(`:${normalizedTarget}`) ||
+        normalizedTarget.endsWith(`:${normalizedValue}`)
+    );
+};
+
+const sortUniqueNumbers = (values: number[]): number[] => Array.from(new Set(values)).sort((a, b) => a - b);
+
+let previewMeasureContext: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null = null;
+
+const getPreviewMeasureContext = (): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null => {
+    if (previewMeasureContext) return previewMeasureContext;
+    if (typeof document !== 'undefined' && typeof document.createElement === 'function') {
+        previewMeasureContext = document.createElement('canvas').getContext('2d');
+        return previewMeasureContext;
+    }
+    if (typeof OffscreenCanvas !== 'undefined') {
+        previewMeasureContext = new OffscreenCanvas(1, 1).getContext('2d');
+        return previewMeasureContext;
+    }
+    return null;
+};
+
+const resolveCanvasContext = (target: CanvasTarget): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D => {
+    if ('canvas' in target) return target;
+    const context = target.getContext('2d');
+    if (!context) {
+        throw new Error('[VMPrintPreview] Unable to resolve a 2D canvas context.');
+    }
+    return context;
+};
+
+export const getSelectablePreviewBoxes = (page: PreviewLayoutSnapshotPage | null): PreviewLayoutSnapshotBox[] =>
+    (page?.boxes || []).filter((box) => normalizePreviewSourceId(box.meta?.sourceId).length > 0);
+
+export const hitTestPreviewBox = (page: PreviewLayoutSnapshotPage | null, x: number, y: number): PreviewLayoutSnapshotBox | null => {
+    const boxes = getSelectablePreviewBoxes(page);
+    for (let index = boxes.length - 1; index >= 0; index -= 1) {
+        const box = boxes[index];
+        if (x >= box.x && x <= box.x + box.w && y >= box.y && y <= box.y + box.h) return box;
+    }
+    return null;
+};
+
+export const buildPreviewTextLayoutModel = (
+    box: PreviewLayoutSnapshotBox | null,
+    defaults?: PreviewTextLayoutDefaults
+): PreviewTextLayoutModel | null => {
+    const measureContext = getPreviewMeasureContext();
+    if (!box?.lines?.length || !box.textMetrics?.lines?.length || !measureContext) return null;
+    const sourceId = stripPreviewSourcePrefixes(normalizePreviewSourceId(box.meta?.sourceId));
+    if (!sourceId) return null;
+    const fallbackFontFamily = defaults?.fontFamily || 'Arimo';
+    const fallbackFontSize = Number(defaults?.fontSize || 13) || 13;
+    const contentBox = box.textMetrics.contentBox;
+    const align = box.style?.textAlign || 'left';
+    const charBoxes: PreviewTextCharBox[] = [];
+    let absoluteOffset = 0;
+
+    box.lines.forEach((line, lineIndex) => {
+        const metric = box.textMetrics?.lines?.[lineIndex];
+        if (!metric) return;
+        const lineWidth = (line || []).reduce((sum, segment) => sum + Number(segment.width || 0), 0);
+        let lineX = contentBox.x;
+        if (align === 'center') lineX = contentBox.x + ((contentBox.w - lineWidth) / 2);
+        else if (align === 'right') lineX = contentBox.x + (contentBox.w - lineWidth);
+
+        let cursorX = lineX;
+        for (const segment of line || []) {
+            const segmentStartX = cursorX;
+            const fontSize = Number(metric.fontSize || box.style?.fontSize || fallbackFontSize) || fallbackFontSize;
+            const fontFamily = segment.fontFamily || fallbackFontFamily;
+            measureContext.font = `${fontSize}px "${fontFamily}"`;
+            const text = String(segment.text || '');
+            const targetSegmentWidth = Number(segment.width || 0);
+            const measuredFullWidth = text.length > 0 ? (measureContext.measureText(text).width || 0) : 0;
+            const scale = targetSegmentWidth > 0 && measuredFullWidth > 0 ? (targetSegmentWidth / measuredFullWidth) : 1;
+            const fallbackWidth = text.length > 0 ? (targetSegmentWidth > 0 ? targetSegmentWidth / text.length : 0) : 0;
+            let previousPrefixWidth = 0;
+
+            for (let index = 0; index < text.length; index += 1) {
+                const char = text[index];
+                const prefix = text.slice(0, index + 1);
+                const measuredPrefixWidth = measureContext.measureText(prefix).width || 0;
+                const currentPrefixWidth = targetSegmentWidth > 0 ? (measuredPrefixWidth * scale) : measuredPrefixWidth;
+                let width = currentPrefixWidth - previousPrefixWidth;
+                if (!Number.isFinite(width) || width <= 0) width = fallbackWidth;
+                charBoxes.push({
+                    x0: segmentStartX + previousPrefixWidth,
+                    x1: segmentStartX + previousPrefixWidth + width,
+                    y0: metric.top,
+                    y1: metric.bottom,
+                    lineIndex,
+                    charIndex: index,
+                    absoluteOffset,
+                    char
+                });
+                previousPrefixWidth += width;
+                absoluteOffset += 1;
+            }
+
+            cursorX = targetSegmentWidth > 0 && text.length > 0
+                ? (segmentStartX + targetSegmentWidth)
+                : (segmentStartX + previousPrefixWidth);
+        }
+
+        if (lineIndex < (box.lines?.length || 0) - 1) absoluteOffset += 1;
+    });
+
+    return {
+        sourceId,
+        box,
+        charBoxes,
+        totalLength: absoluteOffset
+    };
+};
+
+export const getNearestPreviewSelectionOffset = (layout: PreviewTextLayoutModel, x: number, y: number): number => {
+    if (layout.charBoxes.length === 0) return 0;
+    const lineIndexes = sortUniqueNumbers(layout.charBoxes.map((box) => box.lineIndex));
+    let targetLineIndex = lineIndexes[0] || 0;
+    let nearestLineDistance = Number.POSITIVE_INFINITY;
+
+    for (const lineIndex of lineIndexes) {
+        const lineBoxes = layout.charBoxes.filter((box) => box.lineIndex === lineIndex);
+        const lineTop = Math.min(...lineBoxes.map((box) => box.y0));
+        const lineBottom = Math.max(...lineBoxes.map((box) => box.y1));
+        const lineCenterY = (lineTop + lineBottom) / 2;
+        const lineDistance =
+            y < lineTop ? (lineTop - y) :
+            y > lineBottom ? (y - lineBottom) :
+            Math.abs(lineCenterY - y) * 0.25;
+        if (lineDistance < nearestLineDistance) {
+            nearestLineDistance = lineDistance;
+            targetLineIndex = lineIndex;
+        }
+    }
+
+    const targetLineBoxes = layout.charBoxes.filter((box) => box.lineIndex === targetLineIndex);
+    if (targetLineBoxes.length === 0) return 0;
+    const firstBox = targetLineBoxes[0];
+    const lastBox = targetLineBoxes[targetLineBoxes.length - 1];
+
+    if (x <= firstBox.x0) return Math.max(0, Math.min(layout.totalLength, firstBox.absoluteOffset));
+    if (x >= lastBox.x1) return Math.max(0, Math.min(layout.totalLength, lastBox.absoluteOffset + 1));
+
+    for (const box of targetLineBoxes) {
+        const centerX = (box.x0 + box.x1) / 2;
+        if (x < centerX) return Math.max(0, Math.min(layout.totalLength, box.absoluteOffset));
+        if (x <= box.x1) return Math.max(0, Math.min(layout.totalLength, box.absoluteOffset + 1));
+    }
+
+    return Math.max(0, Math.min(layout.totalLength, lastBox.absoluteOffset + 1));
+};
+
+const buildPreviewSelectionSweepRect = (
+    anchor: PreviewTextSelectionPoint,
+    point: { x: number; y: number }
+): { x0: number; y0: number; x1: number; y1: number } => ({
+    x0: Math.min(anchor.x, point.x),
+    y0: Math.min(anchor.y, point.y) - 4,
+    x1: Math.max(anchor.x, point.x),
+    y1: Math.max(anchor.y, point.y) + 4
+});
+
+const rectContainsPreviewCharCenter = (
+    rect: { x0: number; y0: number; x1: number; y1: number },
+    charBox: PreviewTextCharBox
+): boolean => (
+    ((charBox.x0 + charBox.x1) / 2) >= rect.x0 &&
+    ((charBox.x0 + charBox.x1) / 2) <= rect.x1 &&
+    ((charBox.y0 + charBox.y1) / 2) >= rect.y0 &&
+    ((charBox.y0 + charBox.y1) / 2) <= rect.y1
+);
+
+export const getPreviewSpatiallySelectedOffsets = (
+    layout: PreviewTextLayoutModel,
+    anchor: PreviewTextSelectionPoint,
+    point: { x: number; y: number }
+): number[] => {
+    const sweepRect = buildPreviewSelectionSweepRect(anchor, point);
+    return sortUniqueNumbers(
+        layout.charBoxes
+            .filter((charBox) => rectContainsPreviewCharCenter(sweepRect, charBox))
+            .map((charBox) => charBox.absoluteOffset)
+    );
+};
+
+export const buildPreviewContinuousSelectedOffsets = (
+    layout: PreviewTextLayoutModel,
+    anchorOffset: number,
+    caretOffset: number
+): number[] => {
+    const start = Math.min(anchorOffset, caretOffset);
+    const end = Math.max(anchorOffset, caretOffset);
+    return layout.charBoxes
+        .filter((charBox) => charBox.absoluteOffset >= start && charBox.absoluteOffset < end)
+        .map((charBox) => charBox.absoluteOffset);
+};
+
+export const normalizePreviewSelectedOffsets = (layout: PreviewTextLayoutModel, offsets: number[]): number[] => {
+    const unique = sortUniqueNumbers(offsets);
+    if (unique.length === 0) return unique;
+    const start = unique[0];
+    const end = unique[unique.length - 1];
+    return layout.charBoxes
+        .filter((charBox) => charBox.absoluteOffset >= start && charBox.absoluteOffset <= end)
+        .map((charBox) => charBox.absoluteOffset);
+};
+
+export const getPreviewCaretRect = (
+    layout: PreviewTextLayoutModel,
+    offset: number
+): { x: number; y0: number; y1: number } | null => {
+    if (layout.charBoxes.length === 0) return null;
+    const clamped = Math.max(0, Math.min(layout.totalLength, offset));
+    if (clamped === layout.totalLength) {
+        const last = layout.charBoxes[layout.charBoxes.length - 1];
+        return { x: last.x1, y0: last.y0, y1: last.y1 };
+    }
+    const char = layout.charBoxes.find((entry) => entry.absoluteOffset === clamped);
+    if (!char) return null;
+    return { x: char.x0, y0: char.y0, y1: char.y1 };
+};
+
+export const drawPreviewSelectionOverlay = (
+    page: PreviewLayoutSnapshotPage | null,
+    target: CanvasTarget,
+    options: PreviewSelectionOverlayOptions = {}
+): void => {
+    if (!page || !options.selectedSourceId) return;
+    const targetBox = getSelectablePreviewBoxes(page).find((box) => matchesPreviewSourceId(box.meta?.sourceId, options.selectedSourceId || ''));
+    if (!targetBox) return;
+    const context = resolveCanvasContext(target as any);
+    const canvas = context.canvas as HTMLCanvasElement | OffscreenCanvas;
+    const scale = (canvas.width || 1) / Math.max(1, page.width);
+    const lineWidth = options.lineWidth || 1.5;
+
+    context.save();
+    context.setTransform(scale, 0, 0, scale, 0, 0);
+    context.strokeStyle = options.strokeColor || '#60a5fa';
+    context.lineWidth = Math.max(1, lineWidth * 2);
+    context.strokeRect(targetBox.x - 2, targetBox.y - 2, targetBox.w + 4, targetBox.h + 4);
+    context.setLineDash([6, 4]);
+    context.strokeStyle = options.outlineColor || '#c084fc';
+    context.lineWidth = lineWidth;
+    context.strokeRect(targetBox.x - 5, targetBox.y - 5, targetBox.w + 10, targetBox.h + 10);
+
+    const selection = options.selection;
+    if (selection) {
+        const layout = buildPreviewTextLayoutModel(targetBox);
+        if (layout && selection.sourceId === layout.sourceId) {
+            if (selection.selectedOffsets.length > 0) {
+                context.fillStyle = options.selectionFill || 'rgba(96, 165, 250, 0.24)';
+                for (const charBox of layout.charBoxes) {
+                    if (!selection.selectedOffsets.includes(charBox.absoluteOffset)) continue;
+                    context.fillRect(charBox.x0, charBox.y0, Math.max(1, charBox.x1 - charBox.x0), Math.max(1, charBox.y1 - charBox.y0));
+                }
+            }
+            const caret = getPreviewCaretRect(layout, selection.caretOffset);
+            if (caret) {
+                context.strokeStyle = options.caretColor || '#f8fafc';
+                context.lineWidth = lineWidth;
+                context.setLineDash([]);
+                context.beginPath();
+                context.moveTo(caret.x, caret.y0);
+                context.lineTo(caret.x, caret.y1);
+                context.stroke();
+            }
+        }
+    }
+    context.restore();
+};
 
 class MemoryOutputStream implements VmprintOutputStream {
     private readonly chunks: Uint8Array[] = [];

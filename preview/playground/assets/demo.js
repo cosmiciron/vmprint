@@ -63253,6 +63253,213 @@ ${source}`)
     return cloneDocument(documentInput);
   };
   var textEncoder2 = new TextEncoder();
+  var normalizePreviewSourceId = (value) => String(value || "");
+  var stripPreviewSourcePrefixes = (value) => value.replace(/^gen:/, "").replace(/^author:/, "");
+  var matchesPreviewSourceId = (actual, target) => {
+    const value = normalizePreviewSourceId(actual);
+    const normalizedValue = stripPreviewSourcePrefixes(value);
+    const normalizedTarget = stripPreviewSourcePrefixes(normalizePreviewSourceId(target));
+    return value === target || value.endsWith(`:${target}`) || target.endsWith(`:${value}`) || normalizedValue === normalizedTarget || normalizedValue.endsWith(`:${normalizedTarget}`) || normalizedTarget.endsWith(`:${normalizedValue}`);
+  };
+  var sortUniqueNumbers = (values) => Array.from(new Set(values)).sort((a2, b2) => a2 - b2);
+  var previewMeasureContext = null;
+  var getPreviewMeasureContext = () => {
+    if (previewMeasureContext) return previewMeasureContext;
+    if (typeof document !== "undefined" && typeof document.createElement === "function") {
+      previewMeasureContext = document.createElement("canvas").getContext("2d");
+      return previewMeasureContext;
+    }
+    if (typeof OffscreenCanvas !== "undefined") {
+      previewMeasureContext = new OffscreenCanvas(1, 1).getContext("2d");
+      return previewMeasureContext;
+    }
+    return null;
+  };
+  var resolveCanvasContext = (target) => {
+    if ("canvas" in target) return target;
+    const context = target.getContext("2d");
+    if (!context) {
+      throw new Error("[VMPrintPreview] Unable to resolve a 2D canvas context.");
+    }
+    return context;
+  };
+  var getSelectablePreviewBoxes = (page) => (page?.boxes || []).filter((box) => normalizePreviewSourceId(box.meta?.sourceId).length > 0);
+  var hitTestPreviewBox = (page, x2, y2) => {
+    const boxes = getSelectablePreviewBoxes(page);
+    for (let index2 = boxes.length - 1; index2 >= 0; index2 -= 1) {
+      const box = boxes[index2];
+      if (x2 >= box.x && x2 <= box.x + box.w && y2 >= box.y && y2 <= box.y + box.h) return box;
+    }
+    return null;
+  };
+  var buildPreviewTextLayoutModel = (box, defaults) => {
+    const measureContext = getPreviewMeasureContext();
+    if (!box?.lines?.length || !box.textMetrics?.lines?.length || !measureContext) return null;
+    const sourceId = stripPreviewSourcePrefixes(normalizePreviewSourceId(box.meta?.sourceId));
+    if (!sourceId) return null;
+    const fallbackFontFamily = defaults?.fontFamily || "Arimo";
+    const fallbackFontSize = Number(defaults?.fontSize || 13) || 13;
+    const contentBox = box.textMetrics.contentBox;
+    const align = box.style?.textAlign || "left";
+    const charBoxes = [];
+    let absoluteOffset = 0;
+    box.lines.forEach((line, lineIndex) => {
+      const metric = box.textMetrics?.lines?.[lineIndex];
+      if (!metric) return;
+      const lineWidth = (line || []).reduce((sum, segment) => sum + Number(segment.width || 0), 0);
+      let lineX = contentBox.x;
+      if (align === "center") lineX = contentBox.x + (contentBox.w - lineWidth) / 2;
+      else if (align === "right") lineX = contentBox.x + (contentBox.w - lineWidth);
+      let cursorX = lineX;
+      for (const segment of line || []) {
+        const segmentStartX = cursorX;
+        const fontSize = Number(metric.fontSize || box.style?.fontSize || fallbackFontSize) || fallbackFontSize;
+        const fontFamily = segment.fontFamily || fallbackFontFamily;
+        measureContext.font = `${fontSize}px "${fontFamily}"`;
+        const text5 = String(segment.text || "");
+        const targetSegmentWidth = Number(segment.width || 0);
+        const measuredFullWidth = text5.length > 0 ? measureContext.measureText(text5).width || 0 : 0;
+        const scale = targetSegmentWidth > 0 && measuredFullWidth > 0 ? targetSegmentWidth / measuredFullWidth : 1;
+        const fallbackWidth = text5.length > 0 ? targetSegmentWidth > 0 ? targetSegmentWidth / text5.length : 0 : 0;
+        let previousPrefixWidth = 0;
+        for (let index2 = 0; index2 < text5.length; index2 += 1) {
+          const char = text5[index2];
+          const prefix = text5.slice(0, index2 + 1);
+          const measuredPrefixWidth = measureContext.measureText(prefix).width || 0;
+          const currentPrefixWidth = targetSegmentWidth > 0 ? measuredPrefixWidth * scale : measuredPrefixWidth;
+          let width = currentPrefixWidth - previousPrefixWidth;
+          if (!Number.isFinite(width) || width <= 0) width = fallbackWidth;
+          charBoxes.push({
+            x0: segmentStartX + previousPrefixWidth,
+            x1: segmentStartX + previousPrefixWidth + width,
+            y0: metric.top,
+            y1: metric.bottom,
+            lineIndex,
+            charIndex: index2,
+            absoluteOffset,
+            char
+          });
+          previousPrefixWidth += width;
+          absoluteOffset += 1;
+        }
+        cursorX = targetSegmentWidth > 0 && text5.length > 0 ? segmentStartX + targetSegmentWidth : segmentStartX + previousPrefixWidth;
+      }
+      if (lineIndex < (box.lines?.length || 0) - 1) absoluteOffset += 1;
+    });
+    return {
+      sourceId,
+      box,
+      charBoxes,
+      totalLength: absoluteOffset
+    };
+  };
+  var getNearestPreviewSelectionOffset = (layout, x2, y2) => {
+    if (layout.charBoxes.length === 0) return 0;
+    const lineIndexes = sortUniqueNumbers(layout.charBoxes.map((box) => box.lineIndex));
+    let targetLineIndex = lineIndexes[0] || 0;
+    let nearestLineDistance = Number.POSITIVE_INFINITY;
+    for (const lineIndex of lineIndexes) {
+      const lineBoxes = layout.charBoxes.filter((box) => box.lineIndex === lineIndex);
+      const lineTop = Math.min(...lineBoxes.map((box) => box.y0));
+      const lineBottom = Math.max(...lineBoxes.map((box) => box.y1));
+      const lineCenterY = (lineTop + lineBottom) / 2;
+      const lineDistance = y2 < lineTop ? lineTop - y2 : y2 > lineBottom ? y2 - lineBottom : Math.abs(lineCenterY - y2) * 0.25;
+      if (lineDistance < nearestLineDistance) {
+        nearestLineDistance = lineDistance;
+        targetLineIndex = lineIndex;
+      }
+    }
+    const targetLineBoxes = layout.charBoxes.filter((box) => box.lineIndex === targetLineIndex);
+    if (targetLineBoxes.length === 0) return 0;
+    const firstBox = targetLineBoxes[0];
+    const lastBox = targetLineBoxes[targetLineBoxes.length - 1];
+    if (x2 <= firstBox.x0) return Math.max(0, Math.min(layout.totalLength, firstBox.absoluteOffset));
+    if (x2 >= lastBox.x1) return Math.max(0, Math.min(layout.totalLength, lastBox.absoluteOffset + 1));
+    for (const box of targetLineBoxes) {
+      const centerX = (box.x0 + box.x1) / 2;
+      if (x2 < centerX) return Math.max(0, Math.min(layout.totalLength, box.absoluteOffset));
+      if (x2 <= box.x1) return Math.max(0, Math.min(layout.totalLength, box.absoluteOffset + 1));
+    }
+    return Math.max(0, Math.min(layout.totalLength, lastBox.absoluteOffset + 1));
+  };
+  var buildPreviewSelectionSweepRect = (anchor, point3) => ({
+    x0: Math.min(anchor.x, point3.x),
+    y0: Math.min(anchor.y, point3.y) - 4,
+    x1: Math.max(anchor.x, point3.x),
+    y1: Math.max(anchor.y, point3.y) + 4
+  });
+  var rectContainsPreviewCharCenter = (rect, charBox) => (charBox.x0 + charBox.x1) / 2 >= rect.x0 && (charBox.x0 + charBox.x1) / 2 <= rect.x1 && (charBox.y0 + charBox.y1) / 2 >= rect.y0 && (charBox.y0 + charBox.y1) / 2 <= rect.y1;
+  var getPreviewSpatiallySelectedOffsets = (layout, anchor, point3) => {
+    const sweepRect = buildPreviewSelectionSweepRect(anchor, point3);
+    return sortUniqueNumbers(
+      layout.charBoxes.filter((charBox) => rectContainsPreviewCharCenter(sweepRect, charBox)).map((charBox) => charBox.absoluteOffset)
+    );
+  };
+  var buildPreviewContinuousSelectedOffsets = (layout, anchorOffset, caretOffset) => {
+    const start = Math.min(anchorOffset, caretOffset);
+    const end = Math.max(anchorOffset, caretOffset);
+    return layout.charBoxes.filter((charBox) => charBox.absoluteOffset >= start && charBox.absoluteOffset < end).map((charBox) => charBox.absoluteOffset);
+  };
+  var normalizePreviewSelectedOffsets = (layout, offsets) => {
+    const unique = sortUniqueNumbers(offsets);
+    if (unique.length === 0) return unique;
+    const start = unique[0];
+    const end = unique[unique.length - 1];
+    return layout.charBoxes.filter((charBox) => charBox.absoluteOffset >= start && charBox.absoluteOffset <= end).map((charBox) => charBox.absoluteOffset);
+  };
+  var getPreviewCaretRect = (layout, offset) => {
+    if (layout.charBoxes.length === 0) return null;
+    const clamped = Math.max(0, Math.min(layout.totalLength, offset));
+    if (clamped === layout.totalLength) {
+      const last = layout.charBoxes[layout.charBoxes.length - 1];
+      return { x: last.x1, y0: last.y0, y1: last.y1 };
+    }
+    const char = layout.charBoxes.find((entry) => entry.absoluteOffset === clamped);
+    if (!char) return null;
+    return { x: char.x0, y0: char.y0, y1: char.y1 };
+  };
+  var drawPreviewSelectionOverlay = (page, target, options = {}) => {
+    if (!page || !options.selectedSourceId) return;
+    const targetBox = getSelectablePreviewBoxes(page).find((box) => matchesPreviewSourceId(box.meta?.sourceId, options.selectedSourceId || ""));
+    if (!targetBox) return;
+    const context = resolveCanvasContext(target);
+    const canvas = context.canvas;
+    const scale = (canvas.width || 1) / Math.max(1, page.width);
+    const lineWidth = options.lineWidth || 1.5;
+    context.save();
+    context.setTransform(scale, 0, 0, scale, 0, 0);
+    context.strokeStyle = options.strokeColor || "#60a5fa";
+    context.lineWidth = Math.max(1, lineWidth * 2);
+    context.strokeRect(targetBox.x - 2, targetBox.y - 2, targetBox.w + 4, targetBox.h + 4);
+    context.setLineDash([6, 4]);
+    context.strokeStyle = options.outlineColor || "#c084fc";
+    context.lineWidth = lineWidth;
+    context.strokeRect(targetBox.x - 5, targetBox.y - 5, targetBox.w + 10, targetBox.h + 10);
+    const selection = options.selection;
+    if (selection) {
+      const layout = buildPreviewTextLayoutModel(targetBox);
+      if (layout && selection.sourceId === layout.sourceId) {
+        if (selection.selectedOffsets.length > 0) {
+          context.fillStyle = options.selectionFill || "rgba(96, 165, 250, 0.24)";
+          for (const charBox of layout.charBoxes) {
+            if (!selection.selectedOffsets.includes(charBox.absoluteOffset)) continue;
+            context.fillRect(charBox.x0, charBox.y0, Math.max(1, charBox.x1 - charBox.x0), Math.max(1, charBox.y1 - charBox.y0));
+          }
+        }
+        const caret = getPreviewCaretRect(layout, selection.caretOffset);
+        if (caret) {
+          context.strokeStyle = options.caretColor || "#f8fafc";
+          context.lineWidth = lineWidth;
+          context.setLineDash([]);
+          context.beginPath();
+          context.moveTo(caret.x, caret.y0);
+          context.lineTo(caret.x, caret.y1);
+          context.stroke();
+        }
+      }
+    }
+    context.restore();
+  };
   var MemoryOutputStream = class {
     constructor() {
       this.chunks = [];
@@ -82381,6 +82588,7 @@ captions:
   var zoomInBtn = byId("zoom-in");
   var zoomOutBtn = byId("zoom-out");
   var zoomFitBtn = byId("zoom-fit");
+  var interactionModeBtn = byId("interaction-mode");
   var zoomText = byId("zoom-text");
   var statusNode = byId("status-bar");
   var previewCanvas = byId("preview-canvas");
@@ -82401,12 +82609,18 @@ captions:
   var zoomLevel = 1;
   var renderTimer = null;
   var currentDocumentAst = null;
+  var currentSnapshotPage = null;
   var imageCache = /* @__PURE__ */ new Map();
   var offscreenCanvas = document.createElement("canvas");
   var isDragging = false;
   var startX = 0;
   var startY = 0;
   var scrollLeftTop = { left: 0, top: 0 };
+  var interactionMode = "pan";
+  var selectedSourceId = null;
+  var activeTextSelection = null;
+  var dragAnchor = null;
+  var isSelecting = false;
   var MARKDOWN_IMAGE_PATTERN = /!\[[^\]]*?\]\(([^)\s]+)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\)/g;
   var toBase64 = (blob) => new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -82493,10 +82707,51 @@ captions:
     previewCanvas.style.width = `${width * zoomLevel}px`;
     previewCanvas.style.height = `${height * zoomLevel}px`;
   };
+  var getDocumentLayoutDefaults = () => {
+    const layout = currentDocumentAst?.layout || {};
+    return {
+      fontFamily: typeof layout.fontFamily === "string" ? layout.fontFamily : "Arimo",
+      fontSize: Number(layout.fontSize || 13) || 13,
+      lineHeight: Number(layout.lineHeight || 1.3) || 1.3
+    };
+  };
+  var normalizeSelectedSourceId = (value) => {
+    const normalized = String(value || "").replace(/^gen:/, "").replace(/^author:/, "");
+    return normalized || null;
+  };
+  var paintVisibleCanvas = () => {
+    const ctx = previewCanvas.getContext("2d");
+    if (!ctx) return;
+    if (previewCanvas.width !== offscreenCanvas.width || previewCanvas.height !== offscreenCanvas.height) {
+      previewCanvas.width = offscreenCanvas.width;
+      previewCanvas.height = offscreenCanvas.height;
+    }
+    ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    ctx.drawImage(offscreenCanvas, 0, 0);
+    if (interactionMode === "select" && currentSnapshotPage) {
+      drawPreviewSelectionOverlay(currentSnapshotPage, previewCanvas, {
+        selectedSourceId,
+        selection: activeTextSelection
+      });
+    }
+  };
+  var updateInteractionButton = () => {
+    interactionModeBtn.textContent = interactionMode === "pan" ? "Pan" : "Select";
+  };
+  var eventToPagePoint = (event) => {
+    const rect = previewCanvas.getBoundingClientRect();
+    const canvasX = (event.clientX - rect.left) / Math.max(1, rect.width) * previewCanvas.width;
+    const canvasY = (event.clientY - rect.top) / Math.max(1, rect.height) * previewCanvas.height;
+    return {
+      x: canvasX / Math.max(1, previewCanvas.width) * (currentSnapshotPage?.width || 1),
+      y: canvasY / Math.max(1, previewCanvas.height) * (currentSnapshotPage?.height || 1)
+    };
+  };
   var renderCurrentPage = async () => {
     if (!preview) return;
     loader.classList.remove("hidden");
     try {
+      currentSnapshotPage = preview.getLayoutSnapshotPages()[currentPageIndex] || null;
       await preview.renderPageToCanvas(currentPageIndex, offscreenCanvas, {
         scale: 2,
         dpi: 144,
@@ -82509,10 +82764,7 @@ captions:
           previewCanvas.width = offscreenCanvas.width;
           previewCanvas.height = offscreenCanvas.height;
         }
-        const ctx = previewCanvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(offscreenCanvas, 0, 0);
-        }
+        paintVisibleCanvas();
         previewCanvas.classList.remove("canvas-pending");
       });
     } finally {
@@ -82532,6 +82784,9 @@ captions:
         resolveImage: resolveImageFromCache
       });
       currentDocumentAst = docAst;
+      selectedSourceId = null;
+      activeTextSelection = null;
+      dragAnchor = null;
       astOutput.textContent = JSON.stringify(docAst, null, 2);
       if (!preview) {
         preview = await createVMPrintPreview(docAst, { onFontProgress });
@@ -82614,8 +82869,59 @@ captions:
   });
   toggleAstBtn.addEventListener("click", () => astDrawer.classList.toggle("collapsed"));
   closeAstBtn.addEventListener("click", () => astDrawer.classList.add("collapsed"));
+  interactionModeBtn.addEventListener("click", () => {
+    interactionMode = interactionMode === "pan" ? "select" : "pan";
+    isDragging = false;
+    isSelecting = false;
+    dragAnchor = null;
+    renderViewport.classList.toggle("grab-cursor", interactionMode === "pan");
+    previewCanvas.style.cursor = interactionMode === "pan" ? "grab" : "default";
+    updateInteractionButton();
+    paintVisibleCanvas();
+    statusNode.textContent = interactionMode === "pan" ? "Pan mode enabled." : "Selection mode enabled. Click or drag across text.";
+  });
+  previewCanvas.addEventListener("mousemove", (event) => {
+    if (interactionMode !== "select") return;
+    const point3 = eventToPagePoint(event);
+    const hit = hitTestPreviewBox(currentSnapshotPage, point3.x, point3.y);
+    const layout = buildPreviewTextLayoutModel(hit, getDocumentLayoutDefaults());
+    previewCanvas.style.cursor = layout ? "text" : hit ? "pointer" : "default";
+    if (!isSelecting || !dragAnchor || !currentSnapshotPage) return;
+    const currentBox = getSelectablePreviewBoxes(currentSnapshotPage).find((box) => normalizeSelectedSourceId(String(box.meta?.sourceId || "")) === dragAnchor.sourceId);
+    const selectedLayout = buildPreviewTextLayoutModel(currentBox || null, getDocumentLayoutDefaults());
+    if (!selectedLayout || selectedLayout.sourceId !== dragAnchor.sourceId) return;
+    const offset = getNearestPreviewSelectionOffset(selectedLayout, point3.x, point3.y);
+    const selectedOffsets = event.altKey ? normalizePreviewSelectedOffsets(
+      selectedLayout,
+      getPreviewSpatiallySelectedOffsets(selectedLayout, dragAnchor, point3)
+    ) : buildPreviewContinuousSelectedOffsets(selectedLayout, dragAnchor.absoluteOffset, offset);
+    activeTextSelection = {
+      sourceId: dragAnchor.sourceId,
+      selectedOffsets,
+      caretOffset: offset
+    };
+    paintVisibleCanvas();
+  });
+  previewCanvas.addEventListener("mousedown", (event) => {
+    if (event.button !== 0 || interactionMode !== "select" || !currentSnapshotPage) return;
+    const point3 = eventToPagePoint(event);
+    const hit = hitTestPreviewBox(currentSnapshotPage, point3.x, point3.y);
+    const layout = buildPreviewTextLayoutModel(hit, getDocumentLayoutDefaults());
+    isSelecting = true;
+    selectedSourceId = normalizeSelectedSourceId(String(hit?.meta?.sourceId || ""));
+    if (layout) {
+      const offset = getNearestPreviewSelectionOffset(layout, point3.x, point3.y);
+      dragAnchor = { sourceId: layout.sourceId, x: point3.x, y: point3.y, absoluteOffset: offset };
+      activeTextSelection = { sourceId: layout.sourceId, selectedOffsets: [], caretOffset: offset };
+      statusNode.textContent = `Selected ${layout.sourceId}.`;
+    } else {
+      dragAnchor = null;
+      activeTextSelection = null;
+    }
+    paintVisibleCanvas();
+  });
   renderViewport.addEventListener("mousedown", (e) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || interactionMode !== "pan") return;
     isDragging = true;
     startX = e.pageX - renderViewport.offsetLeft;
     startY = e.pageY - renderViewport.offsetTop;
@@ -82625,6 +82931,7 @@ captions:
     };
   });
   window.addEventListener("mousemove", (e) => {
+    if (interactionMode !== "pan") return;
     if (!isDragging) return;
     e.preventDefault();
     const x2 = e.pageX - renderViewport.offsetLeft;
@@ -82636,8 +82943,11 @@ captions:
   });
   window.addEventListener("mouseup", () => {
     isDragging = false;
+    isSelecting = false;
+    dragAnchor = null;
   });
   markdownInput.value = DEFAULT_MARKDOWN;
+  updateInteractionButton();
   void processRender(true);
   window.addEventListener("resize", handleFitZoom);
 })();
