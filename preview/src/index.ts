@@ -96,6 +96,25 @@ export type PreviewLayoutSnapshotTextFragment = {
     fontFamily?: string;
 };
 
+export type PreviewLayoutSnapshotLineMetric = {
+    index: number;
+    top: number;
+    baseline: number;
+    bottom: number;
+    height: number;
+    fontSize: number;
+    referenceAscentScale: number;
+    ascent: number;
+    descent: number;
+};
+
+export type PreviewLayoutSnapshotTextMetrics = {
+    contentBox: { x: number; y: number; w: number; h: number };
+    paragraphReferenceAscentScale: number;
+    uniformLineHeight: number;
+    lines: PreviewLayoutSnapshotLineMetric[];
+};
+
 export type PreviewLayoutSnapshotBox = {
     type: string;
     x: number;
@@ -107,8 +126,16 @@ export type PreviewLayoutSnapshotBox = {
         borderColor?: string;
         color?: string;
         borderWidth?: number;
+        textAlign?: string;
+        fontSize?: number;
+        lineHeight?: number;
+        paddingTop?: number;
+        paddingRight?: number;
+        paddingBottom?: number;
+        paddingLeft?: number;
     };
     lines?: PreviewLayoutSnapshotTextFragment[][];
+    textMetrics?: PreviewLayoutSnapshotTextMetrics;
     meta?: {
         sourceId?: string;
         engineKey?: string;
@@ -424,6 +451,7 @@ class PreviewSessionImpl implements PreviewSession {
     private canvasContext: CanvasContext | null = null;
     private pdfBytesPromise: Promise<Uint8Array> | null = null;
     private layoutPages: any[] | null = null;
+    private layoutSnapshotPages: any[] | null = null;
     private layoutConfig: any | null = null;
     private layoutRuntime: any | null = null;
 
@@ -456,7 +484,7 @@ class PreviewSessionImpl implements PreviewSession {
     getLayoutSnapshotPages(): PreviewLayoutSnapshotPage[] {
         this.assertActive('getLayoutSnapshotPages');
         this.assertHasDocument('getLayoutSnapshotPages');
-        return (this.layoutPages || []).map((page: any) => ({
+        return (this.layoutSnapshotPages || []).map((page: any) => ({
             index: Number(page.index || 0),
             width: Number(page.width || 0),
             height: Number(page.height || 0),
@@ -470,8 +498,36 @@ class PreviewSessionImpl implements PreviewSession {
                     backgroundColor: typeof box.style?.backgroundColor === 'string' ? box.style.backgroundColor : undefined,
                     borderColor: typeof box.style?.borderColor === 'string' ? box.style.borderColor : undefined,
                     color: typeof box.style?.color === 'string' ? box.style.color : undefined,
-                    borderWidth: Number(box.style?.borderWidth || 0) || undefined
+                    borderWidth: Number(box.style?.borderWidth || 0) || undefined,
+                    textAlign: typeof box.style?.textAlign === 'string' ? box.style.textAlign : undefined,
+                    fontSize: Number(box.style?.fontSize || 0) || undefined,
+                    lineHeight: Number(box.style?.lineHeight || 0) || undefined,
+                    paddingTop: Number(box.style?.paddingTop || 0) || undefined,
+                    paddingRight: Number(box.style?.paddingRight || 0) || undefined,
+                    paddingBottom: Number(box.style?.paddingBottom || 0) || undefined,
+                    paddingLeft: Number(box.style?.paddingLeft || 0) || undefined
                 },
+                textMetrics: box.properties?.__vmprintTextMetrics ? {
+                    contentBox: {
+                        x: Number(box.properties.__vmprintTextMetrics.contentBox?.x || 0),
+                        y: Number(box.properties.__vmprintTextMetrics.contentBox?.y || 0),
+                        w: Number(box.properties.__vmprintTextMetrics.contentBox?.w || 0),
+                        h: Number(box.properties.__vmprintTextMetrics.contentBox?.h || 0)
+                    },
+                    paragraphReferenceAscentScale: Number(box.properties.__vmprintTextMetrics.paragraphReferenceAscentScale || 0),
+                    uniformLineHeight: Number(box.properties.__vmprintTextMetrics.uniformLineHeight || 0),
+                    lines: (box.properties.__vmprintTextMetrics.lines || []).map((line: any) => ({
+                        index: Number(line.index || 0),
+                        top: Number(line.top || 0),
+                        baseline: Number(line.baseline || 0),
+                        bottom: Number(line.bottom || 0),
+                        height: Number(line.height || 0),
+                        fontSize: Number(line.fontSize || 0),
+                        referenceAscentScale: Number(line.referenceAscentScale || 0),
+                        ascent: Number(line.ascent || 0),
+                        descent: Number(line.descent || 0)
+                    }))
+                } : undefined,
                 meta: {
                     sourceId: typeof box.meta?.sourceId === 'string' ? box.meta.sourceId : '',
                     engineKey: typeof box.meta?.engineKey === 'string' ? box.meta.engineKey : '',
@@ -546,6 +602,7 @@ class PreviewSessionImpl implements PreviewSession {
         this.canvasContext = null;
         this.pdfBytesPromise = null;
         this.layoutPages = null;
+        this.layoutSnapshotPages = null;
         this.layoutConfig = null;
         this.layoutRuntime = null;
     }
@@ -600,6 +657,7 @@ class PreviewSessionImpl implements PreviewSession {
         this.pageCount = canvasContext.getPageCount();
         this.pageSize = pageSize;
         this.layoutPages = pages;
+        this.layoutSnapshotPages = pages.map((page) => (renderer as any).toOverlayPage(page));
         this.layoutConfig = config;
         this.layoutRuntime = runtime;
         this.pdfBytesPromise = renderPagesToPdfBytes(config, pages, runtime, pageSize);

@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const previewRoot = path.resolve(__dirname, '..');
-const demoRoot = path.join(previewRoot, 'example');
 const host = '127.0.0.1';
 const port = 4173;
 
@@ -32,12 +31,16 @@ const send = (response, statusCode, body, contentType) => {
 
 const normalizeRequestPath = (urlPath) => {
     const cleanPath = decodeURIComponent((urlPath || '/').split('?')[0]);
-    const relativePath = cleanPath === '/' ? '/index.html' : cleanPath;
-    const resolvedPath = path.resolve(demoRoot, `.${relativePath}`);
-    if (!resolvedPath.startsWith(demoRoot)) {
+    const relativePath = cleanPath === '/' ? '/playground/index.html' : cleanPath;
+    const directPath = path.resolve(previewRoot, `.${relativePath}`);
+    if (!directPath.startsWith(previewRoot)) {
         return null;
     }
-    return resolvedPath;
+    if (fs.existsSync(directPath) && fs.statSync(directPath).isDirectory()) {
+        const indexPath = path.join(directPath, 'index.html');
+        return fs.existsSync(indexPath) ? indexPath : null;
+    }
+    return directPath;
 };
 
 const server = http.createServer((request, response) => {
@@ -64,6 +67,6 @@ const server = http.createServer((request, response) => {
 });
 
 server.listen(port, host, () => {
-    console.log(`[preview demo] Serving ${demoRoot}`);
+    console.log(`[preview demo] Serving ${previewRoot}`);
     console.log(`[preview demo] Open http://${host}:${port}/`);
 });

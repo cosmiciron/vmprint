@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VMPrint Preview Dashboard</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script>
+    window.process = window.process || { env: {} };
+    window.global = window;
+  </script>
+</head>
+<body>
+  <main class="shell">
+    <section class="masthead">
+      <div>
+        <p class="eyebrow">Preview Dashboard</p>
+        <h1>Temporal Playback Dashboard</h1>
+        <p class="lede">A dedicated VMPrint preview plane for proof boards, progression playback, interpolation tuning, and performance observation.</p>
+      </div>
+      <div class="signal-card">
+        <p class="signal-label">Current Lane</p>
+        <p class="signal-value">Proof Playback</p>
+        <p class="signal-note">The playground stays focused on markdown preview. This dashboard is for runtime playback and proof inspection.</p>
+      </div>
+    </section>
+
+    <section class="control-grid">
+      <section class="panel controls">
+        <div class="field">
+          <label for="proof-select">Proof Board</label>
+          <select id="proof-select"></select>
+        </div>
+        <p id="proof-description" class="description"></p>
+
+        <div class="toolbar">
+          <button id="prev-page-button" type="button">Step Back</button>
+          <button id="next-page-button" type="button">Step Forward</button>
+          <button id="play-button" type="button" class="primary">Play</button>
+          <button id="pause-button" type="button">Pause</button>
+        </div>
+
+        <div class="field">
+          <label for="page-slider">Page / Frame</label>
+          <input id="page-slider" type="range" min="1" max="1" value="1">
+        </div>
+
+        <div class="aux-grid">
+          <div class="field">
+            <label for="presentation-mode">Playback Mode</label>
+            <select id="presentation-mode">
+              <option value="interpolated">Interpolated Presentation</option>
+              <option value="discrete">Discrete Ticks</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="speed-slider">Playback Speed</label>
+            <input id="speed-slider" type="range" min="0.25" max="2.5" step="0.05" value="1">
+          </div>
+        </div>
+
+        <label class="toggle">
+          <input id="hold-exact-ticks" type="checkbox">
+          <span>Hold exact ticks while playing</span>
+        </label>
+
+        <label class="toggle">
+          <input id="debug-transitions" type="checkbox">
+          <span>Highlight transition semantics</span>
+        </label>
+
+        <div class="readout-grid">
+          <div class="readout"><span class="label-copy">Position</span><strong id="pager">1 / 1</strong></div>
+          <div class="readout"><span class="label-copy">Canvas</span><strong id="page-size">0 x 0</strong></div>
+          <div class="readout"><span class="label-copy">Motion</span><strong id="playback-status">Idle</strong></div>
+          <div class="readout"><span class="label-copy">Mode</span><strong id="mode-readout">Interpolated</strong></div>
+          <div class="readout"><span class="label-copy">Speed</span><strong id="speed-readout">1.00x</strong></div>
+          <div class="readout"><span class="label-copy">Cadence</span><strong id="fps-readout">0.0 fps</strong></div>
+          <div class="readout"><span class="label-copy">Tick Hold</span><strong id="hold-readout">Off</strong></div>
+          <div class="readout"><span class="label-copy">Headroom</span><strong id="headroom-readout">0.00 ms • n/a</strong></div>
+        </div>
+      </section>
+
+      <section class="panel meta">
+        <p class="meta-title">Board Notes</p>
+        <pre id="meta-output"></pre>
+      </section>
+    </section>
+
+    <section class="stage panel">
+      <div class="stage-header">
+        <div>
+          <p class="stage-title">Render Plane</p>
+          <p id="status" class="stage-status">Ready.</p>
+        </div>
+      </div>
+      <div class="canvas-well">
+        <canvas id="proof-canvas" aria-label="VMPrint preview proof playback canvas"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <script src="./assets/dashboard.js"></script>
+</body>
+</html>
