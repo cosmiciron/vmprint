@@ -1,0 +1,187 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 468,
+      "height": 648
+    },
+    "margins": {
+      "top": 40,
+      "right": 44,
+      "bottom": 40,
+      "left": 44
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "marginBottom": 6,
+      "keepWithNext": true
+    },
+    "h2": {
+      "fontSize": 12,
+      "fontWeight": "bold",
+      "color": "#1a3a5c",
+      "marginTop": 18,
+      "marginBottom": 5,
+      "keepWithNext": true
+    },
+    "lead": {
+      "fontSize": 12,
+      "lineHeight": 1.35,
+      "marginBottom": 14,
+      "allowLineSplit": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Circular Float Wrapping"
+    },
+    {
+      "type": "lead",
+      "content": "The SpatialMap now supports circle-shaped exclusion zones. Instead of carving a fixed rectangular interval from every occupied line, it computes the chord width of the circle at each scanline — widest at the centre, narrowing toward the poles. Text hugs the arc naturally, line by line."
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "h2",
+          "content": "Left-Aligned Circle · Wrap Around"
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 6,
+            "shape": "circle"
+          },
+          "properties": {
+            "style": {
+              "width": 90,
+              "height": 90
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAoUlEQVR42u3QMQ0AAAgDsH34l4QysMDH06QKmuniKApkyZIlS5YsBbJkyZIlS5YCWbJkyZIlS4EsWbJkyZKlQJYsWbJkyVIgS5YsWbJkKZAlS5YsWbIUyJIlS5YsWQpkyZIlS5YsBbJkyZIlS5YCWbJkyZIlS4EsWbJkyZKlQJYsWbJkyVIgS5YsWbJkKZAlS5YsWbIUyJIlS5YsWQpkyfq2P1txfA45mOYAAAAASUVORK5CYII="
+          }
+        },
+        {
+          "type": "p",
+          "content": "The teal disc at the left anchors at the text cursor when this element is encountered. Each line of this paragraph queries the SpatialMap at its own Y coordinate. Near the top and bottom of the circle the chord is narrow, so the exclusion zone bites only a little into the column. At the circle's equator the chord is a full diameter wide, pushing the line start the furthest to the right. The result is a visible arc rather than the hard rectangular step produced by an ordinary float."
+        },
+        {
+          "type": "p",
+          "content": "Once the cursor descends past the bottom of the circle the full column measure is restored. Optical underhang means the first full-width line can begin as soon as the line top clears the circle's actual edge, without waiting for the gap clearance to expire — the same semantics as for rectangular floats."
+        },
+        {
+          "type": "h2",
+          "content": "Right-Aligned Circle · Wrap Around"
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 6,
+            "shape": "circle"
+          },
+          "properties": {
+            "style": {
+              "width": 90,
+              "height": 90
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAHgAAAC0CAIAAADQLH9KAAAA/UlEQVR42u3QQQ0AAAgEoEtnMDMZ0Bb6YSMBqR4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0aJFI1o0okWLRrRoRIsWjWjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohH9YwFutkXUeGVWWgAAAABJRU5ErkJggg=="
+          }
+        },
+        {
+          "type": "p",
+          "content": "The coral disc sits in the right margin. Text flows from the column's left edge and terminates at the left tangent of the chord for each affected line. Lines near the circle's top and bottom are nearly full measure; lines near the equator are shortest. The chord computation is: given the circle centre and the effective radius (geometric radius plus gap), find the Y in the line's vertical extent closest to the centre, compute the Euclidean chord half-width at that Y, and carve the symmetric interval from the available space."
+        },
+        {
+          "type": "p",
+          "content": "The conservative sampling rule — using the Y closest to the centre within the line height — guarantees text never bleeds into the circle. A line that straddles the circle's widest point gets the widest carve, not an average. This costs a whisker of space at the very top and bottom of the disc, but the arc contour reads cleanly to the eye."
+        },
+        {
+          "type": "h2",
+          "content": "Center Circle · Dual-Stream Wrap"
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "center",
+            "wrap": "around",
+            "gap": 6,
+            "shape": "circle"
+          },
+          "properties": {
+            "style": {
+              "width": 80,
+              "height": 80
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAkElEQVR42u3QMQ0AAAwDoEqv9Fnot4cEBSQtKwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmR9OyMOEkoQG4WbAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "A centred circle carves a hole in the middle of each affected line. The SpatialMap returns two intervals — one left of the chord, one right — and the lineLayoutResolver fills them both at the same baseline. Text streams around both flanks of the disc simultaneously. Near the equator the circle is widest, so the two text columns are at their narrowest; near the top and bottom the chord is thinner and both columns widen back toward their natural measure."
+        },
+        {
+          "type": "p",
+          "content": "Below the circle the full measure is immediately restored. Because the intervals share the same yOffset, both left and right fragments are rendered on the same baseline — no artificial line breaks are introduced. The dual-stream path is unchanged from rectangular center floats; only the interval boundaries move from scanline to scanline instead of staying fixed."
+        },
+        {
+          "type": "h2",
+          "content": "Circle Carry-Over · Page Break"
+        },
+        {
+          "type": "p",
+          "content": "When a circle float straddles a page break, its carry-over is registered on the next page with the original circle centre translated into the new page coordinate space. The centre may be at a negative Y in the new page — above the page top — which is correct: it means the new page sees only the lower arc of the circle. Lines on the continuation page will be carved with progressively narrowing chords as they approach the original equator and widening chords as they pass it, then return to full width once the effective radius is cleared."
+        },
+        {
+          "type": "p",
+          "content": "The bounding-box methods — topBottomClearY, hasTopBottomBlock, and maxObstacleBottom — all operate on the rect envelope of the obstacle and require no changes for circle shapes. Only the interval-carving path in getAvailableIntervals branches on the shape field, keeping the rest of the SpatialMap contract identical to the rectangular case."
+        },
+        {
+          "type": "p",
+          "content": "Gap semantics for circles are radial rather than rectangular. Specifying a gap of six points expands the effective radius by six, producing a uniform standoff all around the disc. This is geometrically more natural than the rectangular expansion used for box floats, and it means that the gap at the equator (horizontal) equals the gap at the poles (vertical) — a property rectangular gaps cannot satisfy."
+        },
+        {
+          "type": "p",
+          "content": "The shape field defaults to rect when absent, so every existing document continues to behave identically. Authors opt in by adding shape: circle to the placement directive. No other fields change: mode, align, wrap, and gap all carry the same meaning they have for rectangular floats."
+        }
+      ]
+    }
+  ]
+}

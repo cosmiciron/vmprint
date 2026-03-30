@@ -1,4 +1,4 @@
-import { StoryWrapMode } from '../../types';
+import { StoryFloatAlign, StoryWrapMode } from '../../types';
 
 // ---------------------------------------------------------------------------
 // Interval – a horizontal slice of available space
@@ -28,6 +28,24 @@ export interface OccupiedRect {
     /** Optional asymmetric vertical gap overrides. */
     gapTop?: number;
     gapBottom?: number;
+    /** Exclusion-zone shape (default 'rect'). */
+    shape?: 'rect' | 'circle';
+    /**
+     * For circle obstacles only: story-local Y of the circle centre.
+     * Defaults to rect.y + rect.h / 2 when absent.
+     * Carry-over circles must supply this explicitly because their rect.y is
+     * reset to 0 while the original centre may be on the previous page.
+     */
+    circleCy?: number;
+    /**
+     * Float alignment, used by circle obstacles to decide which side of the
+     * arc text wraps around.  'left' and 'right' extend the carve to the
+     * opposite column edge so text never leaks into the near-side corner
+     * regions (which are empty on a true circular image but would overlap a
+     * rectangular placeholder).  'center' keeps the symmetric dual-stream
+     * carve.  Unset → treated as 'center'.
+     */
+    align?: StoryFloatAlign;
 }
 
 // ---------------------------------------------------------------------------
@@ -73,22 +91,62 @@ export class SpatialMap {
         for (const rect of this.rects) {
             if (rect.wrap === 'none') continue;
 
-            const g = rect.gap;
-            const gapTop = rect.gapTop ?? g;
-            const gapBottom = rect.gapBottom ?? g;
-            const obsTop = rect.y - gapTop;
-            const obsBottom = rect.y + rect.h + gapBottom;
             const useOpticalUnderhang = options?.opticalUnderhang && rect.wrap === 'around';
-            const overlapBottom = useOpticalUnderhang ? (rect.y + rect.h) : obsBottom;
 
-            if (lineBottom <= obsTop || lineTop >= overlapBottom) continue; // no Y overlap
+            if (rect.shape === 'circle') {
+                // Circle: exclusion zone is a disc of radius (r + gap) where r = rect.w / 2.
+                const cx = rect.x + rect.w / 2;
+                const cy = rect.circleCy ?? (rect.y + rect.h / 2);
+                const r = rect.w / 2 + rect.gap;
 
-            if (rect.wrap === 'top-bottom') return []; // entire line blocked
+                const circleTop = cy - r;
+                // Optical underhang: allow full-width lines once the line top clears
+                // the actual circle edge (no gap), matching rectangular behaviour.
+                const circleBottom = useOpticalUnderhang ? cy + rect.w / 2 : cy + r;
 
-            // wrap === 'around': carve the obstacle's X-range from available intervals
-            const obsLeft = rect.x - g;
-            const obsRight = rect.x + rect.w + g;
-            available = carveInterval(available, obsLeft, obsRight);
+                if (lineBottom <= circleTop || lineTop >= circleBottom) continue; // no Y overlap
+
+                if (rect.wrap === 'top-bottom') return [];
+
+                // Most conservative carve: use the Y within [lineTop, lineBottom]
+                // closest to the centre — that's where the chord is widest.
+                const yClosest = Math.max(lineTop, Math.min(lineBottom, cy));
+                const dy = yClosest - cy;
+                const chordHalfW = Math.sqrt(Math.max(0, r * r - dy * dy));
+
+                // For edge-aligned circles, extend the carve to the near column
+                // edge so text never leaks into the corner regions between the
+                // arc and the bounding box.  Center floats keep the symmetric
+                // dual-stream carve unchanged.
+                const align = rect.align ?? 'center';
+                const carveLeft = align === 'right'
+                    ? cx - chordHalfW
+                    : align === 'center'
+                        ? cx - chordHalfW
+                        : rect.x - r - 1;
+                const carveRight = align === 'left'
+                    ? cx + chordHalfW
+                    : align === 'center'
+                        ? cx + chordHalfW
+                        : rect.x + rect.w + r + 1;
+                available = carveInterval(available, carveLeft, carveRight);
+            } else {
+                const g = rect.gap;
+                const gapTop = rect.gapTop ?? g;
+                const gapBottom = rect.gapBottom ?? g;
+                const obsTop = rect.y - gapTop;
+                const obsBottom = rect.y + rect.h + gapBottom;
+                const overlapBottom = useOpticalUnderhang ? (rect.y + rect.h) : obsBottom;
+
+                if (lineBottom <= obsTop || lineTop >= overlapBottom) continue; // no Y overlap
+
+                if (rect.wrap === 'top-bottom') return []; // entire line blocked
+
+                // wrap === 'around': carve the obstacle's X-range from available intervals
+                const obsLeft = rect.x - g;
+                const obsRight = rect.x + rect.w + g;
+                available = carveInterval(available, obsLeft, obsRight);
+            }
         }
 
         return available.filter((iv) => iv.w > 0.5);

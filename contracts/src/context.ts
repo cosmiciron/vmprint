@@ -46,8 +46,10 @@ export interface Context {
         x: number,
         y: number
     ): this;
+    circle(x: number, y: number, r: number): this;
     rect(x: number, y: number, w: number, h: number): this;
     roundedRect(x: number, y: number, w: number, h: number, r: number): this;
+    clip(rule?: 'nonzero' | 'evenodd'): this;
     fill(rule?: 'nonzero' | 'evenodd'): this;
     stroke(): this;
     fillAndStroke(fillColor?: string, strokeColor?: string): this;

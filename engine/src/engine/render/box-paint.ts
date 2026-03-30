@@ -78,6 +78,21 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
     }
 
     const bytes = getImageBytes(image.base64Data);
+    const clipShape = String(box.properties?._imageClipShape || '').trim();
+    if (clipShape === 'circle') {
+        const radius = Math.max(0, Math.min(drawWidth, drawHeight) / 2);
+        if (radius > 0) {
+            context.save();
+            context.circle(drawX + (drawWidth / 2), drawY + (drawHeight / 2), radius).clip();
+            context.image(bytes, drawX, drawY, {
+                width: drawWidth,
+                height: drawHeight,
+                mimeType: image.mimeType
+            });
+            context.restore();
+            return;
+        }
+    }
     context.image(bytes, drawX, drawY, {
         width: drawWidth,
         height: drawHeight,

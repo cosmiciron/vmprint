@@ -58,6 +58,49 @@ function repeatedParagraph(seed: string, repeatCount: number): string {
     return `${seed} `.repeat(repeatCount).trim();
 }
 
+function assertArabicMixedBidiSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '18-multilingual-arabic.json') return;
+
+    const segments = pages
+        .flatMap((page: any) => page.boxes || [])
+        .flatMap((box: any) => box.lines || [])
+        .flatMap((line: any[]) => line || []);
+
+    const findSegment = (text: string) => segments.find((segment: any) => segment?.text === text);
+    const expectSegment = (text: string) => {
+        const segment = findSegment(text);
+        assert.ok(segment, `${fixtureName}: expected segment "${text}"`);
+        return segment;
+    };
+
+    const arabicSegment = expectSegment('مرحبا');
+    assert.ok(
+        Array.isArray(arabicSegment.shapedGlyphs) && arabicSegment.shapedGlyphs.length > 0,
+        `${fixtureName}: expected Arabic segment to retain shaped glyphs`
+    );
+
+    const embeddedLatin = expectSegment('VMPrint');
+    assert.equal(embeddedLatin.direction, 'ltr', `${fixtureName}: embedded Latin token should stay LTR`);
+    assert.equal(embeddedLatin.shapedGlyphs, undefined, `${fixtureName}: embedded Latin token should not be RTL-shaped`);
+
+    const embeddedVersion = expectSegment('0.1.0');
+    assert.equal(embeddedVersion.direction, 'ltr', `${fixtureName}: embedded version token should stay LTR`);
+    assert.equal(embeddedVersion.shapedGlyphs, undefined, `${fixtureName}: embedded version token should not be RTL-shaped`);
+
+    const embeddedNumber = expectSegment('100');
+    assert.equal(embeddedNumber.shapedGlyphs, undefined, `${fixtureName}: embedded numeric token should not be RTL-shaped`);
+
+    const embeddedPercent = expectSegment('%');
+    assert.equal(embeddedPercent.shapedGlyphs, undefined, `${fixtureName}: embedded percent token should not be RTL-shaped`);
+
+    const embeddedGroupedNumber = expectSegment('123,456');
+    assert.equal(
+        embeddedGroupedNumber.shapedGlyphs,
+        undefined,
+        `${fixtureName}: grouped numeric token should not be RTL-shaped`
+    );
+}
+
 function createReactiveProofEngine(overrides: Record<string, unknown> = {}): LayoutEngine {
     const layoutOverrides = (overrides.layout as Record<string, unknown>) || {};
     const engine = new LayoutEngine({
@@ -522,6 +565,63 @@ function assertStoryPackagerShowcaseSignals(pages: any[], fixtureName: string): 
         );
         assert.ok(hasWrappedLine, `${fixtureName}: expected amber paragraph to include wrapped (offset) lines`);
         assert.ok(hasFullWidthLine, `${fixtureName}: expected amber paragraph to include a full-width line after underhang`);
+    }
+}
+
+function assertCircleFloatSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+
+    // All three circle floats must produce image boxes.
+    const imageBoxes = allBoxes.filter((box: any) => !!box.image);
+    assert.ok(imageBoxes.length >= 3, `${fixtureName}: expected at least 3 image boxes (one per circle float)`);
+
+    // Text boxes with non-uniform _lineWidths must be present — the resolver fired.
+    const wrappedBoxes = allBoxes.filter((box: any) => {
+        const lw: number[] = Array.isArray(box.properties?._lineWidths)
+            ? box.properties._lineWidths.map((n: any) => Number(n))
+            : [];
+        if (lw.length < 3) return false;
+        return Math.max(...lw) - Math.min(...lw) > 4;
+    });
+    assert.ok(wrappedBoxes.length >= 2, `${fixtureName}: expected text boxes with non-uniform _lineWidths from circle wrap`);
+
+    // Circle arcs must carve more than two distinct line widths within a single
+    // wrapped paragraph — rectangles produce only two (constrained / full).
+    // Three or more distinct widths (rounded to 0.5pt bins) proves the arc is
+    // shaping each scanline individually.
+    const hasArcGradient = wrappedBoxes.some((box: any) => {
+        const lw: number[] = (box.properties._lineWidths as any[]).map((n: any) => Number(n));
+        const bins = new Set(lw.map((w) => Math.round(w * 2) / 2));
+        return bins.size >= 3;
+    });
+    assert.ok(hasArcGradient, `${fixtureName}: expected at least one text box with 3+ distinct line widths proving arc carving`);
+
+    const centerWrapBox = allBoxes.find((box: any) =>
+        (box.lines || []).some((line: any[]) =>
+            line.some((seg: any) => String(seg.text || '').includes('A centred circle'))
+        )
+    );
+    assert.ok(centerWrapBox, `${fixtureName}: expected centered-circle paragraph box`);
+    if (centerWrapBox) {
+        const widths: number[] = Array.isArray(centerWrapBox.properties?._lineWidths)
+            ? centerWrapBox.properties._lineWidths.map((n: any) => Number(n))
+            : [];
+        const offsets: number[] = Array.isArray(centerWrapBox.properties?._lineOffsets)
+            ? centerWrapBox.properties._lineOffsets.map((n: any) => Number(n))
+            : [];
+        const constrainedPairs = widths
+            .map((width, index) => ({ width, offset: Number(offsets[index] || 0), index }))
+            .filter((entry) => entry.width < 300);
+        assert.ok(constrainedPairs.length >= 6, `${fixtureName}: expected centered circle to constrain multiple split intervals`);
+
+        const widthBins = new Set(constrainedPairs.map((entry) => Math.round(entry.width * 2) / 2));
+        assert.ok(widthBins.size >= 3, `${fixtureName}: centered circle should vary the split interval widths across scanlines`);
+
+        const rightOffsets = constrainedPairs
+            .map((entry) => entry.offset)
+            .filter((offset) => offset > 0.1);
+        const rightOffsetBins = new Set(rightOffsets.map((offset) => Math.round(offset * 2) / 2));
+        assert.ok(rightOffsetBins.size >= 3, `${fixtureName}: centered circle should shift the right-hand split interval across scanlines`);
     }
 }
 
@@ -1151,6 +1251,15 @@ async function run() {
                 }
             );
         }
+        if (fixture.name === '18-multilingual-arabic.json') {
+            _check(
+                `${fixture.name} mixed bidi shaping signals`,
+                'Arabic runs keep shaped glyphs while embedded Latin and number runs remain unshaped',
+                () => {
+                    assertArabicMixedBidiSignals(pagesA, fixture.name);
+                }
+            );
+        }
         if (fixture.name === '14-flow-images-multipage.json') {
             _check(
                 `${fixture.name} flow-image pagination coverage`,
@@ -1386,6 +1495,15 @@ async function run() {
                 'multi-page story with image floats, story-absolute, and non-uniform line widths',
                 () => {
                     assertStoryPackagerShowcaseSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '26-circle-floats.json') {
+            _check(
+                `${fixture.name} circle float signals`,
+                'circle floats produce image boxes and text with arc-shaped non-uniform line widths',
+                () => {
+                    assertCircleFloatSignals(pagesA, fixture.name);
                 }
             );
         }

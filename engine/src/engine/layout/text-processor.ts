@@ -341,9 +341,10 @@ export class TextProcessor extends FontProcessor {
             };
             const otScript = SCRIPT_MAP[populateSegment?.scriptClass || ''] || 'latn';
             const otDirection = populateSegment?.direction === 'rtl' ? 'rtl' : 'ltr';
-            const isRtl = otDirection === 'rtl';
             const isWhitespaceOnly = /^\s+$/u.test(text);
             const layoutText = isWhitespaceOnly ? text.replace(/[\u00A0\u202F]/g, ' ') : text;
+            const containsRtlScript = detectRtlScript(layoutText);
+            const isRtl = otDirection === 'rtl' && containsRtlScript;
 
             // Keep explicit OT feature forcing only on RTL runs. For LTR/other scripts,
             // use fontkit defaults so measurement matches render-path defaults.
@@ -852,7 +853,6 @@ export class TextProcessor extends FontProcessor {
         return wrapped;
     }
 }
-
 
 
 

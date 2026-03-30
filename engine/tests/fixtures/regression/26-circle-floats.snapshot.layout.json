@@ -1,0 +1,920 @@
+[
+  {
+    "index": 0,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Circular Float Wrapping",
+              "width": 248.950195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "lead",
+        "x": 44,
+        "y": 77.178125,
+        "w": 380,
+        "h": 88.03125,
+        "lines": [
+          [
+            {
+              "text": "The SpatialMap now supports circle-shaped exclusion zones. Instead ",
+              "width": 371.537109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "of carving a fixed rectangular interval from every occupied line, it ",
+              "width": 345.498047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "computes the chord width of the circle at each scanline — widest at the",
+              "width": 377.53125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "centre, narrowing toward the poles. Text hugs the arc naturally, line by ",
+              "width": 374.642578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "line.",
+              "width": 22.013672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 197.209375,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Left-Aligned Circle · Wrap Around",
+              "width": 193.113281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 44,
+        "y": 219.215625,
+        "w": 90,
+        "h": 90,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 219.215625,
+        "w": 380,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "The teal disc at the left anchors at the text cursor when this ",
+              "width": 290.425781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "element is encountered. Each line of this paragraph ",
+              "width": 254.380371,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "queries the SpatialMap at its own Y coordinate. Near the ",
+              "width": 278.211914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "top and bottom of the circle the chord is narrow, so the ",
+              "width": 267.813477,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "exclusion zone bites only a little into the column. At the ",
+              "width": 269.650391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "circle's equator the chord is a full diameter wide, pushing ",
+              "width": 279.07666,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the line start the furthest to the right. The result is a visible arc ",
+              "width": 303.251953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rather than the hard rectangular step produced by an ordinary float.",
+              "width": 327.147949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 342.904688,
+        "w": 380,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Once the cursor descends past the bottom of the circle the full column ",
+              "width": 343.621094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measure is restored. Optical underhang means the first full-width line can ",
+              "width": 358.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "begin as soon as the line top clears the circle's actual edge, without waiting ",
+              "width": 368.371094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for the gap clearance to expire — the same semantics as for rectangular ",
+              "width": 355.233398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "floats.",
+              "width": 29.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 441.69375,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Right-Aligned Circle · Wrap Around",
+              "width": 201.773438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 334,
+        "y": 463.7,
+        "w": 90,
+        "h": 90,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 463.7,
+        "w": 380,
+        "h": 129.989063,
+        "lines": [
+          [
+            {
+              "text": "The coral disc sits in the right margin. Text flows from the ",
+              "width": 279.989746,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "column's left edge and terminates at the left tangent of the ",
+              "width": 285.833496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "chord for each affected line. Lines near the circle's top ",
+              "width": 266.051758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and bottom are nearly full measure; lines near the equator",
+              "width": 282.498047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "are shortest. The chord computation is: given the circle ",
+              "width": 270.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "centre and the effective radius (geometric radius plus gap), ",
+              "width": 289.620117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "find the Y in the line's vertical extent closest to the centre, ",
+              "width": 282.750488,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "compute the Euclidean chord half-width at that Y, and carve the symmetric ",
+              "width": 364.208496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "interval from the available space.",
+              "width": 160.805176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "The conservative sampling rule — using the Y closest to the centre within the ",
+              "width": 378.46875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "line height — guarantees text never bleeds into the circle. A line that straddles",
+              "width": 379.720215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the circle's widest point gets the widest carve, not an average. This costs a ",
+              "width": 366.501953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "whisker of space at the very top and bottom of the disc, but the arc contour ",
+              "width": 366.867188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reads cleanly to the eye.",
+              "width": 119.238281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 138.789063,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Center Circle · Dual-Stream Wrap",
+              "width": 189.164063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 194,
+        "y": 160.795312,
+        "w": 80,
+        "h": 80,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 160.795312,
+        "w": 380,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "A centred circle carves a hole ",
+              "width": 147.345215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "in the middle of each affected ",
+              "width": 146.561035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "line. The SpatialMap returns ",
+              "width": 140.625977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "two intervals — one left of the",
+              "width": 144.906738,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "chord, one right — and the ",
+              "width": 133.305176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lineLayoutResolver fills them ",
+              "width": 143.064453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "both at the same baseline. ",
+              "width": 132.085938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Text streams around both ",
+              "width": 127.176758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "flanks of the disc ",
+              "width": 84.986816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simultaneously. Near the ",
+              "width": 123.298828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "equator the circle is widest, so ",
+              "width": 150.401367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the two text columns are at their",
+              "width": 155.906738,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "narrowest; near the top and bottom the chord is thinner and both columns ",
+              "width": 360.770996,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "widen back toward their natural measure.",
+              "width": 201.158203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 284.484375,
+        "w": 380,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Below the circle the full measure is immediately restored. Because the ",
+              "width": 344.824219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "intervals share the same yOffset, both left and right fragments are rendered ",
+              "width": 369.713867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "on the same baseline — no artificial line breaks are introduced. The ",
+              "width": 332.01416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "dual-stream path is unchanged from rectangular center floats; only the ",
+              "width": 344.856445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "interval boundaries move from scanline to scanline instead of staying fixed.",
+              "width": 365.030273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 383.273438,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Circle Carry-Over · Page Break",
+              "width": 175.423828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 405.279688,
+        "w": 380,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "When a circle float straddles a page break, its carry-over is registered on the ",
+              "width": 374.78418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "next page with the original circle centre translated into the new page ",
+              "width": 334.479492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "coordinate space. The centre may be at a negative Y in the new page — ",
+              "width": 355.883301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "above the page top — which is correct: it means the new page sees only the ",
+              "width": 374.827148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lower arc of the circle. Lines on the continuation page will be carved with ",
+              "width": 355.249512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "progressively narrowing chords as they approach the original equator and ",
+              "width": 361.37793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "widening chords as they pass it, then return to full width once the effective ",
+              "width": 362.393066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "radius is cleared.",
+              "width": 83.149902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 528.96875,
+        "w": 380,
+        "h": 71.5,
+        "lines": [
+          [
+            {
+              "text": "The bounding-box methods — topBottomClearY, hasTopBottomBlock, and ",
+              "width": 364.22998,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "maxObstacleBottom — all operate on the rect envelope of the obstacle and ",
+              "width": 369.327148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "require no changes for circle shapes. Only the interval-carving path in ",
+              "width": 341.177246,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "getAvailableIntervals branches on the shape field, keeping the rest of the ",
+              "width": 357.532227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "SpatialMap contract identical to the rectangular case.",
+              "width": 258.64502,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 63.589062,
+        "w": 380,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "Gap semantics for circles are radial rather than rectangular. Specifying a gap ",
+              "width": 376.637207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "of six points expands the effective radius by six, producing a uniform standoff ",
+              "width": 377.475098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "all around the disc. This is geometrically more natural than the rectangular ",
+              "width": 363.794922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "expansion used for box floats, and it means that the gap at the equator ",
+              "width": 347.343262,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "(horizontal) equals the gap at the poles (vertical) — a property rectangular ",
+              "width": 363.187988,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "gaps cannot satisfy.",
+              "width": 96.405762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 158.678125,
+        "w": 380,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The shape field defaults to rect when absent, so every existing document ",
+              "width": 358.316406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continues to behave identically. Authors opt in by adding shape: circle to the ",
+              "width": 372.195313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "placement directive. No other fields change: mode, align, wrap, and gap all ",
+              "width": 366.87793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "carry the same meaning they have for rectangular floats.",
+              "width": 275.139648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -73,6 +73,10 @@ type CarryOverObstacle = {
     gap: number;
     gapTop?: number;
     gapBottom?: number;
+    shape?: 'rect' | 'circle';
+    /** Circle centre Y in the new page's story-local coordinates. */
+    circleCy?: number;
+    align?: StoryFloatAlign;
 };
 
 type PlacedTextElement = {
@@ -416,7 +420,8 @@ export class StoryPackager implements PackagerUnit {
         for (const co of this.initialObstacles) {
             const rect: OccupiedRect = {
                 x: co.x, y: 0, w: co.w, h: co.remainingH, wrap: co.wrap, gap: co.gap,
-                gapTop: co.gapTop, gapBottom: co.gapBottom
+                gapTop: co.gapTop, gapBottom: co.gapBottom,
+                shape: co.shape, circleCy: co.circleCy, align: co.align
             };
             storyMap.register(rect);
             registeredObstacles.push(rect);
@@ -445,7 +450,8 @@ export class StoryPackager implements PackagerUnit {
                 w: dims.w,
                 h: dims.h,
                 wrap: layout.wrap,
-                gap: layout.gap
+                gap: layout.gap,
+                shape: layout.shape
             };
             storyMap.register(rect);
             registeredObstacles.push(rect);
@@ -531,7 +537,7 @@ export class StoryPackager implements PackagerUnit {
 
                 if (wrap !== 'none') {
                     const rect: OccupiedRect = {
-                        x: floatX, y: cursorY, w: imgW, h: imgH, wrap, gap
+                        x: floatX, y: cursorY, w: imgW, h: imgH, wrap, gap, shape: layout.shape, align: layout.align
                     };
                     storyMap.register(rect);
                     registeredObstacles.push(rect);
@@ -561,7 +567,7 @@ export class StoryPackager implements PackagerUnit {
                     const gap = layout.gap;
 
                     if (wrap !== 'none') {
-                        const rect: OccupiedRect = { x: floatX, y: cursorY, w: dims.w, h: dims.h, wrap, gap };
+                        const rect: OccupiedRect = { x: floatX, y: cursorY, w: dims.w, h: dims.h, wrap, gap, shape: layout.shape, align: layout.align };
                         storyMap.register(rect);
                         registeredObstacles.push(rect);
                     }
@@ -990,7 +996,10 @@ export class StoryPackager implements PackagerUnit {
                 wrap: co.wrap,
                 gap: co.gap,
                 gapTop: co.gapTop,
-                gapBottom: co.gapBottom
+                gapBottom: co.gapBottom,
+                shape: co.shape,
+                circleCy: co.circleCy,
+                align: co.align
             };
             allObstacles.push(rect);
             registeredObstacles.push(rect);
@@ -1017,7 +1026,8 @@ export class StoryPackager implements PackagerUnit {
                 w: dims.w,
                 h: dims.h,
                 wrap: layout.wrap,
-                gap: layout.gap
+                gap: layout.gap,
+                shape: layout.shape
             };
             allObstacles.push(rect);
             registeredObstacles.push(rect);
@@ -1279,7 +1289,7 @@ export class StoryPackager implements PackagerUnit {
                     const wrap: StoryWrapMode = layout.wrap;
                     const gap = layout.gap;
                     if (wrap !== 'none') {
-                        const rect: OccupiedRect = { x, y: anchorY, w: Math.min(imgW, region.w), h: imgH, wrap, gap };
+                        const rect: OccupiedRect = { x, y: anchorY, w: Math.min(imgW, region.w), h: imgH, wrap, gap, shape: layout.shape, align: layout.align };
                         allObstacles.push(rect);
                         registeredObstacles.push(rect);
                     }
@@ -1315,7 +1325,7 @@ export class StoryPackager implements PackagerUnit {
                         const gap = layout.gap;
 
                         if (wrap !== 'none') {
-                            const rect: OccupiedRect = { x, y: anchorY, w: effectiveW, h: dims.h, wrap, gap };
+                            const rect: OccupiedRect = { x, y: anchorY, w: effectiveW, h: dims.h, wrap, gap, shape: layout.shape, align: layout.align };
                             allObstacles.push(rect);
                             registeredObstacles.push(rect);
                         }
@@ -1786,6 +1796,7 @@ export class StoryPackager implements PackagerUnit {
             style: flowBox.style,
             properties: {
                 ...(flowBox.properties || {}),
+                _imageClipShape: element.placement?.shape,
                 _isFirstLine: true,
                 _isLastLine: true,
                 _isFirstFragmentInLine: true,
@@ -1978,15 +1989,24 @@ function buildCarryOverObstacles(obstacles: OccupiedRect[], splitY: number): Car
     for (const obstacle of obstacles) {
         const obstacleBottom = obstacle.y + obstacle.h;
         if (obstacleBottom > splitY && obstacle.y < splitY) {
-            carryOvers.push({
+            const co: CarryOverObstacle = {
                 x: obstacle.x,
                 w: obstacle.w,
                 remainingH: Math.max(0, obstacleBottom - splitY),
                 wrap: obstacle.wrap,
                 gap: obstacle.gap,
                 gapTop: 0,
-                gapBottom: obstacle.gap
-            });
+                gapBottom: obstacle.gap,
+                shape: obstacle.shape
+            };
+            if (obstacle.shape === 'circle') {
+                // Translate the circle centre into the new page's coordinate space
+                // (new page Y=0 corresponds to splitY in the old page).
+                const originalCy = obstacle.circleCy ?? (obstacle.y + obstacle.h / 2);
+                co.circleCy = originalCy - splitY;
+            }
+            co.align = obstacle.align;
+            carryOvers.push(co);
         }
     }
     return carryOvers;

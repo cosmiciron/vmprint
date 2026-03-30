@@ -1051,6 +1051,73 @@ async function testRendererZIndexOrdering() {
     );
 }
 
+async function testRendererCircularImageClip() {
+    log('Scenario: renderer clips circle-shaped image boxes through the shared context API');
+
+    class ClipContext extends MockContext {
+        circles: Array<{ x: number; y: number; r: number }> = [];
+        clipCalls = 0;
+
+        override circle(x: number, y: number, r: number): this {
+            this.circles.push({ x, y, r });
+            return this;
+        }
+
+        override clip(_rule?: 'nonzero' | 'evenodd'): this {
+            this.clipCalls += 1;
+            return this;
+        }
+    }
+
+    const config = buildConfig();
+    const renderer = new Renderer(config, false);
+    const context = new ClipContext();
+
+    const pages: Page[] = [{
+        index: 0,
+        width: 320,
+        height: 220,
+        boxes: [{
+            type: 'image',
+            x: 20,
+            y: 30,
+            w: 80,
+            h: 80,
+            image: {
+                base64Data: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7Z0ioAAAAASUVORK5CYII=',
+                mimeType: 'image/png',
+                intrinsicWidth: 1,
+                intrinsicHeight: 1,
+                fit: 'fill'
+            },
+            style: {},
+            properties: {
+                _imageClipShape: 'circle'
+            },
+            meta: {
+                sourceId: 'circle-image',
+                engineKey: 'circle-image',
+                sourceType: 'image',
+                fragmentIndex: 0,
+                isContinuation: false
+            }
+        }]
+    }];
+
+    await renderer.render(pages, context);
+
+    _check(
+        'circle image boxes emit clip path commands',
+        'renderer defines a circle clip and applies it before drawing a circle-shaped image box',
+        () => {
+            assert.equal(context.circles.length, 1, 'expected one circle path');
+            assert.equal(context.clipCalls, 1, 'expected one clip call');
+            assert.equal(context.imageCalls, 1, 'expected one image draw');
+            assert.deepEqual(context.circles[0], { x: 60, y: 70, r: 40 });
+        }
+    );
+}
+
 async function testTablePaginationRepeatsHeaderRows() {
     log('Scenario: table primitive paginates by rows and repeats headers on continuation pages');
     const config = buildConfig();
@@ -2009,6 +2076,7 @@ async function run() {
     await testOrientationPageDimensions();
     await testHyphenatedContinuationPreservesBoundaryWord();
     await testRendererZIndexOrdering();
+    await testRendererCircularImageClip();
     await testTablePaginationRepeatsHeaderRows();
     await testTableColSpanMaterializesSpanWidth();
     await testTableSplitStopsBeforeFullWidthViewportBlocker();
@@ -2029,6 +2097,5 @@ run().catch((err) => {
     console.error('[flat-pipeline.spec] FAILED', err);
     process.exit(1);
 });
-
 
 

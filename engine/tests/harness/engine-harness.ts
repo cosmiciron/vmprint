@@ -288,8 +288,10 @@ export class MockContext implements Context {
     moveTo(_x: number, _y: number): this { return this; }
     lineTo(_x: number, _y: number): this { return this; }
     bezierCurveTo(_cp1x: number, _cp1y: number, _cp2x: number, _cp2y: number, _x: number, _y: number): this { return this; }
+    circle(_x: number, _y: number, _r: number): this { return this; }
     rect(_x: number, _y: number, _w: number, _h: number): this { return this; }
     roundedRect(_x: number, _y: number, _w: number, _h: number, _r: number): this { return this; }
+    clip(_rule?: 'nonzero' | 'evenodd'): this { return this; }
     fill(_rule?: 'nonzero' | 'evenodd'): this { return this; }
     stroke(): this { return this; }
     fillAndStroke(_fillColor?: string, _strokeColor?: string): this { return this; }
@@ -330,5 +332,4 @@ export class MockContext implements Context {
         return { width: this._pageWidth, height: this._pageHeight };
     }
 }
-
 
