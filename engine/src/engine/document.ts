@@ -92,7 +92,7 @@ const ZONE_LAYOUT_KEYS = new Set(['columns', 'gap', 'frameOverflow', 'worldBehav
 const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
-const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap']);
+const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape']);
 const PAGE_REGION_DEFINITION_KEYS = new Set(['default', 'firstPage', 'odd', 'even']);
 const PAGE_REGION_CONTENT_KEYS = new Set(['elements', 'style']);
 const PAGE_OVERRIDES_KEYS = new Set(['header', 'footer']);
@@ -510,6 +510,10 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
     if (directive.x !== undefined) assertFiniteNumberAt(directive.x, `${path}.x`, documentPath);
     if (directive.y !== undefined) assertFiniteNumberAt(directive.y, `${path}.y`, documentPath);
     if (directive.gap !== undefined) assertFiniteNumberAt(directive.gap, `${path}.gap`, documentPath);
+    const validShapes = new Set(['rect', 'circle']);
+    if (directive.shape !== undefined && !validShapes.has(directive.shape as string)) {
+        contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle.');
+    }
 }
 
 function validatePaginationContinuation(value: unknown, path: string, documentPath: string): void {

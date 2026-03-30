@@ -315,6 +315,13 @@ export type StoryWrapMode = 'around' | 'top-bottom' | 'none';
 /** Which margin a float anchors to. */
 export type StoryFloatAlign = 'left' | 'right' | 'center';
 
+/**
+ * The exclusion-zone shape used for text wrapping:
+ *   'rect'   – rectangular bounding box (default)
+ *   'circle' – circle inscribed in the bounding box; text conforms to the arc
+ */
+export type StoryFloatShape = 'rect' | 'circle';
+
 export interface StoryLayoutDirective {
     mode: StoryLayoutMode;
     /** story-absolute: X offset from story content-area left edge (points). */
@@ -327,6 +334,8 @@ export interface StoryLayoutDirective {
     wrap?: StoryWrapMode;
     /** Extra whitespace clearance around the obstacle bounding box (points). */
     gap?: number;
+    /** Exclusion-zone shape for text wrapping (default 'rect'). */
+    shape?: StoryFloatShape;
 }
 
 export interface ElementStyle {

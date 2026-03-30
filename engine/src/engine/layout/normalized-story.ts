@@ -1,4 +1,4 @@
-import type { Element, StoryFloatAlign, StoryLayoutDirective, StoryWrapMode } from '../types';
+import type { Element, StoryFloatAlign, StoryFloatShape, StoryLayoutDirective, StoryWrapMode } from '../types';
 
 export type NormalizedStoryChildKind =
     | 'flow'
@@ -15,6 +15,7 @@ export interface NormalizedStoryLayout {
     align: StoryFloatAlign;
     wrap: StoryWrapMode;
     gap: number;
+    shape: StoryFloatShape;
 }
 
 export interface NormalizedStoryChild {
@@ -40,7 +41,8 @@ function normalizeLayout(layout?: StoryLayoutDirective): NormalizedStoryLayout |
         y: Math.max(0, Number(layout.y ?? 0)),
         align: (layout.align ?? 'left') as StoryFloatAlign,
         wrap: (layout.wrap ?? 'around') as StoryWrapMode,
-        gap: Math.max(0, Number(layout.gap ?? 0))
+        gap: Math.max(0, Number(layout.gap ?? 0)),
+        shape: (layout.shape ?? 'rect') as StoryFloatShape
     };
 }
 
