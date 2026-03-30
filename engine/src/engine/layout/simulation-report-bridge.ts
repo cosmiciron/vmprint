@@ -53,7 +53,8 @@ export class SimulationReportBridge {
             sourcePositionMap: publishedArtifacts.get(simulationArtifactKeys.sourcePositionMap) as SimulationArtifactMap['sourcePositionMap'],
             headingTelemetry: publishedArtifacts.get(simulationArtifactKeys.headingTelemetry) as SimulationArtifactMap['headingTelemetry'],
             asyncThoughtSummary: publishedArtifacts.get(simulationArtifactKeys.asyncThoughtSummary) as SimulationArtifactMap['asyncThoughtSummary'],
-            temporalPresentationTimeline: publishedArtifacts.get(simulationArtifactKeys.temporalPresentationTimeline) as SimulationArtifactMap['temporalPresentationTimeline']
+            temporalPresentationTimeline: publishedArtifacts.get(simulationArtifactKeys.temporalPresentationTimeline) as SimulationArtifactMap['temporalPresentationTimeline'],
+            interactionMap: publishedArtifacts.get(simulationArtifactKeys.interactionMap) as SimulationArtifactMap['interactionMap']
         };
 
         for (const [key, value] of publishedArtifacts.entries()) {

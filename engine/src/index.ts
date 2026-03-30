@@ -2,6 +2,7 @@ export * from './engine/types';
 export * from './engine/document';
 export * from './engine/layout-engine';
 export * from './engine/renderer';
+export * from './engine/interaction-model';
 export * from './font-management';
 export * from './font-management/ops';
 export { loadFont, getCachedFont, getCachedBuffer, registerFontBuffer } from './font-management/font-cache-loader';

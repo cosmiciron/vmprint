@@ -41,6 +41,22 @@ type OverlayComputedTextMetrics = {
     lines: OverlayComputedLineMetric[];
 };
 
+type OverlayInteractionRegion = {
+    sourceId: string;
+    originSourceId?: string;
+    clonedFromSourceId?: string;
+    engineKey?: string;
+    sourceType?: string;
+    fragmentIndex: number;
+    isContinuation: boolean;
+    generated: boolean;
+    transformKind?: 'clone' | 'split' | 'morph';
+    selectableText: boolean;
+    containerSourceId?: string;
+    containerType?: string;
+    containerEngineKey?: string;
+};
+
 /**
  * Renderer consumes flat pages of boxes only.
  */
@@ -265,7 +281,42 @@ export class Renderer {
         if (textMetrics) {
             properties.__vmprintTextMetrics = textMetrics;
         }
+        const interactionRegion = this.computeOverlayInteractionRegion(box);
+        if (interactionRegion) {
+            properties.__vmprintInteractionRegion = interactionRegion;
+        }
         return Object.keys(properties).length > 0 ? properties : undefined;
+    }
+
+    private computeOverlayInteractionRegion(box: Box): OverlayInteractionRegion | null {
+        const sourceId = String(box.meta?.sourceId || '');
+        if (!sourceId) return null;
+        const properties = box.properties || {};
+        return {
+            sourceId,
+            originSourceId: typeof box.meta?.originSourceId === 'string' ? box.meta.originSourceId : undefined,
+            clonedFromSourceId: typeof box.meta?.clonedFromSourceId === 'string' ? box.meta.clonedFromSourceId : undefined,
+            engineKey: typeof box.meta?.engineKey === 'string' ? box.meta.engineKey : undefined,
+            sourceType: typeof box.meta?.sourceType === 'string' ? box.meta.sourceType : undefined,
+            fragmentIndex: Number(box.meta?.fragmentIndex || 0),
+            isContinuation: Boolean(box.meta?.isContinuation),
+            generated: Boolean(box.meta?.generated),
+            transformKind: box.meta?.transformKind,
+            selectableText: Boolean(
+                (Array.isArray(box.lines) && box.lines.length > 0)
+                || (typeof box.content === 'string' && box.content.length > 0)
+                || (Array.isArray(box.glyphs) && box.glyphs.length > 0)
+            ),
+            containerSourceId: typeof properties._interactionContainerSourceId === 'string'
+                ? properties._interactionContainerSourceId
+                : undefined,
+            containerType: typeof properties._interactionContainerType === 'string'
+                ? properties._interactionContainerType
+                : undefined,
+            containerEngineKey: typeof properties._interactionContainerEngineKey === 'string'
+                ? properties._interactionContainerEngineKey
+                : undefined
+        };
     }
 
     private computeOverlayTextMetrics(box: Box): OverlayComputedTextMetrics | null {

@@ -869,6 +869,12 @@ export function positionSpatialGridFlowBoxes(
                         ...child,
                         x: Number(child.x || 0) + offsetX,
                         y: Number(child.y || 0) + offsetY,
+                        properties: {
+                            ...(child.properties || {}),
+                            _interactionContainerSourceId: normalizedCellSourceId,
+                            _interactionContainerType: 'table_cell',
+                            _interactionContainerEngineKey: String(emittedCellMeta.engineKey || '')
+                        },
                         meta: emittedChildMeta
                     });
                 }

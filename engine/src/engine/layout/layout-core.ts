@@ -47,6 +47,7 @@ import { TransformArtifactCollaborator } from './collaborators/transform-artifac
 import { ZoneDebugOverlayCollaborator } from './collaborators/zone-debug-overlay-collaborator';
 import { TemporalPresentationCollaborator } from './collaborators/temporal-presentation-collaborator';
 import { AsyncThoughtRuntimeCollaborator } from './collaborators/async-thought-runtime-collaborator';
+import { InteractionArtifactCollaborator } from './collaborators/interaction-artifact-collaborator';
 import { AsyncThoughtHost } from './async-thought-host';
 import {
     buildTableModel,
@@ -1301,6 +1302,7 @@ export class LayoutProcessor extends TextProcessor {
             new HeadingSignalCollaborator(),
             ...(asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []),
             new TemporalPresentationCollaborator(),
+            new InteractionArtifactCollaborator(this.config.layout),
             new ZoneDebugOverlayCollaborator(),
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>

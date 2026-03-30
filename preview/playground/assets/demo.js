@@ -35147,7 +35147,7 @@
   var STRIP_LAYOUT_KEYS = /* @__PURE__ */ new Set(["tracks", "gap"]);
   var TABLE_COLUMN_KEYS = /* @__PURE__ */ new Set(["mode", "value", "fr", "min", "max", "basis", "minContent", "maxContent", "grow", "shrink"]);
   var DROP_CAP_KEYS = /* @__PURE__ */ new Set(["enabled", "lines", "characters", "gap", "characterStyle"]);
-  var STORY_LAYOUT_DIRECTIVE_KEYS = /* @__PURE__ */ new Set(["mode", "x", "y", "align", "wrap", "gap"]);
+  var STORY_LAYOUT_DIRECTIVE_KEYS = /* @__PURE__ */ new Set(["mode", "x", "y", "align", "wrap", "gap", "shape"]);
   var PAGE_REGION_DEFINITION_KEYS = /* @__PURE__ */ new Set(["default", "firstPage", "odd", "even"]);
   var PAGE_REGION_CONTENT_KEYS = /* @__PURE__ */ new Set(["elements", "style"]);
   var PAGE_OVERRIDES_KEYS = /* @__PURE__ */ new Set(["header", "footer"]);
@@ -35531,6 +35531,10 @@
     if (directive.x !== void 0) assertFiniteNumberAt(directive.x, `${path2}.x`, documentPath);
     if (directive.y !== void 0) assertFiniteNumberAt(directive.y, `${path2}.y`, documentPath);
     if (directive.gap !== void 0) assertFiniteNumberAt(directive.gap, `${path2}.gap`, documentPath);
+    const validShapes = /* @__PURE__ */ new Set(["rect", "circle"]);
+    if (directive.shape !== void 0 && !validShapes.has(directive.shape)) {
+      contractError(documentPath, `${path2}.shape`, "expected one of: rect, circle.");
+    }
   }
   function validatePaginationContinuation(value, path2, documentPath) {
     const continuation = assertPlainObjectAt(value, path2, documentPath);
@@ -46696,9 +46700,10 @@
         };
         const otScript = SCRIPT_MAP[populateSegment?.scriptClass || ""] || "latn";
         const otDirection = populateSegment?.direction === "rtl" ? "rtl" : "ltr";
-        const isRtl = otDirection === "rtl";
         const isWhitespaceOnly = /^\s+$/u.test(text5);
         const layoutText = isWhitespaceOnly ? text5.replace(/[\u00A0\u202F]/g, " ") : text5;
+        const containsRtlScript = hasRtlScript(layoutText);
+        const isRtl = otDirection === "rtl" && containsRtlScript;
         let run;
         try {
           run = !isWhitespaceOnly && isRtl ? measurementFont.layout(
@@ -47631,7 +47636,8 @@
     sourcePositionMap: "sourcePositionMap",
     headingTelemetry: "headingTelemetry",
     asyncThoughtSummary: "asyncThoughtSummary",
-    temporalPresentationTimeline: "temporalPresentationTimeline"
+    temporalPresentationTimeline: "temporalPresentationTimeline",
+    interactionMap: "interactionMap"
   };
   var knownSimulationArtifactKeys = [
     simulationArtifactKeys.fragmentationSummary,
@@ -47646,7 +47652,8 @@
     simulationArtifactKeys.sourcePositionMap,
     simulationArtifactKeys.headingTelemetry,
     simulationArtifactKeys.asyncThoughtSummary,
-    simulationArtifactKeys.temporalPresentationTimeline
+    simulationArtifactKeys.temporalPresentationTimeline,
+    simulationArtifactKeys.interactionMap
   ];
   function getSimulationArtifact(report, key) {
     return report?.artifacts?.[key];
@@ -51709,7 +51716,8 @@
         sourcePositionMap: publishedArtifacts.get(simulationArtifactKeys.sourcePositionMap),
         headingTelemetry: publishedArtifacts.get(simulationArtifactKeys.headingTelemetry),
         asyncThoughtSummary: publishedArtifacts.get(simulationArtifactKeys.asyncThoughtSummary),
-        temporalPresentationTimeline: publishedArtifacts.get(simulationArtifactKeys.temporalPresentationTimeline)
+        temporalPresentationTimeline: publishedArtifacts.get(simulationArtifactKeys.temporalPresentationTimeline),
+        interactionMap: publishedArtifacts.get(simulationArtifactKeys.interactionMap)
       };
       for (const [key, value] of publishedArtifacts.entries()) {
         if (key in artifacts && artifacts[key] !== void 0) continue;
@@ -55030,6 +55038,12 @@ ${source}`)
               ...child,
               x: Number(child.x || 0) + offsetX,
               y: Number(child.y || 0) + offsetY,
+              properties: {
+                ...child.properties || {},
+                _interactionContainerSourceId: normalizedCellSourceId,
+                _interactionContainerType: "table_cell",
+                _interactionContainerEngineKey: String(emittedCellMeta.engineKey || "")
+              },
               meta: emittedChildMeta
             });
           }
@@ -55211,7 +55225,8 @@ ${source}`)
       y: Math.max(0, Number(layout.y ?? 0)),
       align: layout.align ?? "left",
       wrap: layout.wrap ?? "around",
-      gap: Math.max(0, Number(layout.gap ?? 0))
+      gap: Math.max(0, Number(layout.gap ?? 0)),
+      shape: layout.shape ?? "rect"
     };
   }
   function classifyChild(element2, layout) {
@@ -55267,18 +55282,35 @@ ${source}`)
       const lineTop = y2;
       for (const rect of this.rects) {
         if (rect.wrap === "none") continue;
-        const g2 = rect.gap;
-        const gapTop = rect.gapTop ?? g2;
-        const gapBottom = rect.gapBottom ?? g2;
-        const obsTop = rect.y - gapTop;
-        const obsBottom = rect.y + rect.h + gapBottom;
         const useOpticalUnderhang = options?.opticalUnderhang && rect.wrap === "around";
-        const overlapBottom = useOpticalUnderhang ? rect.y + rect.h : obsBottom;
-        if (lineBottom <= obsTop || lineTop >= overlapBottom) continue;
-        if (rect.wrap === "top-bottom") return [];
-        const obsLeft = rect.x - g2;
-        const obsRight = rect.x + rect.w + g2;
-        available = carveInterval(available, obsLeft, obsRight);
+        if (rect.shape === "circle") {
+          const cx = rect.x + rect.w / 2;
+          const cy = rect.circleCy ?? rect.y + rect.h / 2;
+          const r = rect.w / 2 + rect.gap;
+          const circleTop = cy - r;
+          const circleBottom = useOpticalUnderhang ? cy + rect.w / 2 : cy + r;
+          if (lineBottom <= circleTop || lineTop >= circleBottom) continue;
+          if (rect.wrap === "top-bottom") return [];
+          const yClosest = Math.max(lineTop, Math.min(lineBottom, cy));
+          const dy = yClosest - cy;
+          const chordHalfW = Math.sqrt(Math.max(0, r * r - dy * dy));
+          const align = rect.align ?? "center";
+          const carveLeft = align === "right" ? cx - chordHalfW : align === "center" ? cx - chordHalfW : rect.x - r - 1;
+          const carveRight = align === "left" ? cx + chordHalfW : align === "center" ? cx + chordHalfW : rect.x + rect.w + r + 1;
+          available = carveInterval(available, carveLeft, carveRight);
+        } else {
+          const g2 = rect.gap;
+          const gapTop = rect.gapTop ?? g2;
+          const gapBottom = rect.gapBottom ?? g2;
+          const obsTop = rect.y - gapTop;
+          const obsBottom = rect.y + rect.h + gapBottom;
+          const overlapBottom = useOpticalUnderhang ? rect.y + rect.h : obsBottom;
+          if (lineBottom <= obsTop || lineTop >= overlapBottom) continue;
+          if (rect.wrap === "top-bottom") return [];
+          const obsLeft = rect.x - g2;
+          const obsRight = rect.x + rect.w + g2;
+          available = carveInterval(available, obsLeft, obsRight);
+        }
       }
       return available.filter((iv) => iv.w > 0.5);
     }
@@ -55528,7 +55560,10 @@ ${source}`)
           wrap: co.wrap,
           gap: co.gap,
           gapTop: co.gapTop,
-          gapBottom: co.gapBottom
+          gapBottom: co.gapBottom,
+          shape: co.shape,
+          circleCy: co.circleCy,
+          align: co.align
         };
         storyMap.register(rect);
         registeredObstacles.push(rect);
@@ -55548,7 +55583,8 @@ ${source}`)
           w: dims.w,
           h: dims.h,
           wrap: layout.wrap,
-          gap: layout.gap
+          gap: layout.gap,
+          shape: layout.shape
         };
         storyMap.register(rect);
         registeredObstacles.push(rect);
@@ -55628,7 +55664,9 @@ ${source}`)
               w: imgW,
               h: imgH,
               wrap: wrap2,
-              gap
+              gap,
+              shape: layout.shape,
+              align: layout.align
             };
             storyMap.register(rect);
             registeredObstacles.push(rect);
@@ -55663,7 +55701,7 @@ ${source}`)
             const wrap2 = layout.wrap;
             const gap = layout.gap;
             if (wrap2 !== "none") {
-              const rect = { x: floatX, y: cursorY, w: dims.w, h: dims.h, wrap: wrap2, gap };
+              const rect = { x: floatX, y: cursorY, w: dims.w, h: dims.h, wrap: wrap2, gap, shape: layout.shape, align: layout.align };
               storyMap.register(rect);
               registeredObstacles.push(rect);
             }
@@ -55999,7 +56037,10 @@ ${source}`)
           wrap: co.wrap,
           gap: co.gap,
           gapTop: co.gapTop,
-          gapBottom: co.gapBottom
+          gapBottom: co.gapBottom,
+          shape: co.shape,
+          circleCy: co.circleCy,
+          align: co.align
         };
         allObstacles.push(rect);
         registeredObstacles.push(rect);
@@ -56021,7 +56062,8 @@ ${source}`)
           w: dims.w,
           h: dims.h,
           wrap: layout.wrap,
-          gap: layout.gap
+          gap: layout.gap,
+          shape: layout.shape
         };
         allObstacles.push(rect);
         registeredObstacles.push(rect);
@@ -56249,7 +56291,7 @@ ${source}`)
             const wrap2 = layout.wrap;
             const gap = layout.gap;
             if (wrap2 !== "none") {
-              const rect = { x: x2, y: anchorY, w: Math.min(imgW, region.w), h: imgH, wrap: wrap2, gap };
+              const rect = { x: x2, y: anchorY, w: Math.min(imgW, region.w), h: imgH, wrap: wrap2, gap, shape: layout.shape, align: layout.align };
               allObstacles.push(rect);
               registeredObstacles.push(rect);
             }
@@ -56280,7 +56322,7 @@ ${source}`)
               const wrap2 = layout.wrap;
               const gap = layout.gap;
               if (wrap2 !== "none") {
-                const rect = { x: x2, y: anchorY, w: effectiveW, h: dims.h, wrap: wrap2, gap };
+                const rect = { x: x2, y: anchorY, w: effectiveW, h: dims.h, wrap: wrap2, gap, shape: layout.shape, align: layout.align };
                 allObstacles.push(rect);
                 registeredObstacles.push(rect);
               }
@@ -56632,6 +56674,7 @@ ${source}`)
         style: flowBox.style,
         properties: {
           ...flowBox.properties || {},
+          _imageClipShape: element2.placement?.shape,
           _isFirstLine: true,
           _isLastLine: true,
           _isFirstFragmentInLine: true,
@@ -56770,15 +56813,22 @@ ${source}`)
     for (const obstacle of obstacles) {
       const obstacleBottom = obstacle.y + obstacle.h;
       if (obstacleBottom > splitY && obstacle.y < splitY) {
-        carryOvers.push({
+        const co = {
           x: obstacle.x,
           w: obstacle.w,
           remainingH: Math.max(0, obstacleBottom - splitY),
           wrap: obstacle.wrap,
           gap: obstacle.gap,
           gapTop: 0,
-          gapBottom: obstacle.gap
-        });
+          gapBottom: obstacle.gap,
+          shape: obstacle.shape
+        };
+        if (obstacle.shape === "circle") {
+          const originalCy = obstacle.circleCy ?? obstacle.y + obstacle.h / 2;
+          co.circleCy = originalCy - splitY;
+        }
+        co.align = obstacle.align;
+        carryOvers.push(co);
       }
     }
     return carryOvers;
@@ -58565,6 +58615,791 @@ ${source}`)
       session.publishArtifact(
         simulationArtifactKeys.asyncThoughtSummary,
         this.host.getSummary()
+      );
+    }
+  };
+  var lineEndsWithForcedBreak2 = (line) => {
+    if (!Array.isArray(line) || line.length === 0) return false;
+    return !!line[line.length - 1]?.forcedBreakAfter;
+  };
+  var getReferenceAscentScale = (line) => {
+    if (line.length === 0) return 0;
+    const textLikeSegments = line.filter((seg) => !seg?.inlineObject);
+    const source = textLikeSegments.length > 0 ? textLikeSegments : line;
+    let maxAscent = 0;
+    for (const seg of source) {
+      if (seg.ascent === void 0) {
+        throw new Error(`[Renderer] Missing precomputed ascent for segment "${(seg.text || "").slice(0, 24)}".`);
+      }
+      if (seg.ascent > maxAscent) maxAscent = seg.ascent;
+    }
+    return maxAscent / 1e3;
+  };
+  var computeEffectiveLineHeight = (line, baseFontSize, lineHeight, referenceAscentScale) => {
+    const lineFontSize = line.reduce(
+      (max, seg) => Math.max(max, Number(seg.style?.fontSize || baseFontSize)),
+      Number(baseFontSize)
+    );
+    const nominal = lineFontSize * lineHeight;
+    if (line.length === 0) return nominal;
+    let maxAscentFromBaseline = 0;
+    let maxDescentFromBaseline = 0;
+    for (const seg of line) {
+      const segFontSize = Number(seg.style?.fontSize || baseFontSize);
+      if (seg.ascent === void 0) {
+        throw new Error(`[Renderer] Missing precomputed ascent for segment "${(seg.text || "").slice(0, 24)}".`);
+      }
+      const segAscent = seg.ascent / 1e3 * segFontSize;
+      if (segAscent > maxAscentFromBaseline) maxAscentFromBaseline = segAscent;
+      if (seg.descent === void 0) {
+        throw new Error(`[Renderer] Missing precomputed descent for segment "${(seg.text || "").slice(0, 24)}".`);
+      }
+      const segDescent = seg.descent / 1e3 * segFontSize;
+      if (segDescent > maxDescentFromBaseline) maxDescentFromBaseline = segDescent;
+    }
+    const baselineOffset = referenceAscentScale * lineFontSize;
+    const neededAscentFromTop = Math.max(maxAscentFromBaseline, baselineOffset);
+    const neededTextHeight = neededAscentFromTop + maxDescentFromBaseline;
+    const lead = nominal - lineFontSize;
+    const neededHeight = neededTextHeight + lead;
+    return Math.max(nominal, neededHeight);
+  };
+  var buildParagraphMetrics = (lines, fontSize, lineHeight) => {
+    const lineHasInlineObject = (line) => line.some((seg) => !!seg?.inlineObject);
+    const paragraphHasInlineObjects = lines.some((line) => Array.isArray(line) && lineHasInlineObject(line));
+    let paragraphReferenceAscentScale = 0;
+    for (const line of lines) {
+      if (!Array.isArray(line)) continue;
+      const ref = getReferenceAscentScale(line);
+      if (ref > paragraphReferenceAscentScale) paragraphReferenceAscentScale = ref;
+    }
+    const lineMetrics = lines.map((line) => {
+      if (!Array.isArray(line)) {
+        return {
+          lineFontSize: Number(fontSize),
+          referenceAscentScale: paragraphReferenceAscentScale,
+          effectiveLineHeight: Number(fontSize) * lineHeight
+        };
+      }
+      const lineFontSize = line.reduce(
+        (max, seg) => Math.max(max, Number(seg.style?.fontSize || fontSize)),
+        Number(fontSize)
+      );
+      const referenceAscentScale = paragraphHasInlineObjects ? getReferenceAscentScale(line) : paragraphReferenceAscentScale;
+      return {
+        lineFontSize,
+        referenceAscentScale,
+        effectiveLineHeight: computeEffectiveLineHeight(line, fontSize, lineHeight, referenceAscentScale)
+      };
+    });
+    let uniformLineHeight = 0;
+    for (const metric of lineMetrics) {
+      if (metric.effectiveLineHeight > uniformLineHeight) uniformLineHeight = metric.effectiveLineHeight;
+    }
+    return {
+      paragraphHasInlineObjects,
+      paragraphReferenceAscentScale,
+      lineMetrics,
+      uniformLineHeight
+    };
+  };
+  var computeLineWidth = (line) => {
+    if (!Array.isArray(line)) return 0;
+    return line.reduce((width, seg) => {
+      if (seg.width === void 0) {
+        throw new Error(`[Renderer] Missing precomputed width for segment "${(seg.text || "").slice(0, 24)}".`);
+      }
+      return width + seg.width;
+    }, 0);
+  };
+  var computeAlignedLineX = (lineIndex, lineDirection, lineOriginX, lineWidthLimit, textIndent, align, adjustedLineWidth) => {
+    let lineX = lineIndex === 0 ? lineOriginX + textIndent : lineOriginX;
+    if (lineDirection === "rtl") {
+      lineX = lineIndex === 0 ? lineOriginX + lineWidthLimit - textIndent : lineOriginX + lineWidthLimit;
+      if (align === "right") {
+        lineX = lineOriginX + adjustedLineWidth;
+      } else if (align === "center") {
+        lineX = lineOriginX + (lineWidthLimit + adjustedLineWidth) / 2;
+      }
+      return lineX;
+    }
+    if (align && align !== "left") {
+      if (align === "right") {
+        lineX = lineOriginX + (lineWidthLimit - adjustedLineWidth);
+      } else if (align === "center") {
+        lineX = lineOriginX + (lineWidthLimit - adjustedLineWidth) / 2;
+      }
+    }
+    return lineX;
+  };
+  var computeJustifyExtraAfter = (line, lineIndex, lineCount, align, justifyEngine, lineWidthLimit, lineWidth) => {
+    if (align !== "justify") return [];
+    if (lineIndex === lineCount - 1) return [];
+    if (lineEndsWithForcedBreak2(line)) return [];
+    if (!Array.isArray(line)) return [];
+    if (justifyEngine === "advanced") {
+      return line.map((seg) => Number(seg.justifyAfter || 0));
+    }
+    const availableExtra = lineWidthLimit - lineWidth;
+    if (availableExtra <= 1e-4) return [];
+    const hasWhitespace = line.some((seg) => /\s/.test(seg.text || ""));
+    const isCjkLike = (text5) => /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]/.test(text5);
+    const isPunct = (text5) => /^[\s.,;:!?\uFF0C\u3002\uFF1B\uFF1A\uFF01\uFF1F\u3001\uFF08\uFF09()\u300A\u300B\u3010\u3011'"\u201C\u201D\u2018\u2019\u2026-]*$/.test(text5);
+    const shouldStretchBoundary2 = (left, right) => {
+      if (!left || !right) return false;
+      if (/\s$/.test(left) || /^\s/.test(right)) return true;
+      if (hasWhitespace) return false;
+      if (isPunct(left) || isPunct(right)) return false;
+      return isCjkLike(left) && isCjkLike(right);
+    };
+    const boundaries = [];
+    for (let i2 = 0; i2 < line.length - 1; i2++) {
+      const left = line[i2]?.text || "";
+      const right = line[i2 + 1]?.text || "";
+      if (shouldStretchBoundary2(left, right)) boundaries.push(i2);
+    }
+    if (boundaries.length === 0) return [];
+    const perBoundary = availableExtra / boundaries.length;
+    const justifyExtraAfter = new Array(line.length).fill(0);
+    boundaries.forEach((idx) => {
+      justifyExtraAfter[idx] = perBoundary;
+    });
+    return justifyExtraAfter;
+  };
+  var createLineFrameAccessors = (boxProperties, startY2, width) => {
+    const lineOffsets = Array.isArray(boxProperties?._lineOffsets) ? boxProperties._lineOffsets : [];
+    const lineWidths = Array.isArray(boxProperties?._lineWidths) ? boxProperties._lineWidths : [];
+    const lineYOffsets = Array.isArray(boxProperties?._lineYOffsets) ? boxProperties._lineYOffsets : [];
+    const hasExplicitLineYOffsets = lineYOffsets.length > 0;
+    return {
+      hasExplicitLineYOffsets,
+      getLineOffset: (lineIndex) => {
+        const candidate = lineOffsets[lineIndex];
+        return Number.isFinite(candidate) ? Number(candidate) : 0;
+      },
+      getLineWidth: (lineIndex) => {
+        const candidate = lineWidths[lineIndex];
+        if (Number.isFinite(candidate) && Number(candidate) > 0) return Number(candidate);
+        return width;
+      },
+      getLineY: (lineIndex) => {
+        if (!hasExplicitLineYOffsets) return null;
+        const candidate = lineYOffsets[lineIndex];
+        if (!Number.isFinite(candidate)) return null;
+        return startY2 + Math.max(0, Number(candidate));
+      }
+    };
+  };
+  var getStrongDirection2 = (text5) => {
+    for (const ch of text5 || "") {
+      const cp = ch.codePointAt(0) || 0;
+      const isRtl = cp >= 1424 && cp <= 2303 || // Hebrew + Arabic + Syriac + Thaana etc.
+      cp >= 64285 && cp <= 65023 || cp >= 65136 && cp <= 65279;
+      if (isRtl) return "rtl";
+      if (new RegExp("\\p{L}", "u").test(ch)) return "ltr";
+    }
+    return "neutral";
+  };
+  var resolveParagraphDirection = (lines, containerStyle, layoutDirection, defaultDirection) => {
+    const configured = String(containerStyle.direction || layoutDirection || defaultDirection);
+    if (configured === "rtl") return "rtl";
+    if (configured === "ltr") return "ltr";
+    const paragraphText = (lines || []).map((line) => Array.isArray(line) ? line.map((seg) => seg?.text || "").join("") : String(line || "")).join("\n");
+    const strong2 = getStrongDirection2(paragraphText);
+    return strong2 === "rtl" ? "rtl" : "ltr";
+  };
+  var reorderItemsForVisualBidi = (items, baseDirection) => {
+    if (items.length <= 1) return items;
+    const resolveStrongDirAt = (index2) => {
+      const text5 = items[index2]?.seg?.text || "";
+      return getStrongDirection2(text5);
+    };
+    const resolvedDirs = new Array(items.length);
+    for (let i2 = 0; i2 < items.length; i2++) {
+      const strong2 = resolveStrongDirAt(i2);
+      if (strong2 !== "neutral") {
+        resolvedDirs[i2] = strong2;
+        continue;
+      }
+      const segText = items[i2]?.seg?.text || "";
+      const segDir = items[i2]?.seg?.direction;
+      const isWhitespace = segText.trim().length === 0;
+      if (!isWhitespace && segDir) {
+        resolvedDirs[i2] = segDir;
+        continue;
+      }
+      let prevStrong = null;
+      for (let j2 = i2 - 1; j2 >= 0; j2--) {
+        const d2 = resolveStrongDirAt(j2);
+        if (d2 !== "neutral") {
+          prevStrong = d2;
+          break;
+        }
+      }
+      let nextStrong = null;
+      for (let j2 = i2 + 1; j2 < items.length; j2++) {
+        const d2 = resolveStrongDirAt(j2);
+        if (d2 !== "neutral") {
+          nextStrong = d2;
+          break;
+        }
+      }
+      if (prevStrong && nextStrong && prevStrong === nextStrong) {
+        resolvedDirs[i2] = prevStrong;
+      } else if (prevStrong) {
+        resolvedDirs[i2] = prevStrong;
+      } else if (nextStrong) {
+        resolvedDirs[i2] = nextStrong;
+      } else if (segDir) {
+        resolvedDirs[i2] = segDir;
+      } else {
+        resolvedDirs[i2] = baseDirection;
+      }
+    }
+    const runs = [];
+    let currentRun = [];
+    let currentDir = baseDirection;
+    for (let i2 = 0; i2 < items.length; i2++) {
+      const item = items[i2];
+      const effectiveDir = resolvedDirs[i2];
+      if (currentRun.length === 0) {
+        currentRun = [item];
+        currentDir = effectiveDir;
+        continue;
+      }
+      if (effectiveDir !== currentDir) {
+        runs.push({ dir: currentDir, items: currentRun });
+        currentRun = [item];
+        currentDir = effectiveDir;
+        continue;
+      }
+      currentRun.push(item);
+    }
+    if (currentRun.length > 0) runs.push({ dir: currentDir, items: currentRun });
+    if (baseDirection === "rtl") {
+      return runs.reverse().flatMap((run) => run.dir === "ltr" ? [...run.items].reverse() : run.items);
+    }
+    return runs.flatMap((run) => run.dir === "rtl" ? [...run.items].reverse() : run.items);
+  };
+  var toNumber = (value, fallback = 0) => {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : fallback;
+  };
+  var sortUniqueNumbers = (values) => Array.from(new Set(values)).sort((a2, b2) => a2 - b2);
+  var clamp2 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var isTextSelectableBox = (box) => {
+    const sourceId = String(box.meta?.sourceId || "");
+    if (!sourceId) return false;
+    return Array.isArray(box.lines) && box.lines.length > 0 || typeof box.content === "string" && box.content.length > 0 || Array.isArray(box.glyphs) && box.glyphs.length > 0;
+  };
+  var isInteractableBox = (box) => {
+    const sourceId = String(box.meta?.sourceId || "");
+    if (!sourceId) return false;
+    return isTextSelectableBox(box) || !!box.image || box.type === "image" || box.type === "box";
+  };
+  var buildTargetId = (meta, pageIndex) => {
+    const engineKey = String(meta?.engineKey || "");
+    if (engineKey) return engineKey;
+    const sourceId = String(meta?.sourceId || "unknown");
+    const fragmentIndex = Number(meta?.fragmentIndex || 0);
+    return `${sourceId}#${fragmentIndex}@${pageIndex}`;
+  };
+  var resolveContentBox = (box) => {
+    const style = box.style || {};
+    const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? 0);
+    const paddingRight = LayoutUtils.validateUnit(style.paddingRight ?? style.padding ?? 0);
+    const paddingTop = LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? 0);
+    const paddingBottom = LayoutUtils.validateUnit(style.paddingBottom ?? style.padding ?? 0);
+    const borderLeft = LayoutUtils.validateUnit(style.borderLeftWidth ?? style.borderWidth ?? 0);
+    const borderRight = LayoutUtils.validateUnit(style.borderRightWidth ?? style.borderWidth ?? 0);
+    const borderTop = LayoutUtils.validateUnit(style.borderTopWidth ?? style.borderWidth ?? 0);
+    const borderBottom = LayoutUtils.validateUnit(style.borderBottomWidth ?? style.borderWidth ?? 0);
+    return {
+      x: box.x + paddingLeft + borderLeft,
+      y: box.y + paddingTop + borderTop,
+      w: Math.max(0, box.w - paddingLeft - paddingRight - borderLeft - borderRight),
+      h: Math.max(0, box.h - paddingTop - paddingBottom - borderTop - borderBottom)
+    };
+  };
+  var buildFallbackUnits = (text5, drawX, lineIndex, top, bottom, absoluteOffsetRef, width) => {
+    const glyphs = Array.from(text5 || "");
+    if (glyphs.length === 0) return [];
+    const unitWidth = glyphs.length > 0 ? width / glyphs.length : 0;
+    return glyphs.map((glyph, unitIndex) => {
+      const x0 = drawX + unitIndex * unitWidth;
+      const x1 = unitIndex === glyphs.length - 1 ? drawX + width : x0 + unitWidth;
+      const unit = {
+        absoluteOffset: absoluteOffsetRef.value,
+        lineIndex,
+        unitIndex,
+        text: glyph,
+        x0,
+        x1,
+        y0: top,
+        y1: bottom
+      };
+      absoluteOffsetRef.value += 1;
+      return unit;
+    });
+  };
+  var buildGlyphUnits = (glyphs, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth) => {
+    if (!Array.isArray(glyphs) || glyphs.length === 0) return [];
+    return glyphs.map((glyph, unitIndex) => {
+      const start = drawX + toNumber(glyph.x, 0);
+      const next = glyphs[unitIndex + 1];
+      const fallbackEnd = drawX + segmentWidth;
+      const end = next ? Math.max(start, drawX + toNumber(next.x, segmentWidth)) : fallbackEnd;
+      const unit = {
+        absoluteOffset: absoluteOffsetRef.value,
+        lineIndex,
+        unitIndex,
+        text: String(glyph.char || ""),
+        x0: start,
+        x1: end,
+        y0: top,
+        y1: bottom
+      };
+      absoluteOffsetRef.value += 1;
+      return unit;
+    });
+  };
+  var buildSegmentUnits = (segment, drawX, lineIndex, top, bottom, absoluteOffsetRef) => {
+    const segmentWidth = Math.max(0, toNumber(segment.width, 0));
+    if (Array.isArray(segment.glyphs) && segment.glyphs.length > 0) {
+      return buildGlyphUnits(segment.glyphs, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth);
+    }
+    return buildFallbackUnits(String(segment.text || ""), drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth);
+  };
+  var buildInteractionTarget = (box, pageIndex, layout) => {
+    if (!isInteractableBox(box)) return null;
+    const rendererLines = box.lines || [];
+    const boxStyle = box.style || {};
+    const contentBox = resolveContentBox(box);
+    const baseFontSize = Number(boxStyle.fontSize || layout.fontSize);
+    const lineHeight = Number(boxStyle.lineHeight || layout.lineHeight);
+    const paragraphMetrics = buildParagraphMetrics(rendererLines, baseFontSize, lineHeight);
+    const lineFrame = createLineFrameAccessors(box.properties || {}, contentBox.y, contentBox.w);
+    const paragraphDirection = resolveParagraphDirection(
+      rendererLines,
+      boxStyle,
+      layout.direction,
+      LAYOUT_DEFAULTS.textLayout.direction
+    );
+    const letterSpacing = LayoutUtils.validateUnit(boxStyle.letterSpacing || 0);
+    const textIndent = LayoutUtils.validateUnit(boxStyle.textIndent || 0);
+    const align = boxStyle.textAlign;
+    const justifyEngine = boxStyle.justifyEngine || layout.justifyEngine || LAYOUT_DEFAULTS.textLayout.justifyEngine;
+    const lines = [];
+    const units = [];
+    const absoluteOffsetRef = { value: 0 };
+    let currentY = contentBox.y;
+    rendererLines.forEach((line, lineIndex) => {
+      if (!Array.isArray(line)) return;
+      const metric = paragraphMetrics.lineMetrics[lineIndex];
+      const actualLineFontSize = metric?.lineFontSize ?? baseFontSize;
+      const referenceAscentScale = metric?.referenceAscentScale ?? paragraphMetrics.paragraphReferenceAscentScale;
+      const effectiveLineHeight = paragraphMetrics.paragraphHasInlineObjects ? metric?.effectiveLineHeight ?? paragraphMetrics.uniformLineHeight : paragraphMetrics.uniformLineHeight;
+      const nominalLineHeight = actualLineFontSize * lineHeight;
+      const nominalLeading = nominalLineHeight - actualLineFontSize;
+      const vOffset = nominalLeading / 2;
+      const lineOffset = lineFrame.getLineOffset(lineIndex);
+      const lineWidthLimit = lineFrame.getLineWidth(lineIndex);
+      const lineOriginX = contentBox.x + lineOffset;
+      const lineTop = lineFrame.getLineY(lineIndex) ?? currentY;
+      const baseline = lineTop + vOffset + referenceAscentScale * actualLineFontSize;
+      const bottom = lineTop + effectiveLineHeight;
+      const lineWidth = computeLineWidth(line);
+      const adjustedLineWidth = lineWidth - letterSpacing;
+      const lineX = computeAlignedLineX(
+        lineIndex,
+        paragraphDirection,
+        lineOriginX,
+        lineWidthLimit,
+        textIndent,
+        align,
+        adjustedLineWidth
+      );
+      const justifyExtraAfter = computeJustifyExtraAfter(
+        line,
+        lineIndex,
+        rendererLines.length,
+        align,
+        justifyEngine,
+        lineWidthLimit,
+        lineWidth
+      );
+      const rawItems = line.map((seg, index2) => ({
+        seg,
+        extra: justifyExtraAfter[index2] || 0
+      }));
+      const lineItems = reorderItemsForVisualBidi(rawItems, paragraphDirection);
+      const lineStartOffset = absoluteOffsetRef.value;
+      let currentX = lineX;
+      const lineUnits = [];
+      for (const { seg, extra } of lineItems) {
+        const segWidth = Math.max(0, toNumber(seg.width, 0));
+        if (paragraphDirection === "rtl") {
+          currentX -= segWidth;
+        }
+        const drawX = currentX;
+        lineUnits.push(...buildSegmentUnits(seg, drawX, lineIndex, lineTop, bottom, absoluteOffsetRef));
+        if (paragraphDirection === "rtl") {
+          currentX -= extra;
+        } else {
+          currentX += segWidth + extra;
+        }
+      }
+      units.push(...lineUnits);
+      const left = lineUnits.length > 0 ? Math.min(...lineUnits.map((unit) => unit.x0)) : lineX;
+      const right = lineUnits.length > 0 ? Math.max(...lineUnits.map((unit) => unit.x1)) : lineX;
+      lines.push({
+        index: lineIndex,
+        startOffset: lineStartOffset,
+        endOffset: absoluteOffsetRef.value,
+        top: lineTop,
+        baseline,
+        bottom,
+        left,
+        right,
+        direction: paragraphDirection
+      });
+      if (lineIndex < rendererLines.length - 1) {
+        absoluteOffsetRef.value += 1;
+      }
+      if (lineFrame.hasExplicitLineYOffsets) {
+        currentY = Math.max(currentY, bottom);
+      } else {
+        currentY += effectiveLineHeight;
+      }
+    });
+    const properties = box.properties || {};
+    return {
+      targetId: buildTargetId(box.meta, pageIndex),
+      pageIndex,
+      sourceId: String(box.meta?.sourceId || ""),
+      engineKey: String(box.meta?.engineKey || ""),
+      sourceType: String(box.meta?.sourceType || ""),
+      selectableText: isTextSelectableBox(box),
+      fragmentIndex: Number(box.meta?.fragmentIndex || 0),
+      isContinuation: Boolean(box.meta?.isContinuation),
+      generated: Boolean(box.meta?.generated),
+      transformKind: box.meta?.transformKind,
+      x: Number(box.x || 0),
+      y: Number(box.y || 0),
+      w: Number(box.w || 0),
+      h: Number(box.h || 0),
+      contentBox,
+      containerSourceId: typeof properties._interactionContainerSourceId === "string" ? properties._interactionContainerSourceId : void 0,
+      containerType: typeof properties._interactionContainerType === "string" ? properties._interactionContainerType : void 0,
+      containerEngineKey: typeof properties._interactionContainerEngineKey === "string" ? properties._interactionContainerEngineKey : void 0,
+      totalLength: absoluteOffsetRef.value,
+      units,
+      lines
+    };
+  };
+  var buildInteractionPages = (pages, layout) => pages.map((page) => ({
+    index: Number(page.index || 0),
+    width: Number(page.width || 0),
+    height: Number(page.height || 0),
+    targets: (page.boxes || []).map((box) => buildInteractionTarget(box, Number(page.index || 0), layout)).filter((target) => target !== null)
+  }));
+  var findInteractionTarget = (page, targetId) => {
+    const normalized = String(targetId || "");
+    if (!normalized) return null;
+    return page?.targets.find((target) => target.targetId === normalized) ?? null;
+  };
+  var getTargetContainerKey = (target) => {
+    if (target.containerSourceId) {
+      return `${target.containerType || "container"}:${target.containerSourceId}`;
+    }
+    return `target:${target.targetId}`;
+  };
+  var sortTargetsInVisualOrder = (targets) => [...targets].sort((left, right) => {
+    const byY = left.y - right.y;
+    if (Math.abs(byY) > 0.5) return byY;
+    const byX = left.x - right.x;
+    if (Math.abs(byX) > 0.5) return byX;
+    return left.targetId.localeCompare(right.targetId);
+  });
+  var getTraversalGroup = (page, seedTarget) => {
+    const key = getTargetContainerKey(seedTarget);
+    return sortTargetsInVisualOrder(
+      page.targets.filter((target) => getTargetContainerKey(target) === key)
+    );
+  };
+  var getRectDistanceSq = (rect, point3) => {
+    const nearestX = clamp2(point3.x, rect.x, rect.x + rect.w);
+    const nearestY = clamp2(point3.y, rect.y, rect.y + rect.h);
+    const dx = point3.x - nearestX;
+    const dy = point3.y - nearestY;
+    return dx * dx + dy * dy;
+  };
+  var hitTestInteractionTarget = (page, x2, y2) => {
+    const targets = page?.targets || [];
+    for (let index2 = targets.length - 1; index2 >= 0; index2 -= 1) {
+      const target = targets[index2];
+      if (x2 >= target.x && x2 <= target.x + target.w && y2 >= target.y && y2 <= target.y + target.h) {
+        return target;
+      }
+    }
+    return null;
+  };
+  var hitTestInteraction = (page, x2, y2) => {
+    const target = hitTestInteractionTarget(page, x2, y2);
+    if (!target) return null;
+    return {
+      pageIndex: target.pageIndex,
+      targetId: target.targetId,
+      sourceId: target.sourceId,
+      selectableText: target.selectableText,
+      containerSourceId: target.containerSourceId,
+      containerType: target.containerType,
+      point: { x: x2, y: y2 }
+    };
+  };
+  var resolveFocusTarget = (page, anchorTarget, point3) => {
+    const direct = hitTestInteractionTarget(page, point3.x, point3.y);
+    const group = getTraversalGroup(page, anchorTarget);
+    if (direct && group.some((candidate) => candidate.targetId === direct.targetId)) {
+      return direct;
+    }
+    let nearest = anchorTarget;
+    let nearestDistance = getRectDistanceSq(anchorTarget, point3);
+    for (const candidate of group) {
+      const distance = getRectDistanceSq(candidate, point3);
+      if (distance < nearestDistance) {
+        nearest = candidate;
+        nearestDistance = distance;
+      }
+    }
+    return nearest;
+  };
+  var getNearestInteractionSelectionOffset = (target, x2, y2) => {
+    if (target.units.length === 0) return 0;
+    const lineIndexes = sortUniqueNumbers(target.units.map((unit) => unit.lineIndex));
+    let targetLineIndex = lineIndexes[0] || 0;
+    let nearestLineDistance = Number.POSITIVE_INFINITY;
+    for (const lineIndex of lineIndexes) {
+      const line2 = target.lines.find((candidate) => candidate.index === lineIndex);
+      if (!line2) continue;
+      const lineCenterY = (line2.top + line2.bottom) / 2;
+      const lineDistance = y2 < line2.top ? line2.top - y2 : y2 > line2.bottom ? y2 - line2.bottom : Math.abs(lineCenterY - y2) * 0.25;
+      if (lineDistance < nearestLineDistance) {
+        nearestLineDistance = lineDistance;
+        targetLineIndex = lineIndex;
+      }
+    }
+    const line = target.lines.find((candidate) => candidate.index === targetLineIndex);
+    const lineUnits = target.units.filter((unit) => unit.lineIndex === targetLineIndex);
+    if (!line || lineUnits.length === 0) return 0;
+    const first = lineUnits[0];
+    const last = lineUnits[lineUnits.length - 1];
+    if (x2 <= first.x0) return line.startOffset;
+    if (x2 >= last.x1) return line.endOffset;
+    for (const unit of lineUnits) {
+      const centerX = (unit.x0 + unit.x1) / 2;
+      if (x2 < centerX) return unit.absoluteOffset;
+      if (x2 <= unit.x1) return unit.absoluteOffset + 1;
+    }
+    return line.endOffset;
+  };
+  var createInteractionSelectionPoint = (page, x2, y2) => {
+    const hit = hitTestInteraction(page, x2, y2);
+    if (!hit) return null;
+    const target = findInteractionTarget(page, hit.targetId);
+    if (!target) return null;
+    return {
+      pageIndex: hit.pageIndex,
+      targetId: hit.targetId,
+      sourceId: hit.sourceId,
+      x: x2,
+      y: y2,
+      absoluteOffset: getNearestInteractionSelectionOffset(target, x2, y2)
+    };
+  };
+  var normalizeInteractionSelectedOffsets = (target, offsets) => {
+    const validOffsets = new Set(target.units.map((unit) => unit.absoluteOffset));
+    return sortUniqueNumbers(offsets.filter((offset) => validOffsets.has(offset)));
+  };
+  var getSpatiallySelectedInteractionOffsets = (target, anchor, point3) => {
+    const x0 = Math.min(anchor.x, point3.x);
+    const y0 = Math.min(anchor.y, point3.y) - 4;
+    const x1 = Math.max(anchor.x, point3.x);
+    const y1 = Math.max(anchor.y, point3.y) + 4;
+    return normalizeInteractionSelectedOffsets(
+      target,
+      target.units.filter((unit) => {
+        const centerX = (unit.x0 + unit.x1) / 2;
+        const centerY = (unit.y0 + unit.y1) / 2;
+        return centerX >= x0 && centerX <= x1 && centerY >= y0 && centerY <= y1;
+      }).map((unit) => unit.absoluteOffset)
+    );
+  };
+  var buildContinuousInteractionOffsets = (target, anchorOffset, focusOffset) => {
+    const start = Math.max(0, Math.min(anchorOffset, focusOffset));
+    const end = Math.max(0, Math.max(anchorOffset, focusOffset));
+    const offsets = [];
+    for (let offset = start; offset < end; offset += 1) {
+      offsets.push(offset);
+    }
+    return normalizeInteractionSelectedOffsets(target, offsets);
+  };
+  var getInteractionCaretRect = (target, offset) => {
+    if (target.lines.length === 0) return null;
+    for (const line of target.lines) {
+      const lineUnits = target.units.filter((unit) => unit.lineIndex === line.index);
+      if (lineUnits.length === 0) continue;
+      if (offset <= line.startOffset) {
+        return { x: lineUnits[0].x0, y0: line.top, y1: line.bottom };
+      }
+      if (offset <= line.endOffset) {
+        const unit = lineUnits.find((candidate) => candidate.absoluteOffset + 1 >= offset);
+        if (!unit) {
+          return { x: lineUnits[lineUnits.length - 1].x1, y0: line.top, y1: line.bottom };
+        }
+        const x2 = offset <= unit.absoluteOffset ? unit.x0 : unit.x1;
+        return { x: x2, y0: line.top, y1: line.bottom };
+      }
+    }
+    const lastLine = target.lines[target.lines.length - 1];
+    const lastUnits = target.units.filter((unit) => unit.lineIndex === lastLine.index);
+    if (lastUnits.length === 0) return null;
+    return { x: lastUnits[lastUnits.length - 1].x1, y0: lastLine.top, y1: lastLine.bottom };
+  };
+  var buildInteractionSelectionRects = (target, selection) => {
+    if (!selection || selection.pageIndex !== target.pageIndex) {
+      return [];
+    }
+    const targetSelection = selection.targetSelections?.find((entry) => entry.targetId === target.targetId);
+    const offsets = new Set(targetSelection?.selectedOffsets ?? (selection.targetId === target.targetId ? selection.selectedOffsets : []));
+    const rects = [];
+    for (const line of target.lines) {
+      const lineUnits = target.units.filter((unit) => unit.lineIndex === line.index && offsets.has(unit.absoluteOffset)).sort((a2, b2) => a2.x0 - b2.x0);
+      if (lineUnits.length === 0) continue;
+      let current = {
+        x: lineUnits[0].x0,
+        y: lineUnits[0].y0,
+        w: Math.max(1, lineUnits[0].x1 - lineUnits[0].x0),
+        h: Math.max(1, lineUnits[0].y1 - lineUnits[0].y0)
+      };
+      for (let index2 = 1; index2 < lineUnits.length; index2 += 1) {
+        const unit = lineUnits[index2];
+        const gap = unit.x0 - (current.x + current.w);
+        if (gap <= 1.5) {
+          current.w = Math.max(1, unit.x1 - current.x);
+          current.h = Math.max(current.h, unit.y1 - current.y);
+          continue;
+        }
+        rects.push(current);
+        current = {
+          x: unit.x0,
+          y: unit.y0,
+          w: Math.max(1, unit.x1 - unit.x0),
+          h: Math.max(1, unit.y1 - unit.y0)
+        };
+      }
+      rects.push(current);
+    }
+    return rects;
+  };
+  var resolveInteractionSelection = (page, anchor, focusPoint, mode = "continuous") => {
+    if (!page || !anchor) return null;
+    const anchorTarget = findInteractionTarget(page, anchor.targetId);
+    if (!anchorTarget) return null;
+    const focusTarget = resolveFocusTarget(page, anchorTarget, focusPoint);
+    const caretOffset = getNearestInteractionSelectionOffset(focusTarget, focusPoint.x, focusPoint.y);
+    if (mode === "spatial" || focusTarget.targetId === anchorTarget.targetId) {
+      const selectedOffsets = mode === "spatial" ? getSpatiallySelectedInteractionOffsets(anchorTarget, anchor, focusPoint) : buildContinuousInteractionOffsets(anchorTarget, anchor.absoluteOffset, caretOffset);
+      return {
+        pageIndex: anchor.pageIndex,
+        targetId: anchor.targetId,
+        sourceId: anchor.sourceId,
+        selectedOffsets,
+        caretOffset,
+        caretTargetId: focusTarget.targetId,
+        targetSelections: [{
+          targetId: anchorTarget.targetId,
+          sourceId: anchorTarget.sourceId,
+          selectedOffsets
+        }]
+      };
+    }
+    const group = getTraversalGroup(page, anchorTarget);
+    const anchorIndex = group.findIndex((target) => target.targetId === anchorTarget.targetId);
+    const focusIndex = group.findIndex((target) => target.targetId === focusTarget.targetId);
+    if (anchorIndex < 0 || focusIndex < 0) return null;
+    const forward = focusIndex >= anchorIndex;
+    const startIndex = Math.min(anchorIndex, focusIndex);
+    const endIndex = Math.max(anchorIndex, focusIndex);
+    const targetSelections = group.slice(startIndex, endIndex + 1).map((target, relativeIndex, slice) => {
+      const isFirst = relativeIndex === 0;
+      const isLast = relativeIndex === slice.length - 1;
+      let selectedOffsets;
+      if (forward) {
+        if (isFirst) {
+          selectedOffsets = buildContinuousInteractionOffsets(target, anchor.absoluteOffset, target.totalLength);
+        } else if (isLast) {
+          selectedOffsets = buildContinuousInteractionOffsets(target, 0, caretOffset);
+        } else {
+          selectedOffsets = normalizeInteractionSelectedOffsets(
+            target,
+            target.units.map((unit) => unit.absoluteOffset)
+          );
+        }
+      } else {
+        if (isFirst) {
+          selectedOffsets = buildContinuousInteractionOffsets(target, 0, caretOffset);
+        } else if (isLast) {
+          selectedOffsets = buildContinuousInteractionOffsets(target, anchor.absoluteOffset, target.totalLength);
+        } else {
+          selectedOffsets = normalizeInteractionSelectedOffsets(
+            target,
+            target.units.map((unit) => unit.absoluteOffset)
+          );
+        }
+      }
+      return {
+        targetId: target.targetId,
+        sourceId: target.sourceId,
+        selectedOffsets
+      };
+    });
+    return {
+      pageIndex: anchor.pageIndex,
+      targetId: anchorTarget.targetId,
+      sourceId: anchor.sourceId,
+      selectedOffsets: targetSelections.find((entry) => entry.targetId === anchorTarget.targetId)?.selectedOffsets ?? [],
+      caretOffset,
+      caretTargetId: focusTarget.targetId,
+      targetSelections
+    };
+  };
+  var buildInteractionOverlayModel = (page, selection, selectedTargetId2) => {
+    const targetId = String(selectedTargetId2 || selection?.targetId || "");
+    if (!page || !targetId) return null;
+    const target = findInteractionTarget(page, targetId);
+    if (!target) return null;
+    const caretTarget = selection?.caretTargetId ? findInteractionTarget(page, selection.caretTargetId) : target;
+    return {
+      targetId: target.targetId,
+      sourceId: target.sourceId,
+      frameRect: { x: target.x, y: target.y, w: target.w, h: target.h },
+      selectionRects: selection?.targetSelections?.length ? selection.targetSelections.flatMap((entry) => {
+        const selectionTarget = findInteractionTarget(page, entry.targetId);
+        if (!selectionTarget) return [];
+        return buildInteractionSelectionRects(selectionTarget, selection);
+      }) : buildInteractionSelectionRects(target, selection),
+      caretRect: selection && caretTarget ? getInteractionCaretRect(caretTarget, selection.caretOffset) : null
+    };
+  };
+  var InteractionArtifactCollaborator = class {
+    constructor(layout) {
+      this.layout = layout;
+    }
+    onSimulationComplete(session) {
+      session.publishArtifact(
+        simulationArtifactKeys.interactionMap,
+        buildInteractionPages(session.getFinalizedPages(), this.layout)
       );
     }
   };
@@ -60780,6 +61615,7 @@ ${source}`)
           new HeadingSignalCollaborator(),
           ...asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : [],
           new TemporalPresentationCollaborator(),
+          new InteractionArtifactCollaborator(this.config.layout),
           new ZoneDebugOverlayCollaborator(),
           new PageRegionCollaborator(this.config, {
             layoutRegion: (content3, rect, pageIndex, sourceType, actorId) => this.layoutRegion(content3, rect, pageIndex, sourceType, actorId)
@@ -61428,6 +62264,21 @@ ${source}`)
       drawY = contentY + (contentHeight - drawHeight) / 2;
     }
     const bytes = getImageBytes(image2.base64Data);
+    const clipShape = String(box.properties?._imageClipShape || "").trim();
+    if (clipShape === "circle") {
+      const radius = Math.max(0, Math.min(drawWidth, drawHeight) / 2);
+      if (radius > 0) {
+        context.save();
+        context.circle(drawX + drawWidth / 2, drawY + drawHeight / 2, radius).clip();
+        context.image(bytes, drawX, drawY, {
+          width: drawWidth,
+          height: drawHeight,
+          mimeType: image2.mimeType
+        });
+        context.restore();
+        return;
+      }
+    }
     context.image(bytes, drawX, drawY, {
       width: drawWidth,
       height: drawHeight,
@@ -61653,97 +62504,6 @@ ${source}`)
       return bytes;
     }
   };
-  var getStrongDirection2 = (text5) => {
-    for (const ch of text5 || "") {
-      const cp = ch.codePointAt(0) || 0;
-      const isRtl = cp >= 1424 && cp <= 2303 || // Hebrew + Arabic + Syriac + Thaana etc.
-      cp >= 64285 && cp <= 65023 || cp >= 65136 && cp <= 65279;
-      if (isRtl) return "rtl";
-      if (new RegExp("\\p{L}", "u").test(ch)) return "ltr";
-    }
-    return "neutral";
-  };
-  var resolveParagraphDirection = (lines, containerStyle, layoutDirection, defaultDirection) => {
-    const configured = String(containerStyle.direction || layoutDirection || defaultDirection);
-    if (configured === "rtl") return "rtl";
-    if (configured === "ltr") return "ltr";
-    const paragraphText = (lines || []).map((line) => Array.isArray(line) ? line.map((seg) => seg?.text || "").join("") : String(line || "")).join("\n");
-    const strong2 = getStrongDirection2(paragraphText);
-    return strong2 === "rtl" ? "rtl" : "ltr";
-  };
-  var reorderItemsForVisualBidi = (items, baseDirection) => {
-    if (items.length <= 1) return items;
-    const resolveStrongDirAt = (index2) => {
-      const text5 = items[index2]?.seg?.text || "";
-      return getStrongDirection2(text5);
-    };
-    const resolvedDirs = new Array(items.length);
-    for (let i2 = 0; i2 < items.length; i2++) {
-      const strong2 = resolveStrongDirAt(i2);
-      if (strong2 !== "neutral") {
-        resolvedDirs[i2] = strong2;
-        continue;
-      }
-      const segText = items[i2]?.seg?.text || "";
-      const segDir = items[i2]?.seg?.direction;
-      const isWhitespace = segText.trim().length === 0;
-      if (!isWhitespace && segDir) {
-        resolvedDirs[i2] = segDir;
-        continue;
-      }
-      let prevStrong = null;
-      for (let j2 = i2 - 1; j2 >= 0; j2--) {
-        const d2 = resolveStrongDirAt(j2);
-        if (d2 !== "neutral") {
-          prevStrong = d2;
-          break;
-        }
-      }
-      let nextStrong = null;
-      for (let j2 = i2 + 1; j2 < items.length; j2++) {
-        const d2 = resolveStrongDirAt(j2);
-        if (d2 !== "neutral") {
-          nextStrong = d2;
-          break;
-        }
-      }
-      if (prevStrong && nextStrong && prevStrong === nextStrong) {
-        resolvedDirs[i2] = prevStrong;
-      } else if (prevStrong) {
-        resolvedDirs[i2] = prevStrong;
-      } else if (nextStrong) {
-        resolvedDirs[i2] = nextStrong;
-      } else if (segDir) {
-        resolvedDirs[i2] = segDir;
-      } else {
-        resolvedDirs[i2] = baseDirection;
-      }
-    }
-    const runs = [];
-    let currentRun = [];
-    let currentDir = baseDirection;
-    for (let i2 = 0; i2 < items.length; i2++) {
-      const item = items[i2];
-      const effectiveDir = resolvedDirs[i2];
-      if (currentRun.length === 0) {
-        currentRun = [item];
-        currentDir = effectiveDir;
-        continue;
-      }
-      if (effectiveDir !== currentDir) {
-        runs.push({ dir: currentDir, items: currentRun });
-        currentRun = [item];
-        currentDir = effectiveDir;
-        continue;
-      }
-      currentRun.push(item);
-    }
-    if (currentRun.length > 0) runs.push({ dir: currentDir, items: currentRun });
-    if (baseDirection === "rtl") {
-      return runs.reverse().flatMap((run) => run.dir === "ltr" ? [...run.items].reverse() : run.items);
-    }
-    return runs.flatMap((run) => run.dir === "rtl" ? [...run.items].reverse() : run.items);
-  };
   var drawRichLineSegments = (context, line, lineItems, options) => {
     let currentX = options.lineX;
     let activeFontId = null;
@@ -61890,178 +62650,6 @@ ${source}`)
       }
     });
     return lineBaselineY;
-  };
-  var lineEndsWithForcedBreak2 = (line) => {
-    if (!Array.isArray(line) || line.length === 0) return false;
-    return !!line[line.length - 1]?.forcedBreakAfter;
-  };
-  var getReferenceAscentScale = (line) => {
-    if (line.length === 0) return 0;
-    const textLikeSegments = line.filter((seg) => !seg?.inlineObject);
-    const source = textLikeSegments.length > 0 ? textLikeSegments : line;
-    let maxAscent = 0;
-    for (const seg of source) {
-      if (seg.ascent === void 0) {
-        throw new Error(`[Renderer] Missing precomputed ascent for segment "${(seg.text || "").slice(0, 24)}".`);
-      }
-      if (seg.ascent > maxAscent) maxAscent = seg.ascent;
-    }
-    return maxAscent / 1e3;
-  };
-  var computeEffectiveLineHeight = (line, baseFontSize, lineHeight, referenceAscentScale) => {
-    const lineFontSize = line.reduce(
-      (max, seg) => Math.max(max, Number(seg.style?.fontSize || baseFontSize)),
-      Number(baseFontSize)
-    );
-    const nominal = lineFontSize * lineHeight;
-    if (line.length === 0) return nominal;
-    let maxAscentFromBaseline = 0;
-    let maxDescentFromBaseline = 0;
-    for (const seg of line) {
-      const segFontSize = Number(seg.style?.fontSize || baseFontSize);
-      if (seg.ascent === void 0) {
-        throw new Error(`[Renderer] Missing precomputed ascent for segment "${(seg.text || "").slice(0, 24)}".`);
-      }
-      const segAscent = seg.ascent / 1e3 * segFontSize;
-      if (segAscent > maxAscentFromBaseline) maxAscentFromBaseline = segAscent;
-      if (seg.descent === void 0) {
-        throw new Error(`[Renderer] Missing precomputed descent for segment "${(seg.text || "").slice(0, 24)}".`);
-      }
-      const segDescent = seg.descent / 1e3 * segFontSize;
-      if (segDescent > maxDescentFromBaseline) maxDescentFromBaseline = segDescent;
-    }
-    const baselineOffset = referenceAscentScale * lineFontSize;
-    const neededAscentFromTop = Math.max(maxAscentFromBaseline, baselineOffset);
-    const neededTextHeight = neededAscentFromTop + maxDescentFromBaseline;
-    const lead = nominal - lineFontSize;
-    const neededHeight = neededTextHeight + lead;
-    return Math.max(nominal, neededHeight);
-  };
-  var buildParagraphMetrics = (lines, fontSize, lineHeight) => {
-    const lineHasInlineObject = (line) => line.some((seg) => !!seg?.inlineObject);
-    const paragraphHasInlineObjects = lines.some((line) => Array.isArray(line) && lineHasInlineObject(line));
-    let paragraphReferenceAscentScale = 0;
-    for (const line of lines) {
-      if (!Array.isArray(line)) continue;
-      const ref = getReferenceAscentScale(line);
-      if (ref > paragraphReferenceAscentScale) paragraphReferenceAscentScale = ref;
-    }
-    const lineMetrics = lines.map((line) => {
-      if (!Array.isArray(line)) {
-        return {
-          lineFontSize: Number(fontSize),
-          referenceAscentScale: paragraphReferenceAscentScale,
-          effectiveLineHeight: Number(fontSize) * lineHeight
-        };
-      }
-      const lineFontSize = line.reduce(
-        (max, seg) => Math.max(max, Number(seg.style?.fontSize || fontSize)),
-        Number(fontSize)
-      );
-      const referenceAscentScale = paragraphHasInlineObjects ? getReferenceAscentScale(line) : paragraphReferenceAscentScale;
-      return {
-        lineFontSize,
-        referenceAscentScale,
-        effectiveLineHeight: computeEffectiveLineHeight(line, fontSize, lineHeight, referenceAscentScale)
-      };
-    });
-    let uniformLineHeight = 0;
-    for (const metric of lineMetrics) {
-      if (metric.effectiveLineHeight > uniformLineHeight) uniformLineHeight = metric.effectiveLineHeight;
-    }
-    return {
-      paragraphHasInlineObjects,
-      paragraphReferenceAscentScale,
-      lineMetrics,
-      uniformLineHeight
-    };
-  };
-  var computeLineWidth = (line) => {
-    if (!Array.isArray(line)) return 0;
-    return line.reduce((width, seg) => {
-      if (seg.width === void 0) {
-        throw new Error(`[Renderer] Missing precomputed width for segment "${(seg.text || "").slice(0, 24)}".`);
-      }
-      return width + seg.width;
-    }, 0);
-  };
-  var computeAlignedLineX = (lineIndex, lineDirection, lineOriginX, lineWidthLimit, textIndent, align, adjustedLineWidth) => {
-    let lineX = lineIndex === 0 ? lineOriginX + textIndent : lineOriginX;
-    if (lineDirection === "rtl") {
-      lineX = lineIndex === 0 ? lineOriginX + lineWidthLimit - textIndent : lineOriginX + lineWidthLimit;
-      if (align === "right") {
-        lineX = lineOriginX + adjustedLineWidth;
-      } else if (align === "center") {
-        lineX = lineOriginX + (lineWidthLimit + adjustedLineWidth) / 2;
-      }
-      return lineX;
-    }
-    if (align && align !== "left") {
-      if (align === "right") {
-        lineX = lineOriginX + (lineWidthLimit - adjustedLineWidth);
-      } else if (align === "center") {
-        lineX = lineOriginX + (lineWidthLimit - adjustedLineWidth) / 2;
-      }
-    }
-    return lineX;
-  };
-  var computeJustifyExtraAfter = (line, lineIndex, lineCount, align, justifyEngine, lineWidthLimit, lineWidth) => {
-    if (align !== "justify") return [];
-    if (lineIndex === lineCount - 1) return [];
-    if (lineEndsWithForcedBreak2(line)) return [];
-    if (!Array.isArray(line)) return [];
-    if (justifyEngine === "advanced") {
-      return line.map((seg) => Number(seg.justifyAfter || 0));
-    }
-    const availableExtra = lineWidthLimit - lineWidth;
-    if (availableExtra <= 1e-4) return [];
-    const hasWhitespace = line.some((seg) => /\s/.test(seg.text || ""));
-    const isCjkLike = (text5) => /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]/.test(text5);
-    const isPunct = (text5) => /^[\s.,;:!?\uFF0C\u3002\uFF1B\uFF1A\uFF01\uFF1F\u3001\uFF08\uFF09()\u300A\u300B\u3010\u3011'"\u201C\u201D\u2018\u2019\u2026-]*$/.test(text5);
-    const shouldStretchBoundary2 = (left, right) => {
-      if (!left || !right) return false;
-      if (/\s$/.test(left) || /^\s/.test(right)) return true;
-      if (hasWhitespace) return false;
-      if (isPunct(left) || isPunct(right)) return false;
-      return isCjkLike(left) && isCjkLike(right);
-    };
-    const boundaries = [];
-    for (let i2 = 0; i2 < line.length - 1; i2++) {
-      const left = line[i2]?.text || "";
-      const right = line[i2 + 1]?.text || "";
-      if (shouldStretchBoundary2(left, right)) boundaries.push(i2);
-    }
-    if (boundaries.length === 0) return [];
-    const perBoundary = availableExtra / boundaries.length;
-    const justifyExtraAfter = new Array(line.length).fill(0);
-    boundaries.forEach((idx) => {
-      justifyExtraAfter[idx] = perBoundary;
-    });
-    return justifyExtraAfter;
-  };
-  var createLineFrameAccessors = (boxProperties, startY2, width) => {
-    const lineOffsets = Array.isArray(boxProperties?._lineOffsets) ? boxProperties._lineOffsets : [];
-    const lineWidths = Array.isArray(boxProperties?._lineWidths) ? boxProperties._lineWidths : [];
-    const lineYOffsets = Array.isArray(boxProperties?._lineYOffsets) ? boxProperties._lineYOffsets : [];
-    const hasExplicitLineYOffsets = lineYOffsets.length > 0;
-    return {
-      hasExplicitLineYOffsets,
-      getLineOffset: (lineIndex) => {
-        const candidate = lineOffsets[lineIndex];
-        return Number.isFinite(candidate) ? Number(candidate) : 0;
-      },
-      getLineWidth: (lineIndex) => {
-        const candidate = lineWidths[lineIndex];
-        if (Number.isFinite(candidate) && Number(candidate) > 0) return Number(candidate);
-        return width;
-      },
-      getLineY: (lineIndex) => {
-        if (!hasExplicitLineYOffsets) return null;
-        const candidate = lineYOffsets[lineIndex];
-        if (!Number.isFinite(candidate)) return null;
-        return startY2 + Math.max(0, Number(candidate));
-      }
-    };
   };
   var drawRichLines = (context, lines, x2, startY2, containerStyle, width, runtime, boxProperties) => {
     let currentY = startY2;
@@ -62361,7 +62949,33 @@ ${source}`)
       if (textMetrics) {
         properties.__vmprintTextMetrics = textMetrics;
       }
+      const interactionRegion = this.computeOverlayInteractionRegion(box);
+      if (interactionRegion) {
+        properties.__vmprintInteractionRegion = interactionRegion;
+      }
       return Object.keys(properties).length > 0 ? properties : void 0;
+    }
+    computeOverlayInteractionRegion(box) {
+      const sourceId = String(box.meta?.sourceId || "");
+      if (!sourceId) return null;
+      const properties = box.properties || {};
+      return {
+        sourceId,
+        originSourceId: typeof box.meta?.originSourceId === "string" ? box.meta.originSourceId : void 0,
+        clonedFromSourceId: typeof box.meta?.clonedFromSourceId === "string" ? box.meta.clonedFromSourceId : void 0,
+        engineKey: typeof box.meta?.engineKey === "string" ? box.meta.engineKey : void 0,
+        sourceType: typeof box.meta?.sourceType === "string" ? box.meta.sourceType : void 0,
+        fragmentIndex: Number(box.meta?.fragmentIndex || 0),
+        isContinuation: Boolean(box.meta?.isContinuation),
+        generated: Boolean(box.meta?.generated),
+        transformKind: box.meta?.transformKind,
+        selectableText: Boolean(
+          Array.isArray(box.lines) && box.lines.length > 0 || typeof box.content === "string" && box.content.length > 0 || Array.isArray(box.glyphs) && box.glyphs.length > 0
+        ),
+        containerSourceId: typeof properties._interactionContainerSourceId === "string" ? properties._interactionContainerSourceId : void 0,
+        containerType: typeof properties._interactionContainerType === "string" ? properties._interactionContainerType : void 0,
+        containerEngineKey: typeof properties._interactionContainerEngineKey === "string" ? properties._interactionContainerEngineKey : void 0
+      };
     }
     computeOverlayTextMetrics(box) {
       if (!box.lines || box.lines.length === 0) return null;
@@ -63253,213 +63867,6 @@ ${source}`)
     return cloneDocument(documentInput);
   };
   var textEncoder2 = new TextEncoder();
-  var normalizePreviewSourceId = (value) => String(value || "");
-  var stripPreviewSourcePrefixes = (value) => value.replace(/^gen:/, "").replace(/^author:/, "");
-  var matchesPreviewSourceId = (actual, target) => {
-    const value = normalizePreviewSourceId(actual);
-    const normalizedValue = stripPreviewSourcePrefixes(value);
-    const normalizedTarget = stripPreviewSourcePrefixes(normalizePreviewSourceId(target));
-    return value === target || value.endsWith(`:${target}`) || target.endsWith(`:${value}`) || normalizedValue === normalizedTarget || normalizedValue.endsWith(`:${normalizedTarget}`) || normalizedTarget.endsWith(`:${normalizedValue}`);
-  };
-  var sortUniqueNumbers = (values) => Array.from(new Set(values)).sort((a2, b2) => a2 - b2);
-  var previewMeasureContext = null;
-  var getPreviewMeasureContext = () => {
-    if (previewMeasureContext) return previewMeasureContext;
-    if (typeof document !== "undefined" && typeof document.createElement === "function") {
-      previewMeasureContext = document.createElement("canvas").getContext("2d");
-      return previewMeasureContext;
-    }
-    if (typeof OffscreenCanvas !== "undefined") {
-      previewMeasureContext = new OffscreenCanvas(1, 1).getContext("2d");
-      return previewMeasureContext;
-    }
-    return null;
-  };
-  var resolveCanvasContext = (target) => {
-    if ("canvas" in target) return target;
-    const context = target.getContext("2d");
-    if (!context) {
-      throw new Error("[VMPrintPreview] Unable to resolve a 2D canvas context.");
-    }
-    return context;
-  };
-  var getSelectablePreviewBoxes = (page) => (page?.boxes || []).filter((box) => normalizePreviewSourceId(box.meta?.sourceId).length > 0);
-  var hitTestPreviewBox = (page, x2, y2) => {
-    const boxes = getSelectablePreviewBoxes(page);
-    for (let index2 = boxes.length - 1; index2 >= 0; index2 -= 1) {
-      const box = boxes[index2];
-      if (x2 >= box.x && x2 <= box.x + box.w && y2 >= box.y && y2 <= box.y + box.h) return box;
-    }
-    return null;
-  };
-  var buildPreviewTextLayoutModel = (box, defaults) => {
-    const measureContext = getPreviewMeasureContext();
-    if (!box?.lines?.length || !box.textMetrics?.lines?.length || !measureContext) return null;
-    const sourceId = stripPreviewSourcePrefixes(normalizePreviewSourceId(box.meta?.sourceId));
-    if (!sourceId) return null;
-    const fallbackFontFamily = defaults?.fontFamily || "Arimo";
-    const fallbackFontSize = Number(defaults?.fontSize || 13) || 13;
-    const contentBox = box.textMetrics.contentBox;
-    const align = box.style?.textAlign || "left";
-    const charBoxes = [];
-    let absoluteOffset = 0;
-    box.lines.forEach((line, lineIndex) => {
-      const metric = box.textMetrics?.lines?.[lineIndex];
-      if (!metric) return;
-      const lineWidth = (line || []).reduce((sum, segment) => sum + Number(segment.width || 0), 0);
-      let lineX = contentBox.x;
-      if (align === "center") lineX = contentBox.x + (contentBox.w - lineWidth) / 2;
-      else if (align === "right") lineX = contentBox.x + (contentBox.w - lineWidth);
-      let cursorX = lineX;
-      for (const segment of line || []) {
-        const segmentStartX = cursorX;
-        const fontSize = Number(metric.fontSize || box.style?.fontSize || fallbackFontSize) || fallbackFontSize;
-        const fontFamily = segment.fontFamily || fallbackFontFamily;
-        measureContext.font = `${fontSize}px "${fontFamily}"`;
-        const text5 = String(segment.text || "");
-        const targetSegmentWidth = Number(segment.width || 0);
-        const measuredFullWidth = text5.length > 0 ? measureContext.measureText(text5).width || 0 : 0;
-        const scale = targetSegmentWidth > 0 && measuredFullWidth > 0 ? targetSegmentWidth / measuredFullWidth : 1;
-        const fallbackWidth = text5.length > 0 ? targetSegmentWidth > 0 ? targetSegmentWidth / text5.length : 0 : 0;
-        let previousPrefixWidth = 0;
-        for (let index2 = 0; index2 < text5.length; index2 += 1) {
-          const char = text5[index2];
-          const prefix = text5.slice(0, index2 + 1);
-          const measuredPrefixWidth = measureContext.measureText(prefix).width || 0;
-          const currentPrefixWidth = targetSegmentWidth > 0 ? measuredPrefixWidth * scale : measuredPrefixWidth;
-          let width = currentPrefixWidth - previousPrefixWidth;
-          if (!Number.isFinite(width) || width <= 0) width = fallbackWidth;
-          charBoxes.push({
-            x0: segmentStartX + previousPrefixWidth,
-            x1: segmentStartX + previousPrefixWidth + width,
-            y0: metric.top,
-            y1: metric.bottom,
-            lineIndex,
-            charIndex: index2,
-            absoluteOffset,
-            char
-          });
-          previousPrefixWidth += width;
-          absoluteOffset += 1;
-        }
-        cursorX = targetSegmentWidth > 0 && text5.length > 0 ? segmentStartX + targetSegmentWidth : segmentStartX + previousPrefixWidth;
-      }
-      if (lineIndex < (box.lines?.length || 0) - 1) absoluteOffset += 1;
-    });
-    return {
-      sourceId,
-      box,
-      charBoxes,
-      totalLength: absoluteOffset
-    };
-  };
-  var getNearestPreviewSelectionOffset = (layout, x2, y2) => {
-    if (layout.charBoxes.length === 0) return 0;
-    const lineIndexes = sortUniqueNumbers(layout.charBoxes.map((box) => box.lineIndex));
-    let targetLineIndex = lineIndexes[0] || 0;
-    let nearestLineDistance = Number.POSITIVE_INFINITY;
-    for (const lineIndex of lineIndexes) {
-      const lineBoxes = layout.charBoxes.filter((box) => box.lineIndex === lineIndex);
-      const lineTop = Math.min(...lineBoxes.map((box) => box.y0));
-      const lineBottom = Math.max(...lineBoxes.map((box) => box.y1));
-      const lineCenterY = (lineTop + lineBottom) / 2;
-      const lineDistance = y2 < lineTop ? lineTop - y2 : y2 > lineBottom ? y2 - lineBottom : Math.abs(lineCenterY - y2) * 0.25;
-      if (lineDistance < nearestLineDistance) {
-        nearestLineDistance = lineDistance;
-        targetLineIndex = lineIndex;
-      }
-    }
-    const targetLineBoxes = layout.charBoxes.filter((box) => box.lineIndex === targetLineIndex);
-    if (targetLineBoxes.length === 0) return 0;
-    const firstBox = targetLineBoxes[0];
-    const lastBox = targetLineBoxes[targetLineBoxes.length - 1];
-    if (x2 <= firstBox.x0) return Math.max(0, Math.min(layout.totalLength, firstBox.absoluteOffset));
-    if (x2 >= lastBox.x1) return Math.max(0, Math.min(layout.totalLength, lastBox.absoluteOffset + 1));
-    for (const box of targetLineBoxes) {
-      const centerX = (box.x0 + box.x1) / 2;
-      if (x2 < centerX) return Math.max(0, Math.min(layout.totalLength, box.absoluteOffset));
-      if (x2 <= box.x1) return Math.max(0, Math.min(layout.totalLength, box.absoluteOffset + 1));
-    }
-    return Math.max(0, Math.min(layout.totalLength, lastBox.absoluteOffset + 1));
-  };
-  var buildPreviewSelectionSweepRect = (anchor, point3) => ({
-    x0: Math.min(anchor.x, point3.x),
-    y0: Math.min(anchor.y, point3.y) - 4,
-    x1: Math.max(anchor.x, point3.x),
-    y1: Math.max(anchor.y, point3.y) + 4
-  });
-  var rectContainsPreviewCharCenter = (rect, charBox) => (charBox.x0 + charBox.x1) / 2 >= rect.x0 && (charBox.x0 + charBox.x1) / 2 <= rect.x1 && (charBox.y0 + charBox.y1) / 2 >= rect.y0 && (charBox.y0 + charBox.y1) / 2 <= rect.y1;
-  var getPreviewSpatiallySelectedOffsets = (layout, anchor, point3) => {
-    const sweepRect = buildPreviewSelectionSweepRect(anchor, point3);
-    return sortUniqueNumbers(
-      layout.charBoxes.filter((charBox) => rectContainsPreviewCharCenter(sweepRect, charBox)).map((charBox) => charBox.absoluteOffset)
-    );
-  };
-  var buildPreviewContinuousSelectedOffsets = (layout, anchorOffset, caretOffset) => {
-    const start = Math.min(anchorOffset, caretOffset);
-    const end = Math.max(anchorOffset, caretOffset);
-    return layout.charBoxes.filter((charBox) => charBox.absoluteOffset >= start && charBox.absoluteOffset < end).map((charBox) => charBox.absoluteOffset);
-  };
-  var normalizePreviewSelectedOffsets = (layout, offsets) => {
-    const unique = sortUniqueNumbers(offsets);
-    if (unique.length === 0) return unique;
-    const start = unique[0];
-    const end = unique[unique.length - 1];
-    return layout.charBoxes.filter((charBox) => charBox.absoluteOffset >= start && charBox.absoluteOffset <= end).map((charBox) => charBox.absoluteOffset);
-  };
-  var getPreviewCaretRect = (layout, offset) => {
-    if (layout.charBoxes.length === 0) return null;
-    const clamped = Math.max(0, Math.min(layout.totalLength, offset));
-    if (clamped === layout.totalLength) {
-      const last = layout.charBoxes[layout.charBoxes.length - 1];
-      return { x: last.x1, y0: last.y0, y1: last.y1 };
-    }
-    const char = layout.charBoxes.find((entry) => entry.absoluteOffset === clamped);
-    if (!char) return null;
-    return { x: char.x0, y0: char.y0, y1: char.y1 };
-  };
-  var drawPreviewSelectionOverlay = (page, target, options = {}) => {
-    if (!page || !options.selectedSourceId) return;
-    const targetBox = getSelectablePreviewBoxes(page).find((box) => matchesPreviewSourceId(box.meta?.sourceId, options.selectedSourceId || ""));
-    if (!targetBox) return;
-    const context = resolveCanvasContext(target);
-    const canvas = context.canvas;
-    const scale = (canvas.width || 1) / Math.max(1, page.width);
-    const lineWidth = options.lineWidth || 1.5;
-    context.save();
-    context.setTransform(scale, 0, 0, scale, 0, 0);
-    context.strokeStyle = options.strokeColor || "#60a5fa";
-    context.lineWidth = Math.max(1, lineWidth * 2);
-    context.strokeRect(targetBox.x - 2, targetBox.y - 2, targetBox.w + 4, targetBox.h + 4);
-    context.setLineDash([6, 4]);
-    context.strokeStyle = options.outlineColor || "#c084fc";
-    context.lineWidth = lineWidth;
-    context.strokeRect(targetBox.x - 5, targetBox.y - 5, targetBox.w + 10, targetBox.h + 10);
-    const selection = options.selection;
-    if (selection) {
-      const layout = buildPreviewTextLayoutModel(targetBox);
-      if (layout && selection.sourceId === layout.sourceId) {
-        if (selection.selectedOffsets.length > 0) {
-          context.fillStyle = options.selectionFill || "rgba(96, 165, 250, 0.24)";
-          for (const charBox of layout.charBoxes) {
-            if (!selection.selectedOffsets.includes(charBox.absoluteOffset)) continue;
-            context.fillRect(charBox.x0, charBox.y0, Math.max(1, charBox.x1 - charBox.x0), Math.max(1, charBox.y1 - charBox.y0));
-          }
-        }
-        const caret = getPreviewCaretRect(layout, selection.caretOffset);
-        if (caret) {
-          context.strokeStyle = options.caretColor || "#f8fafc";
-          context.lineWidth = lineWidth;
-          context.setLineDash([]);
-          context.beginPath();
-          context.moveTo(caret.x, caret.y0);
-          context.lineTo(caret.x, caret.y1);
-          context.stroke();
-        }
-      }
-    }
-    context.restore();
-  };
   var MemoryOutputStream = class {
     constructor() {
       this.chunks = [];
@@ -63583,6 +63990,7 @@ ${source}`)
       this.pdfBytesPromise = null;
       this.layoutPages = null;
       this.layoutSnapshotPages = null;
+      this.interactionSnapshotPages = null;
       this.layoutConfig = null;
       this.layoutRuntime = null;
     }
@@ -63651,6 +64059,21 @@ ${source}`)
               descent: Number(line.descent || 0)
             }))
           } : void 0,
+          interaction: box.properties?.__vmprintInteractionRegion ? {
+            sourceId: String(box.properties.__vmprintInteractionRegion.sourceId || ""),
+            originSourceId: typeof box.properties.__vmprintInteractionRegion.originSourceId === "string" ? box.properties.__vmprintInteractionRegion.originSourceId : void 0,
+            clonedFromSourceId: typeof box.properties.__vmprintInteractionRegion.clonedFromSourceId === "string" ? box.properties.__vmprintInteractionRegion.clonedFromSourceId : void 0,
+            engineKey: typeof box.properties.__vmprintInteractionRegion.engineKey === "string" ? box.properties.__vmprintInteractionRegion.engineKey : void 0,
+            sourceType: typeof box.properties.__vmprintInteractionRegion.sourceType === "string" ? box.properties.__vmprintInteractionRegion.sourceType : void 0,
+            fragmentIndex: Number(box.properties.__vmprintInteractionRegion.fragmentIndex || 0),
+            isContinuation: Boolean(box.properties.__vmprintInteractionRegion.isContinuation),
+            generated: Boolean(box.properties.__vmprintInteractionRegion.generated),
+            transformKind: box.properties.__vmprintInteractionRegion.transformKind,
+            selectableText: Boolean(box.properties.__vmprintInteractionRegion.selectableText),
+            containerSourceId: typeof box.properties.__vmprintInteractionRegion.containerSourceId === "string" ? box.properties.__vmprintInteractionRegion.containerSourceId : void 0,
+            containerType: typeof box.properties.__vmprintInteractionRegion.containerType === "string" ? box.properties.__vmprintInteractionRegion.containerType : void 0,
+            containerEngineKey: typeof box.properties.__vmprintInteractionRegion.containerEngineKey === "string" ? box.properties.__vmprintInteractionRegion.containerEngineKey : void 0
+          } : void 0,
           meta: {
             sourceId: typeof box.meta?.sourceId === "string" ? box.meta.sourceId : "",
             engineKey: typeof box.meta?.engineKey === "string" ? box.meta.engineKey : "",
@@ -63668,6 +64091,43 @@ ${source}`)
           })))
         }))
       }));
+    }
+    getInteractionSnapshotPages() {
+      this.assertActive("getInteractionSnapshotPages");
+      this.assertHasDocument("getInteractionSnapshotPages");
+      return (this.interactionSnapshotPages || []).map((page) => ({
+        ...page,
+        targets: page.targets.map((target) => ({
+          ...target,
+          contentBox: { ...target.contentBox },
+          units: target.units.map((unit) => ({ ...unit })),
+          lines: target.lines.map((line) => ({ ...line }))
+        }))
+      }));
+    }
+    hitTestPageInteraction(pageIndex, x2, y2) {
+      this.assertActive("hitTestPageInteraction");
+      this.assertHasDocument("hitTestPageInteraction");
+      const page = this.interactionSnapshotPages?.[pageIndex];
+      return hitTestInteraction(page, x2, y2);
+    }
+    createPageSelectionPoint(pageIndex, x2, y2) {
+      this.assertActive("createPageSelectionPoint");
+      this.assertHasDocument("createPageSelectionPoint");
+      const page = this.interactionSnapshotPages?.[pageIndex];
+      return createInteractionSelectionPoint(page, x2, y2);
+    }
+    resolvePageSelection(pageIndex, anchor, focusPoint, mode = "continuous") {
+      this.assertActive("resolvePageSelection");
+      this.assertHasDocument("resolvePageSelection");
+      const page = this.interactionSnapshotPages?.[pageIndex];
+      return resolveInteractionSelection(page, anchor, focusPoint, mode);
+    }
+    buildPageInteractionOverlay(pageIndex, selection, selectedTargetId2) {
+      this.assertActive("buildPageInteractionOverlay");
+      this.assertHasDocument("buildPageInteractionOverlay");
+      const page = this.interactionSnapshotPages?.[pageIndex];
+      return buildInteractionOverlayModel(page, selection, selectedTargetId2);
     }
     isDestroyed() {
       return this.destroyed;
@@ -63719,6 +64179,7 @@ ${source}`)
       this.pdfBytesPromise = null;
       this.layoutPages = null;
       this.layoutSnapshotPages = null;
+      this.interactionSnapshotPages = null;
       this.layoutConfig = null;
       this.layoutRuntime = null;
     }
@@ -63752,6 +64213,7 @@ ${source}`)
       const engine = new LayoutEngine(config, runtime);
       await engine.waitForFonts();
       const pages = engine.simulate(documentIr.elements);
+      const report = engine.getLastSimulationReport();
       const pageSize = LayoutUtils.getPageDimensions(config);
       const canvasContext = new CanvasContext({
         size: [pageSize.width, pageSize.height],
@@ -63767,6 +64229,7 @@ ${source}`)
       this.pageSize = pageSize;
       this.layoutPages = pages;
       this.layoutSnapshotPages = pages.map((page) => renderer.toOverlayPage(page));
+      this.interactionSnapshotPages = getSimulationArtifact(report, simulationArtifactKeys.interactionMap) || [];
       this.layoutConfig = config;
       this.layoutRuntime = runtime;
       this.pdfBytesPromise = renderPagesToPdfBytes(config, pages, runtime, pageSize);
@@ -82618,6 +83081,7 @@ captions:
   var scrollLeftTop = { left: 0, top: 0 };
   var interactionMode = "pan";
   var selectedSourceId = null;
+  var selectedTargetId = null;
   var activeTextSelection = null;
   var dragAnchor = null;
   var isSelecting = false;
@@ -82707,14 +83171,6 @@ captions:
     previewCanvas.style.width = `${width * zoomLevel}px`;
     previewCanvas.style.height = `${height * zoomLevel}px`;
   };
-  var getDocumentLayoutDefaults = () => {
-    const layout = currentDocumentAst?.layout || {};
-    return {
-      fontFamily: typeof layout.fontFamily === "string" ? layout.fontFamily : "Arimo",
-      fontSize: Number(layout.fontSize || 13) || 13,
-      lineHeight: Number(layout.lineHeight || 1.3) || 1.3
-    };
-  };
   var normalizeSelectedSourceId = (value) => {
     const normalized = String(value || "").replace(/^gen:/, "").replace(/^author:/, "");
     return normalized || null;
@@ -82728,11 +83184,36 @@ captions:
     }
     ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
     ctx.drawImage(offscreenCanvas, 0, 0);
-    if (interactionMode === "select" && currentSnapshotPage) {
-      drawPreviewSelectionOverlay(currentSnapshotPage, previewCanvas, {
-        selectedSourceId,
-        selection: activeTextSelection
-      });
+    if (interactionMode === "select" && currentSnapshotPage && preview) {
+      const scale = (previewCanvas.width || 1) / Math.max(1, currentSnapshotPage.width);
+      const overlay = preview.buildPageInteractionOverlay(currentPageIndex, activeTextSelection, selectedTargetId);
+      if (overlay) {
+        ctx.save();
+        ctx.setTransform(scale, 0, 0, scale, 0, 0);
+        ctx.strokeStyle = "#60a5fa";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(overlay.frameRect.x - 2, overlay.frameRect.y - 2, overlay.frameRect.w + 4, overlay.frameRect.h + 4);
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = "#c084fc";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(overlay.frameRect.x - 5, overlay.frameRect.y - 5, overlay.frameRect.w + 10, overlay.frameRect.h + 10);
+        if (overlay.selectionRects.length > 0) {
+          ctx.fillStyle = "rgba(96, 165, 250, 0.24)";
+          for (const rect of overlay.selectionRects) {
+            ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+          }
+        }
+        if (overlay.caretRect) {
+          ctx.setLineDash([]);
+          ctx.strokeStyle = "#f8fafc";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(overlay.caretRect.x, overlay.caretRect.y0);
+          ctx.lineTo(overlay.caretRect.x, overlay.caretRect.y1);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
     }
   };
   var updateInteractionButton = () => {
@@ -82785,6 +83266,7 @@ captions:
       });
       currentDocumentAst = docAst;
       selectedSourceId = null;
+      selectedTargetId = null;
       activeTextSelection = null;
       dragAnchor = null;
       astOutput.textContent = JSON.stringify(docAst, null, 2);
@@ -82881,39 +83363,30 @@ captions:
     statusNode.textContent = interactionMode === "pan" ? "Pan mode enabled." : "Selection mode enabled. Click or drag across text.";
   });
   previewCanvas.addEventListener("mousemove", (event) => {
-    if (interactionMode !== "select") return;
+    if (interactionMode !== "select" || !preview) return;
     const point3 = eventToPagePoint(event);
-    const hit = hitTestPreviewBox(currentSnapshotPage, point3.x, point3.y);
-    const layout = buildPreviewTextLayoutModel(hit, getDocumentLayoutDefaults());
-    previewCanvas.style.cursor = layout ? "text" : hit ? "pointer" : "default";
-    if (!isSelecting || !dragAnchor || !currentSnapshotPage) return;
-    const currentBox = getSelectablePreviewBoxes(currentSnapshotPage).find((box) => normalizeSelectedSourceId(String(box.meta?.sourceId || "")) === dragAnchor.sourceId);
-    const selectedLayout = buildPreviewTextLayoutModel(currentBox || null, getDocumentLayoutDefaults());
-    if (!selectedLayout || selectedLayout.sourceId !== dragAnchor.sourceId) return;
-    const offset = getNearestPreviewSelectionOffset(selectedLayout, point3.x, point3.y);
-    const selectedOffsets = event.altKey ? normalizePreviewSelectedOffsets(
-      selectedLayout,
-      getPreviewSpatiallySelectedOffsets(selectedLayout, dragAnchor, point3)
-    ) : buildPreviewContinuousSelectedOffsets(selectedLayout, dragAnchor.absoluteOffset, offset);
-    activeTextSelection = {
-      sourceId: dragAnchor.sourceId,
-      selectedOffsets,
-      caretOffset: offset
-    };
+    const hit = preview.hitTestPageInteraction(currentPageIndex, point3.x, point3.y);
+    previewCanvas.style.cursor = hit ? hit.selectableText ? "text" : "pointer" : "default";
+    if (!isSelecting || !dragAnchor) return;
+    activeTextSelection = preview.resolvePageSelection(
+      currentPageIndex,
+      dragAnchor,
+      point3,
+      event.altKey ? "spatial" : "continuous"
+    );
     paintVisibleCanvas();
   });
   previewCanvas.addEventListener("mousedown", (event) => {
-    if (event.button !== 0 || interactionMode !== "select" || !currentSnapshotPage) return;
+    if (event.button !== 0 || interactionMode !== "select" || !preview) return;
     const point3 = eventToPagePoint(event);
-    const hit = hitTestPreviewBox(currentSnapshotPage, point3.x, point3.y);
-    const layout = buildPreviewTextLayoutModel(hit, getDocumentLayoutDefaults());
+    const target = preview.hitTestPageInteraction(currentPageIndex, point3.x, point3.y);
     isSelecting = true;
-    selectedSourceId = normalizeSelectedSourceId(String(hit?.meta?.sourceId || ""));
-    if (layout) {
-      const offset = getNearestPreviewSelectionOffset(layout, point3.x, point3.y);
-      dragAnchor = { sourceId: layout.sourceId, x: point3.x, y: point3.y, absoluteOffset: offset };
-      activeTextSelection = { sourceId: layout.sourceId, selectedOffsets: [], caretOffset: offset };
-      statusNode.textContent = `Selected ${layout.sourceId}.`;
+    selectedSourceId = normalizeSelectedSourceId(target?.sourceId || "");
+    selectedTargetId = target?.targetId || null;
+    if (target) {
+      dragAnchor = preview.createPageSelectionPoint(currentPageIndex, point3.x, point3.y);
+      activeTextSelection = dragAnchor ? preview.resolvePageSelection(currentPageIndex, dragAnchor, point3, "continuous") : null;
+      statusNode.textContent = `Selected ${target.sourceId}.`;
     } else {
       dragAnchor = null;
       activeTextSelection = null;

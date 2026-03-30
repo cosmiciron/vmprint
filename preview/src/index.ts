@@ -1,12 +1,26 @@
 import { CanvasContext } from '@vmprint/context-canvas';
 import { PdfLiteContext } from '@vmprint/context-pdf-lite';
 import {
+    buildInteractionOverlayModel,
+    createInteractionSelectionPoint,
     createEngineRuntime,
+    getSimulationArtifact,
+    hitTestInteraction,
     LayoutEngine,
     LayoutUtils,
     Renderer,
+    resolveInteractionSelection,
     resolveDocumentPaths,
+    simulationArtifactKeys,
     toLayoutConfig
+} from '@vmprint/engine';
+import type {
+    VmprintInteractionHit,
+    VmprintInteractionOverlayModel,
+    VmprintInteractionPage,
+    VmprintInteractionSelectionMode,
+    VmprintInteractionSelectionPoint,
+    VmprintInteractionSelectionState
 } from '@vmprint/engine';
 import { LOCAL_FONT_ALIASES as FONT_ALIASES, LOCAL_FONT_REGISTRY as FONT_REGISTRY } from '@vmprint/local-fonts/config';
 import { WebFontManager } from '@vmprint/web-fonts';
@@ -115,6 +129,22 @@ export type PreviewLayoutSnapshotTextMetrics = {
     lines: PreviewLayoutSnapshotLineMetric[];
 };
 
+export type PreviewLayoutSnapshotInteractionRegion = {
+    sourceId: string;
+    originSourceId?: string;
+    clonedFromSourceId?: string;
+    engineKey?: string;
+    sourceType?: string;
+    fragmentIndex: number;
+    isContinuation: boolean;
+    generated: boolean;
+    transformKind?: 'clone' | 'split' | 'morph';
+    selectableText: boolean;
+    containerSourceId?: string;
+    containerType?: string;
+    containerEngineKey?: string;
+};
+
 export type PreviewLayoutSnapshotBox = {
     type: string;
     x: number;
@@ -136,6 +166,7 @@ export type PreviewLayoutSnapshotBox = {
     };
     lines?: PreviewLayoutSnapshotTextFragment[][];
     textMetrics?: PreviewLayoutSnapshotTextMetrics;
+    interaction?: PreviewLayoutSnapshotInteractionRegion;
     meta?: {
         sourceId?: string;
         engineKey?: string;
@@ -204,6 +235,20 @@ export type PreviewSession = {
     getPageCount(): number;
     getPageSize(): { width: number; height: number };
     getLayoutSnapshotPages(): PreviewLayoutSnapshotPage[];
+    getInteractionSnapshotPages(): VmprintInteractionPage[];
+    hitTestPageInteraction(pageIndex: number, x: number, y: number): VmprintInteractionHit | null;
+    createPageSelectionPoint(pageIndex: number, x: number, y: number): VmprintInteractionSelectionPoint | null;
+    resolvePageSelection(
+        pageIndex: number,
+        anchor: VmprintInteractionSelectionPoint | null | undefined,
+        focusPoint: { x: number; y: number },
+        mode?: VmprintInteractionSelectionMode
+    ): VmprintInteractionSelectionState | null;
+    buildPageInteractionOverlay(
+        pageIndex: number,
+        selection: VmprintInteractionSelectionState | null | undefined,
+        selectedTargetId?: string | null
+    ): VmprintInteractionOverlayModel | null;
     isDestroyed(): boolean;
     renderPageToCanvas(pageIndex: number, target: CanvasTarget, options?: RenderPageToCanvasOptions): Promise<void>;
     exportPdf(): Promise<Uint8Array>;
@@ -385,7 +430,10 @@ const resolveCanvasContext = (target: CanvasTarget): CanvasRenderingContext2D | 
 };
 
 export const getSelectablePreviewBoxes = (page: PreviewLayoutSnapshotPage | null): PreviewLayoutSnapshotBox[] =>
-    (page?.boxes || []).filter((box) => normalizePreviewSourceId(box.meta?.sourceId).length > 0);
+    (page?.boxes || []).filter((box) => (
+        normalizePreviewSourceId(box.meta?.sourceId).length > 0
+        && (box.interaction?.selectableText !== false)
+    ));
 
 export const hitTestPreviewBox = (page: PreviewLayoutSnapshotPage | null, x: number, y: number): PreviewLayoutSnapshotBox | null => {
     const boxes = getSelectablePreviewBoxes(page);
@@ -784,6 +832,7 @@ class PreviewSessionImpl implements PreviewSession {
     private pdfBytesPromise: Promise<Uint8Array> | null = null;
     private layoutPages: any[] | null = null;
     private layoutSnapshotPages: any[] | null = null;
+    private interactionSnapshotPages: VmprintInteractionPage[] | null = null;
     private layoutConfig: any | null = null;
     private layoutRuntime: any | null = null;
 
@@ -860,6 +909,35 @@ class PreviewSessionImpl implements PreviewSession {
                         descent: Number(line.descent || 0)
                     }))
                 } : undefined,
+                interaction: box.properties?.__vmprintInteractionRegion ? {
+                    sourceId: String(box.properties.__vmprintInteractionRegion.sourceId || ''),
+                    originSourceId: typeof box.properties.__vmprintInteractionRegion.originSourceId === 'string'
+                        ? box.properties.__vmprintInteractionRegion.originSourceId
+                        : undefined,
+                    clonedFromSourceId: typeof box.properties.__vmprintInteractionRegion.clonedFromSourceId === 'string'
+                        ? box.properties.__vmprintInteractionRegion.clonedFromSourceId
+                        : undefined,
+                    engineKey: typeof box.properties.__vmprintInteractionRegion.engineKey === 'string'
+                        ? box.properties.__vmprintInteractionRegion.engineKey
+                        : undefined,
+                    sourceType: typeof box.properties.__vmprintInteractionRegion.sourceType === 'string'
+                        ? box.properties.__vmprintInteractionRegion.sourceType
+                        : undefined,
+                    fragmentIndex: Number(box.properties.__vmprintInteractionRegion.fragmentIndex || 0),
+                    isContinuation: Boolean(box.properties.__vmprintInteractionRegion.isContinuation),
+                    generated: Boolean(box.properties.__vmprintInteractionRegion.generated),
+                    transformKind: box.properties.__vmprintInteractionRegion.transformKind,
+                    selectableText: Boolean(box.properties.__vmprintInteractionRegion.selectableText),
+                    containerSourceId: typeof box.properties.__vmprintInteractionRegion.containerSourceId === 'string'
+                        ? box.properties.__vmprintInteractionRegion.containerSourceId
+                        : undefined,
+                    containerType: typeof box.properties.__vmprintInteractionRegion.containerType === 'string'
+                        ? box.properties.__vmprintInteractionRegion.containerType
+                        : undefined,
+                    containerEngineKey: typeof box.properties.__vmprintInteractionRegion.containerEngineKey === 'string'
+                        ? box.properties.__vmprintInteractionRegion.containerEngineKey
+                        : undefined
+                } : undefined,
                 meta: {
                     sourceId: typeof box.meta?.sourceId === 'string' ? box.meta.sourceId : '',
                     engineKey: typeof box.meta?.engineKey === 'string' ? box.meta.engineKey : '',
@@ -877,6 +955,57 @@ class PreviewSessionImpl implements PreviewSession {
                 })))
             }))
         }));
+    }
+
+    getInteractionSnapshotPages(): VmprintInteractionPage[] {
+        this.assertActive('getInteractionSnapshotPages');
+        this.assertHasDocument('getInteractionSnapshotPages');
+        return (this.interactionSnapshotPages || []).map((page) => ({
+            ...page,
+            targets: page.targets.map((target) => ({
+                ...target,
+                contentBox: { ...target.contentBox },
+                units: target.units.map((unit) => ({ ...unit })),
+                lines: target.lines.map((line) => ({ ...line }))
+            }))
+        }));
+    }
+
+    hitTestPageInteraction(pageIndex: number, x: number, y: number): VmprintInteractionHit | null {
+        this.assertActive('hitTestPageInteraction');
+        this.assertHasDocument('hitTestPageInteraction');
+        const page = this.interactionSnapshotPages?.[pageIndex];
+        return hitTestInteraction(page, x, y);
+    }
+
+    createPageSelectionPoint(pageIndex: number, x: number, y: number): VmprintInteractionSelectionPoint | null {
+        this.assertActive('createPageSelectionPoint');
+        this.assertHasDocument('createPageSelectionPoint');
+        const page = this.interactionSnapshotPages?.[pageIndex];
+        return createInteractionSelectionPoint(page, x, y);
+    }
+
+    resolvePageSelection(
+        pageIndex: number,
+        anchor: VmprintInteractionSelectionPoint | null | undefined,
+        focusPoint: { x: number; y: number },
+        mode: VmprintInteractionSelectionMode = 'continuous'
+    ): VmprintInteractionSelectionState | null {
+        this.assertActive('resolvePageSelection');
+        this.assertHasDocument('resolvePageSelection');
+        const page = this.interactionSnapshotPages?.[pageIndex];
+        return resolveInteractionSelection(page, anchor, focusPoint, mode);
+    }
+
+    buildPageInteractionOverlay(
+        pageIndex: number,
+        selection: VmprintInteractionSelectionState | null | undefined,
+        selectedTargetId?: string | null
+    ): VmprintInteractionOverlayModel | null {
+        this.assertActive('buildPageInteractionOverlay');
+        this.assertHasDocument('buildPageInteractionOverlay');
+        const page = this.interactionSnapshotPages?.[pageIndex];
+        return buildInteractionOverlayModel(page, selection, selectedTargetId);
     }
 
     isDestroyed(): boolean {
@@ -935,6 +1064,7 @@ class PreviewSessionImpl implements PreviewSession {
         this.pdfBytesPromise = null;
         this.layoutPages = null;
         this.layoutSnapshotPages = null;
+        this.interactionSnapshotPages = null;
         this.layoutConfig = null;
         this.layoutRuntime = null;
     }
@@ -972,6 +1102,7 @@ class PreviewSessionImpl implements PreviewSession {
         const engine = new LayoutEngine(config, runtime);
         await engine.waitForFonts();
         const pages = engine.simulate(documentIr.elements);
+        const report = engine.getLastSimulationReport();
         const pageSize = LayoutUtils.getPageDimensions(config);
 
         const canvasContext = new CanvasContext({
@@ -989,7 +1120,8 @@ class PreviewSessionImpl implements PreviewSession {
         this.pageCount = canvasContext.getPageCount();
         this.pageSize = pageSize;
         this.layoutPages = pages;
-        this.layoutSnapshotPages = pages.map((page) => (renderer as any).toOverlayPage(page));
+        this.layoutSnapshotPages = pages.map((page: any) => (renderer as any).toOverlayPage(page));
+        this.interactionSnapshotPages = (getSimulationArtifact(report, simulationArtifactKeys.interactionMap) || []) as VmprintInteractionPage[];
         this.layoutConfig = config;
         this.layoutRuntime = runtime;
         this.pdfBytesPromise = renderPagesToPdfBytes(config, pages, runtime, pageSize);

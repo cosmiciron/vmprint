@@ -10,6 +10,7 @@ const playgroundRoot = path.join(previewRoot, 'playground');
 const dashboardRoot = path.join(previewRoot, 'dashboard');
 
 const aliases = {
+    '@vmprint/engine': path.join(repoRoot, 'engine', 'dist', 'index.mjs'),
     '@vmprint/preview': path.join(previewRoot, 'src', 'index.ts'),
     '@proof/reactive-collector-pages': path.join(repoRoot, 'engine', 'tests', 'output', 'proofs', 'reactive-collector-board.pages.json'),
     '@proof/reactive-collector-timeline': path.join(repoRoot, 'engine', 'tests', 'output', 'proofs', 'reactive-collector-board.timeline.json'),

@@ -11,6 +11,7 @@ import type { SourcePositionSummary } from './collaborators/source-position-arti
 import type { HeadingTelemetrySummary } from './collaborators/heading-telemetry-collaborator';
 import type { AsyncThoughtSummary } from './collaborators/async-thought-runtime-collaborator';
 import type { TemporalPresentationTimeline } from './collaborators/temporal-presentation-collaborator';
+import type { InteractionArtifactSummary } from './collaborators/interaction-artifact-collaborator';
 import type { LayoutProfileMetrics } from './layout-session-types';
 import type { Page } from '../types';
 import type { SimulationProgressionPolicy, SimulationStopReason } from '../types';
@@ -29,6 +30,7 @@ export type SimulationArtifactMap = {
     headingTelemetry?: HeadingTelemetrySummary[];
     asyncThoughtSummary?: AsyncThoughtSummary;
     temporalPresentationTimeline?: TemporalPresentationTimeline;
+    interactionMap?: InteractionArtifactSummary;
 };
 
 export type SimulationArtifactKey = keyof SimulationArtifactMap;
@@ -47,7 +49,8 @@ export const simulationArtifactKeys = {
     sourcePositionMap: 'sourcePositionMap',
     headingTelemetry: 'headingTelemetry',
     asyncThoughtSummary: 'asyncThoughtSummary',
-    temporalPresentationTimeline: 'temporalPresentationTimeline'
+    temporalPresentationTimeline: 'temporalPresentationTimeline',
+    interactionMap: 'interactionMap'
 } as const satisfies Record<SimulationArtifactKey, SimulationArtifactKey>;
 
 export const knownSimulationArtifactKeys: readonly SimulationArtifactKey[] = [
@@ -63,7 +66,8 @@ export const knownSimulationArtifactKeys: readonly SimulationArtifactKey[] = [
     simulationArtifactKeys.sourcePositionMap,
     simulationArtifactKeys.headingTelemetry,
     simulationArtifactKeys.asyncThoughtSummary,
-    simulationArtifactKeys.temporalPresentationTimeline
+    simulationArtifactKeys.temporalPresentationTimeline,
+    simulationArtifactKeys.interactionMap
 ] as const;
 
 export type SimulationReport = {

@@ -1,19 +1,13 @@
 import {
-    buildPreviewContinuousSelectedOffsets,
-    buildPreviewTextLayoutModel,
     createVMPrintPreview,
-    drawPreviewSelectionOverlay,
-    getNearestPreviewSelectionOffset,
-    getPreviewSpatiallySelectedOffsets,
-    getSelectablePreviewBoxes,
-    hitTestPreviewBox,
-    normalizePreviewSelectedOffsets,
     type PreviewLayoutSnapshotPage,
     type PreviewSession,
-    type PreviewTextSelectionPoint,
-    type PreviewTextSelectionState,
     type WebFontProgressEvent
 } from '@vmprint/preview';
+import {
+    type VmprintInteractionSelectionPoint,
+    type VmprintInteractionSelectionState
+} from '@vmprint/engine';
 import { transmute } from '@vmprint/mkd-mkd';
 
 type ResolvedImage = {
@@ -1049,8 +1043,9 @@ let startY = 0;
 let scrollLeftTop = { left: 0, top: 0 };
 let interactionMode: 'pan' | 'select' = 'pan';
 let selectedSourceId: string | null = null;
-let activeTextSelection: PreviewTextSelectionState | null = null;
-let dragAnchor: PreviewTextSelectionPoint | null = null;
+let selectedTargetId: string | null = null;
+let activeTextSelection: VmprintInteractionSelectionState | null = null;
+let dragAnchor: VmprintInteractionSelectionPoint | null = null;
 let isSelecting = false;
 
 // -- Render Pipeline ------------------------------------------------------
@@ -1156,15 +1151,6 @@ const updateUI = (): void => {
     previewCanvas.style.height = `${height * zoomLevel}px`;
 };
 
-const getDocumentLayoutDefaults = (): { fontFamily: string; fontSize: number; lineHeight: number } => {
-    const layout = (currentDocumentAst?.layout as Record<string, unknown> | undefined) || {};
-    return {
-        fontFamily: typeof layout.fontFamily === 'string' ? layout.fontFamily : 'Arimo',
-        fontSize: Number(layout.fontSize || 13) || 13,
-        lineHeight: Number(layout.lineHeight || 1.3) || 1.3
-    };
-};
-
 const normalizeSelectedSourceId = (value: string | null | undefined): string | null => {
     const normalized = String(value || '').replace(/^gen:/, '').replace(/^author:/, '');
     return normalized || null;
@@ -1179,11 +1165,38 @@ const paintVisibleCanvas = (): void => {
     }
     ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
     ctx.drawImage(offscreenCanvas, 0, 0);
-    if (interactionMode === 'select' && currentSnapshotPage) {
-        drawPreviewSelectionOverlay(currentSnapshotPage, previewCanvas, {
-            selectedSourceId,
-            selection: activeTextSelection
-        });
+    if (interactionMode === 'select' && currentSnapshotPage && preview) {
+        const scale = (previewCanvas.width || 1) / Math.max(1, currentSnapshotPage.width);
+        const overlay = preview.buildPageInteractionOverlay(currentPageIndex, activeTextSelection, selectedTargetId);
+        if (overlay) {
+            ctx.save();
+            ctx.setTransform(scale, 0, 0, scale, 0, 0);
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(overlay.frameRect.x - 2, overlay.frameRect.y - 2, overlay.frameRect.w + 4, overlay.frameRect.h + 4);
+            ctx.setLineDash([6, 4]);
+            ctx.strokeStyle = '#c084fc';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(overlay.frameRect.x - 5, overlay.frameRect.y - 5, overlay.frameRect.w + 10, overlay.frameRect.h + 10);
+
+            if (overlay.selectionRects.length > 0) {
+                ctx.fillStyle = 'rgba(96, 165, 250, 0.24)';
+                for (const rect of overlay.selectionRects) {
+                    ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+                }
+            }
+
+            if (overlay.caretRect) {
+                ctx.setLineDash([]);
+                ctx.strokeStyle = '#f8fafc';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(overlay.caretRect.x, overlay.caretRect.y0);
+                ctx.lineTo(overlay.caretRect.x, overlay.caretRect.y1);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
     }
 };
 
@@ -1247,6 +1260,7 @@ const processRender = async (resetZoom = false): Promise<void> => {
         
         currentDocumentAst = docAst;
         selectedSourceId = null;
+        selectedTargetId = null;
         activeTextSelection = null;
         dragAnchor = null;
         astOutput.textContent = JSON.stringify(docAst, null, 2);
@@ -1369,45 +1383,34 @@ interactionModeBtn.addEventListener('click', () => {
 });
 
 previewCanvas.addEventListener('mousemove', (event) => {
-    if (interactionMode !== 'select') return;
+    if (interactionMode !== 'select' || !preview) return;
     const point = eventToPagePoint(event);
-    const hit = hitTestPreviewBox(currentSnapshotPage, point.x, point.y);
-    const layout = buildPreviewTextLayoutModel(hit, getDocumentLayoutDefaults());
-    previewCanvas.style.cursor = layout ? 'text' : hit ? 'pointer' : 'default';
+    const hit = preview.hitTestPageInteraction(currentPageIndex, point.x, point.y);
+    previewCanvas.style.cursor = hit ? (hit.selectableText ? 'text' : 'pointer') : 'default';
 
-    if (!isSelecting || !dragAnchor || !currentSnapshotPage) return;
-    const currentBox = getSelectablePreviewBoxes(currentSnapshotPage)
-        .find((box) => normalizeSelectedSourceId(String(box.meta?.sourceId || '')) === dragAnchor.sourceId);
-    const selectedLayout = buildPreviewTextLayoutModel(currentBox || null, getDocumentLayoutDefaults());
-    if (!selectedLayout || selectedLayout.sourceId !== dragAnchor.sourceId) return;
-
-    const offset = getNearestPreviewSelectionOffset(selectedLayout, point.x, point.y);
-    const selectedOffsets = event.altKey
-        ? normalizePreviewSelectedOffsets(
-            selectedLayout,
-            getPreviewSpatiallySelectedOffsets(selectedLayout, dragAnchor, point)
-        )
-        : buildPreviewContinuousSelectedOffsets(selectedLayout, dragAnchor.absoluteOffset, offset);
-    activeTextSelection = {
-        sourceId: dragAnchor.sourceId,
-        selectedOffsets,
-        caretOffset: offset
-    };
+    if (!isSelecting || !dragAnchor) return;
+    activeTextSelection = preview.resolvePageSelection(
+        currentPageIndex,
+        dragAnchor,
+        point,
+        event.altKey ? 'spatial' : 'continuous'
+    );
     paintVisibleCanvas();
 });
 
 previewCanvas.addEventListener('mousedown', (event) => {
-    if (event.button !== 0 || interactionMode !== 'select' || !currentSnapshotPage) return;
+    if (event.button !== 0 || interactionMode !== 'select' || !preview) return;
     const point = eventToPagePoint(event);
-    const hit = hitTestPreviewBox(currentSnapshotPage, point.x, point.y);
-    const layout = buildPreviewTextLayoutModel(hit, getDocumentLayoutDefaults());
+    const target = preview.hitTestPageInteraction(currentPageIndex, point.x, point.y);
     isSelecting = true;
-    selectedSourceId = normalizeSelectedSourceId(String(hit?.meta?.sourceId || ''));
-    if (layout) {
-        const offset = getNearestPreviewSelectionOffset(layout, point.x, point.y);
-        dragAnchor = { sourceId: layout.sourceId, x: point.x, y: point.y, absoluteOffset: offset };
-        activeTextSelection = { sourceId: layout.sourceId, selectedOffsets: [], caretOffset: offset };
-        statusNode.textContent = `Selected ${layout.sourceId}.`;
+    selectedSourceId = normalizeSelectedSourceId(target?.sourceId || '');
+    selectedTargetId = target?.targetId || null;
+    if (target) {
+        dragAnchor = preview.createPageSelectionPoint(currentPageIndex, point.x, point.y);
+        activeTextSelection = dragAnchor
+            ? preview.resolvePageSelection(currentPageIndex, dragAnchor, point, 'continuous')
+            : null;
+        statusNode.textContent = `Selected ${target.sourceId}.`;
     } else {
         dragAnchor = null;
         activeTextSelection = null;
