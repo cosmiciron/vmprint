@@ -25,6 +25,7 @@ import { PhysicsRuntime } from './physics-runtime';
 import { SessionCollaborationRuntime } from './session-collaboration-runtime';
 import { SessionWorldRuntime } from './session-world-runtime';
 import { SimulationClock } from './simulation-clock';
+import { AsyncThoughtHost, type AsyncThoughtHandle, type AsyncThoughtRequest } from './async-thought-host';
 import { TransitionsRuntime } from './transitions-runtime';
 import type {
     SimulationArtifactKey,
@@ -200,6 +201,7 @@ export type {
 type LayoutSessionOptions = {
     runtime: EngineRuntime;
     collaborators?: readonly Collaborator[];
+    asyncThoughtHost?: AsyncThoughtHost | null;
 };
 
 export class LayoutSession {
@@ -220,6 +222,7 @@ export class LayoutSession {
     readonly simulationReportBridge: SimulationReportBridge;
     readonly transitionsRuntime: TransitionsRuntime;
     readonly simulationClock = new SimulationClock();
+    readonly asyncThoughtHost: AsyncThoughtHost | null;
     readonly profile: LayoutProfileMetrics = {
         handlerCalls: 0,
         handlerMs: 0,
@@ -372,6 +375,7 @@ export class LayoutSession {
 
     constructor(options: LayoutSessionOptions) {
         this.runtime = options.runtime;
+        this.asyncThoughtHost = options.asyncThoughtHost ?? null;
         this.collaborators = options.collaborators ?? [];
         this.eventDispatcher = new EventDispatcher(this.collaborators);
         this.actorCommunicationRuntime = new ActorCommunicationRuntime({
@@ -1048,6 +1052,18 @@ export class LayoutSession {
 
     getSimulationTick(): number {
         return this.simulationClock.tick;
+    }
+
+    requestAsyncThought(request: AsyncThoughtRequest): AsyncThoughtHandle | undefined {
+        return this.asyncThoughtHost?.request(request);
+    }
+
+    readAsyncThoughtResult(key: string): AsyncThoughtHandle | undefined {
+        return this.asyncThoughtHost?.read(key);
+    }
+
+    hasPendingAsyncThoughts(): boolean {
+        return this.asyncThoughtHost?.hasPending() ?? false;
     }
 
     setSimulationProgressionPolicy(policy: SimulationProgressionPolicy): void {

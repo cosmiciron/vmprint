@@ -6,6 +6,7 @@ import { LayoutEngine } from '../../src/engine/layout-engine';
 import { Renderer } from '../../src/engine/renderer';
 import { createEngineRuntime } from '../../src/engine/runtime';
 import type { Element, LayoutConfig, Page } from '../../src/engine/types';
+import { simulationArtifactKeys } from '../../src/engine/layout/simulation-report';
 import { loadStandardFontManager, snapshotPages } from '../harness/engine-harness';
 import { reactiveProofPackagerFactory } from '../support/reactive-proof-packager-factory';
 
@@ -80,13 +81,13 @@ function buildFrameElements(frameCount: number, currentFrame: number): Element[]
                 _clockCooking: {
                     title: `UFO WAVE TRACK  FRAME ${currentFrame.toString().padStart(2, '0')}/${frameCount.toString().padStart(2, '0')}  [DOS FLIPBOOK MODE]`,
                     emptyLabel: 'Scene is dormant.',
-                    baseHeight: 288,
-                    growthPerStage: 8,
+                    baseHeight: 256,
+                    growthPerStage: 3,
                     maxStages: currentFrame,
                     pathStages: frameCount,
                     sceneMode: 'ascii-diorama',
-                    sceneWidth: 62,
-                    sceneHeight: 16,
+                    sceneWidth: 66,
+                    sceneHeight: 17,
                     fontFamily: 'Courier'
                 }
             }
@@ -163,10 +164,12 @@ async function main(): Promise<void> {
     const outputDir = path.resolve(resolveArg('--output-dir') || DEFAULT_OUTPUT_DIR);
     const outputBase = path.join(outputDir, 'saucer-flipbook');
     const snapshotPath = path.resolve(resolveArg('--snapshot') || `${outputBase}.pages.json`);
+    const timelinePath = path.resolve(resolveArg('--timeline') || `${outputBase}.timeline.json`);
     const pdfPath = path.resolve(resolveArg('--pdf') || `${outputBase}.pdf`);
     const skipPdf = hasFlag('--no-pdf');
 
     fs.mkdirSync(path.dirname(snapshotPath), { recursive: true });
+    fs.mkdirSync(path.dirname(timelinePath), { recursive: true });
     fs.mkdirSync(path.dirname(pdfPath), { recursive: true });
 
     const StandardFontManager = await loadStandardFontManager();
@@ -176,16 +179,22 @@ async function main(): Promise<void> {
     engine.setPackagerFactory(reactiveProofPackagerFactory);
     await engine.waitForFonts();
 
-    const frameCount = 10;
+    const frameCount = 24;
     const pages: Page[] = [];
+    let finalTimeline: unknown[] = [];
     for (let currentFrame = 1; currentFrame <= frameCount; currentFrame++) {
         const framePages = engine.simulate(buildFrameElements(frameCount, currentFrame));
         const cookerPage = framePages.find((page) => page.boxes.some((box) => box.type === 'test-clock-cooking')) || framePages[0];
         pages.push(cookerPage);
+        if (currentFrame === frameCount) {
+            finalTimeline = engine.getLastSimulationReportReader().get(simulationArtifactKeys.temporalPresentationTimeline) as unknown[] || [];
+        }
     }
 
     fs.writeFileSync(snapshotPath, JSON.stringify(snapshotPages(pages), null, 2) + '\n', 'utf8');
+    fs.writeFileSync(timelinePath, JSON.stringify(finalTimeline, null, 2) + '\n', 'utf8');
     console.log(`[generate-saucer-flipbook] snapshot=${snapshotPath}`);
+    console.log(`[generate-saucer-flipbook] timeline=${timelinePath}`);
     console.log(`[generate-saucer-flipbook] pages=${pages.length}`);
 
     if (!skipPdf) {

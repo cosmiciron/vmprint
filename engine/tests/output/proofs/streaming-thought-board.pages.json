@@ -1,0 +1,162 @@
+[
+  {
+    "index": 0,
+    "width": 560,
+    "height": 400,
+    "boxes": [
+      {
+        "type": "chapter-heading",
+        "x": 20,
+        "y": 20,
+        "w": 520,
+        "h": 23.709375,
+        "lines": [
+          [
+            {
+              "text": "Streaming Thought Board",
+              "width": 221.994141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 59.709375,
+        "w": 520,
+        "h": 31.6125,
+        "lines": [
+          [
+            {
+              "text": "This board proves that a delayed thought can unfold in many small committed stages instead of ",
+              "width": 509.619141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "appearing all at once.",
+              "width": 114.75,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-async-thought",
+        "x": 20,
+        "y": 107.321875,
+        "w": 520,
+        "h": 150,
+        "lines": [
+          [
+            {
+              "text": "Thought Lobe Stream",
+              "width": 116.074219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "State: resolved",
+              "width": 80.044922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Stage 7: contact established, signal stabilizing, pattern recognized, confidence rising, ",
+              "width": 454.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "committed insight arrives, geometry makes room.",
+              "width": 262.083984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 267.321875,
+        "w": 520,
+        "h": 60,
+        "lines": [
+          [
+            {
+              "text": "Downstream Region",
+              "width": 116.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Should keep shifting as thought streams in",
+              "width": 246.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 1",
+              "width": 93.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 327.321875,
+        "w": 520,
+        "h": 31.6125,
+        "lines": [
+          [
+            {
+              "text": "The world slice should preserve each intermediate stage so playback can show thought becoming",
+              "width": 519.626953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "geometry over time, not merely jumping from pending to done.",
+              "width": 330.832031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

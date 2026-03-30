@@ -1,0 +1,1484 @@
+[
+  {
+    "captureIndex": 0,
+    "tick": 0,
+    "pageCount": 1,
+    "pages": [
+      {
+        "index": 0,
+        "width": 560,
+        "height": 400,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 520,
+            "h": 23.709375,
+            "sourceId": "author:streaming-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Streaming Thought Board",
+                  "width": 221.994141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that a delayed thought can unfold in many small committed stages instead of ",
+                  "width": 509.619141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "appearing all at once.",
+                  "width": 114.75,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 520,
+            "h": 68,
+            "sourceId": "author:streaming-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe Stream",
+                  "width": 116.074219,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: pending",
+                  "width": 77.396484,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Listening for an external chain of thought...",
+                  "width": 226.816406,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 185.321875,
+            "w": 520,
+            "h": 60,
+            "sourceId": "author:streaming-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should keep shifting as thought streams in",
+                  "width": 246.023438,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 245.321875,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-outro",
+            "engineKey": "ek:e/4:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "The world slice should preserve each intermediate stage so playback can show thought becoming",
+                  "width": 519.626953,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "geometry over time, not merely jumping from pending to done.",
+                  "width": 330.832031,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "captureIndex": 1,
+    "tick": 0,
+    "pageCount": 1,
+    "pages": [
+      {
+        "index": 0,
+        "width": 560,
+        "height": 400,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 520,
+            "h": 23.709375,
+            "sourceId": "author:streaming-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Streaming Thought Board",
+                  "width": 221.994141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that a delayed thought can unfold in many small committed stages instead of ",
+                  "width": 509.619141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "appearing all at once.",
+                  "width": 114.75,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 520,
+            "h": 74,
+            "sourceId": "author:streaming-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe Stream",
+                  "width": 116.074219,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: pending",
+                  "width": 77.396484,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Stage 1: contact.",
+                  "width": 90.058594,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 191.321875,
+            "w": 520,
+            "h": 60,
+            "sourceId": "author:streaming-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should keep shifting as thought streams in",
+                  "width": 246.023438,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 251.321875,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-outro",
+            "engineKey": "ek:e/4:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "The world slice should preserve each intermediate stage so playback can show thought becoming",
+                  "width": 519.626953,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "geometry over time, not merely jumping from pending to done.",
+                  "width": 330.832031,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "captureIndex": 2,
+    "tick": 0,
+    "pageCount": 1,
+    "pages": [
+      {
+        "index": 0,
+        "width": 560,
+        "height": 400,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 520,
+            "h": 23.709375,
+            "sourceId": "author:streaming-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Streaming Thought Board",
+                  "width": 221.994141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that a delayed thought can unfold in many small committed stages instead of ",
+                  "width": 509.619141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "appearing all at once.",
+                  "width": 114.75,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 520,
+            "h": 82,
+            "sourceId": "author:streaming-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe Stream",
+                  "width": 116.074219,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: pending",
+                  "width": 77.396484,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Stage 2: contact established.",
+                  "width": 154.101563,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 199.321875,
+            "w": 520,
+            "h": 60,
+            "sourceId": "author:streaming-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should keep shifting as thought streams in",
+                  "width": 246.023438,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 259.321875,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-outro",
+            "engineKey": "ek:e/4:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "The world slice should preserve each intermediate stage so playback can show thought becoming",
+                  "width": 519.626953,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "geometry over time, not merely jumping from pending to done.",
+                  "width": 330.832031,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "captureIndex": 3,
+    "tick": 0,
+    "pageCount": 1,
+    "pages": [
+      {
+        "index": 0,
+        "width": 560,
+        "height": 400,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 520,
+            "h": 23.709375,
+            "sourceId": "author:streaming-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Streaming Thought Board",
+                  "width": 221.994141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that a delayed thought can unfold in many small committed stages instead of ",
+                  "width": 509.619141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "appearing all at once.",
+                  "width": 114.75,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 520,
+            "h": 92,
+            "sourceId": "author:streaming-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe Stream",
+                  "width": 116.074219,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: pending",
+                  "width": 77.396484,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Stage 3: contact established, signal stabilizing.",
+                  "width": 248.150391,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 209.321875,
+            "w": 520,
+            "h": 60,
+            "sourceId": "author:streaming-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should keep shifting as thought streams in",
+                  "width": 246.023438,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 269.321875,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-outro",
+            "engineKey": "ek:e/4:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "The world slice should preserve each intermediate stage so playback can show thought becoming",
+                  "width": 519.626953,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "geometry over time, not merely jumping from pending to done.",
+                  "width": 330.832031,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "captureIndex": 4,
+    "tick": 0,
+    "pageCount": 1,
+    "pages": [
+      {
+        "index": 0,
+        "width": 560,
+        "height": 400,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 520,
+            "h": 23.709375,
+            "sourceId": "author:streaming-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Streaming Thought Board",
+                  "width": 221.994141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that a delayed thought can unfold in many small committed stages instead of ",
+                  "width": 509.619141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "appearing all at once.",
+                  "width": 114.75,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 520,
+            "h": 106,
+            "sourceId": "author:streaming-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe Stream",
+                  "width": 116.074219,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: pending",
+                  "width": 77.396484,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Stage 4: contact established, signal stabilizing, pattern recognized.",
+                  "width": 354.216797,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 223.321875,
+            "w": 520,
+            "h": 60,
+            "sourceId": "author:streaming-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should keep shifting as thought streams in",
+                  "width": 246.023438,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 283.321875,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-outro",
+            "engineKey": "ek:e/4:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "The world slice should preserve each intermediate stage so playback can show thought becoming",
+                  "width": 519.626953,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "geometry over time, not merely jumping from pending to done.",
+                  "width": 330.832031,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "captureIndex": 5,
+    "tick": 0,
+    "pageCount": 1,
+    "pages": [
+      {
+        "index": 0,
+        "width": 560,
+        "height": 400,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 520,
+            "h": 23.709375,
+            "sourceId": "author:streaming-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Streaming Thought Board",
+                  "width": 221.994141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that a delayed thought can unfold in many small committed stages instead of ",
+                  "width": 509.619141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "appearing all at once.",
+                  "width": 114.75,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 520,
+            "h": 122,
+            "sourceId": "author:streaming-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe Stream",
+                  "width": 116.074219,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: pending",
+                  "width": 77.396484,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Stage 5: contact established, signal stabilizing, pattern recognized, confidence rising.",
+                  "width": 450.9375,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 239.321875,
+            "w": 520,
+            "h": 60,
+            "sourceId": "author:streaming-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should keep shifting as thought streams in",
+                  "width": 246.023438,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 299.321875,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-outro",
+            "engineKey": "ek:e/4:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "The world slice should preserve each intermediate stage so playback can show thought becoming",
+                  "width": 519.626953,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "geometry over time, not merely jumping from pending to done.",
+                  "width": 330.832031,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "captureIndex": 6,
+    "tick": 0,
+    "pageCount": 1,
+    "pages": [
+      {
+        "index": 0,
+        "width": 560,
+        "height": 400,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 520,
+            "h": 23.709375,
+            "sourceId": "author:streaming-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Streaming Thought Board",
+                  "width": 221.994141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that a delayed thought can unfold in many small committed stages instead of ",
+                  "width": 509.619141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "appearing all at once.",
+                  "width": 114.75,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 520,
+            "h": 138,
+            "sourceId": "author:streaming-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe Stream",
+                  "width": 116.074219,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: pending",
+                  "width": 77.396484,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Stage 6: contact established, signal stabilizing, pattern recognized, confidence rising, ",
+                  "width": 454.271484,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "committed insight arrives.",
+                  "width": 136.042969,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 255.321875,
+            "w": 520,
+            "h": 60,
+            "sourceId": "author:streaming-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should keep shifting as thought streams in",
+                  "width": 246.023438,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 315.321875,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-outro",
+            "engineKey": "ek:e/4:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "The world slice should preserve each intermediate stage so playback can show thought becoming",
+                  "width": 519.626953,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "geometry over time, not merely jumping from pending to done.",
+                  "width": 330.832031,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "captureIndex": 7,
+    "tick": 0,
+    "pageCount": 1,
+    "pages": [
+      {
+        "index": 0,
+        "width": 560,
+        "height": 400,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 520,
+            "h": 23.709375,
+            "sourceId": "author:streaming-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Streaming Thought Board",
+                  "width": 221.994141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that a delayed thought can unfold in many small committed stages instead of ",
+                  "width": 509.619141,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "appearing all at once.",
+                  "width": 114.75,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 520,
+            "h": 150,
+            "sourceId": "author:streaming-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe Stream",
+                  "width": 116.074219,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: resolved",
+                  "width": 80.044922,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Stage 7: contact established, signal stabilizing, pattern recognized, confidence rising, ",
+                  "width": 454.271484,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "committed insight arrives, geometry makes room.",
+                  "width": 262.083984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 267.321875,
+            "w": 520,
+            "h": 60,
+            "sourceId": "author:streaming-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should keep shifting as thought streams in",
+                  "width": 246.023438,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 327.321875,
+            "w": 520,
+            "h": 31.6125,
+            "sourceId": "author:streaming-thought-outro",
+            "engineKey": "ek:e/4:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "The world slice should preserve each intermediate stage so playback can show thought becoming",
+                  "width": 519.626953,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "geometry over time, not merely jumping from pending to done.",
+                  "width": 330.832031,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

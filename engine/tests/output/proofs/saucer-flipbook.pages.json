@@ -9,11 +9,11 @@
         "x": 20,
         "y": 24,
         "w": 680,
-        "h": 296,
+        "h": 259,
         "lines": [
           [
             {
-              "text": "UFO WAVE TRACK  FRAME 01/10  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "text": "UFO WAVE TRACK  FRAME 01/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
               "width": 579.6,
               "ascent": 629,
               "descent": 157,
@@ -31,8 +31,8 @@
           ],
           [
             {
-              "text": "     t00   t02   t03    t05   t07   t08   t10",
-              "width": 378,
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -40,8 +40,8 @@
           ],
           [
             {
-              "text": "+---+|--+--|+---+|--+---|---+-|-+---|---+-|-+---+---+---+---+-",
-              "width": 520.8,
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -85,8 +85,8 @@
           ],
           [
             {
-              "text": " .      o      +                                         *",
-              "width": 487.2,
+              "text": " .      o      +                                         *      .",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -103,7 +103,7 @@
           ],
           [
             {
-              "text": "      _.---._         *      .      o      +",
+              "text": "                      *      .      o      +",
               "width": 369.6,
               "ascent": 629,
               "descent": 157,
@@ -112,8 +112,8 @@
           ],
           [
             {
-              "text": "   .-'_o___o_`-.",
-              "width": 134.4,
+              "text": "      _.---._",
+              "width": 109.2,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -121,8 +121,8 @@
           ],
           [
             {
-              "text": " o/__/_______\\__\\                                 *      .",
-              "width": 487.2,
+              "text": " o .-'_o___o_`-.                                  *      .      o",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -130,8 +130,8 @@
           ],
           [
             {
-              "text": "  \\  \\_\\_/_/  /",
-              "width": 126,
+              "text": "  /__/_______\\__\\",
+              "width": 142.8,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -139,8 +139,17 @@
           ],
           [
             {
-              "text": "   `-._____,-' *      .      o      +",
+              "text": "  \\  \\_\\_/_/  /*      .      o      +",
               "width": 310.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `-._____,-'",
+              "width": 117.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -184,7 +193,7 @@
           ],
           [
             {
-              "text": "Frame: 01 / 10",
+              "text": "Frame: 01 / 24",
               "width": 117.6,
               "ascent": 629,
               "descent": 157,
@@ -193,7 +202,7 @@
           ],
           [
             {
-              "text": "UFO Pos: x=2, y=8",
+              "text": "UFO Pos: x=2, y=9",
               "width": 142.8,
               "ascent": 629,
               "descent": 157,
@@ -241,7 +250,7 @@
       {
         "type": "test-replay-marker",
         "x": 20,
-        "y": 326,
+        "y": 289,
         "w": 680,
         "h": 32,
         "lines": [
@@ -268,7 +277,7 @@
       {
         "type": "p",
         "x": 20,
-        "y": 362,
+        "y": 325,
         "w": 680,
         "h": 8.4,
         "lines": [
@@ -295,11 +304,11 @@
         "x": 20,
         "y": 24,
         "w": 680,
-        "h": 304,
+        "h": 262,
         "lines": [
           [
             {
-              "text": "UFO WAVE TRACK  FRAME 02/10  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "text": "UFO WAVE TRACK  FRAME 02/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
               "width": 579.6,
               "ascent": 629,
               "descent": 157,
@@ -317,8 +326,8 @@
           ],
           [
             {
-              "text": "     t00   t02   t03    t05   t07   t08   t10",
-              "width": 378,
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -326,8 +335,8 @@
           ],
           [
             {
-              "text": "+---+|--+--|+---+|--+---|---+-|-+---|---+-|-+---+---+---+---+-",
-              "width": 520.8,
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -371,8 +380,8 @@
           ],
           [
             {
-              "text": " .      o      +                                         *",
-              "width": 487.2,
+              "text": " .      o      +                                         *      .",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -389,7 +398,7 @@
           ],
           [
             {
-              "text": "      .---.           *      .      o      +",
+              "text": "                      *      .      o      +",
               "width": 369.6,
               "ascent": 629,
               "descent": 157,
@@ -398,7 +407,25 @@
           ],
           [
             {
-              "text": "   .-'-----_.---._",
+              "text": "      .---.",
+              "width": 92.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--_.---._                                   *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'_o___o_`-.",
               "width": 151.2,
               "ascent": 629,
               "descent": 157,
@@ -407,25 +434,7 @@
           ],
           [
             {
-              "text": " o(____-.-'_o___o_`-.                             *      .",
-              "width": 487.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "   `-.-/__/_______\\__\\",
-              "width": 184.8,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "       \\  \\_\\_/_/  /  .      o      +",
+              "text": "   `/__/_______\\__\\   .      o      +",
               "width": 310.8,
               "ascent": 629,
               "descent": 157,
@@ -434,8 +443,17 @@
           ],
           [
             {
-              "text": "        `-._____,-'",
-              "width": 159.6,
+              "text": "    \\  \\_\\_/_/  /",
+              "width": 142.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-._____,-'",
+              "width": 134.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -470,7 +488,7 @@
           ],
           [
             {
-              "text": "Frame: 02 / 10",
+              "text": "Frame: 02 / 24",
               "width": 117.6,
               "ascent": 629,
               "descent": 157,
@@ -479,8 +497,8 @@
           ],
           [
             {
-              "text": "UFO Pos: x=7, y=9",
-              "width": 142.8,
+              "text": "UFO Pos: x=4, y=10",
+              "width": 151.2,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -527,7 +545,7 @@
       {
         "type": "test-replay-marker",
         "x": 20,
-        "y": 334,
+        "y": 292,
         "w": 680,
         "h": 32,
         "lines": [
@@ -554,7 +572,7 @@
       {
         "type": "p",
         "x": 20,
-        "y": 370,
+        "y": 328,
         "w": 680,
         "h": 8.4,
         "lines": [
@@ -581,11 +599,11 @@
         "x": 20,
         "y": 24,
         "w": 680,
-        "h": 312,
+        "h": 265,
         "lines": [
           [
             {
-              "text": "UFO WAVE TRACK  FRAME 03/10  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "text": "UFO WAVE TRACK  FRAME 03/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
               "width": 579.6,
               "ascent": 629,
               "descent": 157,
@@ -603,8 +621,8 @@
           ],
           [
             {
-              "text": "     t00   t02   t03    t05   t07   t08   t10",
-              "width": 378,
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -612,8 +630,8 @@
           ],
           [
             {
-              "text": "+---+|--+--|+---+|--+---|---+-|-+---|---+-|-+---+---+---+---+-",
-              "width": 520.8,
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -657,8 +675,8 @@
           ],
           [
             {
-              "text": " .      o      +                                         *",
-              "width": 487.2,
+              "text": " .      o      +                                         *      .",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -675,7 +693,7 @@
           ],
           [
             {
-              "text": "      .---.           *      .      o      +",
+              "text": "                      *      .      o      +",
               "width": 369.6,
               "ascent": 629,
               "descent": 157,
@@ -684,8 +702,8 @@
           ],
           [
             {
-              "text": "   .-'-----.-.-.",
-              "width": 134.4,
+              "text": "      .---.",
+              "width": 92.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -693,8 +711,8 @@
           ],
           [
             {
-              "text": " o(____-.-'.....'_.---._                          *      .",
-              "width": 487.2,
+              "text": " o .-'--.-._.---._                                *      .      o",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -702,8 +720,8 @@
           ],
           [
             {
-              "text": "   `-.-(____-..-'_o___o_`-.",
-              "width": 226.8,
+              "text": "  (__.-'.-'_o___o_`-.",
+              "width": 176.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -711,7 +729,7 @@
           ],
           [
             {
-              "text": "        `-.'./__/_______\\__\\ o      +",
+              "text": "   `(__/__/_______\\__\\.      o      +",
               "width": 310.8,
               "ascent": 629,
               "descent": 157,
@@ -720,8 +738,8 @@
           ],
           [
             {
-              "text": "             \\  \\_\\_/_/  /",
-              "width": 218.4,
+              "text": "     `-\\'.\\_\\_/_/  /",
+              "width": 168,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -729,11 +747,20 @@
           ],
           [
             {
-              "text": "              `-._____,-'",
-              "width": 210,
+              "text": "        `-._____,-'",
+              "width": 159.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
             }
           ],
           [
@@ -756,7 +783,7 @@
           ],
           [
             {
-              "text": "Frame: 03 / 10",
+              "text": "Frame: 03 / 24",
               "width": 117.6,
               "ascent": 629,
               "descent": 157,
@@ -765,8 +792,8 @@
           ],
           [
             {
-              "text": "UFO Pos: x=13, y=10",
-              "width": 159.6,
+              "text": "UFO Pos: x=7, y=10",
+              "width": 151.2,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -813,7 +840,7 @@
       {
         "type": "test-replay-marker",
         "x": 20,
-        "y": 342,
+        "y": 295,
         "w": 680,
         "h": 32,
         "lines": [
@@ -840,7 +867,7 @@
       {
         "type": "p",
         "x": 20,
-        "y": 378,
+        "y": 331,
         "w": 680,
         "h": 8.4,
         "lines": [
@@ -867,11 +894,11 @@
         "x": 20,
         "y": 24,
         "w": 680,
-        "h": 320,
+        "h": 268,
         "lines": [
           [
             {
-              "text": "UFO WAVE TRACK  FRAME 04/10  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "text": "UFO WAVE TRACK  FRAME 04/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
               "width": 579.6,
               "ascent": 629,
               "descent": 157,
@@ -889,8 +916,8 @@
           ],
           [
             {
-              "text": "     t00   t02   t03    t05   t07   t08   t10",
-              "width": 378,
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -898,8 +925,8 @@
           ],
           [
             {
-              "text": "+---+|--+--|+---+|--+---|---+-|-+---|---+-|-+---+---+---+---+-",
-              "width": 520.8,
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -943,8 +970,8 @@
           ],
           [
             {
-              "text": " .      o      +                                         *",
-              "width": 487.2,
+              "text": " .      o      +                                         *      .",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -961,7 +988,7 @@
           ],
           [
             {
-              "text": "      .---.           *      .      o      +",
+              "text": "                      *      .      o      +",
               "width": 369.6,
               "ascent": 629,
               "descent": 157,
@@ -970,8 +997,8 @@
           ],
           [
             {
-              "text": "   .-'-----.-.-.      _.---._",
-              "width": 243.6,
+              "text": "      .---.",
+              "width": 92.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -979,8 +1006,8 @@
           ],
           [
             {
-              "text": " o(____-.-'.....'.-.-'_o___o_`-.                  *      .",
-              "width": 487.2,
+              "text": " o .-'--.-..---.                                  *      .      o",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -988,8 +1015,8 @@
           ],
           [
             {
-              "text": "   `-.-(____-..-'-/__/_______\\__\\",
-              "width": 277.2,
+              "text": "  (__.-'.-'--_.---._",
+              "width": 168,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -997,7 +1024,7 @@
           ],
           [
             {
-              "text": "        `-.'.(____\\--\\_\\_/_/ o/     +",
+              "text": "   `(__(__.-'_o___o_`-.      o      +",
               "width": 310.8,
               "ascent": 629,
               "descent": 157,
@@ -1006,8 +1033,8 @@
           ],
           [
             {
-              "text": "              `-.--`-._____,-'",
-              "width": 252,
+              "text": "     `-.`/__/_______\\__\\",
+              "width": 201.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1015,11 +1042,20 @@
           ],
           [
             {
-              "text": "",
-              "width": 0,
+              "text": "         \\  \\_\\_/_/  /",
+              "width": 184.8,
               "ascent": 629,
               "descent": 157,
-              "fontFamily": ""
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-._____,-'",
+              "width": 176.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
             }
           ],
           [
@@ -1042,7 +1078,7 @@
           ],
           [
             {
-              "text": "Frame: 04 / 10",
+              "text": "Frame: 04 / 24",
               "width": 117.6,
               "ascent": 629,
               "descent": 157,
@@ -1051,7 +1087,7 @@
           ],
           [
             {
-              "text": "UFO Pos: x=18, y=9",
+              "text": "UFO Pos: x=9, y=11",
               "width": 151.2,
               "ascent": 629,
               "descent": 157,
@@ -1099,7 +1135,7 @@
       {
         "type": "test-replay-marker",
         "x": 20,
-        "y": 350,
+        "y": 298,
         "w": 680,
         "h": 32,
         "lines": [
@@ -1126,7 +1162,7 @@
       {
         "type": "p",
         "x": 20,
-        "y": 386,
+        "y": 334,
         "w": 680,
         "h": 8.4,
         "lines": [
@@ -1153,11 +1189,11 @@
         "x": 20,
         "y": 24,
         "w": 680,
-        "h": 328,
+        "h": 271,
         "lines": [
           [
             {
-              "text": "UFO WAVE TRACK  FRAME 05/10  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "text": "UFO WAVE TRACK  FRAME 05/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
               "width": 579.6,
               "ascent": 629,
               "descent": 157,
@@ -1175,8 +1211,8 @@
           ],
           [
             {
-              "text": "     t00   t02   t03    t05   t07   t08   t10",
-              "width": 378,
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1184,8 +1220,8 @@
           ],
           [
             {
-              "text": "+---+|--+--|+---+|--+---|---+-|-+---|---+-|-+---+---+---+---+-",
-              "width": 520.8,
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1229,8 +1265,8 @@
           ],
           [
             {
-              "text": " .      o      +                                         *",
-              "width": 487.2,
+              "text": " .      o      +                                         *      .",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1247,7 +1283,7 @@
           ],
           [
             {
-              "text": "      .---.           *    _.---._  o      +",
+              "text": "                      *      .      o      +",
               "width": 369.6,
               "ascent": 629,
               "descent": 157,
@@ -1256,7 +1292,34 @@
           ],
           [
             {
-              "text": "   .-'-----.-.-.      .-.-'_o___o_`-.",
+              "text": "      .---.",
+              "width": 92.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.                                  *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-_.---._",
+              "width": 184.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-'_o___o_`-.    o      +",
               "width": 310.8,
               "ascent": 629,
               "descent": 157,
@@ -1265,8 +1328,8 @@
           ],
           [
             {
-              "text": " o(____-.-'.....'.-.-'./__/_______\\__\\            *      .",
-              "width": 487.2,
+              "text": "     `-.`(_/__/_______\\__\\",
+              "width": 218.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1274,8 +1337,8 @@
           ],
           [
             {
-              "text": "   `-.-(____-..-'-(____\\.-\\_\\_/_/  /",
-              "width": 302.4,
+              "text": "          `\\.'\\_\\_/_/  /",
+              "width": 201.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1283,29 +1346,11 @@
           ],
           [
             {
-              "text": "        `-.'.(____-`-.'.`-._____,-' +",
-              "width": 310.8,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "              `-.---.-'",
+              "text": "            `-._____,-'",
               "width": 193.2,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "",
-              "width": 0,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": ""
             }
           ],
           [
@@ -1328,7 +1373,7 @@
           ],
           [
             {
-              "text": "Frame: 05 / 10",
+              "text": "Frame: 05 / 24",
               "width": 117.6,
               "ascent": 629,
               "descent": 157,
@@ -1337,8 +1382,8 @@
           ],
           [
             {
-              "text": "UFO Pos: x=23, y=8",
-              "width": 151.2,
+              "text": "UFO Pos: x=11, y=11",
+              "width": 159.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1394,7 +1439,7 @@
       {
         "type": "test-replay-marker",
         "x": 20,
-        "y": 358,
+        "y": 301,
         "w": 680,
         "h": 32,
         "lines": [
@@ -1417,6 +1462,24 @@
             }
           ]
         ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 337,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
       }
     ]
   },
@@ -1430,11 +1493,11 @@
         "x": 20,
         "y": 24,
         "w": 680,
-        "h": 336,
+        "h": 274,
         "lines": [
           [
             {
-              "text": "UFO WAVE TRACK  FRAME 06/10  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "text": "UFO WAVE TRACK  FRAME 06/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
               "width": 579.6,
               "ascent": 629,
               "descent": 157,
@@ -1452,8 +1515,8 @@
           ],
           [
             {
-              "text": "     t00   t02   t03    t05   t07   t08   t10",
-              "width": 378,
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1461,8 +1524,8 @@
           ],
           [
             {
-              "text": "+---+|--+--|+---+|--+---|---+-|-+---|---+-|-+---+---+---+---+-",
-              "width": 520.8,
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1506,71 +1569,8 @@
           ],
           [
             {
-              "text": " .      o      +                                         *",
-              "width": 487.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "                                 _.---._",
-              "width": 336,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "      .---.           *    .--.-'_o___o_`-.+",
-              "width": 369.6,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "   .-'-----.-.-.      .-.-'--/__/_______\\__\\",
-              "width": 369.6,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": " o(____-.-'.....'.-.-'.(____-\\-_\\_\\_/_/  /        *      .",
-              "width": 487.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "   `-.-(____-..-'-(____-`-.---`-._____,-'",
-              "width": 344.4,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "        `-.'.(____-`-.'.'.-' o      +",
-              "width": 310.8,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "              `-.---.-'",
-              "width": 193.2,
+              "text": " .      o      +                                         *      .",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1583,6 +1583,78 @@
               "ascent": 629,
               "descent": 157,
               "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                      *      .      o      +",
+              "width": 369.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.",
+              "width": 92.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.                                  *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-_.---._",
+              "width": 201.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'_o___o_`-.  o      +",
+              "width": 310.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_/__/_______\\__\\",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`\\.-\\_\\_/_/  /",
+              "width": 218.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "              `-._____,-'",
+              "width": 210,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
             }
           ],
           [
@@ -1605,7 +1677,7 @@
           ],
           [
             {
-              "text": "Frame: 06 / 10",
+              "text": "Frame: 06 / 24",
               "width": 117.6,
               "ascent": 629,
               "descent": 157,
@@ -1614,8 +1686,8 @@
           ],
           [
             {
-              "text": "UFO Pos: x=29, y=7",
-              "width": 151.2,
+              "text": "UFO Pos: x=13, y=11",
+              "width": 159.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1632,7 +1704,7 @@
           ],
           [
             {
-              "text": "s5@tick4/p15 -> s6@tick5/p16",
+              "text": "s5@tick4/p15 -> s6@tick5/p15",
               "width": 235.2,
               "ascent": 629,
               "descent": 157,
@@ -1671,7 +1743,7 @@
       {
         "type": "test-replay-marker",
         "x": 20,
-        "y": 366,
+        "y": 304,
         "w": 680,
         "h": 32,
         "lines": [
@@ -1694,6 +1766,24 @@
             }
           ]
         ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 340,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
       }
     ]
   },
@@ -1707,11 +1797,11 @@
         "x": 20,
         "y": 24,
         "w": 680,
-        "h": 344,
+        "h": 277,
         "lines": [
           [
             {
-              "text": "UFO WAVE TRACK  FRAME 07/10  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "text": "UFO WAVE TRACK  FRAME 07/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
               "width": 579.6,
               "ascent": 629,
               "descent": 157,
@@ -1729,8 +1819,8 @@
           ],
           [
             {
-              "text": "     t00   t02   t03    t05   t07   t08   t10",
-              "width": 378,
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1738,8 +1828,8 @@
           ],
           [
             {
-              "text": "+---+|--+--|+---+|--+---|---+-|-+---|---+-|-+---+---+---+---+-",
-              "width": 520.8,
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1783,71 +1873,8 @@
           ],
           [
             {
-              "text": " .      o      +                      _.---._            *",
-              "width": 487.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "                                 .-.-'_o___o_`-.",
-              "width": 403.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "      .---.           *    .--.-'./__/_______\\__\\",
-              "width": 411.6,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "   .-'-----.-.-.      .-.-'--(____\\.-\\_\\_/_/  /",
-              "width": 394.8,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": " o(____-.-'.....'.-.-'.(____--`-.'.`-._____,-'    *      .",
-              "width": 487.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "   `-.-(____-..-'-(____-`-.---.-'",
-              "width": 277.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "        `-.'.(____-`-.'.'.-' o      +",
-              "width": 310.8,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "              `-.---.-'",
-              "width": 193.2,
+              "text": " .      o      +                                         *      .",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1860,6 +1887,78 @@
               "ascent": 629,
               "descent": 157,
               "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                      *      .      o      +",
+              "width": 369.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.",
+              "width": 92.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.                                  *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-._.---._",
+              "width": 226.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-'_o___o_`-.      +",
+              "width": 310.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__/__/_______\\__\\",
+              "width": 260.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-\\'.\\_\\_/_/  /",
+              "width": 243.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                 `-._____,-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
             }
           ],
           [
@@ -1882,7 +1981,7 @@
           ],
           [
             {
-              "text": "Frame: 07 / 10",
+              "text": "Frame: 07 / 24",
               "width": 117.6,
               "ascent": 629,
               "descent": 157,
@@ -1891,8 +1990,8 @@
           ],
           [
             {
-              "text": "UFO Pos: x=34, y=6",
-              "width": 151.2,
+              "text": "UFO Pos: x=16, y=11",
+              "width": 159.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1909,7 +2008,7 @@
           ],
           [
             {
-              "text": "s5@tick4/p15 -> s6@tick5/p16 -> s7@tick6/p16",
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15",
               "width": 369.6,
               "ascent": 629,
               "descent": 157,
@@ -1944,6 +2043,51 @@
             }
           ]
         ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 307,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 8",
+              "width": 108,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 343,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
       }
     ]
   },
@@ -1957,11 +2101,11 @@
         "x": 20,
         "y": 24,
         "w": 680,
-        "h": 352,
+        "h": 280,
         "lines": [
           [
             {
-              "text": "UFO WAVE TRACK  FRAME 08/10  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "text": "UFO WAVE TRACK  FRAME 08/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
               "width": 579.6,
               "ascent": 629,
               "descent": 157,
@@ -1979,8 +2123,8 @@
           ],
           [
             {
-              "text": "     t00   t02   t03    t05   t07   t08   t10",
-              "width": 378,
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -1988,8 +2132,8 @@
           ],
           [
             {
-              "text": "+---+|--+--|+---+|--+---|---+-|-+---|---+-|-+---+---+---+---+-",
-              "width": 520.8,
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2033,71 +2177,8 @@
           ],
           [
             {
-              "text": " .      o      +                      .---._.---._       *",
-              "width": 487.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "                                 .-.-'--.-'_o___o_`-.",
-              "width": 445.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "      .---.           *    .--.-'.(____/__/_______\\__\\",
-              "width": 453.6,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "   .-'-----.-.-.      .-.-'--(____-`-.-\\-.\\_\\_/_/  /",
-              "width": 436.8,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": " o(____-.-'.....'.-.-'.(____--`-.'.'.-' `-._____,-'      .",
-              "width": 487.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "   `-.-(____-..-'-(____-`-.---.-'",
-              "width": 277.2,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "        `-.'.(____-`-.'.'.-' o      +",
-              "width": 310.8,
-              "ascent": 629,
-              "descent": 157,
-              "fontFamily": "Courier"
-            }
-          ],
-          [
-            {
-              "text": "              `-.---.-'",
-              "width": 193.2,
+              "text": " .      o      +                                         *      .",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2110,6 +2191,78 @@
               "ascent": 629,
               "descent": 157,
               "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                      *      .      o      +",
+              "width": 369.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.",
+              "width": 92.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.                                  *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-..-_.---._",
+              "width": 243.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.-'_o___o_`-.    +",
+              "width": 310.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_/__/_______\\__\\",
+              "width": 277.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`\\.-\\_\\_/_/  /",
+              "width": 260.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                   `-._____,-'",
+              "width": 252,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
             }
           ],
           [
@@ -2132,7 +2285,7 @@
           ],
           [
             {
-              "text": "Frame: 08 / 10",
+              "text": "Frame: 08 / 24",
               "width": 117.6,
               "ascent": 629,
               "descent": 157,
@@ -2141,8 +2294,8 @@
           ],
           [
             {
-              "text": "UFO Pos: x=39, y=6",
-              "width": 151.2,
+              "text": "UFO Pos: x=18, y=11",
+              "width": 159.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2159,7 +2312,7 @@
           ],
           [
             {
-              "text": "s5@tick4/p15 -> s6@tick5/p16 -> s7@tick6/p16 -> s8@tick7/p16",
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15",
               "width": 504,
               "ascent": 629,
               "descent": 157,
@@ -2194,6 +2347,51 @@
             }
           ]
         ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 310,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 9",
+              "width": 108,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 346,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
       }
     ]
   },
@@ -2207,11 +2405,11 @@
         "x": 20,
         "y": 24,
         "w": 680,
-        "h": 360,
+        "h": 283,
         "lines": [
           [
             {
-              "text": "UFO WAVE TRACK  FRAME 09/10  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "text": "UFO WAVE TRACK  FRAME 09/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
               "width": 579.6,
               "ascent": 629,
               "descent": 157,
@@ -2229,8 +2427,8 @@
           ],
           [
             {
-              "text": "     t00   t02   t03    t05   t07   t08   t10",
-              "width": 378,
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2238,8 +2436,8 @@
           ],
           [
             {
-              "text": "+---+|--+--|+---+|--+---|---+-|-+---|---+-|-+---+---+---+---+-",
-              "width": 520.8,
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2283,8 +2481,8 @@
           ],
           [
             {
-              "text": " .      o      +                      .---..-.-.         *",
-              "width": 487.2,
+              "text": " .      o      +                                         *      .",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2292,8 +2490,17 @@
           ],
           [
             {
-              "text": "                                 .-.-'--.-'.....'-.",
-              "width": 428.4,
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                      *      .      o      +",
+              "width": 369.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2301,8 +2508,8 @@
           ],
           [
             {
-              "text": "      .---.           *    .--.-'.(____(____-.-___.---._",
-              "width": 470.4,
+              "text": "      .---.",
+              "width": 92.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2310,8 +2517,8 @@
           ],
           [
             {
-              "text": "   .-'-----.-.-.      .-.-'--(____-`-.--`-.'.'.-'_o___o_`-.",
-              "width": 495.6,
+              "text": " o .-'--.-..---.        _.---._                   *      .      o",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2319,8 +2526,8 @@
           ],
           [
             {
-              "text": " o(____-.-'.....'.-.-'.(____--`-.'.'.-'      /__/_______\\__\\",
-              "width": 504,
+              "text": "  (__.-'.-'--.-.-.-...-'_o___o_`-.",
+              "width": 285.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2328,8 +2535,8 @@
           ],
           [
             {
-              "text": "   `-.-(____-..-'-(____-`-.---.-'            \\  \\_\\_/_/  /",
-              "width": 487.2,
+              "text": "   `(__(__.-.-.-'.-./__/_______\\__\\ +",
+              "width": 310.8,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2337,8 +2544,8 @@
           ],
           [
             {
-              "text": "        `-.'.(____-`-.'.'.-' o      +         `-._____,-'",
-              "width": 478.8,
+              "text": "     `-.`(_(_(__(_(_\\__\\_\\_/_/) /",
+              "width": 277.2,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2346,8 +2553,8 @@
           ],
           [
             {
-              "text": "              `-.---.-'",
-              "width": 193.2,
+              "text": "          `-`-`-.`-`-`-._____,-'",
+              "width": 268.8,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2382,7 +2589,7 @@
           ],
           [
             {
-              "text": "Frame: 09 / 10",
+              "text": "Frame: 09 / 24",
               "width": 117.6,
               "ascent": 629,
               "descent": 157,
@@ -2391,8 +2598,8 @@
           ],
           [
             {
-              "text": "UFO Pos: x=45, y=8",
-              "width": 151.2,
+              "text": "UFO Pos: x=20, y=10",
+              "width": 159.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2409,7 +2616,7 @@
           ],
           [
             {
-              "text": "s5@tick4/p15 -> s6@tick5/p16 -> s7@tick6/p16 -> s8@tick7/p16 -> s9@tick8/p16",
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15",
               "width": 638.4,
               "ascent": 629,
               "descent": 157,
@@ -2444,6 +2651,51 @@
             }
           ]
         ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 313,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 10",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 349,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
       }
     ]
   },
@@ -2457,11 +2709,11 @@
         "x": 20,
         "y": 24,
         "w": 680,
-        "h": 368,
+        "h": 286,
         "lines": [
           [
             {
-              "text": "UFO WAVE TRACK  FRAME 10/10  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "text": "UFO WAVE TRACK  FRAME 10/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
               "width": 579.6,
               "ascent": 629,
               "descent": 157,
@@ -2479,8 +2731,8 @@
           ],
           [
             {
-              "text": "     t00   t02   t03    t05   t07   t08   t10",
-              "width": 378,
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2488,8 +2740,8 @@
           ],
           [
             {
-              "text": "+---+|--+--|+---+|--+---|---+-|-+---|---+-|-+---+---+---+---+-",
-              "width": 520.8,
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2533,8 +2785,8 @@
           ],
           [
             {
-              "text": " .      o      +                      .---..-.-.         *",
-              "width": 487.2,
+              "text": " .      o      +                                         *      .",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2542,8 +2794,17 @@
           ],
           [
             {
-              "text": "                                 .-.-'--.-'.....'-.",
-              "width": 428.4,
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                      *      .      o      +",
+              "width": 369.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2551,8 +2812,8 @@
           ],
           [
             {
-              "text": "      .---.           *    .--.-'.(____(____-.-__.---.",
-              "width": 453.6,
+              "text": "      .---.",
+              "width": 92.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2560,8 +2821,8 @@
           ],
           [
             {
-              "text": "   .-'-----.-.-.      .-.-'--(____-`-.--`-.'.'.-'-----_.---._",
-              "width": 512.4,
+              "text": " o .-'--.-..---.        .-_.---._                 *      .      o",
+              "width": 546,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2569,8 +2830,8 @@
           ],
           [
             {
-              "text": " o(____-.-'.....'.-.-'.(____--`-.'.'.-'      (____-.-'_o___o_`",
-              "width": 520.8,
+              "text": "  (__.-'.-'--.-.-.-...-.-'_o___o_`-.",
+              "width": 302.4,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2578,8 +2839,8 @@
           ],
           [
             {
-              "text": "   `-.-(____-..-'-(____-`-.---.-'             `-.-/__/_______\\",
-              "width": 520.8,
+              "text": "   `(__(__.-.-.-'.-.(_/__/_______\\__\\",
+              "width": 310.8,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2587,8 +2848,8 @@
           ],
           [
             {
-              "text": "        `-.'.(____-`-.'.'.-' o      +             \\  \\_\\_/_/",
-              "width": 504,
+              "text": "     `-.`(_(_(__(_(__`\\.-\\_\\_/_/  /",
+              "width": 294,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2596,8 +2857,8 @@
           ],
           [
             {
-              "text": "              `-.---.-'                            `-._____,-'",
-              "width": 520.8,
+              "text": "          `-`-`-.`-`-.'`-._____,-'",
+              "width": 285.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2632,7 +2893,7 @@
           ],
           [
             {
-              "text": "Frame: 10 / 10",
+              "text": "Frame: 10 / 24",
               "width": 117.6,
               "ascent": 629,
               "descent": 157,
@@ -2641,8 +2902,8 @@
           ],
           [
             {
-              "text": "UFO Pos: x=50, y=9",
-              "width": 151.2,
+              "text": "UFO Pos: x=22, y=10",
+              "width": 159.6,
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
@@ -2659,7 +2920,7 @@
           ],
           [
             {
-              "text": "s5@tick4/p15 -> s6@tick5/p16 -> s7@tick6/p16 -> s8@tick7/p16 -> s9@tick8/p16 ",
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
               "width": 646.8,
               "ascent": 629,
               "descent": 157,
@@ -2668,7 +2929,7 @@
           ],
           [
             {
-              "text": "-> s10@tick9/p16",
+              "text": "-> s10@tick9/p15",
               "width": 134.4,
               "ascent": 629,
               "descent": 157,
@@ -2700,6 +2961,4604 @@
               "ascent": 629,
               "descent": 157,
               "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 316,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 11",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 352,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 289,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 11/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 11 / 11",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                      *      .      o      +",
+              "width": 369.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  _.---._",
+              "width": 302.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-'_o___o_`-.           *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-/__/_______\\__\\",
+              "width": 336,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(__\\_-\\_\\_/_/ +/",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.`-._____,-'",
+              "width": 310.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 10 | Current Tick: 10",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 11 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=25, y=9",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 11",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 319,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 12",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 355,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 292,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 12/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 12 / 12",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                      *      .      o      +",
+              "width": 369.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  .-_.---._",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.-'_o___o_`-.         *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_/__/_______\\__\\",
+              "width": 352.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`\\.-\\_\\_/_/  /",
+              "width": 336,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.`-._____,-'",
+              "width": 327.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 11 | Current Tick: 11",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 12 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=27, y=9",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15",
+              "width": 436.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 12",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 322,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 13",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 358,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 295,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 13/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 13 / 13",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   _.---._   +",
+              "width": 369.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-'_o___o_`-.",
+              "width": 361.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-./__/_______\\__\\      *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(_\\__\\_\\_/_/) /",
+              "width": 352.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-`-._____,-'",
+              "width": 344.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 12 | Current Tick: 12",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 13 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=29, y=8",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15",
+              "width": 588,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 13",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 325,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 14",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 361,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 298,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 14/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 14 / 14",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-_.---._ +",
+              "width": 369.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-'_o___o_`-.",
+              "width": 378,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_/__/_______\\__\\    *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`\\.-\\_\\_/_/  /",
+              "width": 369.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'`-._____,-'",
+              "width": 361.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 13 | Current Tick: 13",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 14 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=31, y=8",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 14",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 328,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 15",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 364,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 301,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 15/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 15 / 15",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                                      _.---._",
+              "width": 378,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-.-'_o___o_`-.",
+              "width": 403.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-/__/_______\\__\\",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_(__\\_-\\_\\_/_/  /   *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`-`-.`-._____,-'",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'.'.-'",
+              "width": 310.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 14 | Current Tick: 14",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 15 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=34, y=7",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15 -> s15@tick14/p15",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 15",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 331,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 16",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 367,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 304,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 16/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 16 / 16",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                                      .-_.---._",
+              "width": 394.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-.-.-'_o___o_`-.",
+              "width": 420,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-(_/__/_______\\__\\",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_(___`\\.-\\_\\_/_/  / *      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`-`-.'.`-._____,-'",
+              "width": 403.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'.'.-'",
+              "width": 310.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 15 | Current Tick: 15",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 16 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=36, y=7",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15 -> s15@tick14/p15 -> s16@tick15/p15",
+              "width": 420,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 16",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 334,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 17",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 370,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 307,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 17/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 17 / 17",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                                      .-.-_.---._",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-.-.-.-'_o___o_`-.",
+              "width": 436.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-(_(_/__/_______\\__\\",
+              "width": 445.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_(___`-`\\.'\\_\\_/_/  /      .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`-`-.'.'.`-._____,-'",
+              "width": 420,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'.'.-'",
+              "width": 310.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 16 | Current Tick: 16",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 17 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=38, y=7",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15 -> s15@tick14/p15 -> s16@tick15/p15 -> s17@tick16/p15",
+              "width": 571.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 17",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 337,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 18",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 373,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 310,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 18/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 18 / 18",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                                      .-.-.-_.---._",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-.-.-.-.-'_o___o_`-.",
+              "width": 453.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-(_(_(_/__/_______\\__\\",
+              "width": 462,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_(___`-`-`\\.-\\_\\_/_/* /    .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`-`-.'.'.-'`-._____,-'",
+              "width": 436.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'.'.-'",
+              "width": 310.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 17 | Current Tick: 17",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 18 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=40, y=7",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15 -> s15@tick14/p15 -> s16@tick15/p15 -> s17@tick16/p15 -> ",
+              "width": 604.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s18@tick17/p15",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 18",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 340,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 19",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 376,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 313,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 19/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 19 / 19",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                                      .-.-.-.-._.---._",
+              "width": 453.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-.-.-.-.-'.-'_o___o_`-.",
+              "width": 478.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-(_(_(_(__/__/_______\\__\\",
+              "width": 487.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_(___`-`-`-`-\\'.\\_\\_/_/  / .      o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`-`-.'.'.-'   `-._____,-'",
+              "width": 462,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'.'.-'",
+              "width": 310.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 18 | Current Tick: 18",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 19 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=43, y=7",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15 -> s15@tick14/p15 -> s16@tick15/p15 -> s17@tick16/p15 -> ",
+              "width": 604.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s18@tick17/p15 -> s19@tick18/p15",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 19",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 343,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 20",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 379,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 316,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 20/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 20 / 20",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                                      .-.-.-.-..---.",
+              "width": 436.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-.-.-.-.-'.-'--_.---._",
+              "width": 470.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-(_(_(_(__(__.-'_o___o_`-.",
+              "width": 495.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_(___`-`-`-`-.`/__/_______\\__\\    o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`-`-.'.'.-'    \\  \\_\\_/_/  /",
+              "width": 487.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'.'.-'         `-._____,-'",
+              "width": 478.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 19 | Current Tick: 19",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 20 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=45, y=8",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15 -> s15@tick14/p15 -> s16@tick15/p15 -> s17@tick16/p15 -> ",
+              "width": 604.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s18@tick17/p15 -> s19@tick18/p15 -> s20@tick19/p15",
+              "width": 420,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 20",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 346,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 21",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 382,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 319,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 21/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 21 / 21",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                                      .-.-.-.-..---.",
+              "width": 436.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-.-.-.-.-'.-'--.-_.---._",
+              "width": 487.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-(_(_(_(__(__.-.-'_o___o_`-.",
+              "width": 512.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_(___`-`-`-`-.`(_/__/_______\\__\\  o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`-`-.'.'.-'     `\\.'\\_\\_/_/  /",
+              "width": 504,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'.'.-'           `-._____,-'",
+              "width": 495.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 20 | Current Tick: 20",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 21 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=47, y=8",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15 -> s15@tick14/p15 -> s16@tick15/p15 -> s17@tick16/p15 -> ",
+              "width": 604.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s18@tick17/p15 -> s19@tick18/p15 -> s20@tick19/p15 -> s21@tick20/p15",
+              "width": 571.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 21",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 349,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 22",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 385,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 322,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 22/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 22 / 22",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                                      .-.-.-.-..---.",
+              "width": 436.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-.-.-.-.-'.-'--.-.---.",
+              "width": 470.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-(_(_(_(__(__.-.-'--_.---._",
+              "width": 504,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_(___`-`-`-`-.`(_(__.-'_o___o_`-. o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`-`-.'.'.-'     `-`/__/_______\\__\\",
+              "width": 537.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'.'.-'            \\  \\_\\_/_/  /",
+              "width": 520.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'                  `-._____,-'",
+              "width": 512.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'",
+              "width": 235.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 21 | Current Tick: 21",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 22 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=49, y=9",
+              "width": 151.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15 -> s15@tick14/p15 -> s16@tick15/p15 -> s17@tick16/p15 -> ",
+              "width": 604.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s18@tick17/p15 -> s19@tick18/p15 -> s20@tick19/p15 -> s21@tick20/p15 -> ",
+              "width": 604.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s22@tick21/p15",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 22",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 352,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 23",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 388,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 325,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 23/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 23 / 23",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                                      .-.-.-.-..---.",
+              "width": 436.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-.-.-.-.-'.-'--.-.---.",
+              "width": 470.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-(_(_(_(__(__.-.-'--.-.-..",
+              "width": 495.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_(___`-`-`-`-.`(_(__.-'..._.---._ o",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`-`-.'.'.-'     `-`(___.-'_o___o_`-.",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'.'.-'             `-/__/_______\\__",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'                    \\  \\_\\_/_/  /",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'                         `-._____,-'",
+              "width": 537.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 22 | Current Tick: 22",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 23 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=52, y=10",
+              "width": 159.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15 -> s15@tick14/p15 -> s16@tick15/p15 -> s17@tick16/p15 -> ",
+              "width": 604.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s18@tick17/p15 -> s19@tick18/p15 -> s20@tick19/p15 -> s21@tick20/p15 -> ",
+              "width": 604.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s22@tick21/p15 -> s23@tick22/p15",
+              "width": 268.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 23",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 355,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 24",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 20,
+        "y": 391,
+        "w": 680,
+        "h": 8.4,
+        "lines": [
+          [
+            {
+              "text": "telemetry ballast keeps a committed downstream region available for replay",
+              "width": 355.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "width": 720,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "test-clock-cooking",
+        "x": 20,
+        "y": 24,
+        "w": 680,
+        "h": 328,
+        "lines": [
+          [
+            {
+              "text": "UFO WAVE TRACK  FRAME 24/24  [DOS FLIPBOOK MODE]  [DOS FLIPBOOK MODE]",
+              "width": 579.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "State: settled | Ticks Cooked: 24 / 24",
+              "width": 319.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     t00    t04    t08    t12   t16    t20    t24",
+              "width": 411.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "+---+|--+---|---+--|+---+-|-+---|---+--|+---+-|-+---+---+---+---+-",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "                             *      .      o      +",
+              "width": 428.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": " .      o      +                                         *      .",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                                      .-.-.-.-..---.",
+              "width": 436.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "                      *      .   .-.-.-.-.-'.-'--.-.---.",
+              "width": 470.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "      .---.                  ..-.-(_(_(_(__(__.-.-'--.-.-..",
+              "width": 495.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": " o .-'--.-..---.        .-.-.(_(___`-`-`-`-.`(_(__.-'....-_.---._",
+              "width": 546,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "  (__.-'.-'--.-.-.-...-.-(_(__`-`-.'.'.-'     `-`(___.-.-'_o___o_`",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "   `(__(__.-.-.-'.-.(_(___`-`-.'.'.-'             `-(_/__/_______\\",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "     `-.`(_(_(__(_(__`-`-.'.'.-'                     `\\.-\\_\\_/_/",
+              "width": 537.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "          `-`-`-.`-`-.'.'.-'                           `-._____,-'",
+              "width": 554.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Kernel Tick: 23 | Current Tick: 23",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Frame: 24 / 24",
+              "width": 117.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "UFO Pos: x=54, y=10",
+              "width": 159.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Stage Log: s1@tick0/p15 -> s2@tick1/p15 -> s3@tick2/p15 -> s4@tick3/p15 -> ",
+              "width": 630,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s5@tick4/p15 -> s6@tick5/p15 -> s7@tick6/p15 -> s8@tick7/p15 -> s9@tick8/p15 ",
+              "width": 646.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "-> s10@tick9/p15 -> s11@tick10/p15 -> s12@tick11/p15 -> s13@tick12/p15 -> ",
+              "width": 621.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s14@tick13/p15 -> s15@tick14/p15 -> s16@tick15/p15 -> s17@tick16/p15 -> ",
+              "width": 604.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s18@tick17/p15 -> s19@tick18/p15 -> s20@tick19/p15 -> s21@tick20/p15 -> ",
+              "width": 604.8,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "s22@tick21/p15 -> s23@tick22/p15 -> s24@tick23/p15",
+              "width": 420,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Signals: pagination:finalized x 24",
+              "width": 285.6,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Mode: SETTLED | Path: WAVY | Render: DOS/ASCII",
+              "width": 386.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ],
+          [
+            {
+              "text": "Legend: ghost=past committed state | arrows=motion | bright=final capture",
+              "width": 613.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": "Courier"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "test-replay-marker",
+        "x": 20,
+        "y": 358,
+        "w": 680,
+        "h": 32,
+        "lines": [
+          [
+            {
+              "text": "DOWNSTREAM REPLAY",
+              "width": 122.4,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Render Count: 25",
+              "width": 115.2,
+              "ascent": 629,
+              "descent": 157,
+              "fontFamily": ""
             }
           ]
         ]

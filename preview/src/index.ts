@@ -88,9 +88,48 @@ export type SvgExportOptions = {
     textMode?: 'glyph-path' | 'text';
 };
 
+export type PreviewLayoutSnapshotTextFragment = {
+    text: string;
+    width?: number;
+    ascent?: number;
+    descent?: number;
+    fontFamily?: string;
+};
+
+export type PreviewLayoutSnapshotBox = {
+    type: string;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    style?: {
+        backgroundColor?: string;
+        borderColor?: string;
+        color?: string;
+        borderWidth?: number;
+    };
+    lines?: PreviewLayoutSnapshotTextFragment[][];
+    meta?: {
+        sourceId?: string;
+        engineKey?: string;
+        sourceType?: string;
+        fragmentIndex?: number;
+        isContinuation?: boolean;
+        pageIndex?: number;
+    };
+};
+
+export type PreviewLayoutSnapshotPage = {
+    index: number;
+    width: number;
+    height: number;
+    boxes: PreviewLayoutSnapshotBox[];
+};
+
 export type PreviewSession = {
     getPageCount(): number;
     getPageSize(): { width: number; height: number };
+    getLayoutSnapshotPages(): PreviewLayoutSnapshotPage[];
     isDestroyed(): boolean;
     renderPageToCanvas(pageIndex: number, target: CanvasTarget, options?: RenderPageToCanvasOptions): Promise<void>;
     exportPdf(): Promise<Uint8Array>;
@@ -412,6 +451,44 @@ class PreviewSessionImpl implements PreviewSession {
         this.assertActive('getPageSize');
         this.assertHasDocument('getPageSize');
         return this.pageSize;
+    }
+
+    getLayoutSnapshotPages(): PreviewLayoutSnapshotPage[] {
+        this.assertActive('getLayoutSnapshotPages');
+        this.assertHasDocument('getLayoutSnapshotPages');
+        return (this.layoutPages || []).map((page: any) => ({
+            index: Number(page.index || 0),
+            width: Number(page.width || 0),
+            height: Number(page.height || 0),
+            boxes: (page.boxes || []).map((box: any) => ({
+                type: String(box.type || ''),
+                x: Number(box.x || 0),
+                y: Number(box.y || 0),
+                w: Number(box.w || 0),
+                h: Number(box.h || 0),
+                style: {
+                    backgroundColor: typeof box.style?.backgroundColor === 'string' ? box.style.backgroundColor : undefined,
+                    borderColor: typeof box.style?.borderColor === 'string' ? box.style.borderColor : undefined,
+                    color: typeof box.style?.color === 'string' ? box.style.color : undefined,
+                    borderWidth: Number(box.style?.borderWidth || 0) || undefined
+                },
+                meta: {
+                    sourceId: typeof box.meta?.sourceId === 'string' ? box.meta.sourceId : '',
+                    engineKey: typeof box.meta?.engineKey === 'string' ? box.meta.engineKey : '',
+                    sourceType: typeof box.meta?.sourceType === 'string' ? box.meta.sourceType : '',
+                    fragmentIndex: Number(box.meta?.fragmentIndex || 0),
+                    isContinuation: Boolean(box.meta?.isContinuation),
+                    pageIndex: Number(box.meta?.pageIndex || 0)
+                },
+                lines: (box.lines || []).map((line: any[]) => (line || []).map((segment: any) => ({
+                    text: String(segment.text || ''),
+                    width: Number(segment.width || 0),
+                    ascent: Number(segment.ascent || 0),
+                    descent: Number(segment.descent || 0),
+                    fontFamily: String(segment.fontFamily || '')
+                })))
+            }))
+        }));
     }
 
     isDestroyed(): boolean {

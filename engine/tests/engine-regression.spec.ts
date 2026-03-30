@@ -2249,6 +2249,16 @@ async function run() {
             assert.match(replayMarkerText, /Render Count:\s*11/, 'clock cooking board should replay downstream content across the cooked ticks');
             assert.equal(reader.progression?.policy, 'fixed-tick-count', 'clock cooking board should run through the restored fixed-tick progression path');
             assert.equal(reader.progression?.finalTick, 10, 'clock cooking board should capture at tick 10');
+            const timeline = reader.require(simulationArtifactKeys.temporalPresentationTimeline);
+            assert.ok(timeline.length >= 2, 'clock cooking board should publish a temporal presentation timeline');
+            assert.equal(timeline.at(-1)?.tick, 10, 'clock cooking board timeline should end at the final cooked tick');
+            assert.ok((timeline.at(-1)?.pages?.[0]?.boxes?.length || 0) > 0, 'clock cooking board timeline should preserve settled page snapshots');
+            assert.ok(
+                timeline.some((frame: any) => (frame.pages || []).some((page: any) =>
+                    (page.boxes || []).some((box: any) => String(box.engineKey || '').length > 0 && String(box.sourceId || '').length > 0)
+                )),
+                'clock cooking board timeline should preserve stable box identifiers for later interpolation work'
+            );
         }
     );
 
@@ -3198,6 +3208,122 @@ async function run() {
             assert.match(lastText, /UFO WAVE TRACK\s+FRAME 10\/10/, 'saucer flipbook board should preserve the last frame title');
             assert.match(lastText, /Ticks Cooked:\s*10\s*\/\s*10/, 'saucer flipbook board should settle the last frame at ten cooked ticks');
             assert.match(lastText, /DOS FLIPBOOK MODE/, 'saucer flipbook board should expose the historical flipbook mode banner');
+        }
+    );
+
+    await _checkAsync(
+        'async thought board',
+        'a delayed external thought should keep pending state, resolve later, and preserve both states in the temporal presentation timeline',
+        async () => {
+            const engine = createReactiveProofEngine();
+            const pages = await engine.simulateAsync([
+                {
+                    type: 'test-async-thought',
+                    content: '',
+                    properties: {
+                        sourceId: 'async-thought-probe',
+                        _asyncThought: {
+                            title: 'Thought Lobe A',
+                            pendingLabel: 'Thinking...',
+                            resolvedLabel: 'Resolved: delayed insight committed.',
+                            delayMs: 25,
+                            baseHeight: 72,
+                            resolvedHeight: 132,
+                            geometryOnResolve: true
+                        }
+                    }
+                },
+                {
+                    type: 'test-replay-marker',
+                    content: '',
+                    properties: {
+                        sourceId: 'async-thought-probe-downstream',
+                        _testReplayMarker: {
+                            title: 'Downstream Region',
+                            height: 44
+                        }
+                    }
+                }
+            ] as any, { timeoutMs: 1500, maxAsyncReplayPasses: 4 });
+
+            const reader = engine.getLastSimulationReportReader();
+            const asyncSummary = reader.require(simulationArtifactKeys.asyncThoughtSummary);
+            const timeline = reader.require(simulationArtifactKeys.temporalPresentationTimeline);
+            const finalThoughtBox = (pages.flatMap((page: any) => page.boxes || []).find((box: any) =>
+                String(box.meta?.sourceId || '').endsWith('async-thought-probe')
+            ));
+            const finalText = flattenBoxText(finalThoughtBox);
+
+            assert.ok(asyncSummary.some((entry: any) => entry?.state === 'completed'), 'async thought board should complete at least one thought job');
+            assert.match(finalText, /Resolved: delayed insight committed\./, 'async thought board should render resolved thought text');
+            assert.ok(timeline.length >= 2, 'async thought board should preserve both pending and resolved captures');
+            const firstFrameText = timeline[0]?.pages?.flatMap((page: any) => page.boxes || []).find((box: any) =>
+                String(box.sourceId || '').endsWith('async-thought-probe')
+            )?.lines?.flatMap((line: any[]) => line || []).map((segment: any) => String(segment.text || '')).join('');
+            const lastFrameText = timeline.at(-1)?.pages?.flatMap((page: any) => page.boxes || []).find((box: any) =>
+                String(box.sourceId || '').endsWith('async-thought-probe')
+            )?.lines?.flatMap((line: any[]) => line || []).map((segment: any) => String(segment.text || '')).join('');
+            assert.match(String(firstFrameText || ''), /Thinking/, 'async thought board should start in a pending state');
+            assert.match(String(lastFrameText || ''), /Resolved/, 'async thought board should end in a resolved state');
+        }
+    );
+
+    await _checkAsync(
+        'streaming thought board',
+        'a staged async thought should preserve intermediate committed states as the thought unfolds over multiple replay passes',
+        async () => {
+            const engine = createReactiveProofEngine();
+            const pages = await engine.simulateAsync([
+                {
+                    type: 'test-async-thought',
+                    content: '',
+                    properties: {
+                        sourceId: 'streaming-thought-probe',
+                        _asyncThought: {
+                            title: 'Thought Lobe Stream',
+                            pendingLabel: 'Listening...',
+                            baseHeight: 68,
+                            resolvedHeight: 150,
+                            geometryOnResolve: true,
+                            stages: [
+                                { label: 'Stage 1: contact established.', delayMs: 20, height: 80 },
+                                { label: 'Stage 2: pattern recognized.', delayMs: 20, height: 102 },
+                                { label: 'Stage 3: committed insight arrives.', delayMs: 20, height: 142 }
+                            ]
+                        }
+                    }
+                },
+                {
+                    type: 'test-replay-marker',
+                    content: '',
+                    properties: {
+                        sourceId: 'streaming-thought-probe-downstream',
+                        _testReplayMarker: {
+                            title: 'Downstream Region',
+                            height: 44
+                        }
+                    }
+                }
+            ] as any, { timeoutMs: 1500, maxAsyncReplayPasses: 8 });
+
+            const reader = engine.getLastSimulationReportReader();
+            const asyncSummary = reader.require(simulationArtifactKeys.asyncThoughtSummary);
+            const timeline = reader.require(simulationArtifactKeys.temporalPresentationTimeline);
+            const finalThoughtBox = pages.flatMap((page: any) => page.boxes || []).find((box: any) =>
+                String(box.meta?.sourceId || '').endsWith('streaming-thought-probe')
+            );
+            const finalText = flattenBoxText(finalThoughtBox);
+            const timelineThoughtTexts = timeline.map((frame: any) =>
+                frame?.pages?.flatMap((page: any) => page.boxes || []).find((box: any) =>
+                    String(box.sourceId || '').endsWith('streaming-thought-probe')
+                )?.lines?.flatMap((line: any[]) => line || []).map((segment: any) => String(segment.text || '')).join('') || ''
+            );
+
+            assert.ok(asyncSummary.filter((entry: any) => entry?.state === 'completed').length >= 3, 'streaming thought board should complete each staged thought job');
+            assert.ok(timeline.length >= 4, 'streaming thought board should preserve pending plus intermediate staged captures');
+            assert.ok(timelineThoughtTexts.some((text: string) => /Stage 1: contact established\./.test(text)), 'streaming thought board should capture the first stage');
+            assert.ok(timelineThoughtTexts.some((text: string) => /Stage 2: pattern recognized\./.test(text)), 'streaming thought board should capture the second stage');
+            assert.match(finalText, /Stage 3: committed insight arrives\./, 'streaming thought board should finish on the final stage text');
         }
     );
 

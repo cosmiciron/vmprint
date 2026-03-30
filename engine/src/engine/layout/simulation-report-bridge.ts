@@ -51,7 +51,9 @@ export class SimulationReportBridge {
             pageSpatialConstraintSummary: publishedArtifacts.get(simulationArtifactKeys.pageSpatialConstraintSummary) as SimulationArtifactMap['pageSpatialConstraintSummary'],
             pageRegionSummary: publishedArtifacts.get(simulationArtifactKeys.pageRegionSummary) as SimulationArtifactMap['pageRegionSummary'],
             sourcePositionMap: publishedArtifacts.get(simulationArtifactKeys.sourcePositionMap) as SimulationArtifactMap['sourcePositionMap'],
-            headingTelemetry: publishedArtifacts.get(simulationArtifactKeys.headingTelemetry) as SimulationArtifactMap['headingTelemetry']
+            headingTelemetry: publishedArtifacts.get(simulationArtifactKeys.headingTelemetry) as SimulationArtifactMap['headingTelemetry'],
+            asyncThoughtSummary: publishedArtifacts.get(simulationArtifactKeys.asyncThoughtSummary) as SimulationArtifactMap['asyncThoughtSummary'],
+            temporalPresentationTimeline: publishedArtifacts.get(simulationArtifactKeys.temporalPresentationTimeline) as SimulationArtifactMap['temporalPresentationTimeline']
         };
 
         for (const [key, value] of publishedArtifacts.entries()) {

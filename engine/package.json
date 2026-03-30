@@ -46,6 +46,8 @@
     "proof:collector": "tsx --conditions tsx tests/proofs/generate-reactive-collector-board.ts",
     "proof:geometry": "tsx --conditions tsx tests/proofs/generate-reactive-geometry-board.ts",
     "proof:saucer": "tsx --conditions tsx tests/proofs/generate-saucer-flipbook.ts",
+    "proof:async-thought": "tsx --conditions tsx tests/proofs/generate-async-thought-board.ts",
+    "proof:streaming-thought": "tsx --conditions tsx tests/proofs/generate-streaming-thought-board.ts",
     "test": "npm run test:modules && npm run test:flat && npm run test:scripting && npm run test:strip && npm run test:standard-fonts && npm run test:spatial-ir && npm run test:engine"
   },
   "dependencies": {

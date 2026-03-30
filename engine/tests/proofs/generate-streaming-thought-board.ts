@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { LayoutEngine } from '../../src/engine/layout-engine';
 import { Renderer } from '../../src/engine/renderer';
 import { createEngineRuntime } from '../../src/engine/runtime';
-import type { Element, LayoutConfig, Page } from '../../src/engine/types';
 import { simulationArtifactKeys } from '../../src/engine/layout/simulation-report';
+import type { Element, LayoutConfig, Page } from '../../src/engine/types';
 import { loadLocalFontManager, snapshotPages } from '../harness/engine-harness';
 import { reactiveProofPackagerFactory } from '../support/reactive-proof-packager-factory';
 
@@ -43,8 +43,8 @@ const DEFAULT_OUTPUT_DIR = path.resolve(SCRIPT_DIR, '..', 'output', 'proofs');
 function buildConfig(): LayoutConfig {
     return {
         layout: {
-            pageSize: { width: 420, height: 320 },
-            margins: { top: 24, right: 24, bottom: 24, left: 24 },
+            pageSize: { width: 560, height: 400 },
+            margins: { top: 20, right: 20, bottom: 20, left: 20 },
             fontFamily: 'Arimo',
             fontSize: 12,
             lineHeight: 1.2
@@ -63,130 +63,99 @@ function buildConfig(): LayoutConfig {
     };
 }
 
-function longParagraph(seed: string): string {
-    return `${seed} `.repeat(6).trim();
-}
-
-type CollectorPublisherSpec = {
-    id: string;
-    label: string;
-    pastelBackground: string;
-    pastelBorder: string;
-    pastelText: string;
-};
-
-const COLLECTOR_PUBLISHERS: CollectorPublisherSpec[] = [
-    { id: 'one', label: 'Chapter 1: Signal Fire', pastelBackground: '#dbeafe', pastelBorder: '#2563eb', pastelText: '#1e3a8a' },
-    { id: 'two', label: 'Chapter 2: Echo Valley', pastelBackground: '#fef3c7', pastelBorder: '#d97706', pastelText: '#92400e' },
-    { id: 'three', label: 'Chapter 3: Lantern Shore', pastelBackground: '#e0f2fe', pastelBorder: '#0891b2', pastelText: '#155e75' }
-];
-
-function buildCollectorPublisherSection(spec: CollectorPublisherSpec): Element[] {
+function buildElements(): Element[] {
     return [
         {
-            type: 'test-signal-publisher',
-            content: `Heading Publisher\n${spec.label}`,
-            properties: {
-                sourceId: `collector-visual-publisher-${spec.id}`,
-                style: {
-                    height: 82,
-                    marginBottom: 10,
-                    paddingTop: 10,
-                    paddingRight: 10,
-                    paddingBottom: 10,
-                    paddingLeft: 10,
-                    backgroundColor: spec.pastelBackground,
-                    borderColor: spec.pastelBorder,
-                    borderWidth: 2,
-                    color: spec.pastelText,
-                    fontWeight: 700
-                },
-                _actorSignalPublish: {
-                    topic: 'collector-entry',
-                    payload: { label: spec.label }
-                }
-            }
-        },
-        {
-            type: 'p',
-            content: longParagraph(`${spec.label} filler text keeps the collector test moving forward.`),
-            properties: {
-                sourceId: `collector-visual-filler-${spec.id}`,
-                style: {
-                    marginBottom: 10,
-                    paddingTop: 8,
-                    paddingRight: 8,
-                    paddingBottom: 8,
-                    paddingLeft: 8,
-                    backgroundColor: spec.pastelBackground,
-                    borderColor: spec.pastelBorder,
-                    borderWidth: 1,
-                    color: spec.pastelText
-                }
-            }
-        }
-    ];
-}
-
-function buildElements(): Element[] {
-    const elements: Element[] = [
-        {
             type: 'chapter-heading',
-            content: 'Synthetic Collector Visual Proof',
+            content: 'Streaming Thought Board',
             properties: {
-                sourceId: 'collector-visual-heading',
+                sourceId: 'streaming-thought-heading',
                 style: {
                     textAlign: 'center',
                     fontWeight: 700,
                     fontSize: 18,
                     marginTop: 0,
-                    marginBottom: 18
+                    marginBottom: 16
                 }
             }
         },
         {
             type: 'p',
-            content: 'This proof document shows a synthetic TOC-like collector built entirely from proof actors. The collector gathers labels from several publishers, grows into a numbered list, and pushes trailing body text downward.',
-            properties: { sourceId: 'collector-visual-intro' }
-        }
-    ];
-
-    for (const spec of COLLECTOR_PUBLISHERS) {
-        elements.push(...buildCollectorPublisherSection(spec));
-    }
-
-    elements.push(
+            content: 'This board proves that a delayed thought can unfold in many small committed stages instead of appearing all at once.',
+            properties: { sourceId: 'streaming-thought-intro' }
+        },
         {
-            type: 'test-signal-observer',
+            type: 'test-async-thought',
             content: '',
             properties: {
-                sourceId: 'collector-visual-observer',
-                style: {
-                    marginTop: 12,
-                    marginBottom: 12
-                },
-                _actorSignalObserve: {
-                    topic: 'collector-entry',
-                    title: 'Synthetic Collector',
-                    renderMode: 'collector-list',
-                    backgroundColor: '#f8fafc',
-                    borderColor: '#475569',
-                    color: '#0f172a',
-                    baseHeight: 100,
-                    growthPerSignal: 34
+                sourceId: 'streaming-thought-actor',
+                style: { marginTop: 8, marginBottom: 10 },
+                _asyncThought: {
+                    title: 'Thought Lobe Stream',
+                    pendingLabel: 'Listening for an external chain of thought...',
+                    baseHeight: 68,
+                    resolvedHeight: 160,
+                    geometryOnResolve: true,
+                    stages: [
+                        {
+                            label: 'Stage 1: contact.',
+                            delayMs: 320,
+                            height: 74
+                        },
+                        {
+                            label: 'Stage 2: contact established.',
+                            delayMs: 320,
+                            height: 82
+                        },
+                        {
+                            label: 'Stage 3: contact established, signal stabilizing.',
+                            delayMs: 320,
+                            height: 92
+                        },
+                        {
+                            label: 'Stage 4: contact established, signal stabilizing, pattern recognized.',
+                            delayMs: 320,
+                            height: 106
+                        },
+                        {
+                            label: 'Stage 5: contact established, signal stabilizing, pattern recognized, confidence rising.',
+                            delayMs: 320,
+                            height: 122
+                        },
+                        {
+                            label: 'Stage 6: contact established, signal stabilizing, pattern recognized, confidence rising, committed insight arrives.',
+                            delayMs: 320,
+                            height: 138
+                        },
+                        {
+                            label: 'Stage 7: contact established, signal stabilizing, pattern recognized, confidence rising, committed insight arrives, geometry makes room.',
+                            delayMs: 320,
+                            height: 150
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            type: 'test-replay-marker',
+            content: '',
+            properties: {
+                sourceId: 'streaming-thought-downstream',
+                _testReplayMarker: {
+                    title: 'Downstream Region\nShould keep shifting as thought streams in',
+                    backgroundColor: '#dbeafe',
+                    borderColor: '#2563eb',
+                    color: '#1e3a8a',
+                    height: 60
                 }
             }
         },
         {
             type: 'p',
-            content: longParagraph('Trailing aftermath text should appear only after the collector has finished claiming space, proving that the collector has real spatial consequence in ordinary flow.'),
-            properties: {
-                sourceId: 'collector-visual-aftermath'
-            }
+            content: 'The world slice should preserve each intermediate stage so playback can show thought becoming geometry over time, not merely jumping from pending to done.',
+            properties: { sourceId: 'streaming-thought-outro' }
         }
-    );
-
-    return elements;
+    ];
 }
 
 function resolveArg(flag: string): string | undefined {
@@ -217,14 +186,14 @@ async function maybeRenderPdf(pages: Page[], config: LayoutConfig, outputPath: s
         await outputStream.waitForFinish();
         return true;
     } catch (error) {
-        console.warn(`[generate-reactive-collector-board] PDF skipped: ${error instanceof Error ? error.message : String(error)}`);
+        console.warn(`[generate-streaming-thought-board] PDF skipped: ${error instanceof Error ? error.message : String(error)}`);
         return false;
     }
 }
 
 async function main(): Promise<void> {
     const outputDir = path.resolve(resolveArg('--output-dir') || DEFAULT_OUTPUT_DIR);
-    const outputBase = path.join(outputDir, 'reactive-collector-board');
+    const outputBase = path.join(outputDir, 'streaming-thought-board');
     const snapshotPath = path.resolve(resolveArg('--snapshot') || `${outputBase}.pages.json`);
     const timelinePath = path.resolve(resolveArg('--timeline') || `${outputBase}.timeline.json`);
     const pdfPath = path.resolve(resolveArg('--pdf') || `${outputBase}.pdf`);
@@ -241,23 +210,23 @@ async function main(): Promise<void> {
     engine.setPackagerFactory(reactiveProofPackagerFactory);
     await engine.waitForFonts();
 
-    const pages = engine.simulate(buildElements());
+    const pages = await engine.simulateAsync(buildElements(), { timeoutMs: 5000, maxAsyncReplayPasses: 12 });
     const timeline = engine.getLastSimulationReportReader().get(simulationArtifactKeys.temporalPresentationTimeline) as unknown[] || [];
     fs.writeFileSync(snapshotPath, JSON.stringify(snapshotPages(pages), null, 2) + '\n', 'utf8');
     fs.writeFileSync(timelinePath, JSON.stringify(timeline, null, 2) + '\n', 'utf8');
-    console.log(`[generate-reactive-collector-board] snapshot=${snapshotPath}`);
-    console.log(`[generate-reactive-collector-board] timeline=${timelinePath}`);
-    console.log(`[generate-reactive-collector-board] pages=${pages.length}`);
+    console.log(`[generate-streaming-thought-board] snapshot=${snapshotPath}`);
+    console.log(`[generate-streaming-thought-board] timeline=${timelinePath}`);
+    console.log(`[generate-streaming-thought-board] pages=${pages.length}`);
 
     if (!skipPdf) {
         const pdfWritten = await maybeRenderPdf(pages, config, pdfPath, runtime);
         if (pdfWritten) {
-            console.log(`[generate-reactive-collector-board] pdf=${pdfPath}`);
+            console.log(`[generate-streaming-thought-board] pdf=${pdfPath}`);
         }
     }
 }
 
 main().catch((error) => {
-    console.error('[generate-reactive-collector-board] FAILED', error);
+    console.error('[generate-streaming-thought-board] FAILED', error);
     process.exit(1);
 });

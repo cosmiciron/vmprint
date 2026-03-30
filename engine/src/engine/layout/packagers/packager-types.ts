@@ -2,6 +2,7 @@ import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import type { ActorSignal, ActorSignalDraft } from '../actor-event-bus';
+import type { AsyncThoughtHandle, AsyncThoughtRequest } from '../async-thought-host';
 
 export interface LayoutBox extends Box { }
 
@@ -52,6 +53,8 @@ export interface PackagerContext {
     contentWidthOverride?: number;
     publishActorSignal(signal: ActorSignalDraft): ActorSignal;
     readActorSignals(topic?: string): readonly ActorSignal[];
+    requestAsyncThought?(request: AsyncThoughtRequest): AsyncThoughtHandle | undefined;
+    readAsyncThoughtResult?(key: string): AsyncThoughtHandle | undefined;
 }
 
 export type PackagerSplitResult = {

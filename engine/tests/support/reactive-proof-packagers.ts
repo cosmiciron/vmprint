@@ -68,6 +68,25 @@ type ClockCookingSpec = {
     pathStages?: number;
 };
 
+type AsyncThoughtSpec = {
+    key?: string;
+    title?: string;
+    pendingLabel?: string;
+    resolvedLabel?: string;
+    delayMs?: number;
+    baseHeight?: number;
+    resolvedHeight?: number;
+    geometryOnResolve?: boolean;
+    backgroundColor?: string;
+    borderColor?: string;
+    color?: string;
+    stages?: Array<{
+        label: string;
+        delayMs?: number;
+        height?: number;
+    }>;
+};
+
 type CookingStageVisual = {
     backgroundColor: string;
     borderColor: string;
@@ -751,6 +770,235 @@ export class TestClockCookingPackager implements PackagerUnit {
                 }
             }
         };
+
+        this.renderedFlowBox = (this.processor as any).shapeElement(syntheticElement, {
+            sourceId: this.sourceId,
+            sourceType: syntheticElement.type,
+            fragmentIndex: this.fragmentIndex,
+            isContinuation: !!this.continuationOf
+        });
+        this.base = new FlowBoxPackager(this.processor, this.renderedFlowBox, this.identity);
+        return this.base;
+    }
+}
+
+export class TestAsyncThoughtPackager implements PackagerUnit {
+    private base: FlowBoxPackager | null = null;
+    private renderedFlowBox: FlowBox | null = null;
+
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
+    constructor(
+        private readonly processor: LayoutProcessor,
+        private readonly flowBox: FlowBox,
+        private readonly identity: PackagerIdentity
+    ) {
+        this.actorId = identity.actorId;
+        this.sourceId = identity.sourceId;
+        this.actorKind = identity.actorKind;
+        this.fragmentIndex = identity.fragmentIndex;
+        this.continuationOf = identity.continuationOf;
+    }
+
+    get pageBreakBefore(): boolean | undefined { return this.renderedFlowBox?.pageBreakBefore ?? this.flowBox.pageBreakBefore; }
+    get keepWithNext(): boolean | undefined { return this.renderedFlowBox?.keepWithNext ?? this.flowBox.keepWithNext; }
+
+    prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
+        this.base = this.createDynamicPackager(context);
+        this.base.prepare(availableWidth, availableHeight, context);
+    }
+
+    getPlacementPreference(fullAvailableWidth: number, context: PackagerContext): PackagerPlacementPreference | null {
+        const packager = this.base ?? this.createDynamicPackager(context);
+        return packager.getPlacementPreference?.(fullAvailableWidth, context) ?? null;
+    }
+
+    getTransformProfile(): PackagerTransformProfile {
+        return {
+            capabilities: [
+                {
+                    kind: 'split',
+                    preservesIdentity: true,
+                    producesContinuation: true
+                }
+            ]
+        };
+    }
+
+    emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): Box[] {
+        const packager = this.base ?? this.createDynamicPackager(context);
+        return packager.emitBoxes(availableWidth, availableHeight, context);
+    }
+
+    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+        const packager = this.base ?? this.createDynamicPackager(context);
+        return packager.split(availableHeight, context);
+    }
+
+    getRequiredHeight(): number { return this.base?.getRequiredHeight() ?? 0; }
+    isUnbreakable(availableHeight: number): boolean { return this.base?.isUnbreakable(availableHeight) ?? false; }
+    getMarginTop(): number { return this.base?.getMarginTop() ?? this.flowBox.marginTop; }
+    getMarginBottom(): number { return this.base?.getMarginBottom() ?? this.flowBox.marginBottom; }
+
+    private resolveThoughtResult(handle: unknown): Record<string, unknown> | null {
+        if (!handle || typeof handle !== 'object') return null;
+        return handle as Record<string, unknown>;
+    }
+
+    private resolveStreamingState(spec: AsyncThoughtSpec, context: PackagerContext, thoughtKey: string): {
+        state: 'pending' | 'resolved' | 'failed';
+        label: string;
+        height: number;
+        error?: string;
+    } | null {
+        const stages = Array.isArray(spec.stages) ? spec.stages.filter((stage) => stage && typeof stage.label === 'string') : [];
+        if (stages.length === 0) return null;
+
+        const baseHeight = Math.max(0, Number(spec.baseHeight) || 72);
+        const defaultResolvedHeight = Math.max(baseHeight, Number(spec.resolvedHeight || (baseHeight + 48)));
+        let highestCompletedStage = -1;
+        let failureMessage: string | undefined;
+
+        for (let stageIndex = 0; stageIndex < stages.length; stageIndex += 1) {
+            const stageHandle = context.readAsyncThoughtResult?.(`${thoughtKey}:stage:${stageIndex}`);
+            if (stageHandle?.state === 'failed') {
+                failureMessage = stageHandle.error || 'unknown';
+                break;
+            }
+            if (stageHandle?.state === 'completed') {
+                highestCompletedStage = stageIndex;
+                continue;
+            }
+            if (!stageHandle) {
+                const stage = stages[stageIndex];
+                context.requestAsyncThought?.({
+                    key: `${thoughtKey}:stage:${stageIndex}`,
+                    metadata: {
+                        sourceId: this.sourceId,
+                        actorId: this.actorId,
+                        stageIndex
+                    },
+                    executor: async () => {
+                        const delayMs = Math.max(1, Number(stage.delayMs || spec.delayMs || 500));
+                        await new Promise((resolve) => setTimeout(resolve, delayMs));
+                        return {
+                            stageIndex,
+                            text: stage.label,
+                            height: Number(stage.height || 0) || undefined
+                        };
+                    }
+                });
+            }
+            break;
+        }
+
+        if (failureMessage) {
+            return {
+                state: 'failed',
+                label: `Failure: ${failureMessage}`,
+                height: defaultResolvedHeight,
+                error: failureMessage
+            };
+        }
+
+        if (highestCompletedStage < 0) {
+            return {
+                state: 'pending',
+                label: spec.pendingLabel || 'Thinking... external time is passing.',
+                height: baseHeight
+            };
+        }
+
+        const activeStageHandle = context.readAsyncThoughtResult?.(`${thoughtKey}:stage:${highestCompletedStage}`);
+        const activeStageResult = this.resolveThoughtResult(activeStageHandle?.result);
+        const activeStage = stages[Math.max(0, Math.min(stages.length - 1, highestCompletedStage))];
+        const isFinalStage = highestCompletedStage >= stages.length - 1;
+        const resolvedHeight = Math.max(
+            baseHeight,
+            Number(activeStageResult?.height || activeStage.height || (isFinalStage ? defaultResolvedHeight : baseHeight))
+        );
+
+        return {
+            state: isFinalStage ? 'resolved' : 'pending',
+            label: String(activeStageResult?.text || activeStage.label || spec.resolvedLabel || 'Thought resolved.'),
+            height: resolvedHeight
+        };
+    }
+
+    private createDynamicPackager(context: PackagerContext): FlowBoxPackager {
+        const spec = (this.flowBox.properties?._asyncThought || {}) as AsyncThoughtSpec;
+        const thoughtKey = spec.key || `async-thought:${this.sourceId}`;
+        const baseHeight = Math.max(0, Number(spec.baseHeight) || 72);
+        const resolvedHeight = Math.max(baseHeight, Number(spec.resolvedHeight || (baseHeight + 48)));
+        const streamingState = this.resolveStreamingState(spec, context, thoughtKey);
+        const thought = streamingState ? null : (context.requestAsyncThought?.({
+            key: thoughtKey,
+            metadata: {
+                sourceId: this.sourceId,
+                actorId: this.actorId
+            },
+            executor: async () => {
+                const delayMs = Math.max(1, Number(spec.delayMs || 500));
+                await new Promise((resolve) => setTimeout(resolve, delayMs));
+                return {
+                    text: spec.resolvedLabel || 'Thought resolved.',
+                    geometryChanged: Boolean(spec.geometryOnResolve)
+                };
+            }
+        }) ?? context.readAsyncThoughtResult?.(thoughtKey));
+        const isResolved = streamingState
+            ? streamingState.state === 'resolved'
+            : thought?.state === 'completed';
+        const isFailed = streamingState
+            ? streamingState.state === 'failed'
+            : thought?.state === 'failed';
+        const resolvedText = typeof thought?.result === 'object' && thought?.result && 'text' in (thought.result as Record<string, unknown>)
+            ? String((thought.result as Record<string, unknown>).text || '')
+            : '';
+        const content = [
+            spec.title || 'Async Thought Actor',
+            `State: ${isFailed ? 'failed' : (isResolved ? 'resolved' : 'pending')}`,
+            isFailed
+                ? (streamingState?.label || `Failure: ${thought?.error || 'unknown'}`)
+                : (isResolved
+                    ? (streamingState?.label || resolvedText || (spec.resolvedLabel || 'Thought resolved.'))
+                    : (streamingState?.label || (spec.pendingLabel || 'Thinking... external time is passing.')))
+        ].join('\n');
+
+        const sourceElement = (this.flowBox._sourceElement || this.flowBox._unresolvedElement || {
+            type: this.flowBox.type,
+            content: ''
+        }) as Element;
+
+        const syntheticElement: Element = {
+            ...sourceElement,
+            content,
+            children: undefined,
+            properties: {
+                ...(sourceElement.properties || {}),
+                sourceId: this.sourceId,
+                style: {
+                    ...((sourceElement.properties?.style as Record<string, unknown>) || {}),
+                    backgroundColor: spec.backgroundColor || '#ede9fe',
+                    borderColor: spec.borderColor || '#7c3aed',
+                      borderWidth: 2,
+                      paddingTop: 12,
+                      paddingRight: 12,
+                      paddingBottom: 12,
+                      paddingLeft: 12,
+                      color: spec.color || '#4c1d95',
+                      fontSize: 12,
+                      lineHeight: 1.25,
+                      height: streamingState
+                          ? streamingState.height
+                          : (isResolved && spec.geometryOnResolve ? resolvedHeight : baseHeight)
+                  }
+              }
+          };
 
         this.renderedFlowBox = (this.processor as any).shapeElement(syntheticElement, {
             sourceId: this.sourceId,

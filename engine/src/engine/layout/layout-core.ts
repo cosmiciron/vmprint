@@ -45,6 +45,9 @@ import type { ScriptLifecycleState } from './script-runtime-host';
 import { TransformCapabilityArtifactCollaborator } from './collaborators/transform-capability-artifact-collaborator';
 import { TransformArtifactCollaborator } from './collaborators/transform-artifact-collaborator';
 import { ZoneDebugOverlayCollaborator } from './collaborators/zone-debug-overlay-collaborator';
+import { TemporalPresentationCollaborator } from './collaborators/temporal-presentation-collaborator';
+import { AsyncThoughtRuntimeCollaborator } from './collaborators/async-thought-runtime-collaborator';
+import { AsyncThoughtHost } from './async-thought-host';
 import {
     buildTableModel,
     isTableElement,
@@ -666,14 +669,57 @@ export class LayoutProcessor extends TextProcessor {
      * input elements -> flow boxes -> paginated flow boxes -> positioned page boxes.
      */
     simulate(elements: Element[]): Page[] {
+        const result = this.runSimulationReplayLoop(elements, null, null);
+        return result.pages;
+    }
+
+    async simulateAsync(
+        elements: Element[],
+        options: { timeoutMs?: number; maxAsyncReplayPasses?: number } = {}
+    ): Promise<Page[]> {
+        const asyncThoughtHost = new AsyncThoughtHost();
+        const timeoutMs = Math.max(1, Number(options.timeoutMs || 5000));
+        const maxAsyncReplayPasses = Math.max(1, Math.floor(Number(options.maxAsyncReplayPasses || 8)));
+        const accumulatedTimeline: any[] = [];
+
+        for (let asyncPass = 0; asyncPass < maxAsyncReplayPasses; asyncPass++) {
+            const result = this.runSimulationReplayLoop(elements, null, asyncThoughtHost);
+            const report = result.session.getSimulationReport();
+            const timeline = result.session.getSimulationReportReader().get('temporalPresentationTimeline' as any) as any[] | undefined;
+            if (Array.isArray(timeline)) {
+                accumulatedTimeline.push(...timeline.map((frame) => ({
+                    ...frame,
+                    captureIndex: accumulatedTimeline.length + Number(frame.captureIndex || 0)
+                })));
+            }
+            if (!asyncThoughtHost.hasPending()) {
+                if (report) {
+                    report.artifacts.temporalPresentationTimeline = accumulatedTimeline;
+                }
+                return result.pages;
+            }
+            const completed = await asyncThoughtHost.waitForNextCompletion(timeoutMs);
+            if (!completed) {
+                throw new Error('[LayoutProcessor] Async thought did not complete before timeout.');
+            }
+        }
+
+        throw new Error('[LayoutProcessor] Async thought replay exceeded the current bounded limit.');
+    }
+
+    private runSimulationReplayLoop(
+        elements: Element[],
+        existingScriptRuntimeHost: ScriptRuntimeHost | null,
+        asyncThoughtHost: AsyncThoughtHost | null
+    ): { pages: Page[]; session: LayoutSession } {
         const { height: pageHeight, width: pageWidth } = this.getPageDimensions();
         const maxScriptReplayPasses = 3;
         const aggregateScriptProfile = Object.fromEntries(
             LayoutProcessor.SCRIPT_PROFILE_KEYS.map((key) => [key, 0])
         ) as Record<keyof LayoutProfileMetrics, number>;
-        const scriptRuntimeHost = this.config.scripting
+        const scriptRuntimeHost = existingScriptRuntimeHost ?? (this.config.scripting
             ? new ScriptRuntimeHost(this.config.scripting)
-            : null;
+            : null);
         // Any scripting-capable simulation works against a cloned element tree so
         // authored input remains immutable across pre-layout and post-settlement
         // runtime mutations.
@@ -687,12 +733,14 @@ export class LayoutProcessor extends TextProcessor {
             const { collaborators, scriptRuntimeCollaborator, scriptRuntimeHost: activeScriptRuntimeHost } = this.createLayoutCollaborators(
                 simulationElements,
                 scriptLifecycleState,
-                scriptRuntimeHost ?? undefined
+                scriptRuntimeHost ?? undefined,
+                asyncThoughtHost
             );
             this.activeScriptRuntimeHost = activeScriptRuntimeHost;
             const session = new LayoutSession({
                 runtime: this.getRuntime(),
-                collaborators
+                collaborators,
+                asyncThoughtHost
             });
             this.lastLayoutSession = session;
             session.notifySimulationStart();
@@ -712,7 +760,9 @@ export class LayoutProcessor extends TextProcessor {
                 margins: this.config.layout.margins,
                 getPageExclusions: (pageIndex: number) => session.getPageExclusions(pageIndex),
                 publishActorSignal: (signal: any) => session.publishActorSignal(signal),
-                readActorSignals: (topic?: string) => session.getActorSignals(topic)
+                readActorSignals: (topic?: string) => session.getActorSignals(topic),
+                requestAsyncThought: (request: any) => session.requestAsyncThought(request),
+                readAsyncThoughtResult: (key: string) => session.readAsyncThoughtResult(key)
             };
             const pages = executeSimulationMarch(this, packagers, contextBase, session);
             const finalized = session.finalizePages(pages);
@@ -742,7 +792,7 @@ export class LayoutProcessor extends TextProcessor {
                 }
             }
 
-            return finalized;
+            return { pages: finalized, session };
         }
 
         throw new Error('[LayoutProcessor] Script replay loop exited unexpectedly.');
@@ -1215,7 +1265,8 @@ export class LayoutProcessor extends TextProcessor {
     private createLayoutCollaborators(
         elements: Element[],
         scriptLifecycleState: ScriptLifecycleState | null,
-        existingScriptRuntimeHost?: ScriptRuntimeHost
+        existingScriptRuntimeHost?: ScriptRuntimeHost,
+        asyncThoughtHost?: AsyncThoughtHost | null
     ): {
         collaborators: Collaborator[];
         scriptRuntimeCollaborator: ScriptRuntimeCollaborator | null;
@@ -1248,6 +1299,8 @@ export class LayoutProcessor extends TextProcessor {
             new SourcePositionArtifactCollaborator(),
             new HeadingTelemetryCollaborator(),
             new HeadingSignalCollaborator(),
+            ...(asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []),
+            new TemporalPresentationCollaborator(),
             new ZoneDebugOverlayCollaborator(),
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
@@ -1371,6 +1424,3 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 }
-
-
-

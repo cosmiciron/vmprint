@@ -9,6 +9,8 @@ import type { PageSpatialConstraintSummary } from './collaborators/page-spatial-
 import type { PageRegionSummary } from './collaborators/page-region-artifact-collaborator';
 import type { SourcePositionSummary } from './collaborators/source-position-artifact-collaborator';
 import type { HeadingTelemetrySummary } from './collaborators/heading-telemetry-collaborator';
+import type { AsyncThoughtSummary } from './collaborators/async-thought-runtime-collaborator';
+import type { TemporalPresentationTimeline } from './collaborators/temporal-presentation-collaborator';
 import type { LayoutProfileMetrics } from './layout-session-types';
 import type { Page } from '../types';
 import type { SimulationProgressionPolicy, SimulationStopReason } from '../types';
@@ -25,6 +27,8 @@ export type SimulationArtifactMap = {
     pageRegionSummary?: PageRegionSummary[];
     sourcePositionMap?: SourcePositionSummary[];
     headingTelemetry?: HeadingTelemetrySummary[];
+    asyncThoughtSummary?: AsyncThoughtSummary;
+    temporalPresentationTimeline?: TemporalPresentationTimeline;
 };
 
 export type SimulationArtifactKey = keyof SimulationArtifactMap;
@@ -41,7 +45,9 @@ export const simulationArtifactKeys = {
     pageSpatialConstraintSummary: 'pageSpatialConstraintSummary',
     pageRegionSummary: 'pageRegionSummary',
     sourcePositionMap: 'sourcePositionMap',
-    headingTelemetry: 'headingTelemetry'
+    headingTelemetry: 'headingTelemetry',
+    asyncThoughtSummary: 'asyncThoughtSummary',
+    temporalPresentationTimeline: 'temporalPresentationTimeline'
 } as const satisfies Record<SimulationArtifactKey, SimulationArtifactKey>;
 
 export const knownSimulationArtifactKeys: readonly SimulationArtifactKey[] = [
@@ -55,7 +61,9 @@ export const knownSimulationArtifactKeys: readonly SimulationArtifactKey[] = [
     simulationArtifactKeys.pageSpatialConstraintSummary,
     simulationArtifactKeys.pageRegionSummary,
     simulationArtifactKeys.sourcePositionMap,
-    simulationArtifactKeys.headingTelemetry
+    simulationArtifactKeys.headingTelemetry,
+    simulationArtifactKeys.asyncThoughtSummary,
+    simulationArtifactKeys.temporalPresentationTimeline
 ] as const;
 
 export type SimulationReport = {
@@ -107,6 +115,15 @@ export type HeadingOutlineEntry = {
     semanticRole?: string;
     level?: number;
 };
+
+export function getTemporalPresentationTimeline(
+    source: PrintPipelineSnapshot | SimulationReport | null | undefined
+): TemporalPresentationTimeline {
+    const reader = 'reader' in (source || {})
+        ? (source as PrintPipelineSnapshot).reader
+        : createSimulationReportReader(source as SimulationReport | null | undefined);
+    return reader.get(simulationArtifactKeys.temporalPresentationTimeline) ?? [];
+}
 
 export function getSimulationArtifact<K extends SimulationArtifactKey>(
     report: SimulationReport | null | undefined,

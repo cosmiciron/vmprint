@@ -6,6 +6,7 @@ import { LayoutEngine } from '../../src/engine/layout-engine';
 import { Renderer } from '../../src/engine/renderer';
 import { createEngineRuntime } from '../../src/engine/runtime';
 import type { Element, LayoutConfig, Page } from '../../src/engine/types';
+import { simulationArtifactKeys } from '../../src/engine/layout/simulation-report';
 import { loadLocalFontManager, snapshotPages } from '../harness/engine-harness';
 import { reactiveProofPackagerFactory } from '../support/reactive-proof-packager-factory';
 
@@ -235,10 +236,12 @@ async function main(): Promise<void> {
     const outputDir = path.resolve(resolveArg('--output-dir') || DEFAULT_OUTPUT_DIR);
     const outputBase = path.join(outputDir, 'reactive-geometry-board');
     const snapshotPath = path.resolve(resolveArg('--snapshot') || `${outputBase}.pages.json`);
+    const timelinePath = path.resolve(resolveArg('--timeline') || `${outputBase}.timeline.json`);
     const pdfPath = path.resolve(resolveArg('--pdf') || `${outputBase}.pdf`);
     const skipPdf = hasFlag('--no-pdf');
 
     fs.mkdirSync(path.dirname(snapshotPath), { recursive: true });
+    fs.mkdirSync(path.dirname(timelinePath), { recursive: true });
     fs.mkdirSync(path.dirname(pdfPath), { recursive: true });
 
     const LocalFontManager = await loadLocalFontManager();
@@ -249,8 +252,11 @@ async function main(): Promise<void> {
     await engine.waitForFonts();
 
     const pages = engine.simulate(buildElements());
+    const timeline = engine.getLastSimulationReportReader().get(simulationArtifactKeys.temporalPresentationTimeline) as unknown[] || [];
     fs.writeFileSync(snapshotPath, JSON.stringify(snapshotPages(pages), null, 2) + '\n', 'utf8');
+    fs.writeFileSync(timelinePath, JSON.stringify(timeline, null, 2) + '\n', 'utf8');
     console.log(`[generate-reactive-geometry-board] snapshot=${snapshotPath}`);
+    console.log(`[generate-reactive-geometry-board] timeline=${timelinePath}`);
     console.log(`[generate-reactive-geometry-board] pages=${pages.length}`);
 
     if (!skipPdf) {

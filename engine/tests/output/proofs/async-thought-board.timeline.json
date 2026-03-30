@@ -1,0 +1,526 @@
+[
+  {
+    "captureIndex": 0,
+    "tick": 0,
+    "pageCount": 1,
+    "pages": [
+      {
+        "index": 0,
+        "width": 520,
+        "height": 360,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 480,
+            "h": 23.709375,
+            "sourceId": "author:async-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Async Thought Board",
+                  "width": 187.998047,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 480,
+            "h": 31.6125,
+            "sourceId": "author:async-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that VMPrint can wait for an external thought, replay deterministically, ",
+                  "width": 469.998047,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "and present both the pending and resolved states as part of one temporal sequence.",
+                  "width": 448.974609,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 480,
+            "h": 72,
+            "sourceId": "author:async-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe A",
+                  "width": 85.400391,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: pending",
+                  "width": 77.396484,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Thinking... waiting on a delayed external thought.",
+                  "width": 260.835938,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 189.321875,
+            "w": 480,
+            "h": 60,
+            "sourceId": "author:async-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should shift after async resolve",
+                  "width": 181.388672,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 249.321875,
+            "w": 480,
+            "h": 31.6125,
+            "sourceId": "author:async-thought-outro",
+            "engineKey": "ek:e/4:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Trailing content should move only after the async result becomes part of the committed ",
+                  "width": 464.449219,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "world state.",
+                  "width": 61.359375,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "captureIndex": 1,
+    "tick": 0,
+    "pageCount": 1,
+    "pages": [
+      {
+        "index": 0,
+        "width": 520,
+        "height": 360,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 480,
+            "h": 23.709375,
+            "sourceId": "author:async-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Async Thought Board",
+                  "width": 187.998047,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 480,
+            "h": 31.6125,
+            "sourceId": "author:async-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that VMPrint can wait for an external thought, replay deterministically, ",
+                  "width": 469.998047,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "and present both the pending and resolved states as part of one temporal sequence.",
+                  "width": 448.974609,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 480,
+            "h": 132,
+            "sourceId": "author:async-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe A",
+                  "width": 85.400391,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: resolved",
+                  "width": 80.044922,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Resolved: the delayed thought returned a committed insight.",
+                  "width": 320.191406,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 249.321875,
+            "w": 480,
+            "h": 60,
+            "sourceId": "author:async-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should shift after async resolve",
+                  "width": 181.388672,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "captureIndex": 2,
+    "tick": 0,
+    "pageCount": 2,
+    "pages": [
+      {
+        "index": 0,
+        "width": 520,
+        "height": 360,
+        "boxes": [
+          {
+            "type": "chapter-heading",
+            "x": 20,
+            "y": 20,
+            "w": 480,
+            "h": 23.709375,
+            "sourceId": "author:async-thought-heading",
+            "engineKey": "ek:e/0:chapter-heading",
+            "sourceType": "chapter-heading",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Async Thought Board",
+                  "width": 187.998047,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "x": 20,
+            "y": 59.709375,
+            "w": 480,
+            "h": 31.6125,
+            "sourceId": "author:async-thought-intro",
+            "engineKey": "ek:e/1:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "This board proves that VMPrint can wait for an external thought, replay deterministically, ",
+                  "width": 469.998047,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "and present both the pending and resolved states as part of one temporal sequence.",
+                  "width": 448.974609,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-async-thought",
+            "x": 20,
+            "y": 107.321875,
+            "w": 480,
+            "h": 132,
+            "sourceId": "author:async-thought-actor",
+            "engineKey": "ek:e/0:test-async-thought",
+            "sourceType": "test-async-thought",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Thought Lobe A",
+                  "width": 85.400391,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "State: resolved",
+                  "width": 80.044922,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Resolved: the delayed thought returned a committed insight.",
+                  "width": 320.191406,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          },
+          {
+            "type": "test-replay-marker",
+            "x": 20,
+            "y": 249.321875,
+            "w": 480,
+            "h": 60,
+            "sourceId": "author:async-thought-downstream",
+            "engineKey": "ek:e/0:test-replay-marker",
+            "sourceType": "test-replay-marker",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Downstream Region",
+                  "width": 116.015625,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Should shift after async resolve",
+                  "width": 181.388672,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "Render Count: 1",
+                  "width": 93.333984,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "width": 520,
+        "height": 360,
+        "boxes": [
+          {
+            "type": "p",
+            "x": 20,
+            "y": 20,
+            "w": 480,
+            "h": 31.6125,
+            "sourceId": "author:async-thought-outro",
+            "engineKey": "ek:e/4:p",
+            "sourceType": "p",
+            "fragmentIndex": 0,
+            "isContinuation": false,
+            "lines": [
+              [
+                {
+                  "text": "Trailing content should move only after the async result becomes part of the committed ",
+                  "width": 464.449219,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ],
+              [
+                {
+                  "text": "world state.",
+                  "width": 61.359375,
+                  "ascent": 905.273438,
+                  "descent": 211.914063,
+                  "fontFamily": ""
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

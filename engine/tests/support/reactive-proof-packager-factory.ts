@@ -5,6 +5,7 @@ import type { ExternalPackagerFactory } from '../../src/engine/layout/packagers/
 import { createElementPackagerIdentity } from '../../src/engine/layout/packagers/packager-identity';
 import {
     TestClockCookingPackager,
+    TestAsyncThoughtPackager,
     TestSignalPublisherPackager,
     TestSignalObserverPackager,
     TestSignalFollowerPackager,
@@ -52,6 +53,12 @@ export const reactiveProofPackagerFactory: ExternalPackagerFactory = (
         const normalizedFlowBlock = shaper.normalizeFlowBlock(item, { path: [index] });
         const flowBox = shaper.shapeNormalizedFlowBlock(normalizedFlowBlock);
         return new TestClockCookingPackager(processor, flowBox, identity);
+    }
+
+    if (item.type === 'test-async-thought') {
+        const normalizedFlowBlock = shaper.normalizeFlowBlock(item, { path: [index] });
+        const flowBox = shaper.shapeNormalizedFlowBlock(normalizedFlowBlock);
+        return new TestAsyncThoughtPackager(processor, flowBox, identity);
     }
 
     if (item.type === 'test-replay-marker') {
