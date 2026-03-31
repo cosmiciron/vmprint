@@ -13,6 +13,7 @@ Quick rule of thumb:
 - if the content should stay one reading stream, use `story`
 - if the content should line up in one band, use `strip`
 - if the content lives in separate rooms, use `zone-map`
+- if the document needs a stage that actors inhabit directly, use `layout.worldPlain`
 
 ## `story`
 
@@ -171,6 +172,62 @@ The practical mental model is:
 
 So `zone-map` is not just "some columns on a page."
 It is an authored region topology that happens to be revealed through pages.
+
+If what you want is not a region topology but a true stage where actors exist in
+space, `zone-map` is no longer the best fit. That is where `layout.worldPlain`
+comes in.
+
+## `layout.worldPlain`
+
+`worldPlain` is authored through the document `layout`, not as an element. It
+declares that the page/viewport is revealing a broader world stage.
+
+```json
+{
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 12,
+    "lineHeight": 1.4,
+    "worldPlain": {
+      "style": { "backgroundColor": "#f8fbff" }
+    }
+  },
+  "elements": [
+    {
+      "type": "field-actor",
+      "content": "",
+      "properties": {
+        "style": {
+          "width": 96,
+          "height": 72,
+          "backgroundColor": "#0f8b8d"
+        },
+        "spatialField": {
+          "kind": "exclude",
+          "x": 180,
+          "y": 120,
+          "exclusionAssembly": {
+            "members": [
+              { "x": 0, "y": 10, "w": 42, "h": 42, "shape": "circle" },
+              { "x": 28, "y": 18, "w": 46, "h": 18, "shape": "rect" },
+              { "x": 54, "y": 0, "w": 42, "h": 42, "shape": "circle" }
+            ]
+          }
+        }
+      }
+    },
+    { "type": "label", "content": "Ordinary actors can settle around the rock." }
+  ]
+}
+```
+
+Use `worldPlain` when:
+
+- actors should exist in world coordinates
+- spatial fields should belong to ordinary actors, not only story floats
+- the river of document flow should be one inhabitant of the world, not the whole world
 
 ```json
 {

@@ -188,6 +188,12 @@ The overlay hooks fire per page at this stage — `backdrop` before page content
 
 The `type` field on each element is a plain string. The engine reserves a short list of structural types (`table`, `table-row`, `table-cell`, `story`, `strip`, `zone-map`), but everything else — `p`, `h1`, `blockquote`, `code`, whatever — is just a label used to look up a base style from the `styles` map.
 
+The `type` field on each element is a plain string. The engine reserves a short list of structural types (`table`, `table-row`, `table-cell`, `story`, `strip`, `zone-map`), plus the visible spatial body actor `field-actor`. Everything else is just a label used to look up a base style from the `styles` map.
+
+`layout.worldPlain` is the authored way to declare a document-stage world substrate. It is deliberately not authored as `type: "world-plain"`. The engine may synthesize an internal world-plain host at runtime, but that wrapper is an implementation detail rather than part of the public AST.
+
+Spatial presence is exposed separately from visual skin. A rock, hazard, creature, or invisible pressure source should be modeled as a `field-actor` plus `properties.spatialField`, not as `image + spatialField`.
+
 For the full element and property reference, see [AST-REFERENCE.md](AST-REFERENCE.md).
 
 ---
@@ -249,6 +255,8 @@ Concrete implementations:
 | `TablePackager` | Multi-column tables with header repeat and row pagination |
 | `TocPackager` | Table-of-contents assembly |
 | `ZonePackager` | `zone-map` independent region layout |
+| `FieldActorPackager` | Visible actor bodies that publish generic spatial fields |
+| `WorldPlainPackager` | Internal host synthesized from `layout.worldPlain` |
 | `SpatialGridPackager` | Grid-based spatial layout |
 
 The simulation loop is type-agnostic. It knows nothing about paragraphs vs. tables vs. stories. All layout-specific logic is inside the packager objects. Adding a new element type means adding a `PackagerUnit` implementation and a branch in `createPackagers()`. The simulation loop does not change. This is the open/closed principle in practice: the loop is closed to modification and open to extension through new packager implementations.

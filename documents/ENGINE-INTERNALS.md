@@ -26,6 +26,8 @@ What you author — or what a transmuter produces from Markdown — is a semanti
 
 The AST is the stable source. The engine will never rewrite it to satisfy a layout problem. It is the instruction manual that stays on the shelf while the simulation runs on the board.
 
+The newer world substrate follows the same principle. `layout.worldPlain` is authored as layout ontology, not as a public `type: "world-plain"` element. The engine may synthesize an internal host wrapper so the simulation has something concrete to run, but authored callers still describe the stage through layout and then place ordinary actors into it.
+
 ### The Board Setup: Spatial IR and Packagers
 
 Before simulation begins, the engine normalizes the AST into a **Spatial IR** — resolving styles, computing track widths, merging inherited properties, and flattening the tree hierarchy into a sequence of simulation-ready participants. A nested paragraph becomes a `FlowBox`. A table becomes a pre-resolved `SpatialGrid` with calculated column widths. A multi-column story becomes a `NormalizedStory` that knows its zone widths.
@@ -38,6 +40,9 @@ Each spatial IR element is compiled into a **Packager** — the live actor that 
 - `DropCapPackager` — a first-class actor that claims space and pushes neighboring text around it
 - `TocPackager` — a reactive actor that observes committed heading signals and reflows its own content
 - `ZonePackager` — runs independent sub-sessions for each authored zone
+
+- `FieldActorPackager` â€” materializes visible actor bodies that publish generic spatial fields
+- `WorldPlainPackager` â€” hosts actors inside the document-stage world declared by `layout.worldPlain`
 
 Each packager implements a lifecycle contract:
 
@@ -98,6 +103,8 @@ This has practical consequences that matter:
 - **Zones are world regions, not page regions.** A multi-column story zone is defined against world coordinates. It extends across as many viewports as it takes to exhaust its content. The engine doesn't need linked frame workarounds — the zone is just a region in the world, and viewports reveal successive slices of it.
 - **Non-contiguous flows resolve naturally.** If content should continue in a non-adjacent region, that's a viewport planning question, not a special-case linked-frame mechanism.
 - **The page count is a derived fact, not a declaration.** You don't pre-declare ten pages and fill them. The simulation runs until the world is settled, and however many viewports it took is how many pages you have.
+
+- **Sequential document flow is one inhabitant of the world, not the world itself.** Stories and plain flow are rivers moving through the substrate. World-space actors such as `field-actor`s can exist alongside them and publish spatial fields that the settling actors must negotiate around.
 
 The exploration frontier gives the engine a meaningful model for "how much of the world has been seen." It is the boundary between committed space and not-yet-simulated space. Dirty-frontier resimulation — explained below — targets that frontier with precision.
 

@@ -91,8 +91,24 @@ interface LayoutConfig {
     };
 
     storyWrapOpticalUnderhang?: boolean;
+    worldPlain?: WorldPlainOptions;
 }
 ```
+
+### `layout.worldPlain`
+
+`worldPlain` defines the document-stage world substrate. When present, root
+elements inhabit that stage instead of being treated as only sequential flow.
+
+```typescript
+interface WorldPlainOptions {
+    style?: Partial<ElementStyle>;
+}
+```
+
+`worldPlain` is authored through `layout`. Do not author
+`{ "type": "world-plain" }` directly; the engine may synthesize an internal
+host wrapper at runtime, but that wrapper is not part of the public AST.
 
 ---
 
@@ -188,6 +204,8 @@ interface ElementProperties {
     sourceRange?: { lineStart: number; colStart: number; lineEnd: number; colEnd: number };
     sourceSyntax?: string;
     language?: string;
+    spatialField?: SpatialFieldDirective;
+    zoneField?: SpatialFieldDirective;
 }
 ```
 
@@ -208,6 +226,44 @@ AST `1.1` keeps `properties` for overrides, metadata, and cross-cutting controls
 | `simulationContinuation` | any | Cross-page split markers; see §14. |
 | `pageOverrides` | any | Override or suppress the header/footer for this element's pages. |
 | `language` | code blocks | Language hint such as `"typescript"`. |
+| `spatialField` | any actor | Generic actor-published spatial field. |
+| `zoneField` | any actor | Compatibility alias for early zone experiments. Prefer `spatialField`. |
+
+### `SpatialFieldDirective`
+
+```typescript
+type StoryFloatShape = 'rect' | 'circle';
+
+interface StoryExclusionAssemblyMember {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    shape?: StoryFloatShape;
+}
+
+interface StoryExclusionAssembly {
+    members: StoryExclusionAssemblyMember[];
+}
+
+interface SpatialFieldDirective {
+    kind?: 'exclude';
+    x?: number;
+    y?: number;
+    align?: 'left' | 'right' | 'center';
+    wrap?: 'around' | 'top-bottom' | 'none';
+    gap?: number;
+    shape?: StoryFloatShape;
+    exclusionAssembly?: StoryExclusionAssembly;
+    hidden?: boolean;
+}
+```
+
+Hosts decide what the field means:
+
+- `story` consumes it as wrap/exclusion geometry
+- `zone-map` consumes it as placed spatial presence within a region host
+- `worldPlain` consumes it as world-space presence on the stage declared in `layout`
 
 ---
 
@@ -236,6 +292,7 @@ See [engine/src/engine/types.ts](c:\Users\cosmic\Projects\vmprint\engine\src\eng
 | `table-cell` | Table cell. Supports `properties.colSpan` and `properties.rowSpan`. |
 | `strip` | One-row horizontal composition band. Uses `slots[]` plus `element.stripLayout`. |
 | `zone-map` | Independent-region layout. Uses `zones[]` plus `element.zoneLayout`. |
+| `field-actor` | Visible placeable spatial body, typically paired with `properties.spatialField`. |
 
 All other `type` strings are user-defined and are used for style lookup.
 
@@ -453,7 +510,45 @@ Any block element can float or use `story-absolute` if it carries explicit obsta
 
 ---
 
-## 13a. Column Span (`element.columnSpan`)
+## 13b. `field-actor`
+
+`field-actor` is the public visible body actor for world/map-style spatial
+presence. It exists so callers do not need to model a rock, hazard, or
+creature as `image + spatialField`.
+
+```json
+{
+  "type": "field-actor",
+  "content": "",
+  "properties": {
+    "style": {
+      "width": 96,
+      "height": 72,
+      "backgroundColor": "#0f8b8d"
+    },
+    "spatialField": {
+      "kind": "exclude",
+      "hidden": false,
+      "x": 180,
+      "y": 120,
+      "exclusionAssembly": {
+        "members": [
+          { "x": 0, "y": 10, "w": 42, "h": 42, "shape": "circle" },
+          { "x": 28, "y": 18, "w": 46, "h": 18, "shape": "rect" },
+          { "x": 54, "y": 0, "w": 42, "h": 42, "shape": "circle" }
+        ]
+      }
+    }
+  }
+}
+```
+
+`field-actor` must declare `properties.style.width` and
+`properties.style.height`.
+
+---
+
+## 13c. Column Span (`element.columnSpan`)
 
 Declared on children of a multi-column `story`. A spanned element breaks the column flow, is laid out at full story width, then flow resumes below.
 
