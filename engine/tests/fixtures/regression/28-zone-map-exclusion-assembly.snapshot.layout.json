@@ -1,0 +1,467 @@
+[
+  {
+    "index": 0,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 50,
+        "y": 50,
+        "w": 500,
+        "h": 36.4125,
+        "lines": [
+          [
+            {
+              "text": "Zone Map: Invisible Exclusion Field",
+              "width": 405.398438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 98.4125,
+        "w": 500,
+        "h": 30.34375,
+        "lines": [
+          [
+            {
+              "text": "This proof keeps the exclusion assembly invisible. The text should appear to bend around a hidden field inside ",
+              "width": 490.297852,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the main zone, while the sidebar remains structurally independent.",
+              "width": 293.496094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 50,
+        "y": 148.75625,
+        "w": 322.666667,
+        "h": 21.240625,
+        "lines": [
+          [
+            {
+              "text": "Main Zone",
+              "width": 69.220703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 50,
+        "y": 177.996875,
+        "w": 228,
+        "h": 140,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 177.996875,
+        "w": 322.666667,
+        "h": 141.171875,
+        "lines": [
+          [
+            {
+              "text": "Inside this zone the story flows around a compound exclusion field, but ",
+              "width": 315.737305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the field actor itself is ",
+              "width": 96.152344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "visually transparent. That means ",
+              "width": 147.290039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the reader sees only ",
+              "width": 93.388672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the text avoiding a hidden ",
+              "width": 116.75293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "p",
+              "width": 5.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "resence. The result feels ",
+              "width": 112.275391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "uncanny in exactly the",
+              "width": 98.950195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "right way: the page ",
+              "width": 87.275391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "appears to know ",
+              "width": 76.157227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "about ",
+              "width": 27.802734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "an invisible object ",
+              "width": 81.713867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "t",
+              "width": 2.77832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hat still has ",
+              "width": 52.802734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "mass, and the typography settles ",
+              "width": 149.526367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around it as if the field were a real thing occupying the map.",
+              "width": 264.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 327.16875,
+        "w": 322.666667,
+        "h": 85.171875,
+        "lines": [
+          [
+            {
+              "text": "Because the zone hosts a full story layout context, the exclusion field ",
+              "width": 307.397461,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "works here without any special zone-only wrap machinery. The main ",
+              "width": 304.951172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zone is the host, the story is the immediate consumer, and the exclusion ",
+              "width": 321.835938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "assembly itself remains the lower spatial affordance. That layering is ",
+              "width": 304.956055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "useful because it proves the capability can travel into other hosts before ",
+              "width": 320.185547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "those hosts learn to consume the field directly.",
+              "width": 204.921875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 420.340625,
+        "w": 322.666667,
+        "h": 57.171875,
+        "lines": [
+          [
+            {
+              "text": "An invisible field is also a good stress case. It removes the comfort of a ",
+              "width": 316.811523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "visible silhouette and forces us to judge the geometry itself. If the line ",
+              "width": 307.949219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "starts and widths feel natural, then the field is earning its keep even ",
+              "width": 300.732422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "when nothing is painted except the text that yields to it.",
+              "width": 242.373047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-label",
+        "x": 388.666667,
+        "y": 148.75625,
+        "w": 161.333333,
+        "h": 13.654687,
+        "lines": [
+          [
+            {
+              "text": "ZONE NOTE",
+              "width": 52.501465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-body",
+        "x": 388.666667,
+        "y": 166.410937,
+        "w": 161.333333,
+        "h": 40.964062,
+        "lines": [
+          [
+            {
+              "text": "The right zone is unaffected. It keeps its",
+              "width": 158.923828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "own layout session and never learns ",
+              "width": 148.086914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "about the invisible field in the left zone.",
+              "width": 154.599609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-label",
+        "x": 388.666667,
+        "y": 213.375,
+        "w": 161.333333,
+        "h": 13.654687,
+        "lines": [
+          [
+            {
+              "text": "WHY IT MATTERS",
+              "width": 76.825195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-body",
+        "x": 388.666667,
+        "y": 231.029687,
+        "w": 161.333333,
+        "h": 40.964062,
+        "lines": [
+          [
+            {
+              "text": "This is visually satisfying because the ",
+              "width": 152.068359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstruction is implied by the typography ",
+              "width": 160.584961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "alone.",
+              "width": 24.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 485.5125,
+        "w": 500,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "Content below the zone-map resumes in normal document flow after the hidden field proof.",
+              "width": 401.889648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

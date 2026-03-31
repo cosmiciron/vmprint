@@ -1,0 +1,201 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 600,
+      "height": 800
+    },
+    "margins": {
+      "top": 50,
+      "right": 50,
+      "bottom": 50,
+      "left": 50
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.4,
+    "pageBackground": "#fcfbf7"
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true,
+      "color": "#233b56"
+    },
+    "h2": {
+      "fontSize": 14,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true,
+      "color": "#33577d"
+    },
+    "p": {
+      "marginBottom": 8
+    },
+    "sidebar-label": {
+      "fontSize": 9,
+      "fontWeight": "bold",
+      "marginBottom": 4,
+      "color": "#555555"
+    },
+    "sidebar-body": {
+      "fontSize": 9,
+      "marginBottom": 6,
+      "color": "#333333"
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Zone Map: Placed Field Actors"
+    },
+    {
+      "type": "p",
+      "content": "This proof removes the embedded story and places visible exclusion-field actors directly inside the zone. Later ordinary zone children should walk around those placed bodies the way map labels or notes would skirt rocks."
+    },
+    {
+      "type": "zone-map",
+      "properties": {
+        "style": {
+          "marginTop": 12,
+          "marginBottom": 12
+        }
+      },
+      "zones": [
+        {
+          "id": "main",
+          "elements": [
+            {
+              "type": "h2",
+              "content": "Main Zone"
+            },
+            {
+              "type": "image",
+              "content": "",
+              "properties": {
+                "spatialField": {
+                  "kind": "exclude",
+                  "x": 20,
+                  "y": 52,
+                  "wrap": "around",
+                  "gap": 6,
+                  "exclusionAssembly": {
+                    "members": [
+                      { "shape": "circle", "x": 0, "y": 38, "w": 64, "h": 64 },
+                      { "shape": "rect", "x": 40, "y": 48, "w": 74, "h": 24 },
+                      { "shape": "circle", "x": 86, "y": 8, "w": 78, "h": 78 },
+                      { "shape": "circle", "x": 132, "y": 58, "w": 34, "h": 34 }
+                    ]
+                  }
+                },
+                "style": {
+                  "width": 168,
+                  "height": 110
+                }
+              },
+              "image": {
+                "mimeType": "image/png",
+                "fit": "fill",
+                "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+Xr2QAAAAASUVORK5CYII="
+              }
+            },
+            {
+              "type": "image",
+              "content": "",
+              "properties": {
+                "spatialField": {
+                  "kind": "exclude",
+                  "x": 176,
+                  "y": 150,
+                  "wrap": "around",
+                  "gap": 6,
+                  "exclusionAssembly": {
+                    "members": [
+                      { "shape": "circle", "x": 10, "y": 0, "w": 58, "h": 58 },
+                      { "shape": "circle", "x": 0, "y": 36, "w": 44, "h": 44 },
+                      { "shape": "rect", "x": 28, "y": 34, "w": 58, "h": 20 },
+                      { "shape": "circle", "x": 72, "y": 26, "w": 28, "h": 28 }
+                    ]
+                  }
+                },
+                "style": {
+                  "width": 102,
+                  "height": 84
+                }
+              },
+              "image": {
+                "mimeType": "image/png",
+                "fit": "fill",
+                "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+Xr2QAAAAASUVORK5CYII="
+              }
+            },
+            {
+              "type": "p",
+              "content": "This label block should immediately choose a lane around the first placed rock rather than pretending the zone is a story."
+            },
+            {
+              "type": "p",
+              "content": "A later block should encounter a different free interval once the upper mass falls away and the second rock begins to matter."
+            },
+            {
+              "type": "p",
+              "content": "The interesting question is not whether the result looks like typography wrap, but whether ordinary zone actors appear to walk around explicit placed bodies inside the map."
+            },
+            {
+              "type": "p",
+              "content": "That is the more generic capability we care about: rocks, hazards, creatures, or invisible influence zones can all publish spatial fields while the host remains just a region."
+            },
+            {
+              "type": "p",
+              "content": "If this proof is honest, the circles in the assembly should also be visible in the rendered bodies now instead of disappearing into one rectangular proxy."
+            }
+          ]
+        },
+        {
+          "id": "sidebar",
+          "elements": [
+            {
+              "type": "sidebar-label",
+              "content": "ZONE NOTE"
+            },
+            {
+              "type": "sidebar-body",
+              "content": "The sidebar still ignores the hidden field entirely. Native consumption stays local to the main zone."
+            },
+            {
+              "type": "sidebar-label",
+              "content": "WHY IT MATTERS"
+            },
+            {
+              "type": "sidebar-body",
+              "content": "This proof shows a zone can host explicit placed field actors without first embedding a story."
+            }
+          ]
+        }
+      ],
+      "zoneLayout": {
+        "columns": [
+          {
+            "mode": "flex",
+            "fr": 2
+          },
+          {
+            "mode": "flex",
+            "fr": 1
+          }
+        ],
+        "gap": 16
+      }
+    },
+    {
+      "type": "p",
+      "content": "Content below the zone-map resumes in normal document flow after the native field actor proof."
+    }
+  ]
+}

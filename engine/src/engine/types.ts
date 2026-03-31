@@ -282,6 +282,17 @@ export interface ElementProperties extends Record<string, any> {
         levelFilter?: number[];
         style?: Record<string, unknown>;
     };
+    /**
+     * Generic actor-published spatial field. Hosts may interpret this as
+     * exclusion, occupancy, hazard, or other spatial influence without the
+     * actor losing its own identity.
+     */
+    spatialField?: SpatialFieldDirective;
+    /**
+     * Compatibility alias for early zone-map-native experiments. Prefer
+     * `spatialField`.
+     */
+    zoneField?: SpatialFieldDirective;
     pageOverrides?: {
         header?: PageRegionContent | null;
         footer?: PageRegionContent | null;
@@ -337,6 +348,18 @@ export interface StoryExclusionAssemblyMember {
 
 export interface StoryExclusionAssembly {
     members: StoryExclusionAssemblyMember[];
+}
+
+export interface SpatialFieldDirective {
+    kind?: 'exclude';
+    x?: number;
+    y?: number;
+    align?: StoryFloatAlign;
+    wrap?: StoryWrapMode;
+    gap?: number;
+    shape?: StoryFloatShape;
+    exclusionAssembly?: StoryExclusionAssembly;
+    hidden?: boolean;
 }
 
 export interface StoryLayoutDirective {

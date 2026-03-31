@@ -1,0 +1,565 @@
+[
+  {
+    "index": 0,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 50,
+        "y": 50,
+        "w": 500,
+        "h": 36.4125,
+        "lines": [
+          [
+            {
+              "text": "Zone Map: Placed Field Actors",
+              "width": 349.394531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 98.4125,
+        "w": 500,
+        "h": 30.34375,
+        "lines": [
+          [
+            {
+              "text": "This proof removes the embedded story and places visible exclusion-field actors directly inside the zone. Later ",
+              "width": 490.249023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ordinary zone children should walk around those placed bodies the way map labels or notes would skirt rocks.",
+              "width": 485.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 50,
+        "y": 148.75625,
+        "w": 322.666667,
+        "h": 21.240625,
+        "lines": [
+          [
+            {
+              "text": "Main Zone",
+              "width": 69.220703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 70,
+        "y": 200.75625,
+        "w": 168,
+        "h": 110,
+        "lines": []
+      },
+      {
+        "type": "image",
+        "x": 226,
+        "y": 298.75625,
+        "w": 102,
+        "h": 84,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 177.996875,
+        "w": 322.666667,
+        "h": 29.171875,
+        "lines": [
+          [
+            {
+              "text": "This label block should immediately choose a lane around the first ",
+              "width": 294.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "placed rock rather than ",
+              "width": 105.058594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "pretending the zone is a story.",
+              "width": 133.227539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 215.16875,
+        "w": 322.666667,
+        "h": 57.171875,
+        "lines": [
+          [
+            {
+              "text": "A later block should ",
+              "width": 90.048828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "encounter a different free ",
+              "width": 114.335938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "interv",
+              "width": 24.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "al once the upper mass falls ",
+              "width": 127.290039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "aw",
+              "width": 12.783203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ay and the second rock ",
+              "width": 106.176758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "be",
+              "width": 11.123047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "gins to matter.",
+              "width": 62.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 280.340625,
+        "w": 322.666667,
+        "h": 71.171875,
+        "lines": [
+          [
+            {
+              "text": "Th",
+              "width": 11.669922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "e ",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "int",
+              "width": 10.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "eresting question is ",
+              "width": 88.94043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "not ",
+              "width": 16.679688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "whether the ",
+              "width": 55.03418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "r",
+              "width": 3.330078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "esult looks like ",
+              "width": 67.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "typograph",
+              "width": 44.477539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "y wrap, but whether ",
+              "width": 90.043945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "o",
+              "width": 5.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rdinary ",
+              "width": 33.344727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zone actors appear to walk around ",
+              "width": 156.206055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "explicit ",
+              "width": 33.344727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "placed bodies inside the map.",
+              "width": 132.30957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 359.5125,
+        "w": 322.666667,
+        "h": 43.171875,
+        "lines": [
+          [
+            {
+              "text": "That is the more generic capability we",
+              "width": 167.856445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "care about: rocks, ",
+              "width": 82.260742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hazards, creatures, or invisible ",
+              "width": 138.393555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "influence zones can all",
+              "width": 101.176758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "publish spatial fields while the host remains just a region.",
+              "width": 251.801758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 410.684375,
+        "w": 322.666667,
+        "h": 43.171875,
+        "lines": [
+          [
+            {
+              "text": "If this proof is honest, the circles in the assembly should also be visible ",
+              "width": 315.712891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "in the rendered bodies now instead of disappearing into one rectangular ",
+              "width": 320.776367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "proxy.",
+              "width": 26.489258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-label",
+        "x": 388.666667,
+        "y": 148.75625,
+        "w": 161.333333,
+        "h": 13.654687,
+        "lines": [
+          [
+            {
+              "text": "ZONE NOTE",
+              "width": 52.501465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-body",
+        "x": 388.666667,
+        "y": 166.410937,
+        "w": 161.333333,
+        "h": 40.964062,
+        "lines": [
+          [
+            {
+              "text": "The sidebar still ignores the hidden field ",
+              "width": 161.094727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "entirely. Native consumption stays local ",
+              "width": 159.402832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "to the main zone.",
+              "width": 69.04248,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-label",
+        "x": 388.666667,
+        "y": 213.375,
+        "w": 161.333333,
+        "h": 13.654687,
+        "lines": [
+          [
+            {
+              "text": "WHY IT MATTERS",
+              "width": 76.825195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-body",
+        "x": 388.666667,
+        "y": 231.029687,
+        "w": 161.333333,
+        "h": 40.964062,
+        "lines": [
+          [
+            {
+              "text": "This proof shows a zone can host ",
+              "width": 136.573242,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "explicit placed field actors without first ",
+              "width": 153.065918,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "embedding a story.",
+              "width": 75.875977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 461.85625,
+        "w": 500,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "Content below the zone-map resumes in normal document flow after the native field actor proof.",
+              "width": 423.554688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

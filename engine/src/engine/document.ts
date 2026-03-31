@@ -81,7 +81,9 @@ const ELEMENT_PROPERTIES_KEYS = new Set([
     'sourceSyntax',
     'language',
     'pageReservationAfter',
-    'toc'
+    'toc',
+    'spatialField',
+    'zoneField'
 ]);
 const PAGINATION_CONTINUATION_KEYS = new Set(['enabled', 'markerAfterSplit', 'markerBeforeContinuation', 'markersBeforeContinuation']);
 const CONTINUATION_MARKER_KEYS = new Set(['type', 'content', 'style', 'properties']);
@@ -93,6 +95,7 @@ const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
 const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly']);
+const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'hidden']);
 const STORY_EXCLUSION_ASSEMBLY_KEYS = new Set(['members']);
 const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape']);
 const PAGE_REGION_DEFINITION_KEYS = new Set(['default', 'firstPage', 'odd', 'even']);
@@ -543,6 +546,66 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
     }
 }
 
+function validateSpatialFieldDirective(value: unknown, path: string, documentPath: string): void {
+    const directive = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(directive, SPATIAL_FIELD_KEYS, path, documentPath);
+
+    const validWraps = new Set(['around', 'top-bottom', 'none']);
+    const validAligns = new Set(['left', 'right', 'center']);
+    const validShapes = new Set(['rect', 'circle']);
+    const validKinds = new Set(['exclude']);
+
+    if (directive.kind !== undefined && !validKinds.has(directive.kind as string)) {
+        contractError(documentPath, `${path}.kind`, 'expected one of: exclude.');
+    }
+    if (directive.x !== undefined) {
+        assertFiniteNumberAt(directive.x, `${path}.x`, documentPath);
+    }
+    if (directive.y !== undefined) {
+        assertFiniteNumberAt(directive.y, `${path}.y`, documentPath);
+    }
+    if (directive.wrap !== undefined && !validWraps.has(directive.wrap as string)) {
+        contractError(documentPath, `${path}.wrap`, 'expected one of: around, top-bottom, none.');
+    }
+    if (directive.align !== undefined && !validAligns.has(directive.align as string)) {
+        contractError(documentPath, `${path}.align`, 'expected one of: left, right, center.');
+    }
+    if (directive.gap !== undefined) {
+        assertFiniteNumberAt(directive.gap, `${path}.gap`, documentPath);
+    }
+    if (directive.shape !== undefined && !validShapes.has(directive.shape as string)) {
+        contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle.');
+    }
+    if (directive.hidden !== undefined) {
+        assertBooleanAt(directive.hidden, `${path}.hidden`, documentPath);
+    }
+    if (directive.exclusionAssembly !== undefined) {
+        const assembly = assertPlainObjectAt(directive.exclusionAssembly, `${path}.exclusionAssembly`, documentPath);
+        assertAllowedKeys(assembly, STORY_EXCLUSION_ASSEMBLY_KEYS, `${path}.exclusionAssembly`, documentPath);
+        if (!Array.isArray(assembly.members) || assembly.members.length === 0) {
+            contractError(documentPath, `${path}.exclusionAssembly.members`, 'expected a non-empty array.');
+        }
+        assembly.members.forEach((member, index) => {
+            const memberPath = `${path}.exclusionAssembly.members[${index}]`;
+            const memberObj = assertPlainObjectAt(member, memberPath, documentPath);
+            assertAllowedKeys(memberObj, STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS, memberPath, documentPath);
+            assertFiniteNumberAt(memberObj.x, `${memberPath}.x`, documentPath);
+            assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
+            assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
+            assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
+            if (Number(memberObj.w) <= 0) {
+                contractError(documentPath, `${memberPath}.w`, 'expected a number greater than 0.');
+            }
+            if (Number(memberObj.h) <= 0) {
+                contractError(documentPath, `${memberPath}.h`, 'expected a number greater than 0.');
+            }
+            if (memberObj.shape !== undefined && !validShapes.has(memberObj.shape as string)) {
+                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle.');
+            }
+        });
+    }
+}
+
 function validatePaginationContinuation(value: unknown, path: string, documentPath: string): void {
     const continuation = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(continuation, PAGINATION_CONTINUATION_KEYS, path, documentPath);
@@ -716,6 +779,8 @@ function validateElementProperties(
     if (props.sourceSyntax !== undefined) assertStringAt(props.sourceSyntax, `${path}.sourceSyntax`, documentPath);
     if (props.language !== undefined) assertStringAt(props.language, `${path}.language`, documentPath);
     if (props.sourceRange !== undefined) validateSourceRange(props.sourceRange, `${path}.sourceRange`, documentPath);
+    if (props.spatialField !== undefined) validateSpatialFieldDirective(props.spatialField, `${path}.spatialField`, documentPath);
+    if (props.zoneField !== undefined) validateSpatialFieldDirective(props.zoneField, `${path}.zoneField`, documentPath);
 }
 
 function validateEmbeddedImagePayload(value: unknown, path: string, documentPath: string): void {

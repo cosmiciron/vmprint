@@ -9,6 +9,7 @@ export { loadFont, getCachedFont, getCachedBuffer, registerFontBuffer } from './
 export * from './engine/spatial-document';
 export * from './engine/runtime';
 export * from './engine/layout/track-sizing';
+export * from './engine/layout/exclusion-field';
 export * from './engine/layout/simulation-report';
 export { buildDataUri, parseEmbeddedImagePayloadCached } from './engine/image-data';
 export { LayoutUtils } from './engine/layout/layout-utils';

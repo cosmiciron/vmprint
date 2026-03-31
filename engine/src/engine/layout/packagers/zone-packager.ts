@@ -28,12 +28,15 @@
  * so fixed / auto / flex (`fr`) column definitions all work out of the box.
  */
 
-import { Box, DebugZoneRegion, Element, ElementStyle, TableColumnSizing, ZoneDefinition, ZoneLayoutOptions, ZoneWorldBehavior } from '../../types';
+import { Box, DebugZoneRegion, Element, ElementStyle, RichLine, SpatialFieldDirective, StoryFloatAlign, TableColumnSizing, ZoneDefinition, ZoneLayoutOptions, ZoneWorldBehavior } from '../../types';
+import { buildExclusionFieldObstacles } from '../exclusion-field';
 import { LayoutProcessor } from '../layout-core';
 import { LayoutUtils } from '../layout-utils';
+import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { solveTrackSizing, TrackSizingDefinition } from '../track-sizing';
 import type { ActorSignalDraft } from '../actor-event-bus';
 import type { NormalizedIndependentZoneStrip } from '../normalized-zone-strip';
+import { OccupiedRect, SpatialMap } from './spatial-map';
 import {
     PackagerContext,
     PackagerPlacementPreference,
@@ -53,6 +56,200 @@ export function isZoneMapElement(element: Element | undefined): boolean {
     return String(element?.type || '').trim().toLowerCase() === 'zone-map';
 }
 
+type ZoneFieldState = {
+    wrap: 'around' | 'top-bottom' | 'none';
+    hidden: boolean;
+    obstacles: OccupiedRect[];
+};
+
+type ZoneTextPlacement = {
+    boxes: Box[];
+    requiredHeight: number;
+};
+
+function readZoneFieldDirective(boxes: Box[]): SpatialFieldDirective | null {
+    for (const box of boxes) {
+        const directive =
+            (box.properties?.spatialField as SpatialFieldDirective | undefined)
+            ?? (box.properties?.zoneField as SpatialFieldDirective | undefined);
+        if (directive && typeof directive === 'object') {
+            return directive;
+        }
+    }
+    return null;
+}
+
+function resolveZoneFieldAnchorX(align: StoryFloatAlign, zoneWidth: number, fieldWidth: number): number {
+    if (align === 'right') return Math.max(0, zoneWidth - fieldWidth);
+    if (align === 'center') return Math.max(0, (zoneWidth - fieldWidth) / 2);
+    return 0;
+}
+
+function buildZoneFieldState(
+    emitted: Box[],
+    directive: SpatialFieldDirective,
+    zoneWidth: number,
+    baseY: number
+): { boxes: Box[]; field: ZoneFieldState } {
+    const anchorBox = emitted[0];
+    const align = directive.align ?? 'left';
+    const wrap = directive.wrap ?? 'around';
+    const hidden = directive.hidden === true;
+    const fieldWidth = Math.max(0, anchorBox?.w || 0);
+    const fieldHeight = Math.max(0, anchorBox?.h || 0);
+    const fieldX = Number.isFinite(directive.x) ? Math.max(0, Number(directive.x)) : resolveZoneFieldAnchorX(align, zoneWidth, fieldWidth);
+    const fieldY = Number.isFinite(directive.y) ? Math.max(0, Number(directive.y)) : baseY;
+    const translatedBoxes = emitted.map((box) => ({
+        ...box,
+        x: (box.x || 0) + fieldX,
+        y: (box.y || 0) + fieldY,
+        properties: {
+            ...(box.properties || {}),
+            ...(directive.exclusionAssembly?.members
+                ? {
+                    _imageClipAssembly: directive.exclusionAssembly.members.map((member) => ({
+                        x: Number(member.x ?? 0),
+                        y: Number(member.y ?? 0),
+                        w: Math.max(0, Number(member.w ?? 0)),
+                        h: Math.max(0, Number(member.h ?? 0)),
+                        shape: (member.shape ?? 'rect') as 'rect' | 'circle'
+                    }))
+                }
+                : directive.shape
+                    ? { _imageClipShape: directive.shape }
+                    : {}),
+            ...(hidden ? { opacity: 0 } : {})
+        }
+    }));
+
+    return {
+        boxes: translatedBoxes,
+        field: {
+            wrap,
+            hidden,
+            obstacles: buildExclusionFieldObstacles({
+                x: fieldX,
+                y: fieldY,
+                width: fieldWidth,
+                height: fieldHeight,
+                gap: directive.gap ?? 0,
+                shape: directive.shape ?? 'rect',
+                align,
+                wrap,
+                exclusionAssembly: directive.exclusionAssembly
+            })
+        }
+    };
+}
+
+function intersectsVertically(obstacle: OccupiedRect, top: number, bottom: number): boolean {
+    const obstacleTop = obstacle.y;
+    const obstacleBottom = obstacle.y + obstacle.h;
+    return obstacleBottom > top && obstacleTop < bottom;
+}
+
+function resolveZoneLane(
+    zoneWidth: number,
+    top: number,
+    height: number,
+    fields: ZoneFieldState[]
+): { x: number; width: number } {
+    const bottom = top + Math.max(0, height);
+    const occupied: Array<{ start: number; end: number }> = [];
+
+    for (const field of fields) {
+        if (field.wrap !== 'around') continue;
+        for (const obstacle of field.obstacles) {
+            if (!intersectsVertically(obstacle, top, bottom)) continue;
+            occupied.push({
+                start: Math.max(0, obstacle.x),
+                end: Math.min(zoneWidth, obstacle.x + obstacle.w)
+            });
+        }
+    }
+
+    if (occupied.length === 0) {
+        return { x: 0, width: zoneWidth };
+    }
+
+    occupied.sort((a, b) => a.start - b.start || a.end - b.end);
+    const merged: Array<{ start: number; end: number }> = [];
+    for (const segment of occupied) {
+        if (segment.end <= segment.start) continue;
+        const previous = merged[merged.length - 1];
+        if (!previous || segment.start > previous.end) {
+            merged.push({ ...segment });
+            continue;
+        }
+        previous.end = Math.max(previous.end, segment.end);
+    }
+
+    let bestX = 0;
+    let bestWidth = 0;
+    let cursor = 0;
+    for (const segment of merged) {
+        const gapWidth = Math.max(0, segment.start - cursor);
+        if (gapWidth > bestWidth) {
+            bestX = cursor;
+            bestWidth = gapWidth;
+        }
+        cursor = Math.max(cursor, segment.end);
+    }
+
+    const trailingWidth = Math.max(0, zoneWidth - cursor);
+    if (trailingWidth > bestWidth) {
+        bestX = cursor;
+        bestWidth = trailingWidth;
+    }
+
+    return {
+        x: bestX,
+        width: bestWidth
+    };
+}
+
+function buildZoneSpatialMap(fields: ZoneFieldState[]): SpatialMap {
+    const map = new SpatialMap();
+    for (const field of fields) {
+        for (const obstacle of field.obstacles) {
+            map.register(obstacle);
+        }
+    }
+    return map;
+}
+
+function tryPlaceZoneTextActor(
+    actor: PackagerUnit,
+    element: Element,
+    processor: LayoutProcessor,
+    availableWidth: number,
+    currentY: number,
+    layoutBefore: number,
+    activeFields: ZoneFieldState[]
+): ZoneTextPlacement | null {
+    if (activeFields.length === 0) return null;
+    if (String(element.type || '').toLowerCase() === 'image') return null;
+    const storyMap = buildZoneSpatialMap(activeFields);
+    const placed = reflowTextElementAgainstSpatialField({
+        processor,
+        element,
+        path: [0],
+        availableWidth,
+        currentY,
+        layoutBefore,
+        spatialMap: storyMap,
+        pageIndex: 0,
+        clearTopBeforeStart: false
+    });
+    if (!placed) return null;
+
+    const requiredHeight = Math.max(0, layoutBefore) + placed.contentHeight + placed.marginBottom;
+    return {
+        boxes: [placed.box],
+        requiredHeight: Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight)
+    };
+}
+
 // ---------------------------------------------------------------------------
 // Stripped march — non-paginating sequential placement
 // ---------------------------------------------------------------------------
@@ -62,32 +259,80 @@ export function isZoneMapElement(element: Element | undefined): boolean {
  * No pagination; no splitting. Returns boxes in column-local space (y=0 at top).
  */
 function placePackagersInZone(
-    packagers: PackagerUnit[],
+    packagers: ZoneActorEntry[],
     availableWidth: number,
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>
 ): { boxes: Box[]; height: number } {
     const placedBoxes: Box[] = [];
+    const activeFields: ZoneFieldState[] = [];
     let currentY = 0;
     let lastSpacingAfter = 0;
 
-    for (const actor of packagers) {
+    for (const entry of packagers) {
+        const actor = entry.actor;
         const marginTop = actor.getMarginTop();
         const marginBottom = actor.getMarginBottom();
         const layoutBefore = lastSpacingAfter + marginTop;
         const layoutDelta = lastSpacingAfter; // = layoutBefore - marginTop
+        const blockTop = currentY + layoutDelta;
+
+        const textPlacement = tryPlaceZoneTextActor(
+            actor,
+            entry.element,
+            contextBase.processor,
+            availableWidth,
+            currentY,
+            layoutBefore,
+            activeFields
+        );
+        if (textPlacement) {
+            placedBoxes.push(...textPlacement.boxes);
+            currentY += textPlacement.requiredHeight - marginBottom;
+            lastSpacingAfter = marginBottom;
+            continue;
+        }
+
+        const initialLane = resolveZoneLane(availableWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields);
 
         const context: PackagerContext = {
             ...contextBase,
             pageIndex: 0,
             cursorY: currentY
         };
+        const initialContext: PackagerContext = {
+            ...context,
+            contentWidthOverride: initialLane.width || availableWidth,
+            pageWidth: initialLane.width || availableWidth
+        };
 
-        actor.prepare(availableWidth, Infinity, context);
-        const emitted = actor.emitBoxes(availableWidth, Infinity, context) || [];
+        actor.prepare(initialLane.width || availableWidth, Infinity, initialContext);
+        const provisionalHeight = Math.max(
+            LAYOUT_DEFAULTS.minEffectiveHeight,
+            actor.getRequiredHeight() - marginTop - marginBottom + layoutBefore + marginBottom
+        );
+        const lane = resolveZoneLane(availableWidth, blockTop, provisionalHeight, activeFields);
+        const laneContext: PackagerContext = {
+            ...context,
+            contentWidthOverride: lane.width || availableWidth,
+            pageWidth: lane.width || availableWidth
+        };
+        if (Math.abs(lane.width - initialLane.width) > 0.1) {
+            actor.prepare(lane.width || availableWidth, Infinity, laneContext);
+        }
+        const emitted = actor.emitBoxes(lane.width || availableWidth, Infinity, laneContext) || [];
+        const zoneField = readZoneFieldDirective(emitted);
+
+        if (zoneField) {
+            const fieldState = buildZoneFieldState(emitted, zoneField, availableWidth, blockTop);
+            placedBoxes.push(...fieldState.boxes);
+            activeFields.push(fieldState.field);
+            continue;
+        }
 
         for (const box of emitted) {
             placedBoxes.push({
                 ...box,
+                x: (box.x || 0) + lane.x,
                 y: (box.y || 0) + currentY + layoutDelta
             });
         }
@@ -123,6 +368,11 @@ type ZoneSessionContinuation = {
     continuationFragment: PackagerUnit | null;
 };
 
+type ZoneActorEntry = {
+    actor: PackagerUnit;
+    element: Element;
+};
+
 type BoundedZoneSessionResult = ZoneSessionResult & {
     consumedHeight: number;
     hasOverflow: boolean;
@@ -138,7 +388,7 @@ type ZoneActorQueue = {
         height?: number;
     };
     style?: ElementStyle;
-    actors: PackagerUnit[];
+    actors: ZoneActorEntry[];
 };
 
 type ZoneDebugBoxTag = {
@@ -195,9 +445,12 @@ function buildZoneContinuationQueue(
         };
     }
 
-    const nextActors: PackagerUnit[] = [];
+    const nextActors: ZoneActorEntry[] = [];
     if (continuation.continuationFragment) {
-        nextActors.push(continuation.continuationFragment);
+        nextActors.push({
+            actor: continuation.continuationFragment,
+            element: zone.actors[continuation.nextActorIndex]?.element
+        });
     }
 
     const untouchedStart = continuation.nextActorIndex + (continuation.continuationFragment ? 1 : 0);
@@ -352,8 +605,11 @@ function createZoneSessionContextBase(
 function buildZonePackagers(
     zone: NormalizedIndependentZoneStrip['zones'][number],
     processor: LayoutProcessor
-): PackagerUnit[] {
-    return (zone.elements ?? []).map((actor, j) => buildPackagerForElement(actor, j, processor));
+): ZoneActorEntry[] {
+    return (zone.elements ?? []).map((element, j) => ({
+        element,
+        actor: buildPackagerForElement(element, j, processor)
+    }));
 }
 
 function buildZoneActorQueues(
@@ -388,29 +644,88 @@ function runZoneSessionBounded(
     const zoneWidth = zone.rect.width;
     const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
     const placedBoxes: Box[] = [];
+    const activeFields: ZoneFieldState[] = [];
     let currentY = 0;
     let lastSpacingAfter = 0;
 
     for (let actorIndex = 0; actorIndex < zone.actors.length; actorIndex++) {
-        const actor = zone.actors[actorIndex];
+        const entry = zone.actors[actorIndex];
+        const actor = entry.actor;
         const marginTop = actor.getMarginTop();
         const marginBottom = actor.getMarginBottom();
         const layoutBefore = lastSpacingAfter + marginTop;
         const layoutDelta = lastSpacingAfter;
         const remainingHeight = Math.max(0, availableHeight - currentY - layoutDelta);
+        const blockTop = currentY + layoutDelta;
+        const initialLane = resolveZoneLane(zoneWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields);
         const context: PackagerContext = {
             ...zoneContextBase,
             pageIndex: 0,
             cursorY: currentY
         };
+        const initialContext: PackagerContext = {
+            ...context,
+            contentWidthOverride: initialLane.width || zoneWidth,
+            pageWidth: initialLane.width || zoneWidth
+        };
 
-        actor.prepare(zoneWidth, remainingHeight, context);
+        const textPlacement = tryPlaceZoneTextActor(
+            actor,
+            entry.element,
+            zoneContextBase.processor,
+            zoneWidth,
+            currentY,
+            layoutBefore,
+            activeFields
+        );
+        if (textPlacement) {
+            if (currentY + textPlacement.requiredHeight > availableHeight + 0.01) {
+                return {
+                    boxes: placedBoxes,
+                    height: currentY + lastSpacingAfter,
+                    consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
+                    hasOverflow: true,
+                    continuation: {
+                        nextActorIndex: actorIndex,
+                        continuationFragment: actor
+                    }
+                };
+            }
+            placedBoxes.push(...textPlacement.boxes);
+            currentY += textPlacement.requiredHeight - marginBottom;
+            lastSpacingAfter = marginBottom;
+            continue;
+        }
+
+        actor.prepare(initialLane.width || zoneWidth, remainingHeight, initialContext);
+        const provisionalHeight = Math.max(
+            LAYOUT_DEFAULTS.minEffectiveHeight,
+            actor.getRequiredHeight() - marginTop - marginBottom + layoutBefore + marginBottom
+        );
+        const lane = resolveZoneLane(zoneWidth, blockTop, provisionalHeight, activeFields);
+        const laneContext: PackagerContext = {
+            ...context,
+            contentWidthOverride: lane.width || zoneWidth,
+            pageWidth: lane.width || zoneWidth
+        };
+        if (Math.abs(lane.width - initialLane.width) > 0.1) {
+            actor.prepare(lane.width || zoneWidth, remainingHeight, laneContext);
+        }
 
         if (actor.getRequiredHeight() <= remainingHeight + 0.1) {
-            const emitted = actor.emitBoxes(zoneWidth, remainingHeight, context) || [];
+            const emitted = actor.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
+            const zoneField = readZoneFieldDirective(emitted);
+            if (zoneField) {
+                const fieldState = buildZoneFieldState(emitted, zoneField, zoneWidth, blockTop);
+                placedBoxes.push(...fieldState.boxes);
+                activeFields.push(fieldState.field);
+                continue;
+            }
+
             for (const box of emitted) {
                 placedBoxes.push({
                     ...box,
+                    x: (box.x || 0) + lane.x,
                     y: (box.y || 0) + currentY + layoutDelta
                 });
             }
@@ -438,10 +753,11 @@ function runZoneSessionBounded(
 
         const split = actor.split(remainingHeight, context);
         if (split.currentFragment) {
-            const emitted = split.currentFragment.emitBoxes(zoneWidth, remainingHeight, context) || [];
+            const emitted = split.currentFragment.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
             for (const box of emitted) {
                 placedBoxes.push({
                     ...box,
+                    x: (box.x || 0) + lane.x,
                     y: (box.y || 0) + currentY + layoutDelta
                 });
             }

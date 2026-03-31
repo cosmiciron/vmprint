@@ -669,6 +669,59 @@ function assertExclusionAssemblySignals(pages: any[], fixtureName: string): void
     assert.ok(widthBins.size >= 3, `${fixtureName}: expected the composed field to generate at least three distinct wrapped widths`);
 }
 
+function assertZoneMapExclusionAssemblySignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    const transparentImageBoxes = allBoxes.filter((box: any) => !!box.image && Number(box.w || 0) >= 200);
+    assert.ok(transparentImageBoxes.length >= 1, `${fixtureName}: expected a large invisible field image box in the main zone`);
+
+    const wrappedBoxes = allBoxes.filter((box: any) => {
+        const widths: number[] = Array.isArray(box.properties?._lineWidths)
+            ? box.properties._lineWidths.map((n: any) => Number(n))
+            : [];
+        const offsets: number[] = Array.isArray(box.properties?._lineOffsets)
+            ? box.properties._lineOffsets.map((n: any) => Number(n))
+            : [];
+        return widths.length >= 4 && offsets.some((offset) => Number(offset || 0) > 0.1);
+    });
+    assert.ok(wrappedBoxes.length >= 1, `${fixtureName}: expected a wrapped story paragraph inside the zone-map`);
+}
+
+function assertZoneMapNativeFieldSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    const fieldImageBoxes = allBoxes.filter((box: any) =>
+        !!box.image
+        && Number(box.w || 0) >= 90
+        && Number(box.y || 0) >= 170
+    );
+    assert.ok(fieldImageBoxes.length >= 2, `${fixtureName}: expected visible placed native zone field actors`);
+
+    const wrappedParagraphs = allBoxes.filter((box: any) => {
+        if (String(box.type || '').toLowerCase() !== 'p') return false;
+        const debug = box.properties?.__vmprintZoneDebug;
+        if (!debug || debug.zoneId !== 'main') return false;
+        const offsets = Array.isArray(box.properties?._lineOffsets)
+            ? box.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+            : [];
+        const yOffsets = Array.isArray(box.properties?._lineYOffsets)
+            ? box.properties._lineYOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+            : [];
+        if (offsets.length < 2 || yOffsets.length < 2) return false;
+        const seen = new Map<number, Set<string>>();
+        for (let i = 0; i < Math.min(offsets.length, yOffsets.length); i++) {
+            const key = Number(yOffsets[i]).toFixed(2);
+            const set = seen.get(yOffsets[i]) ?? new Set<string>();
+            set.add(Number(offsets[i]).toFixed(2));
+            seen.set(yOffsets[i], set);
+            if (set.size >= 2) return true;
+        }
+        return false;
+    });
+    assert.ok(
+        wrappedParagraphs.length >= 1,
+        `${fixtureName}: expected ordinary zone paragraphs to split into multiple scanline slots around the placed native fields`
+    );
+}
+
 function assertStoryMultiColumnSignals(pages: any[], fixtureName: string): void {
     if (fixtureName !== '15-story-multi-column.json') return;
     assert.ok(pages.length >= 3, `${fixtureName}: expected at least three pages for 2-col intro + 3-col continuation`);
@@ -1557,6 +1610,24 @@ async function run() {
                 'composed float members produce a single actor-owned wrap field with varied line widths',
                 () => {
                     assertExclusionAssemblySignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '28-zone-map-exclusion-assembly.json') {
+            _check(
+                `${fixture.name} zone-map exclusion assembly signals`,
+                'a zone-hosted story should wrap around an invisible composed field while sibling zones remain independent',
+                () => {
+                    assertZoneMapExclusionAssemblySignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '29-zone-map-native-field.json') {
+            _check(
+                `${fixture.name} zone-map native field signals`,
+                'a direct zone child should publish a hidden field that later ordinary zone actors must settle around',
+                () => {
+                    assertZoneMapNativeFieldSignals(pagesA, fixture.name);
                 }
             );
         }

@@ -35136,7 +35136,9 @@
     "sourceSyntax",
     "language",
     "pageReservationAfter",
-    "toc"
+    "toc",
+    "spatialField",
+    "zoneField"
   ]);
   var PAGINATION_CONTINUATION_KEYS = /* @__PURE__ */ new Set(["enabled", "markerAfterSplit", "markerBeforeContinuation", "markersBeforeContinuation"]);
   var CONTINUATION_MARKER_KEYS = /* @__PURE__ */ new Set(["type", "content", "style", "properties"]);
@@ -35148,6 +35150,7 @@
   var TABLE_COLUMN_KEYS = /* @__PURE__ */ new Set(["mode", "value", "fr", "min", "max", "basis", "minContent", "maxContent", "grow", "shrink"]);
   var DROP_CAP_KEYS = /* @__PURE__ */ new Set(["enabled", "lines", "characters", "gap", "characterStyle"]);
   var STORY_LAYOUT_DIRECTIVE_KEYS = /* @__PURE__ */ new Set(["mode", "x", "y", "align", "wrap", "gap", "shape", "exclusionAssembly"]);
+  var SPATIAL_FIELD_KEYS = /* @__PURE__ */ new Set(["kind", "x", "y", "align", "wrap", "gap", "shape", "exclusionAssembly", "hidden"]);
   var STORY_EXCLUSION_ASSEMBLY_KEYS = /* @__PURE__ */ new Set(["members"]);
   var STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = /* @__PURE__ */ new Set(["x", "y", "w", "h", "shape"]);
   var PAGE_REGION_DEFINITION_KEYS = /* @__PURE__ */ new Set(["default", "firstPage", "odd", "even"]);
@@ -35563,6 +35566,63 @@
       });
     }
   }
+  function validateSpatialFieldDirective(value, path2, documentPath) {
+    const directive = assertPlainObjectAt(value, path2, documentPath);
+    assertAllowedKeys(directive, SPATIAL_FIELD_KEYS, path2, documentPath);
+    const validWraps = /* @__PURE__ */ new Set(["around", "top-bottom", "none"]);
+    const validAligns = /* @__PURE__ */ new Set(["left", "right", "center"]);
+    const validShapes = /* @__PURE__ */ new Set(["rect", "circle"]);
+    const validKinds = /* @__PURE__ */ new Set(["exclude"]);
+    if (directive.kind !== void 0 && !validKinds.has(directive.kind)) {
+      contractError(documentPath, `${path2}.kind`, "expected one of: exclude.");
+    }
+    if (directive.x !== void 0) {
+      assertFiniteNumberAt(directive.x, `${path2}.x`, documentPath);
+    }
+    if (directive.y !== void 0) {
+      assertFiniteNumberAt(directive.y, `${path2}.y`, documentPath);
+    }
+    if (directive.wrap !== void 0 && !validWraps.has(directive.wrap)) {
+      contractError(documentPath, `${path2}.wrap`, "expected one of: around, top-bottom, none.");
+    }
+    if (directive.align !== void 0 && !validAligns.has(directive.align)) {
+      contractError(documentPath, `${path2}.align`, "expected one of: left, right, center.");
+    }
+    if (directive.gap !== void 0) {
+      assertFiniteNumberAt(directive.gap, `${path2}.gap`, documentPath);
+    }
+    if (directive.shape !== void 0 && !validShapes.has(directive.shape)) {
+      contractError(documentPath, `${path2}.shape`, "expected one of: rect, circle.");
+    }
+    if (directive.hidden !== void 0) {
+      assertBooleanAt(directive.hidden, `${path2}.hidden`, documentPath);
+    }
+    if (directive.exclusionAssembly !== void 0) {
+      const assembly = assertPlainObjectAt(directive.exclusionAssembly, `${path2}.exclusionAssembly`, documentPath);
+      assertAllowedKeys(assembly, STORY_EXCLUSION_ASSEMBLY_KEYS, `${path2}.exclusionAssembly`, documentPath);
+      if (!Array.isArray(assembly.members) || assembly.members.length === 0) {
+        contractError(documentPath, `${path2}.exclusionAssembly.members`, "expected a non-empty array.");
+      }
+      assembly.members.forEach((member, index2) => {
+        const memberPath = `${path2}.exclusionAssembly.members[${index2}]`;
+        const memberObj = assertPlainObjectAt(member, memberPath, documentPath);
+        assertAllowedKeys(memberObj, STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS, memberPath, documentPath);
+        assertFiniteNumberAt(memberObj.x, `${memberPath}.x`, documentPath);
+        assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
+        assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
+        assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
+        if (Number(memberObj.w) <= 0) {
+          contractError(documentPath, `${memberPath}.w`, "expected a number greater than 0.");
+        }
+        if (Number(memberObj.h) <= 0) {
+          contractError(documentPath, `${memberPath}.h`, "expected a number greater than 0.");
+        }
+        if (memberObj.shape !== void 0 && !validShapes.has(memberObj.shape)) {
+          contractError(documentPath, `${memberPath}.shape`, "expected one of: rect, circle.");
+        }
+      });
+    }
+  }
   function validatePaginationContinuation(value, path2, documentPath) {
     const continuation = assertPlainObjectAt(value, path2, documentPath);
     assertAllowedKeys(continuation, PAGINATION_CONTINUATION_KEYS, path2, documentPath);
@@ -35711,6 +35771,8 @@
     if (props.sourceSyntax !== void 0) assertStringAt(props.sourceSyntax, `${path2}.sourceSyntax`, documentPath);
     if (props.language !== void 0) assertStringAt(props.language, `${path2}.language`, documentPath);
     if (props.sourceRange !== void 0) validateSourceRange(props.sourceRange, `${path2}.sourceRange`, documentPath);
+    if (props.spatialField !== void 0) validateSpatialFieldDirective(props.spatialField, `${path2}.spatialField`, documentPath);
+    if (props.zoneField !== void 0) validateSpatialFieldDirective(props.zoneField, `${path2}.zoneField`, documentPath);
   }
   function validateEmbeddedImagePayload(value, path2, documentPath) {
     const payload = assertPlainObjectAt(value, path2, documentPath);
@@ -53476,6 +53538,35 @@ ${source}`)
       );
     }
   };
+  function buildExclusionFieldObstacles(descriptor) {
+    const gap = Math.max(0, Number(descriptor.gap ?? 0));
+    const normalizedShape = descriptor.shape ?? "rect";
+    const assemblyMembers = Array.isArray(descriptor.exclusionAssembly?.members) ? descriptor.exclusionAssembly.members : [];
+    if (assemblyMembers.length === 0) {
+      return [{
+        x: descriptor.x,
+        y: descriptor.y,
+        w: descriptor.w,
+        h: descriptor.h,
+        wrap: descriptor.wrap,
+        gap,
+        shape: normalizedShape,
+        align: descriptor.align
+      }];
+    }
+    return assemblyMembers.map((member) => ({
+      x: descriptor.x + Number(member.x ?? 0),
+      y: descriptor.y + Number(member.y ?? 0),
+      w: Math.max(0, Number(member.w ?? 0)),
+      h: Math.max(0, Number(member.h ?? 0)),
+      wrap: descriptor.wrap,
+      gap,
+      shape: member.shape ?? "rect"
+      // Deliberately omit align here: assembled members should carve as local
+      // lobes, not inherit the solitary edge-extension heuristic used for
+      // single left/right circles.
+    })).filter((member) => member.w > 0 && member.h > 0);
+  }
   var EPSILON = 1e-6;
   function toUnit(value, fallback) {
     if (value === void 0 || value === null || value === "") return fallback;
@@ -55621,7 +55712,17 @@ ${source}`)
           gap: layout.gap,
           shape: layout.shape
         };
-        for (const obstacle of buildStoryLayoutObstacles(layout, rect.x, rect.y, rect.w, rect.h)) {
+        for (const obstacle of buildExclusionFieldObstacles({
+          x: rect.x,
+          y: rect.y,
+          w: rect.w,
+          h: rect.h,
+          wrap: layout.wrap,
+          gap: layout.gap,
+          shape: layout.shape,
+          align: layout.align,
+          exclusionAssembly: layout.exclusionAssembly
+        })) {
           storyMap.register(obstacle);
           registeredObstacles.push(obstacle);
         }
@@ -55693,7 +55794,17 @@ ${source}`)
           const align = layout.align;
           const floatX = resolveFloatX(align, imgW, availableWidth);
           if (layout.wrap !== "none") {
-            for (const obstacle of buildStoryLayoutObstacles(layout, floatX, cursorY, imgW, imgH)) {
+            for (const obstacle of buildExclusionFieldObstacles({
+              x: floatX,
+              y: cursorY,
+              w: imgW,
+              h: imgH,
+              wrap: layout.wrap,
+              gap: layout.gap,
+              shape: layout.shape,
+              align: layout.align,
+              exclusionAssembly: layout.exclusionAssembly
+            })) {
               storyMap.register(obstacle);
               registeredObstacles.push(obstacle);
             }
@@ -55726,7 +55837,17 @@ ${source}`)
             const align = layout.align;
             const floatX = resolveFloatX(align, dims.w, availableWidth);
             if (layout.wrap !== "none") {
-              for (const obstacle of buildStoryLayoutObstacles(layout, floatX, cursorY, dims.w, dims.h)) {
+              for (const obstacle of buildExclusionFieldObstacles({
+                x: floatX,
+                y: cursorY,
+                w: dims.w,
+                h: dims.h,
+                wrap: layout.wrap,
+                gap: layout.gap,
+                shape: layout.shape,
+                align: layout.align,
+                exclusionAssembly: layout.exclusionAssembly
+              })) {
                 storyMap.register(obstacle);
                 registeredObstacles.push(obstacle);
               }
@@ -56091,7 +56212,17 @@ ${source}`)
           gap: layout.gap,
           shape: layout.shape
         };
-        for (const obstacle of buildStoryLayoutObstacles(layout, rect.x, rect.y, rect.w, rect.h)) {
+        for (const obstacle of buildExclusionFieldObstacles({
+          x: rect.x,
+          y: rect.y,
+          w: rect.w,
+          h: rect.h,
+          wrap: layout.wrap,
+          gap: layout.gap,
+          shape: layout.shape,
+          align: layout.align,
+          exclusionAssembly: layout.exclusionAssembly
+        })) {
           allObstacles.push(obstacle);
           registeredObstacles.push(obstacle);
         }
@@ -56317,7 +56448,17 @@ ${source}`)
             const localX = resolveFloatX(align, Math.min(imgW, region.w), region.w);
             const x2 = region.x + localX;
             if (layout.wrap !== "none") {
-              for (const obstacle of buildStoryLayoutObstacles(layout, x2, anchorY, Math.min(imgW, region.w), imgH)) {
+              for (const obstacle of buildExclusionFieldObstacles({
+                x: x2,
+                y: anchorY,
+                w: Math.min(imgW, region.w),
+                h: imgH,
+                wrap: layout.wrap,
+                gap: layout.gap,
+                shape: layout.shape,
+                align: layout.align,
+                exclusionAssembly: layout.exclusionAssembly
+              })) {
                 allObstacles.push(obstacle);
                 registeredObstacles.push(obstacle);
               }
@@ -56347,7 +56488,17 @@ ${source}`)
               const localX = resolveFloatX(align, effectiveW, region.w);
               const x2 = region.x + localX;
               if (layout.wrap !== "none") {
-                for (const obstacle of buildStoryLayoutObstacles(layout, x2, anchorY, effectiveW, dims.h)) {
+                for (const obstacle of buildExclusionFieldObstacles({
+                  x: x2,
+                  y: anchorY,
+                  w: effectiveW,
+                  h: dims.h,
+                  wrap: layout.wrap,
+                  gap: layout.gap,
+                  shape: layout.shape,
+                  align: layout.align,
+                  exclusionAssembly: layout.exclusionAssembly
+                })) {
                   allObstacles.push(obstacle);
                   registeredObstacles.push(obstacle);
                 }
@@ -56701,6 +56852,13 @@ ${source}`)
         properties: {
           ...flowBox.properties || {},
           _imageClipShape: element2.placement?.shape,
+          _imageClipAssembly: element2.placement?.exclusionAssembly?.members ? element2.placement.exclusionAssembly.members.map((member) => ({
+            x: Number(member.x ?? 0),
+            y: Number(member.y ?? 0),
+            w: Math.max(0, Number(member.w ?? 0)),
+            h: Math.max(0, Number(member.h ?? 0)),
+            shape: member.shape ?? "rect"
+          })) : void 0,
           _isFirstLine: true,
           _isLastLine: true,
           _isFirstFragmentInLine: true,
@@ -56784,36 +56942,6 @@ ${source}`)
     if (align === "right") return Math.max(0, availableWidth - imgW);
     if (align === "center") return Math.max(0, (availableWidth - imgW) / 2);
     return 0;
-  }
-  function buildStoryLayoutObstacles(layout, anchorX, anchorY, defaultWidth, defaultHeight) {
-    const wrap2 = layout.wrap ?? "around";
-    const gap = Math.max(0, Number(layout.gap ?? 0));
-    const normalizedShape = layout.shape ?? "rect";
-    const assemblyMembers = Array.isArray(layout.exclusionAssembly?.members) ? layout.exclusionAssembly.members : [];
-    if (assemblyMembers.length === 0) {
-      return [{
-        x: anchorX,
-        y: anchorY,
-        w: defaultWidth,
-        h: defaultHeight,
-        wrap: wrap2,
-        gap,
-        shape: normalizedShape,
-        align: layout.align
-      }];
-    }
-    return assemblyMembers.map((member) => ({
-      x: anchorX + Number(member.x ?? 0),
-      y: anchorY + Number(member.y ?? 0),
-      w: Math.max(0, Number(member.w ?? 0)),
-      h: Math.max(0, Number(member.h ?? 0)),
-      wrap: wrap2,
-      gap,
-      shape: member.shape ?? "rect"
-      // Deliberately omit align here: assembled members should carve as
-      // local lobes, not inherit the top-level edge-extension heuristic
-      // used for solitary left/right circles.
-    })).filter((member) => member.w > 0 && member.h > 0);
   }
   function cloneBoxes(boxes, pageIndex) {
     return boxes.map((b2) => ({
@@ -57864,8 +57992,122 @@ ${source}`)
   function isZoneMapElement(element2) {
     return String(element2?.type || "").trim().toLowerCase() === "zone-map";
   }
+  function readZoneFieldDirective(boxes) {
+    for (const box of boxes) {
+      const directive = box.properties?.spatialField ?? box.properties?.zoneField;
+      if (directive && typeof directive === "object") {
+        return directive;
+      }
+    }
+    return null;
+  }
+  function resolveZoneFieldAnchorX(align, zoneWidth, fieldWidth) {
+    if (align === "right") return Math.max(0, zoneWidth - fieldWidth);
+    if (align === "center") return Math.max(0, (zoneWidth - fieldWidth) / 2);
+    return 0;
+  }
+  function buildZoneFieldState(emitted, directive, zoneWidth, baseY) {
+    const anchorBox = emitted[0];
+    const align = directive.align ?? "left";
+    const wrap2 = directive.wrap ?? "around";
+    const hidden = directive.hidden === true;
+    const fieldWidth = Math.max(0, anchorBox?.w || 0);
+    const fieldHeight = Math.max(0, anchorBox?.h || 0);
+    const fieldX = Number.isFinite(directive.x) ? Math.max(0, Number(directive.x)) : resolveZoneFieldAnchorX(align, zoneWidth, fieldWidth);
+    const fieldY = Number.isFinite(directive.y) ? Math.max(0, Number(directive.y)) : baseY;
+    const translatedBoxes = emitted.map((box) => ({
+      ...box,
+      x: (box.x || 0) + fieldX,
+      y: (box.y || 0) + fieldY,
+      properties: {
+        ...box.properties || {},
+        ...directive.exclusionAssembly?.members ? {
+          _imageClipAssembly: directive.exclusionAssembly.members.map((member) => ({
+            x: Number(member.x ?? 0),
+            y: Number(member.y ?? 0),
+            w: Math.max(0, Number(member.w ?? 0)),
+            h: Math.max(0, Number(member.h ?? 0)),
+            shape: member.shape ?? "rect"
+          }))
+        } : directive.shape ? { _imageClipShape: directive.shape } : {},
+        ...hidden ? { opacity: 0 } : {}
+      }
+    }));
+    return {
+      boxes: translatedBoxes,
+      field: {
+        wrap: wrap2,
+        hidden,
+        obstacles: buildExclusionFieldObstacles({
+          x: fieldX,
+          y: fieldY,
+          width: fieldWidth,
+          height: fieldHeight,
+          gap: directive.gap ?? 0,
+          shape: directive.shape ?? "rect",
+          align,
+          wrap: wrap2,
+          exclusionAssembly: directive.exclusionAssembly
+        })
+      }
+    };
+  }
+  function intersectsVertically(obstacle, top, bottom) {
+    const obstacleTop = obstacle.y;
+    const obstacleBottom = obstacle.y + obstacle.h;
+    return obstacleBottom > top && obstacleTop < bottom;
+  }
+  function resolveZoneLane(zoneWidth, top, height, fields) {
+    const bottom = top + Math.max(0, height);
+    const occupied = [];
+    for (const field of fields) {
+      if (field.wrap !== "around") continue;
+      for (const obstacle of field.obstacles) {
+        if (!intersectsVertically(obstacle, top, bottom)) continue;
+        occupied.push({
+          start: Math.max(0, obstacle.x),
+          end: Math.min(zoneWidth, obstacle.x + obstacle.w)
+        });
+      }
+    }
+    if (occupied.length === 0) {
+      return { x: 0, width: zoneWidth };
+    }
+    occupied.sort((a2, b2) => a2.start - b2.start || a2.end - b2.end);
+    const merged = [];
+    for (const segment of occupied) {
+      if (segment.end <= segment.start) continue;
+      const previous3 = merged[merged.length - 1];
+      if (!previous3 || segment.start > previous3.end) {
+        merged.push({ ...segment });
+        continue;
+      }
+      previous3.end = Math.max(previous3.end, segment.end);
+    }
+    let bestX = 0;
+    let bestWidth = 0;
+    let cursor = 0;
+    for (const segment of merged) {
+      const gapWidth = Math.max(0, segment.start - cursor);
+      if (gapWidth > bestWidth) {
+        bestX = cursor;
+        bestWidth = gapWidth;
+      }
+      cursor = Math.max(cursor, segment.end);
+    }
+    const trailingWidth = Math.max(0, zoneWidth - cursor);
+    if (trailingWidth > bestWidth) {
+      bestX = cursor;
+      bestWidth = trailingWidth;
+    }
+    return {
+      x: bestX,
+      width: bestWidth
+    };
+  }
   function placePackagersInZone(packagers, availableWidth, contextBase) {
     const placedBoxes = [];
+    const activeFields = [];
     let currentY = 0;
     let lastSpacingAfter = 0;
     for (const actor of packagers) {
@@ -57873,16 +58115,44 @@ ${source}`)
       const marginBottom = actor.getMarginBottom();
       const layoutBefore = lastSpacingAfter + marginTop;
       const layoutDelta = lastSpacingAfter;
+      const blockTop = currentY + layoutDelta;
+      const initialLane = resolveZoneLane(availableWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields);
       const context = {
         ...contextBase,
         pageIndex: 0,
         cursorY: currentY
       };
-      actor.prepare(availableWidth, Infinity, context);
-      const emitted = actor.emitBoxes(availableWidth, Infinity, context) || [];
+      const initialContext = {
+        ...context,
+        contentWidthOverride: initialLane.width || availableWidth,
+        pageWidth: initialLane.width || availableWidth
+      };
+      actor.prepare(initialLane.width || availableWidth, Infinity, initialContext);
+      const provisionalHeight = Math.max(
+        LAYOUT_DEFAULTS.minEffectiveHeight,
+        actor.getRequiredHeight() - marginTop - marginBottom + layoutBefore + marginBottom
+      );
+      const lane = resolveZoneLane(availableWidth, blockTop, provisionalHeight, activeFields);
+      const laneContext = {
+        ...context,
+        contentWidthOverride: lane.width || availableWidth,
+        pageWidth: lane.width || availableWidth
+      };
+      if (Math.abs(lane.width - initialLane.width) > 0.1) {
+        actor.prepare(lane.width || availableWidth, Infinity, laneContext);
+      }
+      const emitted = actor.emitBoxes(lane.width || availableWidth, Infinity, laneContext) || [];
+      const zoneField = readZoneFieldDirective(emitted);
+      if (zoneField) {
+        const fieldState = buildZoneFieldState(emitted, zoneField, availableWidth, blockTop);
+        placedBoxes.push(...fieldState.boxes);
+        activeFields.push(fieldState.field);
+        continue;
+      }
       for (const box of emitted) {
         placedBoxes.push({
           ...box,
+          x: (box.x || 0) + lane.x,
           y: (box.y || 0) + currentY + layoutDelta
         });
       }
@@ -58070,6 +58340,7 @@ ${source}`)
     const zoneWidth = zone.rect.width;
     const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
     const placedBoxes = [];
+    const activeFields = [];
     let currentY = 0;
     let lastSpacingAfter = 0;
     for (let actorIndex = 0; actorIndex < zone.actors.length; actorIndex++) {
@@ -58079,17 +58350,45 @@ ${source}`)
       const layoutBefore = lastSpacingAfter + marginTop;
       const layoutDelta = lastSpacingAfter;
       const remainingHeight = Math.max(0, availableHeight - currentY - layoutDelta);
+      const blockTop = currentY + layoutDelta;
+      const initialLane = resolveZoneLane(zoneWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields);
       const context = {
         ...zoneContextBase,
         pageIndex: 0,
         cursorY: currentY
       };
-      actor.prepare(zoneWidth, remainingHeight, context);
+      const initialContext = {
+        ...context,
+        contentWidthOverride: initialLane.width || zoneWidth,
+        pageWidth: initialLane.width || zoneWidth
+      };
+      actor.prepare(initialLane.width || zoneWidth, remainingHeight, initialContext);
+      const provisionalHeight = Math.max(
+        LAYOUT_DEFAULTS.minEffectiveHeight,
+        actor.getRequiredHeight() - marginTop - marginBottom + layoutBefore + marginBottom
+      );
+      const lane = resolveZoneLane(zoneWidth, blockTop, provisionalHeight, activeFields);
+      const laneContext = {
+        ...context,
+        contentWidthOverride: lane.width || zoneWidth,
+        pageWidth: lane.width || zoneWidth
+      };
+      if (Math.abs(lane.width - initialLane.width) > 0.1) {
+        actor.prepare(lane.width || zoneWidth, remainingHeight, laneContext);
+      }
       if (actor.getRequiredHeight() <= remainingHeight + 0.1) {
-        const emitted = actor.emitBoxes(zoneWidth, remainingHeight, context) || [];
+        const emitted = actor.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
+        const zoneField = readZoneFieldDirective(emitted);
+        if (zoneField) {
+          const fieldState = buildZoneFieldState(emitted, zoneField, zoneWidth, blockTop);
+          placedBoxes.push(...fieldState.boxes);
+          activeFields.push(fieldState.field);
+          continue;
+        }
         for (const box of emitted) {
           placedBoxes.push({
             ...box,
+            x: (box.x || 0) + lane.x,
             y: (box.y || 0) + currentY + layoutDelta
           });
         }
@@ -58114,10 +58413,11 @@ ${source}`)
       }
       const split = actor.split(remainingHeight, context);
       if (split.currentFragment) {
-        const emitted = split.currentFragment.emitBoxes(zoneWidth, remainingHeight, context) || [];
+        const emitted = split.currentFragment.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
         for (const box of emitted) {
           placedBoxes.push({
             ...box,
+            x: (box.x || 0) + lane.x,
             y: (box.y || 0) + currentY + layoutDelta
           });
         }
@@ -62560,6 +62860,36 @@ ${text5}
     }
     const bytes = getImageBytes(image2.base64Data);
     const clipShape = String(box.properties?._imageClipShape || "").trim();
+    const clipAssembly = Array.isArray(box.properties?._imageClipAssembly) ? box.properties?._imageClipAssembly : [];
+    if (clipAssembly.length > 0) {
+      const scaleX = box.w > 0 ? drawWidth / box.w : 1;
+      const scaleY = box.h > 0 ? drawHeight / box.h : 1;
+      context.save();
+      for (const member of clipAssembly) {
+        const memberX = drawX + Number(member.x || 0) * scaleX;
+        const memberY = drawY + Number(member.y || 0) * scaleY;
+        const memberW = Math.max(0, Number(member.w || 0) * scaleX);
+        const memberH = Math.max(0, Number(member.h || 0) * scaleY);
+        if (memberW <= 0 || memberH <= 0) continue;
+        if (member.shape === "circle") {
+          context.circle(
+            memberX + memberW / 2,
+            memberY + memberH / 2,
+            Math.max(0, Math.min(memberW, memberH) / 2)
+          );
+        } else {
+          context.rect(memberX, memberY, memberW, memberH);
+        }
+      }
+      context.clip();
+      context.image(bytes, drawX, drawY, {
+        width: drawWidth,
+        height: drawHeight,
+        mimeType: image2.mimeType
+      });
+      context.restore();
+      return;
+    }
     if (clipShape === "circle") {
       const radius = Math.max(0, Math.min(drawWidth, drawHeight) / 2);
       if (radius > 0) {

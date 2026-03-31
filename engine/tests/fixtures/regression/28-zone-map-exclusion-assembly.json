@@ -1,0 +1,169 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 600,
+      "height": 800
+    },
+    "margins": {
+      "top": 50,
+      "right": 50,
+      "bottom": 50,
+      "left": 50
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.4,
+    "pageBackground": "#fcfbf7",
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true,
+      "color": "#233b56"
+    },
+    "h2": {
+      "fontSize": 14,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true,
+      "color": "#33577d"
+    },
+    "p": {
+      "marginBottom": 8
+    },
+    "sidebar-label": {
+      "fontSize": 9,
+      "fontWeight": "bold",
+      "marginBottom": 4,
+      "color": "#555555"
+    },
+    "sidebar-body": {
+      "fontSize": 9,
+      "marginBottom": 6,
+      "color": "#333333"
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Zone Map: Invisible Exclusion Field"
+    },
+    {
+      "type": "p",
+      "content": "This proof keeps the exclusion assembly invisible. The text should appear to bend around a hidden field inside the main zone, while the sidebar remains structurally independent."
+    },
+    {
+      "type": "zone-map",
+      "properties": {
+        "style": {
+          "marginTop": 12,
+          "marginBottom": 12
+        }
+      },
+      "zones": [
+        {
+          "id": "main",
+          "elements": [
+            {
+              "type": "h2",
+              "content": "Main Zone"
+            },
+            {
+              "type": "story",
+              "children": [
+                {
+                  "type": "image",
+                  "content": "",
+                  "placement": {
+                    "mode": "float",
+                    "align": "left",
+                    "wrap": "around",
+                    "gap": 6,
+                    "exclusionAssembly": {
+                      "members": [
+                        { "shape": "circle", "x": 0, "y": 52, "w": 68, "h": 68 },
+                        { "shape": "rect", "x": 42, "y": 60, "w": 96, "h": 34 },
+                        { "shape": "circle", "x": 102, "y": 28, "w": 86, "h": 86 },
+                        { "shape": "circle", "x": 164, "y": 64, "w": 46, "h": 46 },
+                        { "shape": "circle", "x": 199, "y": 73, "w": 28, "h": 28 }
+                      ]
+                    }
+                  },
+                  "properties": {
+                    "style": {
+                      "width": 228,
+                      "height": 140
+                    }
+                  },
+                  "image": {
+                    "mimeType": "image/png",
+                    "fit": "fill",
+                    "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+Xr2QAAAAASUVORK5CYII="
+                  }
+                },
+                {
+                  "type": "p",
+                  "content": "Inside this zone the story flows around a compound exclusion field, but the field actor itself is visually transparent. That means the reader sees only the text avoiding a hidden presence. The result feels uncanny in exactly the right way: the page appears to know about an invisible object that still has mass, and the typography settles around it as if the field were a real thing occupying the map."
+                },
+                {
+                  "type": "p",
+                  "content": "Because the zone hosts a full story layout context, the exclusion field works here without any special zone-only wrap machinery. The main zone is the host, the story is the immediate consumer, and the exclusion assembly itself remains the lower spatial affordance. That layering is useful because it proves the capability can travel into other hosts before those hosts learn to consume the field directly."
+                },
+                {
+                  "type": "p",
+                  "content": "An invisible field is also a good stress case. It removes the comfort of a visible silhouette and forces us to judge the geometry itself. If the line starts and widths feel natural, then the field is earning its keep even when nothing is painted except the text that yields to it."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sidebar",
+          "elements": [
+            {
+              "type": "sidebar-label",
+              "content": "ZONE NOTE"
+            },
+            {
+              "type": "sidebar-body",
+              "content": "The right zone is unaffected. It keeps its own layout session and never learns about the invisible field in the left zone."
+            },
+            {
+              "type": "sidebar-label",
+              "content": "WHY IT MATTERS"
+            },
+            {
+              "type": "sidebar-body",
+              "content": "This is visually satisfying because the obstruction is implied by the typography alone."
+            }
+          ]
+        }
+      ],
+      "zoneLayout": {
+        "columns": [
+          {
+            "mode": "flex",
+            "fr": 2
+          },
+          {
+            "mode": "flex",
+            "fr": 1
+          }
+        ],
+        "gap": 16
+      }
+    },
+    {
+      "type": "p",
+      "content": "Content below the zone-map resumes in normal document flow after the hidden field proof."
+    }
+  ]
+}

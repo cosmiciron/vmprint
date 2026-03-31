@@ -45,8 +45,10 @@
 
 import { Box, BoxImagePayload, Element, ElementStyle, RichLine, StoryFloatAlign, StoryLayoutDirective, StoryWrapMode } from '../../types';
 import { LayoutProcessor } from '../layout-core';
+import { buildExclusionFieldObstacles } from '../exclusion-field';
 import { LayoutUtils } from '../layout-utils';
 import { normalizeStoryElement, type NormalizedStoryChild } from '../normalized-story';
+import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
@@ -453,7 +455,17 @@ export class StoryPackager implements PackagerUnit {
                 gap: layout.gap,
                 shape: layout.shape
             };
-            for (const obstacle of buildStoryLayoutObstacles(layout, rect.x, rect.y, rect.w, rect.h)) {
+            for (const obstacle of buildExclusionFieldObstacles({
+                x: rect.x,
+                y: rect.y,
+                w: rect.w,
+                h: rect.h,
+                wrap: layout.wrap,
+                gap: layout.gap,
+                shape: layout.shape,
+                align: layout.align,
+                exclusionAssembly: layout.exclusionAssembly
+            })) {
                 storyMap.register(obstacle);
                 registeredObstacles.push(obstacle);
             }
@@ -536,7 +548,17 @@ export class StoryPackager implements PackagerUnit {
                 const floatX = resolveFloatX(align, imgW, availableWidth);
 
                 if (layout.wrap !== 'none') {
-                    for (const obstacle of buildStoryLayoutObstacles(layout, floatX, cursorY, imgW, imgH)) {
+                    for (const obstacle of buildExclusionFieldObstacles({
+                        x: floatX,
+                        y: cursorY,
+                        w: imgW,
+                        h: imgH,
+                        wrap: layout.wrap,
+                        gap: layout.gap,
+                        shape: layout.shape,
+                        align: layout.align,
+                        exclusionAssembly: layout.exclusionAssembly
+                    })) {
                         storyMap.register(obstacle);
                         registeredObstacles.push(obstacle);
                     }
@@ -564,7 +586,17 @@ export class StoryPackager implements PackagerUnit {
                     const floatX = resolveFloatX(align, dims.w, availableWidth);
 
                     if (layout.wrap !== 'none') {
-                        for (const obstacle of buildStoryLayoutObstacles(layout, floatX, cursorY, dims.w, dims.h)) {
+                        for (const obstacle of buildExclusionFieldObstacles({
+                            x: floatX,
+                            y: cursorY,
+                            w: dims.w,
+                            h: dims.h,
+                            wrap: layout.wrap,
+                            gap: layout.gap,
+                            shape: layout.shape,
+                            align: layout.align,
+                            exclusionAssembly: layout.exclusionAssembly
+                        })) {
                             storyMap.register(obstacle);
                             registeredObstacles.push(obstacle);
                         }
@@ -657,169 +689,43 @@ export class StoryPackager implements PackagerUnit {
         cursorY: number,
         xOffset: number = 0
     ): PlacedTextElement | null {
-        // Shape gives us style, meta, and margin values.
-        const flowBox = (this.processor as any).shapeElement(
+        const opticalUnderhang = !!((this.processor as any).config?.layout?.storyWrapOpticalUnderhang);
+        const shaped = (this.processor as any).shapeElement(
             element, { path: [this.storyIndex, childIndex] }
         );
-        const style: ElementStyle = flowBox.style;
-        const fontSize = Number(style.fontSize || (this.processor as any).config.layout.fontSize);
-        const lineHeightRatio = Number(style.lineHeight || (this.processor as any).config.layout.lineHeight);
-        const uniformLH = lineHeightRatio * fontSize;
-
-        const marginTop = Math.max(0, flowBox.marginTop);
-        const marginBottom = Math.max(0, flowBox.marginBottom);
-
-        // Advance the cursor past any top-bottom obstacles before this element
-        // begins.  (Mid-element top-bottom skips are handled by the resolver.)
-        cursorY = storyMap.topBottomClearY(cursorY);
-        const elementStartY = cursorY + marginTop; // absolute story-local Y of box top
-
-        const richSegments = (this.processor as any).getRichSegments(element, style);
-        const font = (this.processor as any).resolveMeasurementFontForStyle(style);
-        const letterSpacing = Number(style.letterSpacing || 0);
-        const textIndent = Number(style.textIndent || 0);
-        const insetH = LayoutUtils.getHorizontalInsets(style);
-        const insetV = LayoutUtils.getVerticalInsets(style);
-        const contentWidth = Math.max(0, availableWidth - insetH);
-        const opticalUnderhang = !!((this.processor as any).config?.layout?.storyWrapOpticalUnderhang);
-
-        // -------------------------------------------------------------------
-        // Stateful line-layout resolver with dual-stream support
-        //
-        // The resolver is called by wrapRichSegments with lineIndex 0, 1, 2, …
-        // in strict ascending order (wrapTokenStream is a sequential pass).
-        //
-        // `physicalLineCount` tracks unique Y positions consumed so far.
-        // `pendingSlots` holds pre-computed extra intervals for the current
-        // physical row (e.g. the right flank of a centered float).  When
-        // `pendingSlots` is non-empty we return the next slot at the SAME
-        // yOffset as the previous call without advancing physicalLineCount —
-        // producing two consecutive wrapRichSegments lines that share the
-        // same Y.  The renderer already handles equal yOffset entries via
-        // `_lineYOffsets` / `_lineOffsets`.
-        //
-        // `accumulatedYBonus` models top-bottom obstacle skips: when a line's
-        // natural Y falls inside a top-bottom obstacle we advance past the
-        // obstacle and add the gap to accumulatedYBonus so that all subsequent
-        // lines are pushed down by the same amount.
-        // -------------------------------------------------------------------
-        let accumulatedYBonus = 0;
-        let physicalLineCount = 0;
-        const pendingSlots: Array<{ width: number; xOffset: number; yOffset: number }> = [];
-
-        const lineLayoutOut: { widths: number[]; offsets: number[]; yOffsets: number[] } = {
-            widths: [], offsets: [], yOffsets: []
-        };
-
-        const resolver = (lineIndex: number): { width: number; xOffset: number; yOffset: number } => {
-            // Serve any queued secondary slots first.  These are extra
-            // intervals at the same physical Y (e.g. right flank of a center
-            // float).  Do NOT advance physicalLineCount for these.
-            if (pendingSlots.length > 0) {
-                return pendingSlots.shift()!;
-            }
-
-            // Compute the story-local Y for this new physical line.
-            let lineY = elementStartY + physicalLineCount * uniformLH + accumulatedYBonus;
-
-            // Advance past any chained top-bottom obstacles that block this line.
-            while (storyMap.hasTopBottomBlock(lineY, uniformLH)) {
-                const clearY = storyMap.topBottomClearY(lineY);
-                accumulatedYBonus += clearY - lineY;
-                lineY = elementStartY + physicalLineCount * uniformLH + accumulatedYBonus;
-            }
-
-            const yOffset = physicalLineCount * uniformLH + accumulatedYBonus;
-            physicalLineCount++;
-
-            const resolvedIntervals = storyMap.getAvailableIntervals(
-                lineY,
-                uniformLH,
-                availableWidth,
-                opticalUnderhang ? { opticalUnderhang: true } : undefined
-            );
-
-            if (resolvedIntervals.length === 0) {
-                // Fully blocked (should not happen after the loop above, but
-                // guard against degenerate obstacle configurations).
-                return { width: contentWidth, xOffset: 0, yOffset };
-            }
-
-            if (resolvedIntervals.length > 1) {
-                // Dual-stream: queue all secondary intervals at the same yOffset.
-                // The token stream flows continuously: left interval is filled
-                // first, then right interval picks up where left left off.
-                for (let j = 1; j < resolvedIntervals.length; j++) {
-                    pendingSlots.push({
-                        width: Math.max(0, resolvedIntervals[j].w - insetH),
-                        xOffset: resolvedIntervals[j].x,
-                        yOffset
-                    });
-                }
-            }
-
-            return {
-                width: Math.max(0, resolvedIntervals[0].w - insetH),
-                xOffset: resolvedIntervals[0].x,
-                yOffset
-            };
-        };
-
-        const lines: RichLine[] = (this.processor as any).wrapRichSegments(
-            richSegments,
-            contentWidth,
-            font,
-            fontSize,
-            letterSpacing,
-            textIndent,
-            resolver,
-            lineLayoutOut
-        );
-
-        if (!lines || lines.length === 0) return null;
-
-        // Height of the content area (accounts for any Y-jumps from obstacle
-        // skips via calculateLineBlockHeight's lineYOffsets branch).
-        const linesH: number = (this.processor as any).calculateLineBlockHeight(
-            lines, style, lineLayoutOut.yOffsets
-        );
-        const contentH = linesH + insetV;
-
-        const box: Box = {
-            type: element.type,
-            x: margins.left + xOffset,
-            y: elementStartY,
-            w: availableWidth + insetH,
-            h: contentH,
-            lines,
-            style,
-            properties: {
-                ...(flowBox.properties || {}),
-                _lineOffsets: lineLayoutOut.offsets,
-                _lineWidths: lineLayoutOut.widths,
-                _lineYOffsets: lineLayoutOut.yOffsets,
-                _isFirstLine: true,
-                _isLastLine: true,
-            },
-            meta: { ...flowBox.meta, pageIndex: 0 }
-        };
+        const marginTop = Math.max(0, shaped.marginTop);
+        const placed = reflowTextElementAgainstSpatialField({
+            processor: this.processor,
+            element,
+            path: [this.storyIndex, childIndex],
+            availableWidth,
+            currentY: cursorY,
+            layoutBefore: marginTop,
+            spatialMap: storyMap,
+            xOffset,
+            leftMargin: margins.left,
+            pageIndex: 0,
+            opticalUnderhang,
+            clearTopBeforeStart: true
+        });
+        if (!placed) return null;
 
         return {
             kind: 'text',
             childIndex,
-            box,
-            topY: elementStartY,
-            contentH,
-            insetV,
-            marginTop,
-            marginBottom,
-            cursorAfter: elementStartY + contentH + marginBottom,
+            box: placed.box,
+            topY: placed.elementStartY,
+            contentH: placed.contentHeight,
+            insetV: placed.insetV,
+            marginTop: placed.marginTop,
+            marginBottom: placed.marginBottom,
+            cursorAfter: placed.elementStartY + placed.contentHeight + placed.marginBottom,
             sourceElement: element,
-            lines,
-            lineYOffsets: lineLayoutOut.yOffsets,
-            lineOffsets: lineLayoutOut.offsets,
-            lineWidths: lineLayoutOut.widths,
-            uniformLH,
+            lines: placed.lines,
+            lineYOffsets: placed.lineYOffsets,
+            lineOffsets: placed.lineOffsets,
+            lineWidths: placed.lineWidths,
+            uniformLH: placed.uniformLineHeight,
         };
     }
 
@@ -1027,7 +933,17 @@ export class StoryPackager implements PackagerUnit {
                 gap: layout.gap,
                 shape: layout.shape
             };
-            for (const obstacle of buildStoryLayoutObstacles(layout, rect.x, rect.y, rect.w, rect.h)) {
+            for (const obstacle of buildExclusionFieldObstacles({
+                x: rect.x,
+                y: rect.y,
+                w: rect.w,
+                h: rect.h,
+                wrap: layout.wrap,
+                gap: layout.gap,
+                shape: layout.shape,
+                align: layout.align,
+                exclusionAssembly: layout.exclusionAssembly
+            })) {
                 allObstacles.push(obstacle);
                 registeredObstacles.push(obstacle);
             }
@@ -1287,7 +1203,17 @@ export class StoryPackager implements PackagerUnit {
                     const localX = resolveFloatX(align, Math.min(imgW, region.w), region.w);
                     const x = region.x + localX;
                     if (layout.wrap !== 'none') {
-                        for (const obstacle of buildStoryLayoutObstacles(layout, x, anchorY, Math.min(imgW, region.w), imgH)) {
+                        for (const obstacle of buildExclusionFieldObstacles({
+                            x,
+                            y: anchorY,
+                            w: Math.min(imgW, region.w),
+                            h: imgH,
+                            wrap: layout.wrap,
+                            gap: layout.gap,
+                            shape: layout.shape,
+                            align: layout.align,
+                            exclusionAssembly: layout.exclusionAssembly
+                        })) {
                             allObstacles.push(obstacle);
                             registeredObstacles.push(obstacle);
                         }
@@ -1322,7 +1248,17 @@ export class StoryPackager implements PackagerUnit {
                         const x = region.x + localX;
 
                         if (layout.wrap !== 'none') {
-                            for (const obstacle of buildStoryLayoutObstacles(layout, x, anchorY, effectiveW, dims.h)) {
+                            for (const obstacle of buildExclusionFieldObstacles({
+                                x,
+                                y: anchorY,
+                                w: effectiveW,
+                                h: dims.h,
+                                wrap: layout.wrap,
+                                gap: layout.gap,
+                                shape: layout.shape,
+                                align: layout.align,
+                                exclusionAssembly: layout.exclusionAssembly
+                            })) {
                                 allObstacles.push(obstacle);
                                 registeredObstacles.push(obstacle);
                             }
@@ -1924,47 +1860,6 @@ function resolveFloatX(
     if (align === 'right') return Math.max(0, availableWidth - imgW);
     if (align === 'center') return Math.max(0, (availableWidth - imgW) / 2);
     return 0; // 'left'
-}
-
-function buildStoryLayoutObstacles(
-    layout: StoryLayoutDirective,
-    anchorX: number,
-    anchorY: number,
-    defaultWidth: number,
-    defaultHeight: number
-): OccupiedRect[] {
-    const wrap = layout.wrap ?? 'around';
-    const gap = Math.max(0, Number(layout.gap ?? 0));
-    const normalizedShape = (layout.shape ?? 'rect') as 'rect' | 'circle';
-    const assemblyMembers = Array.isArray(layout.exclusionAssembly?.members)
-        ? layout.exclusionAssembly.members
-        : [];
-
-    if (assemblyMembers.length === 0) {
-        return [{
-            x: anchorX,
-            y: anchorY,
-            w: defaultWidth,
-            h: defaultHeight,
-            wrap,
-            gap,
-            shape: normalizedShape,
-            align: layout.align
-        }];
-    }
-
-    return assemblyMembers.map((member) => ({
-        x: anchorX + Number(member.x ?? 0),
-        y: anchorY + Number(member.y ?? 0),
-        w: Math.max(0, Number(member.w ?? 0)),
-        h: Math.max(0, Number(member.h ?? 0)),
-        wrap,
-        gap,
-        shape: ((member.shape ?? 'rect') as 'rect' | 'circle')
-        // Deliberately omit align here: assembled members should carve as
-        // local lobes, not inherit the top-level edge-extension heuristic
-        // used for solitary left/right circles.
-    })).filter((member) => member.w > 0 && member.h > 0);
 }
 
 function cloneBoxes(boxes: Box[], pageIndex?: number): Box[] {
