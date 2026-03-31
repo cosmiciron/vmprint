@@ -58881,6 +58881,15 @@ ${source}`)
     }
     return runs.flatMap((run) => run.dir === "rtl" ? [...run.items].reverse() : run.items);
   };
+  var getSelectionEntries = (selection) => {
+    if (!selection) return [];
+    if (selection.targetSelections?.length) return selection.targetSelections;
+    return [{
+      targetId: selection.targetId,
+      sourceId: selection.sourceId,
+      selectedOffsets: selection.selectedOffsets
+    }];
+  };
   var toNumber = (value, fallback = 0) => {
     const numeric = Number(value);
     return Number.isFinite(numeric) ? numeric : fallback;
@@ -58941,7 +58950,9 @@ ${source}`)
         segmentUnitCount: segmentMeta?.unitCount,
         segmentX0: segmentMeta?.x0,
         segmentX1: segmentMeta?.x1,
-        segmentIsShaped: segmentMeta?.shaped
+        segmentIsShaped: segmentMeta?.shaped,
+        segmentLogicalIndex: segmentMeta?.logicalIndex,
+        segmentDirection: segmentMeta?.direction
       };
       absoluteOffsetRef.value += 1;
       return unit;
@@ -58967,7 +58978,9 @@ ${source}`)
         segmentUnitCount: segmentMeta?.unitCount,
         segmentX0: segmentMeta?.x0,
         segmentX1: segmentMeta?.x1,
-        segmentIsShaped: segmentMeta?.shaped
+        segmentIsShaped: segmentMeta?.shaped,
+        segmentLogicalIndex: segmentMeta?.logicalIndex,
+        segmentDirection: segmentMeta?.direction
       };
       absoluteOffsetRef.value += 1;
       return unit;
@@ -59040,7 +59053,8 @@ ${source}`)
       );
       const rawItems = line.map((seg, index2) => ({
         seg,
-        extra: justifyExtraAfter[index2] || 0
+        extra: justifyExtraAfter[index2] || 0,
+        logicalIndex: index2
       }));
       const lineItems = reorderItemsForVisualBidi(rawItems, paragraphDirection);
       const lineStartOffset = absoluteOffsetRef.value;
@@ -59055,12 +59069,15 @@ ${source}`)
         const drawX = currentX;
         const segmentText = String(seg.text || "");
         const segmentUnitCount = Array.from(segmentText).length || seg.glyphs?.length || 0;
+        const segmentDirection = seg.direction === "rtl" ? "rtl" : "ltr";
         const segmentMeta = {
           key: `${pageIndex}:${buildTargetId(box.meta, pageIndex)}:${lineIndex}:${segmentIndex}`,
           unitCount: segmentUnitCount,
           x0: drawX,
           x1: drawX + segWidth,
-          shaped: Array.isArray(seg.shapedGlyphs) && seg.shapedGlyphs.length > 0 && seg.direction === "rtl"
+          shaped: Array.isArray(seg.shapedGlyphs) && seg.shapedGlyphs.length > 0 && seg.direction === "rtl",
+          logicalIndex: lineItems[segmentIndex].logicalIndex,
+          direction: segmentDirection
         };
         lineUnits.push(...buildSegmentUnits(seg, drawX, lineIndex, lineTop, bottom, absoluteOffsetRef, segmentMeta));
         if (paragraphDirection === "rtl") {
@@ -59451,6 +59468,41 @@ ${source}`)
       }) : buildInteractionSelectionRects(target, selection),
       caretRect: selection && caretTarget ? getInteractionCaretRect(caretTarget, selection.caretOffset) : null
     };
+  };
+  var serializeInteractionSelectionText = (page, selection) => {
+    if (!page || !selection) return "";
+    const chunks = [];
+    for (const entry of getSelectionEntries(selection)) {
+      const target = findInteractionTarget(page, entry.targetId);
+      if (!target || entry.selectedOffsets.length === 0) continue;
+      const selectedOffsets = new Set(entry.selectedOffsets);
+      const lineChunks = [];
+      for (const line of target.lines) {
+        const selectedLineUnits = target.units.filter((unit) => unit.lineIndex === line.index && selectedOffsets.has(unit.absoluteOffset));
+        if (selectedLineUnits.length === 0) continue;
+        const bySegment = /* @__PURE__ */ new Map();
+        for (const unit of selectedLineUnits) {
+          const key = unit.segmentKey || `${unit.lineIndex}:${unit.segmentLogicalIndex ?? 0}`;
+          const bucket = bySegment.get(key);
+          if (bucket) bucket.push(unit);
+          else bySegment.set(key, [unit]);
+        }
+        const lineText = [...bySegment.values()].sort((left, right) => {
+          const leftIndex = left[0]?.segmentLogicalIndex ?? 0;
+          const rightIndex = right[0]?.segmentLogicalIndex ?? 0;
+          return leftIndex - rightIndex;
+        }).map((segmentUnits) => {
+          const direction = segmentUnits[0]?.segmentDirection || "ltr";
+          const orderedUnits = [...segmentUnits].sort((left, right) => direction === "rtl" ? right.x0 - left.x0 : left.x0 - right.x0);
+          return orderedUnits.map((unit) => unit.text).join("");
+        }).join("");
+        if (lineText) lineChunks.push(lineText);
+      }
+      if (lineChunks.length > 0) {
+        chunks.push(lineChunks.join("\n"));
+      }
+    }
+    return chunks.join("\n");
   };
   var InteractionArtifactCollaborator = class {
     constructor(layout) {
@@ -64188,6 +64240,12 @@ ${source}`)
       this.assertHasDocument("buildPageInteractionOverlay");
       const page = this.interactionSnapshotPages?.[pageIndex];
       return buildInteractionOverlayModel(page, selection, selectedTargetId2);
+    }
+    getPageInteractionSelectionText(pageIndex, selection) {
+      this.assertActive("getPageInteractionSelectionText");
+      this.assertHasDocument("getPageInteractionSelectionText");
+      const page = this.interactionSnapshotPages?.[pageIndex];
+      return serializeInteractionSelectionText(page, selection);
     }
     isDestroyed() {
       return this.destroyed;
@@ -83478,6 +83536,20 @@ captions:
     isDragging = false;
     isSelecting = false;
     dragAnchor = null;
+  });
+  window.addEventListener("keydown", async (event) => {
+    const isCopyShortcut = (event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey && event.key.toLowerCase() === "c";
+    if (!isCopyShortcut || !preview || !activeTextSelection) return;
+    const selectedText = preview.getPageInteractionSelectionText(currentPageIndex, activeTextSelection);
+    if (!selectedText) return;
+    event.preventDefault();
+    try {
+      await navigator.clipboard.writeText(selectedText);
+      statusNode.textContent = `Copied ${selectedText.length} characters from the current selection.`;
+    } catch (error) {
+      console.error(error);
+      statusNode.textContent = "Copy failed. Clipboard access was denied.";
+    }
   });
   markdownInput.value = DEFAULT_MARKDOWN;
   updateInteractionButton();

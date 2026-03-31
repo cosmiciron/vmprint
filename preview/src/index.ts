@@ -11,6 +11,7 @@ import {
     Renderer,
     resolveInteractionSelection,
     resolveDocumentPaths,
+    serializeInteractionSelectionText,
     simulationArtifactKeys,
     toLayoutConfig
 } from '@vmprint/engine';
@@ -249,6 +250,10 @@ export type PreviewSession = {
         selection: VmprintInteractionSelectionState | null | undefined,
         selectedTargetId?: string | null
     ): VmprintInteractionOverlayModel | null;
+    getPageInteractionSelectionText(
+        pageIndex: number,
+        selection: VmprintInteractionSelectionState | null | undefined
+    ): string;
     isDestroyed(): boolean;
     renderPageToCanvas(pageIndex: number, target: CanvasTarget, options?: RenderPageToCanvasOptions): Promise<void>;
     exportPdf(): Promise<Uint8Array>;
@@ -1006,6 +1011,16 @@ class PreviewSessionImpl implements PreviewSession {
         this.assertHasDocument('buildPageInteractionOverlay');
         const page = this.interactionSnapshotPages?.[pageIndex];
         return buildInteractionOverlayModel(page, selection, selectedTargetId);
+    }
+
+    getPageInteractionSelectionText(
+        pageIndex: number,
+        selection: VmprintInteractionSelectionState | null | undefined
+    ): string {
+        this.assertActive('getPageInteractionSelectionText');
+        this.assertHasDocument('getPageInteractionSelectionText');
+        const page = this.interactionSnapshotPages?.[pageIndex];
+        return serializeInteractionSelectionText(page, selection);
     }
 
     isDestroyed(): boolean {

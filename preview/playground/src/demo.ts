@@ -1449,6 +1449,23 @@ window.addEventListener('mouseup', () => {
     dragAnchor = null;
 });
 
+window.addEventListener('keydown', async (event) => {
+    const isCopyShortcut = (event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey && event.key.toLowerCase() === 'c';
+    if (!isCopyShortcut || !preview || !activeTextSelection) return;
+
+    const selectedText = preview.getPageInteractionSelectionText(currentPageIndex, activeTextSelection);
+    if (!selectedText) return;
+
+    event.preventDefault();
+    try {
+        await navigator.clipboard.writeText(selectedText);
+        statusNode.textContent = `Copied ${selectedText.length} characters from the current selection.`;
+    } catch (error) {
+        console.error(error);
+        statusNode.textContent = 'Copy failed. Clipboard access was denied.';
+    }
+});
+
 // -- Init -----------------------------------------------------------------
 
 markdownInput.value = DEFAULT_MARKDOWN;

@@ -25,6 +25,8 @@ export type VmprintInteractionUnit = {
     segmentX0?: number;
     segmentX1?: number;
     segmentIsShaped?: boolean;
+    segmentLogicalIndex?: number;
+    segmentDirection?: 'ltr' | 'rtl';
 };
 
 export type VmprintInteractionLine = {
@@ -119,6 +121,18 @@ export type VmprintInteractionOverlayModel = {
     caretRect: VmprintInteractionCaretRect | null;
 };
 
+const getSelectionEntries = (
+    selection: VmprintInteractionSelectionState | null | undefined
+): Array<{ targetId: string; sourceId: string; selectedOffsets: number[] }> => {
+    if (!selection) return [];
+    if (selection.targetSelections?.length) return selection.targetSelections;
+    return [{
+        targetId: selection.targetId,
+        sourceId: selection.sourceId,
+        selectedOffsets: selection.selectedOffsets
+    }];
+};
+
 const toNumber = (value: unknown, fallback = 0): number => {
     const numeric = Number(value);
     return Number.isFinite(numeric) ? numeric : fallback;
@@ -189,6 +203,8 @@ const buildFallbackUnits = (
         x0: number;
         x1: number;
         shaped: boolean;
+        logicalIndex: number;
+        direction: 'ltr' | 'rtl';
     }
 ): VmprintInteractionUnit[] => {
     const glyphs = Array.from(text || '');
@@ -210,7 +226,9 @@ const buildFallbackUnits = (
             segmentUnitCount: segmentMeta?.unitCount,
             segmentX0: segmentMeta?.x0,
             segmentX1: segmentMeta?.x1,
-            segmentIsShaped: segmentMeta?.shaped
+            segmentIsShaped: segmentMeta?.shaped,
+            segmentLogicalIndex: segmentMeta?.logicalIndex,
+            segmentDirection: segmentMeta?.direction
         };
         absoluteOffsetRef.value += 1;
         return unit;
@@ -231,6 +249,8 @@ const buildGlyphUnits = (
         x0: number;
         x1: number;
         shaped: boolean;
+        logicalIndex: number;
+        direction: 'ltr' | 'rtl';
     }
 ): VmprintInteractionUnit[] => {
     if (!Array.isArray(glyphs) || glyphs.length === 0) return [];
@@ -255,7 +275,9 @@ const buildGlyphUnits = (
             segmentUnitCount: segmentMeta?.unitCount,
             segmentX0: segmentMeta?.x0,
             segmentX1: segmentMeta?.x1,
-            segmentIsShaped: segmentMeta?.shaped
+            segmentIsShaped: segmentMeta?.shaped,
+            segmentLogicalIndex: segmentMeta?.logicalIndex,
+            segmentDirection: segmentMeta?.direction
         };
         absoluteOffsetRef.value += 1;
         return unit;
@@ -275,6 +297,8 @@ const buildSegmentUnits = (
         x0: number;
         x1: number;
         shaped: boolean;
+        logicalIndex: number;
+        direction: 'ltr' | 'rtl';
     }
 ): VmprintInteractionUnit[] => {
     const segmentWidth = Math.max(0, toNumber(segment.width, 0));
@@ -353,9 +377,10 @@ const buildInteractionTarget = (
             lineWidth
         );
 
-        const rawItems: RendererLineItem[] = line.map((seg, index) => ({
+        const rawItems: Array<RendererLineItem & { logicalIndex: number }> = line.map((seg, index) => ({
             seg,
-            extra: justifyExtraAfter[index] || 0
+            extra: justifyExtraAfter[index] || 0,
+            logicalIndex: index
         }));
         const lineItems = reorderItemsForVisualBidi(rawItems, paragraphDirection);
 
@@ -372,12 +397,15 @@ const buildInteractionTarget = (
             const drawX = currentX;
             const segmentText = String(seg.text || '');
             const segmentUnitCount = Array.from(segmentText).length || seg.glyphs?.length || 0;
+            const segmentDirection: 'ltr' | 'rtl' = seg.direction === 'rtl' ? 'rtl' : 'ltr';
             const segmentMeta = {
                 key: `${pageIndex}:${buildTargetId(box.meta, pageIndex)}:${lineIndex}:${segmentIndex}`,
                 unitCount: segmentUnitCount,
                 x0: drawX,
                 x1: drawX + segWidth,
-                shaped: Array.isArray(seg.shapedGlyphs) && seg.shapedGlyphs.length > 0 && seg.direction === 'rtl'
+                shaped: Array.isArray(seg.shapedGlyphs) && seg.shapedGlyphs.length > 0 && seg.direction === 'rtl',
+                logicalIndex: lineItems[segmentIndex].logicalIndex,
+                direction: segmentDirection
             };
             lineUnits.push(...buildSegmentUnits(seg, drawX, lineIndex, lineTop, bottom, absoluteOffsetRef, segmentMeta));
             if (paragraphDirection === 'rtl') {
@@ -904,4 +932,58 @@ export const buildInteractionOverlayModel = (
             : buildInteractionSelectionRects(target, selection),
         caretRect: selection && caretTarget ? getInteractionCaretRect(caretTarget, selection.caretOffset) : null
     };
+};
+
+export const serializeInteractionSelectionText = (
+    page: VmprintInteractionPage | null | undefined,
+    selection: VmprintInteractionSelectionState | null | undefined
+): string => {
+    if (!page || !selection) return '';
+
+    const chunks: string[] = [];
+    for (const entry of getSelectionEntries(selection)) {
+        const target = findInteractionTarget(page, entry.targetId);
+        if (!target || entry.selectedOffsets.length === 0) continue;
+
+        const selectedOffsets = new Set(entry.selectedOffsets);
+        const lineChunks: string[] = [];
+
+        for (const line of target.lines) {
+            const selectedLineUnits = target.units
+                .filter((unit) => unit.lineIndex === line.index && selectedOffsets.has(unit.absoluteOffset));
+            if (selectedLineUnits.length === 0) continue;
+
+            const bySegment = new Map<string, VmprintInteractionUnit[]>();
+            for (const unit of selectedLineUnits) {
+                const key = unit.segmentKey || `${unit.lineIndex}:${unit.segmentLogicalIndex ?? 0}`;
+                const bucket = bySegment.get(key);
+                if (bucket) bucket.push(unit);
+                else bySegment.set(key, [unit]);
+            }
+
+            const lineText = [...bySegment.values()]
+                .sort((left, right) => {
+                    const leftIndex = left[0]?.segmentLogicalIndex ?? 0;
+                    const rightIndex = right[0]?.segmentLogicalIndex ?? 0;
+                    return leftIndex - rightIndex;
+                })
+                .map((segmentUnits) => {
+                    const direction = segmentUnits[0]?.segmentDirection || 'ltr';
+                    const orderedUnits = [...segmentUnits].sort((left, right) => (
+                        direction === 'rtl'
+                            ? right.x0 - left.x0
+                            : left.x0 - right.x0
+                    ));
+                    return orderedUnits.map((unit) => unit.text).join('');
+                })
+                .join('');
+            if (lineText) lineChunks.push(lineText);
+        }
+
+        if (lineChunks.length > 0) {
+            chunks.push(lineChunks.join('\n'));
+        }
+    }
+
+    return chunks.join('\n');
 };
