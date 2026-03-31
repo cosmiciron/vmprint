@@ -11,6 +11,7 @@ import {
     Renderer,
     resolveInteractionSelection,
     resolveDocumentPaths,
+    serializeInteractionSelectionMarkdown,
     serializeInteractionSelectionText,
     simulationArtifactKeys,
     toLayoutConfig
@@ -251,6 +252,10 @@ export type PreviewSession = {
         selectedTargetId?: string | null
     ): VmprintInteractionOverlayModel | null;
     getPageInteractionSelectionText(
+        pageIndex: number,
+        selection: VmprintInteractionSelectionState | null | undefined
+    ): string;
+    getPageInteractionSelectionMarkdown(
         pageIndex: number,
         selection: VmprintInteractionSelectionState | null | undefined
     ): string;
@@ -1022,6 +1027,16 @@ class PreviewSessionImpl implements PreviewSession {
         this.assertHasDocument('getPageInteractionSelectionText');
         const page = this.interactionSnapshotPages?.[pageIndex];
         return serializeInteractionSelectionText(page, selection);
+    }
+
+    getPageInteractionSelectionMarkdown(
+        pageIndex: number,
+        selection: VmprintInteractionSelectionState | null | undefined
+    ): string {
+        this.assertActive('getPageInteractionSelectionMarkdown');
+        this.assertHasDocument('getPageInteractionSelectionMarkdown');
+        const page = this.interactionSnapshotPages?.[pageIndex];
+        return serializeInteractionSelectionMarkdown(page, selection);
     }
 
     isDestroyed(): boolean {

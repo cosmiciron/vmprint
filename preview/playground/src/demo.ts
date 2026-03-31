@@ -1000,6 +1000,7 @@ const markdownInput = byId<HTMLTextAreaElement>('markdown-input');
 const styleSelect = byId<HTMLSelectElement>('style-preset');
 const pdfButton = byId<HTMLButtonElement>('pdf-button');
 const svgButton = byId<HTMLButtonElement>('svg-button');
+const copyMarkdownButton = byId<HTMLButtonElement>('copy-markdown-button');
 const prevButton = byId<HTMLButtonElement>('prev-button');
 const nextButton = byId<HTMLButtonElement>('next-button');
 const pagerText = byId<HTMLElement>('pager-text');
@@ -1204,6 +1205,21 @@ const updateInteractionButton = (): void => {
     interactionModeBtn.textContent = interactionMode === 'pan' ? 'Pan' : 'Select';
 };
 
+const copyCurrentSelectionAsMarkdown = async (): Promise<boolean> => {
+    if (!preview || !activeTextSelection) return false;
+    const selectedMarkdown = preview.getPageInteractionSelectionMarkdown(currentPageIndex, activeTextSelection);
+    if (!selectedMarkdown) return false;
+    try {
+        await navigator.clipboard.writeText(selectedMarkdown);
+        statusNode.textContent = `Copied ${selectedMarkdown.length} markdown characters from the current selection.`;
+        return true;
+    } catch (error) {
+        console.error(error);
+        statusNode.textContent = 'Markdown copy failed. Clipboard access was denied.';
+        return false;
+    }
+};
+
 const eventToPagePoint = (event: MouseEvent): { x: number; y: number } => {
     const rect = previewCanvas.getBoundingClientRect();
     const canvasX = ((event.clientX - rect.left) / Math.max(1, rect.width)) * previewCanvas.width;
@@ -1365,6 +1381,10 @@ svgButton.addEventListener('click', async () => {
     statusNode.textContent = 'SVG export complete.';
 });
 
+copyMarkdownButton.addEventListener('click', () => {
+    void copyCurrentSelectionAsMarkdown();
+});
+
 toggleAstBtn.addEventListener('click', () => astDrawer.classList.toggle('collapsed'));
 closeAstBtn.addEventListener('click', () => astDrawer.classList.add('collapsed'));
 
@@ -1450,15 +1470,35 @@ window.addEventListener('mouseup', () => {
 });
 
 window.addEventListener('keydown', async (event) => {
+    const isMarkdownCopyShortcut = (event.ctrlKey || event.metaKey) && event.shiftKey && !event.altKey && event.key.toLowerCase() === 'c';
+    if (isMarkdownCopyShortcut) {
+        event.preventDefault();
+        await copyCurrentSelectionAsMarkdown();
+        return;
+    }
+
     const isCopyShortcut = (event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey && event.key.toLowerCase() === 'c';
     if (!isCopyShortcut || !preview || !activeTextSelection) return;
 
     const selectedText = preview.getPageInteractionSelectionText(currentPageIndex, activeTextSelection);
+    const selectedMarkdown = preview.getPageInteractionSelectionMarkdown(currentPageIndex, activeTextSelection);
     if (!selectedText) return;
 
     event.preventDefault();
     try {
-        await navigator.clipboard.writeText(selectedText);
+        if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
+            try {
+                const item = new ClipboardItem({
+                    'text/plain': new Blob([selectedText], { type: 'text/plain' }),
+                    'text/markdown': new Blob([selectedMarkdown || selectedText], { type: 'text/markdown' })
+                });
+                await navigator.clipboard.write([item]);
+            } catch {
+                await navigator.clipboard.writeText(selectedText);
+            }
+        } else {
+            await navigator.clipboard.writeText(selectedText);
+        }
         statusNode.textContent = `Copied ${selectedText.length} characters from the current selection.`;
     } catch (error) {
         console.error(error);

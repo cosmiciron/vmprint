@@ -47,6 +47,7 @@ export type VmprintInteractionTarget = {
     sourceId: string;
     engineKey: string;
     sourceType: string;
+    semanticRole?: string;
     selectableText: boolean;
     fragmentIndex: number;
     isContinuation: boolean;
@@ -473,6 +474,7 @@ const buildInteractionTarget = (
         sourceId: String(box.meta?.sourceId || ''),
         engineKey: String(box.meta?.engineKey || ''),
         sourceType: String(box.meta?.sourceType || ''),
+        semanticRole: typeof box.meta?.semanticRole === 'string' ? box.meta.semanticRole : undefined,
         selectableText: isTextSelectableBox(box),
         fragmentIndex: Number(box.meta?.fragmentIndex || 0),
         isContinuation: Boolean(box.meta?.isContinuation),
@@ -984,49 +986,6 @@ export const serializeInteractionSelectionText = (
         getSelectionEntries(selection).map((entry) => [entry.targetId, entry] as const)
     );
 
-    const serializeTargetSelectionText = (
-        target: VmprintInteractionTarget,
-        selectedOffsets: number[]
-    ): string => {
-        if (selectedOffsets.length === 0) return '';
-        const selectedOffsetSet = new Set(selectedOffsets);
-        const lineChunks: string[] = [];
-
-        for (const line of target.lines) {
-            const selectedLineUnits = target.units
-                .filter((unit) => unit.lineIndex === line.index && selectedOffsetSet.has(unit.absoluteOffset));
-            if (selectedLineUnits.length === 0) continue;
-
-            const bySegment = new Map<string, VmprintInteractionUnit[]>();
-            for (const unit of selectedLineUnits) {
-                const key = unit.segmentKey || `${unit.lineIndex}:${unit.segmentLogicalIndex ?? 0}`;
-                const bucket = bySegment.get(key);
-                if (bucket) bucket.push(unit);
-                else bySegment.set(key, [unit]);
-            }
-
-            const lineText = [...bySegment.values()]
-                .sort((left, right) => {
-                    const leftIndex = left[0]?.segmentLogicalIndex ?? 0;
-                    const rightIndex = right[0]?.segmentLogicalIndex ?? 0;
-                    return leftIndex - rightIndex;
-                })
-                .map((segmentUnits) => {
-                    const direction = segmentUnits[0]?.segmentDirection || 'ltr';
-                    const orderedUnits = [...segmentUnits].sort((left, right) => (
-                        direction === 'rtl'
-                            ? right.x0 - left.x0
-                            : left.x0 - right.x0
-                    ));
-                    return orderedUnits.map((unit) => unit.text).join('');
-                })
-                .join('');
-            if (lineText) lineChunks.push(lineText);
-        }
-
-        return lineChunks.join('\n');
-    };
-
     const pieces: string[] = [];
     let previousTarget: VmprintInteractionTarget | null = null;
 
@@ -1034,8 +993,8 @@ export const serializeInteractionSelectionText = (
         const entry = selectedEntryMap.get(span.targetId);
         if (!entry) continue;
         const target = findInteractionTarget(page, entry.targetId);
-        if (!target || entry.selectedOffsets.length === 0) continue;
-        const text = serializeTargetSelectionText(target, entry.selectedOffsets);
+        if (!target || (target.selectableText && entry.selectedOffsets.length === 0)) continue;
+        const text = serializeInteractionTargetPlainText(target, entry.selectedOffsets);
         if (!text) continue;
 
         if (pieces.length > 0 && previousTarget) {
@@ -1055,6 +1014,182 @@ export const serializeInteractionSelectionText = (
 
         pieces.push(text);
         previousTarget = target;
+    }
+
+    return pieces.join('');
+};
+
+const serializeInteractionTargetPlainText = (
+    target: VmprintInteractionTarget,
+    selectedOffsets: number[]
+): string => {
+    if (!target.selectableText) {
+        const normalizedType = String(target.sourceType || '').trim().toLowerCase();
+        if (normalizedType === 'image') return '[Image]';
+        if (normalizedType === 'table_cell') return '[Cell]';
+        if (normalizedType) {
+            return `[${normalizedType.replace(/[_-]+/g, ' ')}]`;
+        }
+        return '[Object]';
+    }
+    if (selectedOffsets.length === 0) return '';
+    const selectedOffsetSet = new Set(selectedOffsets);
+    const lineChunks: string[] = [];
+
+    for (const line of target.lines) {
+        const selectedLineUnits = target.units
+            .filter((unit) => unit.lineIndex === line.index && selectedOffsetSet.has(unit.absoluteOffset));
+        if (selectedLineUnits.length === 0) continue;
+
+        const bySegment = new Map<string, VmprintInteractionUnit[]>();
+        for (const unit of selectedLineUnits) {
+            const key = unit.segmentKey || `${unit.lineIndex}:${unit.segmentLogicalIndex ?? 0}`;
+            const bucket = bySegment.get(key);
+            if (bucket) bucket.push(unit);
+            else bySegment.set(key, [unit]);
+        }
+
+        const lineText = [...bySegment.values()]
+            .sort((left, right) => {
+                const leftIndex = left[0]?.segmentLogicalIndex ?? 0;
+                const rightIndex = right[0]?.segmentLogicalIndex ?? 0;
+                return leftIndex - rightIndex;
+            })
+            .map((segmentUnits) => {
+                const direction = segmentUnits[0]?.segmentDirection || 'ltr';
+                const orderedUnits = [...segmentUnits].sort((left, right) => (
+                    direction === 'rtl'
+                        ? right.x0 - left.x0
+                        : left.x0 - right.x0
+                ));
+                return orderedUnits.map((unit) => unit.text).join('');
+            })
+            .join('');
+        if (lineText) lineChunks.push(lineText);
+    }
+
+    return lineChunks.join('\n');
+};
+
+const inferHeadingLevel = (target: VmprintInteractionTarget): number | null => {
+    const semantic = String(target.semanticRole || '').trim().toLowerCase();
+    const sourceType = String(target.sourceType || '').trim().toLowerCase();
+    const combined = `${semantic} ${sourceType}`;
+    const match = combined.match(/heading[-_ ]?([1-6])|h([1-6])/);
+    const numeric = Number(match?.[1] || match?.[2] || 0);
+    if (numeric >= 1 && numeric <= 6) return numeric;
+    if (semantic === 'header') return 2;
+    return null;
+};
+
+const serializeInteractionTargetMarkdown = (
+    target: VmprintInteractionTarget,
+    plainText: string
+): string => {
+    const normalizedType = String(target.sourceType || '').trim().toLowerCase();
+    const normalizedRole = String(target.semanticRole || '').trim().toLowerCase();
+    const text = plainText.trimEnd();
+
+    if (!target.selectableText) {
+        if (normalizedType === 'image') return '![Image]()';
+        if (normalizedType) return `[${normalizedType.replace(/[_-]+/g, ' ')}]`;
+        return '[Object]';
+    }
+
+    const headingLevel = inferHeadingLevel(target);
+    if (headingLevel) return `${'#'.repeat(headingLevel)} ${text}`;
+
+    if (normalizedType.includes('blockquote') || normalizedRole.includes('blockquote')) {
+        return text.split('\n').map((line) => `> ${line}`).join('\n');
+    }
+
+    if (normalizedType.includes('ordered-list') || normalizedType === 'ordered_item' || normalizedType === 'ordered-item') {
+        return text.split('\n').map((line, index) => `${index + 1}. ${line}`).join('\n');
+    }
+
+    if (
+        normalizedType.includes('unordered-list') ||
+        normalizedType === 'list_item' ||
+        normalizedType === 'list-item' ||
+        normalizedType === 'bullet-item'
+    ) {
+        return text.split('\n').map((line) => `- ${line}`).join('\n');
+    }
+
+    if (normalizedType.includes('code') || normalizedRole === 'code') {
+        return `\`\`\`\n${text}\n\`\`\``;
+    }
+
+    return text;
+};
+
+export const serializeInteractionSelectionMarkdown = (
+    page: VmprintInteractionPage | null | undefined,
+    selection: VmprintInteractionSelectionState | null | undefined
+): string => {
+    if (!page || !selection) return '';
+
+    const selectedEntryMap = new Map(
+        getSelectionEntries(selection).map((entry) => [entry.targetId, entry] as const)
+    );
+
+    const items = page.flattenedSpans
+        .map((span) => {
+            const entry = selectedEntryMap.get(span.targetId);
+            if (!entry) return null;
+            const target = findInteractionTarget(page, entry.targetId);
+            if (!target || (target.selectableText && entry.selectedOffsets.length === 0)) return null;
+            const plainText = serializeInteractionTargetPlainText(target, entry.selectedOffsets);
+            return plainText
+                ? { span, entry, target, plainText, markdown: serializeInteractionTargetMarkdown(target, plainText) }
+                : null;
+        })
+        .filter((item): item is NonNullable<typeof item> => item !== null);
+
+    const pieces: string[] = [];
+    let index = 0;
+    while (index < items.length) {
+        const current = items[index];
+        if (!current.target.tableCell) {
+            if (pieces.length > 0) pieces.push('\n\n');
+            pieces.push(current.markdown);
+            index += 1;
+            continue;
+        }
+
+        const tableRun: typeof items = [];
+        while (index < items.length && items[index].target.tableCell) {
+            tableRun.push(items[index]);
+            index += 1;
+        }
+
+        const rows = new Map<number, Array<{ col: number; text: string; isHeader: boolean }>>();
+        for (const item of tableRun) {
+            const rowKey = item.target.tableViewportRowIndex ?? item.target.tableRowIndex ?? 0;
+            const row = rows.get(rowKey) || [];
+            row.push({
+                col: item.target.tableColIndex ?? row.length,
+                text: item.plainText.replace(/\n+/g, ' ').trim(),
+                isHeader: rowKey === 0 || String(item.target.semanticRole || '').trim().toLowerCase() === 'header'
+            });
+            rows.set(rowKey, row);
+        }
+
+        const orderedRows = [...rows.entries()]
+            .sort((left, right) => left[0] - right[0])
+            .map(([, row]) => row.sort((left, right) => left.col - right.col));
+
+        const tableMarkdownRows = orderedRows.map((row) => `| ${row.map((cell) => cell.text.replace(/\|/g, '\\|')).join(' | ')} |`);
+        if (tableMarkdownRows.length > 0) {
+            const shouldEmitHeaderSeparator = orderedRows[0]?.some((cell) => cell.isHeader);
+            if (shouldEmitHeaderSeparator) {
+                const separator = `| ${orderedRows[0].map(() => '---').join(' | ')} |`;
+                tableMarkdownRows.splice(1, 0, separator);
+            }
+        }
+
+        if (pieces.length > 0) pieces.push('\n\n');
+        pieces.push(tableMarkdownRows.join('\n'));
     }
 
     return pieces.join('');

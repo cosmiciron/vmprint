@@ -59116,6 +59116,7 @@ ${source}`)
       sourceId: String(box.meta?.sourceId || ""),
       engineKey: String(box.meta?.engineKey || ""),
       sourceType: String(box.meta?.sourceType || ""),
+      semanticRole: typeof box.meta?.semanticRole === "string" ? box.meta.semanticRole : void 0,
       selectableText: isTextSelectableBox(box),
       fragmentIndex: Number(box.meta?.fragmentIndex || 0),
       isContinuation: Boolean(box.meta?.isContinuation),
@@ -59485,41 +59486,14 @@ ${source}`)
     const selectedEntryMap = new Map(
       getSelectionEntries(selection).map((entry) => [entry.targetId, entry])
     );
-    const serializeTargetSelectionText = (target, selectedOffsets) => {
-      if (selectedOffsets.length === 0) return "";
-      const selectedOffsetSet = new Set(selectedOffsets);
-      const lineChunks = [];
-      for (const line of target.lines) {
-        const selectedLineUnits = target.units.filter((unit) => unit.lineIndex === line.index && selectedOffsetSet.has(unit.absoluteOffset));
-        if (selectedLineUnits.length === 0) continue;
-        const bySegment = /* @__PURE__ */ new Map();
-        for (const unit of selectedLineUnits) {
-          const key = unit.segmentKey || `${unit.lineIndex}:${unit.segmentLogicalIndex ?? 0}`;
-          const bucket = bySegment.get(key);
-          if (bucket) bucket.push(unit);
-          else bySegment.set(key, [unit]);
-        }
-        const lineText = [...bySegment.values()].sort((left, right) => {
-          const leftIndex = left[0]?.segmentLogicalIndex ?? 0;
-          const rightIndex = right[0]?.segmentLogicalIndex ?? 0;
-          return leftIndex - rightIndex;
-        }).map((segmentUnits) => {
-          const direction = segmentUnits[0]?.segmentDirection || "ltr";
-          const orderedUnits = [...segmentUnits].sort((left, right) => direction === "rtl" ? right.x0 - left.x0 : left.x0 - right.x0);
-          return orderedUnits.map((unit) => unit.text).join("");
-        }).join("");
-        if (lineText) lineChunks.push(lineText);
-      }
-      return lineChunks.join("\n");
-    };
     const pieces = [];
     let previousTarget = null;
     for (const span of page.flattenedSpans) {
       const entry = selectedEntryMap.get(span.targetId);
       if (!entry) continue;
       const target = findInteractionTarget(page, entry.targetId);
-      if (!target || entry.selectedOffsets.length === 0) continue;
-      const text5 = serializeTargetSelectionText(target, entry.selectedOffsets);
+      if (!target || target.selectableText && entry.selectedOffsets.length === 0) continue;
+      const text5 = serializeInteractionTargetPlainText(target, entry.selectedOffsets);
       if (!text5) continue;
       if (pieces.length > 0 && previousTarget) {
         const sameTable = previousTarget.tableCell && target.tableCell && previousTarget.containerSourceId && target.containerSourceId && previousTarget.containerSourceId === target.containerSourceId;
@@ -59528,6 +59502,132 @@ ${source}`)
       }
       pieces.push(text5);
       previousTarget = target;
+    }
+    return pieces.join("");
+  };
+  var serializeInteractionTargetPlainText = (target, selectedOffsets) => {
+    if (!target.selectableText) {
+      const normalizedType = String(target.sourceType || "").trim().toLowerCase();
+      if (normalizedType === "image") return "[Image]";
+      if (normalizedType === "table_cell") return "[Cell]";
+      if (normalizedType) {
+        return `[${normalizedType.replace(/[_-]+/g, " ")}]`;
+      }
+      return "[Object]";
+    }
+    if (selectedOffsets.length === 0) return "";
+    const selectedOffsetSet = new Set(selectedOffsets);
+    const lineChunks = [];
+    for (const line of target.lines) {
+      const selectedLineUnits = target.units.filter((unit) => unit.lineIndex === line.index && selectedOffsetSet.has(unit.absoluteOffset));
+      if (selectedLineUnits.length === 0) continue;
+      const bySegment = /* @__PURE__ */ new Map();
+      for (const unit of selectedLineUnits) {
+        const key = unit.segmentKey || `${unit.lineIndex}:${unit.segmentLogicalIndex ?? 0}`;
+        const bucket = bySegment.get(key);
+        if (bucket) bucket.push(unit);
+        else bySegment.set(key, [unit]);
+      }
+      const lineText = [...bySegment.values()].sort((left, right) => {
+        const leftIndex = left[0]?.segmentLogicalIndex ?? 0;
+        const rightIndex = right[0]?.segmentLogicalIndex ?? 0;
+        return leftIndex - rightIndex;
+      }).map((segmentUnits) => {
+        const direction = segmentUnits[0]?.segmentDirection || "ltr";
+        const orderedUnits = [...segmentUnits].sort((left, right) => direction === "rtl" ? right.x0 - left.x0 : left.x0 - right.x0);
+        return orderedUnits.map((unit) => unit.text).join("");
+      }).join("");
+      if (lineText) lineChunks.push(lineText);
+    }
+    return lineChunks.join("\n");
+  };
+  var inferHeadingLevel = (target) => {
+    const semantic = String(target.semanticRole || "").trim().toLowerCase();
+    const sourceType = String(target.sourceType || "").trim().toLowerCase();
+    const combined = `${semantic} ${sourceType}`;
+    const match = combined.match(/heading[-_ ]?([1-6])|h([1-6])/);
+    const numeric = Number(match?.[1] || match?.[2] || 0);
+    if (numeric >= 1 && numeric <= 6) return numeric;
+    if (semantic === "header") return 2;
+    return null;
+  };
+  var serializeInteractionTargetMarkdown = (target, plainText) => {
+    const normalizedType = String(target.sourceType || "").trim().toLowerCase();
+    const normalizedRole = String(target.semanticRole || "").trim().toLowerCase();
+    const text5 = plainText.trimEnd();
+    if (!target.selectableText) {
+      if (normalizedType === "image") return "![Image]()";
+      if (normalizedType) return `[${normalizedType.replace(/[_-]+/g, " ")}]`;
+      return "[Object]";
+    }
+    const headingLevel = inferHeadingLevel(target);
+    if (headingLevel) return `${"#".repeat(headingLevel)} ${text5}`;
+    if (normalizedType.includes("blockquote") || normalizedRole.includes("blockquote")) {
+      return text5.split("\n").map((line) => `> ${line}`).join("\n");
+    }
+    if (normalizedType.includes("ordered-list") || normalizedType === "ordered_item" || normalizedType === "ordered-item") {
+      return text5.split("\n").map((line, index2) => `${index2 + 1}. ${line}`).join("\n");
+    }
+    if (normalizedType.includes("unordered-list") || normalizedType === "list_item" || normalizedType === "list-item" || normalizedType === "bullet-item") {
+      return text5.split("\n").map((line) => `- ${line}`).join("\n");
+    }
+    if (normalizedType.includes("code") || normalizedRole === "code") {
+      return `\`\`\`
+${text5}
+\`\`\``;
+    }
+    return text5;
+  };
+  var serializeInteractionSelectionMarkdown = (page, selection) => {
+    if (!page || !selection) return "";
+    const selectedEntryMap = new Map(
+      getSelectionEntries(selection).map((entry) => [entry.targetId, entry])
+    );
+    const items = page.flattenedSpans.map((span) => {
+      const entry = selectedEntryMap.get(span.targetId);
+      if (!entry) return null;
+      const target = findInteractionTarget(page, entry.targetId);
+      if (!target || target.selectableText && entry.selectedOffsets.length === 0) return null;
+      const plainText = serializeInteractionTargetPlainText(target, entry.selectedOffsets);
+      return plainText ? { span, entry, target, plainText, markdown: serializeInteractionTargetMarkdown(target, plainText) } : null;
+    }).filter((item) => item !== null);
+    const pieces = [];
+    let index2 = 0;
+    while (index2 < items.length) {
+      const current = items[index2];
+      if (!current.target.tableCell) {
+        if (pieces.length > 0) pieces.push("\n\n");
+        pieces.push(current.markdown);
+        index2 += 1;
+        continue;
+      }
+      const tableRun = [];
+      while (index2 < items.length && items[index2].target.tableCell) {
+        tableRun.push(items[index2]);
+        index2 += 1;
+      }
+      const rows = /* @__PURE__ */ new Map();
+      for (const item of tableRun) {
+        const rowKey = item.target.tableViewportRowIndex ?? item.target.tableRowIndex ?? 0;
+        const row = rows.get(rowKey) || [];
+        row.push({
+          col: item.target.tableColIndex ?? row.length,
+          text: item.plainText.replace(/\n+/g, " ").trim(),
+          isHeader: rowKey === 0 || String(item.target.semanticRole || "").trim().toLowerCase() === "header"
+        });
+        rows.set(rowKey, row);
+      }
+      const orderedRows = [...rows.entries()].sort((left, right) => left[0] - right[0]).map(([, row]) => row.sort((left, right) => left.col - right.col));
+      const tableMarkdownRows = orderedRows.map((row) => `| ${row.map((cell) => cell.text.replace(/\|/g, "\\|")).join(" | ")} |`);
+      if (tableMarkdownRows.length > 0) {
+        const shouldEmitHeaderSeparator = orderedRows[0]?.some((cell) => cell.isHeader);
+        if (shouldEmitHeaderSeparator) {
+          const separator = `| ${orderedRows[0].map(() => "---").join(" | ")} |`;
+          tableMarkdownRows.splice(1, 0, separator);
+        }
+      }
+      if (pieces.length > 0) pieces.push("\n\n");
+      pieces.push(tableMarkdownRows.join("\n"));
     }
     return pieces.join("");
   };
@@ -64274,6 +64374,12 @@ ${source}`)
       this.assertHasDocument("getPageInteractionSelectionText");
       const page = this.interactionSnapshotPages?.[pageIndex];
       return serializeInteractionSelectionText(page, selection);
+    }
+    getPageInteractionSelectionMarkdown(pageIndex, selection) {
+      this.assertActive("getPageInteractionSelectionMarkdown");
+      this.assertHasDocument("getPageInteractionSelectionMarkdown");
+      const page = this.interactionSnapshotPages?.[pageIndex];
+      return serializeInteractionSelectionMarkdown(page, selection);
     }
     isDestroyed() {
       return this.destroyed;
@@ -83191,6 +83297,7 @@ captions:
   var styleSelect = byId("style-preset");
   var pdfButton = byId("pdf-button");
   var svgButton = byId("svg-button");
+  var copyMarkdownButton = byId("copy-markdown-button");
   var prevButton = byId("prev-button");
   var nextButton = byId("next-button");
   var pagerText = byId("pager-text");
@@ -83365,6 +83472,20 @@ captions:
   var updateInteractionButton = () => {
     interactionModeBtn.textContent = interactionMode === "pan" ? "Pan" : "Select";
   };
+  var copyCurrentSelectionAsMarkdown = async () => {
+    if (!preview || !activeTextSelection) return false;
+    const selectedMarkdown = preview.getPageInteractionSelectionMarkdown(currentPageIndex, activeTextSelection);
+    if (!selectedMarkdown) return false;
+    try {
+      await navigator.clipboard.writeText(selectedMarkdown);
+      statusNode.textContent = `Copied ${selectedMarkdown.length} markdown characters from the current selection.`;
+      return true;
+    } catch (error) {
+      console.error(error);
+      statusNode.textContent = "Markdown copy failed. Clipboard access was denied.";
+      return false;
+    }
+  };
   var eventToPagePoint = (event) => {
     const rect = previewCanvas.getBoundingClientRect();
     const canvasX = (event.clientX - rect.left) / Math.max(1, rect.width) * previewCanvas.width;
@@ -83495,6 +83616,9 @@ captions:
     window.open(url, "_blank");
     statusNode.textContent = "SVG export complete.";
   });
+  copyMarkdownButton.addEventListener("click", () => {
+    void copyCurrentSelectionAsMarkdown();
+  });
   toggleAstBtn.addEventListener("click", () => astDrawer.classList.toggle("collapsed"));
   closeAstBtn.addEventListener("click", () => astDrawer.classList.add("collapsed"));
   interactionModeBtn.addEventListener("click", () => {
@@ -83566,13 +83690,32 @@ captions:
     dragAnchor = null;
   });
   window.addEventListener("keydown", async (event) => {
+    const isMarkdownCopyShortcut = (event.ctrlKey || event.metaKey) && event.shiftKey && !event.altKey && event.key.toLowerCase() === "c";
+    if (isMarkdownCopyShortcut) {
+      event.preventDefault();
+      await copyCurrentSelectionAsMarkdown();
+      return;
+    }
     const isCopyShortcut = (event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey && event.key.toLowerCase() === "c";
     if (!isCopyShortcut || !preview || !activeTextSelection) return;
     const selectedText = preview.getPageInteractionSelectionText(currentPageIndex, activeTextSelection);
+    const selectedMarkdown = preview.getPageInteractionSelectionMarkdown(currentPageIndex, activeTextSelection);
     if (!selectedText) return;
     event.preventDefault();
     try {
-      await navigator.clipboard.writeText(selectedText);
+      if (typeof ClipboardItem !== "undefined" && navigator.clipboard?.write) {
+        try {
+          const item = new ClipboardItem({
+            "text/plain": new Blob([selectedText], { type: "text/plain" }),
+            "text/markdown": new Blob([selectedMarkdown || selectedText], { type: "text/markdown" })
+          });
+          await navigator.clipboard.write([item]);
+        } catch {
+          await navigator.clipboard.writeText(selectedText);
+        }
+      } else {
+        await navigator.clipboard.writeText(selectedText);
+      }
       statusNode.textContent = `Copied ${selectedText.length} characters from the current selection.`;
     } catch (error) {
       console.error(error);
