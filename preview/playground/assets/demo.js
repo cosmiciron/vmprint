@@ -59129,6 +59129,10 @@ ${source}`)
       containerSourceId: typeof properties._interactionContainerSourceId === "string" ? properties._interactionContainerSourceId : void 0,
       containerType: typeof properties._interactionContainerType === "string" ? properties._interactionContainerType : void 0,
       containerEngineKey: typeof properties._interactionContainerEngineKey === "string" ? properties._interactionContainerEngineKey : void 0,
+      tableCell: Boolean(properties._tableCell) || String(box.meta?.sourceType || "") === "table_cell",
+      tableRowIndex: Number.isFinite(Number(properties._tableRowIndex)) ? Number(properties._tableRowIndex) : void 0,
+      tableViewportRowIndex: Number.isFinite(Number(properties._tableViewportRowIndex)) ? Number(properties._tableViewportRowIndex) : void 0,
+      tableColIndex: Number.isFinite(Number(properties._tableColIndex)) ? Number(properties._tableColIndex) : void 0,
       totalLength: absoluteOffsetRef.value,
       units,
       lines
@@ -59478,14 +59482,15 @@ ${source}`)
   };
   var serializeInteractionSelectionText = (page, selection) => {
     if (!page || !selection) return "";
-    const chunks = [];
-    for (const entry of getSelectionEntries(selection)) {
-      const target = findInteractionTarget(page, entry.targetId);
-      if (!target || entry.selectedOffsets.length === 0) continue;
-      const selectedOffsets = new Set(entry.selectedOffsets);
+    const selectedEntryMap = new Map(
+      getSelectionEntries(selection).map((entry) => [entry.targetId, entry])
+    );
+    const serializeTargetSelectionText = (target, selectedOffsets) => {
+      if (selectedOffsets.length === 0) return "";
+      const selectedOffsetSet = new Set(selectedOffsets);
       const lineChunks = [];
       for (const line of target.lines) {
-        const selectedLineUnits = target.units.filter((unit) => unit.lineIndex === line.index && selectedOffsets.has(unit.absoluteOffset));
+        const selectedLineUnits = target.units.filter((unit) => unit.lineIndex === line.index && selectedOffsetSet.has(unit.absoluteOffset));
         if (selectedLineUnits.length === 0) continue;
         const bySegment = /* @__PURE__ */ new Map();
         for (const unit of selectedLineUnits) {
@@ -59505,11 +59510,26 @@ ${source}`)
         }).join("");
         if (lineText) lineChunks.push(lineText);
       }
-      if (lineChunks.length > 0) {
-        chunks.push(lineChunks.join("\n"));
+      return lineChunks.join("\n");
+    };
+    const pieces = [];
+    let previousTarget = null;
+    for (const span of page.flattenedSpans) {
+      const entry = selectedEntryMap.get(span.targetId);
+      if (!entry) continue;
+      const target = findInteractionTarget(page, entry.targetId);
+      if (!target || entry.selectedOffsets.length === 0) continue;
+      const text5 = serializeTargetSelectionText(target, entry.selectedOffsets);
+      if (!text5) continue;
+      if (pieces.length > 0 && previousTarget) {
+        const sameTable = previousTarget.tableCell && target.tableCell && previousTarget.containerSourceId && target.containerSourceId && previousTarget.containerSourceId === target.containerSourceId;
+        const sameViewportRow = sameTable && previousTarget.tableViewportRowIndex !== void 0 && target.tableViewportRowIndex !== void 0 && previousTarget.tableViewportRowIndex === target.tableViewportRowIndex;
+        pieces.push(sameViewportRow ? "	" : "\n");
       }
+      pieces.push(text5);
+      previousTarget = target;
     }
-    return chunks.join("\n");
+    return pieces.join("");
   };
   var InteractionArtifactCollaborator = class {
     constructor(layout) {

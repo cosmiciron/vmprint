@@ -60,6 +60,10 @@ export type VmprintInteractionTarget = {
     containerSourceId?: string;
     containerType?: string;
     containerEngineKey?: string;
+    tableCell?: boolean;
+    tableRowIndex?: number;
+    tableViewportRowIndex?: number;
+    tableColIndex?: number;
     totalLength: number;
     units: VmprintInteractionUnit[];
     lines: VmprintInteractionLine[];
@@ -487,6 +491,16 @@ const buildInteractionTarget = (
             : undefined,
         containerEngineKey: typeof properties._interactionContainerEngineKey === 'string'
             ? properties._interactionContainerEngineKey
+            : undefined,
+        tableCell: Boolean(properties._tableCell) || String(box.meta?.sourceType || '') === 'table_cell',
+        tableRowIndex: Number.isFinite(Number(properties._tableRowIndex))
+            ? Number(properties._tableRowIndex)
+            : undefined,
+        tableViewportRowIndex: Number.isFinite(Number(properties._tableViewportRowIndex))
+            ? Number(properties._tableViewportRowIndex)
+            : undefined,
+        tableColIndex: Number.isFinite(Number(properties._tableColIndex))
+            ? Number(properties._tableColIndex)
             : undefined,
         totalLength: absoluteOffsetRef.value,
         units,
@@ -966,17 +980,21 @@ export const serializeInteractionSelectionText = (
 ): string => {
     if (!page || !selection) return '';
 
-    const chunks: string[] = [];
-    for (const entry of getSelectionEntries(selection)) {
-        const target = findInteractionTarget(page, entry.targetId);
-        if (!target || entry.selectedOffsets.length === 0) continue;
+    const selectedEntryMap = new Map(
+        getSelectionEntries(selection).map((entry) => [entry.targetId, entry] as const)
+    );
 
-        const selectedOffsets = new Set(entry.selectedOffsets);
+    const serializeTargetSelectionText = (
+        target: VmprintInteractionTarget,
+        selectedOffsets: number[]
+    ): string => {
+        if (selectedOffsets.length === 0) return '';
+        const selectedOffsetSet = new Set(selectedOffsets);
         const lineChunks: string[] = [];
 
         for (const line of target.lines) {
             const selectedLineUnits = target.units
-                .filter((unit) => unit.lineIndex === line.index && selectedOffsets.has(unit.absoluteOffset));
+                .filter((unit) => unit.lineIndex === line.index && selectedOffsetSet.has(unit.absoluteOffset));
             if (selectedLineUnits.length === 0) continue;
 
             const bySegment = new Map<string, VmprintInteractionUnit[]>();
@@ -1006,10 +1024,38 @@ export const serializeInteractionSelectionText = (
             if (lineText) lineChunks.push(lineText);
         }
 
-        if (lineChunks.length > 0) {
-            chunks.push(lineChunks.join('\n'));
+        return lineChunks.join('\n');
+    };
+
+    const pieces: string[] = [];
+    let previousTarget: VmprintInteractionTarget | null = null;
+
+    for (const span of page.flattenedSpans) {
+        const entry = selectedEntryMap.get(span.targetId);
+        if (!entry) continue;
+        const target = findInteractionTarget(page, entry.targetId);
+        if (!target || entry.selectedOffsets.length === 0) continue;
+        const text = serializeTargetSelectionText(target, entry.selectedOffsets);
+        if (!text) continue;
+
+        if (pieces.length > 0 && previousTarget) {
+            const sameTable =
+                previousTarget.tableCell &&
+                target.tableCell &&
+                previousTarget.containerSourceId &&
+                target.containerSourceId &&
+                previousTarget.containerSourceId === target.containerSourceId;
+            const sameViewportRow =
+                sameTable &&
+                previousTarget.tableViewportRowIndex !== undefined &&
+                target.tableViewportRowIndex !== undefined &&
+                previousTarget.tableViewportRowIndex === target.tableViewportRowIndex;
+            pieces.push(sameViewportRow ? '\t' : '\n');
         }
+
+        pieces.push(text);
+        previousTarget = target;
     }
 
-    return chunks.join('\n');
+    return pieces.join('');
 };
