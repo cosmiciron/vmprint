@@ -59134,22 +59134,34 @@ ${source}`)
       lines
     };
   };
-  var buildInteractionPages = (pages, layout) => pages.map((page) => ({
-    index: Number(page.index || 0),
-    width: Number(page.width || 0),
-    height: Number(page.height || 0),
-    targets: (page.boxes || []).map((box) => buildInteractionTarget(box, Number(page.index || 0), layout)).filter((target) => target !== null)
+  var buildFlattenedInteractionSpans = (pageIndex, targets) => sortTargetsInVisualOrder(targets).map((target, order2) => ({
+    order: order2,
+    pageIndex,
+    targetId: target.targetId,
+    sourceId: target.sourceId,
+    selectableText: target.selectableText,
+    containerSourceId: target.containerSourceId,
+    containerType: target.containerType,
+    top: target.y,
+    bottom: target.y + target.h,
+    left: target.x,
+    right: target.x + target.w
   }));
+  var buildInteractionPages = (pages, layout) => pages.map((page) => {
+    const index2 = Number(page.index || 0);
+    const targets = (page.boxes || []).map((box) => buildInteractionTarget(box, index2, layout)).filter((target) => target !== null);
+    return {
+      index: index2,
+      width: Number(page.width || 0),
+      height: Number(page.height || 0),
+      targets,
+      flattenedSpans: buildFlattenedInteractionSpans(index2, targets)
+    };
+  });
   var findInteractionTarget = (page, targetId) => {
     const normalized = String(targetId || "");
     if (!normalized) return null;
     return page?.targets.find((target) => target.targetId === normalized) ?? null;
-  };
-  var getTargetContainerKey = (target) => {
-    if (target.containerSourceId) {
-      return `${target.containerType || "container"}:${target.containerSourceId}`;
-    }
-    return `target:${target.targetId}`;
   };
   var sortTargetsInVisualOrder = (targets) => [...targets].sort((left, right) => {
     const byY = left.y - right.y;
@@ -59158,12 +59170,7 @@ ${source}`)
     if (Math.abs(byX) > 0.5) return byX;
     return left.targetId.localeCompare(right.targetId);
   });
-  var getTraversalGroup = (page, seedTarget) => {
-    const key = getTargetContainerKey(seedTarget);
-    return sortTargetsInVisualOrder(
-      page.targets.filter((target) => getTargetContainerKey(target) === key)
-    );
-  };
+  var getFlattenedTraversalTargets = (page) => page.flattenedSpans.map((span) => findInteractionTarget(page, span.targetId)).filter((target) => target !== null);
   var getRectDistanceSq = (rect, point3) => {
     const nearestX = clamp2(point3.x, rect.x, rect.x + rect.w);
     const nearestY = clamp2(point3.y, rect.y, rect.y + rect.h);
@@ -59196,7 +59203,7 @@ ${source}`)
   };
   var resolveFocusTarget = (page, anchorTarget, point3) => {
     const direct = hitTestInteractionTarget(page, point3.x, point3.y);
-    const group = getTraversalGroup(page, anchorTarget);
+    const group = getFlattenedTraversalTargets(page);
     if (direct && group.some((candidate) => candidate.targetId === direct.targetId)) {
       return direct;
     }
@@ -59401,7 +59408,7 @@ ${source}`)
         }]
       };
     }
-    const group = getTraversalGroup(page, anchorTarget);
+    const group = getFlattenedTraversalTargets(page);
     const anchorIndex = group.findIndex((target) => target.targetId === anchorTarget.targetId);
     const focusIndex = group.findIndex((target) => target.targetId === focusTarget.targetId);
     if (anchorIndex < 0 || focusIndex < 0) return null;
@@ -64209,6 +64216,7 @@ ${source}`)
       this.assertHasDocument("getInteractionSnapshotPages");
       return (this.interactionSnapshotPages || []).map((page) => ({
         ...page,
+        flattenedSpans: page.flattenedSpans.map((span) => ({ ...span })),
         targets: page.targets.map((target) => ({
           ...target,
           contentBox: { ...target.contentBox },

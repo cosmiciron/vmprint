@@ -967,6 +967,7 @@ class PreviewSessionImpl implements PreviewSession {
         this.assertHasDocument('getInteractionSnapshotPages');
         return (this.interactionSnapshotPages || []).map((page) => ({
             ...page,
+            flattenedSpans: page.flattenedSpans.map((span) => ({ ...span })),
             targets: page.targets.map((target) => ({
                 ...target,
                 contentBox: { ...target.contentBox },

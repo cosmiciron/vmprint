@@ -70,6 +70,21 @@ export type VmprintInteractionPage = {
     width: number;
     height: number;
     targets: VmprintInteractionTarget[];
+    flattenedSpans: VmprintInteractionFlattenedSpan[];
+};
+
+export type VmprintInteractionFlattenedSpan = {
+    order: number;
+    pageIndex: number;
+    targetId: string;
+    sourceId: string;
+    selectableText: boolean;
+    containerSourceId?: string;
+    containerType?: string;
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
 };
 
 export type VmprintInteractionSelectionPoint = {
@@ -479,17 +494,40 @@ const buildInteractionTarget = (
     };
 };
 
+const buildFlattenedInteractionSpans = (
+    pageIndex: number,
+    targets: VmprintInteractionTarget[]
+): VmprintInteractionFlattenedSpan[] =>
+    sortTargetsInVisualOrder(targets).map((target, order) => ({
+        order,
+        pageIndex,
+        targetId: target.targetId,
+        sourceId: target.sourceId,
+        selectableText: target.selectableText,
+        containerSourceId: target.containerSourceId,
+        containerType: target.containerType,
+        top: target.y,
+        bottom: target.y + target.h,
+        left: target.x,
+        right: target.x + target.w
+    }));
+
 export const buildInteractionPages = (
     pages: readonly Page[],
     layout: LayoutConfig['layout']
-): VmprintInteractionPage[] => pages.map((page) => ({
-    index: Number(page.index || 0),
-    width: Number(page.width || 0),
-    height: Number(page.height || 0),
-    targets: (page.boxes || [])
-        .map((box) => buildInteractionTarget(box, Number(page.index || 0), layout))
-        .filter((target): target is VmprintInteractionTarget => target !== null)
-}));
+): VmprintInteractionPage[] => pages.map((page) => {
+    const index = Number(page.index || 0);
+    const targets = (page.boxes || [])
+        .map((box) => buildInteractionTarget(box, index, layout))
+        .filter((target): target is VmprintInteractionTarget => target !== null);
+    return {
+        index,
+        width: Number(page.width || 0),
+        height: Number(page.height || 0),
+        targets,
+        flattenedSpans: buildFlattenedInteractionSpans(index, targets)
+    };
+});
 
 export const findInteractionTarget = (
     page: VmprintInteractionPage | null | undefined,
@@ -498,13 +536,6 @@ export const findInteractionTarget = (
     const normalized = String(targetId || '');
     if (!normalized) return null;
     return page?.targets.find((target) => target.targetId === normalized) ?? null;
-};
-
-const getTargetContainerKey = (target: VmprintInteractionTarget): string => {
-    if (target.containerSourceId) {
-        return `${target.containerType || 'container'}:${target.containerSourceId}`;
-    }
-    return `target:${target.targetId}`;
 };
 
 const sortTargetsInVisualOrder = (targets: VmprintInteractionTarget[]): VmprintInteractionTarget[] =>
@@ -516,15 +547,10 @@ const sortTargetsInVisualOrder = (targets: VmprintInteractionTarget[]): VmprintI
         return left.targetId.localeCompare(right.targetId);
     });
 
-const getTraversalGroup = (
-    page: VmprintInteractionPage,
-    seedTarget: VmprintInteractionTarget
-): VmprintInteractionTarget[] => {
-    const key = getTargetContainerKey(seedTarget);
-    return sortTargetsInVisualOrder(
-        page.targets.filter((target) => getTargetContainerKey(target) === key)
-    );
-};
+const getFlattenedTraversalTargets = (page: VmprintInteractionPage): VmprintInteractionTarget[] =>
+    page.flattenedSpans
+        .map((span) => findInteractionTarget(page, span.targetId))
+        .filter((target): target is VmprintInteractionTarget => target !== null);
 
 const getRectDistanceSq = (
     rect: { x: number; y: number; w: number; h: number },
@@ -576,7 +602,7 @@ const resolveFocusTarget = (
     point: { x: number; y: number }
 ): VmprintInteractionTarget => {
     const direct = hitTestInteractionTarget(page, point.x, point.y);
-    const group = getTraversalGroup(page, anchorTarget);
+    const group = getFlattenedTraversalTargets(page);
     if (direct && group.some((candidate) => candidate.targetId === direct.targetId)) {
         return direct;
     }
@@ -852,7 +878,7 @@ export const resolveInteractionSelection = (
         };
     }
 
-    const group = getTraversalGroup(page, anchorTarget);
+    const group = getFlattenedTraversalTargets(page);
     const anchorIndex = group.findIndex((target) => target.targetId === anchorTarget.targetId);
     const focusIndex = group.findIndex((target) => target.targetId === focusTarget.targetId);
     if (anchorIndex < 0 || focusIndex < 0) return null;
