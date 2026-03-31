@@ -58921,7 +58921,7 @@ ${source}`)
       h: Math.max(0, box.h - paddingTop - paddingBottom - borderTop - borderBottom)
     };
   };
-  var buildFallbackUnits = (text5, drawX, lineIndex, top, bottom, absoluteOffsetRef, width) => {
+  var buildFallbackUnits = (text5, drawX, lineIndex, top, bottom, absoluteOffsetRef, width, segmentMeta) => {
     const glyphs = Array.from(text5 || "");
     if (glyphs.length === 0) return [];
     const unitWidth = glyphs.length > 0 ? width / glyphs.length : 0;
@@ -58936,13 +58936,18 @@ ${source}`)
         x0,
         x1,
         y0: top,
-        y1: bottom
+        y1: bottom,
+        segmentKey: segmentMeta?.key,
+        segmentUnitCount: segmentMeta?.unitCount,
+        segmentX0: segmentMeta?.x0,
+        segmentX1: segmentMeta?.x1,
+        segmentIsShaped: segmentMeta?.shaped
       };
       absoluteOffsetRef.value += 1;
       return unit;
     });
   };
-  var buildGlyphUnits = (glyphs, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth) => {
+  var buildGlyphUnits = (glyphs, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth, segmentMeta) => {
     if (!Array.isArray(glyphs) || glyphs.length === 0) return [];
     return glyphs.map((glyph, unitIndex) => {
       const start = drawX + toNumber(glyph.x, 0);
@@ -58957,18 +58962,23 @@ ${source}`)
         x0: start,
         x1: end,
         y0: top,
-        y1: bottom
+        y1: bottom,
+        segmentKey: segmentMeta?.key,
+        segmentUnitCount: segmentMeta?.unitCount,
+        segmentX0: segmentMeta?.x0,
+        segmentX1: segmentMeta?.x1,
+        segmentIsShaped: segmentMeta?.shaped
       };
       absoluteOffsetRef.value += 1;
       return unit;
     });
   };
-  var buildSegmentUnits = (segment, drawX, lineIndex, top, bottom, absoluteOffsetRef) => {
+  var buildSegmentUnits = (segment, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentMeta) => {
     const segmentWidth = Math.max(0, toNumber(segment.width, 0));
     if (Array.isArray(segment.glyphs) && segment.glyphs.length > 0) {
-      return buildGlyphUnits(segment.glyphs, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth);
+      return buildGlyphUnits(segment.glyphs, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth, segmentMeta);
     }
-    return buildFallbackUnits(String(segment.text || ""), drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth);
+    return buildFallbackUnits(String(segment.text || ""), drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth, segmentMeta);
   };
   var buildInteractionTarget = (box, pageIndex, layout) => {
     if (!isInteractableBox(box)) return null;
@@ -59036,13 +59046,23 @@ ${source}`)
       const lineStartOffset = absoluteOffsetRef.value;
       let currentX = lineX;
       const lineUnits = [];
-      for (const { seg, extra } of lineItems) {
+      for (let segmentIndex = 0; segmentIndex < lineItems.length; segmentIndex += 1) {
+        const { seg, extra } = lineItems[segmentIndex];
         const segWidth = Math.max(0, toNumber(seg.width, 0));
         if (paragraphDirection === "rtl") {
           currentX -= segWidth;
         }
         const drawX = currentX;
-        lineUnits.push(...buildSegmentUnits(seg, drawX, lineIndex, lineTop, bottom, absoluteOffsetRef));
+        const segmentText = String(seg.text || "");
+        const segmentUnitCount = Array.from(segmentText).length || seg.glyphs?.length || 0;
+        const segmentMeta = {
+          key: `${pageIndex}:${buildTargetId(box.meta, pageIndex)}:${lineIndex}:${segmentIndex}`,
+          unitCount: segmentUnitCount,
+          x0: drawX,
+          x1: drawX + segWidth,
+          shaped: Array.isArray(seg.shapedGlyphs) && seg.shapedGlyphs.length > 0 && seg.direction === "rtl"
+        };
+        lineUnits.push(...buildSegmentUnits(seg, drawX, lineIndex, lineTop, bottom, absoluteOffsetRef, segmentMeta));
         if (paragraphDirection === "rtl") {
           currentX -= extra;
         } else {
@@ -59274,18 +59294,58 @@ ${source}`)
     const offsets = new Set(targetSelection?.selectedOffsets ?? (selection.targetId === target.targetId ? selection.selectedOffsets : []));
     const rects = [];
     for (const line of target.lines) {
-      const lineUnits = target.units.filter((unit) => unit.lineIndex === line.index && offsets.has(unit.absoluteOffset)).sort((a2, b2) => a2.x0 - b2.x0);
-      if (lineUnits.length === 0) continue;
+      const selectedLineUnits = target.units.filter((unit) => unit.lineIndex === line.index && offsets.has(unit.absoluteOffset)).sort((a2, b2) => a2.x0 - b2.x0);
+      if (selectedLineUnits.length === 0) continue;
+      const lineUnitsBySegment = /* @__PURE__ */ new Map();
+      for (const unit of target.units.filter((candidate) => candidate.lineIndex === line.index && candidate.segmentKey)) {
+        const key = String(unit.segmentKey);
+        const bucket = lineUnitsBySegment.get(key);
+        if (bucket) {
+          bucket.push(unit);
+        } else {
+          lineUnitsBySegment.set(key, [unit]);
+        }
+      }
+      const mergedLineUnits = [];
+      let index2 = 0;
+      while (index2 < selectedLineUnits.length) {
+        const unit = selectedLineUnits[index2];
+        if (unit.segmentIsShaped && unit.segmentKey) {
+          const sameSegmentSelected = selectedLineUnits.filter((candidate) => candidate.segmentKey === unit.segmentKey);
+          const sameSegmentAll = lineUnitsBySegment.get(unit.segmentKey) || sameSegmentSelected;
+          const fullySelected = sameSegmentAll.length > 0 && sameSegmentSelected.length === sameSegmentAll.length;
+          mergedLineUnits.push({
+            x0: fullySelected ? unit.segmentX0 ?? sameSegmentSelected[0].x0 : Math.min(...sameSegmentSelected.map((candidate) => candidate.x0)),
+            x1: fullySelected ? unit.segmentX1 ?? sameSegmentSelected[sameSegmentSelected.length - 1].x1 : Math.max(...sameSegmentSelected.map((candidate) => candidate.x1)),
+            y0: Math.min(...sameSegmentSelected.map((candidate) => candidate.y0)),
+            y1: Math.max(...sameSegmentSelected.map((candidate) => candidate.y1)),
+            absoluteOffset: Math.min(...sameSegmentSelected.map((candidate) => candidate.absoluteOffset))
+          });
+          index2 += sameSegmentSelected.length;
+          continue;
+        }
+        mergedLineUnits.push({
+          x0: unit.x0,
+          x1: unit.x1,
+          y0: unit.y0,
+          y1: unit.y1,
+          absoluteOffset: unit.absoluteOffset
+        });
+        index2 += 1;
+      }
       let current = {
-        x: lineUnits[0].x0,
-        y: lineUnits[0].y0,
-        w: Math.max(1, lineUnits[0].x1 - lineUnits[0].x0),
-        h: Math.max(1, lineUnits[0].y1 - lineUnits[0].y0)
+        x: mergedLineUnits[0].x0,
+        y: mergedLineUnits[0].y0,
+        w: Math.max(1, mergedLineUnits[0].x1 - mergedLineUnits[0].x0),
+        h: Math.max(1, mergedLineUnits[0].y1 - mergedLineUnits[0].y0)
       };
-      for (let index2 = 1; index2 < lineUnits.length; index2 += 1) {
-        const unit = lineUnits[index2];
+      for (let index22 = 1; index22 < mergedLineUnits.length; index22 += 1) {
+        const unit = mergedLineUnits[index22];
         const gap = unit.x0 - (current.x + current.w);
-        if (gap <= 1.5) {
+        const previousUnit = mergedLineUnits[index22 - 1];
+        const visuallyContiguous = gap <= 1.5;
+        const logicallyContiguous = unit.absoluteOffset <= previousUnit.absoluteOffset + 1;
+        if (visuallyContiguous || logicallyContiguous) {
           current.w = Math.max(1, unit.x1 - current.x);
           current.h = Math.max(current.h, unit.y1 - current.y);
           continue;
