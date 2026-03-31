@@ -1,0 +1,116 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 468,
+      "height": 648
+    },
+    "margins": {
+      "top": 40,
+      "right": 44,
+      "bottom": 40,
+      "left": 44
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "marginBottom": 6,
+      "keepWithNext": true
+    },
+    "h2": {
+      "fontSize": 12,
+      "fontWeight": "bold",
+      "color": "#1a3a5c",
+      "marginTop": 18,
+      "marginBottom": 5,
+      "keepWithNext": true
+    },
+    "lead": {
+      "fontSize": 12,
+      "lineHeight": 1.35,
+      "marginBottom": 14,
+      "allowLineSplit": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Exclusion Assembly"
+    },
+    {
+      "type": "lead",
+      "content": "An exclusion assembly lets one authored actor publish multiple coordinated wrap primitives. Text does not wrap around one square box anymore; it settles around a composed field of lobes."
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "h2",
+          "content": "Compound Left Float"
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 6,
+            "exclusionAssembly": {
+              "members": [
+                { "shape": "circle", "x": 0, "y": 48, "w": 64, "h": 64 },
+                { "shape": "rect", "x": 38, "y": 54, "w": 92, "h": 34 },
+                { "shape": "circle", "x": 94, "y": 22, "w": 82, "h": 82 },
+                { "shape": "circle", "x": 154, "y": 56, "w": 44, "h": 44 },
+                { "shape": "circle", "x": 188, "y": 66, "w": 28, "h": 28 },
+                { "shape": "circle", "x": 210, "y": 72, "w": 18, "h": 18 }
+              ]
+            }
+          },
+          "properties": {
+            "style": {
+              "width": 228,
+              "height": 140
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAkElEQVR42u3QMQ0AAAwDoEqv9Fnot4cEBSQtKwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmR9OyMOEkoQG4WbAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "This proof introduces the exclusion assembly as the next evolution after circle floats. The visible actor is still one authored element, but its wrap field is composed from several primitive lobes. The first circular lobe suggests a head, the rectangular beam gives the body a longer mass, and later circles extend the silhouette into a tail. The line start should not step to one fixed width. Instead it should breathe inward and outward as different members overlap the scanline, proving that the story is settling against a composed field rather than a single bounding box."
+        },
+        {
+          "type": "p",
+          "content": "Because every member is still just a rect or circle at the SpatialMap layer, carry-over, pagination, underhang, and column projection continue to work with minimal new machinery. What changes is only the authored expressiveness: one float can now publish a family of exclusion lobes and let the text find its own path around them."
+        },
+        {
+          "type": "h2",
+          "content": "Why This Matters"
+        },
+        {
+          "type": "p",
+          "content": "For desktop publishing this supports richer editorial wraps around irregular illustrations, pull quotes, or diagram clusters without demanding a full polygon engine. For the future dragon demonstration it provides the natural first mechanism: a creature can be assembled from moving lobes, and the page can part around that living field while still remaining a real document."
+        }
+      ]
+    }
+  ]
+}

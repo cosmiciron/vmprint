@@ -1,0 +1,368 @@
+[
+  {
+    "index": 0,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Exclusion Assembly",
+              "width": 213.973633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "lead",
+        "x": 44,
+        "y": 77.178125,
+        "w": 380,
+        "h": 52.81875,
+        "lines": [
+          [
+            {
+              "text": "An exclusion assembly lets one authored actor publish multiple ",
+              "width": 337.517578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "coordinated wrap primitives. Text does not wrap around one square ",
+              "width": 360.867188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "box anymore; it settles around a composed field of lobes.",
+              "width": 303.503906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 161.996875,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Compound Left Float",
+              "width": 120.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 44,
+        "y": 184.003125,
+        "w": 228,
+        "h": 140,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 184.003125,
+        "w": 380,
+        "h": 158.589063,
+        "lines": [
+          [
+            {
+              "text": "This proof introduces the exclusion assembly as the next evolution after circle",
+              "width": 377.244141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "floats. The visible ",
+              "width": 88.037598,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "actor is still one authored element, but its ",
+              "width": 202.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "wra",
+              "width": 17.724609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "p field is ",
+              "width": 43.40918,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "composed from several primitive lobes. ",
+              "width": 193.794434,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "T",
+              "width": 6.719238,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "he first circular lobe suggests a head,",
+              "width": 182.208984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the rectangular beam gives ",
+              "width": 135.743652,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the body a longer mass, and ",
+              "width": 141.866699,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later circles extend the ",
+              "width": 113.109863,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "silhouett",
+              "width": 40.970703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "e into a tail. The line start should not step to ",
+              "width": 215.848145,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "one fixed width. Instead it should breathe inward and outward as different ",
+              "width": 359.358398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "members overlap the scanline, proving that the story is settling against a ",
+              "width": 355.23877,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "composed field rather than a single bounding box.",
+              "width": 243.385742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 350.592188,
+        "w": 380,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Because every member is still just a rect or circle at the SpatialMap layer, ",
+              "width": 359.476563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "carry-over, pagination, underhang, and column projection continue to work ",
+              "width": 364.439453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "with minimal new machinery. What changes is only the authored ",
+              "width": 315.277832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "expressiveness: one float can now publish a family of exclusion lobes and let ",
+              "width": 376.658691,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the text find its own path around them.",
+              "width": 186.500488,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 449.38125,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Why This Matters",
+              "width": 99.345703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 471.3875,
+        "w": 380,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "For desktop publishing this supports richer editorial wraps around irregular ",
+              "width": 364.401855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "illustrations, pull quotes, or diagram clusters without demanding a full polygon",
+              "width": 377.260254,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "engine. For the future dragon demonstration it provides the natural first ",
+              "width": 347.305664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "mechanism: a creature can be assembled from moving lobes, and the page ",
+              "width": 370.535645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "can part around that living field while still remaining a real document.",
+              "width": 333.233398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

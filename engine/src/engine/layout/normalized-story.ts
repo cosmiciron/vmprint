@@ -1,4 +1,11 @@
-import type { Element, StoryFloatAlign, StoryFloatShape, StoryLayoutDirective, StoryWrapMode } from '../types';
+import type {
+    Element,
+    StoryExclusionAssemblyMember,
+    StoryFloatAlign,
+    StoryFloatShape,
+    StoryLayoutDirective,
+    StoryWrapMode
+} from '../types';
 
 export type NormalizedStoryChildKind =
     | 'flow'
@@ -16,6 +23,9 @@ export interface NormalizedStoryLayout {
     wrap: StoryWrapMode;
     gap: number;
     shape: StoryFloatShape;
+    exclusionAssembly?: {
+        members: StoryExclusionAssemblyMember[];
+    };
 }
 
 export interface NormalizedStoryChild {
@@ -35,6 +45,15 @@ export interface NormalizedStory {
 
 function normalizeLayout(layout?: StoryLayoutDirective): NormalizedStoryLayout | undefined {
     if (!layout) return undefined;
+    const normalizedMembers = Array.isArray(layout.exclusionAssembly?.members)
+        ? layout.exclusionAssembly.members.map((member) => ({
+            x: Number(member.x ?? 0),
+            y: Number(member.y ?? 0),
+            w: Math.max(0, Number(member.w ?? 0)),
+            h: Math.max(0, Number(member.h ?? 0)),
+            shape: (member.shape ?? 'rect') as StoryFloatShape
+        }))
+        : [];
     return {
         mode: layout.mode,
         x: Math.max(0, Number(layout.x ?? 0)),
@@ -42,7 +61,10 @@ function normalizeLayout(layout?: StoryLayoutDirective): NormalizedStoryLayout |
         align: (layout.align ?? 'left') as StoryFloatAlign,
         wrap: (layout.wrap ?? 'around') as StoryWrapMode,
         gap: Math.max(0, Number(layout.gap ?? 0)),
-        shape: (layout.shape ?? 'rect') as StoryFloatShape
+        shape: (layout.shape ?? 'rect') as StoryFloatShape,
+        exclusionAssembly: normalizedMembers.length > 0
+            ? { members: normalizedMembers }
+            : undefined
     };
 }
 

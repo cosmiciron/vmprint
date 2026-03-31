@@ -322,6 +322,23 @@ export type StoryFloatAlign = 'left' | 'right' | 'center';
  */
 export type StoryFloatShape = 'rect' | 'circle';
 
+export interface StoryExclusionAssemblyMember {
+    /** Local X offset from the float/story-absolute anchor box. */
+    x: number;
+    /** Local Y offset from the float/story-absolute anchor box. */
+    y: number;
+    /** Primitive width in points. */
+    w: number;
+    /** Primitive height in points. */
+    h: number;
+    /** Primitive wrap shape. */
+    shape?: StoryFloatShape;
+}
+
+export interface StoryExclusionAssembly {
+    members: StoryExclusionAssemblyMember[];
+}
+
 export interface StoryLayoutDirective {
     mode: StoryLayoutMode;
     /** story-absolute: X offset from story content-area left edge (points). */
@@ -336,6 +353,12 @@ export interface StoryLayoutDirective {
     gap?: number;
     /** Exclusion-zone shape for text wrapping (default 'rect'). */
     shape?: StoryFloatShape;
+    /**
+     * Optional composed exclusion field built from simple primitives.
+     * When present, text wrapping uses the union of these members instead of a
+     * single rect/circle obstacle.
+     */
+    exclusionAssembly?: StoryExclusionAssembly;
 }
 
 export interface ElementStyle {

@@ -625,6 +625,50 @@ function assertCircleFloatSignals(pages: any[], fixtureName: string): void {
     }
 }
 
+function assertExclusionAssemblySignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    const imageBoxes = allBoxes.filter((box: any) => !!box.image);
+    assert.ok(imageBoxes.length >= 1, `${fixtureName}: expected the assembly proof to emit an image box`);
+
+    const wrappedBoxes = allBoxes.filter((box: any) => {
+        const widths: number[] = Array.isArray(box.properties?._lineWidths)
+            ? box.properties._lineWidths.map((n: any) => Number(n))
+            : [];
+        return widths.length >= 4 && Math.max(...widths) - Math.min(...widths) > 8;
+    });
+    assert.ok(wrappedBoxes.length >= 1, `${fixtureName}: expected a wrapped paragraph with non-uniform line widths`);
+
+    const targetBox = wrappedBoxes
+        .map((box: any) => {
+            const widths: number[] = Array.isArray(box.properties?._lineWidths)
+                ? box.properties._lineWidths.map((n: any) => Number(n))
+                : [];
+            const offsets: number[] = Array.isArray(box.properties?._lineOffsets)
+                ? box.properties._lineOffsets.map((n: any) => Number(n))
+                : [];
+            const constrained = widths
+                .map((width, index) => ({ width, offset: Number(offsets[index] || 0) }))
+                .filter((entry) => entry.offset > 0.1);
+            return { box, constrained };
+        })
+        .sort((left, right) => right.constrained.length - left.constrained.length)[0]?.box;
+    assert.ok(targetBox, `${fixtureName}: expected the lead assembly paragraph box`);
+    if (!targetBox) return;
+
+    const widths: number[] = Array.isArray(targetBox.properties?._lineWidths)
+        ? targetBox.properties._lineWidths.map((n: any) => Number(n))
+        : [];
+    const offsets: number[] = Array.isArray(targetBox.properties?._lineOffsets)
+        ? targetBox.properties._lineOffsets.map((n: any) => Number(n))
+        : [];
+    const constrained = widths
+        .map((width, index) => ({ width, offset: Number(offsets[index] || 0) }))
+        .filter((entry) => entry.offset > 0.1);
+    assert.ok(constrained.length >= 4, `${fixtureName}: expected several offset lines from the composed field`);
+    const widthBins = new Set(constrained.map((entry) => Math.round(entry.width * 2) / 2));
+    assert.ok(widthBins.size >= 3, `${fixtureName}: expected the composed field to generate at least three distinct wrapped widths`);
+}
+
 function assertStoryMultiColumnSignals(pages: any[], fixtureName: string): void {
     if (fixtureName !== '15-story-multi-column.json') return;
     assert.ok(pages.length >= 3, `${fixtureName}: expected at least three pages for 2-col intro + 3-col continuation`);
@@ -1504,6 +1548,15 @@ async function run() {
                 'circle floats produce image boxes and text with arc-shaped non-uniform line widths',
                 () => {
                     assertCircleFloatSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '27-exclusion-assembly.json') {
+            _check(
+                `${fixture.name} exclusion assembly signals`,
+                'composed float members produce a single actor-owned wrap field with varied line widths',
+                () => {
+                    assertExclusionAssemblySignals(pagesA, fixture.name);
                 }
             );
         }

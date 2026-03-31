@@ -35147,7 +35147,9 @@
   var STRIP_LAYOUT_KEYS = /* @__PURE__ */ new Set(["tracks", "gap"]);
   var TABLE_COLUMN_KEYS = /* @__PURE__ */ new Set(["mode", "value", "fr", "min", "max", "basis", "minContent", "maxContent", "grow", "shrink"]);
   var DROP_CAP_KEYS = /* @__PURE__ */ new Set(["enabled", "lines", "characters", "gap", "characterStyle"]);
-  var STORY_LAYOUT_DIRECTIVE_KEYS = /* @__PURE__ */ new Set(["mode", "x", "y", "align", "wrap", "gap", "shape"]);
+  var STORY_LAYOUT_DIRECTIVE_KEYS = /* @__PURE__ */ new Set(["mode", "x", "y", "align", "wrap", "gap", "shape", "exclusionAssembly"]);
+  var STORY_EXCLUSION_ASSEMBLY_KEYS = /* @__PURE__ */ new Set(["members"]);
+  var STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = /* @__PURE__ */ new Set(["x", "y", "w", "h", "shape"]);
   var PAGE_REGION_DEFINITION_KEYS = /* @__PURE__ */ new Set(["default", "firstPage", "odd", "even"]);
   var PAGE_REGION_CONTENT_KEYS = /* @__PURE__ */ new Set(["elements", "style"]);
   var PAGE_OVERRIDES_KEYS = /* @__PURE__ */ new Set(["header", "footer"]);
@@ -35534,6 +35536,31 @@
     const validShapes = /* @__PURE__ */ new Set(["rect", "circle"]);
     if (directive.shape !== void 0 && !validShapes.has(directive.shape)) {
       contractError(documentPath, `${path2}.shape`, "expected one of: rect, circle.");
+    }
+    if (directive.exclusionAssembly !== void 0) {
+      const assembly = assertPlainObjectAt(directive.exclusionAssembly, `${path2}.exclusionAssembly`, documentPath);
+      assertAllowedKeys(assembly, STORY_EXCLUSION_ASSEMBLY_KEYS, `${path2}.exclusionAssembly`, documentPath);
+      if (!Array.isArray(assembly.members) || assembly.members.length === 0) {
+        contractError(documentPath, `${path2}.exclusionAssembly.members`, "expected a non-empty array.");
+      }
+      assembly.members.forEach((member, index2) => {
+        const memberPath = `${path2}.exclusionAssembly.members[${index2}]`;
+        const memberObj = assertPlainObjectAt(member, memberPath, documentPath);
+        assertAllowedKeys(memberObj, STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS, memberPath, documentPath);
+        assertFiniteNumberAt(memberObj.x, `${memberPath}.x`, documentPath);
+        assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
+        assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
+        assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
+        if (Number(memberObj.w) <= 0) {
+          contractError(documentPath, `${memberPath}.w`, "expected a number greater than 0.");
+        }
+        if (Number(memberObj.h) <= 0) {
+          contractError(documentPath, `${memberPath}.h`, "expected a number greater than 0.");
+        }
+        if (memberObj.shape !== void 0 && !validShapes.has(memberObj.shape)) {
+          contractError(documentPath, `${memberPath}.shape`, "expected one of: rect, circle.");
+        }
+      });
     }
   }
   function validatePaginationContinuation(value, path2, documentPath) {
@@ -55219,6 +55246,13 @@ ${source}`)
   };
   function normalizeLayout(layout) {
     if (!layout) return void 0;
+    const normalizedMembers = Array.isArray(layout.exclusionAssembly?.members) ? layout.exclusionAssembly.members.map((member) => ({
+      x: Number(member.x ?? 0),
+      y: Number(member.y ?? 0),
+      w: Math.max(0, Number(member.w ?? 0)),
+      h: Math.max(0, Number(member.h ?? 0)),
+      shape: member.shape ?? "rect"
+    })) : [];
     return {
       mode: layout.mode,
       x: Math.max(0, Number(layout.x ?? 0)),
@@ -55226,7 +55260,8 @@ ${source}`)
       align: layout.align ?? "left",
       wrap: layout.wrap ?? "around",
       gap: Math.max(0, Number(layout.gap ?? 0)),
-      shape: layout.shape ?? "rect"
+      shape: layout.shape ?? "rect",
+      exclusionAssembly: normalizedMembers.length > 0 ? { members: normalizedMembers } : void 0
     };
   }
   function classifyChild(element2, layout) {
@@ -55586,8 +55621,10 @@ ${source}`)
           gap: layout.gap,
           shape: layout.shape
         };
-        storyMap.register(rect);
-        registeredObstacles.push(rect);
+        for (const obstacle of buildStoryLayoutObstacles(layout, rect.x, rect.y, rect.w, rect.h)) {
+          storyMap.register(obstacle);
+          registeredObstacles.push(obstacle);
+        }
       }
       const placedElements = [];
       const allBoxes = [];
@@ -55655,21 +55692,11 @@ ${source}`)
           cursorY = storyMap.topBottomClearY(cursorY);
           const align = layout.align;
           const floatX = resolveFloatX(align, imgW, availableWidth);
-          const wrap2 = layout.wrap;
-          const gap = layout.gap;
-          if (wrap2 !== "none") {
-            const rect = {
-              x: floatX,
-              y: cursorY,
-              w: imgW,
-              h: imgH,
-              wrap: wrap2,
-              gap,
-              shape: layout.shape,
-              align: layout.align
-            };
-            storyMap.register(rect);
-            registeredObstacles.push(rect);
+          if (layout.wrap !== "none") {
+            for (const obstacle of buildStoryLayoutObstacles(layout, floatX, cursorY, imgW, imgH)) {
+              storyMap.register(obstacle);
+              registeredObstacles.push(obstacle);
+            }
           }
           const box = this.buildImageBox(
             child.element,
@@ -55698,12 +55725,11 @@ ${source}`)
             cursorY = storyMap.topBottomClearY(cursorY);
             const align = layout.align;
             const floatX = resolveFloatX(align, dims.w, availableWidth);
-            const wrap2 = layout.wrap;
-            const gap = layout.gap;
-            if (wrap2 !== "none") {
-              const rect = { x: floatX, y: cursorY, w: dims.w, h: dims.h, wrap: wrap2, gap, shape: layout.shape, align: layout.align };
-              storyMap.register(rect);
-              registeredObstacles.push(rect);
+            if (layout.wrap !== "none") {
+              for (const obstacle of buildStoryLayoutObstacles(layout, floatX, cursorY, dims.w, dims.h)) {
+                storyMap.register(obstacle);
+                registeredObstacles.push(obstacle);
+              }
             }
             const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
             const floatContext = {
@@ -56065,8 +56091,10 @@ ${source}`)
           gap: layout.gap,
           shape: layout.shape
         };
-        allObstacles.push(rect);
-        registeredObstacles.push(rect);
+        for (const obstacle of buildStoryLayoutObstacles(layout, rect.x, rect.y, rect.w, rect.h)) {
+          allObstacles.push(obstacle);
+          registeredObstacles.push(obstacle);
+        }
       }
       let regionIndex = 0;
       let cursorY = 0;
@@ -56288,12 +56316,11 @@ ${source}`)
             const align = layout.align;
             const localX = resolveFloatX(align, Math.min(imgW, region.w), region.w);
             const x2 = region.x + localX;
-            const wrap2 = layout.wrap;
-            const gap = layout.gap;
-            if (wrap2 !== "none") {
-              const rect = { x: x2, y: anchorY, w: Math.min(imgW, region.w), h: imgH, wrap: wrap2, gap, shape: layout.shape, align: layout.align };
-              allObstacles.push(rect);
-              registeredObstacles.push(rect);
+            if (layout.wrap !== "none") {
+              for (const obstacle of buildStoryLayoutObstacles(layout, x2, anchorY, Math.min(imgW, region.w), imgH)) {
+                allObstacles.push(obstacle);
+                registeredObstacles.push(obstacle);
+              }
             }
             const box = this.buildImageBox(child.element, margins.left + x2, anchorY, Math.min(imgW, region.w), imgH, imgData, child.childIndex);
             allBoxes.push(box);
@@ -56319,12 +56346,11 @@ ${source}`)
               const effectiveW = Math.min(dims.w, region.w);
               const localX = resolveFloatX(align, effectiveW, region.w);
               const x2 = region.x + localX;
-              const wrap2 = layout.wrap;
-              const gap = layout.gap;
-              if (wrap2 !== "none") {
-                const rect = { x: x2, y: anchorY, w: effectiveW, h: dims.h, wrap: wrap2, gap, shape: layout.shape, align: layout.align };
-                allObstacles.push(rect);
-                registeredObstacles.push(rect);
+              if (layout.wrap !== "none") {
+                for (const obstacle of buildStoryLayoutObstacles(layout, x2, anchorY, effectiveW, dims.h)) {
+                  allObstacles.push(obstacle);
+                  registeredObstacles.push(obstacle);
+                }
               }
               const pkg2 = buildPackagerForElement(child.element, child.childIndex, this.processor);
               const regionStartY = resolveRegionStartY(regions, region.index);
@@ -56758,6 +56784,36 @@ ${source}`)
     if (align === "right") return Math.max(0, availableWidth - imgW);
     if (align === "center") return Math.max(0, (availableWidth - imgW) / 2);
     return 0;
+  }
+  function buildStoryLayoutObstacles(layout, anchorX, anchorY, defaultWidth, defaultHeight) {
+    const wrap2 = layout.wrap ?? "around";
+    const gap = Math.max(0, Number(layout.gap ?? 0));
+    const normalizedShape = layout.shape ?? "rect";
+    const assemblyMembers = Array.isArray(layout.exclusionAssembly?.members) ? layout.exclusionAssembly.members : [];
+    if (assemblyMembers.length === 0) {
+      return [{
+        x: anchorX,
+        y: anchorY,
+        w: defaultWidth,
+        h: defaultHeight,
+        wrap: wrap2,
+        gap,
+        shape: normalizedShape,
+        align: layout.align
+      }];
+    }
+    return assemblyMembers.map((member) => ({
+      x: anchorX + Number(member.x ?? 0),
+      y: anchorY + Number(member.y ?? 0),
+      w: Math.max(0, Number(member.w ?? 0)),
+      h: Math.max(0, Number(member.h ?? 0)),
+      wrap: wrap2,
+      gap,
+      shape: member.shape ?? "rect"
+      // Deliberately omit align here: assembled members should carve as
+      // local lobes, not inherit the top-level edge-extension heuristic
+      // used for solitary left/right circles.
+    })).filter((member) => member.w > 0 && member.h > 0);
   }
   function cloneBoxes(boxes, pageIndex) {
     return boxes.map((b2) => ({

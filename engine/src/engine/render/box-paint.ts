@@ -6,6 +6,14 @@ import { RendererLineSegment } from './types';
 
 type ImageBytesResolver = (base64Data: string) => Uint8Array;
 
+type ImageClipAssemblyMember = {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    shape?: 'rect' | 'circle';
+};
+
 type DrawLineOptions = {
     color?: string;
     lineWidth?: number;
@@ -79,6 +87,38 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
 
     const bytes = getImageBytes(image.base64Data);
     const clipShape = String(box.properties?._imageClipShape || '').trim();
+    const clipAssembly = Array.isArray(box.properties?._imageClipAssembly)
+        ? (box.properties?._imageClipAssembly as ImageClipAssemblyMember[])
+        : [];
+    if (clipAssembly.length > 0) {
+        const scaleX = box.w > 0 ? drawWidth / box.w : 1;
+        const scaleY = box.h > 0 ? drawHeight / box.h : 1;
+        context.save();
+        for (const member of clipAssembly) {
+            const memberX = drawX + (Number(member.x || 0) * scaleX);
+            const memberY = drawY + (Number(member.y || 0) * scaleY);
+            const memberW = Math.max(0, Number(member.w || 0) * scaleX);
+            const memberH = Math.max(0, Number(member.h || 0) * scaleY);
+            if (memberW <= 0 || memberH <= 0) continue;
+            if (member.shape === 'circle') {
+                context.circle(
+                    memberX + (memberW / 2),
+                    memberY + (memberH / 2),
+                    Math.max(0, Math.min(memberW, memberH) / 2)
+                );
+            } else {
+                context.rect(memberX, memberY, memberW, memberH);
+            }
+        }
+        context.clip();
+        context.image(bytes, drawX, drawY, {
+            width: drawWidth,
+            height: drawHeight,
+            mimeType: image.mimeType
+        });
+        context.restore();
+        return;
+    }
     if (clipShape === 'circle') {
         const radius = Math.max(0, Math.min(drawWidth, drawHeight) / 2);
         if (radius > 0) {

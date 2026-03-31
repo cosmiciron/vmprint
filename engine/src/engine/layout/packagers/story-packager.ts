@@ -453,8 +453,10 @@ export class StoryPackager implements PackagerUnit {
                 gap: layout.gap,
                 shape: layout.shape
             };
-            storyMap.register(rect);
-            registeredObstacles.push(rect);
+            for (const obstacle of buildStoryLayoutObstacles(layout, rect.x, rect.y, rect.w, rect.h)) {
+                storyMap.register(obstacle);
+                registeredObstacles.push(obstacle);
+            }
         }
 
         // -------------------------------------------------------------------
@@ -532,15 +534,12 @@ export class StoryPackager implements PackagerUnit {
 
                 const align: StoryFloatAlign = layout.align;
                 const floatX = resolveFloatX(align, imgW, availableWidth);
-                const wrap: StoryWrapMode = layout.wrap;
-                const gap = layout.gap;
 
-                if (wrap !== 'none') {
-                    const rect: OccupiedRect = {
-                        x: floatX, y: cursorY, w: imgW, h: imgH, wrap, gap, shape: layout.shape, align: layout.align
-                    };
-                    storyMap.register(rect);
-                    registeredObstacles.push(rect);
+                if (layout.wrap !== 'none') {
+                    for (const obstacle of buildStoryLayoutObstacles(layout, floatX, cursorY, imgW, imgH)) {
+                        storyMap.register(obstacle);
+                        registeredObstacles.push(obstacle);
+                    }
                 }
 
                 const box = this.buildImageBox(
@@ -563,13 +562,12 @@ export class StoryPackager implements PackagerUnit {
 
                     const align: StoryFloatAlign = layout.align;
                     const floatX = resolveFloatX(align, dims.w, availableWidth);
-                    const wrap: StoryWrapMode = layout.wrap;
-                    const gap = layout.gap;
 
-                    if (wrap !== 'none') {
-                        const rect: OccupiedRect = { x: floatX, y: cursorY, w: dims.w, h: dims.h, wrap, gap, shape: layout.shape, align: layout.align };
-                        storyMap.register(rect);
-                        registeredObstacles.push(rect);
+                    if (layout.wrap !== 'none') {
+                        for (const obstacle of buildStoryLayoutObstacles(layout, floatX, cursorY, dims.w, dims.h)) {
+                            storyMap.register(obstacle);
+                            registeredObstacles.push(obstacle);
+                        }
                     }
 
                     const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
@@ -1029,8 +1027,10 @@ export class StoryPackager implements PackagerUnit {
                 gap: layout.gap,
                 shape: layout.shape
             };
-            allObstacles.push(rect);
-            registeredObstacles.push(rect);
+            for (const obstacle of buildStoryLayoutObstacles(layout, rect.x, rect.y, rect.w, rect.h)) {
+                allObstacles.push(obstacle);
+                registeredObstacles.push(obstacle);
+            }
         }
 
         let regionIndex = 0;
@@ -1286,12 +1286,11 @@ export class StoryPackager implements PackagerUnit {
                     const align: StoryFloatAlign = layout.align;
                     const localX = resolveFloatX(align, Math.min(imgW, region.w), region.w);
                     const x = region.x + localX;
-                    const wrap: StoryWrapMode = layout.wrap;
-                    const gap = layout.gap;
-                    if (wrap !== 'none') {
-                        const rect: OccupiedRect = { x, y: anchorY, w: Math.min(imgW, region.w), h: imgH, wrap, gap, shape: layout.shape, align: layout.align };
-                        allObstacles.push(rect);
-                        registeredObstacles.push(rect);
+                    if (layout.wrap !== 'none') {
+                        for (const obstacle of buildStoryLayoutObstacles(layout, x, anchorY, Math.min(imgW, region.w), imgH)) {
+                            allObstacles.push(obstacle);
+                            registeredObstacles.push(obstacle);
+                        }
                     }
 
                     const box = this.buildImageBox(child.element, margins.left + x, anchorY, Math.min(imgW, region.w), imgH, imgData, child.childIndex);
@@ -1321,13 +1320,12 @@ export class StoryPackager implements PackagerUnit {
                         const effectiveW = Math.min(dims.w, region.w);
                         const localX = resolveFloatX(align, effectiveW, region.w);
                         const x = region.x + localX;
-                        const wrap: StoryWrapMode = layout.wrap;
-                        const gap = layout.gap;
 
-                        if (wrap !== 'none') {
-                            const rect: OccupiedRect = { x, y: anchorY, w: effectiveW, h: dims.h, wrap, gap, shape: layout.shape, align: layout.align };
-                            allObstacles.push(rect);
-                            registeredObstacles.push(rect);
+                        if (layout.wrap !== 'none') {
+                            for (const obstacle of buildStoryLayoutObstacles(layout, x, anchorY, effectiveW, dims.h)) {
+                                allObstacles.push(obstacle);
+                                registeredObstacles.push(obstacle);
+                            }
                         }
 
                         const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
@@ -1797,6 +1795,15 @@ export class StoryPackager implements PackagerUnit {
             properties: {
                 ...(flowBox.properties || {}),
                 _imageClipShape: element.placement?.shape,
+                _imageClipAssembly: element.placement?.exclusionAssembly?.members
+                    ? element.placement.exclusionAssembly.members.map((member) => ({
+                        x: Number(member.x ?? 0),
+                        y: Number(member.y ?? 0),
+                        w: Math.max(0, Number(member.w ?? 0)),
+                        h: Math.max(0, Number(member.h ?? 0)),
+                        shape: member.shape ?? 'rect'
+                    }))
+                    : undefined,
                 _isFirstLine: true,
                 _isLastLine: true,
                 _isFirstFragmentInLine: true,
@@ -1917,6 +1924,47 @@ function resolveFloatX(
     if (align === 'right') return Math.max(0, availableWidth - imgW);
     if (align === 'center') return Math.max(0, (availableWidth - imgW) / 2);
     return 0; // 'left'
+}
+
+function buildStoryLayoutObstacles(
+    layout: StoryLayoutDirective,
+    anchorX: number,
+    anchorY: number,
+    defaultWidth: number,
+    defaultHeight: number
+): OccupiedRect[] {
+    const wrap = layout.wrap ?? 'around';
+    const gap = Math.max(0, Number(layout.gap ?? 0));
+    const normalizedShape = (layout.shape ?? 'rect') as 'rect' | 'circle';
+    const assemblyMembers = Array.isArray(layout.exclusionAssembly?.members)
+        ? layout.exclusionAssembly.members
+        : [];
+
+    if (assemblyMembers.length === 0) {
+        return [{
+            x: anchorX,
+            y: anchorY,
+            w: defaultWidth,
+            h: defaultHeight,
+            wrap,
+            gap,
+            shape: normalizedShape,
+            align: layout.align
+        }];
+    }
+
+    return assemblyMembers.map((member) => ({
+        x: anchorX + Number(member.x ?? 0),
+        y: anchorY + Number(member.y ?? 0),
+        w: Math.max(0, Number(member.w ?? 0)),
+        h: Math.max(0, Number(member.h ?? 0)),
+        wrap,
+        gap,
+        shape: ((member.shape ?? 'rect') as 'rect' | 'circle')
+        // Deliberately omit align here: assembled members should carve as
+        // local lobes, not inherit the top-level edge-extension heuristic
+        // used for solitary left/right circles.
+    })).filter((member) => member.w > 0 && member.h > 0);
 }
 
 function cloneBoxes(boxes: Box[], pageIndex?: number): Box[] {

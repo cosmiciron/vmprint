@@ -92,7 +92,9 @@ const ZONE_LAYOUT_KEYS = new Set(['columns', 'gap', 'frameOverflow', 'worldBehav
 const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
-const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape']);
+const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly']);
+const STORY_EXCLUSION_ASSEMBLY_KEYS = new Set(['members']);
+const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape']);
 const PAGE_REGION_DEFINITION_KEYS = new Set(['default', 'firstPage', 'odd', 'even']);
 const PAGE_REGION_CONTENT_KEYS = new Set(['elements', 'style']);
 const PAGE_OVERRIDES_KEYS = new Set(['header', 'footer']);
@@ -513,6 +515,31 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
     const validShapes = new Set(['rect', 'circle']);
     if (directive.shape !== undefined && !validShapes.has(directive.shape as string)) {
         contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle.');
+    }
+    if (directive.exclusionAssembly !== undefined) {
+        const assembly = assertPlainObjectAt(directive.exclusionAssembly, `${path}.exclusionAssembly`, documentPath);
+        assertAllowedKeys(assembly, STORY_EXCLUSION_ASSEMBLY_KEYS, `${path}.exclusionAssembly`, documentPath);
+        if (!Array.isArray(assembly.members) || assembly.members.length === 0) {
+            contractError(documentPath, `${path}.exclusionAssembly.members`, 'expected a non-empty array.');
+        }
+        assembly.members.forEach((member, index) => {
+            const memberPath = `${path}.exclusionAssembly.members[${index}]`;
+            const memberObj = assertPlainObjectAt(member, memberPath, documentPath);
+            assertAllowedKeys(memberObj, STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS, memberPath, documentPath);
+            assertFiniteNumberAt(memberObj.x, `${memberPath}.x`, documentPath);
+            assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
+            assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
+            assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
+            if (Number(memberObj.w) <= 0) {
+                contractError(documentPath, `${memberPath}.w`, 'expected a number greater than 0.');
+            }
+            if (Number(memberObj.h) <= 0) {
+                contractError(documentPath, `${memberPath}.h`, 'expected a number greater than 0.');
+            }
+            if (memberObj.shape !== undefined && !validShapes.has(memberObj.shape as string)) {
+                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle.');
+            }
+        });
     }
 }
 
