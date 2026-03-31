@@ -14,6 +14,58 @@ type ImageClipAssemblyMember = {
     shape?: 'rect' | 'circle';
 };
 
+type ClipDescriptor = {
+    shape: string;
+    assembly: ImageClipAssemblyMember[];
+};
+
+const resolveClipDescriptor = (box: Box): ClipDescriptor => ({
+    shape: String(box.properties?._clipShape || box.properties?._imageClipShape || '').trim(),
+    assembly: Array.isArray(box.properties?._clipAssembly)
+        ? (box.properties?._clipAssembly as ImageClipAssemblyMember[])
+        : (Array.isArray(box.properties?._imageClipAssembly)
+            ? (box.properties?._imageClipAssembly as ImageClipAssemblyMember[])
+            : [])
+});
+
+const applyClipPath = (
+    context: Context,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    clip: ClipDescriptor
+): boolean => {
+    if (clip.assembly.length > 0) {
+        for (const member of clip.assembly) {
+            const memberX = x + Number(member.x || 0);
+            const memberY = y + Number(member.y || 0);
+            const memberW = Math.max(0, Number(member.w || 0));
+            const memberH = Math.max(0, Number(member.h || 0));
+            if (memberW <= 0 || memberH <= 0) continue;
+            if (member.shape === 'circle') {
+                context.circle(
+                    memberX + (memberW / 2),
+                    memberY + (memberH / 2),
+                    Math.max(0, Math.min(memberW, memberH) / 2)
+                );
+            } else {
+                context.rect(memberX, memberY, memberW, memberH);
+            }
+        }
+        context.clip();
+        return true;
+    }
+    if (clip.shape === 'circle') {
+        const radius = Math.max(0, Math.min(w, h) / 2);
+        if (radius > 0) {
+            context.circle(x + (w / 2), y + (h / 2), radius).clip();
+            return true;
+        }
+    }
+    return false;
+};
+
 type DrawLineOptions = {
     color?: string;
     lineWidth?: number;
@@ -42,7 +94,17 @@ const drawLine = (
 
 export const drawBoxBackground = (context: Context, box: Box, boxStyle: ElementStyle): void => {
     if (!boxStyle.backgroundColor) return;
+    const clip = resolveClipDescriptor(box);
     const radius = boxStyle.borderRadius || 0;
+    if (clip.assembly.length > 0 || clip.shape === 'circle') {
+        context.save();
+        if (applyClipPath(context, box.x, box.y, box.w, box.h, clip)) {
+            context.rect(box.x, box.y, box.w, box.h).fillColor(boxStyle.backgroundColor).fill();
+            context.restore();
+            return;
+        }
+        context.restore();
+    }
     if (radius > 0) {
         context.roundedRect(box.x, box.y, box.w, box.h, radius).fillColor(boxStyle.backgroundColor).fill();
         return;
@@ -86,10 +148,9 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
     }
 
     const bytes = getImageBytes(image.base64Data);
-    const clipShape = String(box.properties?._imageClipShape || '').trim();
-    const clipAssembly = Array.isArray(box.properties?._imageClipAssembly)
-        ? (box.properties?._imageClipAssembly as ImageClipAssemblyMember[])
-        : [];
+    const clip = resolveClipDescriptor(box);
+    const clipShape = clip.shape;
+    const clipAssembly = clip.assembly;
     if (clipAssembly.length > 0) {
         const scaleX = box.w > 0 ? drawWidth / box.w : 1;
         const scaleY = box.h > 0 ? drawHeight / box.h : 1;

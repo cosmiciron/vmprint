@@ -27,6 +27,7 @@ const LAYOUT_KEYS = new Set([
     'lineHeight',
     'pageBackground',
     'storyWrapOpticalUnderhang',
+    'worldPlain',
     'headerInsetTop',
     'headerInsetBottom',
     'footerInsetTop',
@@ -58,6 +59,7 @@ const LAYOUT_KEYS = new Set([
 const PROGRESSION_KEYS = new Set(['policy', 'maxTicks']);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
+const WORLD_PLAIN_KEYS = new Set(['style']);
 const ELEMENT_KEYS = new Set(['type', 'name', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
 const ZONE_DEFINITION_KEYS = new Set(['id', 'region', 'elements', 'style']);
 const ZONE_REGION_KEYS = new Set(['x', 'y', 'width', 'height']);
@@ -279,6 +281,11 @@ function validateLayout(layout: unknown, documentPath: string): void {
     if (obj.pageBackground !== undefined) assertStringAt(obj.pageBackground, 'layout.pageBackground', documentPath);
     if (obj.storyWrapOpticalUnderhang !== undefined) {
         assertBooleanAt(obj.storyWrapOpticalUnderhang, 'layout.storyWrapOpticalUnderhang', documentPath);
+    }
+    if (obj.worldPlain !== undefined) {
+        const plain = assertPlainObjectAt(obj.worldPlain, 'layout.worldPlain', documentPath);
+        assertAllowedKeys(plain, WORLD_PLAIN_KEYS, 'layout.worldPlain', documentPath);
+        if (plain.style !== undefined) validateStyleObject(plain.style, 'layout.worldPlain.style', documentPath);
     }
     if (obj.headerInsetTop !== undefined) assertFiniteNumberAt(obj.headerInsetTop, 'layout.headerInsetTop', documentPath);
     if (obj.headerInsetBottom !== undefined) assertFiniteNumberAt(obj.headerInsetBottom, 'layout.headerInsetBottom', documentPath);
@@ -852,6 +859,10 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
         }
     }
 
+    if (String(element.type).trim() === 'world-plain') {
+        contractError(documentPath, `${path}.type`, 'world-plain is authored through layout.worldPlain, not as a regular element.');
+    }
+
     if (element.zones !== undefined) {
         if (!Array.isArray(element.zones)) {
             contractError(documentPath, `${path}.zones`, 'expected an array of zone definitions.');
@@ -886,6 +897,16 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
     if (String(element.type).trim() === 'image') {
         if (element.image === undefined) {
             contractError(documentPath, `${path}.image`, 'is required when element.type is "image".');
+        }
+    }
+
+    if (String(element.type).trim() === 'field-actor') {
+        const style = isPlainObject(element.properties?.style) ? element.properties.style as Record<string, unknown> : {};
+        if (style.width === undefined) {
+            contractError(documentPath, `${path}.properties.style.width`, 'is required when element.type is "field-actor".');
+        }
+        if (style.height === undefined) {
+            contractError(documentPath, `${path}.properties.style.height`, 'is required when element.type is "field-actor".');
         }
     }
 
@@ -1148,6 +1169,17 @@ function normalizeElementNode(element: Element): Element {
     return normalized;
 }
 
+function synthesizeWorldPlainElement(elements: Element[], worldPlain: unknown): Element {
+    const plain = isPlainObject(worldPlain) ? worldPlain : {};
+    const style = isPlainObject(plain.style) ? plain.style as Record<string, unknown> : undefined;
+    return {
+        type: 'world-plain',
+        content: '',
+        children: elements,
+        properties: style ? { style } : undefined
+    };
+}
+
 function parseYamlScalar(raw: string): unknown {
     const value = raw.trim();
     if (value === 'true') return true;
@@ -1372,7 +1404,10 @@ export function normalizeDocumentToIR(document: DocumentInput, documentPath: str
     }) as LayoutConfig['layout'];
 
     const normalizedStyles = deepSortObject(document.styles || {}) as LayoutConfig['styles'];
-    const normalizedElements = document.elements.map((element) => normalizeElementNode(element));
+    const rootElements = document.elements.map((element) => normalizeElementNode(element));
+    const normalizedElements = document.layout.worldPlain !== undefined
+        ? [synthesizeWorldPlainElement(rootElements, document.layout.worldPlain)]
+        : rootElements;
 
     return {
         documentVersion: CURRENT_DOCUMENT_VERSION,

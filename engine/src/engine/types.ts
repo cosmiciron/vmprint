@@ -261,6 +261,10 @@ export interface StripLayoutOptions {
     gap?: number;
 }
 
+export interface WorldPlainOptions {
+    style?: ElementStyle;
+}
+
 export interface ElementProperties extends Record<string, any> {
     style?: Record<string, any>;
     colSpan?: number;
@@ -462,6 +466,8 @@ export interface LayoutConfig {
         pageBackground?: string;
         /** Optical story wrap underhang: allow full-width lines once their top clears an obstacle bottom. */
         storyWrapOpticalUnderhang?: boolean;
+        /** Optional world substrate for this document. When present, root elements inhabit the world plain. */
+        worldPlain?: WorldPlainOptions;
         headerInsetTop?: number;
         headerInsetBottom?: number;
         footerInsetTop?: number;

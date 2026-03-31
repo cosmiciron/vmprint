@@ -671,8 +671,11 @@ function assertExclusionAssemblySignals(pages: any[], fixtureName: string): void
 
 function assertZoneMapExclusionAssemblySignals(pages: any[], fixtureName: string): void {
     const allBoxes = pages.flatMap((page: any) => page.boxes || []);
-    const transparentImageBoxes = allBoxes.filter((box: any) => !!box.image && Number(box.w || 0) >= 200);
-    assert.ok(transparentImageBoxes.length >= 1, `${fixtureName}: expected a large invisible field image box in the main zone`);
+    const hiddenFieldActors = allBoxes.filter((box: any) =>
+        String(box.type || '').toLowerCase() === 'field-actor'
+        && Number(box.w || 0) >= 200
+    );
+    assert.ok(hiddenFieldActors.length >= 1, `${fixtureName}: expected a large invisible field actor in the main zone`);
 
     const wrappedBoxes = allBoxes.filter((box: any) => {
         const widths: number[] = Array.isArray(box.properties?._lineWidths)
@@ -688,12 +691,12 @@ function assertZoneMapExclusionAssemblySignals(pages: any[], fixtureName: string
 
 function assertZoneMapNativeFieldSignals(pages: any[], fixtureName: string): void {
     const allBoxes = pages.flatMap((page: any) => page.boxes || []);
-    const fieldImageBoxes = allBoxes.filter((box: any) =>
-        !!box.image
+    const fieldActorBoxes = allBoxes.filter((box: any) =>
+        String(box.type || '').toLowerCase() === 'field-actor'
         && Number(box.w || 0) >= 90
         && Number(box.y || 0) >= 170
     );
-    assert.ok(fieldImageBoxes.length >= 2, `${fixtureName}: expected visible placed native zone field actors`);
+    assert.ok(fieldActorBoxes.length >= 2, `${fixtureName}: expected visible placed native zone field actors`);
 
     const wrappedParagraphs = allBoxes.filter((box: any) => {
         if (String(box.type || '').toLowerCase() !== 'p') return false;
@@ -719,6 +722,80 @@ function assertZoneMapNativeFieldSignals(pages: any[], fixtureName: string): voi
     assert.ok(
         wrappedParagraphs.length >= 1,
         `${fixtureName}: expected ordinary zone paragraphs to split into multiple scanline slots around the placed native fields`
+    );
+}
+
+function assertZoneMapAbsoluteRockSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    const rockBoxes = allBoxes.filter((box: any) =>
+        String(box.type || '').toLowerCase() === 'field-actor'
+        && Number(box.w || 0) >= 140
+        && Number(box.x || 0) >= 120
+        && Number(box.y || 0) >= 190
+    );
+    assert.ok(rockBoxes.length >= 1, `${fixtureName}: expected a visible absolute-positioned rock actor in the main zone`);
+
+    const wrappedParagraphs = allBoxes.filter((box: any) => {
+        if (String(box.type || '').toLowerCase() !== 'p') return false;
+        const debug = box.properties?.__vmprintZoneDebug;
+        if (!debug || debug.zoneId !== 'main') return false;
+        const offsets = Array.isArray(box.properties?._lineOffsets)
+            ? box.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+            : [];
+        const yOffsets = Array.isArray(box.properties?._lineYOffsets)
+            ? box.properties._lineYOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+            : [];
+        if (offsets.length < 2 || yOffsets.length < 2) return false;
+        const bands = new Map<string, Set<string>>();
+        for (let i = 0; i < Math.min(offsets.length, yOffsets.length); i++) {
+            const bandKey = Number(yOffsets[i]).toFixed(2);
+            const set = bands.get(bandKey) ?? new Set<string>();
+            set.add(Number(offsets[i]).toFixed(2));
+            bands.set(bandKey, set);
+            if (set.size >= 2) return true;
+        }
+        return false;
+    });
+    assert.ok(
+        wrappedParagraphs.length >= 1,
+        `${fixtureName}: expected ordinary zone labels to split into multiple scanline slots around the absolute rock`
+    );
+}
+
+function assertWorldPlainAbsoluteRockSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    const rockBoxes = allBoxes.filter((box: any) =>
+        String(box.type || '').toLowerCase() === 'field-actor'
+        && Number(box.w || 0) >= 140
+        && Number(box.x || 0) >= 180
+        && Number(box.y || 0) >= 140
+    );
+    assert.ok(rockBoxes.length >= 1, `${fixtureName}: expected a visible absolute-positioned rock actor inside the world plain`);
+
+    const wrappedParagraphs = allBoxes.filter((box: any) => {
+        if (String(box.type || '').toLowerCase() !== 'p') return false;
+        const debug = box.properties?.__vmprintZoneDebug;
+        if (!debug || debug.zoneId !== 'plain') return false;
+        const offsets = Array.isArray(box.properties?._lineOffsets)
+            ? box.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+            : [];
+        const yOffsets = Array.isArray(box.properties?._lineYOffsets)
+            ? box.properties._lineYOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+            : [];
+        if (offsets.length < 2 || yOffsets.length < 2) return false;
+        const bands = new Map<string, Set<string>>();
+        for (let i = 0; i < Math.min(offsets.length, yOffsets.length); i++) {
+            const bandKey = Number(yOffsets[i]).toFixed(2);
+            const set = bands.get(bandKey) ?? new Set<string>();
+            set.add(Number(offsets[i]).toFixed(2));
+            bands.set(bandKey, set);
+            if (set.size >= 2) return true;
+        }
+        return false;
+    });
+    assert.ok(
+        wrappedParagraphs.length >= 1,
+        `${fixtureName}: expected ordinary world-plain labels to split into multiple scanline slots around the rock`
     );
 }
 
@@ -1628,6 +1705,24 @@ async function run() {
                 'a direct zone child should publish a hidden field that later ordinary zone actors must settle around',
                 () => {
                     assertZoneMapNativeFieldSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '30-zone-map-absolute-rock.json') {
+            _check(
+                `${fixture.name} zone-map absolute rock signals`,
+                'an absolute-positioned field actor should exist in map space while ordinary zone labels settle around it',
+                () => {
+                    assertZoneMapAbsoluteRockSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '31-world-plain-absolute-rock.json') {
+            _check(
+                `${fixture.name} world-plain absolute rock signals`,
+                'a world-plain host should hold an absolute-positioned rock actor while ordinary labels settle around it',
+                () => {
+                    assertWorldPlainAbsoluteRockSignals(pagesA, fixture.name);
                 }
             );
         }

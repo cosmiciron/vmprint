@@ -1,0 +1,163 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 600,
+      "height": 800
+    },
+    "margins": {
+      "top": 50,
+      "right": 50,
+      "bottom": 50,
+      "left": 50
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.4,
+    "pageBackground": "#fcfbf7"
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true,
+      "color": "#233b56"
+    },
+    "h2": {
+      "fontSize": 14,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true,
+      "color": "#33577d"
+    },
+    "p": {
+      "marginBottom": 8
+    },
+    "sidebar-label": {
+      "fontSize": 9,
+      "fontWeight": "bold",
+      "marginBottom": 4,
+      "color": "#555555"
+    },
+    "sidebar-body": {
+      "fontSize": 9,
+      "marginBottom": 6,
+      "color": "#333333"
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Zone Map: Absolute Rock Actor"
+    },
+    {
+      "type": "p",
+      "content": "This proof places a visible rock actor at explicit map coordinates inside the main zone. Ordinary labels should negotiate around that fixed body rather than treating it like an in-flow document block."
+    },
+    {
+      "type": "zone-map",
+      "properties": {
+        "style": {
+          "marginTop": 12,
+          "marginBottom": 12
+        }
+      },
+      "zones": [
+        {
+          "id": "main",
+          "elements": [
+            {
+              "type": "h2",
+              "content": "Main Zone"
+            },
+            {
+              "type": "field-actor",
+              "content": "",
+              "properties": {
+                "spatialField": {
+                  "kind": "exclude",
+                  "x": 92,
+                  "y": 76,
+                  "wrap": "around",
+                  "gap": 8,
+                  "exclusionAssembly": {
+                    "members": [
+                      { "shape": "circle", "x": 0, "y": 34, "w": 74, "h": 74 },
+                      { "shape": "circle", "x": 54, "y": 6, "w": 90, "h": 90 },
+                      { "shape": "rect", "x": 44, "y": 54, "w": 88, "h": 28 },
+                      { "shape": "circle", "x": 120, "y": 56, "w": 36, "h": 36 }
+                    ]
+                  }
+                },
+                "style": {
+                  "width": 156,
+                  "backgroundColor": "#f8f6ef",
+                  "height": 116
+                }
+              }
+            },
+            {
+              "type": "p",
+              "content": "A placed rock actor should feel like a thing that exists on the map first, not a paragraph decoration. The first label immediately yields to that occupied territory."
+            },
+            {
+              "type": "p",
+              "content": "Because the body is anchored by explicit x and y coordinates, later labels are negotiating around a field that lives in space, not one that merely follows document order."
+            },
+            {
+              "type": "p",
+              "content": "That makes this proof useful for future game-oriented contexts too. A rock, creature, hazard, or sleeping dragon can be an actor with presence while the zone itself remains only a region."
+            },
+            {
+              "type": "p",
+              "content": "If this idea is honest, the visible circles should stay recognizable and the surrounding labels should divide into multiple scanline slots instead of pretending the map is a rigid column."
+            }
+          ]
+        },
+        {
+          "id": "sidebar",
+          "elements": [
+            {
+              "type": "sidebar-label",
+              "content": "MAP NOTE"
+            },
+            {
+              "type": "sidebar-body",
+              "content": "The rock is absolute only within the main zone's local world. The sidebar continues independently and should not react."
+            },
+            {
+              "type": "sidebar-label",
+              "content": "WHY IT MATTERS"
+            },
+            {
+              "type": "sidebar-body",
+              "content": "This is the cleaner world-facing proof: one actor exists in space and neighboring actors flow around it."
+            }
+          ]
+        }
+      ],
+      "zoneLayout": {
+        "columns": [
+          {
+            "mode": "flex",
+            "fr": 2
+          },
+          {
+            "mode": "flex",
+            "fr": 1
+          }
+        ],
+        "gap": 16
+      }
+    },
+    {
+      "type": "p",
+      "content": "Content below the zone-map resumes in normal document flow after the absolute rock proof."
+    }
+  ]
+}

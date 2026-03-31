@@ -178,6 +178,7 @@ const isInteractableBox = (box: Box): boolean => {
         isTextSelectableBox(box)
         || !!box.image
         || box.type === 'image'
+        || box.type === 'field-actor'
         || box.type === 'box'
     );
 };

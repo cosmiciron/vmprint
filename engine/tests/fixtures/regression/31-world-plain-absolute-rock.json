@@ -1,0 +1,97 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 600,
+      "height": 800
+    },
+    "margins": {
+      "top": 50,
+      "right": 50,
+      "bottom": 50,
+      "left": 50
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.4,
+    "pageBackground": "#fcfbf7",
+    "worldPlain": {
+      "style": {
+        "marginTop": 12,
+        "marginBottom": 12
+      }
+    }
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true,
+      "color": "#233b56"
+    },
+    "p": {
+      "marginBottom": 8
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "World Plain: Absolute Rock Actor"
+    },
+    {
+      "type": "p",
+      "content": "This proof no longer hides inside story or zone-map. A dedicated world-plain host holds one placed rock actor and several ordinary labels that must negotiate around it."
+    },
+    {
+      "type": "field-actor",
+      "content": "",
+      "properties": {
+        "spatialField": {
+          "kind": "exclude",
+          "x": 166,
+          "y": 92,
+          "wrap": "around",
+          "gap": 8,
+          "exclusionAssembly": {
+            "members": [
+              { "shape": "circle", "x": 0, "y": 34, "w": 74, "h": 74 },
+              { "shape": "circle", "x": 54, "y": 6, "w": 90, "h": 90 },
+              { "shape": "rect", "x": 44, "y": 54, "w": 88, "h": 28 },
+              { "shape": "circle", "x": 120, "y": 56, "w": 36, "h": 36 }
+            ]
+          }
+        },
+        "style": {
+          "width": 156,
+          "backgroundColor": "#f8f6ef",
+          "height": 116
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "A placed rock actor should feel like a thing in the world first, not a trick of paragraph flow. The first label should already show that the plain itself understands the actor's presence."
+    },
+    {
+      "type": "p",
+      "content": "Because the body is anchored at explicit coordinates, later labels are negotiating around something that exists in space, not merely in sequence. The river of text is now one inhabitant of the world, not the world itself."
+    },
+    {
+      "type": "p",
+      "content": "This is the architectural threshold we wanted. A rock, creature, hazard, or sleeping dragon can publish a spatial field while ordinary actors continue to decompose and reassemble around it."
+    },
+    {
+      "type": "p",
+      "content": "If the proof is honest, the visible circles remain legible and the labels divide into multiple scanline slots around the rock rather than pretending the plain is just a single rigid column."
+    },
+    {
+      "type": "p",
+      "content": "Content below the world plain resumes in normal document flow after the placed rock proof."
+    }
+  ]
+}

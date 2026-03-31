@@ -1,0 +1,287 @@
+[
+  {
+    "index": 0,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 50,
+        "y": 62,
+        "w": 500,
+        "h": 36.4125,
+        "lines": [
+          [
+            {
+              "text": "World Plain: Absolute Rock Actor",
+              "width": 383.589844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 110.4125,
+        "w": 500,
+        "h": 30.34375,
+        "lines": [
+          [
+            {
+              "text": "This proof no longer hides inside story or zone-map. A dedicated world-plain host holds one placed rock actor ",
+              "width": 486.933594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and several ordinary labels that must negotiate around it.",
+              "width": 251.816406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "field-actor",
+        "x": 216,
+        "y": 154,
+        "w": 156,
+        "h": 116,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 148.75625,
+        "w": 500,
+        "h": 29.171875,
+        "lines": [
+          [
+            {
+              "text": "A placed rock actor should feel like a thing in the ",
+              "width": 217.348633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "world first, not a trick of paragraph flow. The ",
+              "width": 196.75293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "first label should already show that the plain itself ",
+              "width": 220.12207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "understands the actor's presence.",
+              "width": 150.332031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 185.928125,
+        "w": 500,
+        "h": 57.171875,
+        "lines": [
+          [
+            {
+              "text": "Because the body is anchored at ",
+              "width": 148.432617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "explicit coordinates, later labels are ",
+              "width": 158.969727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "negotiating around something that ",
+              "width": 153.999023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "exists in space, not merely in ",
+              "width": 131.166992,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sequence. The river of text is now ",
+              "width": 152.294922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "one inhabitant of the world, not the ",
+              "width": 156.220703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "world itself.",
+              "width": 50.014648,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 251.1,
+        "w": 500,
+        "h": 43.171875,
+        "lines": [
+          [
+            {
+              "text": "This is the architectural threshold we ",
+              "width": 165.073242,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "w",
+              "width": 7.22168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "anted. A rock, creature, hazard, or ",
+              "width": 154.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sleeping dragon can publish a spatial ",
+              "width": 167.338867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "field while ordinary actors continue to decompose and ",
+              "width": 241.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reassemble around it.",
+              "width": 96.162109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 302.271875,
+        "w": 500,
+        "h": 29.171875,
+        "lines": [
+          [
+            {
+              "text": "If the proof is honest, the visible circles remain legible and the labels divide into multiple scanline slots around ",
+              "width": 486.376953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the rock rather than pretending the plain is just a single rigid column.",
+              "width": 302.392578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 339.44375,
+        "w": 500,
+        "h": 15.171875,
+        "lines": [
+          [
+            {
+              "text": "Content below the world plain resumes in normal document flow after the placed rock proof.",
+              "width": 405.209961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

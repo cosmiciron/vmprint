@@ -1730,8 +1730,8 @@ export class StoryPackager implements PackagerUnit {
             style: flowBox.style,
             properties: {
                 ...(flowBox.properties || {}),
-                _imageClipShape: element.placement?.shape,
-                _imageClipAssembly: element.placement?.exclusionAssembly?.members
+                _clipShape: element.placement?.shape,
+                _clipAssembly: element.placement?.exclusionAssembly?.members
                     ? element.placement.exclusionAssembly.members.map((member) => ({
                         x: Number(member.x ?? 0),
                         y: Number(member.y ?? 0),

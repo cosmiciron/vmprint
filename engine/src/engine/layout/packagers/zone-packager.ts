@@ -107,7 +107,7 @@ function buildZoneFieldState(
             ...(box.properties || {}),
             ...(directive.exclusionAssembly?.members
                 ? {
-                    _imageClipAssembly: directive.exclusionAssembly.members.map((member) => ({
+                    _clipAssembly: directive.exclusionAssembly.members.map((member) => ({
                         x: Number(member.x ?? 0),
                         y: Number(member.y ?? 0),
                         w: Math.max(0, Number(member.w ?? 0)),
@@ -116,7 +116,7 @@ function buildZoneFieldState(
                     }))
                 }
                 : directive.shape
-                    ? { _imageClipShape: directive.shape }
+                    ? { _clipShape: directive.shape }
                     : {}),
             ...(hidden ? { opacity: 0 } : {})
         }

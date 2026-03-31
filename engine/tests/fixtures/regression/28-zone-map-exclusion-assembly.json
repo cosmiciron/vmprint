@@ -80,7 +80,7 @@
               "type": "story",
               "children": [
                 {
-                  "type": "image",
+                  "type": "field-actor",
                   "content": "",
                   "placement": {
                     "mode": "float",
@@ -102,11 +102,6 @@
                       "width": 228,
                       "height": 140
                     }
-                  },
-                  "image": {
-                    "mimeType": "image/png",
-                    "fit": "fill",
-                    "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+Xr2QAAAAASUVORK5CYII="
                   }
                 },
                 {

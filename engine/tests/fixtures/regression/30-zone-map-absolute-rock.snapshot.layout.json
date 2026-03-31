@@ -13,8 +13,8 @@
         "lines": [
           [
             {
-              "text": "Zone Map: Placed Field Actors",
-              "width": 349.394531,
+              "text": "Zone Map: Absolute Rock Actor",
+              "width": 364.019531,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -31,8 +31,8 @@
         "lines": [
           [
             {
-              "text": "This proof removes the embedded story and places visible exclusion-field actors directly inside the zone. Later ",
-              "width": 490.249023,
+              "text": "This proof places a visible rock actor at explicit map coordinates inside the main zone. Ordinary labels should ",
+              "width": 485.239258,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -40,8 +40,8 @@
           ],
           [
             {
-              "text": "ordinary zone children should walk around those placed bodies the way map labels or notes would skirt rocks.",
-              "width": 485.820313,
+              "text": "negotiate around that fixed body rather than treating it like an in-flow document block.",
+              "width": 376.894531,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -69,23 +69,41 @@
       },
       {
         "type": "field-actor",
-        "x": 70,
-        "y": 200.75625,
-        "w": 168,
-        "h": 110,
+        "x": 142,
+        "y": 224.75625,
+        "w": 156,
+        "h": 116,
         "lines": []
       },
       {
-        "type": "field-actor",
+        "type": "p",
         "x": 50,
         "y": 177.996875,
         "w": 322.666667,
-        "h": 15.171875,
+        "h": 43.171875,
         "lines": [
           [
             {
-              "text": "",
-              "width": 0,
+              "text": "A placed rock actor should feel like a thing that exists on the map first, ",
+              "width": 312.382813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "not a paragraph decoration. The first label immediately yields to that ",
+              "width": 303.496094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "occupied territory.",
+              "width": 78.735352,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -96,14 +114,194 @@
       {
         "type": "p",
         "x": 50,
-        "y": 193.16875,
+        "y": 229.16875,
+        "w": 322.666667,
+        "h": 71.171875,
+        "lines": [
+          [
+            {
+              "text": "Because the body is anchored by",
+              "width": 147.875977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "explicit x and y ",
+              "width": 68.364258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "coordinates, later labels",
+              "width": 105.615234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "are negotiating ",
+              "width": 68.94043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around a field that ",
+              "width": 82.836914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lives in space, ",
+              "width": 65.585938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "not one that ",
+              "width": 55.600586,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "merely follows ",
+              "width": 66.12793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "document order.",
+              "width": 72.265625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 308.340625,
+        "w": 322.666667,
+        "h": 71.171875,
+        "lines": [
+          [
+            {
+              "text": "That makes this ",
+              "width": 73.359375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "proof useful for",
+              "width": 66.704102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "future ",
+              "width": 28.349609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "g",
+              "width": 5.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ame-oriented ",
+              "width": 61.699219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "contexts too. A rock, ",
+              "width": 93.374023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "creature, hazard, or sleeping dragon ",
+              "width": 163.989258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "can be an actor with presence while the zone itself remains only a ",
+              "width": 294.047852,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "region.",
+              "width": 30.576172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 387.5125,
         "w": 322.666667,
         "h": 43.171875,
         "lines": [
           [
             {
-              "text": "This label block should ",
-              "width": 103.945313,
+              "text": "If this idea is honest, the visible circles should stay recognizable and the ",
+              "width": 321.289063,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -111,8 +309,8 @@
           ],
           [
             {
-              "text": "immediately choose a lane around ",
-              "width": 155.092773,
+              "text": "surrounding labels should divide into multiple scanline slots instead of ",
+              "width": 310.737305,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -120,233 +318,8 @@
           ],
           [
             {
-              "text": "the first placed rock ",
-              "width": 89.482422,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "rather than pretending the zone",
-              "width": 139.545898,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "is a ",
-              "width": 18.339844,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "story.",
-              "width": 23.706055,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 50,
-        "y": 244.340625,
-        "w": 322.666667,
-        "h": 57.171875,
-        "lines": [
-          [
-            {
-              "text": "A ",
-              "width": 9.448242,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "later block should encounter ",
-              "width": 127.856445,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "a ",
-              "width": 8.339844,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "different free interval once ",
-              "width": 118.217773,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "the",
-              "width": 13.901367,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "upper mass falls away and ",
-              "width": 121.171875,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "the ",
-              "width": 16.679688,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "second ",
-              "width": 35.024414,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "rock begins to matter.",
-              "width": 95.600586,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 50,
-        "y": 309.5125,
-        "w": 322.666667,
-        "h": 43.171875,
-        "lines": [
-          [
-            {
-              "text": "The interesting question is not whether the result looks like typography ",
-              "width": 314.619141,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "wrap, but whether ordinary zone actors appear to walk around explicit ",
-              "width": 310.722656,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "placed bodies inside the map.",
-              "width": 132.30957,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 50,
-        "y": 360.684375,
-        "w": 322.666667,
-        "h": 43.171875,
-        "lines": [
-          [
-            {
-              "text": "That is the more generic capability we care about: rocks, hazards, ",
-              "width": 294.02832,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "creatures, or invisible influence zones can all publish spatial fields while ",
-              "width": 319.057617,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "the host remains just a region.",
-              "width": 133.959961,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 50,
-        "y": 411.85625,
-        "w": 322.666667,
-        "h": 43.171875,
-        "lines": [
-          [
-            {
-              "text": "If this proof is honest, the circles in the assembly should also be visible ",
-              "width": 315.712891,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "in the rendered bodies now instead of disappearing into one rectangular ",
-              "width": 320.776367,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "proxy.",
-              "width": 26.489258,
+              "text": "pretending the map is a rigid column.",
+              "width": 163.979492,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -363,8 +336,8 @@
         "lines": [
           [
             {
-              "text": "ZONE NOTE",
-              "width": 52.501465,
+              "text": "MAP NOTE",
+              "width": 47.500488,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -377,12 +350,12 @@
         "x": 388.666667,
         "y": 166.410937,
         "w": 161.333333,
-        "h": 40.964062,
+        "h": 54.61875,
         "lines": [
           [
             {
-              "text": "The sidebar still ignores the hidden field ",
-              "width": 161.094727,
+              "text": "The rock is absolute only within the ",
+              "width": 142.571777,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -390,8 +363,8 @@
           ],
           [
             {
-              "text": "entirely. Native consumption stays local ",
-              "width": 159.402832,
+              "text": "main zone's local world. The sidebar ",
+              "width": 147.788086,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -399,8 +372,17 @@
           ],
           [
             {
-              "text": "to the main zone.",
-              "width": 69.04248,
+              "text": "continues independently and should not ",
+              "width": 161.125488,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "react.",
+              "width": 22.508789,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -411,7 +393,7 @@
       {
         "type": "sidebar-label",
         "x": 388.666667,
-        "y": 213.375,
+        "y": 227.029687,
         "w": 161.333333,
         "h": 13.654687,
         "lines": [
@@ -429,14 +411,14 @@
       {
         "type": "sidebar-body",
         "x": 388.666667,
-        "y": 231.029687,
+        "y": 244.684375,
         "w": 161.333333,
         "h": 40.964062,
         "lines": [
           [
             {
-              "text": "This proof shows a zone can host ",
-              "width": 136.573242,
+              "text": "This is the cleaner world-facing proof: ",
+              "width": 152.068359,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -444,8 +426,8 @@
           ],
           [
             {
-              "text": "explicit placed field actors without first ",
-              "width": 153.065918,
+              "text": "one actor exists in space and ",
+              "width": 119.069824,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -453,8 +435,8 @@
           ],
           [
             {
-              "text": "embedding a story.",
-              "width": 75.875977,
+              "text": "neighboring actors flow around it.",
+              "width": 132.578613,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -465,14 +447,14 @@
       {
         "type": "p",
         "x": 50,
-        "y": 463.028125,
+        "y": 438.684375,
         "w": 500,
         "h": 15.171875,
         "lines": [
           [
             {
-              "text": "Content below the zone-map resumes in normal document flow after the native field actor proof.",
-              "width": 423.554688,
+              "text": "Content below the zone-map resumes in normal document flow after the absolute rock proof.",
+              "width": 410.214844,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

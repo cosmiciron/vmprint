@@ -76,7 +76,7 @@
               "content": "Main Zone"
             },
             {
-              "type": "image",
+              "type": "field-actor",
               "content": "",
               "properties": {
                 "spatialField": {
@@ -96,17 +96,13 @@
                 },
                 "style": {
                   "width": 168,
+                  "backgroundColor": "#f8f6ef",
                   "height": 110
                 }
-              },
-              "image": {
-                "mimeType": "image/png",
-                "fit": "fill",
-                "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+Xr2QAAAAASUVORK5CYII="
               }
             },
             {
-              "type": "image",
+              "type": "field-actor",
               "content": "",
               "properties": {
                 "spatialField": {
@@ -126,13 +122,9 @@
                 },
                 "style": {
                   "width": 102,
+                  "backgroundColor": "#f8f6ef",
                   "height": 84
                 }
-              },
-              "image": {
-                "mimeType": "image/png",
-                "fit": "fill",
-                "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+Xr2QAAAAASUVORK5CYII="
               }
             },
             {

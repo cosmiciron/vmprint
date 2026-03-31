@@ -3,8 +3,10 @@ import { LayoutProcessor } from '../layout-core';
 import { PackagerUnit } from './packager-types';
 import { FlowBoxPackager } from './flow-box-packager';
 import { DropCapPackager } from './dropcap-packager';
+import { FieldActorPackager, isFieldActorElement } from './field-actor-packager';
 import { SpatialGridPackager } from './spatial-grid-packager';
 import { StoryPackager } from './story-packager';
+import { WorldPlainPackager, isWorldPlainElement } from './world-plain-packager';
 import { ZonePackager, isZoneMapElement } from './zone-packager';
 import { TocPackager } from './toc-packager';
 import { isTableElement } from '../layout-table';
@@ -49,6 +51,12 @@ export function buildPackagerForElement(
     const identity = createElementPackagerIdentity(item, [index]);
     if (item.type === 'story') {
         return new StoryPackager(item, processor, index, undefined, undefined, identity);
+    }
+    if (isWorldPlainElement(item)) {
+        return new WorldPlainPackager(item, processor, identity);
+    }
+    if (isFieldActorElement(item)) {
+        return new FieldActorPackager(item, processor, identity);
     }
     if (isZoneMapElement(item)) {
         return new ZonePackager(item, processor, identity);
