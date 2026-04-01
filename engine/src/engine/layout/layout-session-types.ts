@@ -1,4 +1,5 @@
-import type { Box, DebugRegion, Page, PageRegionContent, PageReservationSelector } from '../types';
+import type { Box, DebugRegion, Page, PageRegionContent, PageReservationSelector, StoryFloatAlign, StoryFloatShape, StoryWrapMode } from '../types';
+import type { TraversalInteractionPolicy } from '../types';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
 import { getTailSplitPostAttemptOutcome } from './actor-formation';
@@ -154,6 +155,8 @@ export type RegionReservation = {
     source?: string;
 };
 
+export type ExclusionSurface = 'page' | 'world-traversal';
+
 export type PageReservationIntent = RegionReservation & {
     selector?: 'current' | PageReservationSelector;
 };
@@ -165,6 +168,15 @@ export type SpatialExclusion = {
     w: number;
     h: number;
     source?: string;
+    zIndex?: number;
+    wrap?: StoryWrapMode;
+    gap?: number;
+    gapTop?: number;
+    gapBottom?: number;
+    shape?: StoryFloatShape;
+    align?: StoryFloatAlign;
+    traversalInteraction?: TraversalInteractionPolicy;
+    surface?: ExclusionSurface;
 };
 
 export type PageExclusionIntent = SpatialExclusion & {
@@ -321,6 +333,19 @@ export type ViewportDescriptor = {
     terrain: ViewportTerrain;
 };
 
+export type PageCaptureState = {
+    worldSpace: WorldSpace;
+    viewport: ViewportDescriptor;
+};
+
+export type PageCaptureRecord = {
+    pageIndex: number;
+    physicalPageNumber: number;
+    logicalPageNumber: number | null;
+    usesLogicalNumbering: boolean;
+    capture: PageCaptureState;
+};
+
 export type PageFinalizationState = {
     pageIndex: number;
     physicalPageNumber: number;
@@ -332,6 +357,7 @@ export type PageFinalizationState = {
     footerOverride: PageOverrideState;
     renderedHeader: boolean;
     renderedFooter: boolean;
+    capture: PageCaptureState;
     worldSpace: WorldSpace;
     viewport: ViewportDescriptor;
 };

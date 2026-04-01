@@ -59,7 +59,7 @@ const LAYOUT_KEYS = new Set([
 const PROGRESSION_KEYS = new Set(['policy', 'maxTicks']);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
-const WORLD_PLAIN_KEYS = new Set(['style', 'frameOverflow', 'worldBehavior']);
+const WORLD_PLAIN_KEYS = new Set(['style', 'frameOverflow', 'worldBehavior', 'rootFlowMode', 'traversalInteractionDefault']);
 const ELEMENT_KEYS = new Set(['type', 'name', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
 const ZONE_DEFINITION_KEYS = new Set(['id', 'region', 'elements', 'style']);
 const ZONE_REGION_KEYS = new Set(['x', 'y', 'width', 'height']);
@@ -97,9 +97,10 @@ const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
 const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'zIndex']);
-const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'hidden', 'zIndex']);
+const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'hidden', 'zIndex', 'traversalInteraction']);
 const STORY_EXCLUSION_ASSEMBLY_KEYS = new Set(['members']);
-const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape', 'zIndex']);
+const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape', 'zIndex', 'traversalInteraction']);
+const VALID_TRAVERSAL_INTERACTIONS = new Set(['auto', 'wrap', 'overpass', 'ignore']);
 const PAGE_REGION_DEFINITION_KEYS = new Set(['default', 'firstPage', 'odd', 'even']);
 const PAGE_REGION_CONTENT_KEYS = new Set(['elements', 'style']);
 const PAGE_OVERRIDES_KEYS = new Set(['header', 'footer']);
@@ -296,6 +297,18 @@ function validateLayout(layout: unknown, documentPath: string): void {
             assertStringAt(plain.worldBehavior, 'layout.worldPlain.worldBehavior', documentPath);
             if (plain.worldBehavior !== 'fixed' && plain.worldBehavior !== 'spanning' && plain.worldBehavior !== 'expandable') {
                 contractError(documentPath, 'layout.worldPlain.worldBehavior', 'expected "fixed", "spanning", or "expandable".');
+            }
+        }
+        if (plain.rootFlowMode !== undefined) {
+            assertStringAt(plain.rootFlowMode, 'layout.worldPlain.rootFlowMode', documentPath);
+            if (plain.rootFlowMode !== 'wrapped' && plain.rootFlowMode !== 'traverse') {
+                contractError(documentPath, 'layout.worldPlain.rootFlowMode', 'expected "wrapped" or "traverse".');
+            }
+        }
+        if (plain.traversalInteractionDefault !== undefined) {
+            assertStringAt(plain.traversalInteractionDefault, 'layout.worldPlain.traversalInteractionDefault', documentPath);
+            if (!VALID_TRAVERSAL_INTERACTIONS.has(String(plain.traversalInteractionDefault))) {
+                contractError(documentPath, 'layout.worldPlain.traversalInteractionDefault', 'expected one of: auto, wrap, overpass, ignore.');
             }
         }
     }
@@ -597,6 +610,9 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
     if (directive.zIndex !== undefined) {
         assertFiniteNumberAt(directive.zIndex, `${path}.zIndex`, documentPath);
     }
+    if (directive.traversalInteraction !== undefined && !VALID_TRAVERSAL_INTERACTIONS.has(directive.traversalInteraction as string)) {
+        contractError(documentPath, `${path}.traversalInteraction`, 'expected one of: auto, wrap, overpass, ignore.');
+    }
     if (directive.shape !== undefined && !validShapes.has(directive.shape as string)) {
         contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle.');
     }
@@ -618,6 +634,9 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
             assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
             assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
             if (memberObj.zIndex !== undefined) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
+            if (memberObj.traversalInteraction !== undefined && !VALID_TRAVERSAL_INTERACTIONS.has(memberObj.traversalInteraction as string)) {
+                contractError(documentPath, `${memberPath}.traversalInteraction`, 'expected one of: auto, wrap, overpass, ignore.');
+            }
             if (Number(memberObj.w) <= 0) {
                 contractError(documentPath, `${memberPath}.w`, 'expected a number greater than 0.');
             }
@@ -1200,10 +1219,38 @@ function synthesizeWorldPlainElement(elements: Element[], worldPlain: unknown): 
                 frameOverflow: plain.frameOverflow === 'move-whole' ? 'move-whole' : (plain.frameOverflow === 'continue' ? 'continue' : undefined),
                 worldBehavior: plain.worldBehavior === 'fixed' || plain.worldBehavior === 'spanning' || plain.worldBehavior === 'expandable'
                     ? plain.worldBehavior
+                    : undefined,
+                rootFlowMode: plain.rootFlowMode === 'traverse' ? 'traverse' : (plain.rootFlowMode === 'wrapped' ? 'wrapped' : undefined),
+                traversalInteractionDefault: VALID_TRAVERSAL_INTERACTIONS.has(String(plain.traversalInteractionDefault))
+                    ? plain.traversalInteractionDefault
                     : undefined
             }
         }
     };
+}
+
+function shouldAssignElementToTraversingWorldHost(element: Element): boolean {
+    const type = String(element.type || '').trim().toLowerCase();
+    if (type === 'field-actor') return true;
+    return !!(element.properties?.spatialField || element.properties?.zoneField);
+}
+
+function synthesizeWorldPlainRootElements(elements: Element[], worldPlain: unknown): Element[] {
+    const plain = isPlainObject(worldPlain) ? worldPlain : {};
+    if (plain.rootFlowMode !== 'traverse') {
+        return [synthesizeWorldPlainElement(elements, worldPlain)];
+    }
+
+    const worldElements = elements.filter((element) => shouldAssignElementToTraversingWorldHost(element));
+    const traversingElements = elements.filter((element) => !shouldAssignElementToTraversingWorldHost(element));
+    if (worldElements.length === 0) {
+        return traversingElements;
+    }
+
+    return [
+        synthesizeWorldPlainElement(worldElements, worldPlain),
+        ...traversingElements
+    ];
 }
 
 function parseYamlScalar(raw: string): unknown {
@@ -1432,7 +1479,7 @@ export function normalizeDocumentToIR(document: DocumentInput, documentPath: str
     const normalizedStyles = deepSortObject(document.styles || {}) as LayoutConfig['styles'];
     const rootElements = document.elements.map((element) => normalizeElementNode(element));
     const normalizedElements = document.layout.worldPlain !== undefined
-        ? [synthesizeWorldPlainElement(rootElements, document.layout.worldPlain)]
+        ? synthesizeWorldPlainRootElements(rootElements, document.layout.worldPlain)
         : rootElements;
 
     return {

@@ -3,6 +3,7 @@ import type { EventDispatcher } from './event-dispatcher';
 import type { LayoutSession } from './layout-session';
 import type {
     LayoutProfileMetrics,
+    PageCaptureRecord,
     PageExclusionIntent,
     PageFinalizationState,
     PageReservationIntent,
@@ -96,6 +97,18 @@ export class SessionCollaborationRuntime {
         return this.lifecycleRuntime.getFinalizedPages();
     }
 
+    recordPageCapture(record: PageCaptureRecord): void {
+        this.sessionWorldRuntime.recordPageCapture(record);
+    }
+
+    getPageCapture(pageIndex: number): PageCaptureRecord | undefined {
+        return this.sessionWorldRuntime.getPageCapture(pageIndex);
+    }
+
+    getPageCaptures(): readonly PageCaptureRecord[] {
+        return this.sessionWorldRuntime.getPageCaptures();
+    }
+
     recordPageFinalization(state: PageFinalizationState): void {
         this.lifecycleRuntime.recordPageFinalization(state);
     }
@@ -142,6 +155,10 @@ export class SessionCollaborationRuntime {
 
     getPageExclusions(pageIndex: number): readonly SpatialExclusion[] {
         return this.sessionWorldRuntime.getPageExclusions(pageIndex);
+    }
+
+    getWorldTraversalExclusions(pageIndex: number): readonly SpatialExclusion[] {
+        return this.sessionWorldRuntime.getWorldTraversalExclusions(pageIndex);
     }
 
     getExclusionPageIndices(): readonly number[] {

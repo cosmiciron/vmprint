@@ -1,5 +1,6 @@
-import { Element, ZoneFrameOverflow, ZoneWorldBehavior } from '../../types';
+import { Element, SpatialFieldDirective, TraversalInteractionPolicy, ZoneFrameOverflow, ZoneWorldBehavior } from '../../types';
 import { LayoutProcessor } from '../layout-core';
+import { buildExclusionFieldObstacles } from '../exclusion-field';
 import { createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { buildHostedRegionActorQueuesFromZones } from './region-actor-queues';
 import {
@@ -21,6 +22,8 @@ function resolveWorldPlainHostLayout(element: Element) {
     const options = (element.properties?._worldPlainOptions ?? {}) as {
         frameOverflow?: ZoneFrameOverflow;
         worldBehavior?: ZoneWorldBehavior;
+        rootFlowMode?: 'wrapped' | 'traverse';
+        traversalInteractionDefault?: TraversalInteractionPolicy;
     };
     return {
         sourceKind: 'world-plain' as const,
@@ -28,6 +31,13 @@ function resolveWorldPlainHostLayout(element: Element) {
         worldBehavior: options.worldBehavior === 'fixed' || options.worldBehavior === 'spanning' || options.worldBehavior === 'expandable'
             ? options.worldBehavior
             : 'expandable',
+        rootFlowMode: options.rootFlowMode === 'traverse' ? 'traverse' : 'wrapped',
+        traversalInteractionDefault: options.traversalInteractionDefault === 'wrap'
+            || options.traversalInteractionDefault === 'overpass'
+            || options.traversalInteractionDefault === 'ignore'
+            || options.traversalInteractionDefault === 'auto'
+            ? options.traversalInteractionDefault
+            : 'auto',
         marginTop: Math.max(0, Number(style.marginTop ?? 0) || 0),
         marginBottom: Math.max(0, Number(style.marginBottom ?? 0) || 0),
     };
@@ -74,6 +84,8 @@ function normalizeWorldPlainElement(element: Element) {
         sourceKind: hostLayout.sourceKind,
         frameOverflow: hostLayout.frameOverflow,
         worldBehavior: hostLayout.worldBehavior,
+        rootFlowMode: hostLayout.rootFlowMode,
+        traversalInteractionDefault: hostLayout.traversalInteractionDefault,
         marginTop: hostLayout.marginTop,
         marginBottom: hostLayout.marginBottom
     };
@@ -97,6 +109,8 @@ export class WorldPlainPackager implements PackagerUnit {
     readonly continuationOf?: string;
     readonly frameOverflowMode: ZoneFrameOverflow;
     readonly worldBehaviorMode: ZoneWorldBehavior;
+    readonly rootFlowMode: 'wrapped' | 'traverse';
+    readonly traversalInteractionDefault: TraversalInteractionPolicy;
 
     constructor(
         private readonly element: Element,
@@ -117,14 +131,16 @@ export class WorldPlainPackager implements PackagerUnit {
         this.continuationOf = resolvedIdentity.continuationOf;
         this.frameOverflowMode = this.inner.frameOverflowMode;
         this.worldBehaviorMode = this.inner.worldBehaviorMode;
+        this.rootFlowMode = normalized.rootFlowMode;
+        this.traversalInteractionDefault = normalized.traversalInteractionDefault;
     }
 
     get pageBreakBefore(): boolean | undefined {
-        return this.inner.pageBreakBefore;
+        return this.rootFlowMode === 'traverse' ? undefined : this.inner.pageBreakBefore;
     }
 
     get keepWithNext(): boolean | undefined {
-        return this.inner.keepWithNext;
+        return this.rootFlowMode === 'traverse' ? undefined : this.inner.keepWithNext;
     }
 
     getHostedRuntimeActors(): readonly PackagerUnit[] {
@@ -177,11 +193,19 @@ export class WorldPlainPackager implements PackagerUnit {
     }
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext) {
-        return this.inner.emitBoxes(availableWidth, availableHeight, context);
+        const boxes = this.inner.emitBoxes(availableWidth, availableHeight, context);
+        if (this.rootFlowMode === 'traverse') {
+            this.publishTraversingFlowExclusions(boxes, context);
+        }
+        return boxes;
     }
 
     getRequiredHeight(): number {
-        return this.inner.getRequiredHeight();
+        return this.rootFlowMode === 'traverse' ? 0 : this.inner.getRequiredHeight();
+    }
+
+    getZIndex(): number {
+        return 0;
     }
 
     isUnbreakable(availableHeight: number): boolean {
@@ -189,14 +213,68 @@ export class WorldPlainPackager implements PackagerUnit {
     }
 
     getMarginTop(): number {
-        return this.inner.getMarginTop();
+        return this.rootFlowMode === 'traverse' ? 0 : this.inner.getMarginTop();
     }
 
     getMarginBottom(): number {
-        return this.inner.getMarginBottom();
+        return this.rootFlowMode === 'traverse' ? 0 : this.inner.getMarginBottom();
+    }
+
+    occupiesFlowSpace(): boolean {
+        return this.rootFlowMode !== 'traverse';
     }
 
     split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
         return this.inner.split(availableHeight, context);
+    }
+
+    private publishTraversingFlowExclusions(
+        boxes: ReturnType<HostedRegionPackager['emitBoxes']>,
+        context: PackagerContext
+    ): void {
+        const session = context.processor.getCurrentLayoutSession?.() ?? null;
+        if (!session || !Array.isArray(boxes)) return;
+
+        for (const box of boxes) {
+            const directive =
+                (box.properties?.spatialField as SpatialFieldDirective | undefined)
+                ?? (box.properties?.zoneField as SpatialFieldDirective | undefined);
+            if (!directive || (directive.kind !== undefined && directive.kind !== 'exclude')) continue;
+            const sourceId = String(box.meta?.sourceId || this.sourceId || 'world-plain');
+            const obstacles = buildExclusionFieldObstacles({
+                x: Number(box.x || 0),
+                y: Number(box.y || 0) + context.cursorY,
+                w: Math.max(0, Number(box.w || 0)),
+                h: Math.max(0, Number(box.h || 0)),
+                wrap: directive.wrap ?? 'around',
+                gap: directive.gap ?? 0,
+                shape: directive.shape,
+                align: directive.align,
+                exclusionAssembly: directive.exclusionAssembly,
+                traversalInteraction: directive.traversalInteraction ?? this.traversalInteractionDefault,
+                zIndex: Number.isFinite(Number(directive.zIndex))
+                    ? Number(directive.zIndex)
+                    : (Number.isFinite(Number(box.style?.zIndex)) ? Number(box.style?.zIndex) : 0)
+            });
+            obstacles.forEach((obstacle, index) => {
+                session.excludePageSpace({
+                    id: `world-plain:traverse:${context.pageIndex}:${sourceId}:${index}`,
+                    x: obstacle.x,
+                    y: obstacle.y,
+                    w: obstacle.w,
+                    h: obstacle.h,
+                    surface: 'world-traversal',
+                    source: `world-plain:${sourceId}`,
+                    wrap: obstacle.wrap,
+                    gap: obstacle.gap,
+                    gapTop: obstacle.gapTop,
+                    gapBottom: obstacle.gapBottom,
+                    shape: obstacle.shape,
+                    align: obstacle.align,
+                    traversalInteraction: obstacle.traversalInteraction,
+                    zIndex: obstacle.zIndex
+                }, context.pageIndex);
+            });
+        }
     }
 }

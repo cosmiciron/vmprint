@@ -1,0 +1,130 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 600,
+      "height": 800
+    },
+    "margins": {
+      "top": 50,
+      "right": 50,
+      "bottom": 50,
+      "left": 50
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.4,
+    "pageBackground": "#fcfbf7",
+    "worldPlain": {
+      "rootFlowMode": "traverse",
+      "style": {
+        "marginTop": 12,
+        "marginBottom": 12
+      }
+    }
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true,
+      "color": "#355e3b"
+    },
+    "p": {
+      "marginBottom": 8,
+      "zIndex": 0
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "World Plain: Traversing Flow",
+      "properties": {
+        "sourceId": "plain-traverse-heading"
+      }
+    },
+    {
+      "type": "field-actor",
+      "content": "",
+      "properties": {
+        "sourceId": "plain-traverse-low-rock",
+        "spatialField": {
+          "kind": "exclude",
+          "x": 78,
+          "y": 96,
+          "wrap": "around",
+          "gap": 8,
+          "zIndex": -1,
+          "exclusionAssembly": {
+            "members": [
+              { "shape": "circle", "x": 0, "y": 32, "w": 70, "h": 70, "zIndex": -1 },
+              { "shape": "circle", "x": 52, "y": 4, "w": 88, "h": 88, "zIndex": -1 },
+              { "shape": "rect", "x": 42, "y": 54, "w": 86, "h": 24, "zIndex": -1 }
+            ]
+          }
+        },
+        "style": {
+          "width": 148,
+          "height": 112,
+          "backgroundColor": "#dff3ea",
+          "borderColor": "#7fb39b",
+          "borderWidth": 1,
+          "zIndex": -1
+        }
+      }
+    },
+    {
+      "type": "field-actor",
+      "content": "",
+      "properties": {
+        "sourceId": "plain-traverse-high-rock",
+        "spatialField": {
+          "kind": "exclude",
+          "x": 166,
+          "y": 128,
+          "wrap": "around",
+          "gap": 8,
+          "zIndex": 0,
+          "exclusionAssembly": {
+            "members": [
+              { "shape": "circle", "x": 0, "y": 28, "w": 82, "h": 82, "zIndex": 0 },
+              { "shape": "circle", "x": 58, "y": 2, "w": 100, "h": 100, "zIndex": 0 },
+              { "shape": "rect", "x": 44, "y": 58, "w": 102, "h": 30, "zIndex": 0 }
+            ]
+          }
+        },
+        "style": {
+          "width": 170,
+          "height": 120,
+          "backgroundColor": "#e9e1d3",
+          "zIndex": 0
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The river stays its own participant here instead of being swallowed by the world host. It begins above a lower desert rock, so the current should cross that shallower obstacle without being cut into side lanes. The river stays its own participant here instead of being swallowed by the world host. It begins above a lower desert rock, so the current should cross that shallower obstacle without being cut into side lanes. The river stays its own participant here instead of being swallowed by the world host. It begins above a lower desert rock, so the current should cross that shallower obstacle without being cut into side lanes.",
+      "properties": {
+        "sourceId": "plain-traverse-body-early",
+        "style": {
+          "zIndex": 0
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Farther downstream the river meets a taller rock lifted into the same layer as the flow itself, so this later paragraph should split into wrap lanes around the visible obstacle instead of gliding over it. Farther downstream the river meets a taller rock lifted into the same layer as the flow itself, so this later paragraph should split into wrap lanes around the visible obstacle instead of gliding over it. Farther downstream the river meets a taller rock lifted into the same layer as the flow itself, so this later paragraph should split into wrap lanes around the visible obstacle instead of gliding over it. Farther downstream the river meets a taller rock lifted into the same layer as the flow itself, so this later paragraph should split into wrap lanes around the visible obstacle instead of gliding over it. Farther downstream the river meets a taller rock lifted into the same layer as the flow itself, so this later paragraph should split into wrap lanes around the visible obstacle instead of gliding over it. Farther downstream the river meets a taller rock lifted into the same layer as the flow itself, so this later paragraph should split into wrap lanes around the visible obstacle instead of gliding over it.",
+      "properties": {
+        "sourceId": "plain-traverse-body-late",
+        "style": {
+          "zIndex": 0
+        }
+      }
+    }
+  ]
+}

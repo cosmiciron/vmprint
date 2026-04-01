@@ -77,7 +77,7 @@ export class PageRegionCollaborator implements Collaborator {
             ? footerActor.emitCurrentBoxes()
             : (footerMaterialized ? this.callbacks.layoutRegion(footerMaterialized, footerRect, page.index, 'footer') : []);
 
-        const viewport = session.sessionWorldRuntime.createViewportDescriptor({
+        const capture = session.sessionWorldRuntime.createPageCaptureState({
             pageIndex: page.index,
             pageWidth: page.width,
             pageHeight: page.height,
@@ -85,7 +85,6 @@ export class PageRegionCollaborator implements Collaborator {
             headerRect,
             footerRect
         });
-        const worldSpace = session.sessionWorldRuntime.createWorldSpace(page.index, page.width, page.height);
 
         if (headerContent.length > 0) {
             surface.boxes.push(...headerContent);
@@ -101,6 +100,14 @@ export class PageRegionCollaborator implements Collaborator {
             session.notifyActorSpawn(footerActor);
         }
 
+        session.recordPageCapture({
+            pageIndex: page.index,
+            physicalPageNumber,
+            logicalPageNumber: logicalNumber,
+            usesLogicalNumbering: usesLogical,
+            capture
+        });
+
         session.recordPageFinalization({
             pageIndex: page.index,
             physicalPageNumber,
@@ -112,8 +119,9 @@ export class PageRegionCollaborator implements Collaborator {
             footerOverride: resolveOverrideState(override?.footer),
             renderedHeader: headerContent.length > 0,
             renderedFooter: footerContent.length > 0,
-            worldSpace,
-            viewport
+            capture,
+            worldSpace: capture.worldSpace,
+            viewport: capture.viewport
         });
     }
 

@@ -1,0 +1,340 @@
+[
+  {
+    "index": 0,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "field-actor",
+        "x": 132,
+        "y": 156,
+        "w": 150,
+        "h": 116,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 234,
+        "y": 238,
+        "w": 174,
+        "h": 124,
+        "lines": []
+      },
+      {
+        "type": "h1",
+        "x": 50,
+        "y": 50,
+        "w": 500,
+        "h": 36.4125,
+        "lines": [
+          [
+            {
+              "text": "World Plain: Traversal Policy Override",
+              "width": 434.402344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 110.4125,
+        "w": 500,
+        "h": 99.171875,
+        "lines": [
+          [
+            {
+              "text": "This first current meets a rock sitting in the same depth as the river, but the obstacle is explicitly authored as ",
+              "width": 479.667969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "overpass for traversing flow. So the text should keep its ordinary straight lane instead of splitting around the ",
+              "width": 476.933594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "visible shape. This first current meets a rock sitting in the same depth as the river, but the obstacle is explicitly ",
+              "width": 487.441406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "authored as overpass for traversing flow. So the text should keep its ordinary straight lane instead of splitting ",
+              "width": 481.933594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around the visible shape. This first current meets a rock sitting in the same depth as the river, but the obstacle is ",
+              "width": 497.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "explicitly authored as overpass for traversing flow. So the text should keep its ordinary straight lane instead of ",
+              "width": 485.81543,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "splitting around the visible shape.",
+              "width": 147.871094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 322,
+        "y": 213.584375,
+        "w": 228,
+        "h": 309.171875,
+        "lines": [
+          [
+            {
+              "text": "Farther downstream the river reaches a shallower ",
+              "width": 222.871094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "r",
+              "width": 3.330078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ock, but this one is explicitly authored as ",
+              "width": 181.762695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "wrap for traversing flow. Even ",
+              "width": 133.945313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "though the depth would normally ",
+              "width": 147.319336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "allow an overpass, the current ",
+              "width": 136.181641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should break into side lanes ",
+              "width": 126.748047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around the obstacle because ",
+              "width": 131.206055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the world host has published a ",
+              "width": 137.866211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "stronger interaction rule. Farther ",
+              "width": 145.620117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "downstream the river reaches a ",
+              "width": 142.841797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "s",
+              "width": 5,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hallower rock, but this one is explicitly ",
+              "width": 169.516602,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "authored as wrap for traversing flow. Even though ",
+              "width": 222.905273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the depth would normally allow an overpass, the ",
+              "width": 216.235352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "current should break into side lanes around the ",
+              "width": 211.245117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstacle because the world host has published a ",
+              "width": 218.476563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "stronger interaction rule. Farther downstream the ",
+              "width": 219.545898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "river reaches a shallower rock, but this one is ",
+              "width": 202.866211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "explicitly authored as wrap for traversing flow. Even",
+              "width": 227.329102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "though the depth would normally allow an ",
+              "width": 186.787109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "overpass, the current should break into side lanes ",
+              "width": 223.461914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around the obstacle because the world host has ",
+              "width": 215.141602,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "published a stronger interaction rule.",
+              "width": 161.762695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

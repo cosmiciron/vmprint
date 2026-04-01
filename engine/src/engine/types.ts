@@ -265,6 +265,8 @@ export interface WorldPlainOptions {
     style?: ElementStyle;
     frameOverflow?: ZoneFrameOverflow;
     worldBehavior?: ZoneWorldBehavior;
+    rootFlowMode?: 'wrapped' | 'traverse';
+    traversalInteractionDefault?: TraversalInteractionPolicy;
 }
 
 export interface ElementProperties extends Record<string, any> {
@@ -328,6 +330,7 @@ export type StoryLayoutMode = 'float' | 'story-absolute';
  *   'none'       – image overlays text with no reflow
  */
 export type StoryWrapMode = 'around' | 'top-bottom' | 'none';
+export type TraversalInteractionPolicy = 'auto' | 'wrap' | 'overpass' | 'ignore';
 
 /** Which margin a float anchors to. */
 export type StoryFloatAlign = 'left' | 'right' | 'center';
@@ -352,6 +355,8 @@ export interface StoryExclusionAssemblyMember {
     shape?: StoryFloatShape;
     /** Optional depth override for this primitive. */
     zIndex?: number;
+    /** Optional explicit interaction policy for traversing/root flow. */
+    traversalInteraction?: TraversalInteractionPolicy;
 }
 
 export interface StoryExclusionAssembly {
@@ -369,6 +374,7 @@ export interface SpatialFieldDirective {
     exclusionAssembly?: StoryExclusionAssembly;
     hidden?: boolean;
     zIndex?: number;
+    traversalInteraction?: TraversalInteractionPolicy;
 }
 
 export interface StoryLayoutDirective {

@@ -1,6 +1,8 @@
 import type { PageReservationSelector } from '../types';
 import { Kernel } from './kernel';
 import type {
+    PageCaptureRecord,
+    PageCaptureState,
     PageExclusionIntent,
     PageReservationIntent,
     RegionReservation,
@@ -17,10 +19,16 @@ export type SessionWorldRuntimeHost = {
 };
 
 export class SessionWorldRuntime {
+    private readonly pageCaptures = new Map<number, PageCaptureRecord>();
+
     constructor(
         private readonly kernel: Kernel,
         private readonly host: SessionWorldRuntimeHost
     ) { }
+
+    resetForSimulation(): void {
+        this.pageCaptures.clear();
+    }
 
     publishArtifact(key: string, value: unknown): void {
         this.kernel.publishArtifact(key, value);
@@ -66,7 +74,16 @@ export class SessionWorldRuntime {
             x: Number.isFinite(exclusion.x) ? Number(exclusion.x) : 0,
             y: Number.isFinite(exclusion.y) ? Math.max(0, Number(exclusion.y)) : 0,
             w: Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0,
-            h: Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0
+            h: Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0,
+            surface: exclusion.surface === 'world-traversal' ? 'world-traversal' : 'page',
+            ...(typeof exclusion.wrap === 'string' ? { wrap: exclusion.wrap } : {}),
+            ...(Number.isFinite(exclusion.gap) ? { gap: Math.max(0, Number(exclusion.gap)) } : {}),
+            ...(Number.isFinite(exclusion.gapTop) ? { gapTop: Math.max(0, Number(exclusion.gapTop)) } : {}),
+            ...(Number.isFinite(exclusion.gapBottom) ? { gapBottom: Math.max(0, Number(exclusion.gapBottom)) } : {}),
+            ...(typeof exclusion.shape === 'string' ? { shape: exclusion.shape } : {}),
+            ...(typeof exclusion.align === 'string' ? { align: exclusion.align } : {}),
+            ...(typeof exclusion.traversalInteraction === 'string' ? { traversalInteraction: exclusion.traversalInteraction } : {}),
+            ...(Number.isFinite(exclusion.zIndex) ? { zIndex: Number(exclusion.zIndex) } : {})
         };
         if (!(normalized.w > 0) || !(normalized.h > 0)) return;
 
@@ -77,12 +94,68 @@ export class SessionWorldRuntime {
         return this.kernel.getPageExclusions(pageIndex);
     }
 
+    getWorldTraversalExclusions(pageIndex: number): readonly SpatialExclusion[] {
+        return this.kernel.getPageExclusions(pageIndex)
+            .filter((exclusion) => exclusion.surface === 'world-traversal');
+    }
+
     getExclusionPageIndices(): readonly number[] {
         return this.kernel.getExclusionPageIndices();
     }
 
     getSpatialConstraintPageIndices(): readonly number[] {
         return this.kernel.getSpatialConstraintPageIndices();
+    }
+
+    recordPageCapture(record: PageCaptureRecord): void {
+        this.pageCaptures.set(record.pageIndex, {
+            ...record,
+            capture: {
+                worldSpace: { ...record.capture.worldSpace },
+                viewport: {
+                    ...record.capture.viewport,
+                    contentRect: { ...record.capture.viewport.contentRect },
+                    terrain: {
+                        ...record.capture.viewport.terrain,
+                        margins: { ...record.capture.viewport.terrain.margins },
+                        marginBlocks: record.capture.viewport.terrain.marginBlocks.map((block) => ({ ...block })),
+                        headerBlock: record.capture.viewport.terrain.headerBlock
+                            ? { ...record.capture.viewport.terrain.headerBlock }
+                            : null,
+                        footerBlock: record.capture.viewport.terrain.footerBlock
+                            ? { ...record.capture.viewport.terrain.footerBlock }
+                            : null,
+                        reservationBlocks: record.capture.viewport.terrain.reservationBlocks.map((block) => ({ ...block })),
+                        exclusionBlocks: record.capture.viewport.terrain.exclusionBlocks.map((block) => ({ ...block })),
+                        blockedRects: record.capture.viewport.terrain.blockedRects.map((block) => ({ ...block }))
+                    }
+                }
+            }
+        });
+    }
+
+    getPageCapture(pageIndex: number): PageCaptureRecord | undefined {
+        return this.pageCaptures.get(pageIndex);
+    }
+
+    getPageCaptures(): readonly PageCaptureRecord[] {
+        return Array.from(this.pageCaptures.values()).sort((a, b) => a.pageIndex - b.pageIndex);
+    }
+
+    createPageCaptureState(input: {
+        pageIndex: number;
+        pageWidth: number;
+        pageHeight: number;
+        margins: { top: number; right: number; bottom: number; left: number };
+        headerRect?: ViewportRect | null;
+        footerRect?: ViewportRect | null;
+    }): PageCaptureState {
+        const viewport = this.createViewportDescriptor(input);
+        const worldSpace = this.createWorldSpace(input.pageIndex, input.pageWidth, input.pageHeight);
+        return {
+            worldSpace,
+            viewport
+        };
     }
 
     createWorldSpace(pageIndex: number, pageWidth: number, pageHeight: number): WorldSpace {

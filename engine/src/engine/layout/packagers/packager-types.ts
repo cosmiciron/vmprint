@@ -3,6 +3,7 @@ import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import type { ActorSignal, ActorSignalDraft } from '../actor-event-bus';
 import type { AsyncThoughtHandle, AsyncThoughtRequest } from '../async-thought-host';
+import type { SpatialExclusion } from '../layout-session-types';
 
 export interface LayoutBox extends Box { }
 
@@ -30,16 +31,11 @@ export interface PackagerContext {
     cursorY: number;
     simulationTick?: number;
     actorIndex?: number;
+    layoutBefore?: number;
     viewportWorldY?: number;
     viewportHeight?: number;
-    getPageExclusions?: (pageIndex: number) => ReadonlyArray<{
-        id?: string;
-        x: number;
-        y: number;
-        w: number;
-        h: number;
-        source?: string;
-    }>;
+    getPageExclusions?: (pageIndex: number) => ReadonlyArray<SpatialExclusion>;
+    getWorldTraversalExclusions?: (pageIndex: number) => ReadonlyArray<SpatialExclusion>;
     margins: { top: number; right: number; bottom: number; left: number };
     pageWidth: number;
     pageHeight: number;
@@ -176,6 +172,9 @@ export interface PackagerUnit {
      */
     getRequiredHeight(): number;
 
+    getZIndex?(): number | null | undefined;
+    occupiesFlowSpace?(): boolean;
+
     isUnbreakable(availableHeight: number): boolean;
 
     getMarginTop(): number;
@@ -183,6 +182,15 @@ export interface PackagerUnit {
 
     readonly pageBreakBefore?: boolean;
     readonly keepWithNext?: boolean;
+}
+
+export function resolvePackagerZIndex(unit: PackagerUnit): number {
+    const raw = unit.getZIndex?.();
+    return Number.isFinite(Number(raw)) ? Number(raw) : 0;
+}
+
+export function packagerOccupiesFlowSpace(unit: PackagerUnit): boolean {
+    return unit.occupiesFlowSpace?.() ?? true;
 }
 
 export function preparePackagerForPhase(

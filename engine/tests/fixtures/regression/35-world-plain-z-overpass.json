@@ -67,7 +67,9 @@
         },
         "style": {
           "width": 156,
-          "backgroundColor": "#f8f6ef",
+          "backgroundColor": "#dff3ea",
+          "borderColor": "#7fb39b",
+          "borderWidth": 1,
           "height": 116,
           "zIndex": -1
         }

@@ -18,7 +18,7 @@ import type {
     SplitFragmentAftermathState,
     SplitMarkerPlacementState
 } from './layout-session-types';
-import type { PackagerContext, PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
+import { packagerOccupiesFlowSpace, type PackagerContext, type PackagerSplitResult, type PackagerUnit } from './packagers/packager-types';
 
 type SplitMarkerPositioner = (
     marker: FlowBox,
@@ -153,9 +153,12 @@ export class FragmentSessionRuntime {
 
             const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
             const requiredHeight = contentHeight + layoutBefore + marginBottom;
-            const effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+            const occupiesFlowSpace = packagerOccupiesFlowSpace(actor);
+            const effectiveHeight = occupiesFlowSpace
+                ? Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight)
+                : 0;
             currentY += effectiveHeight - marginBottom;
-            lastSpacingAfter = marginBottom;
+            lastSpacingAfter = occupiesFlowSpace ? marginBottom : 0;
         }
 
         return { boxes: placedBoxes, currentY, lastSpacingAfter };
@@ -325,12 +328,13 @@ export class FragmentSessionRuntime {
         const layoutBefore = input.lastSpacingAfter + marginTop;
         const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
         const requiredHeight = contentHeight + layoutBefore + marginBottom;
+        const occupiesFlowSpace = packagerOccupiesFlowSpace(actor);
 
         return {
             currentY: input.currentY,
             layoutDelta: input.layoutDelta,
-            effectiveHeight: Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight),
-            marginBottom,
+            effectiveHeight: occupiesFlowSpace ? Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight) : 0,
+            marginBottom: occupiesFlowSpace ? marginBottom : 0,
             pageIndex: input.pageIndex,
             actorId: actor.actorId,
             lastSpacingAfter: input.lastSpacingAfter,

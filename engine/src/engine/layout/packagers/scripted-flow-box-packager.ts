@@ -928,6 +928,14 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         return this.inner.getRequiredHeight();
     }
 
+    getZIndex(): number {
+        return this.inner.getZIndex?.() ?? 0;
+    }
+
+    occupiesFlowSpace(): boolean {
+        return this.inner.occupiesFlowSpace?.() ?? true;
+    }
+
     isUnbreakable(availableHeight: number): boolean {
         return this.inner.isUnbreakable(availableHeight);
     }

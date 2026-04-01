@@ -133,6 +133,10 @@ export class FieldActorPackager implements PackagerUnit {
         return this.marginTop + this.height + this.marginBottom;
     }
 
+    getZIndex(): number {
+        return Number.isFinite(Number(this.style.zIndex)) ? Number(this.style.zIndex) : 0;
+    }
+
     isUnbreakable(_availableHeight: number): boolean {
         return true;
     }

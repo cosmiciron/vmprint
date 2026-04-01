@@ -1,0 +1,385 @@
+[
+  {
+    "index": 0,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "field-actor",
+        "x": 134,
+        "y": 156,
+        "w": 150,
+        "h": 116,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 216,
+        "y": 190,
+        "w": 170,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "h1",
+        "x": 50,
+        "y": 50,
+        "w": 500,
+        "h": 36.4125,
+        "lines": [
+          [
+            {
+              "text": "World Plain: Host Traversal Default",
+              "width": 399.65625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 110.4125,
+        "w": 500,
+        "h": 71.171875,
+        "lines": [
+          [
+            {
+              "text": "This early current meets a same-layer rock that does not author any local traversal policy of its own. Because the",
+              "width": 499.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "world host defaults traversing interaction to overpass, the text should keep its straight lane instead of splitting ",
+              "width": 484.155273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around the visible shape. This early current meets a same-layer rock that does not author any local traversal ",
+              "width": 481.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "policy of its own. Because the world host defaults traversing interaction to overpass, the text should keep its ",
+              "width": 478.588867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "straight lane instead of splitting around the visible shape.",
+              "width": 251.269531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 324,
+        "y": 185.584375,
+        "w": 226,
+        "h": 435.171875,
+        "lines": [
+          [
+            {
+              "text": "Later the river reaches another rock in the ",
+              "width": 188.432617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "same layer, but this one explicitly asks ",
+              "width": 172.299805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for wrap. That local authored rule ",
+              "width": 149.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should beat the world host default, so ",
+              "width": 168.442383,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the paragraph should split into side ",
+              "width": 157.880859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lanes around the obstacle even ",
+              "width": 141.767578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "though the host would otherwise allow",
+              "width": 168.994141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "an overpass. Later the river reaches ",
+              "width": 162.861328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "another rock in the same layer, but this one",
+              "width": 191.220703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "explicitly asks for wrap. That local authored rule ",
+              "width": 213.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should beat the world host default, so the ",
+              "width": 185.12207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph should split into side lanes around the ",
+              "width": 218.481445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstacle even though the host would otherwise ",
+              "width": 210.693359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "allow an overpass. Later the river reaches another ",
+              "width": 225.12207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rock in the same layer, but this one explicitly asks ",
+              "width": 221.210938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for wrap. That local authored rule should beat the ",
+              "width": 220.688477,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "world host default, so the paragraph should split ",
+              "width": 215.131836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "into side lanes around the obstacle even though ",
+              "width": 215.15625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the host would otherwise allow an overpass. Later ",
+              "width": 224.013672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the river reaches another rock in the same layer, ",
+              "width": 216.772461,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "but this one explicitly asks for wrap. That local ",
+              "width": 206.201172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "authored rule should beat the world host default, ",
+              "width": 216.811523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "so the paragraph should split into side lanes ",
+              "width": 197.905273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around the obstacle even though the host would ",
+              "width": 215.712891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "otherwise allow an overpass. Later the river ",
+              "width": 195.649414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reaches another rock in the same layer, but this ",
+              "width": 212.890625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "one explicitly asks for wrap. That local authored ",
+              "width": 213.4375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rule should beat the world host default, so the ",
+              "width": 204.575195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph should split into side lanes around the ",
+              "width": 218.481445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstacle even though the host would otherwise ",
+              "width": 210.693359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "allow an overpass.",
+              "width": 82.822266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

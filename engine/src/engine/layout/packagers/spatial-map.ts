@@ -1,4 +1,4 @@
-import { StoryFloatAlign, StoryWrapMode } from '../../types';
+import { StoryFloatAlign, StoryWrapMode, TraversalInteractionPolicy } from '../../types';
 
 // ---------------------------------------------------------------------------
 // Interval – a horizontal slice of available space
@@ -48,6 +48,8 @@ export interface OccupiedRect {
     align?: StoryFloatAlign;
     /** Optional depth used for wrap interaction. Unset is treated as 0. */
     zIndex?: number;
+    /** Optional authored traversal interaction override. */
+    traversalInteraction?: TraversalInteractionPolicy;
 }
 
 // ---------------------------------------------------------------------------
@@ -247,5 +249,12 @@ function normalizeZIndex(value: unknown): number {
 }
 
 function intersectsDepth(rect: OccupiedRect, queryZIndex: number): boolean {
+    const policy = rect.traversalInteraction ?? 'auto';
+    if (policy === 'ignore' || policy === 'overpass') {
+        return false;
+    }
+    if (policy === 'wrap') {
+        return true;
+    }
     return normalizeZIndex(rect.zIndex) === normalizeZIndex(queryZIndex);
 }

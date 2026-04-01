@@ -4,6 +4,8 @@ import type {
     SimulationArtifactKey,
     SimulationArtifactMap,
     SimulationArtifacts,
+    SimulationCapturePolicy,
+    SimulationCaptureSummary,
     SimulationProgressionSummary,
     SimulationReport,
     SimulationReportReader
@@ -20,6 +22,8 @@ export type SimulationReportBridgeHost = {
     getSimulationTick(): number;
     getSimulationProgressionPolicy(): SimulationProgressionPolicy;
     getSimulationStopReason(): SimulationStopReason;
+    getSimulationCapturePolicy(): SimulationCapturePolicy;
+    getSimulationCaptureMaxTicks(): number | null;
     isSimulationProgressionStopped(): boolean;
     onSimulationComplete(): void;
 };
@@ -54,7 +58,8 @@ export class SimulationReportBridge {
             headingTelemetry: publishedArtifacts.get(simulationArtifactKeys.headingTelemetry) as SimulationArtifactMap['headingTelemetry'],
             asyncThoughtSummary: publishedArtifacts.get(simulationArtifactKeys.asyncThoughtSummary) as SimulationArtifactMap['asyncThoughtSummary'],
             temporalPresentationTimeline: publishedArtifacts.get(simulationArtifactKeys.temporalPresentationTimeline) as SimulationArtifactMap['temporalPresentationTimeline'],
-            interactionMap: publishedArtifacts.get(simulationArtifactKeys.interactionMap) as SimulationArtifactMap['interactionMap']
+            interactionMap: publishedArtifacts.get(simulationArtifactKeys.interactionMap) as SimulationArtifactMap['interactionMap'],
+            viewportCaptureSummary: publishedArtifacts.get(simulationArtifactKeys.viewportCaptureSummary) as SimulationArtifactMap['viewportCaptureSummary']
         };
 
         for (const [key, value] of publishedArtifacts.entries()) {
@@ -73,12 +78,21 @@ export class SimulationReportBridge {
             }, 0);
         }, 0);
         const profile = this.host.getProfileSnapshot();
+        const finalTick = this.host.getSimulationTick();
+        const stopReason = this.host.getSimulationStopReason();
         const progression: SimulationProgressionSummary = {
             policy: this.host.getSimulationProgressionPolicy(),
-            stopReason: this.host.getSimulationStopReason(),
+            stopReason,
             captureKind: 'finalized-pages',
-            finalTick: this.host.getSimulationTick(),
+            finalTick,
             progressionStopped: this.host.isSimulationProgressionStopped()
+        };
+        const capture: SimulationCaptureSummary = {
+            policy: this.host.getSimulationCapturePolicy(),
+            requestedMaxTicks: this.host.getSimulationCaptureMaxTicks(),
+            captureKind: 'finalized-pages',
+            satisfiedBy: stopReason,
+            capturedAtTick: finalTick
         };
 
         return {
@@ -87,6 +101,7 @@ export class SimulationReportBridge {
             splitTransitionCount: this.host.getFragmentTransitions().length,
             generatedBoxCount,
             progression,
+            capture,
             profile: {
                 ...profile,
                 keepWithNextPrepareByKind: { ...profile.keepWithNextPrepareByKind },

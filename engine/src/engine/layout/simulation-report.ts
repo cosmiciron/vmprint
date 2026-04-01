@@ -12,6 +12,7 @@ import type { HeadingTelemetrySummary } from './collaborators/heading-telemetry-
 import type { AsyncThoughtSummary } from './collaborators/async-thought-runtime-collaborator';
 import type { TemporalPresentationTimeline } from './collaborators/temporal-presentation-collaborator';
 import type { InteractionArtifactSummary } from './collaborators/interaction-artifact-collaborator';
+import type { ViewportCaptureSummary } from './collaborators/viewport-capture-artifact-collaborator';
 import type { LayoutProfileMetrics } from './layout-session-types';
 import type { Page } from '../types';
 import type { SimulationProgressionPolicy, SimulationStopReason } from '../types';
@@ -31,6 +32,7 @@ export type SimulationArtifactMap = {
     asyncThoughtSummary?: AsyncThoughtSummary;
     temporalPresentationTimeline?: TemporalPresentationTimeline;
     interactionMap?: InteractionArtifactSummary;
+    viewportCaptureSummary?: ViewportCaptureSummary[];
 };
 
 export type SimulationArtifactKey = keyof SimulationArtifactMap;
@@ -50,7 +52,8 @@ export const simulationArtifactKeys = {
     headingTelemetry: 'headingTelemetry',
     asyncThoughtSummary: 'asyncThoughtSummary',
     temporalPresentationTimeline: 'temporalPresentationTimeline',
-    interactionMap: 'interactionMap'
+    interactionMap: 'interactionMap',
+    viewportCaptureSummary: 'viewportCaptureSummary'
 } as const satisfies Record<SimulationArtifactKey, SimulationArtifactKey>;
 
 export const knownSimulationArtifactKeys: readonly SimulationArtifactKey[] = [
@@ -67,7 +70,8 @@ export const knownSimulationArtifactKeys: readonly SimulationArtifactKey[] = [
     simulationArtifactKeys.headingTelemetry,
     simulationArtifactKeys.asyncThoughtSummary,
     simulationArtifactKeys.temporalPresentationTimeline,
-    simulationArtifactKeys.interactionMap
+    simulationArtifactKeys.interactionMap,
+    simulationArtifactKeys.viewportCaptureSummary
 ] as const;
 
 export type SimulationReport = {
@@ -76,11 +80,13 @@ export type SimulationReport = {
     splitTransitionCount: number;
     generatedBoxCount: number;
     progression: SimulationProgressionSummary;
+    capture: SimulationCaptureSummary;
     profile: LayoutProfileMetrics;
     artifacts: SimulationArtifacts;
 };
 
 export type SimulationCaptureKind = 'finalized-pages';
+export type SimulationCapturePolicy = 'settle-immediately' | 'fixed-tick-count';
 
 export type SimulationProgressionSummary = {
     policy: SimulationProgressionPolicy;
@@ -90,6 +96,14 @@ export type SimulationProgressionSummary = {
     progressionStopped: boolean;
 };
 
+export type SimulationCaptureSummary = {
+    policy: SimulationCapturePolicy;
+    requestedMaxTicks: number | null;
+    captureKind: SimulationCaptureKind;
+    satisfiedBy: SimulationStopReason;
+    capturedAtTick: number;
+};
+
 export type SimulationReportReader = {
     readonly report: SimulationReport | null | undefined;
     readonly pageCount: number;
@@ -97,6 +111,7 @@ export type SimulationReportReader = {
     readonly splitTransitionCount: number;
     readonly generatedBoxCount: number;
     readonly progression: SimulationProgressionSummary | undefined;
+    readonly capture: SimulationCaptureSummary | undefined;
     readonly profile: LayoutProfileMetrics | undefined;
     get<K extends SimulationArtifactKey>(key: K): SimulationArtifactMap[K] | undefined;
     has<K extends SimulationArtifactKey>(key: K): boolean;
@@ -164,6 +179,7 @@ export function createSimulationReportReader(
         splitTransitionCount: report?.splitTransitionCount ?? 0,
         generatedBoxCount: report?.generatedBoxCount ?? 0,
         progression: report?.progression,
+        capture: report?.capture,
         profile: report?.profile,
         get: (key) => getSimulationArtifact(report, key),
         has: (key) => hasSimulationArtifact(report, key),

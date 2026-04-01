@@ -1,4 +1,4 @@
-import type { StoryExclusionAssembly, StoryFloatAlign, StoryFloatShape, StoryWrapMode } from '../types';
+import type { StoryExclusionAssembly, StoryFloatAlign, StoryFloatShape, StoryWrapMode, TraversalInteractionPolicy } from '../types';
 import type { OccupiedRect } from './packagers/spatial-map';
 
 export interface ExclusionFieldDescriptor {
@@ -12,6 +12,7 @@ export interface ExclusionFieldDescriptor {
     align?: StoryFloatAlign;
     exclusionAssembly?: StoryExclusionAssembly;
     zIndex?: number;
+    traversalInteraction?: TraversalInteractionPolicy;
 }
 
 /**
@@ -40,7 +41,8 @@ export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescripto
             gap,
             shape: normalizedShape,
             align: descriptor.align,
-            zIndex: Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0
+            zIndex: Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0,
+            traversalInteraction: descriptor.traversalInteraction ?? 'auto'
         }];
     }
 
@@ -54,7 +56,8 @@ export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescripto
         shape: ((member.shape ?? 'rect') as 'rect' | 'circle'),
         zIndex: Number.isFinite(Number(member.zIndex))
             ? Number(member.zIndex)
-            : (Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0)
+            : (Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0),
+        traversalInteraction: member.traversalInteraction ?? descriptor.traversalInteraction ?? 'auto'
         // Deliberately omit align here: assembled members should carve as local
         // lobes, not inherit the solitary edge-extension heuristic used for
         // single left/right circles.

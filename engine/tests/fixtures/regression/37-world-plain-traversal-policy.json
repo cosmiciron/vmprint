@@ -1,0 +1,134 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 600,
+      "height": 800
+    },
+    "margins": {
+      "top": 50,
+      "right": 50,
+      "bottom": 50,
+      "left": 50
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.4,
+    "pageBackground": "#fcfbf7",
+    "worldPlain": {
+      "rootFlowMode": "traverse",
+      "style": {
+        "marginTop": 12,
+        "marginBottom": 12
+      }
+    }
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true,
+      "color": "#355e3b"
+    },
+    "p": {
+      "marginBottom": 8,
+      "zIndex": 0
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "World Plain: Traversal Policy Override",
+      "properties": {
+        "sourceId": "plain-policy-heading"
+      }
+    },
+    {
+      "type": "field-actor",
+      "content": "",
+      "properties": {
+        "sourceId": "plain-policy-overpass-rock",
+        "spatialField": {
+          "kind": "exclude",
+          "x": 82,
+          "y": 94,
+          "wrap": "around",
+          "gap": 8,
+          "zIndex": 0,
+          "traversalInteraction": "overpass",
+          "exclusionAssembly": {
+            "members": [
+              { "shape": "circle", "x": 0, "y": 32, "w": 70, "h": 70, "zIndex": 0, "traversalInteraction": "overpass" },
+              { "shape": "circle", "x": 48, "y": 2, "w": 92, "h": 92, "zIndex": 0, "traversalInteraction": "overpass" },
+              { "shape": "rect", "x": 42, "y": 58, "w": 92, "h": 24, "zIndex": 0, "traversalInteraction": "overpass" }
+            ]
+          }
+        },
+        "style": {
+          "width": 150,
+          "height": 116,
+          "backgroundColor": "#dfeee7",
+          "borderColor": "#7fa18e",
+          "borderWidth": 1,
+          "zIndex": 0
+        }
+      }
+    },
+    {
+      "type": "field-actor",
+      "content": "",
+      "properties": {
+        "sourceId": "plain-policy-wrap-rock",
+        "spatialField": {
+          "kind": "exclude",
+          "x": 184,
+          "y": 176,
+          "wrap": "around",
+          "gap": 8,
+          "zIndex": -1,
+          "traversalInteraction": "wrap",
+          "exclusionAssembly": {
+            "members": [
+              { "shape": "circle", "x": 0, "y": 30, "w": 84, "h": 84, "zIndex": -1, "traversalInteraction": "wrap" },
+              { "shape": "circle", "x": 60, "y": 0, "w": 104, "h": 104, "zIndex": -1, "traversalInteraction": "wrap" },
+              { "shape": "rect", "x": 46, "y": 58, "w": 108, "h": 34, "zIndex": -1, "traversalInteraction": "wrap" }
+            ]
+          }
+        },
+        "style": {
+          "width": 174,
+          "height": 124,
+          "backgroundColor": "#eee3d6",
+          "borderColor": "#b7a48f",
+          "borderWidth": 1,
+          "zIndex": -1
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "This first current meets a rock sitting in the same depth as the river, but the obstacle is explicitly authored as overpass for traversing flow. So the text should keep its ordinary straight lane instead of splitting around the visible shape. This first current meets a rock sitting in the same depth as the river, but the obstacle is explicitly authored as overpass for traversing flow. So the text should keep its ordinary straight lane instead of splitting around the visible shape. This first current meets a rock sitting in the same depth as the river, but the obstacle is explicitly authored as overpass for traversing flow. So the text should keep its ordinary straight lane instead of splitting around the visible shape.",
+      "properties": {
+        "sourceId": "plain-policy-body-overpass",
+        "style": {
+          "zIndex": 0
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Farther downstream the river reaches a shallower rock, but this one is explicitly authored as wrap for traversing flow. Even though the depth would normally allow an overpass, the current should break into side lanes around the obstacle because the world host has published a stronger interaction rule. Farther downstream the river reaches a shallower rock, but this one is explicitly authored as wrap for traversing flow. Even though the depth would normally allow an overpass, the current should break into side lanes around the obstacle because the world host has published a stronger interaction rule. Farther downstream the river reaches a shallower rock, but this one is explicitly authored as wrap for traversing flow. Even though the depth would normally allow an overpass, the current should break into side lanes around the obstacle because the world host has published a stronger interaction rule.",
+      "properties": {
+        "sourceId": "plain-policy-body-wrap",
+        "style": {
+          "zIndex": 0
+        }
+      }
+    }
+  ]
+}

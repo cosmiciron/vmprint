@@ -925,6 +925,181 @@ function assertWorldPlainZOverpassSignals(pages: any[], fixtureName: string): vo
     assert.equal(earlyWrappedCount, 0, `${fixtureName}: expected the early river to pass over the lower-z rock without wrap slots`);
 }
 
+function assertWorldPlainTraversingFlowSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    const lowRockBoxes = allBoxes.filter((box: any) => {
+        const sourceId = String(box.meta?.sourceId || '');
+        return sourceId === 'plain-traverse-low-rock' || sourceId.endsWith(':plain-traverse-low-rock');
+    });
+    const highRockBoxes = allBoxes.filter((box: any) => {
+        const sourceId = String(box.meta?.sourceId || '');
+        return sourceId === 'plain-traverse-high-rock' || sourceId.endsWith(':plain-traverse-high-rock');
+    });
+    assert.ok(lowRockBoxes.length >= 1, `${fixtureName}: expected a visible lower-z world rock`);
+    assert.ok(highRockBoxes.length >= 1, `${fixtureName}: expected a visible same-z world rock`);
+
+    const paragraphWraps = (sourceIdNeedle: string): number =>
+        allBoxes.filter((box: any) => {
+            if (String(box.type || '').toLowerCase() !== 'p') return false;
+            const sourceId = String(box.meta?.sourceId || '');
+            if (!(sourceId === sourceIdNeedle || sourceId.endsWith(`:${sourceIdNeedle}`))) return false;
+            const offsets = Array.isArray(box.properties?._lineOffsets)
+                ? box.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+                : [];
+            const yOffsets = Array.isArray(box.properties?._lineYOffsets)
+                ? box.properties._lineYOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+                : [];
+            if (offsets.length < 2 || yOffsets.length < 2) return false;
+            const bands = new Map<string, Set<string>>();
+            for (let i = 0; i < Math.min(offsets.length, yOffsets.length); i++) {
+                const bandKey = Number(yOffsets[i]).toFixed(2);
+                const set = bands.get(bandKey) ?? new Set<string>();
+                set.add(Number(offsets[i]).toFixed(2));
+                bands.set(bandKey, set);
+                if (set.size >= 2) return true;
+            }
+            return false;
+        }).length;
+
+    assert.equal(
+        paragraphWraps('plain-traverse-body-early'),
+        0,
+        `${fixtureName}: expected the early traversing paragraph to pass over the lower-z rock without wrap lanes`
+    );
+    assert.ok(
+        paragraphWraps('plain-traverse-body-late') >= 1,
+        `${fixtureName}: expected the later traversing paragraph to wrap around the same-z rock`
+    );
+}
+
+function assertWorldPlainTraversalPolicySignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    const paragraphWraps = (sourceIdNeedle: string): number =>
+        allBoxes.filter((box: any) => {
+            if (String(box.type || '').toLowerCase() !== 'p') return false;
+            const sourceId = String(box.meta?.sourceId || '');
+            if (!(sourceId === sourceIdNeedle || sourceId.endsWith(`:${sourceIdNeedle}`))) return false;
+            const offsets = Array.isArray(box.properties?._lineOffsets)
+                ? box.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+                : [];
+            const yOffsets = Array.isArray(box.properties?._lineYOffsets)
+                ? box.properties._lineYOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+                : [];
+            if (offsets.length < 2 || yOffsets.length < 2) return false;
+            const bands = new Map<string, Set<string>>();
+            for (let i = 0; i < Math.min(offsets.length, yOffsets.length); i++) {
+                const bandKey = Number(yOffsets[i]).toFixed(2);
+                const set = bands.get(bandKey) ?? new Set<string>();
+                set.add(Number(offsets[i]).toFixed(2));
+                bands.set(bandKey, set);
+                if (set.size >= 2) return true;
+            }
+            return false;
+        }).length;
+
+    assert.ok(
+        boxesForSourceId(pages, 'plain-policy-overpass-rock').length >= 1,
+        `${fixtureName}: expected the explicit overpass rock to remain visible`
+    );
+    assert.ok(
+        boxesForSourceId(pages, 'plain-policy-wrap-rock').length >= 1,
+        `${fixtureName}: expected the explicit wrap rock to remain visible`
+    );
+    assert.equal(
+        paragraphWraps('plain-policy-body-overpass'),
+        0,
+        `${fixtureName}: expected the authored overpass policy to suppress wrap even at the same depth`
+    );
+    assert.ok(
+        paragraphWraps('plain-policy-body-wrap') >= 1,
+        `${fixtureName}: expected the authored wrap policy to force wrap even across depth mismatch`
+    );
+}
+
+function assertWorldPlainHostTraversalDefaultSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    const paragraphWraps = (sourceIdNeedle: string): number =>
+        allBoxes.filter((box: any) => {
+            if (String(box.type || '').toLowerCase() !== 'p') return false;
+            const sourceId = String(box.meta?.sourceId || '');
+            if (!(sourceId === sourceIdNeedle || sourceId.endsWith(`:${sourceIdNeedle}`))) return false;
+            const offsets = Array.isArray(box.properties?._lineOffsets)
+                ? box.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+                : [];
+            const yOffsets = Array.isArray(box.properties?._lineYOffsets)
+                ? box.properties._lineYOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+                : [];
+            if (offsets.length < 2 || yOffsets.length < 2) return false;
+            const bands = new Map<string, Set<string>>();
+            for (let i = 0; i < Math.min(offsets.length, yOffsets.length); i++) {
+                const bandKey = Number(yOffsets[i]).toFixed(2);
+                const set = bands.get(bandKey) ?? new Set<string>();
+                set.add(Number(offsets[i]).toFixed(2));
+                bands.set(bandKey, set);
+                if (set.size >= 2) return true;
+            }
+            return false;
+        }).length;
+    const paragraphBoxes = (sourceIdNeedle: string): any[] =>
+        allBoxes.filter((box: any) => {
+            if (String(box.type || '').toLowerCase() !== 'p') return false;
+            const sourceId = String(box.meta?.sourceId || '');
+            return sourceId === sourceIdNeedle || sourceId.endsWith(`:${sourceIdNeedle}`);
+        });
+
+    assert.ok(
+        boxesForSourceId(pages, 'plain-host-policy-default-rock').length >= 1,
+        `${fixtureName}: expected the host-default rock to remain visible`
+    );
+    assert.ok(
+        boxesForSourceId(pages, 'plain-host-policy-explicit-wrap-rock').length >= 1,
+        `${fixtureName}: expected the explicit-wrap override rock to remain visible`
+    );
+    assert.equal(
+        paragraphWraps('plain-host-policy-body-default'),
+        0,
+        `${fixtureName}: expected the world host default overpass policy to suppress wrap for an otherwise unannotated same-depth obstacle`
+    );
+    assert.ok(
+        paragraphWraps('plain-host-policy-body-override') >= 1
+        || paragraphBoxes('plain-host-policy-body-override').some((box: any) =>
+            Number(box.x || 0) > 50.5 || Number(box.w || 0) < 499.5
+        ),
+        `${fixtureName}: expected the local wrap override to beat the world host default by forcing the traversing paragraph into a constrained wrap lane`
+    );
+}
+
+function assertViewportCaptureSummarySignals(fixtureName: string, engine: any): void {
+    const summary = engine
+        .getLastSimulationReportReader()
+        .require(simulationArtifactKeys.viewportCaptureSummary);
+
+    assert.ok(summary.length > 0, `${fixtureName}: expected viewport capture summary entries`);
+
+    for (const entry of summary) {
+        assert.equal(
+            entry.viewport.worldY,
+            entry.pageIndex * entry.viewport.height,
+            `${fixtureName}: expected viewport worldY to advance by page-height slices`
+        );
+        assert.ok(
+            entry.worldSpace.exploredBottom >= entry.viewport.worldY + entry.viewport.height,
+            `${fixtureName}: expected exploredBottom to cover at least the current viewport slice`
+        );
+    }
+}
+
+function assertWorldPlainTraversingViewportCaptureSignals(fixtureName: string, engine: any): void {
+    const summary = engine
+        .getLastSimulationReportReader()
+        .require(simulationArtifactKeys.viewportCaptureSummary);
+    assert.ok(summary.length >= 1, `${fixtureName}: expected at least one viewport capture summary entry`);
+    assert.ok(
+        summary.some((entry: any) => Number(entry.terrain.worldTraversalExclusionCount || 0) >= 1),
+        `${fixtureName}: expected traversing-world viewport capture summary to record world-traversal obstacles`
+    );
+}
+
 function assertStoryMultiColumnSignals(pages: any[], fixtureName: string): void {
     if (fixtureName !== '15-story-multi-column.json') return;
     assert.ok(pages.length >= 3, `${fixtureName}: expected at least three pages for 2-col intro + 3-col continuation`);
@@ -1368,9 +1543,15 @@ function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: s
     assert.ok(printSnapshot.reader, `${fixtureName}: expected print pipeline snapshot reader`);
     assert.equal(reader.pageCount, pages.length, `${fixtureName}: simulation report pageCount mismatch`);
     assert.ok(reader.progression, `${fixtureName}: simulation report should expose progression summary`);
+    assert.ok(reader.capture, `${fixtureName}: simulation report should expose capture summary`);
     assert.equal(reader.progression?.policy, 'until-settled', `${fixtureName}: progression policy mismatch`);
     assert.equal(reader.progression?.stopReason, 'settled', `${fixtureName}: progression stopReason mismatch`);
     assert.equal(reader.progression?.captureKind, 'finalized-pages', `${fixtureName}: progression captureKind mismatch`);
+    assert.equal(reader.capture?.policy, 'settle-immediately', `${fixtureName}: capture policy mismatch`);
+    assert.equal(reader.capture?.captureKind, 'finalized-pages', `${fixtureName}: capture captureKind mismatch`);
+    assert.equal(reader.capture?.requestedMaxTicks, null, `${fixtureName}: capture requestedMaxTicks mismatch`);
+    assert.equal(reader.capture?.satisfiedBy, 'settled', `${fixtureName}: capture satisfiedBy mismatch`);
+    assert.equal(reader.capture?.capturedAtTick, reader.progression?.finalTick, `${fixtureName}: capture/progression tick mismatch`);
     assert.ok(
         Number.isFinite(reader.progression?.finalTick),
         `${fixtureName}: progression finalTick should be finite`
@@ -1858,6 +2039,7 @@ async function run() {
                 'the default world-plain host should begin immediately and continue onto a later page as world-native flow',
                 () => {
                     assertWorldPlainDefaultContinueSignals(pagesA, fixture.name);
+                    assertViewportCaptureSummarySignals(fixture.name, engine);
                 }
             );
         }
@@ -1885,6 +2067,34 @@ async function run() {
                 'higher-z world flow should pass over a lower-z rock instead of wrapping around it while the rock remains visible below',
                 () => {
                     assertWorldPlainZOverpassSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '36-world-plain-traversing-flow.json') {
+            _check(
+                `${fixture.name} traversing flow signals`,
+                'root flow should remain a separate participant, pass over lower-z world obstacles, and wrap around same-z world obstacles',
+                () => {
+                    assertWorldPlainTraversingFlowSignals(pagesA, fixture.name);
+                    assertWorldPlainTraversingViewportCaptureSignals(fixture.name, engine);
+                }
+            );
+        }
+        if (fixture.name === '37-world-plain-traversal-policy.json') {
+            _check(
+                `${fixture.name} traversal policy signals`,
+                'explicit authored traversal interaction policy should override the default depth-only decision for traversing root flow',
+                () => {
+                    assertWorldPlainTraversalPolicySignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '38-world-plain-host-traversal-default.json') {
+            _check(
+                `${fixture.name} host traversal default signals`,
+                'worldPlain should be able to supply a host-level traversal default while still allowing local obstacle overrides to win',
+                () => {
+                    assertWorldPlainHostTraversalDefaultSignals(pagesA, fixture.name);
                 }
             );
         }
@@ -2748,6 +2958,10 @@ async function run() {
             assert.match(replayMarkerText, /Render Count:\s*11/, 'clock cooking board should replay downstream content across the cooked ticks');
             assert.equal(reader.progression?.policy, 'fixed-tick-count', 'clock cooking board should run through the restored fixed-tick progression path');
             assert.equal(reader.progression?.finalTick, 10, 'clock cooking board should capture at tick 10');
+            assert.equal(reader.capture?.policy, 'fixed-tick-count', 'clock cooking board should expose fixed-tick-count as capture policy');
+            assert.equal(reader.capture?.requestedMaxTicks, 10, 'clock cooking board should record the requested fixed tick horizon');
+            assert.equal(reader.capture?.capturedAtTick, 10, 'clock cooking board capture should occur at tick 10');
+            assert.equal(reader.capture?.satisfiedBy, 'fixed-tick-count', 'clock cooking board capture should be satisfied by the fixed tick horizon');
             const timeline = reader.require(simulationArtifactKeys.temporalPresentationTimeline);
             assert.ok(timeline.length >= 2, 'clock cooking board should publish a temporal presentation timeline');
             assert.equal(timeline.at(-1)?.tick, 10, 'clock cooking board timeline should end at the final cooked tick');

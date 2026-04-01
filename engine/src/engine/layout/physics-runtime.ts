@@ -17,7 +17,7 @@ import {
     type PaginationPlacementPreparation,
     type ResolvedPlacementFrame
 } from './layout-session-types';
-import { rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
+import { packagerOccupiesFlowSpace, rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
 import { preparePackagerForPhase, type PackagerContext, type PackagerUnit } from './packagers/packager-types';
 
 export type PhysicsRuntimeHost = {
@@ -162,6 +162,7 @@ export class PhysicsRuntime {
             ...input.contextBase,
             pageIndex: input.currentPageIndex,
             cursorY: currentY,
+            layoutBefore,
             viewportWorldY: input.currentPageIndex * input.pageHeight,
             viewportHeight: input.pageHeight,
             margins: {
@@ -497,13 +498,14 @@ export class PhysicsRuntime {
         const marginBottom = actor.getMarginBottom();
         const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
         const requiredHeight = contentHeight + layoutBefore + marginBottom;
+        const occupiesFlowSpace = packagerOccupiesFlowSpace(actor);
 
         const measurement = {
             marginTop,
             marginBottom,
             contentHeight,
-            requiredHeight,
-            effectiveHeight: Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight)
+            requiredHeight: occupiesFlowSpace ? requiredHeight : 0,
+            effectiveHeight: occupiesFlowSpace ? Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight) : 0
         };
         this.host.recordActorMeasurementByKind(actor.actorKind, performance.now() - startedAt);
         return measurement;

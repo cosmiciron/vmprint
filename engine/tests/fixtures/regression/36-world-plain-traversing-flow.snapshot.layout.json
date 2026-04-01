@@ -1,0 +1,322 @@
+[
+  {
+    "index": 0,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "field-actor",
+        "x": 128,
+        "y": 158,
+        "w": 148,
+        "h": 112,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 216,
+        "y": 190,
+        "w": 170,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "h1",
+        "x": 50,
+        "y": 50,
+        "w": 500,
+        "h": 36.4125,
+        "lines": [
+          [
+            {
+              "text": "World Plain: Traversing Flow",
+              "width": 328.945313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 110.4125,
+        "w": 500,
+        "h": 85.171875,
+        "lines": [
+          [
+            {
+              "text": "The river stays its own participant here instead of being swallowed by the world host. It begins above a lower ",
+              "width": 483.032227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "desert rock, so the current should cross that shallower obstacle without being cut into side lanes. The river stays ",
+              "width": 498.022461,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "its own participant here instead of being swallowed by the world host. It begins above a lower desert rock, so the ",
+              "width": 499.72168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "current should cross that shallower obstacle without being cut into side lanes. The river stays its own participant ",
+              "width": 495.800781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "here instead of being swallowed by the world host. It begins above a lower desert rock, so the current should ",
+              "width": 483.051758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "cross that shallower obstacle without being cut into side lanes.",
+              "width": 275.708008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 199.584375,
+        "w": 500,
+        "h": 197.171875,
+        "lines": [
+          [
+            {
+              "text": "Farther downstream the river meets a taller rock ",
+              "width": 215.629883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lifted into the same layer as the flow ",
+              "width": 161.748047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "itself, so this later paragraph should ",
+              "width": 160.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "split into wrap lanes around the visible ",
+              "width": 171.762695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstacle instead of gliding over it. ",
+              "width": 150.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Farther downstream the river meets a",
+              "width": 166.728516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "taller rock lifted into the same layer ",
+              "width": 157.290039,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "as the flow itself, so this later ",
+              "width": 130.610352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph should split into wrap ",
+              "width": 144.53125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lanes around the visible obstacle ",
+              "width": 147.871094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "instead of gliding over it. Farther ",
+              "width": 145.629883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "downstream the river meets a taller ",
+              "width": 158.950195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rock lifted into the same layer as the",
+              "width": 160.078125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "flow itself, so this later paragraph should",
+              "width": 178.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "split into wrap lanes around the ",
+              "width": 141.196289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "visible obstacle instead of gliding over it. ",
+              "width": 181.210938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Farther downstream the river meets a ",
+              "width": 169.506836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "taller rock lifted into the same layer as the flow itself, so this ",
+              "width": 265.668945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later paragraph should split into wrap lanes around the visible obstacle instead of gliding over it. Farther ",
+              "width": 460.263672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "downstream the river meets a taller rock lifted into the same layer as the flow itself, so this later paragraph ",
+              "width": 470.766602,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should split into wrap lanes around the visible obstacle instead of gliding over it. Farther downstream the river ",
+              "width": 485.810547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "meets a taller rock lifted into the same layer as the flow itself, so this later paragraph should split into wrap lanes ",
+              "width": 497.46582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around the visible obstacle instead of gliding over it.",
+              "width": 229.02832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

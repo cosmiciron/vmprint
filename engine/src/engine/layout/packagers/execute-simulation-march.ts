@@ -67,6 +67,10 @@ export function executeSimulationMarch(
         prevAfter + marginTop;
 
     session.setSimulationProgressionPolicy(progression.policy);
+    session.setSimulationCapturePolicy(
+        progression.policy === 'fixed-tick-count' ? 'fixed-tick-count' : 'settle-immediately',
+        progression.policy === 'fixed-tick-count' ? progression.maxTicks : null
+    );
     session.resumeSimulationProgression();
     session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
     if (reactiveCheckpointsEnabled()) {

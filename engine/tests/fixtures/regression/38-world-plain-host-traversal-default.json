@@ -1,0 +1,134 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 600,
+      "height": 800
+    },
+    "margins": {
+      "top": 50,
+      "right": 50,
+      "bottom": 50,
+      "left": 50
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.4,
+    "pageBackground": "#fcfbf7",
+    "worldPlain": {
+      "rootFlowMode": "traverse",
+      "traversalInteractionDefault": "overpass",
+      "style": {
+        "marginTop": 12,
+        "marginBottom": 12
+      }
+    }
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true,
+      "color": "#355e3b"
+    },
+    "p": {
+      "marginBottom": 8,
+      "zIndex": 0
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "World Plain: Host Traversal Default",
+      "properties": {
+        "sourceId": "plain-host-policy-heading"
+      }
+    },
+    {
+      "type": "field-actor",
+      "content": "",
+      "properties": {
+        "sourceId": "plain-host-policy-default-rock",
+        "spatialField": {
+          "kind": "exclude",
+          "x": 84,
+          "y": 94,
+          "wrap": "around",
+          "gap": 8,
+          "zIndex": 0,
+          "exclusionAssembly": {
+            "members": [
+              { "shape": "circle", "x": 0, "y": 32, "w": 70, "h": 70, "zIndex": 0 },
+              { "shape": "circle", "x": 48, "y": 4, "w": 92, "h": 92, "zIndex": 0 },
+              { "shape": "rect", "x": 42, "y": 58, "w": 92, "h": 24, "zIndex": 0 }
+            ]
+          }
+        },
+        "style": {
+          "width": 150,
+          "height": 116,
+          "backgroundColor": "#dfeee7",
+          "borderColor": "#7fa18e",
+          "borderWidth": 1,
+          "zIndex": 0
+        }
+      }
+    },
+    {
+      "type": "field-actor",
+      "content": "",
+      "properties": {
+        "sourceId": "plain-host-policy-explicit-wrap-rock",
+        "spatialField": {
+          "kind": "exclude",
+          "x": 166,
+          "y": 128,
+          "wrap": "around",
+          "gap": 8,
+          "zIndex": 0,
+          "traversalInteraction": "wrap",
+          "exclusionAssembly": {
+            "members": [
+              { "shape": "circle", "x": 0, "y": 28, "w": 82, "h": 82, "zIndex": 0, "traversalInteraction": "wrap" },
+              { "shape": "circle", "x": 58, "y": 2, "w": 100, "h": 100, "zIndex": 0, "traversalInteraction": "wrap" },
+              { "shape": "rect", "x": 44, "y": 58, "w": 102, "h": 30, "zIndex": 0, "traversalInteraction": "wrap" }
+            ]
+          }
+        },
+        "style": {
+          "width": 170,
+          "height": 120,
+          "backgroundColor": "#eee3d6",
+          "borderColor": "#b7a48f",
+          "borderWidth": 1,
+          "zIndex": 0
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "This early current meets a same-layer rock that does not author any local traversal policy of its own. Because the world host defaults traversing interaction to overpass, the text should keep its straight lane instead of splitting around the visible shape. This early current meets a same-layer rock that does not author any local traversal policy of its own. Because the world host defaults traversing interaction to overpass, the text should keep its straight lane instead of splitting around the visible shape.",
+      "properties": {
+        "sourceId": "plain-host-policy-body-default",
+        "style": {
+          "zIndex": 0
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Later the river reaches another rock in the same layer, but this one explicitly asks for wrap. That local authored rule should beat the world host default, so the paragraph should split into side lanes around the obstacle even though the host would otherwise allow an overpass. Later the river reaches another rock in the same layer, but this one explicitly asks for wrap. That local authored rule should beat the world host default, so the paragraph should split into side lanes around the obstacle even though the host would otherwise allow an overpass. Later the river reaches another rock in the same layer, but this one explicitly asks for wrap. That local authored rule should beat the world host default, so the paragraph should split into side lanes around the obstacle even though the host would otherwise allow an overpass. Later the river reaches another rock in the same layer, but this one explicitly asks for wrap. That local authored rule should beat the world host default, so the paragraph should split into side lanes around the obstacle even though the host would otherwise allow an overpass. Later the river reaches another rock in the same layer, but this one explicitly asks for wrap. That local authored rule should beat the world host default, so the paragraph should split into side lanes around the obstacle even though the host would otherwise allow an overpass.",
+      "properties": {
+        "sourceId": "plain-host-policy-body-override",
+        "style": {
+          "zIndex": 0
+        }
+      }
+    }
+  ]
+}

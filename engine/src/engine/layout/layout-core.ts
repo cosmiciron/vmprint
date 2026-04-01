@@ -48,6 +48,7 @@ import { RegionDebugOverlayCollaborator } from './collaborators/region-debug-ove
 import { TemporalPresentationCollaborator } from './collaborators/temporal-presentation-collaborator';
 import { AsyncThoughtRuntimeCollaborator } from './collaborators/async-thought-runtime-collaborator';
 import { InteractionArtifactCollaborator } from './collaborators/interaction-artifact-collaborator';
+import { ViewportCaptureArtifactCollaborator } from './collaborators/viewport-capture-artifact-collaborator';
 import { AsyncThoughtHost } from './async-thought-host';
 import {
     buildTableModel,
@@ -760,6 +761,7 @@ export class LayoutProcessor extends TextProcessor {
                 pageHeight,
                 margins: this.config.layout.margins,
                 getPageExclusions: (pageIndex: number) => session.getPageExclusions(pageIndex),
+                getWorldTraversalExclusions: (pageIndex: number) => session.getWorldTraversalExclusions(pageIndex),
                 publishActorSignal: (signal: any) => session.publishActorSignal(signal),
                 readActorSignals: (topic?: string) => session.getActorSignals(topic),
                 requestAsyncThought: (request: any) => session.requestAsyncThought(request),
@@ -1303,6 +1305,7 @@ export class LayoutProcessor extends TextProcessor {
             ...(asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []),
             new TemporalPresentationCollaborator(),
             new InteractionArtifactCollaborator(this.config.layout),
+            new ViewportCaptureArtifactCollaborator(),
             new RegionDebugOverlayCollaborator(),
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>

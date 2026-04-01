@@ -6,6 +6,7 @@ import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from '
 import type { PackagerUnit } from './packagers/packager-types';
 import type { ObservationResult, PackagerContext, SpatialFrontier } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
+import { resolvePackagerZIndex } from './packagers/packager-types';
 import { AIRuntime } from './ai-runtime';
 import type { ActorSignal, ActorSignalDraft } from './actor-event-bus';
 import {
@@ -31,6 +32,7 @@ import type {
     SimulationArtifactKey,
     SimulationArtifactMap,
     SimulationArtifacts,
+    SimulationCapturePolicy,
     SimulationReport,
     SimulationReportReader
 } from './simulation-report';
@@ -76,6 +78,7 @@ import {
     type LocalQueueSnapshot,
     type LocalSplitStateSnapshot,
     type LocalTransitionSnapshot,
+    type PageCaptureRecord,
     type PageExclusionIntent,
     type PageAdvanceOutcome,
     type PageFinalizationState,
@@ -159,6 +162,7 @@ export type {
     LocalSplitStateSnapshot,
     LocalTransitionSnapshot,
     PageAdvanceOutcome,
+    PageCaptureRecord,
     PageExclusionIntent,
     PageFinalizationState,
     PageOverrideState,
@@ -354,6 +358,8 @@ export class LayoutSession {
     private paginationLoopState: PaginationLoopState | null = null;
     private speculativeBranchSequence = 0;
     private simulationProgressionPolicy: SimulationProgressionPolicy = 'until-settled';
+    private simulationCapturePolicy: SimulationCapturePolicy = 'settle-immediately';
+    private simulationCaptureMaxTicks: number | null = null;
     private simulationStopReason: SimulationStopReason = 'settled';
     private readonly flowResolveSignaturesSeen = new Set<string>();
     private scriptReplayRequested = false;
@@ -463,7 +469,9 @@ export class LayoutSession {
             {
                 getSession: () => this,
                 getCurrentPageIndex: () => this.currentPageIndex,
-                getProfileSnapshot: () => this.profile
+                getProfileSnapshot: () => this.profile,
+                getSimulationCapturePolicy: () => this.simulationCapturePolicy,
+                getSimulationCaptureMaxTicks: () => this.simulationCaptureMaxTicks
             }
         );
         this.placementSessionRuntime = new PlacementSessionRuntime(
@@ -521,6 +529,9 @@ export class LayoutSession {
         this.kernel.resetForSimulation();
         this.actorCommunicationRuntime.resetForSimulation();
         this.lifecycleRuntime.resetForSimulation();
+        this.sessionWorldRuntime.resetForSimulation();
+        this.simulationCapturePolicy = 'settle-immediately';
+        this.simulationCaptureMaxTicks = null;
         this.eventDispatcher.onSimulationStart(this);
     }
 
@@ -756,11 +767,15 @@ export class LayoutSession {
         this.currentConstraintField = constraints;
         const startedAt = performance.now();
         this.recordProfile('reservationConstraintNegotiationCalls', 1);
+        const actorZIndex = resolvePackagerZIndex(actor);
         for (const reservation of this.kernel.getCurrentPageReservations()) {
             constraints.reservations.push({ ...reservation });
             this.recordProfile('reservationConstraintApplications', 1);
         }
         for (const exclusion of this.kernel.getCurrentPageExclusions()) {
+            if (Number.isFinite(exclusion.zIndex) && Number(exclusion.zIndex) !== actorZIndex) {
+                continue;
+            }
             constraints.exclusions.push({ ...exclusion });
         }
         this.recordProfile('reservationConstraintNegotiationMs', performance.now() - startedAt);
@@ -1080,6 +1095,18 @@ export class LayoutSession {
         return this.sessionCollaborationRuntime.getFinalizedPages();
     }
 
+    recordPageCapture(record: PageCaptureRecord): void {
+        this.sessionCollaborationRuntime.recordPageCapture(record);
+    }
+
+    getPageCapture(pageIndex: number): PageCaptureRecord | undefined {
+        return this.sessionCollaborationRuntime.getPageCapture(pageIndex);
+    }
+
+    getPageCaptures(): readonly PageCaptureRecord[] {
+        return this.sessionCollaborationRuntime.getPageCaptures();
+    }
+
     recordPageFinalization(state: PageFinalizationState): void {
         this.sessionCollaborationRuntime.recordPageFinalization(state);
     }
@@ -1126,6 +1153,10 @@ export class LayoutSession {
 
     getPageExclusions(pageIndex: number): readonly SpatialExclusion[] {
         return this.sessionCollaborationRuntime.getPageExclusions(pageIndex);
+    }
+
+    getWorldTraversalExclusions(pageIndex: number): readonly SpatialExclusion[] {
+        return this.sessionCollaborationRuntime.getWorldTraversalExclusions(pageIndex);
     }
 
     getExclusionPageIndices(): readonly number[] {
@@ -1186,6 +1217,19 @@ export class LayoutSession {
 
     getSimulationProgressionPolicy(): SimulationProgressionPolicy {
         return this.simulationProgressionPolicy;
+    }
+
+    setSimulationCapturePolicy(policy: SimulationCapturePolicy, maxTicks: number | null = null): void {
+        this.simulationCapturePolicy = policy;
+        this.simulationCaptureMaxTicks = Number.isFinite(maxTicks) ? Math.max(1, Math.floor(Number(maxTicks))) : null;
+    }
+
+    getSimulationCapturePolicy(): SimulationCapturePolicy {
+        return this.simulationCapturePolicy;
+    }
+
+    getSimulationCaptureMaxTicks(): number | null {
+        return this.simulationCaptureMaxTicks;
     }
 
     getSimulationStopReason(): SimulationStopReason {
