@@ -50,6 +50,17 @@ function boxesForSourceId(pages: any[], sourceId: string): any[] {
     );
 }
 
+function pageIndexesForSourceId(pages: any[], sourceId: string): number[] {
+    return pages.flatMap((page: any, pageIndex: number) =>
+        (page.boxes || []).some((box: any) => {
+            const actual = String(box.meta?.sourceId || '');
+            return actual === sourceId || actual.endsWith(`:${sourceId}`);
+        })
+            ? [pageIndex]
+            : []
+    );
+}
+
 function longParagraph(seed: string, repeatCount = 40): string {
     return `${seed} `.repeat(repeatCount).trim();
 }
@@ -270,6 +281,35 @@ function assertPackagerShatterShowcaseSignals(pages: any[], fixtureName: string)
     assert.ok(
         topFirst && Math.abs(Number(topFirst.box.y || 0) - minY) < 0.2,
         `${fixtureName}: expected page-top-split to start at top of its page`
+    );
+}
+
+function assertWorldPlainDefaultContinueSignals(pages: any[], fixtureName: string): void {
+    assert.ok(pages.length >= 2, `${fixtureName}: expected default worldPlain fixture to span at least two pages`);
+    assert.deepEqual(
+        pageIndexesForSourceId(pages, 'plain-default-lead'),
+        [0],
+        `${fixtureName}: lead paragraph should begin on page 1`
+    );
+    assert.ok(
+        pageIndexesForSourceId(pages, 'plain-default-main').some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: main world body should continue onto a later page`
+    );
+    assert.ok(
+        pageIndexesForSourceId(pages, 'plain-default-later').some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: later world paragraph should remain visible in continued world flow`
+    );
+}
+
+function assertWorldPlainConservativeSignals(pages: any[], fixtureName: string): void {
+    assert.equal(pages.length, 1, `${fixtureName}: expected conservative worldPlain override fixture to remain on a single page`);
+    assert.ok(
+        boxesForSourceId(pages, 'plain-conservative-main').length > 0,
+        `${fixtureName}: conservative main world body should still render`
+    );
+    assert.ok(
+        boxesForSourceId(pages, 'plain-conservative-later').length > 0,
+        `${fixtureName}: conservative trailing world paragraph should still render`
     );
 }
 
@@ -1723,6 +1763,24 @@ async function run() {
                 'a world-plain host should hold an absolute-positioned rock actor while ordinary labels settle around it',
                 () => {
                     assertWorldPlainAbsoluteRockSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '32-world-plain-default-continue.json') {
+            _check(
+                `${fixture.name} world-plain default continuation signals`,
+                'the default world-plain host should begin immediately and continue onto a later page as world-native flow',
+                () => {
+                    assertWorldPlainDefaultContinueSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '33-world-plain-conservative.json') {
+            _check(
+                `${fixture.name} world-plain conservative override signals`,
+                'explicit move-whole and fixed settings should preserve the current conservative single-page world-plain path',
+                () => {
+                    assertWorldPlainConservativeSignals(pagesA, fixture.name);
                 }
             );
         }

@@ -1,0 +1,216 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 26.409375,
+        "lines": [
+          [
+            {
+              "text": "World Plain Conservative Override",
+              "width": 295.769531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 74.409375,
+        "w": 364,
+        "h": 52.81875,
+        "lines": [
+          [
+            {
+              "text": "This regression proves that authored conservative settings survive. ",
+              "width": 358.839844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "The host is explicitly told to stay move-whole and fixed, even though",
+              "width": 361.529297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "worldPlain now defaults to a more world-native mode.",
+              "width": 284.806641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 137.228125,
+        "w": 364,
+        "h": 211.275,
+        "lines": [
+          [
+            {
+              "text": "This body is intentionally the same overall proof mass so the ",
+              "width": 324.158203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "comparison stays visual instead of theoretical. The host is explicitly ",
+              "width": 358.828125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "conservative, and the snapshot preserves whatever that means ",
+              "width": 340.189453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "today for the full-document world plain path. This body is ",
+              "width": 303.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "intentionally the same overall proof mass so the comparison stays ",
+              "width": 353.501953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "visual instead of theoretical. The host is explicitly conservative, and ",
+              "width": 359.513672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the snapshot preserves whatever that means today for the ",
+              "width": 312.84375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "full-document world plain path. This body is intentionally the same ",
+              "width": 352.851563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "overall proof mass so the comparison stays visual instead of ",
+              "width": 323.484375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "theoretical. The host is explicitly conservative, and the snapshot ",
+              "width": 342.181641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "preserves whatever that means today for the full-document world ",
+              "width": 348.169922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "plain path.",
+              "width": 55.376953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 358.503125,
+        "w": 364,
+        "h": 52.81875,
+        "lines": [
+          [
+            {
+              "text": "If future refactors change the conservative path, this fixture should ",
+              "width": 354.193359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "make that shift obvious in the rendered gallery and the stored layout",
+              "width": 360.884766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "snapshot.",
+              "width": 52.037109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

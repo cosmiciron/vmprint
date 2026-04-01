@@ -1,0 +1,69 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 320
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.35,
+    "pageBackground": "#fbfaf6",
+    "worldPlain": {
+      "frameOverflow": "move-whole",
+      "worldBehavior": "fixed",
+      "style": {
+        "marginTop": 10,
+        "marginBottom": 10
+      }
+    }
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 18,
+      "fontWeight": "bold",
+      "marginBottom": 10,
+      "color": "#6a2f27"
+    },
+    "p": {
+      "marginBottom": 10
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "World Plain Conservative Override"
+    },
+    {
+      "type": "p",
+      "content": "This regression proves that authored conservative settings survive. The host is explicitly told to stay move-whole and fixed, even though worldPlain now defaults to a more world-native mode.",
+      "properties": {
+        "sourceId": "plain-conservative-lead"
+      }
+    },
+    {
+      "type": "p",
+      "content": "This body is intentionally the same overall proof mass so the comparison stays visual instead of theoretical. The host is explicitly conservative, and the snapshot preserves whatever that means today for the full-document world plain path. This body is intentionally the same overall proof mass so the comparison stays visual instead of theoretical. The host is explicitly conservative, and the snapshot preserves whatever that means today for the full-document world plain path. This body is intentionally the same overall proof mass so the comparison stays visual instead of theoretical. The host is explicitly conservative, and the snapshot preserves whatever that means today for the full-document world plain path.",
+      "properties": {
+        "sourceId": "plain-conservative-main"
+      }
+    },
+    {
+      "type": "p",
+      "content": "If future refactors change the conservative path, this fixture should make that shift obvious in the rendered gallery and the stored layout snapshot.",
+      "properties": {
+        "sourceId": "plain-conservative-later"
+      }
+    }
+  ]
+}

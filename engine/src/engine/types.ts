@@ -263,6 +263,8 @@ export interface StripLayoutOptions {
 
 export interface WorldPlainOptions {
     style?: ElementStyle;
+    frameOverflow?: ZoneFrameOverflow;
+    worldBehavior?: ZoneWorldBehavior;
 }
 
 export interface ElementProperties extends Record<string, any> {
@@ -587,6 +589,7 @@ export interface BoxMeta {
 export interface DebugZoneRegion {
     fieldActorId: string;
     fieldSourceId: string;
+    sourceKind: 'zone-map' | 'world-plain';
     zoneId?: string;
     zoneIndex: number;
     x: number;

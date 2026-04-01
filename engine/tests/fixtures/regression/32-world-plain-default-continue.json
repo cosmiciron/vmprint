@@ -1,0 +1,67 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 320
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.35,
+    "pageBackground": "#fbfaf6",
+    "worldPlain": {
+      "style": {
+        "marginTop": 10,
+        "marginBottom": 10
+      }
+    }
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 18,
+      "fontWeight": "bold",
+      "marginBottom": 10,
+      "color": "#214663"
+    },
+    "p": {
+      "marginBottom": 10
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "World Plain Default Continue"
+    },
+    {
+      "type": "p",
+      "content": "This regression proves the new world-native default. The plain is allowed to keep using the current frame and continue naturally as the page fills.",
+      "properties": {
+        "sourceId": "plain-default-lead"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The river of text should begin immediately and keep unfolding without treating the entire host as a conservative deferred slab. The first page should already contain the beginning of the world body while later fragments continue honestly on the following page. The river of text should begin immediately and keep unfolding without treating the entire host as a conservative deferred slab. The first page should already contain the beginning of the world body while later fragments continue honestly on the following page. The river of text should begin immediately and keep unfolding without treating the entire host as a conservative deferred slab. The first page should already contain the beginning of the world body while later fragments continue honestly on the following page.",
+      "properties": {
+        "sourceId": "plain-default-main"
+      }
+    },
+    {
+      "type": "p",
+      "content": "A later paragraph should remain visible as continued world content rather than being trapped behind an all-or-nothing host boundary. A later paragraph should remain visible as continued world content rather than being trapped behind an all-or-nothing host boundary. A later paragraph should remain visible as continued world content rather than being trapped behind an all-or-nothing host boundary.",
+      "properties": {
+        "sourceId": "plain-default-later"
+      }
+    }
+  ]
+}

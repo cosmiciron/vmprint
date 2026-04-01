@@ -1,0 +1,259 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 26.409375,
+        "lines": [
+          [
+            {
+              "text": "World Plain Default Continue",
+              "width": 247.666992,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 74.409375,
+        "w": 364,
+        "h": 52.81875,
+        "lines": [
+          [
+            {
+              "text": "This regression proves the new world-native default. The plain is ",
+              "width": 345.503906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "allowed to keep using the current frame and continue naturally as ",
+              "width": 350.208984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the page fills.",
+              "width": 70.710938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 137.228125,
+        "w": 364,
+        "h": 158.45625,
+        "lines": [
+          [
+            {
+              "text": "The river of text should begin immediately and keep unfolding ",
+              "width": 330.193359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "without treating the entire host as a conservative deferred slab. The ",
+              "width": 361.535156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "first page should already contain the beginning of the world body ",
+              "width": 346.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "while later fragments continue honestly on the following page. The ",
+              "width": 354.878906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "river of text should begin immediately and keep unfolding without ",
+              "width": 347.537109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "treating the entire host as a conservative deferred slab. The first ",
+              "width": 342.84375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page should already contain the beginning of the world body while ",
+              "width": 354.246094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later fragments continue honestly on the following page. The river of",
+              "width": 360.873047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "text should begin immediately and keep unfolding without treating ",
+              "width": 350.888672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 52.81875,
+        "lines": [
+          [
+            {
+              "text": "the entire host as a conservative deferred slab. The first page ",
+              "width": 329.513672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should already contain the beginning of the world body while later ",
+              "width": 350.894531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "fragments continue honestly on the following page.",
+              "width": 270.175781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 90.81875,
+        "w": 364,
+        "h": 105.6375,
+        "lines": [
+          [
+            {
+              "text": "A later paragraph should remain visible as continued world content ",
+              "width": 357.539063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rather than being trapped behind an all-or-nothing host boundary. A ",
+              "width": 360.691406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later paragraph should remain visible as continued world content ",
+              "width": 346.201172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rather than being trapped behind an all-or-nothing host boundary. A ",
+              "width": 360.691406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later paragraph should remain visible as continued world content ",
+              "width": 346.201172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rather than being trapped behind an all-or-nothing host boundary.",
+              "width": 346.019531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -146,8 +146,9 @@ export const drawDebugZoneOverlay = (
     labelFontAscent: number
 ): void => {
     const zoneStyle = getZoneDebugStyle(zone);
-    const title = zone.zoneId ? `zone:${zone.zoneId}` : `zone#${zone.zoneIndex + 1}`;
-    const subtitle = `${zone.frameOverflowMode}/${zone.worldBehaviorMode}`;
+    const titlePrefix = zone.sourceKind === 'world-plain' ? 'plain' : 'zone';
+    const title = zone.zoneId ? `${titlePrefix}:${zone.zoneId}` : `${titlePrefix}#${zone.zoneIndex + 1}`;
+    const subtitle = `${zone.sourceKind} ${zone.frameOverflowMode}/${zone.worldBehaviorMode}`;
 
     context.save();
     context.opacity(zoneStyle.fillOpacity)

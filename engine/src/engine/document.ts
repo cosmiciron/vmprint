@@ -59,7 +59,7 @@ const LAYOUT_KEYS = new Set([
 const PROGRESSION_KEYS = new Set(['policy', 'maxTicks']);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
-const WORLD_PLAIN_KEYS = new Set(['style']);
+const WORLD_PLAIN_KEYS = new Set(['style', 'frameOverflow', 'worldBehavior']);
 const ELEMENT_KEYS = new Set(['type', 'name', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
 const ZONE_DEFINITION_KEYS = new Set(['id', 'region', 'elements', 'style']);
 const ZONE_REGION_KEYS = new Set(['x', 'y', 'width', 'height']);
@@ -286,6 +286,18 @@ function validateLayout(layout: unknown, documentPath: string): void {
         const plain = assertPlainObjectAt(obj.worldPlain, 'layout.worldPlain', documentPath);
         assertAllowedKeys(plain, WORLD_PLAIN_KEYS, 'layout.worldPlain', documentPath);
         if (plain.style !== undefined) validateStyleObject(plain.style, 'layout.worldPlain.style', documentPath);
+        if (plain.frameOverflow !== undefined) {
+            assertStringAt(plain.frameOverflow, 'layout.worldPlain.frameOverflow', documentPath);
+            if (plain.frameOverflow !== 'move-whole' && plain.frameOverflow !== 'continue') {
+                contractError(documentPath, 'layout.worldPlain.frameOverflow', 'expected "move-whole" or "continue".');
+            }
+        }
+        if (plain.worldBehavior !== undefined) {
+            assertStringAt(plain.worldBehavior, 'layout.worldPlain.worldBehavior', documentPath);
+            if (plain.worldBehavior !== 'fixed' && plain.worldBehavior !== 'spanning' && plain.worldBehavior !== 'expandable') {
+                contractError(documentPath, 'layout.worldPlain.worldBehavior', 'expected "fixed", "spanning", or "expandable".');
+            }
+        }
     }
     if (obj.headerInsetTop !== undefined) assertFiniteNumberAt(obj.headerInsetTop, 'layout.headerInsetTop', documentPath);
     if (obj.headerInsetBottom !== undefined) assertFiniteNumberAt(obj.headerInsetBottom, 'layout.headerInsetBottom', documentPath);
@@ -1176,7 +1188,15 @@ function synthesizeWorldPlainElement(elements: Element[], worldPlain: unknown): 
         type: 'world-plain',
         content: '',
         children: elements,
-        properties: style ? { style } : undefined
+        properties: {
+            ...(style ? { style } : {}),
+            _worldPlainOptions: {
+                frameOverflow: plain.frameOverflow === 'move-whole' ? 'move-whole' : (plain.frameOverflow === 'continue' ? 'continue' : undefined),
+                worldBehavior: plain.worldBehavior === 'fixed' || plain.worldBehavior === 'spanning' || plain.worldBehavior === 'expandable'
+                    ? plain.worldBehavior
+                    : undefined
+            }
+        }
     };
 }
 

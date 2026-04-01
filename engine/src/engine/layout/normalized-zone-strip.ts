@@ -17,7 +17,7 @@ export interface NormalizedIndependentZone {
 export interface NormalizedIndependentZoneStrip {
     kind: 'zone-strip';
     overflow: 'independent';
-    sourceKind: 'zone-map';
+    sourceKind: 'zone-map' | 'world-plain';
     frameOverflow: ZoneFrameOverflow;
     worldBehavior: ZoneWorldBehavior;
     marginTop: number;

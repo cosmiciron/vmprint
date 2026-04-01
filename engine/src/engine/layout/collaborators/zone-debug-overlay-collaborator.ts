@@ -2,11 +2,15 @@ import type { Box, DebugZoneRegion } from '../../types';
 import type { Collaborator, PageSurface } from '../layout-session-types';
 import type { LayoutSession } from '../layout-session';
 import type { PackagerUnit } from '../packagers/packager-types';
-import { ZonePackager } from '../packagers/zone-packager';
 
-function zoneKey(zone: ReturnType<ZonePackager['getDebugRegions']>[number]): string {
+type DebugRegionActor = PackagerUnit & {
+    getDebugRegions?(): DebugZoneRegion[];
+};
+
+function zoneKey(zone: DebugZoneRegion): string {
     return [
         zone.fieldActorId,
+        zone.sourceKind,
         zone.zoneIndex,
         zone.x,
         zone.y,
@@ -17,10 +21,12 @@ function zoneKey(zone: ReturnType<ZonePackager['getDebugRegions']>[number]): str
 
 export class ZoneDebugOverlayCollaborator implements Collaborator {
     onActorCommitted(actor: PackagerUnit, _committed: Box[], surface: PageSurface, _session: LayoutSession): void {
-        if (!(actor instanceof ZonePackager)) return;
+        const debugActor = actor as DebugRegionActor;
+        const regions = debugActor.getDebugRegions?.();
+        if (!regions || regions.length === 0) return;
 
         const existing = new Set(surface.debugZones.map(zoneKey));
-        for (const zone of actor.getDebugRegions()) {
+        for (const zone of regions) {
             const key = zoneKey(zone);
             if (existing.has(key)) continue;
             surface.debugZones.push({ ...zone });
@@ -37,6 +43,7 @@ export class ZoneDebugOverlayCollaborator implements Collaborator {
                 | {
                     fieldActorId: string;
                     fieldSourceId: string;
+                    sourceKind: DebugZoneRegion['sourceKind'];
                     zoneId?: string;
                     zoneIndex: number;
                     x: number;
@@ -51,6 +58,7 @@ export class ZoneDebugOverlayCollaborator implements Collaborator {
 
             const key = [
                 tag.fieldActorId,
+                tag.sourceKind,
                 tag.zoneIndex,
                 tag.x,
                 tag.y,
@@ -62,6 +70,7 @@ export class ZoneDebugOverlayCollaborator implements Collaborator {
                 aggregated.set(key, {
                     fieldActorId: tag.fieldActorId,
                     fieldSourceId: tag.fieldSourceId,
+                    sourceKind: tag.sourceKind,
                     zoneId: tag.zoneId,
                     zoneIndex: tag.zoneIndex,
                     x: tag.x,

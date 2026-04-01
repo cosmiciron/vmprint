@@ -397,6 +397,7 @@ type ZoneActorQueue = {
 type ZoneDebugBoxTag = {
     fieldActorId: string;
     fieldSourceId: string;
+    sourceKind: 'zone-map' | 'world-plain';
     zoneId?: string;
     zoneIndex: number;
     rect: {
@@ -423,6 +424,7 @@ function attachZoneDebugTag(box: Box, tag: ZoneDebugBoxTag): Box {
             __vmprintZoneDebug: {
                 fieldActorId: tag.fieldActorId,
                 fieldSourceId: tag.fieldSourceId,
+                sourceKind: tag.sourceKind,
                 zoneId: tag.zoneId,
                 zoneIndex: tag.zoneIndex,
                 rect: { ...tag.rect }
@@ -931,6 +933,8 @@ class FrozenZonePackager implements PackagerUnit {
 export class ZonePackager implements PackagerUnit {
     private readonly element: Element;
     private readonly processor: LayoutProcessor;
+    private readonly normalizeStrip: (availableWidth: number) => NormalizedIndependentZoneStrip;
+    private readonly sourceKind: NormalizedIndependentZoneStrip['sourceKind'];
     readonly frameOverflowMode: 'move-whole' | 'continue';
     readonly worldBehaviorMode: ZoneWorldBehavior;
     private zoneQueues: ZoneActorQueue[] | null;
@@ -975,13 +979,16 @@ export class ZonePackager implements PackagerUnit {
         identity?: PackagerIdentity,
         zoneQueues?: ZoneActorQueue[] | null,
         fragmentMarginTop?: number,
-        fragmentMarginBottom?: number
+        fragmentMarginBottom?: number,
+        normalizeStrip?: (availableWidth: number) => NormalizedIndependentZoneStrip
     ) {
         this.element = element;
         this.processor = processor;
+        this.normalizeStrip = normalizeStrip ?? ((availableWidth) => normalizeZoneMapElement(element, availableWidth));
         const resolved = identity ?? createElementPackagerIdentity(element, [0]);
         this.zoneQueues = zoneQueues ?? null;
-        const normalizedForIdentity = normalizeZoneMapElement(element, 0);
+        const normalizedForIdentity = this.normalizeStrip(0);
+        this.sourceKind = normalizedForIdentity.sourceKind;
         this.frameOverflowMode = normalizedForIdentity.frameOverflow;
         this.worldBehaviorMode = normalizedForIdentity.worldBehavior;
         this.fragmentMarginTop = fragmentMarginTop ?? (resolved.fragmentIndex > 0 ? 0 : normalizedForIdentity.marginTop);
@@ -1011,7 +1018,7 @@ export class ZonePackager implements PackagerUnit {
             return this.zoneQueues;
         }
 
-        const normalizedStrip = normalizeZoneMapElement(this.element, availableWidth);
+        const normalizedStrip = this.normalizeStrip(availableWidth);
         this.zoneQueues = buildZoneActorQueues(normalizedStrip, this.processor, this);
         return this.zoneQueues;
     }
@@ -1170,6 +1177,7 @@ export class ZonePackager implements PackagerUnit {
             const zoneTag: ZoneDebugBoxTag = {
                 fieldActorId: '',
                 fieldSourceId: '',
+                sourceKind: this.sourceKind,
                 zoneId: zone.id,
                 zoneIndex: i,
                 rect: { ...zone.rect }
@@ -1240,6 +1248,7 @@ export class ZonePackager implements PackagerUnit {
             const zoneTag: ZoneDebugBoxTag = {
                 fieldActorId: this.actorId,
                 fieldSourceId: this.sourceId,
+                sourceKind: this.sourceKind,
                 zoneId: zone.id,
                 zoneIndex,
                 rect: { ...zone.rect }
@@ -1307,7 +1316,8 @@ export class ZonePackager implements PackagerUnit {
             createContinuationIdentity(this),
             this.boundedContinuationQueues,
             0,
-            this.fragmentMarginBottom
+            this.fragmentMarginBottom,
+            this.normalizeStrip
         );
     }
 
@@ -1360,6 +1370,7 @@ export class ZonePackager implements PackagerUnit {
                         __vmprintZoneDebugPage: {
                             fieldActorId: this.actorId,
                             fieldSourceId: this.sourceId,
+                            sourceKind: tag.sourceKind,
                             zoneId: tag.zoneId,
                             zoneIndex: tag.zoneIndex,
                             x: leftMargin + tag.rect.x,
@@ -1410,6 +1421,7 @@ export class ZonePackager implements PackagerUnit {
             return {
                 fieldActorId: this.actorId,
                 fieldSourceId: this.sourceId,
+                sourceKind: this.sourceKind,
                 zoneId: zone.id,
                 zoneIndex,
                 x: this.lastEmittedLeftMargin + zone.rect.x,

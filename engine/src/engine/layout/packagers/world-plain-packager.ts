@@ -1,7 +1,8 @@
-import { Element } from '../../types';
+import { Element, ZoneFrameOverflow, ZoneWorldBehavior } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
 import {
+    DebugZoneRegion,
     PackagerContext,
     PackagerPlacementPreference,
     PackagerSplitResult,
@@ -14,26 +15,35 @@ export function isWorldPlainElement(element: Element | undefined): boolean {
     return String(element?.type || '').trim().toLowerCase() === 'world-plain';
 }
 
-function synthesizeZoneMapFromWorldPlain(element: Element): Element {
+function normalizeWorldPlainElement(element: Element, availableWidth: number) {
+    const style = (element.properties?.style ?? {}) as Record<string, unknown>;
+    const options = (element.properties?._worldPlainOptions ?? {}) as {
+        frameOverflow?: ZoneFrameOverflow;
+        worldBehavior?: ZoneWorldBehavior;
+    };
     return {
-        type: 'zone-map',
-        content: element.content || '',
-        properties: {
-            ...(element.properties || {}),
-            style: { ...((element.properties?.style || {}) as Record<string, unknown>) }
-        },
+        kind: 'zone-strip' as const,
+        overflow: 'independent' as const,
+        sourceKind: 'world-plain' as const,
+        frameOverflow: options.frameOverflow === 'move-whole' ? 'move-whole' : 'continue',
+        worldBehavior: options.worldBehavior === 'fixed' || options.worldBehavior === 'spanning' || options.worldBehavior === 'expandable'
+            ? options.worldBehavior
+            : 'expandable',
+        marginTop: Math.max(0, Number(style.marginTop ?? 0) || 0),
+        marginBottom: Math.max(0, Number(style.marginBottom ?? 0) || 0),
+        gap: 0,
+        blockStyle: Object.keys(style).length > 0 ? style as any : undefined,
         zones: [
             {
                 id: 'plain',
+                rect: {
+                    x: 0,
+                    y: 0,
+                    width: Math.max(0, availableWidth)
+                },
                 elements: [...(element.children || [])]
             }
-        ],
-        zoneLayout: {
-            columns: [{ mode: 'flex', fr: 1 }],
-            gap: 0,
-            frameOverflow: 'move-whole',
-            worldBehavior: 'fixed'
-        }
+        ]
     };
 }
 
@@ -53,6 +63,8 @@ export class WorldPlainPackager implements PackagerUnit {
     readonly actorKind: string;
     readonly fragmentIndex: number;
     readonly continuationOf?: string;
+    readonly frameOverflowMode: ZoneFrameOverflow;
+    readonly worldBehaviorMode: ZoneWorldBehavior;
 
     constructor(
         private readonly element: Element,
@@ -60,16 +72,17 @@ export class WorldPlainPackager implements PackagerUnit {
         identity?: PackagerIdentity
     ) {
         const resolvedIdentity = identity ?? createElementPackagerIdentity(element, [0]);
-        const synthesized = synthesizeZoneMapFromWorldPlain(element);
-        this.inner = new ZonePackager(synthesized, processor, {
+        this.inner = new ZonePackager(element, processor, {
             ...resolvedIdentity,
             actorKind: 'world-plain'
-        });
+        }, undefined, undefined, undefined, (availableWidth) => normalizeWorldPlainElement(element, availableWidth));
         this.actorId = resolvedIdentity.actorId;
         this.sourceId = resolvedIdentity.sourceId;
         this.actorKind = 'world-plain';
         this.fragmentIndex = resolvedIdentity.fragmentIndex;
         this.continuationOf = resolvedIdentity.continuationOf;
+        this.frameOverflowMode = this.inner.frameOverflowMode;
+        this.worldBehaviorMode = this.inner.worldBehaviorMode;
     }
 
     get pageBreakBefore(): boolean | undefined {
@@ -82,6 +95,10 @@ export class WorldPlainPackager implements PackagerUnit {
 
     getHostedRuntimeActors(): readonly PackagerUnit[] {
         return this.inner.getHostedRuntimeActors();
+    }
+
+    getDebugRegions(): DebugZoneRegion[] {
+        return this.inner.getDebugRegions();
     }
 
     handlesHostedRuntimeActor(targetActor: PackagerUnit): boolean {

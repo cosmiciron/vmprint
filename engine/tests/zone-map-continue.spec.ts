@@ -252,6 +252,168 @@ async function main() {
     );
 
     _check(
+        'worldPlain publishes world-native debug identity',
+        'worldPlain debug regions should preserve world-plain sourceKind instead of leaking zone-map host identity',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 360, height: 360 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.25,
+                    worldPlain: {
+                        style: { marginTop: 10, marginBottom: 10 }
+                    }
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {},
+                elements: [
+                    {
+                        type: 'p',
+                        content: 'World plain identity proof.',
+                        properties: {
+                            sourceId: 'plain-label'
+                        }
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'world-plain-debug-identity.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const worldPlainPackager = buildPackagerForElement(resolved.elements[0], 0, engine) as any;
+            const context: PackagerContext = {
+                processor: engine,
+                pageIndex: 0,
+                cursorY: 0,
+                margins: { left: 24, right: 24, top: 24, bottom: 24 },
+                pageWidth: 360,
+                pageHeight: 360,
+                publishActorSignal: () => ({ pageIndex: 0, sequence: -1 } as any),
+                readActorSignals: () => []
+            };
+
+            worldPlainPackager.prepare(312, 312, context);
+            const emittedBoxes = worldPlainPackager.emitBoxes(312, 312, context) as any[];
+            const debugTags = emittedBoxes
+                .map((box) => box.properties?.__vmprintZoneDebugPage)
+                .filter(Boolean);
+
+            assert.equal(worldPlainPackager.actorKind, 'world-plain');
+            assert.ok(debugTags.length > 0, 'expected worldPlain debug tags');
+            assert.ok(debugTags.every((tag: any) => tag.sourceKind === 'world-plain'), 'expected worldPlain debug region sourceKind');
+        }
+    );
+
+    _check(
+        'worldPlain defaults to expandable continuation semantics',
+        'a world-plain host should continue through the current page frame by default instead of moving whole like a conservative zone-map',
+        () => {
+            const continuingWorldBody =
+                'This second world paragraph should continue onto a later page without the whole host deferring first.' +
+                ' World plain continuation text keeps expanding through the live frame and onto later pages.'.repeat(25);
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 320, height: 220 },
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3,
+                    worldPlain: {
+                        style: { marginTop: 8, marginBottom: 8 }
+                    }
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10 }
+                },
+                elements: [
+                    {
+                        type: 'body',
+                        content: 'World plain starts on page one and should keep flowing through the current frame before continuing later.',
+                        properties: { sourceId: 'plain-start' }
+                    },
+                    {
+                        type: 'body',
+                        content: continuingWorldBody,
+                        properties: { sourceId: 'plain-later' }
+                    },
+                    {
+                        type: 'body',
+                        content: 'Tail after world continuation.',
+                        properties: { sourceId: 'plain-tail' }
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'world-plain-default-continuation.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+            const worldPlainPackager = buildPackagerForElement(resolved.elements[0], 0, engine) as any;
+
+            assert.equal(worldPlainPackager.actorKind, 'world-plain');
+            assert.equal(worldPlainPackager.frameOverflowMode, 'continue');
+            assert.equal(worldPlainPackager.worldBehaviorMode, 'expandable');
+            assert.deepEqual(findPagesForSource(pages, 'plain-start'), [0]);
+            assert.ok(findPagesForSource(pages, 'plain-later').some((pageIndex) => pageIndex >= 1), 'expected later world content to continue onto a later page');
+        }
+    );
+
+    _check(
+        'worldPlain authored options can stay conservative',
+        'worldPlain should still honor explicit move-whole/fixed settings when authored that way',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 320, height: 220 },
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3,
+                    worldPlain: {
+                        frameOverflow: 'move-whole',
+                        worldBehavior: 'fixed',
+                        style: { marginTop: 8, marginBottom: 8 }
+                    }
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10 }
+                },
+                elements: [
+                    {
+                        type: 'body',
+                        content: 'Prelude before conservative world plain host.',
+                        properties: { sourceId: 'plain-prelude' }
+                    },
+                    {
+                        type: 'body',
+                        content: 'Conservative world body should defer together when it does not fit.',
+                        properties: { sourceId: 'plain-conservative-start' }
+                    },
+                    {
+                        type: 'body',
+                        content: 'Conservative continuation body.',
+                        properties: { sourceId: 'plain-conservative-later' }
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'world-plain-conservative-options.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+            const worldPlainPackager = buildPackagerForElement(resolved.elements[0], 0, engine) as any;
+
+            assert.equal(worldPlainPackager.frameOverflowMode, 'move-whole');
+            assert.equal(worldPlainPackager.worldBehaviorMode, 'fixed');
+            assert.ok(findPagesForSource(pages, 'plain-conservative-start').length > 0, 'expected conservative world content to render');
+        }
+    );
+
+    _check(
         'zone packagers carry authored frame and world modes',
         'move-whole defaults to fixed, while explicit continue/expandable survives onto the runtime packager surface',
         () => {
