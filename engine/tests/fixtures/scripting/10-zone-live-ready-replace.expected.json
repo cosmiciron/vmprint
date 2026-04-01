@@ -1,0 +1,31 @@
+{
+  "expectedTextIncludes": [
+    "Zone-hosted target was replaced through the",
+    "live runtime without replay.",
+    "Lead paragraph: document onReady will target a zone-hosted",
+    "participant.",
+    "Zone follow paragraph: it should remain after",
+    "the replacement naturally.",
+    "Sidebar note: sibling",
+    "zone content should",
+    "remain intact.",
+    "Tail paragraph: normal root flow still follows the zone host."
+  ],
+  "expectedTextExcludes": [
+    "This zone-hosted target should be replaced live."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "zoned-target",
+      "content": "This zone-hosted target should be replaced live."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "replaceCalls": 1
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

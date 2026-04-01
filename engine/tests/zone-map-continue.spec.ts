@@ -139,6 +139,22 @@ function findPagesForSource(pages: any[], sourceId: string): number[] {
     return Array.from(indices.values()).sort((a, b) => a - b);
 }
 
+function findBoxesForSource(pages: any[], sourceId: string): any[] {
+    return pages.flatMap((page) =>
+        (page.boxes || []).filter((box: any) => {
+            const actual = String(box.meta?.sourceId || '');
+            return actual === sourceId || actual.endsWith(`:${sourceId}`);
+        })
+    );
+}
+
+function registeredActorsIncludeSource(actors: readonly PackagerUnit[], sourceId: string): boolean {
+    return actors.some((actor) => {
+        const actual = String(actor.sourceId || '');
+        return actual === sourceId || actual.endsWith(`:${sourceId}`);
+    });
+}
+
 async function main() {
     const LocalFontManager = await loadLocalFontManager();
     const runtime = createEngineRuntime({
@@ -160,6 +176,80 @@ async function main() {
     const moveWholePages = moveWholeEngine.simulate(moveWholeResolved.elements);
     const fixedContinuePages = fixedContinueEngine.simulate(fixedContinueResolved.elements);
     const continuePages = continueEngine.simulate(continueResolved.elements);
+
+    _check(
+        'zone children register as real runtime actors',
+        'zone-hosted participants should appear in the session actor registry instead of staying invisible to the runtime',
+        () => {
+            const registered = continueEngine.getCurrentLayoutSession()?.getRegisteredActors() ?? [];
+
+            assert.ok(registeredActorsIncludeSource(registered, 'zone-body'), 'expected zone host to stay registered');
+            assert.ok(registeredActorsIncludeSource(registered, 'main-zone-open'), 'expected main zone child to be registered');
+            assert.ok(registeredActorsIncludeSource(registered, 'main-zone-middle'), 'expected continued main-zone child to be registered');
+            assert.ok(registeredActorsIncludeSource(registered, 'side-zone-label'), 'expected sidebar zone child to be registered');
+        }
+    );
+
+    _check(
+        'zone child boxes preserve child actor identity',
+        'zone-hosted emitted boxes should carry the hosted child actorId so observer/update paths can see them',
+        () => {
+            const boxes = findBoxesForSource(continuePages, 'main-zone-open');
+            assert.ok(boxes.length > 0, 'expected main-zone-open boxes');
+            assert.ok(boxes.every((box) => typeof box.meta?.actorId === 'string' && box.meta.actorId.length > 0), 'expected hosted zone boxes to carry actorId metadata');
+        }
+    );
+
+    _check(
+        'worldPlain inherits runtime actor participation from the zone bridge',
+        'worldPlain children should register as real runtime actors once the underlying zone host proxies them into the session',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 360, height: 360 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.25,
+                    worldPlain: {
+                        style: { backgroundColor: '#f8fbff' }
+                    }
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    label: { marginBottom: 10 }
+                },
+                elements: [
+                    {
+                        type: 'field-actor',
+                        content: '',
+                        properties: {
+                            sourceId: 'plain-rock',
+                            style: { width: 72, height: 72, backgroundColor: '#0f8b8d' },
+                            spatialField: { kind: 'exclude', x: 120, y: 64 }
+                        }
+                    },
+                    {
+                        type: 'label',
+                        content: 'World actors should now be visible to the session runtime.',
+                        properties: {
+                            sourceId: 'plain-label'
+                        }
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'world-plain-runtime-registration.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+            const registered = engine.getCurrentLayoutSession()?.getRegisteredActors() ?? [];
+
+            assert.ok(registeredActorsIncludeSource(registered, 'plain-rock'), 'expected worldPlain field actor to be registered');
+            assert.ok(registeredActorsIncludeSource(registered, 'plain-label'), 'expected worldPlain ordinary child to be registered');
+            assert.ok(findBoxesForSource(pages, 'plain-label').every((box) => typeof box.meta?.actorId === 'string' && box.meta.actorId.length > 0), 'expected worldPlain child boxes to carry actorId metadata');
+        }
+    );
 
     _check(
         'zone packagers carry authored frame and world modes',

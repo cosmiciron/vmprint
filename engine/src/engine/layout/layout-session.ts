@@ -1,5 +1,5 @@
 import { performance } from 'node:perf_hooks';
-import type { Box, Page, PageReservationSelector, BoxMeta } from '../types';
+import type { Box, Page, PageReservationSelector, BoxMeta, Element } from '../types';
 import type { EngineRuntime } from '../runtime';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
@@ -543,24 +543,39 @@ export class LayoutSession {
         this.kernel.registerActor(actor);
         this.actorCommunicationRuntime.notifyActorSpawn(actor);
         this.eventDispatcher.onActorSpawn(actor, this);
+        const hostedActors = getHostedRuntimeActors(actor);
+        for (const hostedActor of hostedActors) {
+            this.notifyActorSpawn(hostedActor);
+        }
     }
 
     notifyActorDespawn(actor: PackagerUnit): void {
+        const hostedActors = getHostedRuntimeActors(actor);
+        for (const hostedActor of hostedActors) {
+            this.notifyActorDespawn(hostedActor);
+        }
         this.kernel.unregisterActor(actor);
         this.actorCommunicationRuntime.notifyActorDespawn(actor);
+    }
+
+    noteActorRuntimeIndex(actor: PackagerUnit, actorIndex: number): void {
+        this.actorCommunicationRuntime.noteActorIndex(actor, actorIndex);
     }
 
     insertActorsInLiveQueue(
         targetActor: PackagerUnit,
         insertions: readonly PackagerUnit[],
-        position: 'before' | 'after'
+        position: 'before' | 'after',
+        sourceElements?: readonly Element[]
     ): number | null {
         if (insertions.length === 0) return null;
         const state = this.paginationLoopState;
         if (!state) return null;
         const actorQueue = state.actorQueue;
         const index = actorQueue.findIndex((actor) => actor.actorId === targetActor.actorId);
-        if (index < 0) return null;
+        if (index < 0) {
+            return this.insertHostedActorsInLiveQueue(targetActor, insertions, position, sourceElements);
+        }
 
         const insertionIndex = position === 'before' ? index : index + 1;
         actorQueue.splice(insertionIndex, 0, ...insertions);
@@ -577,7 +592,9 @@ export class LayoutSession {
         if (!state) return null;
         const actorQueue = state.actorQueue;
         const index = actorQueue.findIndex((actor) => actor.actorId === targetActor.actorId);
-        if (index < 0) return null;
+        if (index < 0) {
+            return this.deleteHostedActorInLiveQueue(targetActor);
+        }
 
         actorQueue.splice(index, 1);
         this.notifyActorDespawn(targetActor);
@@ -592,12 +609,18 @@ export class LayoutSession {
         return index;
     }
 
-    replaceActorInLiveQueue(targetActor: PackagerUnit, replacements: readonly PackagerUnit[]): number | null {
+    replaceActorInLiveQueue(
+        targetActor: PackagerUnit,
+        replacements: readonly PackagerUnit[],
+        sourceElements?: readonly Element[]
+    ): number | null {
         const state = this.paginationLoopState;
         if (!state) return null;
         const actorQueue = state.actorQueue;
         const index = actorQueue.findIndex((actor) => actor.actorId === targetActor.actorId);
-        if (index < 0) return null;
+        if (index < 0) {
+            return this.replaceHostedActorInLiveQueue(targetActor, replacements, sourceElements);
+        }
 
         actorQueue.splice(index, 1, ...replacements);
         this.notifyActorDespawn(targetActor);
@@ -613,6 +636,53 @@ export class LayoutSession {
         }
 
         return index;
+    }
+
+    private insertHostedActorsInLiveQueue(
+        targetActor: PackagerUnit,
+        insertions: readonly PackagerUnit[],
+        position: 'before' | 'after',
+        sourceElements?: readonly Element[]
+    ): number | null {
+        const state = this.paginationLoopState;
+        if (!state) return null;
+        const host = findHostedActorController(this.kernel.actorRegistry, targetActor);
+        if (!host) return null;
+        const inserted = host.insertHostedRuntimeActors?.(targetActor, insertions, position, sourceElements);
+        if (!inserted) return null;
+        for (const actor of insertions) {
+            this.notifyActorSpawn(actor);
+        }
+        return state.actorQueue.findIndex((actor) => actor.actorId === host.actorId);
+    }
+
+    private deleteHostedActorInLiveQueue(targetActor: PackagerUnit): number | null {
+        const state = this.paginationLoopState;
+        if (!state) return null;
+        const host = findHostedActorController(this.kernel.actorRegistry, targetActor);
+        if (!host) return null;
+        const deleted = host.deleteHostedRuntimeActor?.(targetActor);
+        if (!deleted) return null;
+        this.notifyActorDespawn(targetActor);
+        return state.actorQueue.findIndex((actor) => actor.actorId === host.actorId);
+    }
+
+    private replaceHostedActorInLiveQueue(
+        targetActor: PackagerUnit,
+        replacements: readonly PackagerUnit[],
+        sourceElements?: readonly Element[]
+    ): number | null {
+        const state = this.paginationLoopState;
+        if (!state) return null;
+        const host = findHostedActorController(this.kernel.actorRegistry, targetActor);
+        if (!host) return null;
+        const replaced = host.replaceHostedRuntimeActor?.(targetActor, replacements, sourceElements);
+        if (!replaced) return null;
+        this.notifyActorDespawn(targetActor);
+        for (const actor of replacements) {
+            this.notifyActorSpawn(actor);
+        }
+        return state.actorQueue.findIndex((actor) => actor.actorId === host.actorId);
     }
 
     hasCommittedSignalObservers(): boolean {
@@ -1373,4 +1443,41 @@ function transplantBoxContent(committed: Box, next: Box): Box {
         h: committed.h,
         meta: nextMeta
     };
+}
+
+function getHostedRuntimeActors(actor: PackagerUnit): readonly PackagerUnit[] {
+    const maybeHost = actor as PackagerUnit & {
+        getHostedRuntimeActors?(): readonly PackagerUnit[];
+    };
+    return maybeHost.getHostedRuntimeActors?.() ?? [];
+}
+
+type HostedActorController = PackagerUnit & {
+    handlesHostedRuntimeActor?(targetActor: PackagerUnit): boolean;
+    insertHostedRuntimeActors?(
+        targetActor: PackagerUnit,
+        insertions: readonly PackagerUnit[],
+        position: 'before' | 'after',
+        sourceElements?: readonly Element[]
+    ): boolean;
+    deleteHostedRuntimeActor?(targetActor: PackagerUnit): boolean;
+    replaceHostedRuntimeActor?(
+        targetActor: PackagerUnit,
+        replacements: readonly PackagerUnit[],
+        sourceElements?: readonly Element[]
+    ): boolean;
+};
+
+function findHostedActorController(
+    actors: readonly PackagerUnit[],
+    targetActor: PackagerUnit
+): HostedActorController | null {
+    for (const actor of actors) {
+        if (actor.actorId === targetActor.actorId) continue;
+        const maybeController = actor as HostedActorController;
+        if (maybeController.handlesHostedRuntimeActor?.(targetActor)) {
+            return maybeController;
+        }
+    }
+    return null;
 }

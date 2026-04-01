@@ -323,7 +323,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const packagerFactory = processorWithFactory.getPackagerFactory?.();
         const replacements = createPackagers(elements, this.processor, packagerFactory);
         if (replacements.length === 0) return false;
-        const replacedIndex = session.replaceActorInLiveQueue(this, replacements);
+        const replacedIndex = session.replaceActorInLiveQueue(this, replacements, elements);
         if (replacedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
         this.pendingLiveFrontier = {
@@ -344,7 +344,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const packagerFactory = processorWithFactory.getPackagerFactory?.();
         const insertions = createPackagers(elements, this.processor, packagerFactory);
         if (insertions.length === 0) return false;
-        const insertedIndex = session.insertActorsInLiveQueue(this, insertions, position);
+        const insertedIndex = session.insertActorsInLiveQueue(this, insertions, position, elements);
         if (insertedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
         this.pendingLiveFrontier = {
@@ -376,7 +376,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const packagerFactory = processorWithFactory.getPackagerFactory?.();
         const replacements = createPackagers(elements, this.processor, packagerFactory);
         if (replacements.length === 0) return false;
-        const replacedIndex = session.replaceActorInLiveQueue(actor, replacements);
+        const replacedIndex = session.replaceActorInLiveQueue(actor, replacements, elements);
         if (replacedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
         this.pendingLiveFrontier = {
@@ -403,7 +403,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const packagerFactory = processorWithFactory.getPackagerFactory?.();
         const insertions = createPackagers(elements, this.processor, packagerFactory);
         if (insertions.length === 0) return false;
-        const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position);
+        const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position, elements);
         if (insertedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
         this.pendingLiveFrontier = {

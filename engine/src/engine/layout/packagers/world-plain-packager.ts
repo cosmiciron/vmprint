@@ -80,6 +80,10 @@ export class WorldPlainPackager implements PackagerUnit {
         return this.inner.keepWithNext;
     }
 
+    getHostedRuntimeActors(): readonly PackagerUnit[] {
+        return this.inner.getHostedRuntimeActors();
+    }
+
     prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
         this.inner.prepare(availableWidth, availableHeight, context);
     }

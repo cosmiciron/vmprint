@@ -142,6 +142,15 @@ function buildZoneFieldState(
     };
 }
 
+function annotateHostedActorBoxes(actor: PackagerUnit, boxes: Box[]): Box[] {
+    return boxes.map((box) => ({
+        ...box,
+        meta: box.meta
+            ? { ...box.meta, actorId: actor.actorId, sourceId: box.meta.sourceId ?? actor.sourceId }
+            : { actorId: actor.actorId, sourceId: actor.sourceId }
+    }));
+}
+
 function intersectsVertically(obstacle: OccupiedRect, top: number, bottom: number): boolean {
     const obstacleTop = obstacle.y;
     const obstacleBottom = obstacle.y + obstacle.h;
@@ -286,7 +295,7 @@ function placePackagersInZone(
             activeFields
         );
         if (textPlacement) {
-            placedBoxes.push(...textPlacement.boxes);
+            placedBoxes.push(...annotateHostedActorBoxes(actor, textPlacement.boxes));
             currentY += textPlacement.requiredHeight - marginBottom;
             lastSpacingAfter = marginBottom;
             continue;
@@ -324,12 +333,12 @@ function placePackagersInZone(
 
         if (zoneField) {
             const fieldState = buildZoneFieldState(emitted, zoneField, availableWidth, blockTop);
-            placedBoxes.push(...fieldState.boxes);
+            placedBoxes.push(...annotateHostedActorBoxes(actor, fieldState.boxes));
             activeFields.push(fieldState.field);
             continue;
         }
 
-        for (const box of emitted) {
+        for (const box of annotateHostedActorBoxes(actor, emitted)) {
             placedBoxes.push({
                 ...box,
                 x: (box.x || 0) + lane.x,
@@ -351,13 +360,6 @@ function placePackagersInZone(
 // Zone materialization
 // ---------------------------------------------------------------------------
 
-type ZoneMaterialized = {
-    boxes: Box[];
-    totalHeight: number;
-    marginTop: number;
-    marginBottom: number;
-};
-
 type ZoneSessionResult = {
     boxes: Box[];
     height: number;
@@ -371,6 +373,7 @@ type ZoneSessionContinuation = {
 type ZoneActorEntry = {
     actor: PackagerUnit;
     element: Element;
+    actorHost: ZonePackager;
 };
 
 type BoundedZoneSessionResult = ZoneSessionResult & {
@@ -449,7 +452,8 @@ function buildZoneContinuationQueue(
     if (continuation.continuationFragment) {
         nextActors.push({
             actor: continuation.continuationFragment,
-            element: zone.actors[continuation.nextActorIndex]?.element
+            element: zone.actors[continuation.nextActorIndex]?.element,
+            actorHost: zone.actors[continuation.nextActorIndex]?.actorHost as ZonePackager
         });
     }
 
@@ -581,58 +585,60 @@ function createZoneSessionContextBase(
     availableWidth: number,
     processor: LayoutProcessor
 ): Omit<PackagerContext, 'pageIndex' | 'cursorY'> {
-    // Zone sub-sessions currently run in the V1 infinite-height branch and do
-    // not participate in the main session event bus yet.
+    const session = processor.getCurrentLayoutSession();
     return {
         processor,
         margins: { top: 0, right: 0, bottom: 0, left: 0 },
         pageWidth: availableWidth,
         pageHeight: Infinity,
-        publishActorSignal: (_signal: ActorSignalDraft) => ({
-            topic: '',
-            publisherActorId: '',
-            publisherSourceId: '',
-            publisherActorKind: '',
-            tick: 0,
-            fragmentIndex: 0,
-            pageIndex: 0,
-            sequence: 0
-        }),
-        readActorSignals: () => []
+        publishActorSignal: (signal: ActorSignalDraft) => {
+            if (!session) {
+                return {
+                    ...signal,
+                    pageIndex: signal.pageIndex ?? 0,
+                    sequence: -1
+                } as any;
+            }
+            return session.publishActorSignal(signal);
+        },
+        readActorSignals: (topic?: string) => session ? session.getActorSignals(topic) : [],
+        requestAsyncThought: (request) => session?.requestAsyncThought(request),
+        readAsyncThoughtResult: (key) => session?.readAsyncThoughtResult(key)
     };
 }
 
 function buildZonePackagers(
     zone: NormalizedIndependentZoneStrip['zones'][number],
-    processor: LayoutProcessor
+    processor: LayoutProcessor,
+    actorHost: ZonePackager
 ): ZoneActorEntry[] {
     return (zone.elements ?? []).map((element, j) => ({
         element,
-        actor: buildPackagerForElement(element, j, processor)
+        actor: buildPackagerForElement(element, j, processor),
+        actorHost
     }));
 }
 
 function buildZoneActorQueues(
     strip: NormalizedIndependentZoneStrip,
-    processor: LayoutProcessor
+    processor: LayoutProcessor,
+    actorHost: ZonePackager
 ): ZoneActorQueue[] {
     return strip.zones.map((zone) => ({
         id: zone.id,
         rect: { ...zone.rect },
         style: zone.style,
-        actors: buildZonePackagers(zone, processor)
+        actors: buildZonePackagers(zone, processor, actorHost)
     }));
 }
 
 function runZoneSession(
-    zone: NormalizedIndependentZoneStrip['zones'][number],
-    processor: LayoutProcessor,
+    zone: ZoneActorQueue,
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>
 ): ZoneSessionResult {
-    const packagers = buildZonePackagers(zone, processor);
     const zoneWidth = zone.rect.width;
     const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
-    const result = placePackagersInZone(packagers, zoneWidth, zoneContextBase);
+    const result = placePackagersInZone(zone.actors, zoneWidth, zoneContextBase);
     return { boxes: result.boxes, height: result.height };
 }
 
@@ -691,7 +697,7 @@ function runZoneSessionBounded(
                     }
                 };
             }
-            placedBoxes.push(...textPlacement.boxes);
+            placedBoxes.push(...annotateHostedActorBoxes(actor, textPlacement.boxes));
             currentY += textPlacement.requiredHeight - marginBottom;
             lastSpacingAfter = marginBottom;
             continue;
@@ -717,12 +723,12 @@ function runZoneSessionBounded(
             const zoneField = readZoneFieldDirective(emitted);
             if (zoneField) {
                 const fieldState = buildZoneFieldState(emitted, zoneField, zoneWidth, blockTop);
-                placedBoxes.push(...fieldState.boxes);
+                placedBoxes.push(...annotateHostedActorBoxes(actor, fieldState.boxes));
                 activeFields.push(fieldState.field);
                 continue;
             }
 
-            for (const box of emitted) {
+            for (const box of annotateHostedActorBoxes(actor, emitted)) {
                 placedBoxes.push({
                     ...box,
                     x: (box.x || 0) + lane.x,
@@ -754,7 +760,7 @@ function runZoneSessionBounded(
         const split = actor.split(remainingHeight, context);
         if (split.currentFragment) {
             const emitted = split.currentFragment.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
-            for (const box of emitted) {
+            for (const box of annotateHostedActorBoxes(split.currentFragment, emitted)) {
                 placedBoxes.push({
                     ...box,
                     x: (box.x || 0) + lane.x,
@@ -797,16 +803,21 @@ function runZoneSessionBounded(
     };
 }
 
-function materializeZoneStrip(strip: NormalizedIndependentZoneStrip, availableWidth: number, processor: LayoutProcessor): ZoneMaterialized {
+function materializeZoneStrip(
+    strip: NormalizedIndependentZoneStrip,
+    availableWidth: number,
+    processor: LayoutProcessor
+): { boxes: Box[]; totalHeight: number; marginTop: number; marginBottom: number } {
     // Stub PackagerContext base — zone sub-sessions do not publish signals
     const stubContextBase = createZoneSessionContextBase(availableWidth, processor);
+    const queues = buildZoneActorQueues(strip, processor, null as any);
 
     const allBoxes: Box[] = [];
     let totalHeight = 0;
 
-    for (let i = 0; i < strip.zones.length; i++) {
-        const zone = strip.zones[i];
-        const result = runZoneSession(zone, processor, stubContextBase);
+    for (let i = 0; i < queues.length; i++) {
+        const zone = queues[i];
+        const result = runZoneSession(zone, stubContextBase);
         const zoneTag: ZoneDebugBoxTag = {
             fieldActorId: '',
             fieldSourceId: '',
@@ -922,9 +933,10 @@ export class ZonePackager implements PackagerUnit {
     private readonly processor: LayoutProcessor;
     readonly frameOverflowMode: 'move-whole' | 'continue';
     readonly worldBehaviorMode: ZoneWorldBehavior;
-    private readonly zoneQueues: ZoneActorQueue[] | null;
+    private zoneQueues: ZoneActorQueue[] | null;
     private readonly fragmentMarginTop: number;
     private readonly fragmentMarginBottom: number;
+    private hostedRuntimeActorIds = new Set<string>();
     private lastAvailableWidth: number = -1;
     private lastAvailableHeight: number = -1;
     private materializedBoxes: Box[] | null = null;
@@ -985,11 +997,194 @@ export class ZonePackager implements PackagerUnit {
         }
     }
 
+    getHostedRuntimeActors(): readonly PackagerUnit[] {
+        return this.flattenHostedActors();
+    }
+
+    private flattenHostedActors(): PackagerUnit[] {
+        if (!this.zoneQueues) return [];
+        return this.zoneQueues.flatMap((zone) => zone.actors.map((entry) => entry.actor));
+    }
+
+    private ensureZoneQueues(availableWidth: number): ZoneActorQueue[] {
+        if (this.zoneQueues) {
+            return this.zoneQueues;
+        }
+
+        const normalizedStrip = normalizeZoneMapElement(this.element, availableWidth);
+        this.zoneQueues = buildZoneActorQueues(normalizedStrip, this.processor, this);
+        return this.zoneQueues;
+    }
+
+    private syncHostedActors(actorIndex?: number): void {
+        const session = this.processor.getCurrentLayoutSession();
+        if (!session) return;
+
+        const actors = this.flattenHostedActors();
+        const activeIds = new Set(actors.map((actor) => actor.actorId));
+        for (const actor of actors) {
+            if (!this.hostedRuntimeActorIds.has(actor.actorId)) {
+                session.notifyActorSpawn(actor);
+                this.hostedRuntimeActorIds.add(actor.actorId);
+            }
+            if (actorIndex !== undefined) {
+                session.noteActorRuntimeIndex(actor, actorIndex);
+            }
+        }
+
+        for (const actorId of [...this.hostedRuntimeActorIds]) {
+            if (activeIds.has(actorId)) continue;
+            const staleActor = session.getRegisteredActors().find((entry) => entry.actorId === actorId);
+            if (staleActor) {
+                session.notifyActorDespawn(staleActor as PackagerUnit);
+            }
+            this.hostedRuntimeActorIds.delete(actorId);
+        }
+    }
+
+    annotateHostedActorBoxes(actor: PackagerUnit, boxes: Box[]): Box[] {
+        return annotateHostedActorBoxes(actor, boxes);
+    }
+
+    private collectHostedActorIds(actor: PackagerUnit): string[] {
+        const ids = [actor.actorId];
+        const maybeHosted = actor as PackagerUnit & {
+            getHostedRuntimeActors?(): readonly PackagerUnit[];
+        };
+        for (const hosted of maybeHosted.getHostedRuntimeActors?.() ?? []) {
+            ids.push(...this.collectHostedActorIds(hosted));
+        }
+        return ids;
+    }
+
+    private trackHostedActorsAsActive(actors: readonly PackagerUnit[]): void {
+        for (const actor of actors) {
+            for (const actorId of this.collectHostedActorIds(actor)) {
+                this.hostedRuntimeActorIds.add(actorId);
+            }
+        }
+    }
+
+    private trackHostedActorsAsRemoved(actors: readonly PackagerUnit[]): void {
+        for (const actor of actors) {
+            for (const actorId of this.collectHostedActorIds(actor)) {
+                this.hostedRuntimeActorIds.delete(actorId);
+            }
+        }
+    }
+
+    private invalidateMaterialization(): void {
+        this.materializedBoxes = null;
+        this.boundedBoxes = null;
+        this.boundedContinuationQueues = null;
+        this.boundedHeight = 0;
+        this.boundedOverflow = false;
+        this.totalZoneHeight = 0;
+        this.lastAvailableHeight = -1;
+    }
+
+    private createZoneActorEntries(
+        sourceElements: readonly Element[] | undefined,
+        actors: readonly PackagerUnit[]
+    ): ZoneActorEntry[] | null {
+        if (!sourceElements || sourceElements.length !== actors.length) {
+            return null;
+        }
+        return actors.map((actor, index) => ({
+            actor,
+            element: sourceElements[index] as Element,
+            actorHost: this
+        }));
+    }
+
+    private findHostedActorLocation(
+        targetActor: PackagerUnit
+    ): { zone: ZoneActorQueue; zoneIndex: number; actorIndex: number } | null {
+        if (!this.zoneQueues) return null;
+        for (let zoneIndex = 0; zoneIndex < this.zoneQueues.length; zoneIndex++) {
+            const zone = this.zoneQueues[zoneIndex] as ZoneActorQueue;
+            const actorIndex = zone.actors.findIndex((entry) => entry.actor.actorId === targetActor.actorId);
+            if (actorIndex >= 0) {
+                return { zone, zoneIndex, actorIndex };
+            }
+        }
+        return null;
+    }
+
+    handlesHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        return this.findHostedActorLocation(targetActor) !== null;
+    }
+
+    insertHostedRuntimeActors(
+        targetActor: PackagerUnit,
+        insertions: readonly PackagerUnit[],
+        position: 'before' | 'after',
+        sourceElements?: readonly Element[]
+    ): boolean {
+        const location = this.findHostedActorLocation(targetActor);
+        const entries = this.createZoneActorEntries(sourceElements, insertions);
+        if (!location || !entries) return false;
+        const insertionIndex = position === 'before' ? location.actorIndex : location.actorIndex + 1;
+        location.zone.actors.splice(insertionIndex, 0, ...entries);
+        this.trackHostedActorsAsActive(insertions);
+        this.invalidateMaterialization();
+        return true;
+    }
+
+    deleteHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        const location = this.findHostedActorLocation(targetActor);
+        if (!location) return false;
+        const [removed] = location.zone.actors.splice(location.actorIndex, 1);
+        if (!removed) return false;
+        this.trackHostedActorsAsRemoved([removed.actor]);
+        this.invalidateMaterialization();
+        return true;
+    }
+
+    replaceHostedRuntimeActor(
+        targetActor: PackagerUnit,
+        replacements: readonly PackagerUnit[],
+        sourceElements?: readonly Element[]
+    ): boolean {
+        const location = this.findHostedActorLocation(targetActor);
+        const entries = this.createZoneActorEntries(sourceElements, replacements);
+        if (!location || !entries) return false;
+        const [removed] = location.zone.actors.splice(location.actorIndex, 1, ...entries);
+        if (!removed) return false;
+        this.trackHostedActorsAsRemoved([removed.actor]);
+        this.trackHostedActorsAsActive(replacements);
+        this.invalidateMaterialization();
+        return true;
+    }
+
     private materializeMoveWhole(availableWidth: number): void {
         if (this.materializedBoxes !== null && this.lastAvailableWidth === availableWidth) return;
-        const normalizedStrip = normalizeZoneMapElement(this.element, availableWidth);
-        const result = materializeZoneStrip(normalizedStrip, availableWidth, this.processor);
-        this.materializedBoxes = result.boxes.map((box) => {
+        const contextBase = createZoneSessionContextBase(availableWidth, this.processor);
+        const queues = this.ensureZoneQueues(availableWidth);
+        const allBoxes: Box[] = [];
+        let totalHeight = 0;
+
+        for (let i = 0; i < queues.length; i++) {
+            const zone = queues[i];
+            const result = runZoneSession(zone, contextBase);
+            const zoneTag: ZoneDebugBoxTag = {
+                fieldActorId: '',
+                fieldSourceId: '',
+                zoneId: zone.id,
+                zoneIndex: i,
+                rect: { ...zone.rect }
+            };
+            for (const box of result.boxes) {
+                allBoxes.push({
+                    ...attachZoneDebugTag(box, zoneTag),
+                    x: (box.x || 0) + zone.rect.x,
+                    y: (box.y || 0) + zone.rect.y
+                });
+            }
+            totalHeight = Math.max(totalHeight, zone.rect.y + resolveZoneFootprintHeight(zone, result.height));
+        }
+
+        this.materializedBoxes = allBoxes.map((box) => {
             const tag = readZoneDebugTag(box);
             return tag
                 ? attachZoneDebugTag(box, {
@@ -1001,7 +1196,7 @@ export class ZonePackager implements PackagerUnit {
         });
         this.marginTopVal = this.fragmentMarginTop;
         this.marginBottomVal = this.fragmentMarginBottom;
-        this.totalZoneHeight = result.totalHeight;
+        this.totalZoneHeight = totalHeight;
         this.lastAvailableWidth = availableWidth;
         this.lastAvailableHeight = Infinity;
     }
@@ -1024,8 +1219,7 @@ export class ZonePackager implements PackagerUnit {
             return;
         }
 
-        const normalizedStrip = normalizeZoneMapElement(this.element, availableWidth);
-        const queues = this.zoneQueues ?? buildZoneActorQueues(normalizedStrip, this.processor);
+        const queues = this.ensureZoneQueues(availableWidth);
         const contextBase = createZoneSessionContextBase(availableWidth, this.processor);
         const allBoxes: Box[] = [];
         let occupiedHeight = 0;
@@ -1068,6 +1262,9 @@ export class ZonePackager implements PackagerUnit {
         this.boundedHeight = occupiedHeight;
         this.boundedOverflow = hasOverflow;
         this.boundedContinuationQueues = hasOverflow ? continuationQueues : null;
+        if (hasOverflow) {
+            this.zoneQueues = continuationQueues;
+        }
         this.totalZoneHeight = hasOverflow
             ? Math.max(occupiedHeight, Math.max(0, availableHeight) + 1)
             : occupiedHeight;
@@ -1115,6 +1312,8 @@ export class ZonePackager implements PackagerUnit {
     }
 
     prepare(availableWidth: number, availableHeight: number, _context: PackagerContext): void {
+        this.ensureZoneQueues(availableWidth);
+        this.syncHostedActors(_context.actorIndex);
         this.materialize(availableWidth, availableHeight);
     }
 

@@ -1,0 +1,75 @@
+---
+methods:
+  onReady(): |
+    replaceElement("zoned-target", [
+      {
+        type: "p",
+        name: "zone-replacement",
+        content: "Zone-hosted target was replaced through the live runtime without replay."
+      }
+    ])
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "lead",
+      "content": "Lead paragraph: document onReady will target a zone-hosted participant."
+    },
+    {
+      "type": "zone-map",
+      "content": "",
+      "name": "zone-host",
+      "zoneLayout": {
+        "columns": [
+          { "mode": "flex", "fr": 2 },
+          { "mode": "flex", "fr": 1 }
+        ],
+        "gap": 18,
+        "frameOverflow": "move-whole",
+        "worldBehavior": "fixed"
+      },
+      "zones": [
+        {
+          "id": "main",
+          "elements": [
+            {
+              "type": "p",
+              "name": "zoned-target",
+              "content": "This zone-hosted target should be replaced live."
+            },
+            {
+              "type": "p",
+              "name": "zoned-follow",
+              "content": "Zone follow paragraph: it should remain after the replacement naturally."
+            }
+          ]
+        },
+        {
+          "id": "side",
+          "elements": [
+            {
+              "type": "p",
+              "name": "sidebar-note",
+              "content": "Sidebar note: sibling zone content should remain intact."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "name": "tail",
+      "content": "Tail paragraph: normal root flow still follows the zone host."
+    }
+  ]
+}

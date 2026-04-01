@@ -291,7 +291,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const elements = normalizeScriptElements(value);
         const replacements = this.createLivePackagers(context, elements);
         if (replacements.length === 0) return false;
-        const replacedIndex = session.replaceActorInLiveQueue(actor, replacements);
+        const replacedIndex = session.replaceActorInLiveQueue(actor, replacements, elements);
         if (replacedIndex === null) return false;
         this.recordRuntimeMutation({
             pageIndex: 0,
@@ -314,7 +314,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const elements = normalizeScriptElements(value);
         const insertions = this.createLivePackagers(context, elements);
         if (insertions.length === 0) return false;
-        const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position);
+        const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position, elements);
         if (insertedIndex === null) return false;
         this.recordRuntimeMutation({
             pageIndex: 0,

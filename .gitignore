@@ -2,6 +2,7 @@ node_modules/
 dist/
 build/
 coverage/
+documents/wip/
 .env
 .env.test
 npm-debug.log*
