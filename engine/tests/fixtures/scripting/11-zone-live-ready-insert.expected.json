@@ -1,0 +1,26 @@
+{
+  "expectedTextIncludes": [
+    "Lead paragraph above zone host.",
+    "Zone prelude inserted live.",
+    "Zone anchor stays centered.",
+    "Zone epilogue inserted live.",
+    "Zone follow stays after inserts.",
+    "Sidebar remains",
+    "steady.",
+    "Tail paragraph after zone host."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "zoned-anchor",
+      "content": "Zone anchor stays centered."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "insertCalls": 2
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

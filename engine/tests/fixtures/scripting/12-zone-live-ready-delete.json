@@ -1,0 +1,69 @@
+---
+methods:
+  onReady(): |
+    deleteElement("zoned-vanishing")
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "lead",
+      "content": "Lead paragraph before delete."
+    },
+    {
+      "type": "zone-map",
+      "content": "",
+      "name": "zone-host",
+      "zoneLayout": {
+        "columns": [
+          { "mode": "flex", "fr": 2 },
+          { "mode": "flex", "fr": 1 }
+        ],
+        "gap": 18,
+        "frameOverflow": "move-whole",
+        "worldBehavior": "fixed"
+      },
+      "zones": [
+        {
+          "id": "main",
+          "elements": [
+            {
+              "type": "p",
+              "name": "zoned-vanishing",
+              "content": "This zone paragraph should vanish live."
+            },
+            {
+              "type": "p",
+              "name": "zoned-follow",
+              "content": "Zone follow closes the gap."
+            }
+          ]
+        },
+        {
+          "id": "side",
+          "elements": [
+            {
+              "type": "p",
+              "name": "sidebar-note",
+              "content": "Sidebar stays present."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "name": "tail",
+      "content": "Tail paragraph after delete."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "expectedTextIncludes": [
+    "Lead paragraph before delete.",
+    "Zone follow closes the gap.",
+    "Sidebar stays present.",
+    "Tail paragraph after delete."
+  ],
+  "expectedTextExcludes": [
+    "This zone paragraph should vanish live."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "zoned-vanishing",
+      "content": "This zone paragraph should vanish live."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "removeCalls": 1
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}
