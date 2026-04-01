@@ -350,6 +350,8 @@ export interface StoryExclusionAssemblyMember {
     h: number;
     /** Primitive wrap shape. */
     shape?: StoryFloatShape;
+    /** Optional depth override for this primitive. */
+    zIndex?: number;
 }
 
 export interface StoryExclusionAssembly {
@@ -366,6 +368,7 @@ export interface SpatialFieldDirective {
     shape?: StoryFloatShape;
     exclusionAssembly?: StoryExclusionAssembly;
     hidden?: boolean;
+    zIndex?: number;
 }
 
 export interface StoryLayoutDirective {
@@ -388,6 +391,8 @@ export interface StoryLayoutDirective {
      * single rect/circle obstacle.
      */
     exclusionAssembly?: StoryExclusionAssembly;
+    /** Optional depth for float/story-absolute obstacle interaction. */
+    zIndex?: number;
 }
 
 export interface ElementStyle {
@@ -586,10 +591,12 @@ export interface BoxMeta {
     clonedFromSourceId?: string;
 }
 
-export interface DebugZoneRegion {
+export interface DebugRegion {
     fieldActorId: string;
     fieldSourceId: string;
     sourceKind: 'zone-map' | 'world-plain';
+    regionId?: string;
+    regionIndex: number;
     zoneId?: string;
     zoneIndex: number;
     x: number;
@@ -605,7 +612,7 @@ export interface Page {
     boxes: Box[];
     width: number;
     height: number;
-    debugZones?: DebugZoneRegion[];
+    debugRegions?: DebugRegion[];
 }
 
 export interface AnnotatedLayoutStream {

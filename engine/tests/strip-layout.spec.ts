@@ -277,17 +277,17 @@ async function main() {
         'finalized pages expose subtle debug overlay geometry for authored zones',
         () => {
             const page = explicitRegionPages[0];
-            assert.ok(Array.isArray(page.debugZones), 'expected debugZones on finalized page');
+            assert.ok(Array.isArray(page.debugRegions), 'expected debugRegions on finalized page');
             assert.deepEqual(
-                page.debugZones?.map((zone: any) => ({
-                    zoneId: zone.zoneId,
-                    x: zone.x,
-                    y: zone.y,
-                    w: zone.w
+                page.debugRegions?.map((region: any) => ({
+                    regionId: region.regionId,
+                    x: region.x,
+                    y: region.y,
+                    w: region.w
                 })),
                 [
-                    { zoneId: 'main', x: 20, y: 0, w: 170 },
-                    { zoneId: 'side', x: 208, y: 26, w: 92 }
+                    { regionId: 'main', x: 20, y: 0, w: 170 },
+                    { regionId: 'side', x: 208, y: 26, w: 92 }
                 ]
             );
         }

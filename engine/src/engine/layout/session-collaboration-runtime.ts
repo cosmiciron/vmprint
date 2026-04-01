@@ -42,14 +42,14 @@ export class SessionCollaborationRuntime {
             width,
             height,
             boxes: [...boxes],
-            debugZones: [],
+            debugRegions: [],
             finalize(): Page {
                 return {
                     index: this.pageIndex,
                     width: this.width,
                     height: this.height,
                     boxes: this.boxes,
-                    ...(this.debugZones.length > 0 ? { debugZones: this.debugZones.map((zone) => ({ ...zone })) } : {})
+                    ...(this.debugRegions.length > 0 ? { debugRegions: this.debugRegions.map((region) => ({ ...region })) } : {})
                 };
             }
         };

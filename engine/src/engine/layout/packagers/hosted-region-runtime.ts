@@ -13,6 +13,7 @@ export type HostedRegionSessionResult = {
 export type HostedRegionSessionContinuation = {
     nextActorIndex: number;
     continuationFragment: PackagerUnit | null;
+    prefixActors?: HostedRegionActorEntry[];
 };
 
 export type BoundedHostedRegionSessionResult = HostedRegionSessionResult & {
@@ -78,6 +79,9 @@ export function buildHostedRegionContinuationQueue(
     }
 
     const nextActors = [];
+    if (continuation.prefixActors?.length) {
+        nextActors.push(...continuation.prefixActors);
+    }
     if (continuation.continuationFragment) {
         nextActors.push({
             actor: continuation.continuationFragment,

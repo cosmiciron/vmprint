@@ -46,6 +46,8 @@ export interface OccupiedRect {
      * carve.  Unset → treated as 'center'.
      */
     align?: StoryFloatAlign;
+    /** Optional depth used for wrap interaction. Unset is treated as 0. */
+    zIndex?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -82,14 +84,16 @@ export class SpatialMap {
         y: number,
         lineH: number,
         totalWidth: number,
-        options?: { opticalUnderhang?: boolean }
+        options?: { opticalUnderhang?: boolean; queryZIndex?: number }
     ): Interval[] {
         let available: Interval[] = [{ x: 0, w: totalWidth }];
         const lineBottom = y + lineH;
         const lineTop = y;
+        const queryZIndex = normalizeZIndex(options?.queryZIndex);
 
         for (const rect of this.rects) {
             if (rect.wrap === 'none') continue;
+            if (!intersectsDepth(rect, queryZIndex)) continue;
 
             const useOpticalUnderhang = options?.opticalUnderhang && rect.wrap === 'around';
 
@@ -153,10 +157,11 @@ export class SpatialMap {
     }
 
     /** Returns true when any top-bottom obstacle overlaps [y, y+lineH]. */
-    hasTopBottomBlock(y: number, lineH: number): boolean {
+    hasTopBottomBlock(y: number, lineH: number, queryZIndex: number = 0): boolean {
         const lineBottom = y + lineH;
         return this.rects.some((r) => {
             if (r.wrap !== 'top-bottom') return false;
+            if (!intersectsDepth(r, queryZIndex)) return false;
             const gapTop = r.gapTop ?? r.gap;
             const gapBottom = r.gapBottom ?? r.gap;
             const obsTop = r.y - gapTop;
@@ -169,13 +174,14 @@ export class SpatialMap {
      * Returns the first Y at which no top-bottom obstacle blocks [y, …).
      * Iterates to handle chained consecutive obstacles.
      */
-    topBottomClearY(y: number): number {
+    topBottomClearY(y: number, queryZIndex: number = 0): number {
         let clearY = y;
         let changed = true;
         while (changed) {
             changed = false;
             for (const r of this.rects) {
                 if (r.wrap !== 'top-bottom') continue;
+                if (!intersectsDepth(r, queryZIndex)) continue;
                 const gapTop = r.gapTop ?? r.gap;
                 const gapBottom = r.gapBottom ?? r.gap;
                 const obsTop = r.y - gapTop;
@@ -234,4 +240,12 @@ function carveInterval(
         }
     }
     return result;
+}
+
+function normalizeZIndex(value: unknown): number {
+    return Number.isFinite(Number(value)) ? Number(value) : 0;
+}
+
+function intersectsDepth(rect: OccupiedRect, queryZIndex: number): boolean {
+    return normalizeZIndex(rect.zIndex) === normalizeZIndex(queryZIndex);
 }

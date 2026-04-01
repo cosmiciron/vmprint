@@ -3,7 +3,7 @@ import { LayoutProcessor } from '../layout-core';
 import { createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { buildHostedRegionActorQueuesFromZones } from './region-actor-queues';
 import {
-    DebugZoneRegion,
+    DebugRegion,
     PackagerContext,
     PackagerPlacementPreference,
     PackagerSplitResult,
@@ -131,7 +131,7 @@ export class WorldPlainPackager implements PackagerUnit {
         return this.inner.getHostedRuntimeActors();
     }
 
-    getDebugRegions(): DebugZoneRegion[] {
+    getDebugRegions(): DebugRegion[] {
         return this.inner.getDebugRegions();
     }
 

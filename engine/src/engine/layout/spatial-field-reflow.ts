@@ -47,6 +47,10 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     if (!flowBox || flowBox._materializationMode !== 'reflowable') return null;
 
     const style: ElementStyle = flowBox.style || {};
+    const authoredStyle = options.element.properties?.style as { zIndex?: unknown } | undefined;
+    const queryZIndex = Number.isFinite(Number(style.zIndex))
+        ? Number(style.zIndex)
+        : (Number.isFinite(Number(authoredStyle?.zIndex)) ? Number(authoredStyle?.zIndex) : 0);
     const fontSize = Number(style.fontSize || anyProcessor.config.layout.fontSize);
     const lineHeightRatio = Number(style.lineHeight || anyProcessor.config.layout.lineHeight);
     const uniformLH = lineHeightRatio * fontSize;
@@ -63,7 +67,7 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const marginTop = Math.max(0, flowBox.marginTop);
     const marginBottom = Math.max(0, flowBox.marginBottom);
     const cursorBase = options.clearTopBeforeStart
-        ? options.spatialMap.topBottomClearY(options.currentY)
+        ? options.spatialMap.topBottomClearY(options.currentY, queryZIndex)
         : options.currentY;
     const elementStartY = cursorBase + Math.max(0, options.layoutBefore);
 
@@ -82,8 +86,8 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         }
 
         let lineY = elementStartY + (physicalLineCount * uniformLH) + accumulatedYBonus;
-        while (options.spatialMap.hasTopBottomBlock(lineY, uniformLH)) {
-            const clearY = options.spatialMap.topBottomClearY(lineY);
+        while (options.spatialMap.hasTopBottomBlock(lineY, uniformLH, queryZIndex)) {
+            const clearY = options.spatialMap.topBottomClearY(lineY, queryZIndex);
             accumulatedYBonus += clearY - lineY;
             lineY = elementStartY + (physicalLineCount * uniformLH) + accumulatedYBonus;
         }
@@ -95,7 +99,7 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
             lineY,
             uniformLH,
             options.availableWidth,
-            options.opticalUnderhang ? { opticalUnderhang: true } : undefined
+            options.opticalUnderhang ? { opticalUnderhang: true, queryZIndex } : { queryZIndex }
         );
         if (intervals.length === 0) {
             return { width: contentWidth, xOffset: 0, yOffset };

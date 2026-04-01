@@ -148,6 +148,27 @@ function findBoxesForSource(pages: any[], sourceId: string): any[] {
     );
 }
 
+function boxHasMultiSlotWrap(box: any, regionId: string): boolean {
+    const debug = box.properties?.__vmprintZoneDebug;
+    if (!debug || debug.zoneId !== regionId) return false;
+    const offsets = Array.isArray(box.properties?._lineOffsets)
+        ? box.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+        : [];
+    const yOffsets = Array.isArray(box.properties?._lineYOffsets)
+        ? box.properties._lineYOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+        : [];
+    if (offsets.length < 2 || yOffsets.length < 2) return false;
+    const bands = new Map<string, Set<string>>();
+    for (let i = 0; i < Math.min(offsets.length, yOffsets.length); i++) {
+        const bandKey = Number(yOffsets[i]).toFixed(2);
+        const set = bands.get(bandKey) ?? new Set<string>();
+        set.add(Number(offsets[i]).toFixed(2));
+        bands.set(bandKey, set);
+        if (set.size >= 2) return true;
+    }
+    return false;
+}
+
 function registeredActorsIncludeSource(actors: readonly PackagerUnit[], sourceId: string): boolean {
     return actors.some((actor) => {
         const actual = String(actor.sourceId || '');
@@ -391,7 +412,7 @@ async function main() {
             worldPlainPackager.prepare(312, 312, context);
             const emittedBoxes = worldPlainPackager.emitBoxes(312, 312, context) as any[];
             const debugTags = emittedBoxes
-                .map((box) => box.properties?.__vmprintZoneDebugPage)
+                .map((box) => box.properties?.__vmprintRegionDebugPage)
                 .filter(Boolean);
 
             assert.equal(worldPlainPackager.actorKind, 'world-plain');
@@ -504,6 +525,211 @@ async function main() {
             assert.equal(worldPlainPackager.frameOverflowMode, 'move-whole');
             assert.equal(worldPlainPackager.worldBehaviorMode, 'fixed');
             assert.ok(findPagesForSource(pages, 'plain-conservative-start').length > 0, 'expected conservative world content to render');
+        }
+    );
+
+    _check(
+        'worldPlain spanning is now a real host continuation mode',
+        'explicit continue/spanning should begin in the current frame and continue later instead of collapsing back to fixed conservative behavior',
+        () => {
+            const continuingWorldBody =
+                'This spanning world paragraph should begin immediately and continue beyond the first page.' +
+                ' Spanning world flow keeps using the current frame before continuing later.'.repeat(25);
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 320, height: 220 },
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3,
+                    worldPlain: {
+                        frameOverflow: 'continue',
+                        worldBehavior: 'spanning',
+                        style: { marginTop: 8, marginBottom: 8 }
+                    }
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10 }
+                },
+                elements: [
+                    {
+                        type: 'body',
+                        content: 'World plain spanning starts on page one and should keep flowing through the current frame before continuing later.',
+                        properties: { sourceId: 'plain-spanning-start' }
+                    },
+                    {
+                        type: 'body',
+                        content: continuingWorldBody,
+                        properties: { sourceId: 'plain-spanning-later' }
+                    },
+                    {
+                        type: 'body',
+                        content: 'Tail after spanning world continuation.',
+                        properties: { sourceId: 'plain-spanning-tail' }
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'world-plain-spanning-options.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+            const worldPlainPackager = buildPackagerForElement(resolved.elements[0], 0, engine) as any;
+
+            assert.equal(worldPlainPackager.frameOverflowMode, 'continue');
+            assert.equal(worldPlainPackager.worldBehaviorMode, 'spanning');
+            assert.deepEqual(findPagesForSource(pages, 'plain-spanning-start'), [0]);
+            assert.ok(findPagesForSource(pages, 'plain-spanning-later').some((pageIndex) => pageIndex >= 1), 'expected spanning world content to continue onto a later page');
+        }
+    );
+
+    _check(
+        'worldPlain fields persist across continuation pages',
+        'a world-owned field should keep occupying world space on later pages instead of vanishing once the body starts continuing',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 320, height: 240 },
+                    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.3,
+                    worldPlain: {
+                        frameOverflow: 'continue',
+                        worldBehavior: 'spanning',
+                        style: { marginTop: 8, marginBottom: 8 }
+                    }
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10 }
+                },
+                elements: [
+                    {
+                        type: 'body',
+                        content: 'Prelude world text to establish the first capture before the rock continuation begins.',
+                        properties: { sourceId: 'plain-carryover-prelude' }
+                    },
+                    {
+                        type: 'field-actor',
+                        content: '',
+                        properties: {
+                            sourceId: 'plain-carryover-rock',
+                            spatialField: { kind: 'exclude', x: 124, y: 128, wrap: 'around', gap: 8 },
+                            style: { width: 96, height: 120, backgroundColor: '#d9d2c3' }
+                        }
+                    },
+                    {
+                        type: 'body',
+                        content: ('The spanning world river keeps moving while the same rock remains part of the desert beneath it. ').repeat(40),
+                        properties: { sourceId: 'plain-carryover-body' }
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'world-plain-field-carryover.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+
+            const rockPages = findPagesForSource(pages, 'plain-carryover-rock');
+            assert.ok(rockPages.includes(0), 'expected rock to appear on the first page');
+            assert.ok(rockPages.some((pageIndex) => pageIndex >= 1), 'expected rock to persist onto a later page');
+            assert.ok(findPagesForSource(pages, 'plain-carryover-body').some((pageIndex) => pageIndex >= 1), 'expected body to continue onto a later page');
+        }
+    );
+
+    _check(
+        'worldPlain higher-z flow can pass over lower-z rocks',
+        'a traversing world river on a higher zIndex should ignore lower-z exclusion wrap, then split around a later same-z rock',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 600, height: 800 },
+                    margins: { top: 50, right: 50, bottom: 50, left: 50 },
+                    fontFamily: 'Arimo',
+                    fontSize: 10,
+                    lineHeight: 1.4,
+                    worldPlain: {
+                        style: { marginTop: 12, marginBottom: 12 }
+                    }
+                },
+                fonts: { regular: 'Arimo', bold: 'Arimo' },
+                styles: {
+                    h1: { fontSize: 24, fontWeight: 'bold', marginBottom: 12, keepWithNext: true, color: '#355e3b' },
+                    p: { marginBottom: 8 }
+                },
+                elements: [
+                    {
+                        type: 'h1',
+                        content: 'World Plain: Z Overpass'
+                    },
+                    {
+                        type: 'field-actor',
+                        content: '',
+                        properties: {
+                            sourceId: 'plain-overpass-low-rock',
+                            spatialField: { kind: 'exclude', x: 82, y: 92, wrap: 'around', gap: 8, zIndex: -1 },
+                            style: { width: 156, height: 116, backgroundColor: '#f8f6ef', zIndex: -1 }
+                        }
+                    },
+                    {
+                        type: 'field-actor',
+                        content: '',
+                        properties: {
+                            sourceId: 'plain-overpass-high-rock',
+                            spatialField: {
+                                kind: 'exclude',
+                                x: 160,
+                                y: 154,
+                                wrap: 'around',
+                                gap: 8,
+                                zIndex: 0,
+                                exclusionAssembly: {
+                                    members: [
+                                        { shape: 'circle', x: 0, y: 30, w: 80, h: 80, zIndex: 0 },
+                                        { shape: 'circle', x: 58, y: 4, w: 98, h: 98, zIndex: 0 },
+                                        { shape: 'rect', x: 42, y: 58, w: 104, h: 34, zIndex: 0 },
+                                        { shape: 'circle', x: 126, y: 48, w: 42, h: 42, zIndex: 0 }
+                                    ]
+                                }
+                            },
+                            style: { width: 170, height: 122, backgroundColor: '#e9e1d3', zIndex: 0 }
+                        }
+                    },
+                    {
+                        type: 'p',
+                        content: ('The first current should skim across the sunken rock without being forced into wrap slots because that obstacle sits below the river layer. ').repeat(4),
+                        properties: { sourceId: 'plain-overpass-body-early', style: { zIndex: 0 } }
+                    },
+                    {
+                        type: 'p',
+                        content: ('The later current keeps running long enough to meet the taller rock resting in the same layer, so here the river should divide and rejoin around the obstruction instead of gliding through it. ').repeat(20),
+                        properties: { sourceId: 'plain-overpass-body-late', style: { zIndex: 0 } }
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'world-plain-z-overpass.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+            const lowRockPages = findPagesForSource(pages, 'plain-overpass-low-rock');
+            const highRockPages = findPagesForSource(pages, 'plain-overpass-high-rock');
+            const earlyBodyBoxes = findBoxesForSource(pages, 'plain-overpass-body-early');
+            const lateBodyBoxes = findBoxesForSource(pages, 'plain-overpass-body-late');
+            const wrappedLateBodyBoxes = lateBodyBoxes.filter((box) => boxHasMultiSlotWrap(box, 'plain'));
+
+            assert.ok(lowRockPages.includes(0), 'expected lower-z rock to remain visible');
+            assert.ok(highRockPages.includes(0), 'expected same-z rock to remain visible');
+            assert.ok(earlyBodyBoxes.length > 0, 'expected early river boxes');
+            assert.ok(lateBodyBoxes.length > 0, 'expected late river boxes');
+            assert.ok(wrappedLateBodyBoxes.length > 0, 'expected later river to wrap once it reaches the same-z rock');
+            assert.ok(
+                earlyBodyBoxes.every((box) => !boxHasMultiSlotWrap(box, 'plain')),
+                'expected early river to avoid wrap slots while crossing over the lower-z rock'
+            );
         }
     );
 

@@ -1,0 +1,232 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 38,
+        "w": 364,
+        "h": 26.409375,
+        "lines": [
+          [
+            {
+              "text": "World Plain Spanning",
+              "width": 185.668945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 74.409375,
+        "w": 364,
+        "h": 35.2125,
+        "lines": [
+          [
+            {
+              "text": "This regression proves that authored spanning semantics are now a",
+              "width": 360.867188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "real world-host mode instead of dead vocabulary.",
+              "width": 261.257813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 119.621875,
+        "w": 364,
+        "h": 140.85,
+        "lines": [
+          [
+            {
+              "text": "The spanning world body should begin in the current page frame ",
+              "width": 346.21875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and keep unfolding onto the next page without collapsing back to ",
+              "width": 347.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "conservative fixed behavior. The spanning world body should begin ",
+              "width": 360.228516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "in the current page frame and keep unfolding onto the next page ",
+              "width": 344.912109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "without collapsing back to conservative fixed behavior. The ",
+              "width": 315.509766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "spanning world body should begin in the current page frame and ",
+              "width": 345.5625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keep unfolding onto the next page without collapsing back to ",
+              "width": 324.228516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "conservative fixed behavior. The spanning world body should begin ",
+              "width": 360.228516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 35.2125,
+        "lines": [
+          [
+            {
+              "text": "in the current page frame and keep unfolding onto the next page ",
+              "width": 344.912109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "without collapsing back to conservative fixed behavior.",
+              "width": 288.164063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 73.2125,
+        "w": 364,
+        "h": 105.6375,
+        "lines": [
+          [
+            {
+              "text": "A later spanning paragraph should remain visible in the continued ",
+              "width": 351.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "world flow rather than being deferred as an all-or-nothing slab. A ",
+              "width": 344.859375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later spanning paragraph should remain visible in the continued ",
+              "width": 340.21875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "world flow rather than being deferred as an all-or-nothing slab. A ",
+              "width": 344.859375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later spanning paragraph should remain visible in the continued ",
+              "width": 340.21875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "world flow rather than being deferred as an all-or-nothing slab.",
+              "width": 330.1875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

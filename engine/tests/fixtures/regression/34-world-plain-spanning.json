@@ -1,0 +1,69 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 320
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.35,
+    "pageBackground": "#f9faf7",
+    "worldPlain": {
+      "frameOverflow": "continue",
+      "worldBehavior": "spanning",
+      "style": {
+        "marginTop": 10,
+        "marginBottom": 10
+      }
+    }
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 18,
+      "fontWeight": "bold",
+      "marginBottom": 10,
+      "color": "#355e3b"
+    },
+    "p": {
+      "marginBottom": 10
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "World Plain Spanning"
+    },
+    {
+      "type": "p",
+      "content": "This regression proves that authored spanning semantics are now a real world-host mode instead of dead vocabulary.",
+      "properties": {
+        "sourceId": "plain-spanning-lead"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The spanning world body should begin in the current page frame and keep unfolding onto the next page without collapsing back to conservative fixed behavior. The spanning world body should begin in the current page frame and keep unfolding onto the next page without collapsing back to conservative fixed behavior. The spanning world body should begin in the current page frame and keep unfolding onto the next page without collapsing back to conservative fixed behavior. The spanning world body should begin in the current page frame and keep unfolding onto the next page without collapsing back to conservative fixed behavior.",
+      "properties": {
+        "sourceId": "plain-spanning-main"
+      }
+    },
+    {
+      "type": "p",
+      "content": "A later spanning paragraph should remain visible in the continued world flow rather than being deferred as an all-or-nothing slab. A later spanning paragraph should remain visible in the continued world flow rather than being deferred as an all-or-nothing slab. A later spanning paragraph should remain visible in the continued world flow rather than being deferred as an all-or-nothing slab.",
+      "properties": {
+        "sourceId": "plain-spanning-later"
+      }
+    }
+  ]
+}

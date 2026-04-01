@@ -44,7 +44,7 @@ import { ScriptRuntimeHost } from './script-runtime-host';
 import type { ScriptLifecycleState } from './script-runtime-host';
 import { TransformCapabilityArtifactCollaborator } from './collaborators/transform-capability-artifact-collaborator';
 import { TransformArtifactCollaborator } from './collaborators/transform-artifact-collaborator';
-import { ZoneDebugOverlayCollaborator } from './collaborators/zone-debug-overlay-collaborator';
+import { RegionDebugOverlayCollaborator } from './collaborators/region-debug-overlay-collaborator';
 import { TemporalPresentationCollaborator } from './collaborators/temporal-presentation-collaborator';
 import { AsyncThoughtRuntimeCollaborator } from './collaborators/async-thought-runtime-collaborator';
 import { InteractionArtifactCollaborator } from './collaborators/interaction-artifact-collaborator';
@@ -1303,7 +1303,7 @@ export class LayoutProcessor extends TextProcessor {
             ...(asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []),
             new TemporalPresentationCollaborator(),
             new InteractionArtifactCollaborator(this.config.layout),
-            new ZoneDebugOverlayCollaborator(),
+            new RegionDebugOverlayCollaborator(),
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
                     this.layoutRegion(content, rect, pageIndex, sourceType, actorId)

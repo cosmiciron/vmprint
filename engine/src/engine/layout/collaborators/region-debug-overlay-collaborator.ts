@@ -1,49 +1,51 @@
-import type { Box, DebugZoneRegion } from '../../types';
+import type { Box, DebugRegion } from '../../types';
 import type { Collaborator, PageSurface } from '../layout-session-types';
 import type { LayoutSession } from '../layout-session';
 import type { PackagerUnit } from '../packagers/packager-types';
 
 type DebugRegionActor = PackagerUnit & {
-    getDebugRegions?(): DebugZoneRegion[];
+    getDebugRegions?(): DebugRegion[];
 };
 
-function zoneKey(zone: DebugZoneRegion): string {
+function regionKey(region: DebugRegion): string {
     return [
-        zone.fieldActorId,
-        zone.sourceKind,
-        zone.zoneIndex,
-        zone.x,
-        zone.y,
-        zone.w,
-        zone.h
+        region.fieldActorId,
+        region.sourceKind,
+        region.regionIndex,
+        region.x,
+        region.y,
+        region.w,
+        region.h
     ].join(':');
 }
 
-export class ZoneDebugOverlayCollaborator implements Collaborator {
+export class RegionDebugOverlayCollaborator implements Collaborator {
     onActorCommitted(actor: PackagerUnit, _committed: Box[], surface: PageSurface, _session: LayoutSession): void {
         const debugActor = actor as DebugRegionActor;
         const regions = debugActor.getDebugRegions?.();
         if (!regions || regions.length === 0) return;
 
-        const existing = new Set(surface.debugZones.map(zoneKey));
-        for (const zone of regions) {
-            const key = zoneKey(zone);
+        const existing = new Set(surface.debugRegions.map(regionKey));
+        for (const region of regions) {
+            const key = regionKey(region);
             if (existing.has(key)) continue;
-            surface.debugZones.push({ ...zone });
+            surface.debugRegions.push({ ...region });
             existing.add(key);
         }
     }
 
     onPageFinalized(surface: PageSurface, _session: LayoutSession): void {
-        const existing = new Set(surface.debugZones.map(zoneKey));
-        const aggregated = new Map<string, DebugZoneRegion>();
+        const existing = new Set(surface.debugRegions.map(regionKey));
+        const aggregated = new Map<string, DebugRegion>();
 
         for (const box of surface.boxes) {
-            const tag = box.properties?.__vmprintZoneDebugPage as
+            const tag = box.properties?.__vmprintRegionDebugPage as
                 | {
                     fieldActorId: string;
                     fieldSourceId: string;
-                    sourceKind: DebugZoneRegion['sourceKind'];
+                    sourceKind: DebugRegion['sourceKind'];
+                    regionId?: string;
+                    regionIndex: number;
                     zoneId?: string;
                     zoneIndex: number;
                     x: number;
@@ -51,7 +53,7 @@ export class ZoneDebugOverlayCollaborator implements Collaborator {
                     w: number;
                     explicitHeight?: number;
                     frameOverflowMode: 'move-whole' | 'continue';
-                    worldBehaviorMode: DebugZoneRegion['worldBehaviorMode'];
+                    worldBehaviorMode: DebugRegion['worldBehaviorMode'];
                 }
                 | undefined;
             if (!tag) continue;
@@ -59,7 +61,7 @@ export class ZoneDebugOverlayCollaborator implements Collaborator {
             const key = [
                 tag.fieldActorId,
                 tag.sourceKind,
-                tag.zoneIndex,
+                tag.regionIndex,
                 tag.x,
                 tag.y,
                 tag.w
@@ -71,6 +73,8 @@ export class ZoneDebugOverlayCollaborator implements Collaborator {
                     fieldActorId: tag.fieldActorId,
                     fieldSourceId: tag.fieldSourceId,
                     sourceKind: tag.sourceKind,
+                    regionId: tag.regionId ?? tag.zoneId,
+                    regionIndex: tag.regionIndex,
                     zoneId: tag.zoneId,
                     zoneIndex: tag.zoneIndex,
                     x: tag.x,
@@ -93,10 +97,10 @@ export class ZoneDebugOverlayCollaborator implements Collaborator {
             );
         }
 
-        for (const zone of aggregated.values()) {
-            const key = zoneKey(zone);
+        for (const region of aggregated.values()) {
+            const key = regionKey(region);
             if (existing.has(key)) continue;
-            surface.debugZones.push(zone);
+            surface.debugRegions.push(region);
             existing.add(key);
         }
     }

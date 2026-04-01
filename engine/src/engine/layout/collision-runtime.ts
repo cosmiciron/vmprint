@@ -25,9 +25,10 @@ type PackagerWithStoryElement = PackagerUnit & {
     storyElement?: unknown;
 };
 
-type PackagerWithZoneContinuation = PackagerUnit & {
+type PackagerWithRegionContinuation = PackagerUnit & {
     frameOverflowMode?: string;
     worldBehaviorMode?: string;
+    actorKind?: string;
 };
 
 export type CollisionRuntimeHost = {
@@ -315,8 +316,8 @@ export class CollisionRuntime {
             : !!input.actor.emitBoxes(input.availableWidth, input.availableHeightAdjusted, input.context);
         const isSpatialGridPackager = this.hasSpatialGridFlowBox(input.actor);
         const isStoryPackager = this.hasStoryElement(input.actor);
-        const isContinuingZonePackager = this.hasContinuingZoneField(input.actor);
-        const allowsMidPageSplit = isSpatialGridPackager || isStoryPackager || isContinuingZonePackager;
+        const isContinuingRegionPackager = this.hasContinuingRegionField(input.actor);
+        const allowsMidPageSplit = isSpatialGridPackager || isStoryPackager || isContinuingRegionPackager;
         const emptyLayoutBefore = input.marginTop;
         const emptyAvailable = input.pageLimit - input.pageTop;
         const requiredOnEmpty = input.contentHeight + emptyLayoutBefore + input.marginBottom;
@@ -338,8 +339,10 @@ export class CollisionRuntime {
         return !!(actor as PackagerWithStoryElement).storyElement;
     }
 
-    private hasContinuingZoneField(actor: PackagerUnit): actor is PackagerWithZoneContinuation {
-        const zoneActor = actor as PackagerWithZoneContinuation;
-        return zoneActor.frameOverflowMode === 'continue' && zoneActor.worldBehaviorMode === 'expandable';
+    private hasContinuingRegionField(actor: PackagerUnit): actor is PackagerWithRegionContinuation {
+        const regionActor = actor as PackagerWithRegionContinuation;
+        if (regionActor.frameOverflowMode !== 'continue') return false;
+        if (regionActor.worldBehaviorMode === 'expandable') return true;
+        return regionActor.actorKind === 'world-plain' && regionActor.worldBehaviorMode === 'spanning';
     }
 }

@@ -1,0 +1,340 @@
+[
+  {
+    "index": 0,
+    "width": 600,
+    "height": 800,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 50,
+        "y": 62,
+        "w": 500,
+        "h": 36.4125,
+        "lines": [
+          [
+            {
+              "text": "World Plain: Z Overpass",
+              "width": 276.960938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "field-actor",
+        "x": 132,
+        "y": 154,
+        "w": 156,
+        "h": 116,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 216,
+        "y": 234,
+        "w": 170,
+        "h": 122,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 110.4125,
+        "w": 500,
+        "h": 57.171875,
+        "lines": [
+          [
+            {
+              "text": "The first current of the river rides one layer above the lower desert rock, so it should cross over that obstacle ",
+              "width": 481.333008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "without splitting into wrap slots. The first current of the river rides one layer above the lower desert rock, so it ",
+              "width": 481.323242,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should cross over that obstacle without splitting into wrap slots. The first current of the river rides one layer above",
+              "width": 499.682617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the lower desert rock, so it should cross over that obstacle without splitting into wrap slots.",
+              "width": 397.963867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 50,
+        "y": 175.584375,
+        "w": 500,
+        "h": 225.171875,
+        "lines": [
+          [
+            {
+              "text": "The later current runs long enough to meet a second rock lifted into the river's own depth, so there the body ",
+              "width": 477.739258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should visibly divide around the obstacle instead of gliding through it. The later current runs long enough to meet ",
+              "width": 499.194336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a second rock lifted into the river's own depth, so there the body should visibly divide around the obstacle instead",
+              "width": 499.428711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "of gliding through it. The later current runs long enough to ",
+              "width": 257.382813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "meet a second rock lifted into the river's own ",
+              "width": 199.780273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "depth, so there the body should visibly divide around",
+              "width": 232.929688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the obstacle instead of gliding through it. ",
+              "width": 181.787109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "The later current runs long enough to ",
+              "width": 167.324219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "meet a second rock lifted into the river's",
+              "width": 175.878906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "own depth, so there the body should ",
+              "width": 164.003906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "visibly divide around the obstacle ",
+              "width": 149.53125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "instead of gliding through it. The ",
+              "width": 145.092773,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later current runs long enough to ",
+              "width": 147.314453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "meet a second rock lifted into the ",
+              "width": 149.526367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "river's own depth, so there the ",
+              "width": 136.425781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "body should visibly divide around ",
+              "width": 149.536133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the obstacle instead of gliding ",
+              "width": 134.536133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "through it. The later current runs ",
+              "width": 145.625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "long enough to meet a second rock ",
+              "width": 158.994141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lifted into the river's own depth, so ",
+              "width": 153.657227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "there the body should visibly divide ",
+              "width": 157.871094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around the obstacle instead of gliding ",
+              "width": 168.452148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "throug",
+              "width": 28.354492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "h it. The later current runs long enough to meet a ",
+              "width": 219.570313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "second rock lifted into the river's own depth, so there the body should visibly divide around the obstacle instead ",
+              "width": 493.867188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "of gliding through it. The later current runs long enough to meet a second rock lifted into the river's own depth, so",
+              "width": 498.305664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "there the body should visibly divide around the obstacle instead of gliding through it.",
+              "width": 370.795898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

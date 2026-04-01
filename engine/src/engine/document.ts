@@ -96,10 +96,10 @@ const ZONE_LAYOUT_KEYS = new Set(['columns', 'gap', 'frameOverflow', 'worldBehav
 const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
-const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly']);
-const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'hidden']);
+const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'zIndex']);
+const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'hidden', 'zIndex']);
 const STORY_EXCLUSION_ASSEMBLY_KEYS = new Set(['members']);
-const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape']);
+const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape', 'zIndex']);
 const PAGE_REGION_DEFINITION_KEYS = new Set(['default', 'firstPage', 'odd', 'even']);
 const PAGE_REGION_CONTENT_KEYS = new Set(['elements', 'style']);
 const PAGE_OVERRIDES_KEYS = new Set(['header', 'footer']);
@@ -534,6 +534,7 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
     if (directive.x !== undefined) assertFiniteNumberAt(directive.x, `${path}.x`, documentPath);
     if (directive.y !== undefined) assertFiniteNumberAt(directive.y, `${path}.y`, documentPath);
     if (directive.gap !== undefined) assertFiniteNumberAt(directive.gap, `${path}.gap`, documentPath);
+    if (directive.zIndex !== undefined) assertFiniteNumberAt(directive.zIndex, `${path}.zIndex`, documentPath);
     const validShapes = new Set(['rect', 'circle']);
     if (directive.shape !== undefined && !validShapes.has(directive.shape as string)) {
         contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle.');
@@ -552,6 +553,7 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
             assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
             assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
             assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
+            if (memberObj.zIndex !== undefined) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
             if (Number(memberObj.w) <= 0) {
                 contractError(documentPath, `${memberPath}.w`, 'expected a number greater than 0.');
             }
@@ -592,6 +594,9 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
     if (directive.gap !== undefined) {
         assertFiniteNumberAt(directive.gap, `${path}.gap`, documentPath);
     }
+    if (directive.zIndex !== undefined) {
+        assertFiniteNumberAt(directive.zIndex, `${path}.zIndex`, documentPath);
+    }
     if (directive.shape !== undefined && !validShapes.has(directive.shape as string)) {
         contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle.');
     }
@@ -612,6 +617,7 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
             assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
             assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
             assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
+            if (memberObj.zIndex !== undefined) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
             if (Number(memberObj.w) <= 0) {
                 contractError(documentPath, `${memberPath}.w`, 'expected a number greater than 0.');
             }

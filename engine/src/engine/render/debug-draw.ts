@@ -1,5 +1,5 @@
 import { Context } from '@vmprint/contracts';
-import { Box, DebugZoneRegion } from '../types';
+import { Box, DebugRegion } from '../types';
 
 type DebugStyle = {
     color: string;
@@ -38,8 +38,8 @@ const getDebugStyle = (type: string): DebugStyle => {
     };
 };
 
-const getZoneDebugStyle = (zone: DebugZoneRegion): ZoneDebugStyle => {
-    const signature = `${zone.fieldSourceId}:${zone.zoneId || zone.zoneIndex}`;
+const getRegionDebugStyle = (region: DebugRegion): ZoneDebugStyle => {
+    const signature = `${region.fieldSourceId}:${region.regionId || region.zoneId || region.regionIndex}`;
     const seed = Array.from(signature).reduce((acc, ch) => ((acc * 33) + ch.charCodeAt(0)) >>> 0, 17);
     const baseHues = [164, 206, 28, 332, 48, 262];
     const hue = (baseHues[seed % baseHues.length] + ((seed >> 3) % 11) - 5 + 360) % 360;
@@ -139,44 +139,46 @@ export const drawDebugPageMargins = (
     context.restore();
 };
 
-export const drawDebugZoneOverlay = (
+export const drawDebugRegionOverlay = (
     context: Context,
-    zone: DebugZoneRegion,
+    region: DebugRegion,
     labelFontId: string,
     labelFontAscent: number
 ): void => {
-    const zoneStyle = getZoneDebugStyle(zone);
-    const titlePrefix = zone.sourceKind === 'world-plain' ? 'plain' : 'zone';
-    const title = zone.zoneId ? `${titlePrefix}:${zone.zoneId}` : `${titlePrefix}#${zone.zoneIndex + 1}`;
-    const subtitle = `${zone.sourceKind} ${zone.frameOverflowMode}/${zone.worldBehaviorMode}`;
+    const zoneStyle = getRegionDebugStyle(region);
+    const titlePrefix = region.sourceKind === 'world-plain' ? 'plain' : 'zone';
+    const labelId = region.regionId ?? region.zoneId;
+    const labelIndex = region.regionIndex ?? region.zoneIndex;
+    const title = labelId ? `${titlePrefix}:${labelId}` : `${titlePrefix}#${labelIndex + 1}`;
+    const subtitle = `${region.sourceKind} ${region.frameOverflowMode}/${region.worldBehaviorMode}`;
 
     context.save();
     context.opacity(zoneStyle.fillOpacity)
         .fillColor(zoneStyle.fill)
-        .rect(zone.x, zone.y, zone.w, zone.h)
+        .rect(region.x, region.y, region.w, region.h)
         .fill();
 
     context.opacity(zoneStyle.strokeOpacity)
         .lineWidth(0.8)
         .strokeColor(zoneStyle.stroke)
         .dash(zoneStyle.dash[0], { space: zoneStyle.dash[1] })
-        .rect(zone.x, zone.y, zone.w, zone.h)
+        .rect(region.x, region.y, region.w, region.h)
         .stroke()
         .undash();
 
     context.opacity(zoneStyle.accentOpacity)
         .lineWidth(0.45)
         .strokeColor(zoneStyle.stroke)
-        .moveTo(zone.x, zone.y)
-        .lineTo(zone.x + Math.min(18, zone.w), zone.y)
-        .moveTo(zone.x, zone.y)
-        .lineTo(zone.x, zone.y + Math.min(18, zone.h))
+        .moveTo(region.x, region.y)
+        .lineTo(region.x + Math.min(18, region.w), region.y)
+        .moveTo(region.x, region.y)
+        .lineTo(region.x, region.y + Math.min(18, region.h))
         .stroke();
 
     context.font(labelFontId).fontSize(5.5);
     context.opacity(0.82).fillColor(zoneStyle.label);
-    context.text(title, Math.max(2, zone.x + 3), Math.max(2, zone.y + 4), { ascent: labelFontAscent });
+    context.text(title, Math.max(2, region.x + 3), Math.max(2, region.y + 4), { ascent: labelFontAscent });
     context.opacity(0.58).fillColor(zoneStyle.label);
-    context.text(subtitle, Math.max(2, zone.x + 3), Math.max(2, zone.y + 10), { ascent: labelFontAscent });
+    context.text(subtitle, Math.max(2, region.x + 3), Math.max(2, region.y + 10), { ascent: labelFontAscent });
     context.restore();
 };

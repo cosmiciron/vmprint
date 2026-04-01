@@ -1,0 +1,126 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 600,
+      "height": 800
+    },
+    "margins": {
+      "top": 50,
+      "right": 50,
+      "bottom": 50,
+      "left": 50
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.4,
+    "pageBackground": "#fcfbf7",
+    "worldPlain": {
+      "style": {
+        "marginTop": 12,
+        "marginBottom": 12
+      }
+    }
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "marginBottom": 12,
+      "keepWithNext": true,
+      "color": "#355e3b"
+    },
+    "p": {
+      "marginBottom": 8,
+      "zIndex": 1
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "World Plain: Z Overpass"
+    },
+    {
+      "type": "field-actor",
+      "content": "",
+      "properties": {
+        "sourceId": "plain-overpass-low-rock",
+        "spatialField": {
+          "kind": "exclude",
+          "x": 82,
+          "y": 92,
+          "wrap": "around",
+          "gap": 8,
+          "zIndex": -1,
+          "exclusionAssembly": {
+            "members": [
+              { "shape": "circle", "x": 0, "y": 34, "w": 74, "h": 74, "zIndex": -1 },
+              { "shape": "circle", "x": 54, "y": 6, "w": 90, "h": 90, "zIndex": -1 },
+              { "shape": "rect", "x": 44, "y": 54, "w": 88, "h": 28, "zIndex": -1 },
+              { "shape": "circle", "x": 120, "y": 56, "w": 36, "h": 36, "zIndex": -1 }
+            ]
+          }
+        },
+        "style": {
+          "width": 156,
+          "backgroundColor": "#f8f6ef",
+          "height": 116,
+          "zIndex": -1
+        }
+      }
+    },
+    {
+      "type": "field-actor",
+      "content": "",
+      "properties": {
+        "sourceId": "plain-overpass-high-rock",
+        "spatialField": {
+          "kind": "exclude",
+          "x": 166,
+          "y": 172,
+          "wrap": "around",
+          "gap": 8,
+          "zIndex": 0,
+          "exclusionAssembly": {
+            "members": [
+              { "shape": "circle", "x": 0, "y": 30, "w": 80, "h": 80, "zIndex": 0 },
+              { "shape": "circle", "x": 58, "y": 4, "w": 98, "h": 98, "zIndex": 0 },
+              { "shape": "rect", "x": 42, "y": 58, "w": 104, "h": 34, "zIndex": 0 },
+              { "shape": "circle", "x": 126, "y": 48, "w": 42, "h": 42, "zIndex": 0 }
+            ]
+          }
+        },
+        "style": {
+          "width": 170,
+          "backgroundColor": "#e9e1d3",
+          "height": 122,
+          "zIndex": 0
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The first current of the river rides one layer above the lower desert rock, so it should cross over that obstacle without splitting into wrap slots. The first current of the river rides one layer above the lower desert rock, so it should cross over that obstacle without splitting into wrap slots. The first current of the river rides one layer above the lower desert rock, so it should cross over that obstacle without splitting into wrap slots.",
+      "properties": {
+        "sourceId": "plain-overpass-body-early",
+        "style": {
+          "zIndex": 0
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The later current runs long enough to meet a second rock lifted into the river's own depth, so there the body should visibly divide around the obstacle instead of gliding through it. The later current runs long enough to meet a second rock lifted into the river's own depth, so there the body should visibly divide around the obstacle instead of gliding through it. The later current runs long enough to meet a second rock lifted into the river's own depth, so there the body should visibly divide around the obstacle instead of gliding through it. The later current runs long enough to meet a second rock lifted into the river's own depth, so there the body should visibly divide around the obstacle instead of gliding through it. The later current runs long enough to meet a second rock lifted into the river's own depth, so there the body should visibly divide around the obstacle instead of gliding through it. The later current runs long enough to meet a second rock lifted into the river's own depth, so there the body should visibly divide around the obstacle instead of gliding through it. The later current runs long enough to meet a second rock lifted into the river's own depth, so there the body should visibly divide around the obstacle instead of gliding through it. The later current runs long enough to meet a second rock lifted into the river's own depth, so there the body should visibly divide around the obstacle instead of gliding through it.",
+      "properties": {
+        "sourceId": "plain-overpass-body-late",
+        "style": {
+          "zIndex": 0
+        }
+      }
+    }
+  ]
+}

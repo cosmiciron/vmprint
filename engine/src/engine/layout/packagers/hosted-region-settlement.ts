@@ -19,6 +19,41 @@ type HostedRegionTextPlacement = {
     requiredHeight: number;
 };
 
+class HostedRegionCarryoverFieldPackager implements PackagerUnit {
+    readonly actorId: string;
+    readonly sourceId: string;
+    readonly actorKind: string;
+    readonly fragmentIndex: number;
+    readonly continuationOf?: string;
+
+    constructor(
+        private readonly boxesTemplate: Box[],
+        actor: PackagerUnit
+    ) {
+        this.actorId = actor.actorId;
+        this.sourceId = actor.sourceId;
+        this.actorKind = actor.actorKind;
+        this.fragmentIndex = actor.fragmentIndex;
+        this.continuationOf = actor.continuationOf;
+    }
+
+    prepare(_availableWidth: number, _availableHeight: number, _context: PackagerContext): void {}
+    getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext) { return { minimumWidth: fullAvailableWidth }; }
+    getTransformProfile() { return { capabilities: [] }; }
+    emitBoxes(_availableWidth: number, _availableHeight: number, _context: PackagerContext): Box[] {
+        return this.boxesTemplate.map((box) => ({
+            ...box,
+            properties: { ...(box.properties || {}) },
+            meta: box.meta ? { ...box.meta } : box.meta
+        }));
+    }
+    getRequiredHeight(): number { return Math.max(0, this.boxesTemplate[0]?.h || 0); }
+    isUnbreakable(_availableHeight: number): boolean { return true; }
+    getMarginTop(): number { return 0; }
+    getMarginBottom(): number { return 0; }
+    split(_availableHeight: number, _context: PackagerContext) { return { currentFragment: null, continuationFragment: this }; }
+}
+
 function readHostedRegionFieldDirective(boxes: Box[]): SpatialFieldDirective | null {
     for (const box of boxes) {
         const directive =
@@ -31,6 +66,17 @@ function readHostedRegionFieldDirective(boxes: Box[]): SpatialFieldDirective | n
     return null;
 }
 
+function readHostedRegionElementFieldDirective(element: Element): SpatialFieldDirective | null {
+    const directive =
+        (element.properties?.spatialField as SpatialFieldDirective | undefined)
+        ?? (element.properties?.zoneField as SpatialFieldDirective | undefined);
+    return directive && typeof directive === 'object' ? directive : null;
+}
+
+function isHostedRegionFieldPublisher(element: Element): boolean {
+    return readHostedRegionElementFieldDirective(element) !== null;
+}
+
 function resolveHostedRegionFieldAnchorX(align: StoryFloatAlign, regionWidth: number, fieldWidth: number): number {
     if (align === 'right') return Math.max(0, regionWidth - fieldWidth);
     if (align === 'center') return Math.max(0, (regionWidth - fieldWidth) / 2);
@@ -41,7 +87,8 @@ function buildHostedRegionFieldState(
     emitted: Box[],
     directive: SpatialFieldDirective,
     regionWidth: number,
-    baseY: number
+    baseY: number,
+    zIndex: number
 ): { boxes: Box[]; field: HostedRegionFieldState } {
     const anchorBox = emitted[0];
     const align = directive.align ?? 'left';
@@ -84,14 +131,98 @@ function buildHostedRegionFieldState(
             obstacles: buildExclusionFieldObstacles({
                 x: fieldX,
                 y: fieldY,
-                width: fieldWidth,
-                height: fieldHeight,
+                w: fieldWidth,
+                h: fieldHeight,
                 gap: directive.gap ?? 0,
                 shape: directive.shape ?? 'rect',
                 align,
+                zIndex,
                 wrap,
                 exclusionAssembly: directive.exclusionAssembly
             })
+        }
+    };
+}
+
+function materializeHostedRegionFieldPublisher(
+    actor: PackagerUnit,
+    element: Element,
+    regionWidth: number,
+    availableHeight: number,
+    context: PackagerContext,
+    baseY: number,
+    zIndex: number
+): { boxes: Box[]; field: HostedRegionFieldState; directive: SpatialFieldDirective } | null {
+    actor.prepare(regionWidth, availableHeight, {
+        ...context,
+        contentWidthOverride: regionWidth,
+        pageWidth: regionWidth
+    });
+    const emitted = actor.emitBoxes(regionWidth, availableHeight, {
+        ...context,
+        contentWidthOverride: regionWidth,
+        pageWidth: regionWidth
+    }) || [];
+    const directive = readHostedRegionFieldDirective(emitted) ?? readHostedRegionElementFieldDirective(element);
+    if (!directive) return null;
+    const fieldState = buildHostedRegionFieldState(
+        emitted,
+        directive,
+        regionWidth,
+        baseY,
+        Number.isFinite(Number(directive.zIndex)) ? Number(directive.zIndex) : zIndex
+    );
+    return {
+        boxes: annotateHostedActorBoxes(actor, fieldState.boxes),
+        field: fieldState.field,
+        directive
+    };
+}
+
+function cloneShiftedFieldDirective(
+    directive: SpatialFieldDirective,
+    deltaY: number
+): SpatialFieldDirective {
+    return {
+        ...directive,
+        y: Math.max(0, Number(directive.y ?? 0) - deltaY)
+    };
+}
+
+function buildHostedRegionFieldCarryoverEntry(
+    entry: HostedRegionActorEntry,
+    emitted: Box[],
+    directive: SpatialFieldDirective,
+    deltaY: number
+): HostedRegionActorEntry {
+    const shiftedDirective = cloneShiftedFieldDirective(directive, deltaY);
+    const shiftedBoxes = emitted.map((box) => ({
+        ...box,
+        properties: {
+            ...(box.properties || {}),
+            ...(box.properties?.spatialField
+                ? { spatialField: shiftedDirective }
+                : {}),
+            ...(box.properties?.zoneField
+                ? { zoneField: shiftedDirective }
+                : {})
+        },
+        meta: box.meta ? { ...box.meta } : box.meta
+    }));
+
+    return {
+        actor: new HostedRegionCarryoverFieldPackager(shiftedBoxes, entry.actor),
+        element: {
+            ...entry.element,
+            properties: {
+                ...(entry.element.properties || {}),
+                ...(entry.element.properties?.spatialField
+                    ? { spatialField: shiftedDirective }
+                    : {}),
+                ...(entry.element.properties?.zoneField
+                    ? { zoneField: shiftedDirective }
+                    : {})
+            }
         }
     };
 }
@@ -115,7 +246,8 @@ function resolveHostedRegionLane(
     regionWidth: number,
     top: number,
     height: number,
-    fields: HostedRegionFieldState[]
+    fields: HostedRegionFieldState[],
+    queryZIndex: number
 ): { x: number; width: number } {
     const bottom = top + Math.max(0, height);
     const occupied: Array<{ start: number; end: number }> = [];
@@ -123,6 +255,7 @@ function resolveHostedRegionLane(
     for (const field of fields) {
         if (field.wrap !== 'around') continue;
         for (const obstacle of field.obstacles) {
+            if (Number(obstacle.zIndex ?? 0) !== queryZIndex) continue;
             if (!intersectsVertically(obstacle, top, bottom)) continue;
             occupied.push({
                 start: Math.max(0, obstacle.x),
@@ -166,6 +299,11 @@ function resolveHostedRegionLane(
     }
 
     return { x: bestX, width: bestWidth };
+}
+
+function resolveHostedRegionActorZIndex(element: Element): number {
+    const style = element.properties?.style as { zIndex?: unknown } | undefined;
+    return Number.isFinite(Number(style?.zIndex)) ? Number(style?.zIndex) : 0;
 }
 
 function buildHostedRegionSpatialMap(fields: HostedRegionFieldState[]): SpatialMap {
@@ -222,11 +360,35 @@ function placePackagersInHostedRegion(
 
     for (const entry of packagers) {
         const actor = entry.actor;
+        const fieldDirective = readHostedRegionElementFieldDirective(entry.element);
+        const actorZIndex = resolveHostedRegionActorZIndex(entry.element);
         const marginTop = actor.getMarginTop();
         const marginBottom = actor.getMarginBottom();
         const layoutBefore = lastSpacingAfter + marginTop;
         const layoutDelta = lastSpacingAfter;
         const blockTop = currentY + layoutDelta;
+
+        if (fieldDirective) {
+            const context: PackagerContext = {
+                ...contextBase,
+                pageIndex: 0,
+                cursorY: currentY
+            };
+            const fieldPublisher = materializeHostedRegionFieldPublisher(
+                actor,
+                entry.element,
+                availableWidth,
+                Infinity,
+                context,
+                blockTop,
+                actorZIndex
+            );
+            if (fieldPublisher) {
+                placedBoxes.push(...fieldPublisher.boxes);
+                activeFields.push(fieldPublisher.field);
+                continue;
+            }
+        }
 
         const textPlacement = tryPlaceHostedRegionTextActor(
             actor,
@@ -244,7 +406,7 @@ function placePackagersInHostedRegion(
             continue;
         }
 
-        const initialLane = resolveHostedRegionLane(availableWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields);
+        const initialLane = resolveHostedRegionLane(availableWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields, actorZIndex);
         const context: PackagerContext = {
             ...contextBase,
             pageIndex: 0,
@@ -261,7 +423,7 @@ function placePackagersInHostedRegion(
             LAYOUT_DEFAULTS.minEffectiveHeight,
             actor.getRequiredHeight() - marginTop - marginBottom + layoutBefore + marginBottom
         );
-        const lane = resolveHostedRegionLane(availableWidth, blockTop, provisionalHeight, activeFields);
+        const lane = resolveHostedRegionLane(availableWidth, blockTop, provisionalHeight, activeFields, actorZIndex);
         const laneContext: PackagerContext = {
             ...context,
             contentWidthOverride: lane.width || availableWidth,
@@ -271,10 +433,16 @@ function placePackagersInHostedRegion(
             actor.prepare(lane.width || availableWidth, Infinity, laneContext);
         }
         const emitted = actor.emitBoxes(lane.width || availableWidth, Infinity, laneContext) || [];
-        const fieldDirective = readHostedRegionFieldDirective(emitted);
+        const emittedFieldDirective = readHostedRegionFieldDirective(emitted);
 
-        if (fieldDirective) {
-            const fieldState = buildHostedRegionFieldState(emitted, fieldDirective, availableWidth, blockTop);
+        if (emittedFieldDirective) {
+            const fieldState = buildHostedRegionFieldState(
+                emitted,
+                emittedFieldDirective,
+                availableWidth,
+                blockTop,
+                Number.isFinite(Number(emittedFieldDirective.zIndex)) ? Number(emittedFieldDirective.zIndex) : actorZIndex
+            );
             placedBoxes.push(...annotateHostedActorBoxes(actor, fieldState.boxes));
             activeFields.push(fieldState.field);
             continue;
@@ -317,19 +485,22 @@ export function runHostedRegionSessionBounded(
     const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
     const placedBoxes: Box[] = [];
     const activeFields: HostedRegionFieldState[] = [];
+    const carryoverActors: HostedRegionActorEntry[] = [];
     let currentY = 0;
     let lastSpacingAfter = 0;
 
     for (let actorIndex = 0; actorIndex < zone.actors.length; actorIndex++) {
         const entry = zone.actors[actorIndex];
         const actor = entry.actor;
+        const fieldDirective = readHostedRegionElementFieldDirective(entry.element);
+        const actorZIndex = resolveHostedRegionActorZIndex(entry.element);
         const marginTop = actor.getMarginTop();
         const marginBottom = actor.getMarginBottom();
         const layoutBefore = lastSpacingAfter + marginTop;
         const layoutDelta = lastSpacingAfter;
         const remainingHeight = Math.max(0, availableHeight - currentY - layoutDelta);
         const blockTop = currentY + layoutDelta;
-        const initialLane = resolveHostedRegionLane(zoneWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields);
+        const initialLane = resolveHostedRegionLane(zoneWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields, actorZIndex);
         const context: PackagerContext = {
             ...zoneContextBase,
             pageIndex: 0,
@@ -340,6 +511,39 @@ export function runHostedRegionSessionBounded(
             contentWidthOverride: initialLane.width || zoneWidth,
             pageWidth: initialLane.width || zoneWidth
         };
+
+        if (fieldDirective) {
+            const fieldPublisher = materializeHostedRegionFieldPublisher(
+                actor,
+                entry.element,
+                zoneWidth,
+                remainingHeight,
+                context,
+                blockTop,
+                actorZIndex
+            );
+            if (fieldPublisher) {
+                const anchorBox = fieldPublisher.boxes[0];
+                const fieldTop = Number.isFinite(fieldDirective.y) ? Math.max(0, Number(fieldDirective.y)) : blockTop;
+                const fieldBottom = fieldTop + Math.max(0, anchorBox?.h || 0);
+                if (fieldBottom > availableHeight + 0.01) {
+                    carryoverActors.push(
+                        buildHostedRegionFieldCarryoverEntry(
+                            entry,
+                            fieldPublisher.boxes,
+                            fieldPublisher.directive,
+                            availableHeight
+                        )
+                    );
+                }
+                if (fieldTop >= availableHeight - 0.01) {
+                    continue;
+                }
+                placedBoxes.push(...fieldPublisher.boxes);
+                activeFields.push(fieldPublisher.field);
+                continue;
+            }
+        }
 
         const textPlacement = tryPlaceHostedRegionTextActor(
             actor,
@@ -359,7 +563,8 @@ export function runHostedRegionSessionBounded(
                     hasOverflow: true,
                     continuation: {
                         nextActorIndex: actorIndex,
-                        continuationFragment: actor
+                        continuationFragment: actor,
+                        prefixActors: carryoverActors.length > 0 ? carryoverActors : undefined
                     }
                 };
             }
@@ -374,7 +579,7 @@ export function runHostedRegionSessionBounded(
             LAYOUT_DEFAULTS.minEffectiveHeight,
             actor.getRequiredHeight() - marginTop - marginBottom + layoutBefore + marginBottom
         );
-        const lane = resolveHostedRegionLane(zoneWidth, blockTop, provisionalHeight, activeFields);
+        const lane = resolveHostedRegionLane(zoneWidth, blockTop, provisionalHeight, activeFields, actorZIndex);
         const laneContext: PackagerContext = {
             ...context,
             contentWidthOverride: lane.width || zoneWidth,
@@ -388,7 +593,22 @@ export function runHostedRegionSessionBounded(
             const emitted = actor.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
             const fieldDirective = readHostedRegionFieldDirective(emitted);
             if (fieldDirective) {
-                const fieldState = buildHostedRegionFieldState(emitted, fieldDirective, zoneWidth, blockTop);
+                const anchorBox = emitted[0];
+                const fieldTop = Number.isFinite(fieldDirective.y) ? Math.max(0, Number(fieldDirective.y)) : blockTop;
+                const fieldBottom = fieldTop + Math.max(0, anchorBox?.h || 0);
+                if (fieldBottom > availableHeight + 0.01) {
+                    carryoverActors.push(buildHostedRegionFieldCarryoverEntry(entry, emitted, fieldDirective, availableHeight));
+                }
+                if (fieldTop >= availableHeight - 0.01) {
+                    continue;
+                }
+                const fieldState = buildHostedRegionFieldState(
+                    emitted,
+                    fieldDirective,
+                    zoneWidth,
+                    blockTop,
+                    Number.isFinite(Number(fieldDirective.zIndex)) ? Number(fieldDirective.zIndex) : actorZIndex
+                );
                 placedBoxes.push(...annotateHostedActorBoxes(actor, fieldState.boxes));
                 activeFields.push(fieldState.field);
                 continue;
@@ -418,7 +638,8 @@ export function runHostedRegionSessionBounded(
                 hasOverflow: true,
                 continuation: {
                     nextActorIndex: actorIndex,
-                    continuationFragment: actor
+                    continuationFragment: actor,
+                    prefixActors: carryoverActors.length > 0 ? carryoverActors : undefined
                 }
             };
         }
@@ -454,10 +675,25 @@ export function runHostedRegionSessionBounded(
                 hasOverflow: true,
                 continuation: {
                     nextActorIndex: actorIndex,
-                    continuationFragment: split.continuationFragment
+                    continuationFragment: split.continuationFragment,
+                    prefixActors: carryoverActors.length > 0 ? carryoverActors : undefined
                 }
             };
         }
+    }
+
+    if (carryoverActors.length > 0) {
+        return {
+            boxes: placedBoxes,
+            height: currentY + lastSpacingAfter,
+            consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
+            hasOverflow: true,
+            continuation: {
+                nextActorIndex: zone.actors.length,
+                continuationFragment: null,
+                prefixActors: carryoverActors
+            }
+        };
     }
 
     return {

@@ -1,4 +1,4 @@
-import type { Box, DebugZoneRegion, Page, PageRegionContent, PageReservationSelector } from '../types';
+import type { Box, DebugRegion, Page, PageRegionContent, PageReservationSelector } from '../types';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
 import { getTailSplitPostAttemptOutcome } from './actor-formation';
@@ -540,7 +540,7 @@ export class PageSurface {
         public readonly width: number,
         public readonly height: number,
         public readonly boxes: Box[],
-        public readonly debugZones: DebugZoneRegion[] = []
+        public readonly debugRegions: DebugRegion[] = []
     ) { }
 
     finalize(): Page {
@@ -549,7 +549,7 @@ export class PageSurface {
             width: this.width,
             height: this.height,
             boxes: this.boxes,
-            ...(this.debugZones.length > 0 ? { debugZones: this.debugZones.map((zone) => ({ ...zone })) } : {})
+            ...(this.debugRegions.length > 0 ? { debugRegions: this.debugRegions.map((region) => ({ ...region })) } : {})
         };
     }
 }

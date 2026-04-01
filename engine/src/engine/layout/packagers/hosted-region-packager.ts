@@ -1,4 +1,4 @@
-import { Box, DebugZoneRegion, Element, ElementStyle, RichLine, ZoneWorldBehavior } from '../../types';
+import { Box, DebugRegion, Element, ElementStyle, RichLine, ZoneWorldBehavior } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import type { NormalizedIndependentZoneStrip } from '../normalized-zone-strip';
 import {
@@ -208,7 +208,9 @@ export class HostedRegionPackager implements PackagerUnit {
     }
 
     private usesSpanningContinuation(): boolean {
-        return this.frameOverflowMode === 'continue' && this.worldBehaviorMode === 'expandable';
+        if (this.frameOverflowMode !== 'continue') return false;
+        if (this.worldBehaviorMode === 'expandable') return true;
+        return this.sourceKind === 'world-plain' && this.worldBehaviorMode === 'spanning';
     }
 
     get pageBreakBefore(): boolean | undefined {
@@ -503,10 +505,12 @@ export class HostedRegionPackager implements PackagerUnit {
                 properties: tag
                     ? {
                         ...(b.properties || {}),
-                        __vmprintZoneDebugPage: {
+                        __vmprintRegionDebugPage: {
                             fieldActorId: this.actorId,
                             fieldSourceId: this.sourceId,
                             sourceKind: tag.sourceKind,
+                            regionId: tag.zoneId,
+                            regionIndex: tag.zoneIndex,
                             zoneId: tag.zoneId,
                             zoneIndex: tag.zoneIndex,
                             x: leftMargin + tag.rect.x,
@@ -522,7 +526,7 @@ export class HostedRegionPackager implements PackagerUnit {
         });
     }
 
-    getDebugRegions(): DebugZoneRegion[] {
+    getDebugRegions(): DebugRegion[] {
         const availableWidth = this.lastAvailableWidth > 0 ? this.lastAvailableWidth : 0;
         const regions = this.describeRegions(availableWidth);
         const boxes = this.usesSpanningContinuation() ? (this.boundedBoxes || []) : (this.materializedBoxes || []);
@@ -547,6 +551,8 @@ export class HostedRegionPackager implements PackagerUnit {
                 fieldActorId: this.actorId,
                 fieldSourceId: this.sourceId,
                 sourceKind: this.sourceKind,
+                regionId: zone.id,
+                regionIndex: zoneIndex,
                 zoneId: zone.id,
                 zoneIndex,
                 x: this.lastEmittedLeftMargin + zone.rect.x,

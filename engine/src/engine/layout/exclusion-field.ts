@@ -11,6 +11,7 @@ export interface ExclusionFieldDescriptor {
     shape?: StoryFloatShape;
     align?: StoryFloatAlign;
     exclusionAssembly?: StoryExclusionAssembly;
+    zIndex?: number;
 }
 
 /**
@@ -38,7 +39,8 @@ export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescripto
             wrap: descriptor.wrap,
             gap,
             shape: normalizedShape,
-            align: descriptor.align
+            align: descriptor.align,
+            zIndex: Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0
         }];
     }
 
@@ -49,7 +51,10 @@ export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescripto
         h: Math.max(0, Number(member.h ?? 0)),
         wrap: descriptor.wrap,
         gap,
-        shape: ((member.shape ?? 'rect') as 'rect' | 'circle')
+        shape: ((member.shape ?? 'rect') as 'rect' | 'circle'),
+        zIndex: Number.isFinite(Number(member.zIndex))
+            ? Number(member.zIndex)
+            : (Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0)
         // Deliberately omit align here: assembled members should carve as local
         // lobes, not inherit the solitary edge-extension heuristic used for
         // single left/right circles.

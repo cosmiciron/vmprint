@@ -301,6 +301,23 @@ function assertWorldPlainDefaultContinueSignals(pages: any[], fixtureName: strin
     );
 }
 
+function assertWorldPlainSpanningSignals(pages: any[], fixtureName: string): void {
+    assert.ok(pages.length >= 2, `${fixtureName}: expected spanning worldPlain fixture to span at least two pages`);
+    assert.deepEqual(
+        pageIndexesForSourceId(pages, 'plain-spanning-lead'),
+        [0],
+        `${fixtureName}: spanning lead paragraph should begin on page 1`
+    );
+    assert.ok(
+        pageIndexesForSourceId(pages, 'plain-spanning-main').some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: spanning world body should continue onto a later page`
+    );
+    assert.ok(
+        pageIndexesForSourceId(pages, 'plain-spanning-later').some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: later spanning world paragraph should remain visible in continued world flow`
+    );
+}
+
 function assertWorldPlainConservativeSignals(pages: any[], fixtureName: string): void {
     assert.equal(pages.length, 1, `${fixtureName}: expected conservative worldPlain override fixture to remain on a single page`);
     assert.ok(
@@ -837,6 +854,75 @@ function assertWorldPlainAbsoluteRockSignals(pages: any[], fixtureName: string):
         wrappedParagraphs.length >= 1,
         `${fixtureName}: expected ordinary world-plain labels to split into multiple scanline slots around the rock`
     );
+}
+
+function assertWorldPlainZOverpassSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    const lowRockBoxes = allBoxes.filter((box: any) => {
+        const sourceId = String(box.meta?.sourceId || '');
+        return sourceId === 'plain-overpass-low-rock' || sourceId.endsWith(':plain-overpass-low-rock');
+    });
+    const highRockBoxes = allBoxes.filter((box: any) => {
+        const sourceId = String(box.meta?.sourceId || '');
+        return sourceId === 'plain-overpass-high-rock' || sourceId.endsWith(':plain-overpass-high-rock');
+    });
+    assert.ok(lowRockBoxes.length >= 1, `${fixtureName}: expected a visible lower-z rock actor inside the world plain`);
+    assert.ok(highRockBoxes.length >= 1, `${fixtureName}: expected a visible same-z rock actor inside the world plain`);
+
+    const wrappedParagraphs = allBoxes.filter((box: any) => {
+        if (String(box.type || '').toLowerCase() !== 'p') return false;
+        const sourceId = String(box.meta?.sourceId || '');
+        if (!(sourceId === 'plain-overpass-body-late' || sourceId.endsWith(':plain-overpass-body-late'))) return false;
+        const debug = box.properties?.__vmprintZoneDebug;
+        if (!debug || debug.zoneId !== 'plain') return false;
+        const offsets = Array.isArray(box.properties?._lineOffsets)
+            ? box.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+            : [];
+        const yOffsets = Array.isArray(box.properties?._lineYOffsets)
+            ? box.properties._lineYOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+            : [];
+        if (offsets.length < 2 || yOffsets.length < 2) return false;
+        const bands = new Map<string, Set<string>>();
+        for (let i = 0; i < Math.min(offsets.length, yOffsets.length); i++) {
+            const bandKey = Number(yOffsets[i]).toFixed(2);
+            const set = bands.get(bandKey) ?? new Set<string>();
+            set.add(Number(offsets[i]).toFixed(2));
+            bands.set(bandKey, set);
+            if (set.size >= 2) return true;
+        }
+        return false;
+    });
+    assert.ok(
+        wrappedParagraphs.length >= 1,
+        `${fixtureName}: expected the higher-z river to wrap once it reaches the same-z rock`
+    );
+
+    const earlyRiverBoxes = allBoxes.filter((box: any) => {
+        if (String(box.type || '').toLowerCase() !== 'p') return false;
+        const sourceId = String(box.meta?.sourceId || '');
+        return sourceId === 'plain-overpass-body-early' || sourceId.endsWith(':plain-overpass-body-early');
+    });
+    const earlyWrappedCount = earlyRiverBoxes.filter((box: any) => {
+        const debug = box.properties?.__vmprintZoneDebug;
+        if (!debug || debug.zoneId !== 'plain') return false;
+        const offsets = Array.isArray(box.properties?._lineOffsets)
+            ? box.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+            : [];
+        const yOffsets = Array.isArray(box.properties?._lineYOffsets)
+            ? box.properties._lineYOffsets.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+            : [];
+        if (offsets.length < 2 || yOffsets.length < 2) return false;
+        const bands = new Map<string, Set<string>>();
+        for (let i = 0; i < Math.min(offsets.length, yOffsets.length); i++) {
+            const bandKey = Number(yOffsets[i]).toFixed(2);
+            const set = bands.get(bandKey) ?? new Set<string>();
+            set.add(Number(offsets[i]).toFixed(2));
+            bands.set(bandKey, set);
+            if (set.size >= 2) return true;
+        }
+        return false;
+    }).length;
+    assert.equal(earlyWrappedCount, 0, `${fixtureName}: expected the early river to pass over the lower-z rock without wrap slots`);
 }
 
 function assertStoryMultiColumnSignals(pages: any[], fixtureName: string): void {
@@ -1781,6 +1867,24 @@ async function run() {
                 'explicit move-whole and fixed settings should preserve the current conservative single-page world-plain path',
                 () => {
                     assertWorldPlainConservativeSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '34-world-plain-spanning.json') {
+            _check(
+                `${fixture.name} world-plain spanning signals`,
+                'explicit continue plus spanning should behave as a real world-host continuation mode instead of collapsing to conservative behavior',
+                () => {
+                    assertWorldPlainSpanningSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '35-world-plain-z-overpass.json') {
+            _check(
+                `${fixture.name} world-plain z overpass signals`,
+                'higher-z world flow should pass over a lower-z rock instead of wrapping around it while the rock remains visible below',
+                () => {
+                    assertWorldPlainZOverpassSignals(pagesA, fixture.name);
                 }
             );
         }

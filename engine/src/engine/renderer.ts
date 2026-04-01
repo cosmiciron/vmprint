@@ -10,7 +10,7 @@ import {
     RendererBoxProperties,
     RendererLine
 } from './render/types';
-import { drawDebugBoxOverlay, drawDebugPageMargins, drawDebugZoneOverlay } from './render/debug-draw';
+import { drawDebugBoxOverlay, drawDebugPageMargins, drawDebugRegionOverlay } from './render/debug-draw';
 import {
     drawBoxBackground,
     drawBoxBorders,
@@ -112,9 +112,9 @@ export class Renderer {
                     debugLabelFontId,
                     debugLabelFontAscent
                 );
-                (page.debugZones || []).forEach((zone) => drawDebugZoneOverlay(
+                (page.debugRegions || []).forEach((region) => drawDebugRegionOverlay(
                     context,
-                    zone,
+                    region,
                     debugLabelFontId,
                     debugLabelFontAscent
                 ));
