@@ -1544,6 +1544,13 @@ function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: s
     assert.equal(reader.pageCount, pages.length, `${fixtureName}: simulation report pageCount mismatch`);
     assert.ok(reader.progression, `${fixtureName}: simulation report should expose progression summary`);
     assert.ok(reader.capture, `${fixtureName}: simulation report should expose capture summary`);
+    assert.ok(reader.world, `${fixtureName}: simulation report should expose world summary`);
+    assert.equal(reader.world?.progressionPolicy, 'until-settled', `${fixtureName}: world progressionPolicy mismatch`);
+    assert.equal(reader.world?.capturePolicy, 'settle-immediately', `${fixtureName}: world capturePolicy mismatch`);
+    assert.equal(reader.world?.stopReason, 'settled', `${fixtureName}: world stopReason mismatch`);
+    assert.equal(reader.world?.captureMaxTicks, null, `${fixtureName}: world captureMaxTicks mismatch`);
+    assert.equal(reader.world?.currentTick, reader.progression?.finalTick, `${fixtureName}: world/progression tick mismatch`);
+    assert.ok((reader.world?.pageCaptures.length || 0) >= 1, `${fixtureName}: world summary should expose page captures`);
     assert.equal(reader.progression?.policy, 'until-settled', `${fixtureName}: progression policy mismatch`);
     assert.equal(reader.progression?.stopReason, 'settled', `${fixtureName}: progression stopReason mismatch`);
     assert.equal(reader.progression?.captureKind, 'finalized-pages', `${fixtureName}: progression captureKind mismatch`);
@@ -2962,6 +2969,11 @@ async function run() {
             assert.equal(reader.capture?.requestedMaxTicks, 10, 'clock cooking board should record the requested fixed tick horizon');
             assert.equal(reader.capture?.capturedAtTick, 10, 'clock cooking board capture should occur at tick 10');
             assert.equal(reader.capture?.satisfiedBy, 'fixed-tick-count', 'clock cooking board capture should be satisfied by the fixed tick horizon');
+            assert.equal(reader.world?.progressionPolicy, 'fixed-tick-count', 'clock cooking board world summary should expose fixed-tick progression');
+            assert.equal(reader.world?.capturePolicy, 'fixed-tick-count', 'clock cooking board world summary should expose fixed-tick capture policy');
+            assert.equal(reader.world?.captureMaxTicks, 10, 'clock cooking board world summary should retain the requested capture horizon');
+            assert.equal(reader.world?.currentTick, 10, 'clock cooking board world summary should capture the final tick');
+            assert.ok((reader.world?.pageCaptures.length || 0) > 0, 'clock cooking board world summary should expose page captures');
             const timeline = reader.require(simulationArtifactKeys.temporalPresentationTimeline);
             assert.ok(timeline.length >= 2, 'clock cooking board should publish a temporal presentation timeline');
             assert.equal(timeline.at(-1)?.tick, 10, 'clock cooking board timeline should end at the final cooked tick');

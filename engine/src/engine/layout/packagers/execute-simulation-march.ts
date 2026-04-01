@@ -66,12 +66,7 @@ export function executeSimulationMarch(
     const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
         prevAfter + marginTop;
 
-    session.setSimulationProgressionPolicy(progression.policy);
-    session.setSimulationCapturePolicy(
-        progression.policy === 'fixed-tick-count' ? 'fixed-tick-count' : 'settle-immediately',
-        progression.policy === 'fixed-tick-count' ? progression.maxTicks : null
-    );
-    session.resumeSimulationProgression();
+    session.beginSimulationRun(progression);
     session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
     if (reactiveCheckpointsEnabled()) {
         session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, 'page');
@@ -532,31 +527,25 @@ export function executeSimulationMarch(
         });
 
         if (!maybeSettleAtCheckpoint()) {
-            const fixedTickHorizonReached =
-                progression.policy === 'fixed-tick-count'
-                && session.getSimulationTick() >= progression.maxTicks;
-
-            if (!fixedTickHorizonReached && progression.policy === 'fixed-tick-count') {
-                continue;
-            }
-            if (
-                !fixedTickHorizonReached
-                &&
+            const currentTick = session.getSimulationTick();
+            const hasActiveSteppedActors =
                 steppedActorsEnabled()
                 && session.hasActiveSteppedActors(
                     {
                         ...contextBase,
-                        simulationTick: session.getSimulationTick()
+                        simulationTick: currentTick
                     },
                     currentPageIndex,
                     currentY
-                )
-            ) {
+                );
+
+            if (session.shouldContinueAfterPaginationFinalized({
+                currentTick,
+                hasActiveSteppedActors
+            })) {
                 continue;
             }
-            session.stopSimulationProgression(
-                fixedTickHorizonReached ? 'fixed-tick-count' : 'settled'
-            );
+            session.stopSimulationProgression(session.resolveSimulationStopReason(currentTick));
             break;
         }
     }

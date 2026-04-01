@@ -13,7 +13,7 @@ import type { AsyncThoughtSummary } from './collaborators/async-thought-runtime-
 import type { TemporalPresentationTimeline } from './collaborators/temporal-presentation-collaborator';
 import type { InteractionArtifactSummary } from './collaborators/interaction-artifact-collaborator';
 import type { ViewportCaptureSummary } from './collaborators/viewport-capture-artifact-collaborator';
-import type { LayoutProfileMetrics } from './layout-session-types';
+import type { LayoutProfileMetrics, PageCaptureRecord } from './layout-session-types';
 import type { Page } from '../types';
 import type { SimulationProgressionPolicy, SimulationStopReason } from '../types';
 
@@ -79,6 +79,7 @@ export type SimulationReport = {
     actorCount: number;
     splitTransitionCount: number;
     generatedBoxCount: number;
+    world: SimulationWorldSummary;
     progression: SimulationProgressionSummary;
     capture: SimulationCaptureSummary;
     profile: LayoutProfileMetrics;
@@ -104,12 +105,23 @@ export type SimulationCaptureSummary = {
     capturedAtTick: number;
 };
 
+export type SimulationWorldSummary = {
+    currentTick: number;
+    progressionPolicy: SimulationProgressionPolicy;
+    stopReason: SimulationStopReason;
+    progressionStopped: boolean;
+    capturePolicy: SimulationCapturePolicy;
+    captureMaxTicks: number | null;
+    pageCaptures: readonly PageCaptureRecord[];
+};
+
 export type SimulationReportReader = {
     readonly report: SimulationReport | null | undefined;
     readonly pageCount: number;
     readonly actorCount: number;
     readonly splitTransitionCount: number;
     readonly generatedBoxCount: number;
+    readonly world: SimulationWorldSummary | undefined;
     readonly progression: SimulationProgressionSummary | undefined;
     readonly capture: SimulationCaptureSummary | undefined;
     readonly profile: LayoutProfileMetrics | undefined;
@@ -178,6 +190,7 @@ export function createSimulationReportReader(
         actorCount: report?.actorCount ?? 0,
         splitTransitionCount: report?.splitTransitionCount ?? 0,
         generatedBoxCount: report?.generatedBoxCount ?? 0,
+        world: report?.world,
         progression: report?.progression,
         capture: report?.capture,
         profile: report?.profile,

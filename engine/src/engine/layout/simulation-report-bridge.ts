@@ -1,17 +1,16 @@
 import type { Page } from '../types';
-import type { SimulationProgressionPolicy, SimulationStopReason } from '../types';
 import type {
     SimulationArtifactKey,
     SimulationArtifactMap,
     SimulationArtifacts,
-    SimulationCapturePolicy,
     SimulationCaptureSummary,
     SimulationProgressionSummary,
     SimulationReport,
-    SimulationReportReader
+    SimulationReportReader,
+    SimulationWorldSummary
 } from './simulation-report';
 import { createSimulationReportReader, simulationArtifactKeys } from './simulation-report';
-import type { LayoutProfileMetrics, PageFinalizationState } from './layout-session-types';
+import type { LayoutProfileMetrics } from './layout-session-types';
 
 export type SimulationReportBridgeHost = {
     getFinalizedPages(): readonly Page[];
@@ -19,12 +18,9 @@ export type SimulationReportBridgeHost = {
     getFragmentTransitions(): readonly unknown[];
     getPublishedArtifacts(): ReadonlyMap<string, unknown>;
     getProfileSnapshot(): LayoutProfileMetrics;
-    getSimulationTick(): number;
-    getSimulationProgressionPolicy(): SimulationProgressionPolicy;
-    getSimulationStopReason(): SimulationStopReason;
-    getSimulationCapturePolicy(): SimulationCapturePolicy;
-    getSimulationCaptureMaxTicks(): number | null;
-    isSimulationProgressionStopped(): boolean;
+    getSimulationWorldSummary(): SimulationWorldSummary;
+    getSimulationProgressionSummary(): SimulationProgressionSummary;
+    getSimulationCaptureSummary(): SimulationCaptureSummary;
     onSimulationComplete(): void;
 };
 
@@ -78,28 +74,16 @@ export class SimulationReportBridge {
             }, 0);
         }, 0);
         const profile = this.host.getProfileSnapshot();
-        const finalTick = this.host.getSimulationTick();
-        const stopReason = this.host.getSimulationStopReason();
-        const progression: SimulationProgressionSummary = {
-            policy: this.host.getSimulationProgressionPolicy(),
-            stopReason,
-            captureKind: 'finalized-pages',
-            finalTick,
-            progressionStopped: this.host.isSimulationProgressionStopped()
-        };
-        const capture: SimulationCaptureSummary = {
-            policy: this.host.getSimulationCapturePolicy(),
-            requestedMaxTicks: this.host.getSimulationCaptureMaxTicks(),
-            captureKind: 'finalized-pages',
-            satisfiedBy: stopReason,
-            capturedAtTick: finalTick
-        };
+        const world = this.host.getSimulationWorldSummary();
+        const progression = this.host.getSimulationProgressionSummary();
+        const capture = this.host.getSimulationCaptureSummary();
 
         return {
             pageCount: pages.length,
             actorCount: this.host.getRegisteredActors().length,
             splitTransitionCount: this.host.getFragmentTransitions().length,
             generatedBoxCount,
+            world,
             progression,
             capture,
             profile: {

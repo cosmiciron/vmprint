@@ -40,9 +40,24 @@ function normalizeLocale(locale?: string): string {
 function reorderFamiliesByPreference(families: string[], preferredFamilies: string[]): string[] {
     if (preferredFamilies.length === 0) return families;
     const preferredSet = new Set(preferredFamilies);
-    const preferred = families.filter((family) => preferredSet.has(family));
+    const familySet = new Set(families);
+    const preferred = preferredFamilies.filter((family) => familySet.has(family));
     const rest = families.filter((family) => !preferredSet.has(family));
     return [...preferred, ...rest];
+}
+
+function reorderFallbacksPreservingBase(
+    baseFamily: string,
+    fallbackFamilies: string[],
+    preferredFamilies: string[]
+): string[] {
+    return [
+        baseFamily,
+        ...reorderFamiliesByPreference(
+            fallbackFamilies.filter((family) => family !== baseFamily),
+            preferredFamilies.filter((family) => family !== baseFamily)
+        )
+    ];
 }
 
 function deriveLocalePreferredFamilies(locale: string): string[] {
@@ -304,7 +319,7 @@ export function segmentTextByFont(params: {
     const locale = normalizeLocale(params.preferredLocale);
     const fallbackOrder = params.fallbackFamilies.filter((family) => family !== baseFamily);
     const localePreferredFamilies = deriveLocalePreferredFamilies(locale);
-    const familyOrder = [baseFamily, ...reorderFamiliesByPreference(fallbackOrder, localePreferredFamilies)];
+    const familyOrder = reorderFallbacksPreservingBase(baseFamily, fallbackOrder, localePreferredFamilies);
 
     const resolveRegularFont = (family: string): any | null => {
         try {
@@ -356,7 +371,7 @@ export function segmentTextByFont(params: {
             if (clusterPrefKey === lastClusterPrefKey) {
                 preferredFamilyOrder = lastPreferredFamilyOrder;
             } else {
-                preferredFamilyOrder = reorderFamiliesByPreference(familyOrder, clusterPreferredFamilies);
+                preferredFamilyOrder = reorderFallbacksPreservingBase(baseFamily, fallbackOrder, clusterPreferredFamilies);
                 lastClusterPrefKey = clusterPrefKey;
                 lastPreferredFamilyOrder = preferredFamilyOrder;
             }
@@ -389,6 +404,4 @@ export function segmentTextByFont(params: {
     pushCurrent();
     return segments;
 }
-
-
 

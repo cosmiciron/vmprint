@@ -143,6 +143,31 @@ function testScriptSegmentationHelpers(): void {
     );
 
     _check(
+        'base family stays ahead of locale CJK fallback',
+        'a requested CJK-capable base family remains selected when it already supports the glyph',
+        () => {
+            const supportByFamily = new Map<string, boolean>([
+                ['Noto Serif SC', true],
+                ['Noto Sans SC', true],
+                ['Noto Sans JP', true]
+            ]);
+
+            const segments = segmentTextByFont({
+                text: '雪',
+                preferredLocale: 'zh-CN',
+                baseFontFamily: 'Noto Serif SC',
+                fallbackFamilies: ['Noto Sans SC', 'Noto Sans JP'],
+                getGraphemeClusters: (value) => Array.from(value),
+                resolveLoadedFamilyFont: (familyName: string) => familyName,
+                fontSupportsCluster: (font: string) => supportByFamily.get(font) === true
+            });
+
+            assert.equal(segments.length, 1);
+            assert.equal(segments[0].fontName, 'Noto Serif SC');
+        }
+    );
+
+    _check(
         'neutral whitespace inherits active run font',
         'spaces between Arabic words stay in the Arabic font run to avoid bidi fragmentation',
         () => {
@@ -1223,5 +1248,4 @@ run().catch((err) => {
     console.error('[module-extractions.spec] FAILED', err);
     process.exit(1);
 });
-
 

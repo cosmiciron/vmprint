@@ -83,9 +83,11 @@ const PERF_WATCHLIST = [
     '07-pagination-fragments.json',
     '08-dropcap-pagination.json',
     '09-tables-spans-pagination.json',
+    '10-packager-split-scenarios.json',
     '14-flow-images-multipage.json',
     '15-story-multi-column.json',
-    '20-block-floats-and-column-span.json'
+    '20-block-floats-and-column-span.json',
+    '22-story-nested-table-continuation.json'
 ] as const;
 
 const HOT_PROFILE_KEYS: HotProfileMetricKey[] = [

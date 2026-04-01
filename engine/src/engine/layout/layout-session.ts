@@ -34,7 +34,8 @@ import type {
     SimulationArtifacts,
     SimulationCapturePolicy,
     SimulationReport,
-    SimulationReportReader
+    SimulationReportReader,
+    SimulationWorldSummary
 } from './simulation-report';
 import { SimulationReportBridge } from './simulation-report-bridge';
 
@@ -114,7 +115,7 @@ import {
     type ViewportTerrain,
     type WorldSpace
 } from './layout-session-types';
-import type { SimulationProgressionPolicy, SimulationStopReason } from '../types';
+import type { SimulationProgressionConfig, SimulationProgressionPolicy, SimulationStopReason } from '../types';
 
 export {
     ConstraintField,
@@ -357,10 +358,6 @@ export class LayoutSession {
     };
     private paginationLoopState: PaginationLoopState | null = null;
     private speculativeBranchSequence = 0;
-    private simulationProgressionPolicy: SimulationProgressionPolicy = 'until-settled';
-    private simulationCapturePolicy: SimulationCapturePolicy = 'settle-immediately';
-    private simulationCaptureMaxTicks: number | null = null;
-    private simulationStopReason: SimulationStopReason = 'settled';
     private readonly flowResolveSignaturesSeen = new Set<string>();
     private scriptReplayRequested = false;
 
@@ -460,7 +457,17 @@ export class LayoutSession {
                 this.paginationLoopRuntime.resolveNextActorIndex(currentIndex, shouldAdvanceIndex),
             toPaginationLoopAction: (outcome) => this.paginationLoopRuntime.toPaginationLoopAction(outcome)
         });
-        this.simulationReportBridge = new SimulationReportBridge(this);
+        this.simulationReportBridge = new SimulationReportBridge({
+            getFinalizedPages: () => this.sessionCollaborationRuntime.getFinalizedPages(),
+            getRegisteredActors: () => this.getRegisteredActors(),
+            getFragmentTransitions: () => this.getFragmentTransitions(),
+            getPublishedArtifacts: () => this.getPublishedArtifacts(),
+            getProfileSnapshot: () => this.getProfileSnapshot(),
+            getSimulationWorldSummary: () => this.sessionWorldRuntime.getSimulationWorldSummary(),
+            getSimulationProgressionSummary: () => this.sessionWorldRuntime.getSimulationProgressionSummary(),
+            getSimulationCaptureSummary: () => this.sessionWorldRuntime.getSimulationCaptureSummary(),
+            onSimulationComplete: () => this.sessionCollaborationRuntime.onSimulationComplete()
+        });
         this.sessionCollaborationRuntime = new SessionCollaborationRuntime(
             this.eventDispatcher,
             this.lifecycleRuntime,
@@ -469,9 +476,7 @@ export class LayoutSession {
             {
                 getSession: () => this,
                 getCurrentPageIndex: () => this.currentPageIndex,
-                getProfileSnapshot: () => this.profile,
-                getSimulationCapturePolicy: () => this.simulationCapturePolicy,
-                getSimulationCaptureMaxTicks: () => this.simulationCaptureMaxTicks
+                getProfileSnapshot: () => this.profile
             }
         );
         this.placementSessionRuntime = new PlacementSessionRuntime(
@@ -530,8 +535,6 @@ export class LayoutSession {
         this.actorCommunicationRuntime.resetForSimulation();
         this.lifecycleRuntime.resetForSimulation();
         this.sessionWorldRuntime.resetForSimulation();
-        this.simulationCapturePolicy = 'settle-immediately';
-        this.simulationCaptureMaxTicks = null;
         this.eventDispatcher.onSimulationStart(this);
     }
 
@@ -925,15 +928,15 @@ export class LayoutSession {
         actorQueue: PackagerUnit[],
         checkpoint: SessionSafeCheckpoint
     ): { currentPageBoxes: Box[]; currentY: number; lastSpacingAfter: number } {
-        const currentClock = this.captureSimulationClockSnapshot();
-        const restored = this.actorCommunicationRuntime.restoreSafeCheckpoint(
-            pages,
-            actorQueue,
-            checkpoint,
-            (restoredQueue, snapshot) => this.restoreSessionBranchStateSnapshot(restoredQueue, snapshot)
+        this.recordProfile('progressionSnapshotCalls', 1);
+        return this.sessionWorldRuntime.preserveCurrentProgressionState(() =>
+            this.actorCommunicationRuntime.restoreSafeCheckpoint(
+                pages,
+                actorQueue,
+                checkpoint,
+                (restoredQueue, snapshot) => this.restoreSessionBranchStateSnapshot(restoredQueue, snapshot)
+            )
         );
-        this.restoreSimulationClockSnapshot(currentClock);
-        return restored;
     }
 
     executeSpeculativeBranch<T>(
@@ -1196,7 +1199,7 @@ export class LayoutSession {
     }
 
     getSimulationTick(): number {
-        return this.simulationClock.tick;
+        return this.sessionWorldRuntime.getCurrentTick();
     }
 
     requestAsyncThought(request: AsyncThoughtRequest): AsyncThoughtHandle | undefined {
@@ -1212,36 +1215,66 @@ export class LayoutSession {
     }
 
     setSimulationProgressionPolicy(policy: SimulationProgressionPolicy): void {
-        this.simulationProgressionPolicy = policy;
+        this.sessionWorldRuntime.setSimulationProgressionPolicy(policy);
+    }
+
+    configureSimulationRun(config: Required<SimulationProgressionConfig>): void {
+        this.sessionWorldRuntime.configureSimulationRun(config);
+    }
+
+    beginSimulationRun(config: Required<SimulationProgressionConfig>): void {
+        this.sessionWorldRuntime.startSimulationRun(config);
     }
 
     getSimulationProgressionPolicy(): SimulationProgressionPolicy {
-        return this.simulationProgressionPolicy;
+        return this.sessionWorldRuntime.getSimulationProgressionPolicy();
     }
 
     setSimulationCapturePolicy(policy: SimulationCapturePolicy, maxTicks: number | null = null): void {
-        this.simulationCapturePolicy = policy;
-        this.simulationCaptureMaxTicks = Number.isFinite(maxTicks) ? Math.max(1, Math.floor(Number(maxTicks))) : null;
+        this.sessionWorldRuntime.setSimulationCapturePolicy(policy, maxTicks);
     }
 
     getSimulationCapturePolicy(): SimulationCapturePolicy {
-        return this.simulationCapturePolicy;
+        return this.sessionWorldRuntime.getSimulationCapturePolicy();
     }
 
     getSimulationCaptureMaxTicks(): number | null {
-        return this.simulationCaptureMaxTicks;
+        return this.sessionWorldRuntime.getSimulationCaptureMaxTicks();
+    }
+
+    getSimulationWorldSummary(): SimulationWorldSummary {
+        return this.sessionWorldRuntime.getSimulationWorldSummary();
+    }
+
+    getSimulationProgressionSummary() {
+        return this.sessionWorldRuntime.getSimulationProgressionSummary();
+    }
+
+    getSimulationCaptureSummary() {
+        return this.sessionWorldRuntime.getSimulationCaptureSummary();
     }
 
     getSimulationStopReason(): SimulationStopReason {
-        return this.simulationStopReason;
+        return this.sessionWorldRuntime.getSimulationStopReason();
+    }
+
+    shouldContinueAfterPaginationFinalized(input: {
+        currentTick: number;
+        hasActiveSteppedActors: boolean;
+    }): boolean {
+        return this.sessionWorldRuntime.shouldContinueAfterPaginationFinalized(input);
+    }
+
+    resolveSimulationStopReason(currentTick: number): SimulationStopReason {
+        return this.sessionWorldRuntime.resolveSimulationStopReason(currentTick);
     }
 
     isSimulationProgressionStopped(): boolean {
-        return this.simulationClock.isStopped;
+        return !this.sessionWorldRuntime.isSimulationProgressionActive();
     }
 
-    advanceSimulationTick(): number {
-        const previousTick = this.simulationClock.tick;
+    advanceSimulationTickRaw(): number {
+        const previousTick = this.getSimulationTick();
         const nextTick = this.simulationClock.advance();
         if (nextTick !== previousTick) {
             this.recordProfile('simulationTickCount', 1);
@@ -1249,49 +1282,75 @@ export class LayoutSession {
         return nextTick;
     }
 
+    advanceSimulationTick(): number {
+        return this.sessionWorldRuntime.advanceSimulationTick();
+    }
+
     stopSimulationProgression(reason: SimulationStopReason = 'settled'): void {
-        if (this.simulationClock.isStopped) return;
-        this.simulationStopReason = reason;
-        this.simulationClock.stop();
-        this.recordProfile('progressionStopCalls', 1);
+        this.sessionWorldRuntime.stopSimulationProgression(reason);
     }
 
     resumeSimulationProgression(): void {
-        if (!this.simulationClock.isStopped) return;
-        this.simulationClock.resume();
-        this.recordProfile('progressionResumeCalls', 1);
-    }
-
-    captureSimulationClockSnapshot(): SimulationClockSnapshot {
-        this.recordProfile('progressionSnapshotCalls', 1);
-        return this.simulationClock.captureSnapshot();
-    }
-
-    restoreSimulationClockSnapshot(snapshot: SimulationClockSnapshot): void {
-        this.simulationClock.restoreSnapshot(snapshot);
+        this.sessionWorldRuntime.resumeSimulationProgression();
     }
 
     captureSessionBranchStateSnapshot(actorQueue: readonly PackagerUnit[]): SessionBranchStateSnapshot {
-        return {
-            ...this.kernel.captureLocalBranchStateSnapshot(actorQueue),
-            simulationClockSnapshot: this.captureSimulationClockSnapshot()
-        };
+        return this.sessionWorldRuntime.captureSessionBranchStateSnapshot(actorQueue);
     }
 
     restoreSessionBranchStateSnapshot(
         actorQueue: PackagerUnit[],
         snapshot: SessionBranchStateSnapshot
     ): void {
-        this.kernel.restoreLocalBranchStateSnapshot(actorQueue, snapshot);
-        this.restoreSimulationClockSnapshot(snapshot.simulationClockSnapshot);
+        this.sessionWorldRuntime.restoreSessionBranchStateSnapshot(actorQueue, snapshot);
     }
 
     getCurrentPageIndex(): number {
         return this.currentPageIndex;
     }
 
+    getSimulationTickRaw(): number {
+        return this.simulationClock.tick;
+    }
+
+    isSimulationProgressionStoppedRaw(): boolean {
+        return this.simulationClock.isStopped;
+    }
+
+    resumeSimulationProgressionClockRaw(): boolean {
+        if (!this.simulationClock.isStopped) return false;
+        this.simulationClock.resume();
+        return true;
+    }
+
+    stopSimulationProgressionClockRaw(): boolean {
+        if (this.simulationClock.isStopped) return false;
+        this.simulationClock.stop();
+        return true;
+    }
+
+    captureSimulationClockSnapshotRaw(): SimulationClockSnapshot {
+        return this.simulationClock.captureSnapshot();
+    }
+
+    restoreSimulationClockSnapshotRaw(snapshot: SimulationClockSnapshot): void {
+        this.simulationClock.restoreSnapshot(snapshot);
+    }
+
     recordReservationWrite(): void {
         this.recordProfile('reservationWrites', 1);
+    }
+
+    recordProgressionStop(): void {
+        this.recordProfile('progressionStopCalls', 1);
+    }
+
+    recordProgressionResume(): void {
+        this.recordProfile('progressionResumeCalls', 1);
+    }
+
+    recordProgressionSnapshot(): void {
+        this.recordProfile('progressionSnapshotCalls', 1);
     }
 
     getPublishedArtifacts(): ReadonlyMap<string, unknown> {

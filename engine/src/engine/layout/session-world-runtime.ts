@@ -1,11 +1,26 @@
-import type { PageReservationSelector } from '../types';
+import type {
+    PageReservationSelector,
+    SimulationProgressionConfig,
+    SimulationProgressionPolicy,
+    SimulationStopReason
+} from '../types';
+import type { PackagerUnit } from './packagers/packager-types';
+import type {
+    KernelBranchStateSnapshot,
+    SimulationCapturePolicy,
+    SimulationCaptureSummary,
+    SimulationProgressionSummary,
+    SimulationWorldSummary
+} from './simulation-report';
 import { Kernel } from './kernel';
 import type {
     PageCaptureRecord,
     PageCaptureState,
     PageExclusionIntent,
     PageReservationIntent,
+    ProgressionStateSnapshot,
     RegionReservation,
+    SimulationClockSnapshot,
     SpatialExclusion,
     ViewportDescriptor,
     ViewportRect,
@@ -15,11 +30,25 @@ import type {
 
 export type SessionWorldRuntimeHost = {
     getCurrentPageIndex(): number;
+    getSimulationTickRaw(): number;
+    isSimulationProgressionStoppedRaw(): boolean;
+    advanceSimulationTickRaw(): number;
+    resumeSimulationProgressionClockRaw(): boolean;
+    stopSimulationProgressionClockRaw(): boolean;
+    captureSimulationClockSnapshotRaw(): SimulationClockSnapshot;
+    restoreSimulationClockSnapshotRaw(snapshot: SimulationClockSnapshot): void;
     recordReservationWrite(): void;
+    recordProgressionStop(): void;
+    recordProgressionResume(): void;
+    recordProgressionSnapshot(): void;
 };
 
 export class SessionWorldRuntime {
     private readonly pageCaptures = new Map<number, PageCaptureRecord>();
+    private simulationProgressionPolicy: SimulationProgressionPolicy = 'until-settled';
+    private simulationCapturePolicy: SimulationCapturePolicy = 'settle-immediately';
+    private simulationCaptureMaxTicks: number | null = null;
+    private simulationStopReason: SimulationStopReason = 'settled';
 
     constructor(
         private readonly kernel: Kernel,
@@ -28,6 +57,10 @@ export class SessionWorldRuntime {
 
     resetForSimulation(): void {
         this.pageCaptures.clear();
+        this.simulationProgressionPolicy = 'until-settled';
+        this.simulationCapturePolicy = 'settle-immediately';
+        this.simulationCaptureMaxTicks = null;
+        this.simulationStopReason = 'settled';
     }
 
     publishArtifact(key: string, value: unknown): void {
@@ -140,6 +173,201 @@ export class SessionWorldRuntime {
 
     getPageCaptures(): readonly PageCaptureRecord[] {
         return Array.from(this.pageCaptures.values()).sort((a, b) => a.pageIndex - b.pageIndex);
+    }
+
+    configureSimulationRun(config: Required<SimulationProgressionConfig>): void {
+        this.simulationProgressionPolicy = config.policy;
+        this.simulationCapturePolicy = config.policy === 'fixed-tick-count'
+            ? 'fixed-tick-count'
+            : 'settle-immediately';
+        this.simulationCaptureMaxTicks = config.policy === 'fixed-tick-count'
+            ? Math.max(1, Math.floor(Number(config.maxTicks)))
+            : null;
+        this.simulationStopReason = 'settled';
+    }
+
+    beginSimulationRun(config: Required<SimulationProgressionConfig>): void {
+        this.configureSimulationRun(config);
+        this.simulationStopReason = 'settled';
+    }
+
+    startSimulationRun(config: Required<SimulationProgressionConfig>): boolean {
+        this.beginSimulationRun(config);
+        return this.resumeSimulationProgression();
+    }
+
+    shouldContinueAfterPaginationFinalized(input: {
+        currentTick: number;
+        hasActiveSteppedActors: boolean;
+    }): boolean {
+        const currentTick = Number.isFinite(input.currentTick) ? Math.max(0, Math.floor(input.currentTick)) : 0;
+        if (this.simulationProgressionPolicy === 'fixed-tick-count') {
+            const maxTicks = Number.isFinite(this.simulationCaptureMaxTicks)
+                ? Math.max(1, Math.floor(Number(this.simulationCaptureMaxTicks)))
+                : 1;
+            if (currentTick < maxTicks) {
+                return true;
+            }
+        }
+
+        return input.hasActiveSteppedActors;
+    }
+
+    resolveSimulationStopReason(currentTick: number): SimulationStopReason {
+        if (
+            this.simulationProgressionPolicy === 'fixed-tick-count'
+            && currentTick >= (this.simulationCaptureMaxTicks ?? 0)
+        ) {
+            return 'fixed-tick-count';
+        }
+        return 'settled';
+    }
+
+    stopSimulationRun(reason: SimulationStopReason): void {
+        this.simulationStopReason = reason;
+    }
+
+    setSimulationProgressionPolicy(policy: SimulationProgressionPolicy): void {
+        this.simulationProgressionPolicy = policy;
+    }
+
+    getSimulationProgressionPolicy(): SimulationProgressionPolicy {
+        return this.simulationProgressionPolicy;
+    }
+
+    setSimulationCapturePolicy(policy: SimulationCapturePolicy, maxTicks: number | null = null): void {
+        this.simulationCapturePolicy = policy;
+        this.simulationCaptureMaxTicks = Number.isFinite(maxTicks) ? Math.max(1, Math.floor(Number(maxTicks))) : null;
+    }
+
+    getSimulationCapturePolicy(): SimulationCapturePolicy {
+        return this.simulationCapturePolicy;
+    }
+
+    getSimulationCaptureMaxTicks(): number | null {
+        return this.simulationCaptureMaxTicks;
+    }
+
+    setSimulationStopReason(reason: SimulationStopReason): void {
+        this.simulationStopReason = reason;
+    }
+
+    getSimulationStopReason(): SimulationStopReason {
+        return this.simulationStopReason;
+    }
+
+    getCurrentTick(): number {
+        return this.host.getSimulationTickRaw();
+    }
+
+    advanceSimulationTick(): number {
+        return this.host.advanceSimulationTickRaw();
+    }
+
+    isSimulationProgressionActive(): boolean {
+        return !this.host.isSimulationProgressionStoppedRaw();
+    }
+
+    resumeSimulationRun(): boolean {
+        return this.host.resumeSimulationProgressionClockRaw();
+    }
+
+    stopSimulationRunClock(): boolean {
+        return this.host.stopSimulationProgressionClockRaw();
+    }
+
+    stopSimulationProgression(reason: SimulationStopReason = 'settled'): boolean {
+        if (!this.stopSimulationRunClock()) return false;
+        this.stopSimulationRun(reason);
+        this.host.recordProgressionStop();
+        return true;
+    }
+
+    resumeSimulationProgression(): boolean {
+        if (!this.resumeSimulationRun()) return false;
+        this.setSimulationStopReason('settled');
+        this.host.recordProgressionResume();
+        return true;
+    }
+
+    captureSimulationClockSnapshot(): SimulationClockSnapshot {
+        this.host.recordProgressionSnapshot();
+        return this.host.captureSimulationClockSnapshotRaw();
+    }
+
+    restoreSimulationClockSnapshot(snapshot: SimulationClockSnapshot): void {
+        this.host.restoreSimulationClockSnapshotRaw(snapshot);
+    }
+
+    captureProgressionStateSnapshot(): ProgressionStateSnapshot {
+        return {
+            simulationClockSnapshot: this.captureSimulationClockSnapshot()
+        };
+    }
+
+    restoreProgressionStateSnapshot(snapshot: ProgressionStateSnapshot): void {
+        this.restoreSimulationClockSnapshot(snapshot.simulationClockSnapshot);
+    }
+
+    preserveCurrentProgressionState<T>(run: () => T): T {
+        const current = this.captureProgressionStateSnapshot();
+        try {
+            return run();
+        } finally {
+            this.restoreProgressionStateSnapshot(current);
+        }
+    }
+
+    captureSessionBranchStateSnapshot(actorQueue: readonly PackagerUnit[]): SessionBranchStateSnapshot {
+        return {
+            ...this.kernel.captureLocalBranchStateSnapshot(actorQueue),
+            ...this.captureProgressionStateSnapshot()
+        };
+    }
+
+    restoreSessionBranchStateSnapshot(
+        actorQueue: PackagerUnit[],
+        snapshot: SessionBranchStateSnapshot
+    ): void {
+        this.kernel.restoreLocalBranchStateSnapshot(
+            actorQueue,
+            snapshot as KernelBranchStateSnapshot
+        );
+        this.restoreProgressionStateSnapshot(snapshot);
+    }
+
+    getSimulationWorldSummary(): SimulationWorldSummary {
+        return {
+            currentTick: this.getCurrentTick(),
+            progressionPolicy: this.simulationProgressionPolicy,
+            stopReason: this.simulationStopReason,
+            progressionStopped: this.host.isSimulationProgressionStoppedRaw(),
+            capturePolicy: this.simulationCapturePolicy,
+            captureMaxTicks: this.simulationCaptureMaxTicks,
+            pageCaptures: this.getPageCaptures()
+        };
+    }
+
+    getSimulationProgressionSummary(): SimulationProgressionSummary {
+        const world = this.getSimulationWorldSummary();
+        return {
+            policy: world.progressionPolicy,
+            stopReason: world.stopReason,
+            captureKind: 'finalized-pages',
+            finalTick: world.currentTick,
+            progressionStopped: world.progressionStopped
+        };
+    }
+
+    getSimulationCaptureSummary(): SimulationCaptureSummary {
+        const world = this.getSimulationWorldSummary();
+        return {
+            policy: world.capturePolicy,
+            requestedMaxTicks: world.captureMaxTicks,
+            captureKind: 'finalized-pages',
+            satisfiedBy: world.stopReason,
+            capturedAtTick: world.currentTick
+        };
     }
 
     createPageCaptureState(input: {
