@@ -159,6 +159,10 @@ type StoryViewportSnapshot = {
     viewportHeight: number | null;
 };
 
+type StoryActorEntry = NormalizedStoryChild & {
+    actor: PackagerUnit;
+};
+
 // ---------------------------------------------------------------------------
 // FrozenStoryPackager – holds pre-split partA boxes
 // ---------------------------------------------------------------------------
@@ -236,6 +240,7 @@ export class StoryPackager implements PackagerUnit {
     private readonly normalizedStory;
     private readonly processor: LayoutProcessor;
     private readonly storyIndex: number;
+    private storyActorEntries: StoryActorEntry[];
     /** Obstacles carried over from the preceding page (already started there). */
     private readonly initialObstacles: CarryOverObstacle[];
     private readonly deferredLeadingPackager: PackagerUnit | null;
@@ -282,6 +287,10 @@ export class StoryPackager implements PackagerUnit {
         this.actorKind = resolvedIdentity.actorKind;
         this.fragmentIndex = resolvedIdentity.fragmentIndex;
         this.continuationOf = resolvedIdentity.continuationOf;
+        this.storyActorEntries = this.normalizedStory.children.map((child) => ({
+            ...child,
+            actor: buildPackagerForElement(child.element, child.childIndex, this.processor)
+        }));
     }
 
     // -- PackagerUnit ---------------------------------------------------------
@@ -374,6 +383,78 @@ export class StoryPackager implements PackagerUnit {
     getMarginTop(): number { return 0; }
     getMarginBottom(): number { return 0; }
 
+    getHostedRuntimeActors(): readonly PackagerUnit[] {
+        return this.storyActorEntries.map((entry) => entry.actor);
+    }
+
+    handlesHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        return this.findHostedActorIndex(targetActor) >= 0;
+    }
+
+    insertHostedRuntimeActors(
+        targetActor: PackagerUnit,
+        insertions: readonly PackagerUnit[],
+        position: 'before' | 'after',
+        sourceElements?: readonly Element[]
+    ): boolean {
+        const targetIndex = this.findHostedActorIndex(targetActor);
+        if (targetIndex < 0 || !sourceElements || sourceElements.length !== insertions.length) return false;
+        const children = [...(this.storyElement.children ?? [])];
+        const insertionIndex = position === 'before' ? targetIndex : targetIndex + 1;
+        children.splice(insertionIndex, 0, ...sourceElements);
+        this.storyElement.children = children;
+        this.storyActorEntries.splice(
+            insertionIndex,
+            0,
+            ...insertions.map((actor, index) => ({
+                childIndex: -1,
+                element: sourceElements[index] as Element,
+                kind: 'flow',
+                actor
+            }))
+        );
+        this.refreshStoryActorEntries();
+        this.invalidateCachedStoryLayout();
+        return true;
+    }
+
+    deleteHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        const targetIndex = this.findHostedActorIndex(targetActor);
+        if (targetIndex < 0) return false;
+        const children = [...(this.storyElement.children ?? [])];
+        children.splice(targetIndex, 1);
+        this.storyElement.children = children;
+        this.storyActorEntries.splice(targetIndex, 1);
+        this.refreshStoryActorEntries();
+        this.invalidateCachedStoryLayout();
+        return true;
+    }
+
+    replaceHostedRuntimeActor(
+        targetActor: PackagerUnit,
+        replacements: readonly PackagerUnit[],
+        sourceElements?: readonly Element[]
+    ): boolean {
+        const targetIndex = this.findHostedActorIndex(targetActor);
+        if (targetIndex < 0 || !sourceElements || sourceElements.length !== replacements.length) return false;
+        const children = [...(this.storyElement.children ?? [])];
+        children.splice(targetIndex, 1, ...sourceElements);
+        this.storyElement.children = children;
+        this.storyActorEntries.splice(
+            targetIndex,
+            1,
+            ...replacements.map((actor, index) => ({
+                childIndex: -1,
+                element: sourceElements[index] as Element,
+                kind: 'flow',
+                actor
+            }))
+        );
+        this.refreshStoryActorEntries();
+        this.invalidateCachedStoryLayout();
+        return true;
+    }
+
     split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
         const availableWidth = this.lastAvailableWidth > 0
             ? this.lastAvailableWidth
@@ -398,7 +479,7 @@ export class StoryPackager implements PackagerUnit {
         context: PackagerContext
     ): FullPourResult {
         const margins = context.margins;
-        const children = this.normalizedStory.children;
+        const children = this.storyActorEntries;
         const storyMap = new SpatialMap();
         const registeredObstacles: OccupiedRect[] = [];
         const imageMetricsCache = new Map<number, { img: BoxImagePayload; w: number; h: number } | null>();
@@ -493,7 +574,7 @@ export class StoryPackager implements PackagerUnit {
                     const { img: imgData, w: imgW, h: imgH } = metrics;
                     if (localY + imgH < 0) continue; // wholly before this page's origin
                     const x = layout.x;
-                    const box = this.buildImageBox(child.element, margins.left + x, effectiveY, imgW, imgH, imgData, child.childIndex);
+                    const box = this.buildImageBox(child.element, margins.left + x, effectiveY, imgW, imgH, imgData, child.childIndex, child.actor);
                     allBoxes.push(box);
                     placedElements.push({
                         kind: 'image', childIndex: child.childIndex, box,
@@ -505,7 +586,7 @@ export class StoryPackager implements PackagerUnit {
                 const dims = this.measureFloatBox(child.element, availableWidth);
                 if (!dims) continue;
                 if (localY + dims.h < 0) continue; // wholly before this page's origin
-                const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+                const pkg = child.actor;
                 const absoluteContext: PackagerContext = {
                     ...this.createLocalFrameContext(
                         context,
@@ -565,7 +646,7 @@ export class StoryPackager implements PackagerUnit {
                 }
 
                 const box = this.buildImageBox(
-                    child.element, margins.left + floatX, cursorY, imgW, imgH, imgData, child.childIndex
+                    child.element, margins.left + floatX, cursorY, imgW, imgH, imgData, child.childIndex, child.actor
                 );
                 allBoxes.push(box);
                 placedElements.push({
@@ -602,7 +683,7 @@ export class StoryPackager implements PackagerUnit {
                         }
                     }
 
-                    const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+                    const pkg = child.actor;
                     const floatContext: PackagerContext = {
                         ...this.createLocalFrameContext(
                             context,
@@ -649,7 +730,7 @@ export class StoryPackager implements PackagerUnit {
                 const boxY = cursorY + marginTop;
 
                 const box = this.buildImageBox(
-                    child.element, margins.left, boxY, imgW, imgH, imgData, child.childIndex
+                    child.element, margins.left, boxY, imgW, imgH, imgData, child.childIndex, child.actor
                 );
                 allBoxes.push(box);
                 placedElements.push({
@@ -662,7 +743,7 @@ export class StoryPackager implements PackagerUnit {
 
             // ---- text / block element --------------------------------------
             const placed = this.pourTextChild(
-                child.element, child.childIndex, availableWidth, margins, storyMap, cursorY
+                child.element, child.childIndex, availableWidth, margins, storyMap, cursorY, 0, child.actor
             );
             if (placed) {
                 allBoxes.push(placed.box);
@@ -687,7 +768,8 @@ export class StoryPackager implements PackagerUnit {
         margins: { left: number },
         storyMap: SpatialMap,
         cursorY: number,
-        xOffset: number = 0
+        xOffset: number = 0,
+        actor?: PackagerUnit
     ): PlacedTextElement | null {
         const opticalUnderhang = !!((this.processor as any).config?.layout?.storyWrapOpticalUnderhang);
         const shaped = (this.processor as any).shapeElement(
@@ -709,11 +791,19 @@ export class StoryPackager implements PackagerUnit {
             clearTopBeforeStart: true
         });
         if (!placed) return null;
+        const box = actor
+            ? {
+                ...placed.box,
+                meta: placed.box.meta
+                    ? { ...placed.box.meta, actorId: actor.actorId, sourceId: placed.box.meta.sourceId ?? actor.sourceId }
+                    : { actorId: actor.actorId, sourceId: actor.sourceId }
+            }
+            : placed.box;
 
         return {
             kind: 'text',
             childIndex,
-            box: placed.box,
+            box,
             topY: placed.elementStartY,
             contentH: placed.contentHeight,
             insetV: placed.insetV,
@@ -870,7 +960,7 @@ export class StoryPackager implements PackagerUnit {
             };
         }
 
-        const children = this.normalizedStory.children;
+        const children = this.storyActorEntries;
         const registeredObstacles: OccupiedRect[] = [];
         const allObstacles: OccupiedRect[] = [];
         const allBoxes: Box[] = [];
@@ -1059,7 +1149,8 @@ export class StoryPackager implements PackagerUnit {
                         imgW,
                         imgH,
                         imgData,
-                        child.childIndex
+                        child.childIndex,
+                        child.actor
                     );
                     allBoxes.push(box);
                     continue;
@@ -1070,7 +1161,7 @@ export class StoryPackager implements PackagerUnit {
                 if (localY + dims.h < 0 || localY > resolveRegionStackHeight(regions)) continue;
                 const region = regions[projected.regionIndex];
                 const regionStartY = resolveRegionStartY(regions, region.index);
-                const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+                const pkg = child.actor;
                 const absoluteContext: PackagerContext = {
                     ...this.createLocalFrameContext(
                         context,
@@ -1110,7 +1201,7 @@ export class StoryPackager implements PackagerUnit {
                         Math.max(0, availableHeight - spanTopY)
                     )
                 };
-                const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+                const pkg = child.actor;
                 pkg.prepare(availableWidth, availableHeight - spanTopY, spanContext);
                 const spanH = pkg.getRequiredHeight();
 
@@ -1155,9 +1246,7 @@ export class StoryPackager implements PackagerUnit {
                                 remainingAfterSpan
                             )
                         };
-                        const nextPkg = buildPackagerForElement(
-                            nextFlowChild.element, nextFlowChild.childIndex, this.processor
-                        );
+                        const nextPkg = nextFlowChild.actor;
                         if (nextPkg.prepareLookahead) {
                             nextPkg.prepareLookahead(resumeRegion.w, remainingAfterSpan, nextCtx);
                         } else {
@@ -1219,7 +1308,7 @@ export class StoryPackager implements PackagerUnit {
                         }
                     }
 
-                    const box = this.buildImageBox(child.element, margins.left + x, anchorY, Math.min(imgW, region.w), imgH, imgData, child.childIndex);
+                    const box = this.buildImageBox(child.element, margins.left + x, anchorY, Math.min(imgW, region.w), imgH, imgData, child.childIndex, child.actor);
                     allBoxes.push(box);
                     cursorY = anchorY;
                     break;
@@ -1264,7 +1353,7 @@ export class StoryPackager implements PackagerUnit {
                             }
                         }
 
-                        const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+                        const pkg = child.actor;
                         const regionStartY = resolveRegionStartY(regions, region.index);
                         const floatContext: PackagerContext = {
                             ...this.createLocalFrameContext(
@@ -1306,7 +1395,7 @@ export class StoryPackager implements PackagerUnit {
                     const marginBottom = Math.max(0, flowBox.marginBottom);
                     const y = top + marginTop;
                     if (y + imgH + marginBottom <= region.h + 0.1) {
-                        const box = this.buildImageBox(child.element, margins.left + region.x, y, Math.min(imgW, region.w), imgH, imgData, child.childIndex);
+                        const box = this.buildImageBox(child.element, margins.left + region.x, y, Math.min(imgW, region.w), imgH, imgData, child.childIndex, child.actor);
                         allBoxes.push(box);
                         cursorY = y + imgH + marginBottom;
                         break;
@@ -1329,7 +1418,7 @@ export class StoryPackager implements PackagerUnit {
             // generic column-adjusted emitBoxes path — no special-casing per
             // element type required.
             // ----------------------------------------------------------
-            const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+            const pkg = child.actor;
 
             if (!(pkg instanceof FlowBoxPackager)) {
                 const completed = placeOpaquePackager(pkg, i, (continuation) => {
@@ -1345,12 +1434,13 @@ export class StoryPackager implements PackagerUnit {
                 const regionMap = this.createRegionMap(region, allObstacles);
                 const placed = this.pourTextChild(
                     workingElement,
-                    i,
+                    child.childIndex,
                     region.w,
                     { left: margins.left },
                     regionMap,
                     cursorY,
-                    region.x
+                    region.x,
+                    child.actor
                 );
 
                 if (!placed) break;
@@ -1715,7 +1805,8 @@ export class StoryPackager implements PackagerUnit {
         w: number,
         h: number,
         imgData: BoxImagePayload,
-        childIndex: number
+        childIndex: number,
+        actor?: PackagerUnit
     ): Box {
         const flowBox = (this.processor as any).shapeElement(
             element, { path: [this.storyIndex, childIndex] }
@@ -1745,8 +1836,32 @@ export class StoryPackager implements PackagerUnit {
                 _isFirstFragmentInLine: true,
                 _isLastFragmentInLine: true,
             },
-            meta: { ...flowBox.meta, pageIndex: 0 }
+            meta: {
+                ...flowBox.meta,
+                ...(actor ? { actorId: actor.actorId, sourceId: flowBox.meta?.sourceId ?? actor.sourceId } : {}),
+                pageIndex: 0
+            }
         };
+    }
+
+    private findHostedActorIndex(targetActor: PackagerUnit): number {
+        return this.storyActorEntries.findIndex((entry) => entry.actor.actorId === targetActor.actorId);
+    }
+
+    private refreshStoryActorEntries(): void {
+        const previousActors = this.storyActorEntries.map((entry) => entry.actor);
+        this.normalizedStory = normalizeStoryElement(this.storyElement);
+        this.storyActorEntries = this.normalizedStory.children.map((child, index) => ({
+            ...child,
+            actor: previousActors[index] ?? buildPackagerForElement(child.element, child.childIndex, this.processor)
+        }));
+    }
+
+    private invalidateCachedStoryLayout(): void {
+        this.lastResult = null;
+        this.lastAvailableWidth = -1;
+        this.lastAvailableHeight = -1;
+        this.lastViewportSnapshot = null;
     }
 
     /**

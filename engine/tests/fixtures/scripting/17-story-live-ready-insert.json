@@ -1,0 +1,57 @@
+---
+methods:
+  onReady(): |
+    insertBefore("story-anchor", [
+      {
+        type: "p",
+        name: "story-prelude",
+        content: "Story prelude inserted live."
+      }
+    ])
+    insertAfter("story-anchor", [
+      {
+        type: "p",
+        name: "story-epilogue",
+        content: "Story epilogue inserted live."
+      }
+    ])
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "lead",
+      "content": "Lead paragraph above story host."
+    },
+    {
+      "type": "story",
+      "name": "story-host",
+      "children": [
+        {
+          "type": "p",
+          "name": "story-anchor",
+          "content": "Story anchor stays centered."
+        },
+        {
+          "type": "p",
+          "name": "story-follow",
+          "content": "Story follow stays after inserts."
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "name": "tail",
+      "content": "Tail paragraph after story host."
+    }
+  ]
+}

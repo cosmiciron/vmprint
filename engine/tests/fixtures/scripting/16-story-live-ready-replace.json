@@ -1,0 +1,50 @@
+---
+methods:
+  onReady(): |
+    replaceElement("story-target", [
+      {
+        type: "p",
+        name: "story-replacement",
+        content: "Story-hosted target was replaced through the live runtime without replay."
+      }
+    ])
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "lead",
+      "content": "Lead paragraph above story host."
+    },
+    {
+      "type": "story",
+      "name": "story-host",
+      "children": [
+        {
+          "type": "p",
+          "name": "story-target",
+          "content": "This story-hosted target should be replaced live."
+        },
+        {
+          "type": "p",
+          "name": "story-follow",
+          "content": "Story follow paragraph should remain after the replacement naturally."
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "name": "tail",
+      "content": "Tail paragraph after story host."
+    }
+  ]
+}

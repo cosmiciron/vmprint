@@ -1,0 +1,25 @@
+{
+  "expectedTextIncludes": [
+    "Lead paragraph above story host.",
+    "Story-hosted target was replaced through the live runtime without replay.",
+    "Story follow paragraph should remain after the replacement naturally.",
+    "Tail paragraph after story host."
+  ],
+  "expectedTextExcludes": [
+    "This story-hosted target should be replaced live."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "story-target",
+      "content": "This story-hosted target should be replaced live."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "replaceCalls": 1
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

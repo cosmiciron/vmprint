@@ -1,0 +1,24 @@
+{
+  "expectedTextIncludes": [
+    "Lead paragraph above story host.",
+    "Story prelude inserted live.",
+    "Story anchor stays centered.",
+    "Story epilogue inserted live.",
+    "Story follow stays after inserts.",
+    "Tail paragraph after story host."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "story-anchor",
+      "content": "Story anchor stays centered."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "insertCalls": 2
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

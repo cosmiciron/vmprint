@@ -1,0 +1,24 @@
+{
+  "expectedTextIncludes": [
+    "Lead paragraph above story host.",
+    "Story survivor paragraph should remain after the delete.",
+    "Tail paragraph after story host."
+  ],
+  "expectedTextExcludes": [
+    "This story-hosted paragraph should vanish live."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "story-vanishing",
+      "content": "This story-hosted paragraph should vanish live."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "removeCalls": 1
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

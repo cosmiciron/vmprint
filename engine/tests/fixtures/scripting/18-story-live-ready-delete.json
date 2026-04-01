@@ -1,0 +1,44 @@
+---
+methods:
+  onReady(): |
+    deleteElement("story-vanishing")
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "lead",
+      "content": "Lead paragraph above story host."
+    },
+    {
+      "type": "story",
+      "name": "story-host",
+      "children": [
+        {
+          "type": "p",
+          "name": "story-vanishing",
+          "content": "This story-hosted paragraph should vanish live."
+        },
+        {
+          "type": "p",
+          "name": "story-survivor",
+          "content": "Story survivor paragraph should remain after the delete."
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "name": "tail",
+      "content": "Tail paragraph after story host."
+    }
+  ]
+}

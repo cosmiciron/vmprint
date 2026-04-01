@@ -252,6 +252,100 @@ async function main() {
     );
 
     _check(
+        'story children register as real runtime actors',
+        'story-hosted participants should appear in the session actor registry instead of remaining private to story layout',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 360, height: 360 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.25
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10 }
+                },
+                elements: [
+                    {
+                        type: 'story',
+                        properties: { sourceId: 'story-host' },
+                        children: [
+                            {
+                                type: 'body',
+                                content: 'Story child one should be a real runtime participant.',
+                                properties: { sourceId: 'story-child-one' }
+                            },
+                            {
+                                type: 'body',
+                                content: 'Story child two should also register honestly with the session runtime.',
+                                properties: { sourceId: 'story-child-two' }
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'story-runtime-registration.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+            const registered = engine.getCurrentLayoutSession()?.getRegisteredActors() ?? [];
+
+            assert.ok(pages.length > 0, 'expected story participation probe to paginate');
+            assert.ok(registeredActorsIncludeSource(registered, 'story-host'), 'expected story host to stay registered');
+            assert.ok(registeredActorsIncludeSource(registered, 'story-child-one'), 'expected first story child to be registered');
+            assert.ok(registeredActorsIncludeSource(registered, 'story-child-two'), 'expected second story child to be registered');
+        }
+    );
+
+    _check(
+        'story child boxes preserve child actor identity',
+        'story-hosted emitted boxes should carry the hosted child actorId so observer/update paths can see them',
+        () => {
+            const doc: DocumentInput = {
+                documentVersion: CURRENT_DOCUMENT_VERSION,
+                layout: {
+                    pageSize: { width: 360, height: 360 },
+                    margins: { top: 24, right: 24, bottom: 24, left: 24 },
+                    fontFamily: 'Arimo',
+                    fontSize: 12,
+                    lineHeight: 1.25
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    body: { marginBottom: 10 }
+                },
+                elements: [
+                    {
+                        type: 'story',
+                        properties: { sourceId: 'story-identity-host' },
+                        children: [
+                            {
+                                type: 'body',
+                                content: 'Identity-bearing story child box.',
+                                properties: { sourceId: 'story-identity-child' }
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            const resolved = resolveDocumentPaths(doc, 'story-child-identity.json');
+            const engine = new LayoutEngine(toLayoutConfig(resolved, false), runtime);
+            const pages = engine.simulate(resolved.elements);
+            const boxes = findBoxesForSource(pages, 'story-identity-child');
+
+            assert.ok(boxes.length > 0, 'expected story identity child boxes');
+            assert.ok(
+                boxes.every((box) => typeof box.meta?.actorId === 'string' && box.meta.actorId.length > 0),
+                'expected story child boxes to carry actorId metadata'
+            );
+        }
+    );
+
+    _check(
         'worldPlain publishes world-native debug identity',
         'worldPlain debug regions should preserve world-plain sourceKind instead of leaking zone-map host identity',
         () => {
