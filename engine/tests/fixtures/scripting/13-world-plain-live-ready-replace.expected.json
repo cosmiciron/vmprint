@@ -1,0 +1,25 @@
+{
+  "expectedTextIncludes": [
+    "Lead above world plain.",
+    "World plain target replaced live.",
+    "World plain follow stays.",
+    "Tail after world plain."
+  ],
+  "expectedTextExcludes": [
+    "This world plain target should disappear."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "plain-target",
+      "content": "This world plain target should disappear."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "replaceCalls": 1
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

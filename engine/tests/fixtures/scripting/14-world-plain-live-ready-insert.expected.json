@@ -1,0 +1,24 @@
+{
+  "expectedTextIncludes": [
+    "Lead above world plain.",
+    "World plain prelude inserted.",
+    "World plain anchor remains.",
+    "World plain epilogue inserted.",
+    "World plain follow stays.",
+    "Tail after world plain."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "plain-anchor",
+      "content": "World plain anchor remains."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "insertCalls": 2
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

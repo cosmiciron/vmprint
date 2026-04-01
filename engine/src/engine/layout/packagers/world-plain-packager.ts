@@ -84,6 +84,31 @@ export class WorldPlainPackager implements PackagerUnit {
         return this.inner.getHostedRuntimeActors();
     }
 
+    handlesHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        return this.inner.handlesHostedRuntimeActor(targetActor);
+    }
+
+    insertHostedRuntimeActors(
+        targetActor: PackagerUnit,
+        insertions: readonly PackagerUnit[],
+        position: 'before' | 'after',
+        sourceElements?: readonly Element[]
+    ): boolean {
+        return this.inner.insertHostedRuntimeActors(targetActor, insertions, position, sourceElements);
+    }
+
+    deleteHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        return this.inner.deleteHostedRuntimeActor(targetActor);
+    }
+
+    replaceHostedRuntimeActor(
+        targetActor: PackagerUnit,
+        replacements: readonly PackagerUnit[],
+        sourceElements?: readonly Element[]
+    ): boolean {
+        return this.inner.replaceHostedRuntimeActor(targetActor, replacements, sourceElements);
+    }
+
     prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
         this.inner.prepare(availableWidth, availableHeight, context);
     }

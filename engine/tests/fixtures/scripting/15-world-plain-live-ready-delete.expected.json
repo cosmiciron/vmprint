@@ -1,0 +1,24 @@
+{
+  "expectedTextIncludes": [
+    "Lead above world plain.",
+    "World plain follow stays.",
+    "Tail after world plain."
+  ],
+  "expectedTextExcludes": [
+    "This world plain node should vanish."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "plain-vanishing",
+      "content": "This world plain node should vanish."
+    }
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "removeCalls": 1
+  },
+  "profileEquals": {
+    "replayRequests": 0
+  }
+}

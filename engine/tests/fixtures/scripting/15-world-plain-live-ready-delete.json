@@ -1,0 +1,44 @@
+---
+methods:
+  onReady(): |
+    deleteElement("plain-vanishing")
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 12,
+    "lineHeight": 1.4,
+    "worldPlain": {
+      "style": {
+        "marginTop": 12,
+        "marginBottom": 12
+      }
+    }
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "lead",
+      "content": "Lead above world plain."
+    },
+    {
+      "type": "p",
+      "name": "plain-vanishing",
+      "content": "This world plain node should vanish."
+    },
+    {
+      "type": "p",
+      "name": "plain-follow",
+      "content": "World plain follow stays."
+    },
+    {
+      "type": "p",
+      "name": "tail",
+      "content": "Tail after world plain."
+    }
+  ]
+}

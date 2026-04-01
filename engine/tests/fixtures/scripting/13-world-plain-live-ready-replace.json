@@ -1,0 +1,50 @@
+---
+methods:
+  onReady(): |
+    replaceElement("plain-target", [
+      {
+        type: "p",
+        name: "plain-replacement",
+        content: "World plain target replaced live."
+      }
+    ])
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 12,
+    "lineHeight": 1.4,
+    "worldPlain": {
+      "style": {
+        "marginTop": 12,
+        "marginBottom": 12
+      }
+    }
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "lead",
+      "content": "Lead above world plain."
+    },
+    {
+      "type": "p",
+      "name": "plain-target",
+      "content": "This world plain target should disappear."
+    },
+    {
+      "type": "p",
+      "name": "plain-follow",
+      "content": "World plain follow stays."
+    },
+    {
+      "type": "p",
+      "name": "tail",
+      "content": "Tail after world plain."
+    }
+  ]
+}
