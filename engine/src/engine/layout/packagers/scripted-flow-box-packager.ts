@@ -318,6 +318,18 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.inner = new FlowBoxPackager(this.processor, nextFlowBox, this.identity);
     }
 
+    getLiveContent(): string {
+        return String(this.sourceElement.content || '');
+    }
+
+    setLiveContent(content: string): boolean {
+        const nextContent = String(content);
+        if (this.getLiveContent() === nextContent) return false;
+        this.sourceElement.content = nextContent;
+        this.rebuildInner();
+        return true;
+    }
+
     private replaceLiveSelf(session: LayoutSession, elements: Element[]): boolean {
         const processorWithFactory = this.processor as unknown as ScriptPackagerFactoryProvider;
         const packagerFactory = processorWithFactory.getPackagerFactory?.();

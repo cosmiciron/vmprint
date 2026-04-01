@@ -719,6 +719,16 @@ export class LayoutSession {
         return state.actorQueue.findIndex((actor) => actor.actorId === host.actorId);
     }
 
+    noteHostedRuntimeActorContentMutation(targetActor: PackagerUnit): number | null {
+        const state = this.paginationLoopState;
+        if (!state) return null;
+        const host = findHostedActorController(this.kernel.actorRegistry, targetActor);
+        if (!host) return null;
+        const refreshed = host.refreshHostedRuntimeActor?.(targetActor);
+        if (!refreshed) return null;
+        return state.actorQueue.findIndex((actor) => actor.actorId === host.actorId);
+    }
+
     hasCommittedSignalObservers(): boolean {
         return this.actorCommunicationRuntime.hasCommittedSignalObservers();
     }
@@ -1500,6 +1510,7 @@ type HostedActorController = PackagerUnit & {
         replacements: readonly PackagerUnit[],
         sourceElements?: readonly Element[]
     ): boolean;
+    refreshHostedRuntimeActor?(targetActor: PackagerUnit): boolean;
 };
 
 function findHostedActorController(

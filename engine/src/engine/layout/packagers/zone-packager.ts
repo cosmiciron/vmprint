@@ -1164,6 +1164,12 @@ export class ZonePackager implements PackagerUnit {
         return true;
     }
 
+    refreshHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        if (!this.handlesHostedRuntimeActor(targetActor)) return false;
+        this.invalidateMaterialization();
+        return true;
+    }
+
     private materializeMoveWhole(availableWidth: number): void {
         if (this.materializedBoxes !== null && this.lastAvailableWidth === availableWidth) return;
         const contextBase = createZoneSessionContextBase(availableWidth, this.processor);

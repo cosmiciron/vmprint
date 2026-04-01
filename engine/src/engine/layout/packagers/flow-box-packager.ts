@@ -11,6 +11,8 @@ import {
 } from './packager-types';
 
 type FlowBoxProcessor = {
+    normalizeFlowBlock(element: any, options: { path: number[] }): any;
+    shapeNormalizedFlowBlock(block: any): FlowBox;
     createFlowMaterializationContext(pageIndex: number, cursorY: number, availableWidth: number): FlowMaterializationContext;
     materializeFlowBox(flowBox: FlowBox, context?: FlowMaterializationContext): void;
     positionFlowBox(
@@ -59,6 +61,34 @@ export class FlowBoxPackager implements PackagerUnit {
         this.actorKind = resolvedIdentity.actorKind;
         this.fragmentIndex = resolvedIdentity.fragmentIndex;
         this.continuationOf = resolvedIdentity.continuationOf;
+    }
+
+    getLiveContent(): string {
+        return String(this.flowBox._sourceElement?.content || '');
+    }
+
+    private rebuildLiveFlowBox(): boolean {
+        const sourceElement = this.flowBox._sourceElement;
+        if (!sourceElement) return false;
+        const shaper = this.processor as unknown as FlowBoxProcessor;
+        const path = this.flowBox._normalizedFlowBlock?.identitySeed?.path ?? [0];
+        const normalized = shaper.normalizeFlowBlock(sourceElement, { path });
+        this.flowBox = shaper.shapeNormalizedFlowBlock(normalized);
+        this.isMaterialized = false;
+        this.cachedBoxes = null;
+        this.lastAvailableWidth = -1;
+        this.lastContentWidth = -1;
+        this.lastAvailableHeight = -1;
+        return true;
+    }
+
+    setLiveContent(content: string): boolean {
+        const sourceElement = this.flowBox._sourceElement;
+        if (!sourceElement) return false;
+        const nextContent = String(content);
+        if (this.getLiveContent() === nextContent) return false;
+        sourceElement.content = nextContent;
+        return this.rebuildLiveFlowBox();
     }
 
     private materialize(availableWidth: number, contentWidth: number = -1) {

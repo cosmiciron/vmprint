@@ -455,6 +455,12 @@ export class StoryPackager implements PackagerUnit {
         return true;
     }
 
+    refreshHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        if (this.findHostedActorIndex(targetActor) < 0) return false;
+        this.invalidateCachedStoryLayout();
+        return true;
+    }
+
     split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
         const availableWidth = this.lastAvailableWidth > 0
             ? this.lastAvailableWidth

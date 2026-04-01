@@ -4,6 +4,8 @@ import type { LayoutSession } from '../layout-session';
 import { LayoutUtils } from '../layout-utils';
 import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../script-runtime-host';
 import { createPackagers, type ExternalPackagerFactory } from './create-packagers';
+import { FlowBoxPackager } from './flow-box-packager';
+import { ScriptedFlowBoxPackager } from './scripted-flow-box-packager';
 import type {
     LayoutBox,
     ObservationResult,
@@ -25,6 +27,11 @@ type StructuralOperation =
 
 type ScriptPackagerFactoryProvider = LayoutProcessor & {
     getPackagerFactory(): ExternalPackagerFactory | undefined;
+};
+
+type LiveContentActor = PackagerUnit & {
+    getLiveContent(): string;
+    setLiveContent(content: string): boolean;
 };
 
 function cloneElementTree<T>(value: T): T {
@@ -268,6 +275,16 @@ export class ScriptDocumentPackager implements PackagerUnit {
         }
     }
 
+    private isLiveContentActor(actor: PackagerUnit | null): actor is LiveContentActor {
+        return !!actor
+            && (
+                actor instanceof FlowBoxPackager
+                || actor instanceof ScriptedFlowBoxPackager
+            )
+            && typeof (actor as { getLiveContent?: unknown }).getLiveContent === 'function'
+            && typeof (actor as { setLiveContent?: unknown }).setLiveContent === 'function';
+    }
+
     private resolveLiveActor(session: LayoutSession, target: unknown): PackagerUnit | null {
         const sourceId = this.resolveSourceId(target);
         if (!sourceId || sourceId === 'doc') return null;
@@ -339,6 +356,30 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return true;
     }
 
+    private setLiveActorContent(
+        session: LayoutSession,
+        target: unknown,
+        content: string
+    ): boolean {
+        const actor = this.resolveLiveActor(session, target);
+        if (!this.isLiveContentActor(actor)) return false;
+        const nextContent = String(content);
+        const changed = actor.setLiveContent(nextContent);
+        if (!changed) return false;
+        const shadowNode = actor.sourceId ? findBySourceId(this.elements, actor.sourceId) : null;
+        if (shadowNode) {
+            shadowNode.content = nextContent;
+        }
+        const hostActorIndex = session.noteHostedRuntimeActorContentMutation(actor);
+        this.recordRuntimeMutation({
+            pageIndex: 0,
+            actorIndex: hostActorIndex ?? undefined,
+            actorId: hostActorIndex !== null ? undefined : actor.actorId,
+            sourceId: hostActorIndex !== null ? undefined : actor.sourceId
+        });
+        return true;
+    }
+
     private prependLiveDocument(
         session: LayoutSession,
         context: PackagerContext,
@@ -385,6 +426,18 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return {
             name: toPublicScriptName(actor.sourceId),
             type: String(actor.actorKind || ''),
+            get content() {
+                if (this.isLiveContentActor(actor)) {
+                    return actor.getLiveContent();
+                }
+                return '';
+            },
+            setContent: (content: string) => {
+                const changed = this.setLiveActorContent(session, actor.sourceId, content);
+                if (!changed) return false;
+                session.recordProfile('setContentCalls', 1);
+                return true;
+            },
             replace: (value: unknown) => {
                 const replaced = this.replaceLiveActor(session, context, actor.sourceId, value);
                 if (!replaced) return false;
@@ -436,6 +489,21 @@ export class ScriptDocumentPackager implements PackagerUnit {
             type: String(element.type || ''),
             get content() {
                 return String(element.content || '');
+            },
+            setContent: (content: string) => {
+                if (!sourceId) return false;
+                const liveChanged = context
+                    ? this.setLiveActorContent(session, sourceId, content)
+                    : false;
+                if (liveChanged) {
+                    session.recordProfile('setContentCalls', 1);
+                    return true;
+                }
+                const nextContent = String(content);
+                if (String(element.content || '') === nextContent) return false;
+                element.content = nextContent;
+                session.recordProfile('setContentCalls', 1);
+                return true;
             },
             replace: (value: unknown) => {
                 if (!sourceId) return false;
@@ -566,12 +634,19 @@ export class ScriptDocumentPackager implements PackagerUnit {
             return true;
         };
         const setContent = (target: unknown, content: string) => {
+            const liveChanged = this.setLiveActorContent(session, target, content);
+            if (liveChanged) {
+                session.recordProfile('setContentCalls', 1);
+                return true;
+            }
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
             if (sourceId === 'doc') return false;
             const node = findBySourceId(this.elements, sourceId);
             if (!node) return false;
-            node.content = String(content);
+            const nextContent = String(content);
+            if (String(node.content || '') === nextContent) return false;
+            node.content = nextContent;
             session.recordProfile('setContentCalls', 1);
             return true;
         };

@@ -1,0 +1,21 @@
+{
+  "expectedTextIncludes": [
+    "Zone follow now speaks through the live",
+    "runtime."
+  ],
+  "expectedTextExcludes": [
+    "Zone follow starts with authored text."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "zoned-follow",
+      "content": "Zone follow starts with authored text."
+    }
+  ],
+  "profileEquals": {
+    "replayRequests": 0
+  },
+  "profileAtLeast": {
+    "setContentCalls": 1
+  }
+}

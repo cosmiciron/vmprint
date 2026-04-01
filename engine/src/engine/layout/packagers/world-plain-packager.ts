@@ -126,6 +126,10 @@ export class WorldPlainPackager implements PackagerUnit {
         return this.inner.replaceHostedRuntimeActor(targetActor, replacements, sourceElements);
     }
 
+    refreshHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        return this.inner.refreshHostedRuntimeActor?.(targetActor) ?? false;
+    }
+
     prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
         this.inner.prepare(availableWidth, availableHeight, context);
     }
