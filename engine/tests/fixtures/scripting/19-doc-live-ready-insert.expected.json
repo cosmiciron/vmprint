@@ -1,0 +1,16 @@
+{
+  "expectedTextIncludes": [
+    "Document prelude inserted live.",
+    "Original document body remains in the middle.",
+    "Original tail remains after the body.",
+    "Document epilogue inserted live."
+  ],
+  "profileAtLeast": {
+    "handlerCalls": 1,
+    "readyCalls": 1,
+    "insertCalls": 2
+  },
+  "profileEquals": {
+    "replayRequests": 1
+  }
+}

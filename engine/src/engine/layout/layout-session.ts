@@ -587,6 +587,40 @@ export class LayoutSession {
         return insertionIndex;
     }
 
+    prependActorsInLiveQueue(insertions: readonly PackagerUnit[]): number | null {
+        if (insertions.length === 0) return null;
+        const state = this.paginationLoopState;
+        if (!state) return null;
+        const actorQueue = state.actorQueue;
+        const anchor = actorQueue[0] ?? null;
+        actorQueue.splice(0, 0, ...insertions);
+        if (anchor) {
+            this.actorCommunicationRuntime.insertActorsInCheckpointQueues(anchor.actorId, insertions, 'before');
+        }
+        for (const actor of insertions) {
+            this.notifyActorSpawn(actor);
+        }
+        state.actorIndex += insertions.length;
+        return 0;
+    }
+
+    appendActorsInLiveQueue(insertions: readonly PackagerUnit[]): number | null {
+        if (insertions.length === 0) return null;
+        const state = this.paginationLoopState;
+        if (!state) return null;
+        const actorQueue = state.actorQueue;
+        const anchor = actorQueue[actorQueue.length - 1] ?? null;
+        const insertionIndex = actorQueue.length;
+        actorQueue.push(...insertions);
+        if (anchor) {
+            this.actorCommunicationRuntime.insertActorsInCheckpointQueues(anchor.actorId, insertions, 'after');
+        }
+        for (const actor of insertions) {
+            this.notifyActorSpawn(actor);
+        }
+        return insertionIndex;
+    }
+
     deleteActorInLiveQueue(targetActor: PackagerUnit): number | null {
         const state = this.paginationLoopState;
         if (!state) return null;

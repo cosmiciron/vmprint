@@ -1,0 +1,37 @@
+---
+methods:
+  onReady(): |
+    prepend({
+      type: "p",
+      name: "doc-prelude",
+      content: "Document prelude inserted live."
+    })
+    append({
+      type: "p",
+      name: "doc-epilogue",
+      content: "Document epilogue inserted live."
+    })
+---
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 16,
+    "lineHeight": 1.45
+  },
+  "styles": {},
+  "elements": [
+    {
+      "type": "p",
+      "name": "doc-anchor",
+      "content": "Original document body remains in the middle."
+    },
+    {
+      "type": "p",
+      "name": "doc-tail",
+      "content": "Original tail remains after the body."
+    }
+  ]
+}

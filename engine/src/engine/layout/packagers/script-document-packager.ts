@@ -339,6 +339,44 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return true;
     }
 
+    private prependLiveDocument(
+        session: LayoutSession,
+        context: PackagerContext,
+        value: unknown
+    ): boolean {
+        const elements = normalizeScriptElements(value);
+        const insertions = this.createLivePackagers(context, elements);
+        if (insertions.length === 0) return false;
+        const insertedIndex = session.prependActorsInLiveQueue(insertions);
+        if (insertedIndex === null) return false;
+        this.recordRuntimeMutation({
+            pageIndex: 0,
+            actorIndex: insertedIndex,
+            actorId: insertions[0]?.actorId,
+            sourceId: insertions[0]?.sourceId
+        });
+        return true;
+    }
+
+    private appendLiveDocument(
+        session: LayoutSession,
+        context: PackagerContext,
+        value: unknown
+    ): boolean {
+        const elements = normalizeScriptElements(value);
+        const insertions = this.createLivePackagers(context, elements);
+        if (insertions.length === 0) return false;
+        const insertedIndex = session.appendActorsInLiveQueue(insertions);
+        if (insertedIndex === null) return false;
+        this.recordRuntimeMutation({
+            pageIndex: 0,
+            actorIndex: insertedIndex,
+            actorId: insertions[0]?.actorId,
+            sourceId: insertions[0]?.sourceId
+        });
+        return true;
+    }
+
     private createLiveActorRef(
         session: LayoutSession,
         context: PackagerContext,
