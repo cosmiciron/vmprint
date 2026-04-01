@@ -1,6 +1,7 @@
 import { Element, ZoneFrameOverflow, ZoneWorldBehavior } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
+import { buildHostedRegionActorQueuesFromZones } from './region-actor-queues';
 import {
     DebugZoneRegion,
     PackagerContext,
@@ -15,15 +16,13 @@ export function isWorldPlainElement(element: Element | undefined): boolean {
     return String(element?.type || '').trim().toLowerCase() === 'world-plain';
 }
 
-function normalizeWorldPlainElement(element: Element, availableWidth: number) {
+function resolveWorldPlainHostLayout(element: Element) {
     const style = (element.properties?.style ?? {}) as Record<string, unknown>;
     const options = (element.properties?._worldPlainOptions ?? {}) as {
         frameOverflow?: ZoneFrameOverflow;
         worldBehavior?: ZoneWorldBehavior;
     };
     return {
-        kind: 'zone-strip' as const,
-        overflow: 'independent' as const,
         sourceKind: 'world-plain' as const,
         frameOverflow: options.frameOverflow === 'move-whole' ? 'move-whole' : 'continue',
         worldBehavior: options.worldBehavior === 'fixed' || options.worldBehavior === 'spanning' || options.worldBehavior === 'expandable'
@@ -31,9 +30,16 @@ function normalizeWorldPlainElement(element: Element, availableWidth: number) {
             : 'expandable',
         marginTop: Math.max(0, Number(style.marginTop ?? 0) || 0),
         marginBottom: Math.max(0, Number(style.marginBottom ?? 0) || 0),
-        gap: 0,
-        blockStyle: Object.keys(style).length > 0 ? style as any : undefined,
-        zones: [
+    };
+}
+
+function buildWorldPlainRegionQueues(
+    element: Element,
+    availableWidth: number,
+    processor: LayoutProcessor
+) {
+    return buildHostedRegionActorQueuesFromZones(
+        [
             {
                 id: 'plain',
                 rect: {
@@ -43,7 +49,33 @@ function normalizeWorldPlainElement(element: Element, availableWidth: number) {
                 },
                 elements: [...(element.children || [])]
             }
-        ]
+        ],
+        processor
+    );
+}
+
+function describeWorldPlainRegions(availableWidth: number) {
+    return [
+        {
+            id: 'plain',
+            rect: {
+                x: 0,
+                y: 0,
+                width: Math.max(0, availableWidth)
+            }
+        }
+    ];
+}
+
+function normalizeWorldPlainElement(element: Element) {
+    const hostLayout = resolveWorldPlainHostLayout(element);
+    return {
+        kind: 'world-plain' as const,
+        sourceKind: hostLayout.sourceKind,
+        frameOverflow: hostLayout.frameOverflow,
+        worldBehavior: hostLayout.worldBehavior,
+        marginTop: hostLayout.marginTop,
+        marginBottom: hostLayout.marginBottom
     };
 }
 
@@ -72,10 +104,12 @@ export class WorldPlainPackager implements PackagerUnit {
         identity?: PackagerIdentity
     ) {
         const resolvedIdentity = identity ?? createElementPackagerIdentity(element, [0]);
+        const normalized = normalizeWorldPlainElement(element);
         this.inner = new ZonePackager(element, processor, {
             ...resolvedIdentity,
             actorKind: 'world-plain'
-        }, undefined, undefined, undefined, (availableWidth) => normalizeWorldPlainElement(element, availableWidth));
+        }, undefined, undefined, undefined, undefined, () => normalized, (availableWidth) =>
+            buildWorldPlainRegionQueues(element, availableWidth, processor), describeWorldPlainRegions);
         this.actorId = resolvedIdentity.actorId;
         this.sourceId = resolvedIdentity.sourceId;
         this.actorKind = 'world-plain';

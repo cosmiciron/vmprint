@@ -34,7 +34,6 @@ import { LayoutProcessor } from '../layout-core';
 import { LayoutUtils } from '../layout-utils';
 import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { solveTrackSizing, TrackSizingDefinition } from '../track-sizing';
-import type { ActorSignalDraft } from '../actor-event-bus';
 import type { NormalizedIndependentZoneStrip } from '../normalized-zone-strip';
 import { OccupiedRect, SpatialMap } from './spatial-map';
 import {
@@ -46,6 +45,27 @@ import {
 } from './packager-types';
 import { buildPackagerForElement } from './create-packagers';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
+import {
+    attachHostedRegionDebugTag,
+    buildHostedRegionContinuationQueue,
+    cloneHostedRegionBoxes,
+    createHostedRegionSessionContextBase,
+    materializeHostedRegionsBounded,
+    materializeHostedRegionsMoveWhole,
+    readHostedRegionDebugTag,
+    resolveHostedRegionFootprintHeight,
+    resolveHostedRegionVisibleHeight,
+    type BoundedHostedRegionSessionResult,
+    type HostedRegionDebugBoxTag,
+    type HostedRegionSessionContinuation,
+    type HostedRegionSessionResult
+} from './hosted-region-runtime';
+import {
+    buildHostedRegionActorQueues,
+    type HostedRegionActorEntry,
+    type HostedRegionActorQueue,
+    type HostedRegionDescriptor
+} from './region-actor-queues';
 import { LAYOUT_DEFAULTS } from '../defaults';
 
 // ---------------------------------------------------------------------------
@@ -360,133 +380,31 @@ function placePackagersInZone(
 // Zone materialization
 // ---------------------------------------------------------------------------
 
-type ZoneSessionResult = {
-    boxes: Box[];
-    height: number;
-};
+type ZoneActorEntry = HostedRegionActorEntry;
 
-type ZoneSessionContinuation = {
-    nextActorIndex: number;
-    continuationFragment: PackagerUnit | null;
-};
+type ZoneActorQueue = HostedRegionActorQueue;
 
-type ZoneActorEntry = {
-    actor: PackagerUnit;
-    element: Element;
-    actorHost: ZonePackager;
-};
+type ZoneHostLayout = Pick<
+    NormalizedIndependentZoneStrip,
+    'sourceKind' | 'frameOverflow' | 'worldBehavior' | 'marginTop' | 'marginBottom'
+>;
 
-type BoundedZoneSessionResult = ZoneSessionResult & {
-    consumedHeight: number;
-    hasOverflow: boolean;
-    continuation: ZoneSessionContinuation | null;
-};
+type ZoneDebugBoxTag = HostedRegionDebugBoxTag;
 
-type ZoneActorQueue = {
-    id?: string;
-    rect: {
-        x: number;
-        y: number;
-        width: number;
-        height?: number;
-    };
-    style?: ElementStyle;
-    actors: ZoneActorEntry[];
-};
+const cloneZoneBoxes = cloneHostedRegionBoxes;
+const attachZoneDebugTag = attachHostedRegionDebugTag;
+const readZoneDebugTag = readHostedRegionDebugTag;
+const resolveZoneVisibleHeight = resolveHostedRegionVisibleHeight;
+const resolveZoneFootprintHeight = resolveHostedRegionFootprintHeight;
+const createZoneSessionContextBase = createHostedRegionSessionContextBase;
+const buildZoneContinuationQueue = buildHostedRegionContinuationQueue;
 
-type ZoneDebugBoxTag = {
-    fieldActorId: string;
-    fieldSourceId: string;
-    sourceKind: 'zone-map' | 'world-plain';
-    zoneId?: string;
-    zoneIndex: number;
-    rect: {
-        x: number;
-        y: number;
-        width: number;
-        height?: number;
-    };
-};
-
-function cloneZoneBoxes(boxes: Box[]): Box[] {
-    return boxes.map((box) => ({
-        ...box,
-        properties: { ...(box.properties || {}) },
-        meta: box.meta ? { ...box.meta } : box.meta
-    }));
-}
-
-function attachZoneDebugTag(box: Box, tag: ZoneDebugBoxTag): Box {
-    return {
-        ...box,
-        properties: {
-            ...(box.properties || {}),
-            __vmprintZoneDebug: {
-                fieldActorId: tag.fieldActorId,
-                fieldSourceId: tag.fieldSourceId,
-                sourceKind: tag.sourceKind,
-                zoneId: tag.zoneId,
-                zoneIndex: tag.zoneIndex,
-                rect: { ...tag.rect }
-            }
-        }
-    };
-}
-
-function readZoneDebugTag(box: Box): ZoneDebugBoxTag | null {
-    const tag = box.properties?.__vmprintZoneDebug as ZoneDebugBoxTag | undefined;
-    if (!tag || typeof tag !== 'object') return null;
-    return tag;
-}
-
-function buildZoneContinuationQueue(
-    zone: ZoneActorQueue,
-    continuation: ZoneSessionContinuation | null
-): ZoneActorQueue {
-    if (!continuation) {
-        return {
-            ...zone,
-            actors: []
-        };
-    }
-
-    const nextActors: ZoneActorEntry[] = [];
-    if (continuation.continuationFragment) {
-        nextActors.push({
-            actor: continuation.continuationFragment,
-            element: zone.actors[continuation.nextActorIndex]?.element,
-            actorHost: zone.actors[continuation.nextActorIndex]?.actorHost as ZonePackager
-        });
-    }
-
-    const untouchedStart = continuation.nextActorIndex + (continuation.continuationFragment ? 1 : 0);
-    for (let actorIndex = untouchedStart; actorIndex < zone.actors.length; actorIndex++) {
-        nextActors.push(zone.actors[actorIndex]);
-    }
-
-    return {
-        ...zone,
-        actors: nextActors
-    };
-}
-
-function resolveZoneVisibleHeight(
-    zone: ZoneActorQueue,
-    fieldAvailableHeight: number
-): number {
-    const heightWithinViewport = Math.max(0, fieldAvailableHeight - zone.rect.y);
-    if (zone.rect.height === undefined) {
-        return heightWithinViewport;
-    }
-    return Math.min(heightWithinViewport, Math.max(0, Number(zone.rect.height)));
-}
-
-function resolveZoneFootprintHeight(
-    zone: ZoneActorQueue | NormalizedIndependentZoneStrip['zones'][number],
-    contentHeight: number
-): number {
-    const authoredHeight = zone.rect.height !== undefined ? Math.max(0, Number(zone.rect.height)) : 0;
-    return Math.max(Math.max(0, contentHeight), authoredHeight);
+function buildZoneActorQueues(
+    strip: NormalizedIndependentZoneStrip,
+    processor: LayoutProcessor,
+    _host: unknown
+): ZoneActorQueue[] {
+    return buildHostedRegionActorQueues(strip, processor);
 }
 
 function resolveTrackWidths(columns: TableColumnSizing[] | undefined, columnCount: number, availableWidth: number, gap: number): number[] {
@@ -583,61 +501,10 @@ export function normalizeZoneMapElement(element: Element, availableWidth: number
     };
 }
 
-function createZoneSessionContextBase(
-    availableWidth: number,
-    processor: LayoutProcessor
-): Omit<PackagerContext, 'pageIndex' | 'cursorY'> {
-    const session = processor.getCurrentLayoutSession();
-    return {
-        processor,
-        margins: { top: 0, right: 0, bottom: 0, left: 0 },
-        pageWidth: availableWidth,
-        pageHeight: Infinity,
-        publishActorSignal: (signal: ActorSignalDraft) => {
-            if (!session) {
-                return {
-                    ...signal,
-                    pageIndex: signal.pageIndex ?? 0,
-                    sequence: -1
-                } as any;
-            }
-            return session.publishActorSignal(signal);
-        },
-        readActorSignals: (topic?: string) => session ? session.getActorSignals(topic) : [],
-        requestAsyncThought: (request) => session?.requestAsyncThought(request),
-        readAsyncThoughtResult: (key) => session?.readAsyncThoughtResult(key)
-    };
-}
-
-function buildZonePackagers(
-    zone: NormalizedIndependentZoneStrip['zones'][number],
-    processor: LayoutProcessor,
-    actorHost: ZonePackager
-): ZoneActorEntry[] {
-    return (zone.elements ?? []).map((element, j) => ({
-        element,
-        actor: buildPackagerForElement(element, j, processor),
-        actorHost
-    }));
-}
-
-function buildZoneActorQueues(
-    strip: NormalizedIndependentZoneStrip,
-    processor: LayoutProcessor,
-    actorHost: ZonePackager
-): ZoneActorQueue[] {
-    return strip.zones.map((zone) => ({
-        id: zone.id,
-        rect: { ...zone.rect },
-        style: zone.style,
-        actors: buildZonePackagers(zone, processor, actorHost)
-    }));
-}
-
 function runZoneSession(
     zone: ZoneActorQueue,
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>
-): ZoneSessionResult {
+): HostedRegionSessionResult {
     const zoneWidth = zone.rect.width;
     const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
     const result = placePackagersInZone(zone.actors, zoneWidth, zoneContextBase);
@@ -648,7 +515,7 @@ function runZoneSessionBounded(
     zone: ZoneActorQueue,
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
     availableHeight: number
-): BoundedZoneSessionResult {
+): BoundedHostedRegionSessionResult {
     const zoneWidth = zone.rect.width;
     const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
     const placedBoxes: Box[] = [];
@@ -814,33 +681,16 @@ function materializeZoneStrip(
     const stubContextBase = createZoneSessionContextBase(availableWidth, processor);
     const queues = buildZoneActorQueues(strip, processor, null as any);
 
-    const allBoxes: Box[] = [];
-    let totalHeight = 0;
+    const { boxes, totalHeight } = materializeHostedRegionsMoveWhole(
+        queues,
+        strip.sourceKind,
+        '',
+        '',
+        runZoneSession,
+        stubContextBase
+    );
 
-    for (let i = 0; i < queues.length; i++) {
-        const zone = queues[i];
-        const result = runZoneSession(zone, stubContextBase);
-        const zoneTag: ZoneDebugBoxTag = {
-            fieldActorId: '',
-            fieldSourceId: '',
-            zoneId: zone.id,
-            zoneIndex: i,
-            rect: { ...zone.rect }
-        };
-
-        // Offset each box into zone-map-local space (x += column x offset)
-        for (const box of result.boxes) {
-            allBoxes.push({
-                ...attachZoneDebugTag(box, zoneTag),
-                x: (box.x || 0) + zone.rect.x,
-                y: (box.y || 0) + zone.rect.y
-            });
-        }
-
-        totalHeight = Math.max(totalHeight, zone.rect.y + resolveZoneFootprintHeight(zone, result.height));
-    }
-
-    return { boxes: allBoxes, totalHeight, marginTop: strip.marginTop, marginBottom: strip.marginBottom };
+    return { boxes, totalHeight, marginTop: strip.marginTop, marginBottom: strip.marginBottom };
 }
 
 class FrozenZonePackager implements PackagerUnit {
@@ -934,6 +784,9 @@ export class ZonePackager implements PackagerUnit {
     private readonly element: Element;
     private readonly processor: LayoutProcessor;
     private readonly normalizeStrip: (availableWidth: number) => NormalizedIndependentZoneStrip;
+    private readonly resolveHostLayout: (availableWidth: number) => ZoneHostLayout;
+    private readonly buildInitialQueues?: (availableWidth: number) => ZoneActorQueue[];
+    private readonly describeRegions: (availableWidth: number) => readonly HostedRegionDescriptor[];
     private readonly sourceKind: NormalizedIndependentZoneStrip['sourceKind'];
     readonly frameOverflowMode: 'move-whole' | 'continue';
     readonly worldBehaviorMode: ZoneWorldBehavior;
@@ -980,19 +833,34 @@ export class ZonePackager implements PackagerUnit {
         zoneQueues?: ZoneActorQueue[] | null,
         fragmentMarginTop?: number,
         fragmentMarginBottom?: number,
-        normalizeStrip?: (availableWidth: number) => NormalizedIndependentZoneStrip
+        normalizeStrip?: (availableWidth: number) => NormalizedIndependentZoneStrip,
+        resolveHostLayout?: (availableWidth: number) => ZoneHostLayout,
+        buildInitialQueues?: (availableWidth: number) => ZoneActorQueue[],
+        describeRegions?: (availableWidth: number) => readonly HostedRegionDescriptor[]
     ) {
         this.element = element;
         this.processor = processor;
         this.normalizeStrip = normalizeStrip ?? ((availableWidth) => normalizeZoneMapElement(element, availableWidth));
+        this.resolveHostLayout = resolveHostLayout ?? ((availableWidth) => {
+            const normalized = this.normalizeStrip(availableWidth);
+            return {
+                sourceKind: normalized.sourceKind,
+                frameOverflow: normalized.frameOverflow,
+                worldBehavior: normalized.worldBehavior,
+                marginTop: normalized.marginTop,
+                marginBottom: normalized.marginBottom
+            };
+        });
+        this.buildInitialQueues = buildInitialQueues;
+        this.describeRegions = describeRegions ?? ((availableWidth) => this.normalizeStrip(availableWidth).zones);
         const resolved = identity ?? createElementPackagerIdentity(element, [0]);
         this.zoneQueues = zoneQueues ?? null;
-        const normalizedForIdentity = this.normalizeStrip(0);
-        this.sourceKind = normalizedForIdentity.sourceKind;
-        this.frameOverflowMode = normalizedForIdentity.frameOverflow;
-        this.worldBehaviorMode = normalizedForIdentity.worldBehavior;
-        this.fragmentMarginTop = fragmentMarginTop ?? (resolved.fragmentIndex > 0 ? 0 : normalizedForIdentity.marginTop);
-        this.fragmentMarginBottom = fragmentMarginBottom ?? normalizedForIdentity.marginBottom;
+        const hostLayout = this.resolveHostLayout(0);
+        this.sourceKind = hostLayout.sourceKind;
+        this.frameOverflowMode = hostLayout.frameOverflow;
+        this.worldBehaviorMode = hostLayout.worldBehavior;
+        this.fragmentMarginTop = fragmentMarginTop ?? (resolved.fragmentIndex > 0 ? 0 : hostLayout.marginTop);
+        this.fragmentMarginBottom = fragmentMarginBottom ?? hostLayout.marginBottom;
         this.actorId = resolved.actorId;
         this.sourceId = resolved.sourceId;
         this.actorKind = resolved.actorKind;
@@ -1018,8 +886,13 @@ export class ZonePackager implements PackagerUnit {
             return this.zoneQueues;
         }
 
+        if (this.buildInitialQueues) {
+            this.zoneQueues = this.buildInitialQueues(availableWidth);
+            return this.zoneQueues;
+        }
+
         const normalizedStrip = this.normalizeStrip(availableWidth);
-        this.zoneQueues = buildZoneActorQueues(normalizedStrip, this.processor, this);
+        this.zoneQueues = buildHostedRegionActorQueues(normalizedStrip, this.processor);
         return this.zoneQueues;
     }
 
@@ -1099,8 +972,7 @@ export class ZonePackager implements PackagerUnit {
         }
         return actors.map((actor, index) => ({
             actor,
-            element: sourceElements[index] as Element,
-            actorHost: this
+            element: sourceElements[index] as Element
         }));
     }
 
@@ -1174,29 +1046,14 @@ export class ZonePackager implements PackagerUnit {
         if (this.materializedBoxes !== null && this.lastAvailableWidth === availableWidth) return;
         const contextBase = createZoneSessionContextBase(availableWidth, this.processor);
         const queues = this.ensureZoneQueues(availableWidth);
-        const allBoxes: Box[] = [];
-        let totalHeight = 0;
-
-        for (let i = 0; i < queues.length; i++) {
-            const zone = queues[i];
-            const result = runZoneSession(zone, contextBase);
-            const zoneTag: ZoneDebugBoxTag = {
-                fieldActorId: '',
-                fieldSourceId: '',
-                sourceKind: this.sourceKind,
-                zoneId: zone.id,
-                zoneIndex: i,
-                rect: { ...zone.rect }
-            };
-            for (const box of result.boxes) {
-                allBoxes.push({
-                    ...attachZoneDebugTag(box, zoneTag),
-                    x: (box.x || 0) + zone.rect.x,
-                    y: (box.y || 0) + zone.rect.y
-                });
-            }
-            totalHeight = Math.max(totalHeight, zone.rect.y + resolveZoneFootprintHeight(zone, result.height));
-        }
+        const { boxes: allBoxes, totalHeight } = materializeHostedRegionsMoveWhole(
+            queues,
+            this.sourceKind,
+            '',
+            '',
+            runZoneSession,
+            contextBase
+        );
 
         this.materializedBoxes = allBoxes.map((box) => {
             const tag = readZoneDebugTag(box);
@@ -1235,41 +1092,16 @@ export class ZonePackager implements PackagerUnit {
 
         const queues = this.ensureZoneQueues(availableWidth);
         const contextBase = createZoneSessionContextBase(availableWidth, this.processor);
-        const allBoxes: Box[] = [];
-        let occupiedHeight = 0;
-        let hasOverflow = false;
-        const continuationQueues: ZoneActorQueue[] = [];
-
-        for (let zoneIndex = 0; zoneIndex < queues.length; zoneIndex++) {
-            const zone = queues[zoneIndex];
-            const zoneVisibleHeight = resolveZoneVisibleHeight(zone, Math.max(0, availableHeight));
-            if (zoneVisibleHeight <= 0) {
-                occupiedHeight = Math.max(occupiedHeight, zone.rect.y + resolveZoneFootprintHeight(zone, 0));
-                hasOverflow = hasOverflow || zone.actors.length > 0;
-                continuationQueues.push(zone);
-                continue;
-            }
-
-            const result = runZoneSessionBounded(zone, contextBase, zoneVisibleHeight);
-            const zoneTag: ZoneDebugBoxTag = {
-                fieldActorId: this.actorId,
-                fieldSourceId: this.sourceId,
-                sourceKind: this.sourceKind,
-                zoneId: zone.id,
-                zoneIndex,
-                rect: { ...zone.rect }
-            };
-            for (const box of result.boxes) {
-                allBoxes.push({
-                    ...attachZoneDebugTag(box, zoneTag),
-                    x: (box.x || 0) + zone.rect.x,
-                    y: (box.y || 0) + zone.rect.y
-                });
-            }
-            occupiedHeight = Math.max(occupiedHeight, zone.rect.y + resolveZoneFootprintHeight(zone, result.height));
-            hasOverflow = hasOverflow || result.hasOverflow;
-            continuationQueues.push(buildZoneContinuationQueue(zone, result.continuation));
-        }
+        const { boxes: allBoxes, occupiedHeight, hasOverflow, continuationQueues, totalHeight } =
+            materializeHostedRegionsBounded(
+                queues,
+                this.sourceKind,
+                this.actorId,
+                this.sourceId,
+                availableHeight,
+                runZoneSessionBounded,
+                contextBase
+            );
 
         this.marginTopVal = this.fragmentMarginTop;
         this.marginBottomVal = hasOverflow ? 0 : this.fragmentMarginBottom;
@@ -1280,9 +1112,7 @@ export class ZonePackager implements PackagerUnit {
         if (hasOverflow) {
             this.zoneQueues = continuationQueues;
         }
-        this.totalZoneHeight = hasOverflow
-            ? Math.max(occupiedHeight, Math.max(0, availableHeight) + 1)
-            : occupiedHeight;
+        this.totalZoneHeight = totalHeight;
         this.lastAvailableWidth = availableWidth;
         this.lastAvailableHeight = availableHeight;
     }
@@ -1323,7 +1153,10 @@ export class ZonePackager implements PackagerUnit {
             this.boundedContinuationQueues,
             0,
             this.fragmentMarginBottom,
-            this.normalizeStrip
+            this.normalizeStrip,
+            this.resolveHostLayout,
+            this.buildInitialQueues,
+            this.describeRegions
         );
     }
 
@@ -1394,7 +1227,7 @@ export class ZonePackager implements PackagerUnit {
 
     getDebugRegions(): DebugZoneRegion[] {
         const availableWidth = this.lastAvailableWidth > 0 ? this.lastAvailableWidth : 0;
-        const normalizedStrip = normalizeZoneMapElement(this.element, availableWidth);
+        const regions = this.describeRegions(availableWidth);
         const boxes = this.usesSpanningContinuation() ? (this.boundedBoxes || []) : (this.materializedBoxes || []);
         const bottomsByZone = new Map<number, number>();
 
@@ -1408,7 +1241,7 @@ export class ZonePackager implements PackagerUnit {
             }
         }
 
-        return normalizedStrip.zones.map((zone, zoneIndex) => {
+        return regions.map((zone, zoneIndex) => {
             const explicitHeight = zone.rect.height !== undefined ? Math.max(0, Number(zone.rect.height)) : 0;
             const contentHeight = Math.max(0, (bottomsByZone.get(zoneIndex) ?? zone.rect.y) - zone.rect.y);
             const visibleHeight = this.usesSpanningContinuation()
