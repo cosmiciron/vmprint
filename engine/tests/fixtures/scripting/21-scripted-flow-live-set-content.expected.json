@@ -1,0 +1,28 @@
+{
+  "expectedTextIncludes": [
+    "Controller element: message handled.",
+    "Nested scripted host updated this zone child",
+    "live."
+  ],
+  "expectedTextExcludes": [
+    "Zone child starts untouched."
+  ],
+  "originalTextUnchanged": [
+    {
+      "sourceId": "controller",
+      "content": "Controller element: waiting."
+    },
+    {
+      "sourceId": "zoned-follow",
+      "content": "Zone child starts untouched."
+    }
+  ],
+  "profileEquals": {
+    "replayRequests": 0
+  },
+  "profileAtLeast": {
+    "setContentCalls": 2,
+    "messageSendCalls": 1,
+    "messageHandlerCalls": 1
+  }
+}

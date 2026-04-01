@@ -36,6 +36,11 @@ type ScriptPackagerFactoryProvider = LayoutProcessor & {
     getPackagerFactory(): ExternalPackagerFactory | undefined;
 };
 
+type LiveContentActor = PackagerUnit & {
+    getLiveContent(): string;
+    setLiveContent(content: string): boolean;
+};
+
 type ReplaceResult =
     | { replaced: false }
     | { replaced: true; nextNodes: Element[] };
@@ -368,6 +373,16 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         return true;
     }
 
+    private isLiveContentActor(actor: PackagerUnit | null): actor is LiveContentActor {
+        return !!actor
+            && (
+                actor instanceof FlowBoxPackager
+                || actor instanceof ScriptedFlowBoxPackager
+            )
+            && typeof (actor as { getLiveContent?: unknown }).getLiveContent === 'function'
+            && typeof (actor as { setLiveContent?: unknown }).setLiveContent === 'function';
+    }
+
     private resolveLiveActor(session: LayoutSession, target: unknown): PackagerUnit | null {
         const sourceId = this.resolveSourceId(target);
         if (!sourceId || sourceId === 'doc') return null;
@@ -396,6 +411,27 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             actorIndex: replacedIndex,
             actorId: replacements[0]?.actorId ?? actor.actorId,
             sourceId: replacements[0]?.sourceId ?? actor.sourceId
+        };
+        return true;
+    }
+
+    private setLiveActorContent(session: LayoutSession, target: unknown, content: string): boolean {
+        const actor = this.resolveLiveActor(session, target);
+        if (!this.isLiveContentActor(actor)) return false;
+        const nextContent = String(content);
+        const changed = actor.setLiveContent(nextContent);
+        if (!changed) return false;
+        const shadowNode = actor.sourceId ? findBySourceId(this.elements, actor.sourceId) : null;
+        if (shadowNode) {
+            shadowNode.content = nextContent;
+        }
+        const hostActorIndex = session.noteHostedRuntimeActorContentMutation(actor);
+        this.pendingLiveStructuralChange = true;
+        this.pendingLiveFrontier = {
+            pageIndex: this.lastObservedPageIndex,
+            actorIndex: hostActorIndex ?? this.lastObservedActorIndex,
+            actorId: hostActorIndex !== null ? undefined : actor.actorId,
+            sourceId: hostActorIndex !== null ? undefined : actor.sourceId
         };
         return true;
     }
@@ -508,6 +544,13 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 return String(element.content || '');
             },
             setContent: (content: string) => {
+                if (sourceId) {
+                    const liveChanged = this.setLiveActorContent(session, sourceId, content);
+                    if (liveChanged) {
+                        session.recordProfile('setContentCalls', 1);
+                        return true;
+                    }
+                }
                 const nextContent = String(content);
                 if (String(element.content || '') === nextContent) return false;
                 element.content = nextContent;
@@ -660,6 +703,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             setContent: (target: unknown, content: string) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;
+                const liveChanged = this.setLiveActorContent(session, sourceId, content);
+                if (liveChanged) {
+                    session.recordProfile('setContentCalls', 1);
+                    return true;
+                }
                 const node = findBySourceId(this.elements, sourceId);
                 if (!node) return false;
                 const nextContent = String(content);
