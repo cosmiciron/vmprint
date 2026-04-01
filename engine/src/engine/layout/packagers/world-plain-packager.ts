@@ -10,7 +10,7 @@ import {
     PackagerTransformProfile,
     PackagerUnit
 } from './packager-types';
-import { ZonePackager } from './zone-packager';
+import { HostedRegionPackager } from './hosted-region-packager';
 
 export function isWorldPlainElement(element: Element | undefined): boolean {
     return String(element?.type || '').trim().toLowerCase() === 'world-plain';
@@ -88,7 +88,7 @@ function normalizeWorldPlainElement(element: Element) {
  * independent stack immediately.
  */
 export class WorldPlainPackager implements PackagerUnit {
-    private readonly inner: ZonePackager;
+    private readonly inner: HostedRegionPackager;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -105,7 +105,7 @@ export class WorldPlainPackager implements PackagerUnit {
     ) {
         const resolvedIdentity = identity ?? createElementPackagerIdentity(element, [0]);
         const normalized = normalizeWorldPlainElement(element);
-        this.inner = new ZonePackager(element, processor, {
+        this.inner = new HostedRegionPackager(element, processor, {
             ...resolvedIdentity,
             actorKind: 'world-plain'
         }, undefined, undefined, undefined, undefined, () => normalized, (availableWidth) =>
