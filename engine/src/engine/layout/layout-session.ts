@@ -1223,7 +1223,8 @@ export class LayoutSession {
     }
 
     beginSimulationRun(config: Required<SimulationProgressionConfig>): void {
-        this.sessionWorldRuntime.startSimulationRun(config);
+        this.sessionWorldRuntime.beginSimulationRun(config);
+        this.sessionWorldRuntime.resumeSimulationProgression();
     }
 
     getSimulationProgressionPolicy(): SimulationProgressionPolicy {

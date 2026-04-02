@@ -188,12 +188,6 @@ export class SessionWorldRuntime {
 
     beginSimulationRun(config: Required<SimulationProgressionConfig>): void {
         this.configureSimulationRun(config);
-        this.simulationStopReason = 'settled';
-    }
-
-    startSimulationRun(config: Required<SimulationProgressionConfig>): boolean {
-        this.beginSimulationRun(config);
-        return this.resumeSimulationProgression();
     }
 
     shouldContinueAfterPaginationFinalized(input: {

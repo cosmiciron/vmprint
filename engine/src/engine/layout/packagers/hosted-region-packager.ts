@@ -11,7 +11,6 @@ import {
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
 import {
     attachHostedRegionDebugTag,
-    buildHostedRegionContinuationQueue,
     cloneHostedRegionBoxes,
     createHostedRegionSessionContextBase,
     materializeHostedRegionsBounded,
@@ -43,27 +42,6 @@ function annotateHostedActorBoxes(actor: PackagerUnit, boxes: Box[]): Box[] {
     }));
 }
 
-const cloneHostedBoxes = cloneHostedRegionBoxes;
-const attachDebugTag = attachHostedRegionDebugTag;
-const readDebugTag = readHostedRegionDebugTag;
-const resolveVisibleHeight = resolveHostedRegionVisibleHeight;
-const createSessionContextBase = createHostedRegionSessionContextBase;
-const buildContinuationQueue = buildHostedRegionContinuationQueue;
-
-function runHostedSession(
-    zone: HostedRegionActorQueue,
-    contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>
-): HostedRegionSessionResult {
-    return runHostedRegionSession(zone, contextBase);
-}
-
-function runHostedSessionBounded(
-    zone: HostedRegionActorQueue,
-    contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
-    availableHeight: number
-): BoundedHostedRegionSessionResult {
-    return runHostedRegionSessionBounded(zone, contextBase, availableHeight);
-}
 
 class FrozenHostedRegionPackager implements PackagerUnit {
     private readonly frozenBoxes: Box[];
@@ -84,7 +62,7 @@ class FrozenHostedRegionPackager implements PackagerUnit {
         marginBottom: number,
         identity: PackagerIdentity
     ) {
-        this.frozenBoxes = cloneHostedBoxes(boxes);
+        this.frozenBoxes = cloneHostedRegionBoxes(boxes);
         this.frozenHeight = height;
         this.marginTopVal = marginTop;
         this.marginBottomVal = marginBottom;
@@ -373,20 +351,20 @@ export class HostedRegionPackager implements PackagerUnit {
 
     private materializeMoveWhole(availableWidth: number): void {
         if (this.materializedBoxes !== null && this.lastAvailableWidth === availableWidth) return;
-        const contextBase = createSessionContextBase(availableWidth, this.processor);
+        const contextBase = createHostedRegionSessionContextBase(availableWidth, this.processor);
         const queues = this.ensureRegionQueues(availableWidth);
         const { boxes, totalHeight } = materializeHostedRegionsMoveWhole(
             queues,
             this.sourceKind,
             '',
             '',
-            runHostedSession,
+            runHostedRegionSession,
             contextBase
         );
         this.materializedBoxes = boxes.map((box) => {
-            const tag = readDebugTag(box);
+            const tag = readHostedRegionDebugTag(box);
             return tag
-                ? attachDebugTag(box, { ...tag, fieldActorId: this.actorId, fieldSourceId: this.sourceId })
+                ? attachHostedRegionDebugTag(box, { ...tag, fieldActorId: this.actorId, fieldSourceId: this.sourceId })
                 : box;
         });
         this.marginTopVal = this.fragmentMarginTop;
@@ -402,14 +380,14 @@ export class HostedRegionPackager implements PackagerUnit {
         }
         if (!Number.isFinite(availableHeight)) {
             this.materializeMoveWhole(availableWidth);
-            this.boundedBoxes = this.materializedBoxes ? cloneHostedBoxes(this.materializedBoxes) : [];
+            this.boundedBoxes = this.materializedBoxes ? cloneHostedRegionBoxes(this.materializedBoxes) : [];
             this.boundedHeight = this.totalRegionHeight;
             this.boundedOverflow = false;
             this.boundedContinuationQueues = null;
             return;
         }
         const queues = this.ensureRegionQueues(availableWidth);
-        const contextBase = createSessionContextBase(availableWidth, this.processor);
+        const contextBase = createHostedRegionSessionContextBase(availableWidth, this.processor);
         const { boxes, occupiedHeight, hasOverflow, continuationQueues, totalHeight } =
             materializeHostedRegionsBounded(
                 queues,
@@ -417,7 +395,7 @@ export class HostedRegionPackager implements PackagerUnit {
                 this.actorId,
                 this.sourceId,
                 availableHeight,
-                runHostedSessionBounded,
+                runHostedRegionSessionBounded,
                 contextBase
             );
         this.marginTopVal = this.fragmentMarginTop;
@@ -497,7 +475,7 @@ export class HostedRegionPackager implements PackagerUnit {
         this.lastEmittedLeftMargin = leftMargin;
         const boxes = this.usesSpanningContinuation() ? (this.boundedBoxes || []) : (this.materializedBoxes || []);
         return boxes.map((b) => {
-            const tag = readDebugTag(b);
+            const tag = readHostedRegionDebugTag(b);
             return {
                 ...b,
                 x: (b.x || 0) + leftMargin,
@@ -532,7 +510,7 @@ export class HostedRegionPackager implements PackagerUnit {
         const boxes = this.usesSpanningContinuation() ? (this.boundedBoxes || []) : (this.materializedBoxes || []);
         const bottomsByZone = new Map<number, number>();
         for (const box of boxes) {
-            const tag = readDebugTag(box);
+            const tag = readHostedRegionDebugTag(box);
             if (!tag) continue;
             const localBottom = (box.y || 0) + (box.h || 0);
             const currentBottom = bottomsByZone.get(tag.zoneIndex) ?? tag.rect.y;
@@ -544,7 +522,7 @@ export class HostedRegionPackager implements PackagerUnit {
             const explicitHeight = zone.rect.height !== undefined ? Math.max(0, Number(zone.rect.height)) : 0;
             const contentHeight = Math.max(0, (bottomsByZone.get(zoneIndex) ?? zone.rect.y) - zone.rect.y);
             const visibleHeight = this.usesSpanningContinuation()
-                ? resolveVisibleHeight({ id: zone.id, rect: { ...zone.rect }, style: zone.style, actors: [] }, Math.max(0, this.lastAvailableHeight))
+                ? resolveHostedRegionVisibleHeight({ id: zone.id, rect: { ...zone.rect }, style: zone.style, actors: [] }, Math.max(0, this.lastAvailableHeight))
                 : contentHeight;
             const height = Math.max(explicitHeight, contentHeight, visibleHeight);
             return {
