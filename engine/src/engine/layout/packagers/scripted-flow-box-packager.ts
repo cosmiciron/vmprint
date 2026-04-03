@@ -285,6 +285,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
     private readonly messageTopic: string;
     private lastObservedPageIndex = 0;
     private lastObservedActorIndex = 0;
+    private lastObservedCursorY = 0;
     private pendingLiveStructuralChange = false;
     private pendingLiveFrontier: SpatialFrontier | null = null;
 
@@ -345,6 +346,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveStructuralChange = true;
         this.pendingLiveFrontier = {
             pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: replacedIndex,
             actorId: replacements[0]?.actorId ?? this.actorId,
             sourceId: replacements[0]?.sourceId ?? this.sourceId
@@ -366,6 +368,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveStructuralChange = true;
         this.pendingLiveFrontier = {
             pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: insertedIndex,
             actorId: insertions[0]?.actorId,
             sourceId: insertions[0]?.sourceId
@@ -408,6 +411,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveStructuralChange = true;
         this.pendingLiveFrontier = {
             pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: replacedIndex,
             actorId: replacements[0]?.actorId ?? actor.actorId,
             sourceId: replacements[0]?.sourceId ?? actor.sourceId
@@ -429,6 +433,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveStructuralChange = true;
         this.pendingLiveFrontier = {
             pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: hostActorIndex ?? this.lastObservedActorIndex,
             actorId: hostActorIndex !== null ? undefined : actor.actorId,
             sourceId: hostActorIndex !== null ? undefined : actor.sourceId
@@ -456,6 +461,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveStructuralChange = true;
         this.pendingLiveFrontier = {
             pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: insertedIndex,
             actorId: insertions[0]?.actorId,
             sourceId: insertions[0]?.sourceId
@@ -471,6 +477,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveStructuralChange = true;
         this.pendingLiveFrontier = {
             pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: deletedIndex,
             actorId: actor.actorId,
             sourceId: actor.sourceId
@@ -503,6 +510,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             publisherActorKind: this.actorKind,
             fragmentIndex: this.fragmentIndex,
             pageIndex: context.pageIndex,
+            cursorY: context.cursorY,
             payload: {
                 ...message,
                 from: this.sourceId,
@@ -816,6 +824,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
     prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
         this.lastObservedPageIndex = context.pageIndex;
         this.lastObservedActorIndex = Number.isFinite(context.actorIndex) ? Number(context.actorIndex) : this.lastObservedActorIndex;
+        this.lastObservedCursorY = Number.isFinite(context.cursorY) ? Number(context.cursorY) : this.lastObservedCursorY;
         this.inner.prepare(availableWidth, availableHeight, context);
     }
 
@@ -885,6 +894,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             this.pendingLiveStructuralChange = false;
             const frontier = this.pendingLiveFrontier || {
                 pageIndex: this.lastObservedPageIndex,
+                cursorY: this.lastObservedCursorY,
                 actorIndex: this.lastObservedActorIndex,
                 actorId: this.actorId,
                 sourceId: this.sourceId
@@ -913,6 +923,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             updateKind,
             earliestAffectedFrontier: {
                 pageIndex: this.lastObservedPageIndex,
+                cursorY: this.lastObservedCursorY,
                 actorIndex: this.lastObservedActorIndex,
                 actorId: this.actorId,
                 sourceId: this.sourceId

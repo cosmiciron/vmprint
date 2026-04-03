@@ -255,6 +255,7 @@ export class ActorCommunicationRuntime<
         pagesPrefix: readonly Page[],
         currentPageBoxes: readonly Box[],
         currentPageIndex: number,
+        currentY: number,
         kind: 'page' | 'actor',
         captureTransitionSnapshot: () => TTransitionSnapshot,
         captureBranchStateSnapshot: () => TBranchStateSnapshot
@@ -270,6 +271,7 @@ export class ActorCommunicationRuntime<
             anchorSourceId: anchorActor?.sourceId,
             frontier: {
                 pageIndex: currentPageIndex,
+                cursorY: currentY,
                 actorIndex,
                 actorId: anchorActor?.actorId,
                 sourceId: anchorActor?.sourceId
@@ -291,11 +293,7 @@ export class ActorCommunicationRuntime<
             this.safeCheckpoints.splice(existingIndex, 1, checkpoint);
         } else {
             this.safeCheckpoints.push(checkpoint);
-            this.safeCheckpoints.sort((a, b) => {
-                if (a.pageIndex !== b.pageIndex) return a.pageIndex - b.pageIndex;
-                if (a.actorIndex !== b.actorIndex) return a.actorIndex - b.actorIndex;
-                return a.id.localeCompare(b.id);
-            });
+            this.safeCheckpoints.sort(sortCheckpointsAscending);
         }
 
         return checkpoint;
@@ -448,9 +446,16 @@ export class ActorCommunicationRuntime<
     resolveSafeCheckpoint(
         frontier: SpatialFrontier
     ): SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot> | null {
+        const frontierActorIndex =
+            frontier.actorIndex
+            ?? (frontier.sourceId ? this.actorIndexBySourceId.get(frontier.sourceId) : undefined)
+            ?? (frontier.actorId ? this.actorIndexByActorId.get(frontier.actorId) : undefined)
+            ?? Number.POSITIVE_INFINITY;
+
         const anchoredCandidates = this.safeCheckpoints
             .filter((checkpoint) =>
                 checkpoint.pageIndex === frontier.pageIndex
+                && isCheckpointAtOrBeforeFrontier(checkpoint, frontier, frontierActorIndex)
                 && (
                     (frontier.sourceId && checkpoint.anchorSourceId === frontier.sourceId)
                     || (frontier.actorId && checkpoint.anchorActorId === frontier.actorId)
@@ -461,17 +466,8 @@ export class ActorCommunicationRuntime<
             return anchoredCandidates[0];
         }
 
-        const frontierActorIndex =
-            frontier.actorIndex
-            ?? (frontier.sourceId ? this.actorIndexBySourceId.get(frontier.sourceId) : undefined)
-            ?? (frontier.actorId ? this.actorIndexByActorId.get(frontier.actorId) : undefined)
-            ?? Number.POSITIVE_INFINITY;
-
         const candidates = this.safeCheckpoints
-            .filter((checkpoint) =>
-                checkpoint.pageIndex < frontier.pageIndex
-                || (checkpoint.pageIndex === frontier.pageIndex && checkpoint.actorIndex <= frontierActorIndex)
-            )
+            .filter((checkpoint) => isCheckpointAtOrBeforeFrontier(checkpoint, frontier, frontierActorIndex))
             .sort(sortCheckpointsDescending);
         return candidates[0] ?? null;
     }
@@ -526,6 +522,16 @@ function isEarlierFrontier(
         return result.earliestAffectedFrontier.pageIndex < current.pageIndex;
     }
 
+    const nextCursorY = Number.isFinite(result.earliestAffectedFrontier.cursorY)
+        ? Number(result.earliestAffectedFrontier.cursorY)
+        : Number.POSITIVE_INFINITY;
+    const currentCursorY = Number.isFinite(current.cursorY)
+        ? Number(current.cursorY)
+        : Number.POSITIVE_INFINITY;
+    if (Math.abs(nextCursorY - currentCursorY) > 0.01) {
+        return nextCursorY < currentCursorY;
+    }
+
     const nextActorIndex = Number.isFinite(result.earliestAffectedFrontier.actorIndex)
         ? Number(result.earliestAffectedFrontier.actorIndex)
         : Number.POSITIVE_INFINITY;
@@ -543,8 +549,51 @@ function sortCheckpointsDescending<
     b: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>
 ): number {
     if (a.pageIndex !== b.pageIndex) return b.pageIndex - a.pageIndex;
+    const aCursorY = Number.isFinite(a.frontier.cursorY) ? Number(a.frontier.cursorY) : Number.NEGATIVE_INFINITY;
+    const bCursorY = Number.isFinite(b.frontier.cursorY) ? Number(b.frontier.cursorY) : Number.NEGATIVE_INFINITY;
+    if (Math.abs(aCursorY - bCursorY) > 0.01) return bCursorY - aCursorY;
     if (a.actorIndex !== b.actorIndex) return b.actorIndex - a.actorIndex;
     return b.id.localeCompare(a.id);
+}
+
+function sortCheckpointsAscending<
+    TTransitionSnapshot extends { currentY: number; lastSpacingAfter: number },
+    TBranchStateSnapshot extends object
+>(
+    a: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>,
+    b: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>
+): number {
+    if (a.pageIndex !== b.pageIndex) return a.pageIndex - b.pageIndex;
+    const aCursorY = Number.isFinite(a.frontier.cursorY) ? Number(a.frontier.cursorY) : Number.POSITIVE_INFINITY;
+    const bCursorY = Number.isFinite(b.frontier.cursorY) ? Number(b.frontier.cursorY) : Number.POSITIVE_INFINITY;
+    if (Math.abs(aCursorY - bCursorY) > 0.01) return aCursorY - bCursorY;
+    if (a.actorIndex !== b.actorIndex) return a.actorIndex - b.actorIndex;
+    return a.id.localeCompare(b.id);
+}
+
+function isCheckpointAtOrBeforeFrontier<
+    TTransitionSnapshot extends { currentY: number; lastSpacingAfter: number },
+    TBranchStateSnapshot extends object
+>(
+    checkpoint: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>,
+    frontier: SpatialFrontier,
+    frontierActorIndex: number
+): boolean {
+    if (checkpoint.pageIndex !== frontier.pageIndex) {
+        return checkpoint.pageIndex < frontier.pageIndex;
+    }
+
+    const checkpointCursorY = Number.isFinite(checkpoint.frontier.cursorY)
+        ? Number(checkpoint.frontier.cursorY)
+        : Number.POSITIVE_INFINITY;
+    const frontierCursorY = Number.isFinite(frontier.cursorY)
+        ? Number(frontier.cursorY)
+        : Number.POSITIVE_INFINITY;
+    if (Number.isFinite(checkpointCursorY) && Number.isFinite(frontierCursorY) && Math.abs(checkpointCursorY - frontierCursorY) > 0.01) {
+        return checkpointCursorY <= frontierCursorY;
+    }
+
+    return checkpoint.actorIndex <= frontierActorIndex;
 }
 
 function clonePage(page: Page): Page {

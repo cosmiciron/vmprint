@@ -245,6 +245,9 @@ export class ScriptDocumentPackager implements PackagerUnit {
     private replayRequested = false;
     private pendingLiveStructuralChange = false;
     private pendingLiveFrontier: SpatialFrontier | null = null;
+    private lastObservedPageIndex = 0;
+    private lastObservedActorIndex = 0;
+    private lastObservedCursorY = 0;
 
     constructor(
         private readonly host: ScriptRuntimeHost,
@@ -254,8 +257,9 @@ export class ScriptDocumentPackager implements PackagerUnit {
 
     private createDocumentFrontier() {
         return {
-            pageIndex: 0,
-            actorIndex: 0,
+            pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
+            actorIndex: this.lastObservedActorIndex,
             actorId: this.actorId,
             sourceId: this.sourceId
         };
@@ -311,7 +315,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const replacedIndex = session.replaceActorInLiveQueue(actor, replacements, elements);
         if (replacedIndex === null) return false;
         this.recordRuntimeMutation({
-            pageIndex: 0,
+            pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: replacedIndex,
             actorId: replacements[0]?.actorId ?? actor.actorId,
             sourceId: replacements[0]?.sourceId ?? actor.sourceId
@@ -334,7 +339,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position, elements);
         if (insertedIndex === null) return false;
         this.recordRuntimeMutation({
-            pageIndex: 0,
+            pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: insertedIndex,
             actorId: insertions[0]?.actorId,
             sourceId: insertions[0]?.sourceId
@@ -348,7 +354,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const deletedIndex = session.deleteActorInLiveQueue(actor);
         if (deletedIndex === null) return false;
         this.recordRuntimeMutation({
-            pageIndex: 0,
+            pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: deletedIndex,
             actorId: actor.actorId,
             sourceId: actor.sourceId
@@ -372,7 +379,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
         }
         const hostActorIndex = session.noteHostedRuntimeActorContentMutation(actor);
         this.recordRuntimeMutation({
-            pageIndex: 0,
+            pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: hostActorIndex ?? undefined,
             actorId: hostActorIndex !== null ? undefined : actor.actorId,
             sourceId: hostActorIndex !== null ? undefined : actor.sourceId
@@ -391,7 +399,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const insertedIndex = session.prependActorsInLiveQueue(insertions);
         if (insertedIndex === null) return false;
         this.recordRuntimeMutation({
-            pageIndex: 0,
+            pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: insertedIndex,
             actorId: insertions[0]?.actorId,
             sourceId: insertions[0]?.sourceId
@@ -410,7 +419,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
         const insertedIndex = session.appendActorsInLiveQueue(insertions);
         if (insertedIndex === null) return false;
         this.recordRuntimeMutation({
-            pageIndex: 0,
+            pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
             actorIndex: insertedIndex,
             actorId: insertions[0]?.actorId,
             sourceId: insertions[0]?.sourceId
@@ -732,6 +742,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
                     publisherActorKind: this.actorKind,
                     fragmentIndex: this.fragmentIndex,
                     pageIndex: context.pageIndex,
+                    cursorY: context.cursorY,
                     payload: {
                         ...message,
                         from: this.sourceId,
@@ -775,6 +786,9 @@ export class ScriptDocumentPackager implements PackagerUnit {
 
     updateCommittedState(context: PackagerContext): ObservationResult {
         const session = getCurrentLayoutSession(context);
+        this.lastObservedPageIndex = Number.isFinite(context.pageIndex) ? Number(context.pageIndex) : this.lastObservedPageIndex;
+        this.lastObservedActorIndex = Number.isFinite(context.actorIndex) ? Number(context.actorIndex) : this.lastObservedActorIndex;
+        this.lastObservedCursorY = Number.isFinite(context.cursorY) ? Number(context.cursorY) : this.lastObservedCursorY;
         const globals = this.createGlobals(session, context);
         const beforeDigest = this.host.createDocumentDigest(this.elements);
         const beforeMutationVersion = this.lifecycleState.runtimeMutationVersion;

@@ -541,6 +541,8 @@ export class LayoutSession {
     publishActorSignal(signal: ActorSignalDraft): ActorSignal {
         return this.actorCommunicationRuntime.publishActorSignal({
             ...signal,
+            pageIndex: Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : this.currentPageIndex,
+            ...(Number.isFinite(signal.cursorY) ? { cursorY: Number(signal.cursorY) } : { cursorY: this.currentY }),
             tick: this.getSimulationTick()
         });
     }
@@ -897,6 +899,7 @@ export class LayoutSession {
             pagesPrefix,
             currentPageBoxes,
             currentPageIndex,
+            currentY,
             kind,
             () => this.fragmentSessionRuntime.captureLocalTransitionSnapshot(currentPageBoxes, currentY, lastSpacingAfter),
             () => this.captureSessionBranchStateSnapshot(actorQueue)
