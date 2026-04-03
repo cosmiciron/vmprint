@@ -74,6 +74,32 @@ function resolvedHeight(entryCount: number, isContinuation: boolean): number {
     return TITLE_HEIGHT + entryCount * ENTRY_HEIGHT + PADDING;
 }
 
+function isEarlierCommittedPosition(
+    pageIndex: number,
+    cursorY: number | undefined,
+    actorIndex: number | undefined,
+    currentPageIndex: number | null,
+    currentCursorY: number | null,
+    currentActorIndex: number | null
+): boolean {
+    if (currentPageIndex === null) {
+        return true;
+    }
+    if (pageIndex !== currentPageIndex) {
+        return pageIndex < currentPageIndex;
+    }
+
+    const nextCursorY = Number.isFinite(cursorY) ? Number(cursorY) : Number.POSITIVE_INFINITY;
+    const existingCursorY = Number.isFinite(currentCursorY) ? Number(currentCursorY) : Number.POSITIVE_INFINITY;
+    if (Math.abs(nextCursorY - existingCursorY) > 0.01) {
+        return nextCursorY < existingCursorY;
+    }
+
+    const nextActorIndex = Number.isFinite(actorIndex) ? Number(actorIndex) : Number.POSITIVE_INFINITY;
+    const existingActorIndex = Number.isFinite(currentActorIndex) ? Number(currentActorIndex) : Number.POSITIVE_INFINITY;
+    return nextActorIndex < existingActorIndex;
+}
+
 /**
  * A live in-flow Table of Contents actor.
  *
@@ -134,12 +160,21 @@ export class TocPackager implements PackagerUnit {
     }
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): Box[] {
-        if (this.firstCommittedPageIndex === null) this.firstCommittedPageIndex = context.pageIndex;
-        if (this.firstCommittedActorIndex === null && typeof context.actorIndex === 'number') {
-            this.firstCommittedActorIndex = context.actorIndex;
-        }
-        if (this.firstCommittedCursorY === null && Number.isFinite(context.cursorY)) {
-            this.firstCommittedCursorY = Number(context.cursorY);
+        if (isEarlierCommittedPosition(
+            context.pageIndex,
+            context.cursorY,
+            typeof context.actorIndex === 'number' ? context.actorIndex : undefined,
+            this.firstCommittedPageIndex,
+            this.firstCommittedCursorY,
+            this.firstCommittedActorIndex
+        )) {
+            this.firstCommittedPageIndex = context.pageIndex;
+            this.firstCommittedActorIndex = typeof context.actorIndex === 'number'
+                ? context.actorIndex
+                : this.firstCommittedActorIndex;
+            this.firstCommittedCursorY = Number.isFinite(context.cursorY)
+                ? Number(context.cursorY)
+                : this.firstCommittedCursorY;
         }
         const packager = this.base ?? this.buildPackager(context);
         return packager.emitBoxes(availableWidth, availableHeight, context);

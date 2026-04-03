@@ -116,6 +116,23 @@ function normalizeScriptElements(value: unknown): Element[] {
     return [];
 }
 
+function chooseEarlierFrontier(current: SpatialFrontier | null, next: SpatialFrontier): SpatialFrontier {
+    if (!current) {
+        return next;
+    }
+    if (next.pageIndex !== current.pageIndex) {
+        return next.pageIndex < current.pageIndex ? next : current;
+    }
+    const nextCursorY = Number.isFinite(next.cursorY) ? Number(next.cursorY) : Number.POSITIVE_INFINITY;
+    const currentCursorY = Number.isFinite(current.cursorY) ? Number(current.cursorY) : Number.POSITIVE_INFINITY;
+    if (Math.abs(nextCursorY - currentCursorY) > 0.01) {
+        return nextCursorY < currentCursorY ? next : current;
+    }
+    const nextActorIndex = Number.isFinite(next.actorIndex) ? Number(next.actorIndex) : Number.POSITIVE_INFINITY;
+    const currentActorIndex = Number.isFinite(current.actorIndex) ? Number(current.actorIndex) : Number.POSITIVE_INFINITY;
+    return nextActorIndex < currentActorIndex ? next : current;
+}
+
 function applyStructuralOperationBySourceId(
     nodes: Element[],
     sourceId: string,
@@ -275,7 +292,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
         this.lifecycleState.runtimeMutationVersion += 1;
         this.pendingLiveStructuralChange = true;
         if (frontier) {
-            this.pendingLiveFrontier = frontier;
+            this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, frontier);
         }
     }
 

@@ -327,6 +327,7 @@ function tryPlaceHostedRegionTextActor(
 ): HostedRegionTextPlacement | null {
     if (activeFields.length === 0) return null;
     if (String(element.type || '').toLowerCase() === 'image') return null;
+    const session = processor.getCurrentLayoutSession();
     const spatialMap = buildHostedRegionSpatialMap(activeFields);
     const placed = reflowTextElementAgainstSpatialField({
         processor,
@@ -336,7 +337,7 @@ function tryPlaceHostedRegionTextActor(
         currentY,
         layoutBefore,
         spatialMap,
-        pageIndex: 0,
+        pageIndex: session ? session.getCurrentPageIndex() : 0,
         clearTopBeforeStart: false
     });
     if (!placed) return null;
@@ -348,6 +349,13 @@ function tryPlaceHostedRegionTextActor(
     };
 }
 
+function resolveHostedRegionPageIndex(
+    contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>
+): number {
+    const session = contextBase.processor.getCurrentLayoutSession?.();
+    return session ? session.getCurrentPageIndex() : 0;
+}
+
 function placePackagersInHostedRegion(
     packagers: HostedRegionActorEntry[],
     availableWidth: number,
@@ -355,6 +363,7 @@ function placePackagersInHostedRegion(
 ): { boxes: Box[]; height: number } {
     const placedBoxes: Box[] = [];
     const activeFields: HostedRegionFieldState[] = [];
+    const pageIndex = resolveHostedRegionPageIndex(contextBase);
     let currentY = 0;
     let lastSpacingAfter = 0;
 
@@ -371,9 +380,9 @@ function placePackagersInHostedRegion(
         if (fieldDirective) {
             const context: PackagerContext = {
                 ...contextBase,
-                pageIndex: 0,
+                pageIndex,
                 cursorY: currentY,
-                publishActorSignal: bindPackagerSignalPublisher(contextBase.publishActorSignal, 0, currentY)
+                publishActorSignal: bindPackagerSignalPublisher(contextBase.publishActorSignal, pageIndex, currentY)
             };
             const fieldPublisher = materializeHostedRegionFieldPublisher(
                 actor,
@@ -410,9 +419,9 @@ function placePackagersInHostedRegion(
         const initialLane = resolveHostedRegionLane(availableWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields, actorZIndex);
         const context: PackagerContext = {
             ...contextBase,
-            pageIndex: 0,
+            pageIndex,
             cursorY: currentY,
-            publishActorSignal: bindPackagerSignalPublisher(contextBase.publishActorSignal, 0, currentY)
+            publishActorSignal: bindPackagerSignalPublisher(contextBase.publishActorSignal, pageIndex, currentY)
         };
         const initialContext: PackagerContext = {
             ...context,
@@ -488,6 +497,7 @@ export function runHostedRegionSessionBounded(
     const placedBoxes: Box[] = [];
     const activeFields: HostedRegionFieldState[] = [];
     const carryoverActors: HostedRegionActorEntry[] = [];
+    const pageIndex = resolveHostedRegionPageIndex(zoneContextBase);
     let currentY = 0;
     let lastSpacingAfter = 0;
 
@@ -505,9 +515,9 @@ export function runHostedRegionSessionBounded(
         const initialLane = resolveHostedRegionLane(zoneWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields, actorZIndex);
         const context: PackagerContext = {
             ...zoneContextBase,
-            pageIndex: 0,
+            pageIndex,
             cursorY: currentY,
-            publishActorSignal: bindPackagerSignalPublisher(zoneContextBase.publishActorSignal, 0, currentY)
+            publishActorSignal: bindPackagerSignalPublisher(zoneContextBase.publishActorSignal, pageIndex, currentY)
         };
         const initialContext: PackagerContext = {
             ...context,

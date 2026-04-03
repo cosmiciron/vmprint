@@ -105,6 +105,23 @@ function normalizeScriptElements(value: unknown): Element[] {
     return [];
 }
 
+function chooseEarlierFrontier(current: SpatialFrontier | null, next: SpatialFrontier): SpatialFrontier {
+    if (!current) {
+        return next;
+    }
+    if (next.pageIndex !== current.pageIndex) {
+        return next.pageIndex < current.pageIndex ? next : current;
+    }
+    const nextCursorY = Number.isFinite(next.cursorY) ? Number(next.cursorY) : Number.POSITIVE_INFINITY;
+    const currentCursorY = Number.isFinite(current.cursorY) ? Number(current.cursorY) : Number.POSITIVE_INFINITY;
+    if (Math.abs(nextCursorY - currentCursorY) > 0.01) {
+        return nextCursorY < currentCursorY ? next : current;
+    }
+    const nextActorIndex = Number.isFinite(next.actorIndex) ? Number(next.actorIndex) : Number.POSITIVE_INFINITY;
+    const currentActorIndex = Number.isFinite(current.actorIndex) ? Number(current.actorIndex) : Number.POSITIVE_INFINITY;
+    return nextActorIndex < currentActorIndex ? next : current;
+}
+
 function normalizeRuntimeElement(element: Element): Element {
     const cloned = cloneElementTree(element);
     const normalizedName = typeof cloned.name === 'string' && cloned.name.trim() ? cloned.name.trim() : '';
@@ -344,13 +361,13 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const replacedIndex = session.replaceActorInLiveQueue(this, replacements, elements);
         if (replacedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = {
+        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
             actorIndex: replacedIndex,
             actorId: replacements[0]?.actorId ?? this.actorId,
             sourceId: replacements[0]?.sourceId ?? this.sourceId
-        };
+        });
         return true;
     }
 
@@ -366,13 +383,13 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const insertedIndex = session.insertActorsInLiveQueue(this, insertions, position, elements);
         if (insertedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = {
+        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
             actorIndex: insertedIndex,
             actorId: insertions[0]?.actorId,
             sourceId: insertions[0]?.sourceId
-        };
+        });
         return true;
     }
 
@@ -409,13 +426,13 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const replacedIndex = session.replaceActorInLiveQueue(actor, replacements, elements);
         if (replacedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = {
+        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
             actorIndex: replacedIndex,
             actorId: replacements[0]?.actorId ?? actor.actorId,
             sourceId: replacements[0]?.sourceId ?? actor.sourceId
-        };
+        });
         return true;
     }
 
@@ -431,13 +448,13 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         }
         const hostActorIndex = session.noteHostedRuntimeActorContentMutation(actor);
         this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = {
+        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
             actorIndex: hostActorIndex ?? this.lastObservedActorIndex,
             actorId: hostActorIndex !== null ? undefined : actor.actorId,
             sourceId: hostActorIndex !== null ? undefined : actor.sourceId
-        };
+        });
         return true;
     }
 
@@ -459,13 +476,13 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position, elements);
         if (insertedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = {
+        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
             actorIndex: insertedIndex,
             actorId: insertions[0]?.actorId,
             sourceId: insertions[0]?.sourceId
-        };
+        });
         return true;
     }
 
@@ -475,13 +492,13 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const deletedIndex = session.deleteActorInLiveQueue(actor);
         if (deletedIndex === null) return false;
         this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = {
+        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
             actorIndex: deletedIndex,
             actorId: actor.actorId,
             sourceId: actor.sourceId
-        };
+        });
         return true;
     }
 

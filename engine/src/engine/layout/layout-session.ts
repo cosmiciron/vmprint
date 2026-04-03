@@ -539,10 +539,19 @@ export class LayoutSession {
     }
 
     publishActorSignal(signal: ActorSignalDraft): ActorSignal {
+        const resolvedPageIndex = Number.isFinite(signal.pageIndex)
+            ? Number(signal.pageIndex)
+            : this.currentPageIndex;
         return this.actorCommunicationRuntime.publishActorSignal({
             ...signal,
-            pageIndex: Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : this.currentPageIndex,
-            ...(Number.isFinite(signal.cursorY) ? { cursorY: Number(signal.cursorY) } : { cursorY: this.currentY }),
+            pageIndex: resolvedPageIndex,
+            ...(
+                Number.isFinite(signal.cursorY)
+                    ? { cursorY: Number(signal.cursorY) }
+                    : (!Number.isFinite(signal.pageIndex) || resolvedPageIndex === this.currentPageIndex)
+                        ? { cursorY: this.currentY }
+                        : {}
+            ),
             tick: this.getSimulationTick()
         });
     }
