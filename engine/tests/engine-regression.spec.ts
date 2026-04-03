@@ -878,6 +878,52 @@ function assertZoneMapSpanningFieldCarryoverSignals(pages: any[], fixtureName: s
     );
 }
 
+function assertZoneMapSpanningMultiParticipantSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '41-zone-map-spanning-multi-participant.json') return;
+
+    const findPagesForSource = (sourceId: string): number[] => {
+        const indices = new Set<number>();
+        pages.forEach((page: any, pageIndex: number) => {
+            (page.boxes || []).forEach((box: any) => {
+                const actual = String(box.meta?.sourceId || '');
+                if (actual === sourceId || actual.endsWith(`:${sourceId}`)) {
+                    indices.add(pageIndex);
+                }
+            });
+        });
+        return Array.from(indices.values()).sort((a, b) => a - b);
+    };
+
+    const hearthPages = findPagesForSource('zone-multi-hearth');
+    const sideMarkerPages = findPagesForSource('zone-multi-side-marker');
+    const mainBodyPages = findPagesForSource('zone-multi-main-body');
+    const sideBodyPages = findPagesForSource('zone-multi-side-body');
+    const postFlowPages = findPagesForSource('post-zone-multi-flow');
+
+    assert.ok(hearthPages.includes(0), `${fixtureName}: expected main hearth on the first page`);
+    assert.ok(sideMarkerPages.includes(0), `${fixtureName}: expected side marker on the first page`);
+    assert.ok(
+        hearthPages.some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: expected main hearth to persist onto a later continuation page`
+    );
+    assert.ok(
+        sideMarkerPages.some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: expected side marker to persist onto a later continuation page`
+    );
+    assert.ok(
+        mainBodyPages.some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: expected main regional body to continue onto a later page`
+    );
+    assert.ok(
+        sideBodyPages.some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: expected side regional body to continue onto a later page`
+    );
+    assert.ok(
+        postFlowPages.every((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: expected downstream flow only after the multi-participant zone continuation`
+    );
+}
+
 function assertWorldPlainAbsoluteRockSignals(pages: any[], fixtureName: string): void {
     const allBoxes = pages.flatMap((page: any) => page.boxes || []);
     const rockBoxes = allBoxes.filter((box: any) =>
@@ -2105,6 +2151,15 @@ async function run() {
                 'a zone-owned field actor should remain visible across later chunk intersections while the same zone body continues',
                 () => {
                     assertZoneMapSpanningFieldCarryoverSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '41-zone-map-spanning-multi-participant.json') {
+            _check(
+                `${fixture.name} zone-map spanning multi participant signals`,
+                'a spanning zone should carry multiple persistent regional participants and continuing regional body flow across later chunk intersections',
+                () => {
+                    assertZoneMapSpanningMultiParticipantSignals(pagesA, fixture.name);
                 }
             );
         }

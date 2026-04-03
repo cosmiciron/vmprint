@@ -1,0 +1,153 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 360,
+      "height": 300
+    },
+    "margins": {
+      "top": 24,
+      "right": 24,
+      "bottom": 24,
+      "left": 24
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.25
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "marginBottom": 12,
+      "fontWeight": "bold"
+    },
+    "p": {
+      "marginBottom": 10,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "sidebar-note": {
+      "fontSize": 11,
+      "lineHeight": 1.3,
+      "marginBottom": 10
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Zone Map Spanning Multi Participant"
+    },
+    {
+      "type": "p",
+      "content": "This regression proves that a single spanning zone can keep multiple regional participants alive across later chunk intersections instead of degrading into one surviving obstacle plus reset local strips."
+    },
+    {
+      "type": "zone-map",
+      "content": "",
+      "properties": {
+        "sourceId": "zone-multi-body",
+        "style": {
+          "marginTop": 10,
+          "marginBottom": 10
+        }
+      },
+      "zoneLayout": {
+        "columns": [
+          {
+            "mode": "flex",
+            "fr": 2
+          },
+          {
+            "mode": "flex",
+            "fr": 1
+          }
+        ],
+        "gap": 14,
+        "frameOverflow": "continue",
+        "worldBehavior": "spanning"
+      },
+      "zones": [
+        {
+          "id": "main",
+          "elements": [
+            {
+              "type": "field-actor",
+              "content": "",
+              "properties": {
+                "sourceId": "zone-multi-hearth",
+                "spatialField": {
+                  "kind": "exclude",
+                  "x": 74,
+                  "y": 92,
+                  "wrap": "around",
+                  "gap": 8
+                },
+                "style": {
+                  "width": 92,
+                  "height": 120,
+                  "backgroundColor": "#d9d2c3"
+                }
+              }
+            },
+            {
+              "type": "p",
+              "content": "The main hall opens first and establishes the larger regional surface before the later chunk revisits it.",
+              "properties": {
+                "sourceId": "zone-multi-main-open"
+              }
+            },
+            {
+              "type": "p",
+              "content": "Main hall traffic should continue past the persistent hearth while later chunks keep revisiting the same inhabited zone. Main hall traffic should continue past the persistent hearth while later chunks keep revisiting the same inhabited zone. Main hall traffic should continue past the persistent hearth while later chunks keep revisiting the same inhabited zone. Main hall traffic should continue past the persistent hearth while later chunks keep revisiting the same inhabited zone. Main hall traffic should continue past the persistent hearth while later chunks keep revisiting the same inhabited zone. Main hall traffic should continue past the persistent hearth while later chunks keep revisiting the same inhabited zone. Main hall traffic should continue past the persistent hearth while later chunks keep revisiting the same inhabited zone. Main hall traffic should continue past the persistent hearth while later chunks keep revisiting the same inhabited zone.",
+              "properties": {
+                "sourceId": "zone-multi-main-body"
+              }
+            }
+          ]
+        },
+        {
+          "id": "side",
+          "elements": [
+            {
+              "type": "field-actor",
+              "content": "",
+              "properties": {
+                "sourceId": "zone-multi-side-marker",
+                "spatialField": {
+                  "kind": "exclude",
+                  "x": 16,
+                  "y": 82,
+                  "wrap": "around",
+                  "gap": 5
+                },
+                "style": {
+                  "width": 56,
+                  "height": 96,
+                  "backgroundColor": "#c9d8bf"
+                }
+              }
+            },
+            {
+              "type": "sidebar-note",
+              "content": "The side room is a second participant in the same regional map and should keep its own continuing local life while later chunks revisit the larger tavern. The side room is a second participant in the same regional map and should keep its own continuing local life while later chunks revisit the larger tavern. The side room is a second participant in the same regional map and should keep its own continuing local life while later chunks revisit the larger tavern. The side room is a second participant in the same regional map and should keep its own continuing local life while later chunks revisit the larger tavern.",
+              "properties": {
+                "sourceId": "zone-multi-side-body"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "content": "Normal document flow resumes after the multi-participant zone finishes.",
+      "properties": {
+        "sourceId": "post-zone-multi-flow"
+      }
+    }
+  ]
+}
