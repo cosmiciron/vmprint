@@ -150,8 +150,9 @@ export class SpatialGridPackager implements PackagerUnit {
         const processor = this.processor as unknown as SpatialGridPackagerProcessor;
         this.prepare(availableWidth, _availableHeight, context);
 
-        const chunkOriginWorldY = Number.isFinite(resolvePackagerChunkOriginWorldY(context))
-            ? Math.max(0, Number(resolvePackagerChunkOriginWorldY(context)))
+        const resolvedChunkOriginWorldY = resolvePackagerChunkOriginWorldY(context);
+        const chunkOriginWorldY = Number.isFinite(resolvedChunkOriginWorldY)
+            ? Math.max(0, Number(resolvedChunkOriginWorldY))
             : null;
         const viewportHeight = Number.isFinite(context.viewportHeight)
             ? Math.max(0, Number(context.viewportHeight))

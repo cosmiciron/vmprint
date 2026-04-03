@@ -594,6 +594,127 @@ export class LayoutSession {
         this.actorCommunicationRuntime.noteActorIndex(actor, actorIndex);
     }
 
+    resolveActorRuntimeFrontier(
+        actor: PackagerUnit,
+        options?: {
+            actorIndex?: number;
+            actorId?: string;
+            sourceId?: string;
+        }
+    ): SpatialFrontier | null {
+        const owner = findHostedActorController(this.kernel.actorRegistry, actor) ?? actor;
+        const state = this.paginationLoopState;
+        const finalizedPages = this.getFinalizedPages();
+        const currentPageBoxes = state?.paginationState.currentPageBoxes ?? [];
+        const currentPageIndex = state?.paginationState.currentPageIndex ?? this.currentPageIndex;
+        const refs = collectActorBoxRefs(finalizedPages as Page[], currentPageBoxes, currentPageIndex, owner.actorId);
+        const queueIndex = state?.actorQueue.findIndex((entry) => entry.actorId === owner.actorId);
+        const resolvedActorIndexCandidate =
+            options?.actorIndex
+            ?? this.actorCommunicationRuntime.resolveKnownActorIndex(owner)
+            ?? (queueIndex !== undefined && queueIndex >= 0 ? queueIndex : undefined);
+        const resolvedActorIndex = Number.isFinite(resolvedActorIndexCandidate) && Number(resolvedActorIndexCandidate) >= 0
+            ? Number(resolvedActorIndexCandidate)
+            : undefined;
+        const checkpointFrontier = this.actorCommunicationRuntime.resolveActorCheckpointFrontier(owner, resolvedActorIndex);
+
+        if (checkpointFrontier) {
+            return {
+                ...checkpointFrontier,
+                ...(Number.isFinite(resolvedActorIndex) ? { actorIndex: resolvedActorIndex } : {}),
+                actorId: owner.actorId,
+                sourceId: owner.sourceId
+            };
+        }
+
+        if (refs.length > 0) {
+            let earliest = refs[0];
+            for (const ref of refs.slice(1)) {
+                const currentY = Number(ref.box.y || 0);
+                const earliestY = Number(earliest.box.y || 0);
+                if (
+                    ref.pageIndex < earliest.pageIndex
+                    || (ref.pageIndex === earliest.pageIndex && currentY < earliestY)
+                ) {
+                    earliest = ref;
+                }
+            }
+
+            const pageHeight =
+                finalizedPages.find((page) => page.index === earliest.pageIndex)?.height
+                ?? (earliest.pageIndex === currentPageIndex
+                    ? state?.context.pageHeight ?? this.currentSurface?.height
+                    : this.currentSurface?.height);
+            const cursorY = Number(earliest.box.y || 0);
+            return {
+                pageIndex: earliest.pageIndex,
+                cursorY,
+                ...(Number.isFinite(pageHeight)
+                    ? { worldY: Math.max(0, earliest.pageIndex * Number(pageHeight) + cursorY) }
+                    : {}),
+                ...(Number.isFinite(resolvedActorIndex) ? { actorIndex: Number(resolvedActorIndex) } : {}),
+                actorId: owner.actorId,
+                sourceId: owner.sourceId
+            };
+        }
+
+        if (Number.isFinite(resolvedActorIndex) && state) {
+            return {
+                pageIndex: state.paginationState.currentPageIndex,
+                cursorY: state.paginationState.currentY,
+                ...(Number.isFinite(this.currentSurface?.height)
+                    ? {
+                        worldY: Math.max(
+                            0,
+                            state.paginationState.currentPageIndex * Number(this.currentSurface?.height) + state.paginationState.currentY
+                        )
+                    }
+                    : {}),
+                actorIndex: Number(resolvedActorIndex),
+                actorId: owner.actorId,
+                sourceId: owner.sourceId
+            };
+        }
+
+        return null;
+    }
+
+    resolveRuntimeFrontierAtActorIndex(actorIndex: number): SpatialFrontier | null {
+        if (!Number.isFinite(actorIndex)) {
+            return null;
+        }
+
+        const resolvedActorIndex = Number(actorIndex);
+        const checkpointFrontier = this.actorCommunicationRuntime.resolveQueueCheckpointFrontier(resolvedActorIndex);
+        if (checkpointFrontier) {
+            return {
+                ...checkpointFrontier,
+                actorIndex: resolvedActorIndex
+            };
+        }
+
+        const state = this.paginationLoopState;
+        if (!state) {
+            return null;
+        }
+
+        const currentPageIndex = state.paginationState.currentPageIndex;
+        const currentY = state.paginationState.currentY;
+        const pageHeight = this.currentSurface?.height;
+        return {
+            pageIndex: currentPageIndex,
+            cursorY: currentY,
+            ...(Number.isFinite(pageHeight)
+                ? { worldY: Math.max(0, currentPageIndex * Number(pageHeight) + currentY) }
+                : {}),
+            actorIndex: resolvedActorIndex
+        };
+    }
+
+    invalidateSafeCheckpointsAfterFrontier(frontier: SpatialFrontier): void {
+        this.actorCommunicationRuntime.invalidateSafeCheckpointsAfterFrontier(frontier);
+    }
+
     insertActorsInLiveQueue(
         targetActor: PackagerUnit,
         insertions: readonly PackagerUnit[],

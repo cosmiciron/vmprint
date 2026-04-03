@@ -390,15 +390,17 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         if (insertions.length === 0) return false;
         const insertedIndex = session.insertActorsInLiveQueue(this, insertions, position, elements);
         if (insertedIndex === null) return false;
+        const mutationFrontier =
+            session.resolveRuntimeFrontierAtActorIndex(insertedIndex)
+            ?? {
+                pageIndex: this.lastObservedPageIndex,
+                cursorY: this.lastObservedCursorY,
+                ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
+                actorIndex: insertedIndex
+            };
+        session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
         this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
-            pageIndex: this.lastObservedPageIndex,
-            cursorY: this.lastObservedCursorY,
-            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
-            actorIndex: insertedIndex,
-            actorId: insertions[0]?.actorId,
-            sourceId: insertions[0]?.sourceId
-        });
+        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, mutationFrontier);
         return true;
     }
 
@@ -410,6 +412,25 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             )
             && typeof (actor as { getLiveContent?: unknown }).getLiveContent === 'function'
             && typeof (actor as { setLiveContent?: unknown }).setLiveContent === 'function';
+    }
+
+    private resolveLiveMutationFrontier(
+        session: LayoutSession,
+        actor: PackagerUnit,
+        options?: {
+            actorIndex?: number;
+            actorId?: string;
+            sourceId?: string;
+        }
+    ): SpatialFrontier {
+        return session.resolveActorRuntimeFrontier(actor, options) ?? {
+            pageIndex: this.lastObservedPageIndex,
+            cursorY: this.lastObservedCursorY,
+            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
+            ...(Number.isFinite(options?.actorIndex) ? { actorIndex: Number(options?.actorIndex) } : {}),
+            actorId: options?.actorId ?? actor.actorId,
+            sourceId: options?.sourceId ?? actor.sourceId
+        };
     }
 
     private resolveLiveActor(session: LayoutSession, target: unknown): PackagerUnit | null {
@@ -434,15 +455,17 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         if (replacements.length === 0) return false;
         const replacedIndex = session.replaceActorInLiveQueue(actor, replacements, elements);
         if (replacedIndex === null) return false;
-        this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
-            pageIndex: this.lastObservedPageIndex,
-            cursorY: this.lastObservedCursorY,
-            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
+        const mutationFrontier = this.resolveLiveMutationFrontier(session, actor, {
             actorIndex: replacedIndex,
-            actorId: replacements[0]?.actorId ?? actor.actorId,
-            sourceId: replacements[0]?.sourceId ?? actor.sourceId
+            actorId: actor.actorId,
+            sourceId: actor.sourceId
         });
+        session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+        this.pendingLiveStructuralChange = true;
+        this.pendingLiveFrontier = chooseEarlierFrontier(
+            this.pendingLiveFrontier,
+            mutationFrontier
+        );
         return true;
     }
 
@@ -457,15 +480,24 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             shadowNode.content = nextContent;
         }
         const hostActorIndex = session.noteHostedRuntimeActorContentMutation(actor);
+        const mutationFrontier =
+            Number.isFinite(hostActorIndex)
+                ? session.resolveRuntimeFrontierAtActorIndex(Number(hostActorIndex))
+                : this.resolveLiveMutationFrontier(session, actor);
+        if (mutationFrontier) {
+            session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+        }
         this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
-            pageIndex: this.lastObservedPageIndex,
-            cursorY: this.lastObservedCursorY,
-            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
-            actorIndex: hostActorIndex ?? this.lastObservedActorIndex,
-            actorId: hostActorIndex !== null ? undefined : actor.actorId,
-            sourceId: hostActorIndex !== null ? undefined : actor.sourceId
-        });
+        this.pendingLiveFrontier = chooseEarlierFrontier(
+            this.pendingLiveFrontier,
+            mutationFrontier ?? {
+                pageIndex: this.lastObservedPageIndex,
+                cursorY: this.lastObservedCursorY,
+                ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
+                actorIndex: hostActorIndex ?? this.lastObservedActorIndex,
+                ...(hostActorIndex !== null ? {} : { actorId: actor.actorId, sourceId: actor.sourceId })
+            }
+        );
         return true;
     }
 
@@ -486,32 +518,37 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         if (insertions.length === 0) return false;
         const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position, elements);
         if (insertedIndex === null) return false;
-        this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
-            pageIndex: this.lastObservedPageIndex,
-            cursorY: this.lastObservedCursorY,
-            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
+        const mutationFrontier = this.resolveLiveMutationFrontier(session, actor, {
             actorIndex: insertedIndex,
-            actorId: insertions[0]?.actorId,
-            sourceId: insertions[0]?.sourceId
+            actorId: actor.actorId,
+            sourceId: actor.sourceId
         });
+        session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+        this.pendingLiveStructuralChange = true;
+        this.pendingLiveFrontier = chooseEarlierFrontier(
+            this.pendingLiveFrontier,
+            mutationFrontier
+        );
         return true;
     }
 
     private deleteLiveActor(session: LayoutSession, target: unknown): boolean {
         const actor = this.resolveLiveActor(session, target);
         if (!actor) return false;
+        const mutationFrontier = this.resolveLiveMutationFrontier(session, actor);
         const deletedIndex = session.deleteActorInLiveQueue(actor);
         if (deletedIndex === null) return false;
+        session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
         this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
-            pageIndex: this.lastObservedPageIndex,
-            cursorY: this.lastObservedCursorY,
-            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
-            actorIndex: deletedIndex,
-            actorId: actor.actorId,
-            sourceId: actor.sourceId
-        });
+        this.pendingLiveFrontier = chooseEarlierFrontier(
+            this.pendingLiveFrontier,
+            {
+                ...mutationFrontier,
+                actorIndex: deletedIndex,
+                actorId: actor.actorId,
+                sourceId: actor.sourceId
+            }
+        );
         return true;
     }
 

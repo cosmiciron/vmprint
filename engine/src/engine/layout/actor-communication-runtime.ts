@@ -249,6 +249,38 @@ export class ActorCommunicationRuntime<
         }
     }
 
+    resolveKnownActorIndex(actor: PackagerUnit): number | undefined {
+        return this.actorIndexByActorId.get(actor.actorId)
+            ?? this.actorIndexBySourceId.get(actor.sourceId);
+    }
+
+    resolveActorCheckpointFrontier(actor: PackagerUnit, actorIndex?: number): SpatialFrontier | undefined {
+        const resolvedActorIndex =
+            Number.isFinite(actorIndex) ? Number(actorIndex) : this.resolveKnownActorIndex(actor);
+        const candidates = this.safeCheckpoints
+            .filter((checkpoint) =>
+                checkpoint.kind === 'actor'
+                && (
+                    checkpoint.anchorActorId === actor.actorId
+                    || checkpoint.anchorSourceId === actor.sourceId
+                    || (Number.isFinite(resolvedActorIndex) && checkpoint.actorIndex === resolvedActorIndex)
+                )
+            )
+            .sort(sortCheckpointsAscending);
+        return candidates[0]?.frontier;
+    }
+
+    resolveQueueCheckpointFrontier(actorIndex: number): SpatialFrontier | undefined {
+        if (!Number.isFinite(actorIndex)) {
+            return undefined;
+        }
+        const resolvedActorIndex = Number(actorIndex);
+        const candidates = this.safeCheckpoints
+            .filter((checkpoint) => checkpoint.actorIndex === resolvedActorIndex)
+            .sort(sortCheckpointsAscending);
+        return candidates[0]?.frontier;
+    }
+
     recordSafeCheckpoint(
         actorQueue: readonly PackagerUnit[],
         actorIndex: number,
@@ -489,6 +521,11 @@ export class ActorCommunicationRuntime<
             currentY: checkpoint.snapshot.currentY,
             lastSpacingAfter: checkpoint.snapshot.lastSpacingAfter
         };
+    }
+
+    invalidateSafeCheckpointsAfterFrontier(frontier: SpatialFrontier): void {
+        this.safeCheckpoints = this.safeCheckpoints
+            .filter((checkpoint) => compareSpatialFrontiersAscending(checkpoint.frontier, frontier) <= 0);
     }
 
     private awakenObserversForSignal(topic: string): void {
