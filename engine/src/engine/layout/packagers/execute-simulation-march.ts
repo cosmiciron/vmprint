@@ -69,7 +69,7 @@ export function executeSimulationMarch(
     session.beginSimulationRun(progression);
     session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
     if (reactiveCheckpointsEnabled()) {
-        session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, 'page');
+        session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, contextBase.pageHeight, lastSpacingAfter, 'page');
     }
 
     const maybeSettleAtCheckpoint = (): boolean => {
@@ -136,7 +136,7 @@ export function executeSimulationMarch(
         });
         i = checkpoint.actorIndex;
         session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
-        session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, checkpoint.kind);
+        session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, contextBase.pageHeight, lastSpacingAfter, checkpoint.kind);
         return true;
     };
 
@@ -182,7 +182,7 @@ export function executeSimulationMarch(
         });
         i = checkpoint.actorIndex;
         session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
-        session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, checkpoint.kind);
+        session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, contextBase.pageHeight, lastSpacingAfter, checkpoint.kind);
         return true;
     };
 
@@ -203,7 +203,7 @@ export function executeSimulationMarch(
         session.recordProfile('boundaryCheckpointCalls', 1);
         const checkpointRecordStart = performance.now();
         session.recordProfile('checkpointRecordCalls', 1);
-        session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, lastSpacingAfter, checkpointKind);
+        session.recordSafeCheckpoint(packagers, i, pages, currentPageBoxes, currentPageIndex, currentY, contextBase.pageHeight, lastSpacingAfter, checkpointKind);
         session.recordProfile('checkpointRecordMs', performance.now() - checkpointRecordStart);
         const observerBoundaryStart = performance.now();
         session.recordProfile('observerBoundaryCheckCalls', 1);
@@ -558,8 +558,8 @@ function resolveReactiveResettlementCycleCap(): number {
 
 function buildReactiveResettlementSignature(
     kind: 'observer',
-    checkpoint: { kind: string; pageIndex: number; actorIndex: number; anchorActorId?: string; anchorSourceId?: string; frontier: { cursorY?: number } },
-    frontier: { pageIndex: number; cursorY?: number; actorIndex?: number; actorId?: string; sourceId?: string },
+    checkpoint: { kind: string; pageIndex: number; actorIndex: number; anchorActorId?: string; anchorSourceId?: string; frontier: { cursorY?: number; worldY?: number } },
+    frontier: { pageIndex: number; cursorY?: number; worldY?: number; actorIndex?: number; actorId?: string; sourceId?: string },
     sequenceOrTick: number
 ): string {
     return [
@@ -567,11 +567,13 @@ function buildReactiveResettlementSignature(
         checkpoint.kind,
         checkpoint.pageIndex,
         Number.isFinite(checkpoint.frontier.cursorY) ? Number(checkpoint.frontier.cursorY).toFixed(3) : 'na',
+        Number.isFinite(checkpoint.frontier.worldY) ? Number(checkpoint.frontier.worldY).toFixed(3) : 'na',
         checkpoint.actorIndex,
         checkpoint.anchorActorId ?? 'na',
         checkpoint.anchorSourceId ?? 'na',
         frontier.pageIndex,
         Number.isFinite(frontier.cursorY) ? Number(frontier.cursorY).toFixed(3) : 'na',
+        Number.isFinite(frontier.worldY) ? Number(frontier.worldY).toFixed(3) : 'na',
         frontier.actorIndex ?? 'na',
         frontier.actorId ?? 'na',
         frontier.sourceId ?? 'na',

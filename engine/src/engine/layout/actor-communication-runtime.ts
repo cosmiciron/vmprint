@@ -256,6 +256,7 @@ export class ActorCommunicationRuntime<
         currentPageBoxes: readonly Box[],
         currentPageIndex: number,
         currentY: number,
+        currentWorldY: number | undefined,
         kind: 'page' | 'actor',
         captureTransitionSnapshot: () => TTransitionSnapshot,
         captureBranchStateSnapshot: () => TBranchStateSnapshot
@@ -272,6 +273,7 @@ export class ActorCommunicationRuntime<
             frontier: {
                 pageIndex: currentPageIndex,
                 cursorY: currentY,
+                ...(Number.isFinite(currentWorldY) ? { worldY: Number(currentWorldY) } : {}),
                 actorIndex,
                 actorId: anchorActor?.actorId,
                 sourceId: anchorActor?.sourceId
@@ -518,6 +520,16 @@ function isEarlierFrontier(
         return true;
     }
 
+    const nextWorldY = Number.isFinite(result.earliestAffectedFrontier.worldY)
+        ? Number(result.earliestAffectedFrontier.worldY)
+        : Number.NaN;
+    const currentWorldY = Number.isFinite(current.worldY)
+        ? Number(current.worldY)
+        : Number.NaN;
+    if (Number.isFinite(nextWorldY) && Number.isFinite(currentWorldY) && Math.abs(nextWorldY - currentWorldY) > 0.01) {
+        return nextWorldY < currentWorldY;
+    }
+
     if (result.earliestAffectedFrontier.pageIndex !== current.pageIndex) {
         return result.earliestAffectedFrontier.pageIndex < current.pageIndex;
     }
@@ -548,6 +560,9 @@ function sortCheckpointsDescending<
     a: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>,
     b: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>
 ): number {
+    const aWorldY = Number.isFinite(a.frontier.worldY) ? Number(a.frontier.worldY) : Number.NaN;
+    const bWorldY = Number.isFinite(b.frontier.worldY) ? Number(b.frontier.worldY) : Number.NaN;
+    if (Number.isFinite(aWorldY) && Number.isFinite(bWorldY) && Math.abs(aWorldY - bWorldY) > 0.01) return bWorldY - aWorldY;
     if (a.pageIndex !== b.pageIndex) return b.pageIndex - a.pageIndex;
     const aCursorY = Number.isFinite(a.frontier.cursorY) ? Number(a.frontier.cursorY) : Number.NEGATIVE_INFINITY;
     const bCursorY = Number.isFinite(b.frontier.cursorY) ? Number(b.frontier.cursorY) : Number.NEGATIVE_INFINITY;
@@ -563,6 +578,9 @@ function sortCheckpointsAscending<
     a: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>,
     b: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>
 ): number {
+    const aWorldY = Number.isFinite(a.frontier.worldY) ? Number(a.frontier.worldY) : Number.NaN;
+    const bWorldY = Number.isFinite(b.frontier.worldY) ? Number(b.frontier.worldY) : Number.NaN;
+    if (Number.isFinite(aWorldY) && Number.isFinite(bWorldY) && Math.abs(aWorldY - bWorldY) > 0.01) return aWorldY - bWorldY;
     if (a.pageIndex !== b.pageIndex) return a.pageIndex - b.pageIndex;
     const aCursorY = Number.isFinite(a.frontier.cursorY) ? Number(a.frontier.cursorY) : Number.POSITIVE_INFINITY;
     const bCursorY = Number.isFinite(b.frontier.cursorY) ? Number(b.frontier.cursorY) : Number.POSITIVE_INFINITY;
@@ -579,6 +597,12 @@ function isCheckpointAtOrBeforeFrontier<
     frontier: SpatialFrontier,
     frontierActorIndex: number
 ): boolean {
+    const checkpointWorldY = Number.isFinite(checkpoint.frontier.worldY) ? Number(checkpoint.frontier.worldY) : Number.NaN;
+    const frontierWorldY = Number.isFinite(frontier.worldY) ? Number(frontier.worldY) : Number.NaN;
+    if (Number.isFinite(checkpointWorldY) && Number.isFinite(frontierWorldY) && Math.abs(checkpointWorldY - frontierWorldY) > 0.01) {
+        return checkpointWorldY <= frontierWorldY;
+    }
+
     if (checkpoint.pageIndex !== frontier.pageIndex) {
         return checkpoint.pageIndex < frontier.pageIndex;
     }

@@ -160,7 +160,7 @@ export class SpatialGridPackager implements PackagerUnit {
 
         const viewportWorldY = Number.isFinite(context.viewportWorldY)
             ? Math.max(0, Number(context.viewportWorldY))
-            : Math.max(0, Number(context.pageIndex || 0)) * Math.max(0, Number(context.pageHeight || 0));
+            : null;
         const viewportHeight = Number.isFinite(context.viewportHeight)
             ? Math.max(0, Number(context.viewportHeight))
             : Math.max(0, Number(context.pageHeight || 0));
@@ -172,7 +172,7 @@ export class SpatialGridPackager implements PackagerUnit {
                 ...box,
                 properties: {
                     ...(box.properties || {}),
-                    _tableViewportWorldY: viewportWorldY,
+                    ...(viewportWorldY !== null ? { _tableViewportWorldY: viewportWorldY } : {}),
                     _tableViewportHeight: viewportHeight
                 }
             };

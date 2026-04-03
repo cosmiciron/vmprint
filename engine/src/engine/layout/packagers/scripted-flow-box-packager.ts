@@ -109,6 +109,11 @@ function chooseEarlierFrontier(current: SpatialFrontier | null, next: SpatialFro
     if (!current) {
         return next;
     }
+    const nextWorldY = Number.isFinite(next.worldY) ? Number(next.worldY) : Number.NaN;
+    const currentWorldY = Number.isFinite(current.worldY) ? Number(current.worldY) : Number.NaN;
+    if (Number.isFinite(nextWorldY) && Number.isFinite(currentWorldY) && Math.abs(nextWorldY - currentWorldY) > 0.01) {
+        return nextWorldY < currentWorldY ? next : current;
+    }
     if (next.pageIndex !== current.pageIndex) {
         return next.pageIndex < current.pageIndex ? next : current;
     }
@@ -303,6 +308,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
     private lastObservedPageIndex = 0;
     private lastObservedActorIndex = 0;
     private lastObservedCursorY = 0;
+    private lastObservedWorldY: number | undefined;
     private pendingLiveStructuralChange = false;
     private pendingLiveFrontier: SpatialFrontier | null = null;
 
@@ -364,6 +370,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
+            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
             actorIndex: replacedIndex,
             actorId: replacements[0]?.actorId ?? this.actorId,
             sourceId: replacements[0]?.sourceId ?? this.sourceId
@@ -386,6 +393,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
+            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
             actorIndex: insertedIndex,
             actorId: insertions[0]?.actorId,
             sourceId: insertions[0]?.sourceId
@@ -429,6 +437,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
+            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
             actorIndex: replacedIndex,
             actorId: replacements[0]?.actorId ?? actor.actorId,
             sourceId: replacements[0]?.sourceId ?? actor.sourceId
@@ -451,6 +460,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
+            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
             actorIndex: hostActorIndex ?? this.lastObservedActorIndex,
             actorId: hostActorIndex !== null ? undefined : actor.actorId,
             sourceId: hostActorIndex !== null ? undefined : actor.sourceId
@@ -479,6 +489,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
+            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
             actorIndex: insertedIndex,
             actorId: insertions[0]?.actorId,
             sourceId: insertions[0]?.sourceId
@@ -495,6 +506,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
             pageIndex: this.lastObservedPageIndex,
             cursorY: this.lastObservedCursorY,
+            ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
             actorIndex: deletedIndex,
             actorId: actor.actorId,
             sourceId: actor.sourceId
@@ -842,6 +854,9 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.lastObservedPageIndex = context.pageIndex;
         this.lastObservedActorIndex = Number.isFinite(context.actorIndex) ? Number(context.actorIndex) : this.lastObservedActorIndex;
         this.lastObservedCursorY = Number.isFinite(context.cursorY) ? Number(context.cursorY) : this.lastObservedCursorY;
+        this.lastObservedWorldY = Number.isFinite(context.viewportWorldY) && Number.isFinite(context.cursorY)
+            ? Number(context.viewportWorldY) + Number(context.cursorY)
+            : this.lastObservedWorldY;
         this.inner.prepare(availableWidth, availableHeight, context);
     }
 
@@ -912,6 +927,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             const frontier = this.pendingLiveFrontier || {
                 pageIndex: this.lastObservedPageIndex,
                 cursorY: this.lastObservedCursorY,
+                ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
                 actorIndex: this.lastObservedActorIndex,
                 actorId: this.actorId,
                 sourceId: this.sourceId
@@ -941,6 +957,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             earliestAffectedFrontier: {
                 pageIndex: this.lastObservedPageIndex,
                 cursorY: this.lastObservedCursorY,
+                ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
                 actorIndex: this.lastObservedActorIndex,
                 actorId: this.actorId,
                 sourceId: this.sourceId

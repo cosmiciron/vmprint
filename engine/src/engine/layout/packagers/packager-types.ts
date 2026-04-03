@@ -10,6 +10,7 @@ export interface LayoutBox extends Box { }
 export type SpatialFrontier = {
     pageIndex: number;
     cursorY?: number;
+    worldY?: number;
     actorIndex?: number;
     actorId?: string;
     sourceId?: string;

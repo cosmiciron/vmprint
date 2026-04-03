@@ -118,6 +118,7 @@ export class TocPackager implements PackagerUnit {
     private firstCommittedPageIndex: number | null = null;
     private firstCommittedActorIndex: number | null = null;
     private firstCommittedCursorY: number | null = null;
+    private firstCommittedWorldY: number | null = null;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -175,6 +176,9 @@ export class TocPackager implements PackagerUnit {
             this.firstCommittedCursorY = Number.isFinite(context.cursorY)
                 ? Number(context.cursorY)
                 : this.firstCommittedCursorY;
+            this.firstCommittedWorldY = Number.isFinite(context.viewportWorldY) && Number.isFinite(context.cursorY)
+                ? Number(context.viewportWorldY) + Number(context.cursorY)
+                : this.firstCommittedWorldY;
         }
         const packager = this.base ?? this.buildPackager(context);
         return packager.emitBoxes(availableWidth, availableHeight, context);
@@ -233,6 +237,9 @@ export class TocPackager implements PackagerUnit {
                     pageIndex: this.firstCommittedPageIndex,
                     ...(Number.isFinite(this.firstCommittedCursorY)
                         ? { cursorY: Number(this.firstCommittedCursorY) }
+                        : {}),
+                    ...(Number.isFinite(this.firstCommittedWorldY)
+                        ? { worldY: Number(this.firstCommittedWorldY) }
                         : {}),
                     actorIndex: this.firstCommittedActorIndex ?? undefined,
                     actorId: this.actorId,

@@ -1960,7 +1960,7 @@ export class StoryPackager implements PackagerUnit {
         const normalizedLocalFrameWidth = Math.max(0, Number(localFrameWidth) || 0);
         const outerViewportWorldY = Number.isFinite(context.viewportWorldY)
             ? Math.max(0, Number(context.viewportWorldY))
-            : Math.max(0, Number(context.pageIndex || 0)) * Math.max(0, Number(context.pageHeight || 0));
+            : null;
         const resolvedViewportHeight = localViewportHeight !== undefined
             ? Math.max(0, Number(localViewportHeight) || 0)
             : (
@@ -1972,7 +1972,9 @@ export class StoryPackager implements PackagerUnit {
             ...nested,
             pageWidth: nested.margins.left + normalizedLocalFrameWidth + nested.margins.right,
             contentWidthOverride: normalizedLocalFrameWidth,
-            viewportWorldY: outerViewportWorldY + Math.max(0, Number(localWorldOffsetY) || 0),
+            ...(outerViewportWorldY !== null
+                ? { viewportWorldY: outerViewportWorldY + Math.max(0, Number(localWorldOffsetY) || 0) }
+                : {}),
             viewportHeight: resolvedViewportHeight
         };
     }

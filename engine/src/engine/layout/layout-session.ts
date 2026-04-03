@@ -899,6 +899,7 @@ export class LayoutSession {
         currentPageBoxes: readonly Box[],
         currentPageIndex: number,
         currentY: number,
+        currentPageHeight: number,
         lastSpacingAfter: number,
         kind: 'page' | 'actor'
     ): SessionSafeCheckpoint {
@@ -909,6 +910,7 @@ export class LayoutSession {
             currentPageBoxes,
             currentPageIndex,
             currentY,
+            Math.max(0, currentPageIndex * currentPageHeight + currentY),
             kind,
             () => this.fragmentSessionRuntime.captureLocalTransitionSnapshot(currentPageBoxes, currentY, lastSpacingAfter),
             () => this.captureSessionBranchStateSnapshot(actorQueue)
