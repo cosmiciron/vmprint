@@ -4,7 +4,7 @@ import path from 'node:path';
 import { ContextFontRegistrationOptions } from '@vmprint/contracts';
 import { LayoutEngine } from '../src/engine/layout-engine';
 import { Renderer } from '../src/engine/renderer';
-import { toLayoutConfig, resolveDocumentPaths } from '../src';
+import { toLayoutConfig, resolveDocumentSourceText } from '../src';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { createEngineRuntime } from '../src/engine/runtime';
 import { encodeStandardFontText } from '../src/font-management/standard-font-encoding';
@@ -64,8 +64,8 @@ class StandardCaptureContext extends MockContext {
 async function run() {
 
     const fixturePath = getAstFixturePath(FIXTURE_NAME);
-    const fixture = resolveDocumentPaths(
-        JSON.parse(fs.readFileSync(fixturePath, 'utf-8')),
+    const fixture = resolveDocumentSourceText(
+        fs.readFileSync(fixturePath, 'utf-8'),
         fixturePath
     );
     const config = toLayoutConfig(fixture, false);
@@ -165,4 +165,3 @@ run().catch((err) => {
     console.error('[standard-fonts.spec] FAILED', err);
     process.exit(1);
 });
-

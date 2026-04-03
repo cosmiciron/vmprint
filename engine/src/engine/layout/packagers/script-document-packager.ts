@@ -599,10 +599,19 @@ export class ScriptDocumentPackager implements PackagerUnit {
     }
 
     private createDocRef(session: LayoutSession, context?: PackagerContext): Record<string, unknown> {
+        const getRegions = () => {
+            session.recordProfile('docQueryCalls', 1);
+            return session.getScriptRegions();
+        };
         return {
             name: 'doc',
             type: 'document',
             vars: this.host.getScriptVars(),
+            getRegions,
+            findRegionByName: (name: string) => {
+                session.recordProfile('docQueryCalls', 1);
+                return session.findScriptRegionByName(name);
+            },
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);

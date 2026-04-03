@@ -1397,11 +1397,20 @@ export function parseDocumentSourceText(source: string, documentPath: string = '
         throw new Error(`[document] Document source "${documentPath}" must parse to a root object.`);
     }
 
+    const bodyObject = parsedBody as Record<string, unknown>;
+    const forbiddenScriptBodyKeys = ['methods', 'scriptVars', 'onBeforeLayout', 'onAfterSettle']
+        .filter((key) => bodyObject[key] !== undefined);
+    if (forbiddenScriptBodyKeys.length > 0) {
+        throw new Error(
+            `[document] Document source "${documentPath}" must declare scripting only in YAML front matter; `
+            + `found ${forbiddenScriptBodyKeys.join(', ')} inside the JSON body.`
+        );
+    }
+
     if (!isPlainObject(frontMatter)) {
         return parsedBody as unknown as DocumentInput;
     }
 
-    const bodyObject = parsedBody as Record<string, unknown>;
     const frontMatterObject = frontMatter as Record<string, unknown>;
     const scriptVars: Record<string, unknown> = {
         ...(isPlainObject(bodyObject.scriptVars) ? bodyObject.scriptVars as Record<string, unknown> : {})

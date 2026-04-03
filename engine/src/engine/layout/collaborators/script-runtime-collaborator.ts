@@ -306,13 +306,22 @@ export class ScriptRuntimeCollaborator implements Collaborator {
     }
 
     private createDocRef(session: LayoutSession): Record<string, unknown> {
+        const getRegions = () => {
+            session.recordProfile('docQueryCalls', 1);
+            return session.getScriptRegions();
+        };
         return {
             name: 'doc',
             type: 'document',
             vars: this.host.getScriptVars(),
             getPageCount: () => {
                 session.recordProfile('docQueryCalls', 1);
-                return 0;
+                return session.getFinalizedPages().length;
+            },
+            getRegions,
+            findRegionByName: (name: string) => {
+                session.recordProfile('docQueryCalls', 1);
+                return session.findScriptRegionByName(name);
             },
             findElementByName: (name: string) => {
                 session.recordProfile('docQueryCalls', 1);

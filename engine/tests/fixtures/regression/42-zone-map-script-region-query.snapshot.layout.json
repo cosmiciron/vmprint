@@ -1,0 +1,1007 @@
+[
+  {
+    "index": 0,
+    "width": 360,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Zone Map Script Region Query",
+              "width": 292.255859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 63.34375,
+        "w": 312,
+        "h": 49.21875,
+        "lines": [
+          [
+            {
+              "text": "This proof checks that scripts can query a spanning zone ",
+              "width": 306.164063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "as one persistent regional entity instead of reconstructing ",
+              "width": 306.84375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page-local strips by hand.",
+              "width": 136.746094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "field-actor",
+        "x": 98,
+        "y": 224.5625,
+        "w": 92,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 132.5625,
+        "w": 198.666667,
+        "h": 61.40625,
+        "lines": [
+          [
+            {
+              "text": "The main hall opens first and ",
+              "width": 157.417969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "establishes the larger regional ",
+              "width": 163.429688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "surface before the later chunk ",
+              "width": 162.09375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "revisits it.",
+              "width": 50.003906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 203.96875,
+        "w": 198.666667,
+        "h": 16.40625,
+        "lines": [
+          [
+            {
+              "text": "Main hall ",
+              "width": 51.357422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "traffi",
+              "width": 23.337891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "field-actor",
+        "x": 252.666667,
+        "y": 214.5625,
+        "w": 56,
+        "h": 96,
+        "lines": []
+      },
+      {
+        "type": "sidebar-note",
+        "x": 236.666667,
+        "y": 132.5625,
+        "w": 99.333333,
+        "h": 144.289063,
+        "lines": [
+          [
+            {
+              "text": "The side room is a ",
+              "width": 93.537598,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "second participant ",
+              "width": 92.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "in the same regional",
+              "width": 99.059082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "map and should ",
+              "width": 81.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keep its own ",
+              "width": 64.200684,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "c",
+              "width": 5.5,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "onti",
+              "width": 17.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "n",
+              "width": 6.117676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "uing",
+              "width": 20.796875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lo",
+              "width": 8.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "cal ",
+              "width": 17.117676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lif",
+              "width": 7.943848,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "e ",
+              "width": 9.173828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "w",
+              "width": 7.943848,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hile ",
+              "width": 20.179199,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 360,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "field-actor",
+        "x": 98,
+        "y": 24,
+        "w": 92,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 144,
+        "w": 198.666667,
+        "h": 121.40625,
+        "lines": [
+          [
+            {
+              "text": "c should ",
+              "width": 48.029297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "cont",
+              "width": 22.681641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inue past the persistent hearth while ",
+              "width": 195.451172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later chunks keep revisiting the same",
+              "width": 197.431641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inhabited zone. Main hall traffic ",
+              "width": 168.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should continue past the persistent ",
+              "width": 188.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hearth while later chunks keep ",
+              "width": 165.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "revisiting the same inhabited zone. ",
+              "width": 188.109375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Main hall traffic should continue past ",
+              "width": 197.226563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "field-actor",
+        "x": 252.666667,
+        "y": 24,
+        "w": 56,
+        "h": 96,
+        "lines": []
+      },
+      {
+        "type": "sidebar-note",
+        "x": 236.666667,
+        "y": 120,
+        "w": 99.333333,
+        "h": 144.289063,
+        "lines": [
+          [
+            {
+              "text": "la",
+              "width": 8.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ter ",
+              "width": 15.893066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "chunks revisit the ",
+              "width": 88.037598,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "larger tavern. The ",
+              "width": 89.874512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "side room is a ",
+              "width": 71.526855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "second participant ",
+              "width": 92.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "in the same regional",
+              "width": 99.059082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "map and should ",
+              "width": 81.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keep its own ",
+              "width": 64.200684,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuing local life ",
+              "width": 96.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "while later chunks ",
+              "width": 90.486816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 360,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 198.666667,
+        "h": 241.40625,
+        "lines": [
+          [
+            {
+              "text": "the persistent hearth while later ",
+              "width": 170.091797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "chunks keep revisiting the same ",
+              "width": 174.087891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inhabited zone. Main hall traffic ",
+              "width": 168.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should continue past the persistent ",
+              "width": 188.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hearth while later chunks keep ",
+              "width": 165.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "revisiting the same inhabited zone. ",
+              "width": 188.109375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Main hall traffic should continue past ",
+              "width": 197.226563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the persistent hearth while later ",
+              "width": 170.091797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "chunks keep revisiting the same ",
+              "width": 174.087891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inhabited zone. Main hall traffic ",
+              "width": 168.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should continue past the persistent ",
+              "width": 188.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hearth while later chunks keep ",
+              "width": 165.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "revisiting the same inhabited zone. ",
+              "width": 188.109375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Main hall traffic should continue past ",
+              "width": 197.226563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the persistent hearth while later ",
+              "width": 170.091797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "chunks keep revisiting the same ",
+              "width": 174.087891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-note",
+        "x": 236.666667,
+        "y": 24,
+        "w": 99.333333,
+        "h": 244.389063,
+        "lines": [
+          [
+            {
+              "text": "revisit the larger ",
+              "width": 81.307617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "tavern. The side ",
+              "width": 81.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "room is a second ",
+              "width": 86.818359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "participant in the ",
+              "width": 83.772949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "same regional map ",
+              "width": 96.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and should keep its ",
+              "width": 97.845215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "own continuing local",
+              "width": 99.064453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "life while later ",
+              "width": 69.695313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "chunks revisit the ",
+              "width": 88.037598,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "larger tavern. The ",
+              "width": 89.874512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "side room is a ",
+              "width": 71.526855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "second participant ",
+              "width": 92.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "in the same regional",
+              "width": 99.059082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "map and should ",
+              "width": 81.334473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keep its own ",
+              "width": 64.200684,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuing local life ",
+              "width": 96.00293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "while later chunks ",
+              "width": 90.486816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 360,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 198.666667,
+        "h": 61.40625,
+        "lines": [
+          [
+            {
+              "text": "inhabited zone. Main hall traffic ",
+              "width": 168.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should continue past the persistent ",
+              "width": 188.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hearth while later chunks keep ",
+              "width": 165.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "revisiting the same inhabited zone.",
+              "width": 184.775391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-note",
+        "x": 236.666667,
+        "y": 24,
+        "w": 99.333333,
+        "h": 29.889063,
+        "lines": [
+          [
+            {
+              "text": "revisit the larger ",
+              "width": 81.307617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "tavern.",
+              "width": 33.628418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 105.40625,
+        "w": 312,
+        "h": 32.8125,
+        "lines": [
+          [
+            {
+              "text": "Normal document flow resumes after the queried regional ",
+              "width": 308.818359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zone finishes.",
+              "width": 73.376953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "report",
+        "x": 24,
+        "y": 156.21875,
+        "w": 312,
+        "h": 86.03125,
+        "lines": [
+          [
+            {
+              "text": "regions=2 main:1/2/3/4:4 ",
+              "width": 113.129883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "members=author:post-zone-script-flow/author:region-query-report/aut",
+              "width": 307.084961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hor:zone-script-hearth/author:zone-script-main-body/author:zone-scrip",
+              "width": 310.698242,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "t-main-open side:1/2/3/4:4 ",
+              "width": 118.959961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "members=author:post-zone-script-flow/author:region-query-report/aut",
+              "width": 307.084961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hor:zone-script-side-body/author:zone-script-side-marker",
+              "width": 251.762695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

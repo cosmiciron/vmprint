@@ -15,7 +15,7 @@ import { applyAdvancedJustification } from '../src/engine/layout/text-justificat
 import { tryHyphenateSegmentToFit } from '../src/engine/layout/text-hyphenation';
 import { getRichSegments } from '../src/engine/layout/rich-text-extractor';
 import { TextSegment } from '../src/engine/types';
-import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src';
+import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, parseDocumentSourceText, resolveDocumentPaths, toLayoutConfig } from '../src';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { solveTrackSizing } from '../src/engine/layout/track-sizing';
 import { createEngineRuntime } from '../src/engine/runtime';
@@ -46,6 +46,33 @@ function testStyleSignatureCache(): void {
         'equivalent style objects with different key order compare equal',
         () => {
             assert.equal(cache.areStylesEquivalent(styleA, styleB), true);
+        }
+    );
+}
+
+function testSourceTextRejectsInlineJsonScripting(): void {
+    _check(
+        'source text forbids inline JSON scripting fields',
+        'document source text must declare methods in YAML front matter instead of the JSON body',
+        () => {
+            assert.throws(
+                () => parseDocumentSourceText(`{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Times New Roman",
+    "fontSize": 12,
+    "lineHeight": 1.2
+  },
+  "styles": {},
+  "methods": {
+    "onReady()": "setContent(\\"greeting\\", \\"hi\\")"
+  },
+  "elements": []
+}`, 'memory://inline-json-scripting.json'),
+                /must declare scripting only in YAML front matter/
+            );
         }
     );
 }
@@ -1268,6 +1295,7 @@ async function run() {
     testAdvancedJustificationSkipsForcedBreakLines();
     testHyphenationSoftBreak();
     testDocumentContractNormalization();
+    testSourceTextRejectsInlineJsonScripting();
     testEmbeddedImageContract();
     testTableLayoutContract();
     testAst11PromotedFieldsContract();

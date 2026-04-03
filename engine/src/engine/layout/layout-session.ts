@@ -38,6 +38,8 @@ import type {
     SimulationWorldSummary
 } from './simulation-report';
 import { SimulationReportBridge } from './simulation-report-bridge';
+import type { PageRegionSummary } from './page-region-summary';
+import type { ScriptRegionRef } from './script-region-query';
 
 import {
     ConstraintField,
@@ -1123,6 +1125,18 @@ export class LayoutSession {
 
     getFinalizedPages(): readonly Page[] {
         return this.sessionCollaborationRuntime.getFinalizedPages();
+    }
+
+    getPageRegionSummaries(): readonly PageRegionSummary[] {
+        return this.sessionCollaborationRuntime.getPageRegionSummaries();
+    }
+
+    getScriptRegions(): readonly ScriptRegionRef[] {
+        return this.sessionCollaborationRuntime.getScriptRegions();
+    }
+
+    findScriptRegionByName(name: string): ScriptRegionRef | null {
+        return this.sessionCollaborationRuntime.findScriptRegionByName(name);
     }
 
     recordPageCapture(record: PageCaptureRecord): void {

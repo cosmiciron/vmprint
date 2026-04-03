@@ -6,7 +6,7 @@ import type { PageOverrideSummary } from './collaborators/page-override-artifact
 import type { PageReservationSummary } from './collaborators/page-reservation-artifact-collaborator';
 import type { PageExclusionSummary } from './collaborators/page-exclusion-artifact-collaborator';
 import type { PageSpatialConstraintSummary } from './collaborators/page-spatial-constraint-artifact-collaborator';
-import type { PageRegionSummary } from './collaborators/page-region-artifact-collaborator';
+import type { PageRegionSummary } from './page-region-summary';
 import type { SourcePositionSummary } from './collaborators/source-position-artifact-collaborator';
 import type { HeadingTelemetrySummary } from './collaborators/heading-telemetry-collaborator';
 import type { AsyncThoughtSummary } from './collaborators/async-thought-runtime-collaborator';

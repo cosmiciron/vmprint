@@ -13,7 +13,7 @@ import {
     snapshotPages,
     loadLocalFontManager
 } from './harness/engine-harness';
-import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src';
+import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentSourceText, toLayoutConfig } from '../src';
 import { loadAstJsonDocumentFixtures } from './harness/ast-fixture-harness';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import {
@@ -948,6 +948,84 @@ function assertZoneMapSpanningMultiParticipantSignals(pages: any[], fixtureName:
     );
 }
 
+function assertZoneMapScriptRegionQuerySignals(pages: any[], fixtureName: string, engine: any): void {
+    if (fixtureName !== '42-zone-map-script-region-query.json') return;
+
+    const reportBoxes = boxesForSourceId(pages, 'region-query-report');
+    assert.ok(reportBoxes.length > 0, `${fixtureName}: expected script-populated region query report`);
+    const reportText = reportBoxes.map((box: any) => flattenBoxText(box)).join(' ').replace(/\s+/g, ' ').trim();
+    assert.notEqual(reportText, 'region query pending', `${fixtureName}: expected onReady script to rewrite the region report`);
+
+    const reader = engine.getLastSimulationReportReader?.();
+    assert.ok(reader?.has(simulationArtifactKeys.pageRegionSummary), `${fixtureName}: expected pageRegionSummary in simulation report`);
+    const pageRegionSummary = reader.require(simulationArtifactKeys.pageRegionSummary);
+    const findRegionPages = (regionId: string): number[] => pageRegionSummary
+        .filter((item: any) => Array.isArray(item?.debugRegions) && item.debugRegions.some((region: any) =>
+            region?.sourceKind === 'zone-map' && (region?.regionId === regionId || region?.zoneId === regionId)
+        ))
+        .map((item: any) => Number(item?.pageIndex) + 1)
+        .filter((pageIndex: number) => Number.isFinite(pageIndex))
+        .sort((a: number, b: number) => a - b);
+
+    const expectedMain = findRegionPages('main');
+    const expectedSide = findRegionPages('side');
+    const expectedRegionCount = new Set(
+        pageRegionSummary.flatMap((item: any) => (item?.debugRegions || [])
+            .filter((region: any) => region?.sourceKind === 'zone-map')
+            .map((region: any) => String(region?.stableKey || ''))
+            .filter(Boolean))
+    ).size;
+    const expectedMembers = (regionId: string): string[] => {
+        const memberSet = new Set<string>();
+        for (const page of pages) {
+            const regions = (page.debugRegions || []).filter((region: any) =>
+                region?.sourceKind === 'zone-map' && (region?.regionId === regionId || region?.zoneId === regionId)
+            );
+            if (regions.length === 0) continue;
+            for (const box of page.boxes || []) {
+                const sourceId = String(box?.meta?.sourceId || '');
+                if (!sourceId || box?.meta?.generated === true) continue;
+                const intersects = regions.some((region: any) => {
+                    const left = Number(box?.x || 0);
+                    const top = Number(box?.y || 0);
+                    const right = left + Math.max(0, Number(box?.w || 0));
+                    const bottom = top + Math.max(0, Number(box?.h || 0));
+                    const regionRight = Number(region?.x || 0) + Math.max(0, Number(region?.w || 0));
+                    const regionBottom = Number(region?.y || 0) + Math.max(0, Number(region?.h || 0));
+                    return right > Number(region?.x || 0)
+                        && left < regionRight
+                        && bottom > Number(region?.y || 0)
+                        && top < regionBottom;
+                });
+                if (intersects) {
+                    memberSet.add(sourceId);
+                }
+            }
+        }
+        return Array.from(memberSet).sort((a, b) => a.localeCompare(b));
+    };
+    const expectedMainMembers = expectedMembers('main');
+    const expectedSideMembers = expectedMembers('side');
+
+    assert.ok(reportText.includes(`regions=${expectedRegionCount}`), `${fixtureName}: expected region count in script report`);
+    assert.ok(
+        reportText.includes(`main:${expectedMain.join('/')}:${expectedMain.length}`),
+        `${fixtureName}: expected main region pages in script report`
+    );
+    assert.ok(
+        reportText.includes(`side:${expectedSide.join('/')}:${expectedSide.length}`),
+        `${fixtureName}: expected side region pages in script report`
+    );
+    assert.ok(
+        reportText.includes(`members=${expectedMainMembers.join('/')}`),
+        `${fixtureName}: expected main region members in script report`
+    );
+    assert.ok(
+        reportText.includes(`members=${expectedSideMembers.join('/')}`),
+        `${fixtureName}: expected side region members in script report`
+    );
+}
+
 function assertWorldPlainAbsoluteRockSignals(pages: any[], fixtureName: string): void {
     const allBoxes = pages.flatMap((page: any) => page.boxes || []);
     const rockBoxes = allBoxes.filter((box: any) =>
@@ -1806,8 +1884,8 @@ async function run() {
         log(`Fixture: ${fixture.name}`);
         const fixturePath = fixture.filePath;
         const fixtureRaw = fs.readFileSync(fixturePath, 'utf-8');
-        const irA = resolveDocumentPaths(JSON.parse(fixtureRaw), fixturePath);
-        const irB = resolveDocumentPaths(JSON.parse(fixtureRaw), fixturePath);
+        const irA = resolveDocumentSourceText(fixtureRaw, fixturePath);
+        const irB = resolveDocumentSourceText(fixtureRaw, fixturePath);
 
         _check(
             `${fixture.name} canonical IR determinism`,
@@ -2197,6 +2275,15 @@ async function run() {
                 'a spanning zone should carry multiple persistent regional participants and continuing regional body flow across later chunk intersections',
                 () => {
                     assertZoneMapSpanningMultiParticipantSignals(pagesA, fixture.name, engine);
+                }
+            );
+        }
+        if (fixture.name === '42-zone-map-script-region-query.json') {
+            _check(
+                `${fixture.name} zone-map script region query signals`,
+                'scripts should be able to query one spanning regional identity and report its revisited pages without manually stitching page-local strips',
+                () => {
+                    assertZoneMapScriptRegionQuerySignals(pagesA, fixture.name, engine);
                 }
             );
         }
