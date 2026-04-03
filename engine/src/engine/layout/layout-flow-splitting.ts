@@ -190,6 +190,18 @@ export function splitFlowBoxWithCallbacks(
 
     const linesA = box.lines.slice(0, linesA_Count);
     const linesB = box.lines.slice(linesA_Count);
+    const partALineYOffsets = sourceLineYOffsets
+        ? sourceLineYOffsets.slice(0, linesA_Count)
+        : undefined;
+    const partBLineYOffsetsRaw = sourceLineYOffsets
+        ? sourceLineYOffsets.slice(linesA_Count, totalLines)
+        : undefined;
+    const partBLineYOffsetBase = partBLineYOffsetsRaw && partBLineYOffsetsRaw.length > 0
+        ? Number(partBLineYOffsetsRaw[0] || 0)
+        : 0;
+    const partBLineYOffsets = partBLineYOffsetsRaw
+        ? partBLineYOffsetsRaw.map((offset) => Number(offset || 0) - partBLineYOffsetBase)
+        : undefined;
 
     const partAStyle: ElementStyle = createLeadingFragmentStyle(style);
     const partBStyle: ElementStyle = createContinuationFragmentStyle(style);
@@ -200,7 +212,7 @@ export function splitFlowBoxWithCallbacks(
         ...box.properties,
         _lineOffsets: Array.isArray(box.properties?._lineOffsets) ? box.properties._lineOffsets.slice(0, linesA.length) : undefined,
         _lineWidths: Array.isArray(box.properties?._lineWidths) ? box.properties._lineWidths.slice(0, linesA.length) : undefined,
-        _lineYOffsets: Array.isArray(box.properties?._lineYOffsets) ? box.properties._lineYOffsets.slice(0, linesA.length) : undefined,
+        _lineYOffsets: partALineYOffsets,
         _isFirstLine: true,
         _isLastLine: false
     });
@@ -210,7 +222,7 @@ export function splitFlowBoxWithCallbacks(
         ...box.properties,
         _lineOffsets: Array.isArray(box.properties?._lineOffsets) ? box.properties._lineOffsets.slice(linesA_Count, totalLines) : undefined,
         _lineWidths: Array.isArray(box.properties?._lineWidths) ? box.properties._lineWidths.slice(linesA_Count, totalLines) : undefined,
-        _lineYOffsets: Array.isArray(box.properties?._lineYOffsets) ? box.properties._lineYOffsets.slice(linesA_Count, totalLines) : undefined,
+        _lineYOffsets: partBLineYOffsets,
         _isFirstLine: false,
         _isLastLine: true
     });

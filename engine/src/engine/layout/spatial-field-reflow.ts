@@ -10,6 +10,7 @@ export type SpatialFieldTextPlacement = {
     lines: RichLine[];
     lineOffsets: number[];
     lineWidths: number[];
+    lineSlotWidths: number[];
     lineYOffsets: number[];
     contentHeight: number;
     insetV: number;
@@ -33,6 +34,7 @@ type SpatialFieldReflowOptions = {
     worldY?: number;
     opticalUnderhang?: boolean;
     clearTopBeforeStart?: boolean;
+    minUsableSlotWidth?: number;
 };
 
 /**
@@ -64,6 +66,7 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const insetH = LayoutUtils.getHorizontalInsets(style);
     const insetV = LayoutUtils.getVerticalInsets(style);
     const contentWidth = Math.max(0, options.availableWidth - insetH);
+    const minUsableSlotWidth = Math.max(0, Number(options.minUsableSlotWidth || 0));
 
     const marginTop = Math.max(0, flowBox.marginTop);
     const marginBottom = Math.max(0, flowBox.marginBottom);
@@ -80,10 +83,13 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         offsets: [],
         yOffsets: []
     };
+    const lineSlotWidths: number[] = [];
 
     const resolver = (): { width: number; xOffset: number; yOffset: number } => {
         if (pendingSlots.length > 0) {
-            return pendingSlots.shift()!;
+            const slot = pendingSlots.shift()!;
+            lineSlotWidths.push(slot.width);
+            return slot;
         }
 
         let lineY = elementStartY + (physicalLineCount * uniformLH) + accumulatedYBonus;
@@ -96,31 +102,36 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         const yOffset = (physicalLineCount * uniformLH) + accumulatedYBonus;
         physicalLineCount++;
 
-        const intervals = options.spatialMap.getAvailableIntervals(
+        const rawIntervals = options.spatialMap.getAvailableIntervals(
             lineY,
             uniformLH,
             options.availableWidth,
             options.opticalUnderhang ? { opticalUnderhang: true, queryZIndex } : { queryZIndex }
         );
-        if (intervals.length === 0) {
+        const intervals = rawIntervals.filter((interval) => Math.max(0, interval.w - insetH) >= minUsableSlotWidth);
+        const usableIntervals = intervals.length > 0 ? intervals : rawIntervals;
+        if (usableIntervals.length === 0) {
+            lineSlotWidths.push(contentWidth);
             return { width: contentWidth, xOffset: 0, yOffset };
         }
 
-        if (intervals.length > 1) {
-            for (let i = 1; i < intervals.length; i++) {
+        if (usableIntervals.length > 1) {
+            for (let i = 1; i < usableIntervals.length; i++) {
                 pendingSlots.push({
-                    width: Math.max(0, intervals[i].w - insetH),
-                    xOffset: intervals[i].x,
+                    width: Math.max(0, usableIntervals[i].w - insetH),
+                    xOffset: usableIntervals[i].x,
                     yOffset
                 });
             }
         }
 
-        return {
-            width: Math.max(0, intervals[0].w - insetH),
-            xOffset: intervals[0].x,
+        const slot = {
+            width: Math.max(0, usableIntervals[0].w - insetH),
+            xOffset: usableIntervals[0].x,
             yOffset
         };
+        lineSlotWidths.push(slot.width);
+        return slot;
     };
 
     const lines: RichLine[] = anyProcessor.wrapRichSegments(
@@ -143,6 +154,7 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         lines,
         lineOffsets: lineLayoutOut.offsets,
         lineWidths: lineLayoutOut.widths,
+        lineSlotWidths,
         lineYOffsets: lineLayoutOut.yOffsets,
         contentHeight,
         insetV,

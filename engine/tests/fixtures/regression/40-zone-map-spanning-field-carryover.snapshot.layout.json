@@ -112,6 +112,33 @@
         ]
       },
       {
+        "type": "p",
+        "x": 24,
+        "y": 216.3125,
+        "w": 198.666667,
+        "h": 31.40625,
+        "lines": [
+          [
+            {
+              "text": "Regional body flow should continue ",
+              "width": 192.128906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "past the carried field instead of ",
+              "width": 166.763672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
         "type": "sidebar-note",
         "x": 236.666667,
         "y": 159.90625,
@@ -197,6 +224,87 @@
         "w": 92,
         "h": 120,
         "lines": []
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 144,
+        "w": 198.666667,
+        "h": 121.40625,
+        "lines": [
+          [
+            {
+              "text": "resetting to a",
+              "width": 69.375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "fresh unrelated page-local strip. ",
+              "width": 171.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Regional body flow should continue ",
+              "width": 192.128906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "past the carried field instead of ",
+              "width": 166.763672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "resetting to a fresh unrelated ",
+              "width": 156.09375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page-local strip. Regional body flow ",
+              "width": 192.773438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should continue past the carried field",
+              "width": 195.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "instead of resetting to a fresh ",
+              "width": 158.091797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
       }
     ]
   },
@@ -210,8 +318,44 @@
         "x": 24,
         "y": 24,
         "w": 198.666667,
-        "h": 246.09375,
+        "h": 241.40625,
         "lines": [
+          [
+            {
+              "text": "unrelated page-local strip. Regional ",
+              "width": 192.117188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "body flow should continue past the ",
+              "width": 187.458984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "carried field instead of resetting to a ",
+              "width": 193.441406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "fresh unrelated page-local strip. ",
+              "width": 171.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
           [
             {
               "text": "Regional body flow should continue ",
@@ -315,33 +459,6 @@
             {
               "text": "past the carried field instead of ",
               "width": 166.763672,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "resetting to a fresh unrelated ",
-              "width": 156.09375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "page-local strip. Regional body flow ",
-              "width": 192.773438,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "should continue past the carried field",
-              "width": 195.457031,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -361,71 +478,8 @@
         "x": 24,
         "y": 24,
         "w": 198.666667,
-        "h": 246.09375,
+        "h": 121.40625,
         "lines": [
-          [
-            {
-              "text": "instead of resetting to a fresh ",
-              "width": 158.091797,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "unrelated page-local strip. Regional ",
-              "width": 192.117188,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "body flow should continue past the ",
-              "width": 187.458984,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "carried field instead of resetting to a ",
-              "width": 193.441406,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "fresh unrelated page-local strip. ",
-              "width": 171.427734,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "Regional body flow should continue ",
-              "width": 192.128906,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "past the carried field instead of ",
-              "width": 166.763672,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
           [
             {
               "text": "resetting to a fresh unrelated ",
@@ -491,60 +545,8 @@
           ],
           [
             {
-              "text": "fresh unrelated page-local strip. ",
-              "width": 171.427734,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "index": 4,
-    "width": 360,
-    "height": 300,
-    "boxes": [
-      {
-        "type": "p",
-        "x": 24,
-        "y": 24,
-        "w": 198.666667,
-        "h": 65.625,
-        "lines": [
-          [
-            {
-              "text": "Regional body flow should continue ",
-              "width": 192.128906,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "past the carried field instead of ",
-              "width": 166.763672,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "resetting to a fresh unrelated ",
-              "width": 156.09375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "page-local strip.",
-              "width": 84.708984,
+              "text": "fresh unrelated page-local strip.",
+              "width": 168.09375,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -555,7 +557,7 @@
       {
         "type": "p",
         "x": 24,
-        "y": 109.625,
+        "y": 155.40625,
         "w": 312,
         "h": 32.8125,
         "lines": [

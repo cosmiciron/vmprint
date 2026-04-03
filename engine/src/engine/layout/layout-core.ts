@@ -590,8 +590,10 @@ export class LayoutProcessor extends TextProcessor {
                 continue;
             }
 
-            renderedIndex += 1;
-            sourceIndex += 1;
+            // At this point the rendered text no longer looks like a tolerable
+            // prefix of the source. Stop rather than drifting forward through
+            // repeated prose and over-consuming real content.
+            break;
         }
 
         return Math.max(0, Math.min(sourceText.length, sourceIndex));
