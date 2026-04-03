@@ -196,8 +196,23 @@ function buildHostedRegionFieldCarryoverEntry(
     deltaY: number
 ): HostedRegionActorEntry {
     const shiftedDirective = cloneShiftedFieldDirective(directive, deltaY);
+    const explicitFieldX = Number.isFinite(directive.x) ? Math.max(0, Number(directive.x)) : null;
+    const explicitFieldY = Number.isFinite(directive.y) ? Math.max(0, Number(directive.y)) : null;
+    const anchorBox = emitted[0];
+    const emittedAlreadyIncludesFieldX =
+        explicitFieldX !== null && Math.abs(Number(anchorBox?.x || 0) - explicitFieldX) <= 0.01;
+    const emittedAlreadyIncludesFieldY =
+        explicitFieldY !== null && Math.abs(Number(anchorBox?.y || 0) - explicitFieldY) <= 0.01;
     const shiftedBoxes = emitted.map((box) => ({
         ...box,
+        x:
+            explicitFieldX !== null && emittedAlreadyIncludesFieldX
+                ? Number(box.x || 0) - explicitFieldX
+                : Number(box.x || 0),
+        y:
+            explicitFieldY !== null && emittedAlreadyIncludesFieldY
+                ? Number(box.y || 0) - explicitFieldY
+                : Number(box.y || 0),
         properties: {
             ...(box.properties || {}),
             ...(box.properties?.spatialField

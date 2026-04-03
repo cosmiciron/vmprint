@@ -224,7 +224,10 @@ export function materializeHostedRegionsBounded(
             sourceKind,
             zoneId: zone.id,
             zoneIndex,
-            rect: { ...zone.rect }
+            rect: {
+                ...zone.rect,
+                height: zoneVisibleHeight
+            }
         };
         for (const box of result.boxes) {
             allBoxes.push({

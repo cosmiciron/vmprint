@@ -48,6 +48,9 @@ class FrozenHostedRegionPackager implements PackagerUnit {
     private readonly frozenHeight: number;
     private readonly marginTopVal: number;
     private readonly marginBottomVal: number;
+    private readonly sourceKind: NormalizedIndependentZoneStrip['sourceKind'];
+    private readonly frameOverflowMode: 'move-whole' | 'continue';
+    private readonly worldBehaviorMode: ZoneWorldBehavior;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -60,12 +63,18 @@ class FrozenHostedRegionPackager implements PackagerUnit {
         height: number,
         marginTop: number,
         marginBottom: number,
+        sourceKind: NormalizedIndependentZoneStrip['sourceKind'],
+        frameOverflowMode: 'move-whole' | 'continue',
+        worldBehaviorMode: ZoneWorldBehavior,
         identity: PackagerIdentity
     ) {
         this.frozenBoxes = cloneHostedRegionBoxes(boxes);
         this.frozenHeight = height;
         this.marginTopVal = marginTop;
         this.marginBottomVal = marginBottom;
+        this.sourceKind = sourceKind;
+        this.frameOverflowMode = frameOverflowMode;
+        this.worldBehaviorMode = worldBehaviorMode;
         this.actorId = identity.actorId;
         this.sourceId = identity.sourceId;
         this.actorKind = identity.actorKind;
@@ -90,13 +99,35 @@ class FrozenHostedRegionPackager implements PackagerUnit {
     emitBoxes(_availableWidth: number, _availableHeight: number, context: PackagerContext): Box[] {
         const leftMargin = context.margins.left;
         const mt = this.marginTopVal;
-        return this.frozenBoxes.map((box) => ({
-            ...box,
-            x: (box.x || 0) + leftMargin,
-            y: (box.y || 0) + mt,
-            properties: { ...(box.properties || {}) },
-            meta: box.meta ? { ...box.meta } : box.meta
-        }));
+        return this.frozenBoxes.map((box) => {
+            const tag = readHostedRegionDebugTag(box);
+            return {
+                ...box,
+                x: (box.x || 0) + leftMargin,
+                y: (box.y || 0) + mt,
+                properties: tag
+                    ? {
+                        ...(box.properties || {}),
+                        __vmprintRegionDebugPage: {
+                            fieldActorId: this.actorId,
+                            fieldSourceId: this.sourceId,
+                            sourceKind: this.sourceKind,
+                            regionId: tag.zoneId,
+                            regionIndex: tag.zoneIndex,
+                            zoneId: tag.zoneId,
+                            zoneIndex: tag.zoneIndex,
+                            x: leftMargin + tag.rect.x,
+                            y: mt + tag.rect.y,
+                            w: tag.rect.width,
+                            explicitHeight: tag.rect.height,
+                            frameOverflowMode: this.frameOverflowMode,
+                            worldBehaviorMode: this.worldBehaviorMode
+                        }
+                    }
+                    : { ...(box.properties || {}) },
+                meta: box.meta ? { ...box.meta } : box.meta
+            };
+        });
     }
 
     split(_availableHeight: number, _context: PackagerContext): PackagerSplitResult {
@@ -426,6 +457,9 @@ export class HostedRegionPackager implements PackagerUnit {
             this.marginTopVal + (this.usesSpanningContinuation() ? this.boundedHeight : this.totalRegionHeight) + this.marginBottomVal,
             this.marginTopVal,
             this.marginBottomVal,
+            this.sourceKind,
+            this.frameOverflowMode,
+            this.worldBehaviorMode,
             {
                 actorId: this.actorId,
                 sourceId: this.sourceId,

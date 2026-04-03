@@ -1,0 +1,134 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 360,
+      "height": 300
+    },
+    "margins": {
+      "top": 24,
+      "right": 24,
+      "bottom": 24,
+      "left": 24
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 12,
+    "lineHeight": 1.25
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "marginBottom": 12,
+      "fontWeight": "bold"
+    },
+    "p": {
+      "marginBottom": 10,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "sidebar-note": {
+      "fontSize": 11,
+      "lineHeight": 1.3,
+      "marginBottom": 10
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Zone Map Spanning Field Carryover"
+    },
+    {
+      "type": "p",
+      "content": "This regression proves that a zone-owned field actor remains part of the same zone as later chunks revisit it, instead of disappearing once regional continuation begins."
+    },
+    {
+      "type": "zone-map",
+      "content": "",
+      "properties": {
+        "sourceId": "zone-field-body",
+        "style": {
+          "marginTop": 10,
+          "marginBottom": 10
+        }
+      },
+      "zoneLayout": {
+        "columns": [
+          {
+            "mode": "flex",
+            "fr": 2
+          },
+          {
+            "mode": "flex",
+            "fr": 1
+          }
+        ],
+        "gap": 14,
+        "frameOverflow": "continue",
+        "worldBehavior": "spanning"
+      },
+      "zones": [
+        {
+          "id": "main",
+          "elements": [
+            {
+              "type": "field-actor",
+              "content": "",
+              "properties": {
+                "sourceId": "zone-carryover-rock",
+                "spatialField": {
+                  "kind": "exclude",
+                  "x": 78,
+                  "y": 96,
+                  "wrap": "around",
+                  "gap": 8
+                },
+                "style": {
+                  "width": 92,
+                  "height": 120,
+                  "backgroundColor": "#d9d2c3"
+                }
+              }
+            },
+            {
+              "type": "p",
+              "content": "The same regional rock should stay part of the zone while later chunks intersect later slices of that zone.",
+              "properties": {
+                "sourceId": "zone-carryover-open"
+              }
+            },
+            {
+              "type": "p",
+              "content": "Regional body flow should continue past the carried field instead of resetting to a fresh unrelated page-local strip. Regional body flow should continue past the carried field instead of resetting to a fresh unrelated page-local strip. Regional body flow should continue past the carried field instead of resetting to a fresh unrelated page-local strip. Regional body flow should continue past the carried field instead of resetting to a fresh unrelated page-local strip. Regional body flow should continue past the carried field instead of resetting to a fresh unrelated page-local strip. Regional body flow should continue past the carried field instead of resetting to a fresh unrelated page-local strip. Regional body flow should continue past the carried field instead of resetting to a fresh unrelated page-local strip. Regional body flow should continue past the carried field instead of resetting to a fresh unrelated page-local strip. Regional body flow should continue past the carried field instead of resetting to a fresh unrelated page-local strip. Regional body flow should continue past the carried field instead of resetting to a fresh unrelated page-local strip.",
+              "properties": {
+                "sourceId": "zone-carryover-body"
+              }
+            }
+          ]
+        },
+        {
+          "id": "side",
+          "elements": [
+            {
+              "type": "sidebar-note",
+              "content": "This side zone proves the host is still one regional map with multiple local participants while the main zone continues.",
+              "properties": {
+                "sourceId": "zone-carryover-side"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "content": "Normal document flow resumes after the zone-owned field continuation is finished.",
+      "properties": {
+        "sourceId": "post-zone-carryover-flow"
+      }
+    }
+  ]
+}

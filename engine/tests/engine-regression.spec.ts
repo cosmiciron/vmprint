@@ -847,6 +847,37 @@ function assertZoneMapSpanningContinueSignals(pages: any[], fixtureName: string)
     );
 }
 
+function assertZoneMapSpanningFieldCarryoverSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '40-zone-map-spanning-field-carryover.json') return;
+
+    const findPagesForSource = (sourceId: string): number[] => {
+        const indices = new Set<number>();
+        pages.forEach((page: any, pageIndex: number) => {
+            (page.boxes || []).forEach((box: any) => {
+                const actual = String(box.meta?.sourceId || '');
+                if (actual === sourceId || actual.endsWith(`:${sourceId}`)) {
+                    indices.add(pageIndex);
+                }
+            });
+        });
+        return Array.from(indices.values()).sort((a, b) => a - b);
+    };
+
+    assert.ok(findPagesForSource('zone-carryover-rock').includes(0), `${fixtureName}: expected zone rock on the first page`);
+    assert.ok(
+        findPagesForSource('zone-carryover-rock').some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: expected zone rock to persist onto a later continuation page`
+    );
+    assert.ok(
+        findPagesForSource('zone-carryover-body').some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: expected regional body flow to continue onto a later page`
+    );
+    assert.ok(
+        findPagesForSource('post-zone-carryover-flow').every((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: expected downstream flow only after zone continuation pages`
+    );
+}
+
 function assertWorldPlainAbsoluteRockSignals(pages: any[], fixtureName: string): void {
     const allBoxes = pages.flatMap((page: any) => page.boxes || []);
     const rockBoxes = allBoxes.filter((box: any) =>
@@ -2065,6 +2096,15 @@ async function run() {
                 'continue plus spanning should begin in the current page chunk and continue later instead of collapsing back to conservative fixed behavior',
                 () => {
                     assertZoneMapSpanningContinueSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '40-zone-map-spanning-field-carryover.json') {
+            _check(
+                `${fixture.name} zone-map spanning field carryover signals`,
+                'a zone-owned field actor should remain visible across later chunk intersections while the same zone body continues',
+                () => {
+                    assertZoneMapSpanningFieldCarryoverSignals(pagesA, fixture.name);
                 }
             );
         }

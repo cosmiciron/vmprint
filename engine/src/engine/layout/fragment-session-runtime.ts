@@ -141,9 +141,20 @@ export class FragmentSessionRuntime {
             };
             const boxes = actor.emitBoxes(state.availableWidth, availableHeight, context) || [];
             for (const box of boxes) {
+                const placedY = (box.y || 0) + currentY + layoutDelta;
+                const regionDebugPage = box.properties?.__vmprintRegionDebugPage;
                 const placed = {
                     ...box,
-                    y: (box.y || 0) + currentY + layoutDelta
+                    y: placedY,
+                    properties: regionDebugPage
+                        ? {
+                            ...(box.properties || {}),
+                            __vmprintRegionDebugPage: {
+                                ...regionDebugPage,
+                                y: Number(regionDebugPage.y || 0) + currentY + layoutDelta
+                            }
+                        }
+                        : box.properties
                 };
                 if (placed.meta) {
                     placed.meta = { ...placed.meta, pageIndex: state.pageIndex };
@@ -258,9 +269,20 @@ export class FragmentSessionRuntime {
         state: FragmentCommitState
     ): { boxes: Box[]; currentY: number; lastSpacingAfter: number } {
         const committedBoxes = boxes.map((box) => {
+            const placedY = (box.y || 0) + state.currentY + state.layoutDelta;
+            const regionDebugPage = box.properties?.__vmprintRegionDebugPage;
             const committed = {
                 ...box,
-                y: (box.y || 0) + state.currentY + state.layoutDelta
+                y: placedY,
+                properties: regionDebugPage
+                    ? {
+                        ...(box.properties || {}),
+                        __vmprintRegionDebugPage: {
+                            ...regionDebugPage,
+                            y: Number(regionDebugPage.y || 0) + state.currentY + state.layoutDelta
+                        }
+                    }
+                    : box.properties
             };
             if (committed.meta) {
                 committed.meta = { ...committed.meta, actorId: actor.actorId, pageIndex: state.pageIndex };
