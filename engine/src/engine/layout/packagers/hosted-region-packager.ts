@@ -392,12 +392,7 @@ export class HostedRegionPackager implements PackagerUnit {
             runHostedRegionSession,
             contextBase
         );
-        this.materializedBoxes = boxes.map((box) => {
-            const tag = readHostedRegionDebugTag(box);
-            return tag
-                ? attachHostedRegionDebugTag(box, { ...tag, fieldActorId: this.actorId, fieldSourceId: this.sourceId })
-                : box;
-        });
+        this.materializedBoxes = boxes.map((box) => this.attachHostDebugIdentity(box));
         this.marginTopVal = this.fragmentMarginTop;
         this.marginBottomVal = this.fragmentMarginBottom;
         this.totalRegionHeight = totalHeight;
@@ -453,7 +448,7 @@ export class HostedRegionPackager implements PackagerUnit {
 
     private createFrozenCurrentFragment(): FrozenHostedRegionPackager {
         return new FrozenHostedRegionPackager(
-            this.usesSpanningContinuation() ? (this.boundedBoxes || []) : (this.materializedBoxes || []),
+            this.getEmittableBoxes(),
             this.marginTopVal + (this.usesSpanningContinuation() ? this.boundedHeight : this.totalRegionHeight) + this.marginBottomVal,
             this.marginTopVal,
             this.marginBottomVal,
@@ -507,7 +502,7 @@ export class HostedRegionPackager implements PackagerUnit {
         const mt = this.marginTopVal;
         const leftMargin = context.margins.left;
         this.lastEmittedLeftMargin = leftMargin;
-        const boxes = this.usesSpanningContinuation() ? (this.boundedBoxes || []) : (this.materializedBoxes || []);
+        const boxes = this.getEmittableBoxes();
         return boxes.map((b) => {
             const tag = readHostedRegionDebugTag(b);
             return {
@@ -541,7 +536,7 @@ export class HostedRegionPackager implements PackagerUnit {
     getDebugRegions(): DebugRegion[] {
         const availableWidth = this.lastAvailableWidth > 0 ? this.lastAvailableWidth : 0;
         const regions = this.describeRegions(availableWidth);
-        const boxes = this.usesSpanningContinuation() ? (this.boundedBoxes || []) : (this.materializedBoxes || []);
+        const boxes = this.getEmittableBoxes();
         const bottomsByZone = new Map<number, number>();
         for (const box of boxes) {
             const tag = readHostedRegionDebugTag(box);
@@ -611,5 +606,16 @@ export class HostedRegionPackager implements PackagerUnit {
             currentFragment,
             continuationFragment: this.createContinuationPackager()
         };
+    }
+
+    private getEmittableBoxes(): Box[] {
+        return this.usesSpanningContinuation() ? (this.boundedBoxes || []) : (this.materializedBoxes || []);
+    }
+
+    private attachHostDebugIdentity(box: Box): Box {
+        const tag = readHostedRegionDebugTag(box);
+        return tag
+            ? attachHostedRegionDebugTag(box, { ...tag, fieldActorId: this.actorId, fieldSourceId: this.sourceId })
+            : box;
     }
 }

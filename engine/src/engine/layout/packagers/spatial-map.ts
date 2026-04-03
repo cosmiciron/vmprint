@@ -71,6 +71,10 @@ export interface OccupiedRect {
 export class SpatialMap {
     private readonly rects: OccupiedRect[] = [];
 
+    clear(): void {
+        this.rects.length = 0;
+    }
+
     register(rect: OccupiedRect): void {
         this.rects.push(rect);
     }

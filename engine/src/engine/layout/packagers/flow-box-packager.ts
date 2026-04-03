@@ -45,9 +45,13 @@ export class FlowBoxPackager implements PackagerUnit {
     private lastAvailableHeight: number = -1;
     private cachedBoxes: Box[] | null = null;
     private cachedSpatialBoxes: Box[] | null = null;
-    private cachedSpatialKey: string | null = null;
+    private cachedSpatialExclusions: readonly SpatialExclusion[] | null = null;
+    private cachedSpatialPageIndex: number | null = null;
+    private cachedSpatialCursorY: number | null = null;
+    private cachedSpatialLayoutBefore: number | null = null;
     private requiredHeight: number = 0;
     private isMaterialized: boolean = false;
+    private readonly spatialMap: SpatialMap = new SpatialMap();
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -82,8 +86,7 @@ export class FlowBoxPackager implements PackagerUnit {
         this.flowBox = shaper.shapeNormalizedFlowBlock(normalized);
         this.isMaterialized = false;
         this.cachedBoxes = null;
-        this.cachedSpatialBoxes = null;
-        this.cachedSpatialKey = null;
+        this.clearSpatialCache();
         this.lastAvailableWidth = -1;
         this.lastContentWidth = -1;
         this.lastAvailableHeight = -1;
@@ -162,11 +165,7 @@ export class FlowBoxPackager implements PackagerUnit {
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): Box[] {
         this.prepareSpatialPlacement(context);
         if (this.cachedSpatialBoxes) {
-            return this.cachedSpatialBoxes.map((box) => ({
-                ...box,
-                properties: { ...(box.properties || {}) },
-                meta: box.meta ? { ...box.meta } : box.meta
-            }));
+            return this.cachedSpatialBoxes;
         }
         const processor = this.processor as unknown as FlowBoxProcessor;
         this.prepare(availableWidth, availableHeight, context);
@@ -223,36 +222,25 @@ export class FlowBoxPackager implements PackagerUnit {
             ?? (context.getPageExclusions?.(context.pageIndex) ?? [])
                 .filter((exclusion) => exclusion.surface === 'world-traversal');
         if (!sourceElement || this.flowBox.image || exclusions.length === 0) {
-            this.cachedSpatialBoxes = null;
-            this.cachedSpatialKey = null;
+            this.clearSpatialCache();
             return;
         }
 
-        const key = [
-            context.pageIndex,
-            Number(context.cursorY).toFixed(3),
-            Number(context.layoutBefore ?? this.flowBox.marginTop).toFixed(3),
-            ...exclusions.map((exclusion) => [
-                exclusion.id || '',
-                Number(exclusion.x).toFixed(3),
-                Number(exclusion.y).toFixed(3),
-                Number(exclusion.w).toFixed(3),
-                Number(exclusion.h).toFixed(3),
-                String(exclusion.wrap || 'around'),
-                Number(exclusion.gap ?? 0).toFixed(3),
-                Number(exclusion.gapTop ?? exclusion.gap ?? 0).toFixed(3),
-                Number(exclusion.gapBottom ?? exclusion.gap ?? 0).toFixed(3),
-                String(exclusion.shape || 'rect'),
-                String(exclusion.align || ''),
-                String(exclusion.traversalInteraction || 'auto'),
-                Number(exclusion.zIndex ?? 0).toFixed(3)
-            ].join(':'))
-        ].join('|');
-        if (this.cachedSpatialKey === key && this.cachedSpatialBoxes) return;
+        const layoutBefore = Number(context.layoutBefore ?? this.flowBox.marginTop);
+        const cursorY = Number(context.cursorY);
+        if (
+            this.cachedSpatialBoxes
+            && this.cachedSpatialExclusions === exclusions
+            && this.cachedSpatialPageIndex === context.pageIndex
+            && this.cachedSpatialCursorY === cursorY
+            && this.cachedSpatialLayoutBefore === layoutBefore
+        ) {
+            return;
+        }
 
-        const spatialMap = new SpatialMap();
+        this.spatialMap.clear();
         for (const exclusion of exclusions) {
-            this.registerSpatialExclusion(spatialMap, exclusion, context);
+            this.registerSpatialExclusion(this.spatialMap, exclusion, context);
         }
 
         const path = this.flowBox._normalizedFlowBlock?.identitySeed?.path ?? [0];
@@ -262,8 +250,8 @@ export class FlowBoxPackager implements PackagerUnit {
             path,
             availableWidth: Math.max(0, context.pageWidth - context.margins.left - context.margins.right),
             currentY: 0,
-            layoutBefore: context.layoutBefore ?? this.flowBox.marginTop,
-            spatialMap,
+            layoutBefore,
+            spatialMap: this.spatialMap,
             leftMargin: context.margins.left,
             pageIndex: context.pageIndex,
             ...(Number.isFinite(resolvePackagerChunkOriginWorldY(context))
@@ -272,8 +260,7 @@ export class FlowBoxPackager implements PackagerUnit {
             clearTopBeforeStart: false
         });
         if (!placed) {
-            this.cachedSpatialBoxes = null;
-            this.cachedSpatialKey = null;
+            this.clearSpatialCache();
             return;
         }
 
@@ -281,8 +268,20 @@ export class FlowBoxPackager implements PackagerUnit {
             ...placed.box,
             y: Number(placed.box.y || 0)
         }];
-        this.cachedSpatialKey = key;
+        this.cachedSpatialExclusions = exclusions;
+        this.cachedSpatialPageIndex = context.pageIndex;
+        this.cachedSpatialCursorY = cursorY;
+        this.cachedSpatialLayoutBefore = layoutBefore;
         this.requiredHeight = placed.marginTop + placed.contentHeight + placed.marginBottom;
+    }
+
+    private clearSpatialCache(): void {
+        this.cachedSpatialBoxes = null;
+        this.cachedSpatialExclusions = null;
+        this.cachedSpatialPageIndex = null;
+        this.cachedSpatialCursorY = null;
+        this.cachedSpatialLayoutBefore = null;
+        this.spatialMap.clear();
     }
 
     private registerSpatialExclusion(
@@ -337,6 +336,8 @@ export class FlowBoxPackager implements PackagerUnit {
             splitResult.partB,
             createContinuationIdentity(this, splitResult.partB.meta?.fragmentIndex)
         );
+        this.cachedBoxes = null;
+        this.clearSpatialCache();
         return { currentFragment: partA, continuationFragment: partB };
     }
 }

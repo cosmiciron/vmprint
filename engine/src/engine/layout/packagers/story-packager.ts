@@ -259,6 +259,8 @@ export class StoryPackager implements PackagerUnit {
     private lastAvailableWidth: number = -1;
     private lastAvailableHeight: number = -1;
     private lastViewportSnapshot: StoryViewportSnapshot | null = null;
+    private readonly imageMetricsCache = new Map<string, { img: BoxImagePayload; w: number; h: number } | null>();
+    private imageMetricsCacheDirty: boolean = true;
 
     readonly pageBreakBefore: boolean = false;
     readonly keepWithNext: boolean = false;
@@ -491,20 +493,9 @@ export class StoryPackager implements PackagerUnit {
         const children = this.storyActorEntries;
         const storyMap = new SpatialMap();
         const registeredObstacles: OccupiedRect[] = [];
-        const imageMetricsCache = new Map<number, { img: BoxImagePayload; w: number; h: number } | null>();
 
         const resolveImageMetrics = (child: Element, index: number): { img: BoxImagePayload; w: number; h: number } | null => {
-            if (!child.image) return null;
-            if (imageMetricsCache.has(index)) return imageMetricsCache.get(index)!;
-            const imgData = this.resolveImage(child);
-            if (!imgData) {
-                imageMetricsCache.set(index, null);
-                return null;
-            }
-            const { w, h } = this.measureImageBox(child, imgData, availableWidth);
-            const cached = { img: imgData, w, h };
-            imageMetricsCache.set(index, cached);
-            return cached;
+            return this.resolveCachedImageMetrics(child, index, availableWidth);
         };
 
         // Pre-register carry-over obstacles at Y=0 (they bleed in from the
@@ -974,21 +965,10 @@ export class StoryPackager implements PackagerUnit {
         const registeredObstacles: OccupiedRect[] = [];
         const allObstacles: OccupiedRect[] = [];
         const allBoxes: Box[] = [];
-        const imageMetricsCache = new Map<number, { img: BoxImagePayload; w: number; h: number } | null>();
         const maxRegionWidth = Math.max(...regions.map((r) => r.w));
 
         const resolveImageMetrics = (child: NormalizedStoryChild): { img: BoxImagePayload; w: number; h: number } | null => {
-            if (!child.element.image) return null;
-            if (imageMetricsCache.has(child.childIndex)) return imageMetricsCache.get(child.childIndex)!;
-            const imgData = this.resolveImage(child.element);
-            if (!imgData) {
-                imageMetricsCache.set(child.childIndex, null);
-                return null;
-            }
-            const { w, h } = this.measureImageBox(child.element, imgData, maxRegionWidth);
-            const cached = { img: imgData, w, h };
-            imageMetricsCache.set(child.childIndex, cached);
-            return cached;
+            return this.resolveCachedImageMetrics(child.element, child.childIndex, maxRegionWidth);
         };
 
         for (const co of this.initialObstacles) {
@@ -1873,6 +1853,30 @@ export class StoryPackager implements PackagerUnit {
         this.lastAvailableWidth = -1;
         this.lastAvailableHeight = -1;
         this.lastViewportSnapshot = null;
+        this.imageMetricsCacheDirty = true;
+    }
+
+    private resolveCachedImageMetrics(
+        child: Element,
+        childIndex: number,
+        availableWidth: number
+    ): { img: BoxImagePayload; w: number; h: number } | null {
+        if (!child.image) return null;
+        if (this.imageMetricsCacheDirty) {
+            this.imageMetricsCache.clear();
+            this.imageMetricsCacheDirty = false;
+        }
+        const key = `${childIndex}:${availableWidth}`;
+        if (this.imageMetricsCache.has(key)) return this.imageMetricsCache.get(key)!;
+        const imgData = this.resolveImage(child);
+        if (!imgData) {
+            this.imageMetricsCache.set(key, null);
+            return null;
+        }
+        const { w, h } = this.measureImageBox(child, imgData, availableWidth);
+        const cached = { img: imgData, w, h };
+        this.imageMetricsCache.set(key, cached);
+        return cached;
     }
 
     /**
