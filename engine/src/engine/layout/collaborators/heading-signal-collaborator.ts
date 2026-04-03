@@ -80,6 +80,7 @@ export class HeadingSignalCollaborator implements Collaborator {
             publisherActorKind: typeof actor.actorKind === 'string' ? actor.actorKind : 'heading',
             fragmentIndex: actor.fragmentIndex,
             pageIndex: surface.pageIndex,
+            cursorY: Number.isFinite(y) ? y : 0,
             signalKey: `heading:${actor.sourceId}`,
             payload: {
                 heading,

@@ -53,6 +53,7 @@ import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
 import {
+    bindPackagerSignalPublisher,
     LayoutBox,
     PackagerContext,
     PackagerPlacementPreference,
@@ -1913,21 +1914,28 @@ export class StoryPackager implements PackagerUnit {
         context: PackagerContext,
         overrides: Partial<PackagerContext>
     ): PackagerContext {
+        const resolvedPageIndex = Number.isFinite(overrides.pageIndex)
+            ? Number(overrides.pageIndex)
+            : context.pageIndex;
+        const resolvedCursorY = Number.isFinite(overrides.cursorY)
+            ? Number(overrides.cursorY)
+            : context.cursorY;
         return {
             ...context,
             ...overrides,
             processor: this.processor,
-            publishActorSignal: (signal) => {
+            publishActorSignal: bindPackagerSignalPublisher((signal) => {
                 const session = this.processor.getCurrentLayoutSession();
                 if (!session) {
                     return {
                         ...signal,
-                        pageIndex: signal.pageIndex ?? context.pageIndex ?? 0,
+                        pageIndex: signal.pageIndex ?? resolvedPageIndex ?? 0,
+                        cursorY: signal.cursorY ?? resolvedCursorY ?? 0,
                         sequence: -1
                     } as any;
                 }
                 return session.publishActorSignal(signal);
-            },
+            }, resolvedPageIndex, resolvedCursorY),
             readActorSignals: (topic?: string) => {
                 const session = this.processor.getCurrentLayoutSession();
                 return session ? session.getActorSignals(topic) : [];

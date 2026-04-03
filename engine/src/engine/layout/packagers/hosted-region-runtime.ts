@@ -134,6 +134,7 @@ export function createHostedRegionSessionContextBase(
                 return {
                     ...signal,
                     pageIndex: signal.pageIndex ?? 0,
+                    cursorY: signal.cursorY ?? 0,
                     sequence: -1
                 } as any;
             }

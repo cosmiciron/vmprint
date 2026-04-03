@@ -20,6 +20,7 @@ const PADDING = 16;        // top + bottom internal padding
 type TocEntry = {
     heading: string;
     pageIndex: number;
+    cursorY?: number;
     level: number | undefined;
 };
 
@@ -51,6 +52,23 @@ function formatEntry(entry: TocEntry): string {
     return `${indent}${entry.heading}  ${page}`;
 }
 
+function compareTocEntries(a: TocEntry, b: TocEntry): number {
+    if (a.pageIndex !== b.pageIndex) {
+        return a.pageIndex - b.pageIndex;
+    }
+    const aCursorY = Number.isFinite(a.cursorY) ? Number(a.cursorY) : Number.POSITIVE_INFINITY;
+    const bCursorY = Number.isFinite(b.cursorY) ? Number(b.cursorY) : Number.POSITIVE_INFINITY;
+    if (aCursorY !== bCursorY) {
+        return aCursorY - bCursorY;
+    }
+    const aLevel = Number.isFinite(a.level) ? Number(a.level) : Number.POSITIVE_INFINITY;
+    const bLevel = Number.isFinite(b.level) ? Number(b.level) : Number.POSITIVE_INFINITY;
+    if (aLevel !== bLevel) {
+        return aLevel - bLevel;
+    }
+    return a.heading.localeCompare(b.heading);
+}
+
 function resolvedHeight(entryCount: number, isContinuation: boolean): number {
     if (isContinuation) return entryCount * ENTRY_HEIGHT + PADDING;
     return TITLE_HEIGHT + entryCount * ENTRY_HEIGHT + PADDING;
@@ -73,6 +91,7 @@ export class TocPackager implements PackagerUnit {
     private geometrySignature: string | null = null;
     private firstCommittedPageIndex: number | null = null;
     private firstCommittedActorIndex: number | null = null;
+    private firstCommittedCursorY: number | null = null;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -118,6 +137,9 @@ export class TocPackager implements PackagerUnit {
         if (this.firstCommittedPageIndex === null) this.firstCommittedPageIndex = context.pageIndex;
         if (this.firstCommittedActorIndex === null && typeof context.actorIndex === 'number') {
             this.firstCommittedActorIndex = context.actorIndex;
+        }
+        if (this.firstCommittedCursorY === null && Number.isFinite(context.cursorY)) {
+            this.firstCommittedCursorY = Number(context.cursorY);
         }
         const packager = this.base ?? this.buildPackager(context);
         return packager.emitBoxes(availableWidth, availableHeight, context);
@@ -173,6 +195,7 @@ export class TocPackager implements PackagerUnit {
             earliestAffectedFrontier: geometryChanged
                 ? {
                     pageIndex: this.firstCommittedPageIndex ?? 0,
+                    cursorY: this.firstCommittedCursorY ?? 0,
                     actorIndex: this.firstCommittedActorIndex ?? undefined,
                     actorId: this.actorId,
                     sourceId: this.sourceId
@@ -189,10 +212,12 @@ export class TocPackager implements PackagerUnit {
             .map((signal) => ({
                 heading: String(signal.payload?.heading ?? ''),
                 pageIndex: signal.pageIndex,
+                cursorY: Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : undefined,
                 level: signal.payload?.level != null ? Number(signal.payload.level) : undefined
             }))
             .filter((e) => e.heading.length > 0)
-            .filter((e) => !levelFilter || levelFilter.length === 0 || (e.level != null && levelFilter.includes(e.level)));
+            .filter((e) => !levelFilter || levelFilter.length === 0 || (e.level != null && levelFilter.includes(e.level)))
+            .sort(compareTocEntries);
     }
 
     private getTocProperties(): TocProperties {

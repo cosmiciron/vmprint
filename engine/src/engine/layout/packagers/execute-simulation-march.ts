@@ -519,7 +519,8 @@ export function executeSimulationMarch(
             publisherSourceId: 'system:pagination-finalizer',
             publisherActorKind: 'system',
             fragmentIndex: 0,
-            pageIndex: Math.max(0, pages.length - 1),
+            pageIndex: currentPageIndex,
+            cursorY: currentY,
             signalKey: 'pagination:finalized',
             payload: {
                 totalPageCount: pages.length

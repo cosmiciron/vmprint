@@ -17,7 +17,12 @@ import {
     type PaginationPlacementPreparation,
     type ResolvedPlacementFrame
 } from './layout-session-types';
-import { packagerOccupiesFlowSpace, rejectsPlacementFrame, resolvePackagerPlacementPreference } from './packagers/packager-types';
+import {
+    bindPackagerSignalPublisher,
+    packagerOccupiesFlowSpace,
+    rejectsPlacementFrame,
+    resolvePackagerPlacementPreference
+} from './packagers/packager-types';
 import { preparePackagerForPhase, type PackagerContext, type PackagerUnit } from './packagers/packager-types';
 
 export type PhysicsRuntimeHost = {
@@ -169,7 +174,12 @@ export class PhysicsRuntime {
                 ...input.margins,
                 left: placementFrame.margins.left,
                 right: placementFrame.margins.right
-            }
+            },
+            publishActorSignal: bindPackagerSignalPublisher(
+                input.contextBase.publishActorSignal,
+                input.currentPageIndex,
+                currentY
+            )
         };
         const availableHeightAdjusted = constraintField.effectiveAvailableHeight;
         const effectiveAvailableHeight = layoutDelta + availableHeightAdjusted;

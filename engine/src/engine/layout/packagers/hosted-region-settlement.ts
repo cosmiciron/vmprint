@@ -6,7 +6,7 @@ import { LAYOUT_DEFAULTS } from '../defaults';
 import { OccupiedRect, SpatialMap } from './spatial-map';
 import type { HostedRegionActorEntry, HostedRegionActorQueue } from './region-actor-queues';
 import type { BoundedHostedRegionSessionResult, HostedRegionSessionResult } from './hosted-region-runtime';
-import type { PackagerContext, PackagerUnit } from './packager-types';
+import { bindPackagerSignalPublisher, type PackagerContext, type PackagerUnit } from './packager-types';
 
 type HostedRegionFieldState = {
     wrap: 'around' | 'top-bottom' | 'none';
@@ -372,7 +372,8 @@ function placePackagersInHostedRegion(
             const context: PackagerContext = {
                 ...contextBase,
                 pageIndex: 0,
-                cursorY: currentY
+                cursorY: currentY,
+                publishActorSignal: bindPackagerSignalPublisher(contextBase.publishActorSignal, 0, currentY)
             };
             const fieldPublisher = materializeHostedRegionFieldPublisher(
                 actor,
@@ -410,7 +411,8 @@ function placePackagersInHostedRegion(
         const context: PackagerContext = {
             ...contextBase,
             pageIndex: 0,
-            cursorY: currentY
+            cursorY: currentY,
+            publishActorSignal: bindPackagerSignalPublisher(contextBase.publishActorSignal, 0, currentY)
         };
         const initialContext: PackagerContext = {
             ...context,
@@ -504,7 +506,8 @@ export function runHostedRegionSessionBounded(
         const context: PackagerContext = {
             ...zoneContextBase,
             pageIndex: 0,
-            cursorY: currentY
+            cursorY: currentY,
+            publishActorSignal: bindPackagerSignalPublisher(zoneContextBase.publishActorSignal, 0, currentY)
         };
         const initialContext: PackagerContext = {
             ...context,

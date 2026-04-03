@@ -6,7 +6,7 @@ import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from '
 import type { PackagerUnit } from './packagers/packager-types';
 import type { ObservationResult, PackagerContext, SpatialFrontier } from './packagers/packager-types';
 import type { PackagerSplitResult } from './packagers/packager-types';
-import { resolvePackagerZIndex } from './packagers/packager-types';
+import { bindPackagerSignalPublisher, resolvePackagerZIndex } from './packagers/packager-types';
 import { AIRuntime } from './ai-runtime';
 import type { ActorSignal, ActorSignalDraft } from './actor-event-bus';
 import {
@@ -1057,7 +1057,12 @@ export class LayoutSession {
             const context: PackagerContext = {
                 ...contextBase,
                 pageIndex,
-                cursorY: Number.isFinite(cursorY) ? cursorY : 0
+                cursorY: Number.isFinite(cursorY) ? cursorY : 0,
+                publishActorSignal: bindPackagerSignalPublisher(
+                    contextBase.publishActorSignal,
+                    pageIndex,
+                    Number.isFinite(cursorY) ? cursorY : 0
+                )
             };
             const availableWidth = Math.max(0, contextBase.pageWidth - contextBase.margins.left - contextBase.margins.right);
             const availableHeight = Math.max(0, contextBase.pageHeight - context.cursorY - contextBase.margins.bottom);
