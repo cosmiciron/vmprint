@@ -845,6 +845,12 @@ export function positionSpatialGridFlowBoxes(
                     _tableViewportRowIndex: displayRowIndex,
                     _tableWorldRowOffset: rowWorldOffset,
                     _tableIsRepeatedHeaderClone: isRepeatedHeaderClone,
+                    ...(Number.isFinite(unit.properties?._tableViewportWorldY)
+                        ? { _tableViewportWorldY: Number(unit.properties?._tableViewportWorldY) }
+                        : {}),
+                    ...(Number.isFinite(unit.properties?._tableViewportHeight)
+                        ? { _tableViewportHeight: Number(unit.properties?._tableViewportHeight) }
+                        : {}),
                     _tableColIndex: colStart,
                     _tableColStart: colStart,
                     _tableColSpan: colSpan,

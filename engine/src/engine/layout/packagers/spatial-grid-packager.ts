@@ -8,7 +8,8 @@ import {
     PackagerPlacementPreference,
     PackagerSplitResult,
     PackagerTransformProfile,
-    PackagerUnit
+    PackagerUnit,
+    resolvePackagerChunkOriginWorldY
 } from './packager-types';
 
 type SpatialGridPackagerProcessor = {
@@ -149,6 +150,18 @@ export class SpatialGridPackager implements PackagerUnit {
         const processor = this.processor as unknown as SpatialGridPackagerProcessor;
         this.prepare(availableWidth, _availableHeight, context);
 
+        const chunkOriginWorldY = Number.isFinite(resolvePackagerChunkOriginWorldY(context))
+            ? Math.max(0, Number(resolvePackagerChunkOriginWorldY(context)))
+            : null;
+        const viewportHeight = Number.isFinite(context.viewportHeight)
+            ? Math.max(0, Number(context.viewportHeight))
+            : Math.max(0, Number(context.pageHeight || 0));
+        this.flowBox.properties = {
+            ...(this.flowBox.properties || {}),
+            ...(chunkOriginWorldY !== null ? { _tableViewportWorldY: chunkOriginWorldY } : {}),
+            _tableViewportHeight: viewportHeight
+        };
+
         const positioned = processor.positionFlowBox(
             this.flowBox,
             0,
@@ -157,13 +170,6 @@ export class SpatialGridPackager implements PackagerUnit {
             availableWidth,
             context.pageIndex
         );
-
-        const viewportWorldY = Number.isFinite(context.viewportWorldY)
-            ? Math.max(0, Number(context.viewportWorldY))
-            : null;
-        const viewportHeight = Number.isFinite(context.viewportHeight)
-            ? Math.max(0, Number(context.viewportHeight))
-            : Math.max(0, Number(context.pageHeight || 0));
         const boxes = (Array.isArray(positioned) ? positioned : [positioned]).map((box) => {
             if (box.type !== 'table_cell') {
                 return box;
@@ -172,7 +178,7 @@ export class SpatialGridPackager implements PackagerUnit {
                 ...box,
                 properties: {
                     ...(box.properties || {}),
-                    ...(viewportWorldY !== null ? { _tableViewportWorldY: viewportWorldY } : {}),
+                    ...(chunkOriginWorldY !== null ? { _tableViewportWorldY: chunkOriginWorldY } : {}),
                     _tableViewportHeight: viewportHeight
                 }
             };

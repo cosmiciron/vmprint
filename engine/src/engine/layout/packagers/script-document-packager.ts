@@ -6,6 +6,7 @@ import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from
 import { createPackagers, type ExternalPackagerFactory } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { ScriptedFlowBoxPackager } from './scripted-flow-box-packager';
+import { resolvePackagerWorldYAtCursor } from './packager-types';
 import type {
     LayoutBox,
     ObservationResult,
@@ -828,8 +829,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
         this.lastObservedPageIndex = Number.isFinite(context.pageIndex) ? Number(context.pageIndex) : this.lastObservedPageIndex;
         this.lastObservedActorIndex = Number.isFinite(context.actorIndex) ? Number(context.actorIndex) : this.lastObservedActorIndex;
         this.lastObservedCursorY = Number.isFinite(context.cursorY) ? Number(context.cursorY) : this.lastObservedCursorY;
-        this.lastObservedWorldY = Number.isFinite(context.viewportWorldY) && Number.isFinite(context.cursorY)
-            ? Number(context.viewportWorldY) + Number(context.cursorY)
+        this.lastObservedWorldY = Number.isFinite(resolvePackagerWorldYAtCursor(context))
+            ? Number(resolvePackagerWorldYAtCursor(context))
             : this.lastObservedWorldY;
         const globals = this.createGlobals(session, context);
         const beforeDigest = this.host.createDocumentDigest(this.elements);

@@ -1,7 +1,10 @@
 import type { Box, Page } from '../types';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import { LAYOUT_DEFAULTS } from './defaults';
-import type { PackagerContext } from './packagers/packager-types';
+import {
+    resolvePackagerChunkOriginWorldY,
+    type PackagerContext
+} from './packagers/packager-types';
 import type { PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
 import type {
     AcceptedSplitQueueHandling,
@@ -45,6 +48,26 @@ type PackagerWithFlowBox = PackagerUnit & {
 type PackagerWithProcessor = PackagerUnit & {
     processor?: ContinuationArtifactProvider;
 };
+
+function buildChunkPageContext(
+    contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
+    pageIndex: number,
+    cursorY: number,
+    pageHeight: number
+): PackagerContext {
+    const resolvedChunkOriginWorldY = resolvePackagerChunkOriginWorldY(contextBase);
+    const chunkOriginWorldY = Number.isFinite(resolvedChunkOriginWorldY)
+        ? Number(resolvedChunkOriginWorldY)
+        : pageIndex * pageHeight;
+    return {
+        ...contextBase,
+        pageIndex,
+        cursorY,
+        chunkOriginWorldY,
+        viewportWorldY: chunkOriginWorldY,
+        viewportHeight: pageHeight
+    };
+}
 
 export type TransitionsRuntimeHost = {
     getContinuationArtifacts(actorId: string): ContinuationArtifacts | undefined;
@@ -456,11 +479,12 @@ export class TransitionsRuntime {
                     return { accept: false };
                 }
 
-                const partAContext = {
-                    ...contextBase,
-                    pageIndex: currentPageIndex,
-                    cursorY: placedPrefix.currentY
-                };
+                const partAContext = buildChunkPageContext(
+                    contextBase,
+                    currentPageIndex,
+                    placedPrefix.currentY,
+                    pageHeight
+                );
                 const partABoxes = partA.emitBoxes(
                     state.availableWidth,
                     splitExecution.emitAvailableHeight,
@@ -749,12 +773,16 @@ export class TransitionsRuntime {
 
         if (!fitsCurrent) {
             const boxes = state.currentY === state.pageTop
-                ? (packager.emitBoxes(state.availableWidth, state.availableHeightAdjusted, {
-                    ...contextBase,
-                    pageIndex: currentPageIndex,
-                    cursorY: state.currentY,
-                    viewportHeight: pageHeight
-                }) || [])
+                ? (packager.emitBoxes(
+                    state.availableWidth,
+                    state.availableHeightAdjusted,
+                    buildChunkPageContext(
+                        contextBase,
+                        currentPageIndex,
+                        state.currentY,
+                        pageHeight
+                    )
+                ) || [])
                 : null;
             const outcome = this.host.resolveActorSplitFailure(
                 packager,
@@ -782,12 +810,12 @@ export class TransitionsRuntime {
             );
         }
 
-        const splitContext: PackagerContext = {
-            ...contextBase,
-            pageIndex: currentPageIndex,
-            cursorY: state.currentY,
-            viewportHeight: pageHeight
-        };
+        const splitContext = buildChunkPageContext(
+            contextBase,
+            currentPageIndex,
+            state.currentY,
+            pageHeight
+        );
         const fitsMarginBottom = fitsCurrent.getMarginBottom();
         const fitsMarginTop = fitsCurrent.getMarginTop();
         const fitsLayoutBefore = state.lastSpacingAfter + fitsMarginTop;

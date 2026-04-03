@@ -34,6 +34,8 @@ export interface PackagerContext {
     simulationTick?: number;
     actorIndex?: number;
     layoutBefore?: number;
+    chunkOriginWorldY?: number;
+    /** @deprecated Use chunkOriginWorldY. */
     viewportWorldY?: number;
     viewportHeight?: number;
     getPageExclusions?: (pageIndex: number) => ReadonlyArray<SpatialExclusion>;
@@ -53,6 +55,28 @@ export interface PackagerContext {
     readActorSignals(topic?: string): readonly ActorSignal[];
     requestAsyncThought?(request: AsyncThoughtRequest): AsyncThoughtHandle | undefined;
     readAsyncThoughtResult?(key: string): AsyncThoughtHandle | undefined;
+}
+
+export function resolvePackagerChunkOriginWorldY(
+    context: Pick<PackagerContext, 'chunkOriginWorldY' | 'viewportWorldY'>
+): number | undefined {
+    if (Number.isFinite(context.chunkOriginWorldY)) {
+        return Number(context.chunkOriginWorldY);
+    }
+    if (Number.isFinite(context.viewportWorldY)) {
+        return Number(context.viewportWorldY);
+    }
+    return undefined;
+}
+
+export function resolvePackagerWorldYAtCursor(
+    context: Pick<PackagerContext, 'chunkOriginWorldY' | 'viewportWorldY' | 'cursorY'>
+): number | undefined {
+    const chunkOriginWorldY = resolvePackagerChunkOriginWorldY(context);
+    if (!Number.isFinite(chunkOriginWorldY) || !Number.isFinite(context.cursorY)) {
+        return undefined;
+    }
+    return Number(chunkOriginWorldY) + Number(context.cursorY);
 }
 
 export function bindPackagerSignalPublisher(

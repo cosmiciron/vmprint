@@ -10,7 +10,8 @@ import {
     PackagerPlacementPreference,
     PackagerSplitResult,
     PackagerTransformProfile,
-    PackagerUnit
+    PackagerUnit,
+    resolvePackagerChunkOriginWorldY
 } from './packager-types';
 
 type FlowBoxProcessor = {
@@ -265,7 +266,9 @@ export class FlowBoxPackager implements PackagerUnit {
             spatialMap,
             leftMargin: context.margins.left,
             pageIndex: context.pageIndex,
-            ...(Number.isFinite(context.viewportWorldY) ? { worldY: Number(context.viewportWorldY) } : {}),
+            ...(Number.isFinite(resolvePackagerChunkOriginWorldY(context))
+                ? { worldY: Number(resolvePackagerChunkOriginWorldY(context)) }
+                : {}),
             clearTopBeforeStart: false
         });
         if (!placed) {

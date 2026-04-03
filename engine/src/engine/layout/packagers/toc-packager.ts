@@ -4,6 +4,7 @@ import type { FlowBox } from '../layout-core-types';
 import { createContinuationIdentity, type PackagerIdentity } from './packager-identity';
 import { FlowBoxPackager } from './flow-box-packager';
 import { HEADING_SIGNAL_TOPIC } from '../collaborators/heading-signal-collaborator';
+import { resolvePackagerWorldYAtCursor } from './packager-types';
 import type {
     ObservationResult,
     PackagerContext,
@@ -176,8 +177,8 @@ export class TocPackager implements PackagerUnit {
             this.firstCommittedCursorY = Number.isFinite(context.cursorY)
                 ? Number(context.cursorY)
                 : this.firstCommittedCursorY;
-            this.firstCommittedWorldY = Number.isFinite(context.viewportWorldY) && Number.isFinite(context.cursorY)
-                ? Number(context.viewportWorldY) + Number(context.cursorY)
+            this.firstCommittedWorldY = Number.isFinite(resolvePackagerWorldYAtCursor(context))
+                ? Number(resolvePackagerWorldYAtCursor(context))
                 : this.firstCommittedWorldY;
         }
         const packager = this.base ?? this.buildPackager(context);

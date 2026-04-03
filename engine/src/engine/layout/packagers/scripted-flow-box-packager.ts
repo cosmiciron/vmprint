@@ -9,6 +9,7 @@ import { FlowBoxPackager } from './flow-box-packager';
 import { createPackagers, type ExternalPackagerFactory } from './create-packagers';
 import type { PackagerIdentity } from './packager-identity';
 import { createFlowBoxPackagerIdentity } from './packager-identity';
+import { resolvePackagerWorldYAtCursor } from './packager-types';
 import type {
     LayoutBox,
     ObservationResult,
@@ -863,8 +864,8 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         this.lastObservedPageIndex = context.pageIndex;
         this.lastObservedActorIndex = Number.isFinite(context.actorIndex) ? Number(context.actorIndex) : this.lastObservedActorIndex;
         this.lastObservedCursorY = Number.isFinite(context.cursorY) ? Number(context.cursorY) : this.lastObservedCursorY;
-        this.lastObservedWorldY = Number.isFinite(context.viewportWorldY) && Number.isFinite(context.cursorY)
-            ? Number(context.viewportWorldY) + Number(context.cursorY)
+        this.lastObservedWorldY = Number.isFinite(resolvePackagerWorldYAtCursor(context))
+            ? Number(resolvePackagerWorldYAtCursor(context))
             : this.lastObservedWorldY;
         this.inner.prepare(availableWidth, availableHeight, context);
     }

@@ -21,6 +21,7 @@ import {
     bindPackagerSignalPublisher,
     packagerOccupiesFlowSpace,
     rejectsPlacementFrame,
+    resolvePackagerChunkOriginWorldY,
     resolvePackagerPlacementPreference
 } from './packagers/packager-types';
 import { preparePackagerForPhase, type PackagerContext, type PackagerUnit } from './packagers/packager-types';
@@ -163,14 +164,17 @@ export class PhysicsRuntime {
         }
 
         availableWidth = placementFrame.availableWidth;
-        const chunkOriginWorldY = Number.isFinite(input.contextBase.viewportWorldY)
-            ? Number(input.contextBase.viewportWorldY)
+        const resolvedChunkOriginWorldY = resolvePackagerChunkOriginWorldY(input.contextBase);
+        const chunkOriginWorldY = Number.isFinite(resolvedChunkOriginWorldY)
+            ? Number(resolvedChunkOriginWorldY)
             : input.currentPageIndex * input.pageHeight;
         const context: PackagerContext = {
             ...input.contextBase,
             pageIndex: input.currentPageIndex,
             cursorY: currentY,
             layoutBefore,
+            chunkOriginWorldY,
+            // Preserve the legacy field while callers migrate.
             viewportWorldY: chunkOriginWorldY,
             viewportHeight: input.pageHeight,
             margins: {
