@@ -16,8 +16,10 @@ export class Kernel {
     readonly actorRegistry: PackagerUnit[] = [];
 
     private readonly continuationArtifacts = new Map<string, ContinuationArtifacts>();
-    private readonly stagedContinuationActors = new Map<string, PackagerUnit[]>();
-    private readonly stagedAfterSplitMarkers = new Map<string, FlowBox[]>();
+    private stagedContinuationActors = new Map<string, PackagerUnit[]>();
+    private stagedAfterSplitMarkers = new Map<string, FlowBox[]>();
+    private stagedContinuationActorsShared = false;
+    private stagedAfterSplitMarkersShared = false;
     private readonly fragmentTransitions: FragmentTransition[] = [];
     private readonly fragmentTransitionsByActor = new Map<string, FragmentTransition>();
     private readonly fragmentTransitionsBySource = new Map<string, FragmentTransition[]>();
@@ -37,6 +39,8 @@ export class Kernel {
         this.fragmentTransitionsBySource.clear();
         this.stagedContinuationActors.clear();
         this.stagedAfterSplitMarkers.clear();
+        this.stagedContinuationActorsShared = false;
+        this.stagedAfterSplitMarkersShared = false;
         this.artifacts.clear();
     }
 
@@ -112,47 +116,45 @@ export class Kernel {
 
     stageActorsBeforeContinuation(continuationActorId: string, actors: PackagerUnit[]): void {
         if (!actors.length) return;
+        this.ensureMutableStagedContinuationActors();
         this.stagedContinuationActors.set(continuationActorId, actors);
     }
 
     consumeActorsBeforeContinuation(continuationActorId: string): PackagerUnit[] {
         const actors = this.stagedContinuationActors.get(continuationActorId) ?? [];
+        this.ensureMutableStagedContinuationActors();
         this.stagedContinuationActors.delete(continuationActorId);
         return actors;
     }
 
     stageMarkersAfterSplit(fragmentActorId: string, markers: FlowBox[]): void {
         if (!markers.length) return;
+        this.ensureMutableStagedAfterSplitMarkers();
         this.stagedAfterSplitMarkers.set(fragmentActorId, markers);
     }
 
     consumeMarkersAfterSplit(fragmentActorId: string): FlowBox[] {
         const markers = this.stagedAfterSplitMarkers.get(fragmentActorId) ?? [];
+        this.ensureMutableStagedAfterSplitMarkers();
         this.stagedAfterSplitMarkers.delete(fragmentActorId);
         return markers;
     }
 
     captureLocalQueueSnapshot(actorQueue: readonly PackagerUnit[]): LocalQueueSnapshot {
+        this.stagedContinuationActorsShared = true;
+        this.stagedAfterSplitMarkersShared = true;
         return {
             actorQueue: [...actorQueue],
-            stagedContinuationActors: new Map(
-                Array.from(this.stagedContinuationActors.entries(), ([actorId, actors]) => [actorId, [...actors]])
-            ),
-            stagedAfterSplitMarkers: new Map(
-                Array.from(this.stagedAfterSplitMarkers.entries(), ([actorId, markers]) => [actorId, [...markers]])
-            )
+            stagedContinuationActors: this.stagedContinuationActors,
+            stagedAfterSplitMarkers: this.stagedAfterSplitMarkers
         };
     }
 
     restoreLocalQueueSnapshot(snapshot: LocalQueueSnapshot): void {
-        this.stagedContinuationActors.clear();
-        for (const [actorId, actors] of snapshot.stagedContinuationActors.entries()) {
-            this.stagedContinuationActors.set(actorId, [...actors]);
-        }
-        this.stagedAfterSplitMarkers.clear();
-        for (const [actorId, markers] of snapshot.stagedAfterSplitMarkers.entries()) {
-            this.stagedAfterSplitMarkers.set(actorId, [...markers]);
-        }
+        this.stagedContinuationActors = snapshot.stagedContinuationActors;
+        this.stagedAfterSplitMarkers = snapshot.stagedAfterSplitMarkers;
+        this.stagedContinuationActorsShared = true;
+        this.stagedAfterSplitMarkersShared = true;
     }
 
     installContinuationIntoQueue(
@@ -263,6 +265,18 @@ export class Kernel {
     ): void {
         this.rollbackContinuationQueue(actorQueue, snapshot);
         this.restoreLocalSplitStateSnapshot(snapshot);
+    }
+
+    private ensureMutableStagedContinuationActors(): void {
+        if (!this.stagedContinuationActorsShared) return;
+        this.stagedContinuationActors = new Map(this.stagedContinuationActors);
+        this.stagedContinuationActorsShared = false;
+    }
+
+    private ensureMutableStagedAfterSplitMarkers(): void {
+        if (!this.stagedAfterSplitMarkersShared) return;
+        this.stagedAfterSplitMarkers = new Map(this.stagedAfterSplitMarkers);
+        this.stagedAfterSplitMarkersShared = false;
     }
 
     storePageReservation(pageIndex: number, currentPageIndex: number, reservation: RegionReservation): void {
