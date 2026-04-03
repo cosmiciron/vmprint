@@ -454,8 +454,7 @@ export class ActorCommunicationRuntime<
 
         const anchoredCandidates = this.safeCheckpoints
             .filter((checkpoint) =>
-                checkpoint.pageIndex === frontier.pageIndex
-                && isCheckpointAtOrBeforeFrontier(checkpoint, frontier, frontierActorIndex)
+                isCheckpointAtOrBeforeFrontier(checkpoint, frontier, frontierActorIndex)
                 && (
                     (frontier.sourceId && checkpoint.anchorSourceId === frontier.sourceId)
                     || (frontier.actorId && checkpoint.anchorActorId === frontier.actorId)
