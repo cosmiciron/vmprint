@@ -753,7 +753,6 @@ export class TransitionsRuntime {
                     ...contextBase,
                     pageIndex: currentPageIndex,
                     cursorY: state.currentY,
-                    viewportWorldY: currentPageIndex * pageHeight,
                     viewportHeight: pageHeight
                 }) || [])
                 : null;
@@ -787,7 +786,6 @@ export class TransitionsRuntime {
             ...contextBase,
             pageIndex: currentPageIndex,
             cursorY: state.currentY,
-            viewportWorldY: currentPageIndex * pageHeight,
             viewportHeight: pageHeight
         };
         const fitsMarginBottom = fitsCurrent.getMarginBottom();

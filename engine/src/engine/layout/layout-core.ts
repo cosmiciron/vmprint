@@ -185,12 +185,17 @@ export class LayoutProcessor extends TextProcessor {
     private createFlowMaterializationContext(
         pageIndex: number,
         cursorY: number,
-        contentWidth: number
+        contentWidth: number,
+        worldY?: number
     ): FlowMaterializationContext {
         // Only propagate contentWidth when it is a valid non-negative finite number.
         // Negative sentinel values (e.g. -1 = "unset") must not be propagated
         // because getContextualContentWidth treats any finite value as authoritative.
-        const ctx: FlowMaterializationContext = { pageIndex, cursorY };
+        const ctx: FlowMaterializationContext = {
+            pageIndex,
+            cursorY,
+            ...(Number.isFinite(worldY) ? { worldY: Number(worldY) } : {})
+        };
         if (Number.isFinite(contentWidth) && contentWidth >= 0) {
             ctx.contentWidth = contentWidth;
         }
@@ -200,8 +205,9 @@ export class LayoutProcessor extends TextProcessor {
     private getMaterializationContextKey(unit: FlowBox, context?: FlowMaterializationContext): string {
         if (!context) return 'default';
         const top = Number(context.cursorY).toFixed(3);
+        const worldKey = Number.isFinite(context.worldY) ? Number(context.worldY).toFixed(3) : 'na';
         const widthKey = Number.isFinite(context.contentWidth) ? Number(context.contentWidth).toFixed(3) : 'auto';
-        return `${context.pageIndex}:${top}:${unit.type}:${widthKey}`;
+        return `${context.pageIndex}:${top}:${worldKey}:${unit.type}:${widthKey}`;
     }
 
     private hashTextContent(text: string): string {

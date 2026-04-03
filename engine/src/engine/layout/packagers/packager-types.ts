@@ -58,13 +58,19 @@ export interface PackagerContext {
 export function bindPackagerSignalPublisher(
     publishActorSignal: (signal: ActorSignalDraft) => ActorSignal,
     pageIndex: number,
-    cursorY: number
+    cursorY: number,
+    worldY?: number
 ): (signal: ActorSignalDraft) => ActorSignal {
     return (signal: ActorSignalDraft) =>
         publishActorSignal({
             ...signal,
             pageIndex: Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : pageIndex,
-            cursorY: Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : cursorY
+            cursorY: Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : cursorY,
+            ...(Number.isFinite(signal.worldY)
+                ? { worldY: Number(signal.worldY) }
+                : Number.isFinite(worldY)
+                    ? { worldY: Number(worldY) }
+                    : {})
         });
 }
 

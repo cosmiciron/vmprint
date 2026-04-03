@@ -382,7 +382,14 @@ function placePackagersInHostedRegion(
                 ...contextBase,
                 pageIndex,
                 cursorY: currentY,
-                publishActorSignal: bindPackagerSignalPublisher(contextBase.publishActorSignal, pageIndex, currentY)
+                publishActorSignal: bindPackagerSignalPublisher(
+                    contextBase.publishActorSignal,
+                    pageIndex,
+                    currentY,
+                    Number.isFinite(contextBase.viewportWorldY)
+                        ? Number(contextBase.viewportWorldY) + currentY
+                        : undefined
+                )
             };
             const fieldPublisher = materializeHostedRegionFieldPublisher(
                 actor,
@@ -421,7 +428,14 @@ function placePackagersInHostedRegion(
             ...contextBase,
             pageIndex,
             cursorY: currentY,
-            publishActorSignal: bindPackagerSignalPublisher(contextBase.publishActorSignal, pageIndex, currentY)
+            publishActorSignal: bindPackagerSignalPublisher(
+                contextBase.publishActorSignal,
+                pageIndex,
+                currentY,
+                Number.isFinite(contextBase.viewportWorldY)
+                    ? Number(contextBase.viewportWorldY) + currentY
+                    : undefined
+            )
         };
         const initialContext: PackagerContext = {
             ...context,
@@ -517,7 +531,14 @@ export function runHostedRegionSessionBounded(
             ...zoneContextBase,
             pageIndex,
             cursorY: currentY,
-            publishActorSignal: bindPackagerSignalPublisher(zoneContextBase.publishActorSignal, pageIndex, currentY)
+            publishActorSignal: bindPackagerSignalPublisher(
+                zoneContextBase.publishActorSignal,
+                pageIndex,
+                currentY,
+                Number.isFinite(zoneContextBase.viewportWorldY)
+                    ? Number(zoneContextBase.viewportWorldY) + currentY
+                    : undefined
+            )
         };
         const initialContext: PackagerContext = {
             ...context,

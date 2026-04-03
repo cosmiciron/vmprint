@@ -542,16 +542,21 @@ export class LayoutSession {
         const resolvedPageIndex = Number.isFinite(signal.pageIndex)
             ? Number(signal.pageIndex)
             : this.currentPageIndex;
+        const resolvedCursorY = Number.isFinite(signal.cursorY)
+            ? Number(signal.cursorY)
+            : (!Number.isFinite(signal.pageIndex) || resolvedPageIndex === this.currentPageIndex)
+                ? this.currentY
+                : undefined;
+        const resolvedWorldY = Number.isFinite(signal.worldY)
+            ? Number(signal.worldY)
+            : (Number.isFinite(resolvedCursorY) && this.currentSurface && resolvedPageIndex === this.currentPageIndex)
+                ? Math.max(0, resolvedPageIndex * this.currentSurface.height + Number(resolvedCursorY))
+                : undefined;
         return this.actorCommunicationRuntime.publishActorSignal({
             ...signal,
             pageIndex: resolvedPageIndex,
-            ...(
-                Number.isFinite(signal.cursorY)
-                    ? { cursorY: Number(signal.cursorY) }
-                    : (!Number.isFinite(signal.pageIndex) || resolvedPageIndex === this.currentPageIndex)
-                        ? { cursorY: this.currentY }
-                        : {}
-            ),
+            ...(Number.isFinite(resolvedCursorY) ? { cursorY: Number(resolvedCursorY) } : {}),
+            ...(Number.isFinite(resolvedWorldY) ? { worldY: Number(resolvedWorldY) } : {}),
             tick: this.getSimulationTick()
         });
     }
@@ -1072,7 +1077,10 @@ export class LayoutSession {
                 publishActorSignal: bindPackagerSignalPublisher(
                     contextBase.publishActorSignal,
                     pageIndex,
-                    Number.isFinite(cursorY) ? cursorY : 0
+                    Number.isFinite(cursorY) ? cursorY : 0,
+                    this.currentSurface && pageIndex === this.currentPageIndex && Number.isFinite(cursorY)
+                        ? pageIndex * this.currentSurface.height + Number(cursorY)
+                        : undefined
                 )
             };
             const availableWidth = Math.max(0, contextBase.pageWidth - contextBase.margins.left - contextBase.margins.right);

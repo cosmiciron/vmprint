@@ -12,7 +12,7 @@ import {
 } from './packager-types';
 
 type SpatialGridPackagerProcessor = {
-    createFlowMaterializationContext(pageIndex: number, cursorY: number, availableWidth: number): FlowMaterializationContext;
+    createFlowMaterializationContext(pageIndex: number, cursorY: number, availableWidth: number, worldY?: number): FlowMaterializationContext;
     materializeFlowBox(flowBox: FlowBox): void;
     positionFlowBox(
         flowBox: FlowBox,

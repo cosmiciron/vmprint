@@ -30,6 +30,7 @@ type SpatialFieldReflowOptions = {
     xOffset?: number;
     leftMargin?: number;
     pageIndex?: number;
+    worldY?: number;
     opticalUnderhang?: boolean;
     clearTopBeforeStart?: boolean;
 };
@@ -163,7 +164,8 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
                 _lineWidths: lineLayoutOut.widths,
                 _lineYOffsets: lineLayoutOut.yOffsets,
                 _isFirstLine: true,
-                _isLastLine: true
+                _isLastLine: true,
+                ...(Number.isFinite(options.worldY) ? { _worldY: Number(options.worldY) } : {})
             },
             meta: flowBox.meta ? { ...flowBox.meta, pageIndex: Number(options.pageIndex || 0) } : { pageIndex: Number(options.pageIndex || 0) }
         }

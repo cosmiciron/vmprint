@@ -1941,7 +1941,9 @@ export class StoryPackager implements PackagerUnit {
                     } as any;
                 }
                 return session.publishActorSignal(signal);
-            }, resolvedPageIndex, resolvedCursorY),
+            }, resolvedPageIndex, resolvedCursorY, Number.isFinite(context.viewportWorldY)
+                ? Number(context.viewportWorldY) + resolvedCursorY
+                : undefined),
             readActorSignals: (topic?: string) => {
                 const session = this.processor.getCurrentLayoutSession();
                 return session ? session.getActorSignals(topic) : [];

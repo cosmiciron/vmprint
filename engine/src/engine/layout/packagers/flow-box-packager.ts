@@ -16,7 +16,7 @@ import {
 type FlowBoxProcessor = {
     normalizeFlowBlock(element: any, options: { path: number[] }): any;
     shapeNormalizedFlowBlock(block: any): FlowBox;
-    createFlowMaterializationContext(pageIndex: number, cursorY: number, availableWidth: number): FlowMaterializationContext;
+    createFlowMaterializationContext(pageIndex: number, cursorY: number, availableWidth: number, worldY?: number): FlowMaterializationContext;
     materializeFlowBox(flowBox: FlowBox, context?: FlowMaterializationContext): void;
     positionFlowBox(
         flowBox: FlowBox,
@@ -265,6 +265,7 @@ export class FlowBoxPackager implements PackagerUnit {
             spatialMap,
             leftMargin: context.margins.left,
             pageIndex: context.pageIndex,
+            ...(Number.isFinite(context.viewportWorldY) ? { worldY: Number(context.viewportWorldY) } : {}),
             clearTopBeforeStart: false
         });
         if (!placed) {

@@ -163,12 +163,15 @@ export class PhysicsRuntime {
         }
 
         availableWidth = placementFrame.availableWidth;
+        const chunkOriginWorldY = Number.isFinite(input.contextBase.viewportWorldY)
+            ? Number(input.contextBase.viewportWorldY)
+            : input.currentPageIndex * input.pageHeight;
         const context: PackagerContext = {
             ...input.contextBase,
             pageIndex: input.currentPageIndex,
             cursorY: currentY,
             layoutBefore,
-            viewportWorldY: input.currentPageIndex * input.pageHeight,
+            viewportWorldY: chunkOriginWorldY,
             viewportHeight: input.pageHeight,
             margins: {
                 ...input.margins,
@@ -178,7 +181,8 @@ export class PhysicsRuntime {
             publishActorSignal: bindPackagerSignalPublisher(
                 input.contextBase.publishActorSignal,
                 input.currentPageIndex,
-                currentY
+                currentY,
+                chunkOriginWorldY + currentY
             )
         };
         const availableHeightAdjusted = constraintField.effectiveAvailableHeight;

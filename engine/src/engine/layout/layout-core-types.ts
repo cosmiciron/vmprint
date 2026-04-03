@@ -34,6 +34,7 @@ export type FlowBox = {
 export type FlowMaterializationContext = {
     pageIndex: number;
     cursorY: number;
+    worldY?: number;
     contentWidth?: number;
 };
 
