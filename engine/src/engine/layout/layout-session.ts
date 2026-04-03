@@ -646,11 +646,14 @@ export class LayoutSession {
                     ? state?.context.pageHeight ?? this.currentSurface?.height
                     : this.currentSurface?.height);
             const cursorY = Number(earliest.box.y || 0);
+            const chunkOriginWorldY = Number.isFinite(pageHeight)
+                ? this.resolveChunkOriginWorldY(earliest.pageIndex, Number(pageHeight))
+                : undefined;
             return {
                 pageIndex: earliest.pageIndex,
                 cursorY,
-                ...(Number.isFinite(pageHeight)
-                    ? { worldY: Math.max(0, earliest.pageIndex * Number(pageHeight) + cursorY) }
+                ...(Number.isFinite(chunkOriginWorldY)
+                    ? { worldY: Math.max(0, Number(chunkOriginWorldY) + cursorY) }
                     : {}),
                 ...(Number.isFinite(resolvedActorIndex) ? { actorIndex: Number(resolvedActorIndex) } : {}),
                 actorId: owner.actorId,
@@ -701,11 +704,14 @@ export class LayoutSession {
         const currentPageIndex = state.paginationState.currentPageIndex;
         const currentY = state.paginationState.currentY;
         const pageHeight = this.currentSurface?.height;
+        const chunkOriginWorldY = Number.isFinite(pageHeight)
+            ? this.resolveChunkOriginWorldY(currentPageIndex, Number(pageHeight))
+            : undefined;
         return {
             pageIndex: currentPageIndex,
             cursorY: currentY,
-            ...(Number.isFinite(pageHeight)
-                ? { worldY: Math.max(0, currentPageIndex * Number(pageHeight) + currentY) }
+            ...(Number.isFinite(chunkOriginWorldY)
+                ? { worldY: Math.max(0, Number(chunkOriginWorldY) + currentY) }
                 : {}),
             actorIndex: resolvedActorIndex
         };
@@ -1470,6 +1476,10 @@ export class LayoutSession {
 
     getCurrentPageIndex(): number {
         return this.currentPageIndex;
+    }
+
+    resolveChunkOriginWorldY(chunkIndex: number, chunkHeight: number): number {
+        return this.lifecycleRuntime.resolveChunkOriginWorldY(chunkIndex, chunkHeight);
     }
 
     getSimulationTickRaw(): number {

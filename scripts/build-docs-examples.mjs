@@ -215,12 +215,12 @@ async function buildAstToCanvasWebfontsExample(exampleRoot) {
 
 async function buildPreviewExample(exampleRoot) {
     const previewPackageRoot = path.join(repoRoot, 'preview');
-    const sourceDemoRoot = path.join(previewPackageRoot, 'example');
+    const sourceDemoRoot = path.join(previewPackageRoot, 'playground');
 
     fs.rmSync(exampleRoot, { recursive: true, force: true });
     fs.mkdirSync(path.join(exampleRoot, 'assets'), { recursive: true });
 
-    // Copy static files from preview/example/
+    // Copy static files from preview/playground/
     fs.copyFileSync(path.join(sourceDemoRoot, 'index.html'), path.join(exampleRoot, 'index.html'));
     fs.copyFileSync(path.join(sourceDemoRoot, 'styles.css'), path.join(exampleRoot, 'styles.css'));
     fs.copyFileSync(path.join(sourceDemoRoot, 'assets', 'pdf.worker.mjs'), path.join(exampleRoot, 'assets', 'pdf.worker.mjs'));

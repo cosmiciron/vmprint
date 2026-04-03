@@ -65,6 +65,10 @@ export function executeSimulationMarch(
     const pageLimit = contextBase.pageHeight - margins.bottom;
     const resolveLayoutBefore = (prevAfter: number, marginTop: number): number =>
         prevAfter + marginTop;
+    const buildChunkContextBase = () => ({
+        ...contextBase,
+        chunkOriginWorldY: session.resolveChunkOriginWorldY(currentPageIndex, contextBase.pageHeight)
+    });
 
     session.beginSimulationRun(progression);
     session.notifyPageStart(currentPageIndex, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
@@ -76,9 +80,10 @@ export function executeSimulationMarch(
         if (!reactiveCheckpointsEnabled()) {
             return false;
         }
-        const observation = session.evaluateObserverRegistry(contextBase, currentPageIndex, currentY);
+        const chunkContextBase = buildChunkContextBase();
+        const observation = session.evaluateObserverRegistry(chunkContextBase, currentPageIndex, currentY);
         if (!observation.geometryChanged && observation.contentOnlyActors.length > 0) {
-            session.applyContentOnlyActorUpdates(pages, currentPageBoxes, observation.contentOnlyActors, contextBase);
+            session.applyContentOnlyActorUpdates(pages, currentPageBoxes, observation.contentOnlyActors, chunkContextBase);
             return false;
         }
         if (!observation.geometryChanged || !observation.earliestAffectedFrontier) {
@@ -144,9 +149,10 @@ export function executeSimulationMarch(
         if (!steppedActorsEnabled()) {
             return false;
         }
+        const chunkContextBase = buildChunkContextBase();
         const stepped = session.evaluateSteppedActors(
             {
-                ...contextBase,
+                ...chunkContextBase,
                 simulationTick: session.getSimulationTick()
             },
             currentPageIndex,
@@ -158,7 +164,7 @@ export function executeSimulationMarch(
                 currentPageBoxes,
                 stepped.contentOnlyActors,
                 {
-                    ...contextBase,
+                    ...chunkContextBase,
                     simulationTick: session.getSimulationTick()
                 }
             );

@@ -286,8 +286,8 @@ async function main() {
                     w: region.w
                 })),
                 [
-                    { regionId: 'main', x: 20, y: 0, w: 170 },
-                    { regionId: 'side', x: 208, y: 26, w: 92 }
+                    { regionId: 'main', x: 20, y: 20, w: 170 },
+                    { regionId: 'side', x: 208, y: 46, w: 92 }
                 ]
             );
         }

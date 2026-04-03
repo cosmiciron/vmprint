@@ -35082,6 +35082,7 @@
     "lineHeight",
     "pageBackground",
     "storyWrapOpticalUnderhang",
+    "worldPlain",
     "headerInsetTop",
     "headerInsetBottom",
     "footerInsetTop",
@@ -35113,6 +35114,7 @@
   var PROGRESSION_KEYS = /* @__PURE__ */ new Set(["policy", "maxTicks"]);
   var MARGINS_KEYS = /* @__PURE__ */ new Set(["top", "right", "bottom", "left"]);
   var OPTICAL_SCALING_KEYS = /* @__PURE__ */ new Set(["enabled", "cjk", "korean", "thai", "devanagari", "arabic", "cyrillic", "latin", "default"]);
+  var WORLD_PLAIN_KEYS = /* @__PURE__ */ new Set(["style", "frameOverflow", "worldBehavior", "rootFlowMode", "traversalInteractionDefault"]);
   var ELEMENT_KEYS = /* @__PURE__ */ new Set(["type", "name", "content", "children", "image", "table", "slots", "columns", "gutter", "balance", "zones", "zoneLayout", "stripLayout", "dropCap", "columnSpan", "placement", "properties"]);
   var ZONE_DEFINITION_KEYS = /* @__PURE__ */ new Set(["id", "region", "elements", "style"]);
   var ZONE_REGION_KEYS = /* @__PURE__ */ new Set(["x", "y", "width", "height"]);
@@ -35149,10 +35151,11 @@
   var STRIP_LAYOUT_KEYS = /* @__PURE__ */ new Set(["tracks", "gap"]);
   var TABLE_COLUMN_KEYS = /* @__PURE__ */ new Set(["mode", "value", "fr", "min", "max", "basis", "minContent", "maxContent", "grow", "shrink"]);
   var DROP_CAP_KEYS = /* @__PURE__ */ new Set(["enabled", "lines", "characters", "gap", "characterStyle"]);
-  var STORY_LAYOUT_DIRECTIVE_KEYS = /* @__PURE__ */ new Set(["mode", "x", "y", "align", "wrap", "gap", "shape", "exclusionAssembly"]);
-  var SPATIAL_FIELD_KEYS = /* @__PURE__ */ new Set(["kind", "x", "y", "align", "wrap", "gap", "shape", "exclusionAssembly", "hidden"]);
+  var STORY_LAYOUT_DIRECTIVE_KEYS = /* @__PURE__ */ new Set(["mode", "x", "y", "align", "wrap", "gap", "shape", "exclusionAssembly", "zIndex"]);
+  var SPATIAL_FIELD_KEYS = /* @__PURE__ */ new Set(["kind", "x", "y", "align", "wrap", "gap", "shape", "exclusionAssembly", "hidden", "zIndex", "traversalInteraction"]);
   var STORY_EXCLUSION_ASSEMBLY_KEYS = /* @__PURE__ */ new Set(["members"]);
-  var STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = /* @__PURE__ */ new Set(["x", "y", "w", "h", "shape"]);
+  var STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = /* @__PURE__ */ new Set(["x", "y", "w", "h", "shape", "zIndex", "traversalInteraction"]);
+  var VALID_TRAVERSAL_INTERACTIONS = /* @__PURE__ */ new Set(["auto", "wrap", "overpass", "ignore"]);
   var PAGE_REGION_DEFINITION_KEYS = /* @__PURE__ */ new Set(["default", "firstPage", "odd", "even"]);
   var PAGE_REGION_CONTENT_KEYS = /* @__PURE__ */ new Set(["elements", "style"]);
   var PAGE_OVERRIDES_KEYS = /* @__PURE__ */ new Set(["header", "footer"]);
@@ -35315,6 +35318,35 @@
     if (obj.pageBackground !== void 0) assertStringAt(obj.pageBackground, "layout.pageBackground", documentPath);
     if (obj.storyWrapOpticalUnderhang !== void 0) {
       assertBooleanAt(obj.storyWrapOpticalUnderhang, "layout.storyWrapOpticalUnderhang", documentPath);
+    }
+    if (obj.worldPlain !== void 0) {
+      const plain = assertPlainObjectAt(obj.worldPlain, "layout.worldPlain", documentPath);
+      assertAllowedKeys(plain, WORLD_PLAIN_KEYS, "layout.worldPlain", documentPath);
+      if (plain.style !== void 0) validateStyleObject(plain.style, "layout.worldPlain.style", documentPath);
+      if (plain.frameOverflow !== void 0) {
+        assertStringAt(plain.frameOverflow, "layout.worldPlain.frameOverflow", documentPath);
+        if (plain.frameOverflow !== "move-whole" && plain.frameOverflow !== "continue") {
+          contractError(documentPath, "layout.worldPlain.frameOverflow", 'expected "move-whole" or "continue".');
+        }
+      }
+      if (plain.worldBehavior !== void 0) {
+        assertStringAt(plain.worldBehavior, "layout.worldPlain.worldBehavior", documentPath);
+        if (plain.worldBehavior !== "fixed" && plain.worldBehavior !== "spanning" && plain.worldBehavior !== "expandable") {
+          contractError(documentPath, "layout.worldPlain.worldBehavior", 'expected "fixed", "spanning", or "expandable".');
+        }
+      }
+      if (plain.rootFlowMode !== void 0) {
+        assertStringAt(plain.rootFlowMode, "layout.worldPlain.rootFlowMode", documentPath);
+        if (plain.rootFlowMode !== "wrapped" && plain.rootFlowMode !== "traverse") {
+          contractError(documentPath, "layout.worldPlain.rootFlowMode", 'expected "wrapped" or "traverse".');
+        }
+      }
+      if (plain.traversalInteractionDefault !== void 0) {
+        assertStringAt(plain.traversalInteractionDefault, "layout.worldPlain.traversalInteractionDefault", documentPath);
+        if (!VALID_TRAVERSAL_INTERACTIONS.has(String(plain.traversalInteractionDefault))) {
+          contractError(documentPath, "layout.worldPlain.traversalInteractionDefault", "expected one of: auto, wrap, overpass, ignore.");
+        }
+      }
     }
     if (obj.headerInsetTop !== void 0) assertFiniteNumberAt(obj.headerInsetTop, "layout.headerInsetTop", documentPath);
     if (obj.headerInsetBottom !== void 0) assertFiniteNumberAt(obj.headerInsetBottom, "layout.headerInsetBottom", documentPath);
@@ -35536,6 +35568,7 @@
     if (directive.x !== void 0) assertFiniteNumberAt(directive.x, `${path2}.x`, documentPath);
     if (directive.y !== void 0) assertFiniteNumberAt(directive.y, `${path2}.y`, documentPath);
     if (directive.gap !== void 0) assertFiniteNumberAt(directive.gap, `${path2}.gap`, documentPath);
+    if (directive.zIndex !== void 0) assertFiniteNumberAt(directive.zIndex, `${path2}.zIndex`, documentPath);
     const validShapes = /* @__PURE__ */ new Set(["rect", "circle"]);
     if (directive.shape !== void 0 && !validShapes.has(directive.shape)) {
       contractError(documentPath, `${path2}.shape`, "expected one of: rect, circle.");
@@ -35554,6 +35587,7 @@
         assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
         assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
         assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
+        if (memberObj.zIndex !== void 0) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
         if (Number(memberObj.w) <= 0) {
           contractError(documentPath, `${memberPath}.w`, "expected a number greater than 0.");
         }
@@ -35591,6 +35625,12 @@
     if (directive.gap !== void 0) {
       assertFiniteNumberAt(directive.gap, `${path2}.gap`, documentPath);
     }
+    if (directive.zIndex !== void 0) {
+      assertFiniteNumberAt(directive.zIndex, `${path2}.zIndex`, documentPath);
+    }
+    if (directive.traversalInteraction !== void 0 && !VALID_TRAVERSAL_INTERACTIONS.has(directive.traversalInteraction)) {
+      contractError(documentPath, `${path2}.traversalInteraction`, "expected one of: auto, wrap, overpass, ignore.");
+    }
     if (directive.shape !== void 0 && !validShapes.has(directive.shape)) {
       contractError(documentPath, `${path2}.shape`, "expected one of: rect, circle.");
     }
@@ -35611,6 +35651,10 @@
         assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
         assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
         assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
+        if (memberObj.zIndex !== void 0) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
+        if (memberObj.traversalInteraction !== void 0 && !VALID_TRAVERSAL_INTERACTIONS.has(memberObj.traversalInteraction)) {
+          contractError(documentPath, `${memberPath}.traversalInteraction`, "expected one of: auto, wrap, overpass, ignore.");
+        }
         if (Number(memberObj.w) <= 0) {
           contractError(documentPath, `${memberPath}.w`, "expected a number greater than 0.");
         }
@@ -35837,6 +35881,9 @@
         contractError(documentPath, `${path2}.gutter`, "must be >= 0 for story elements.");
       }
     }
+    if (String(element2.type).trim() === "world-plain") {
+      contractError(documentPath, `${path2}.type`, "world-plain is authored through layout.worldPlain, not as a regular element.");
+    }
     if (element2.zones !== void 0) {
       if (!Array.isArray(element2.zones)) {
         contractError(documentPath, `${path2}.zones`, "expected an array of zone definitions.");
@@ -35867,6 +35914,16 @@
     if (String(element2.type).trim() === "image") {
       if (element2.image === void 0) {
         contractError(documentPath, `${path2}.image`, 'is required when element.type is "image".');
+      }
+    }
+    if (String(element2.type).trim() === "field-actor") {
+      const properties = isPlainObject(element2.properties) ? element2.properties : null;
+      const style = isPlainObject(properties?.style) ? properties.style : {};
+      if (style.width === void 0) {
+        contractError(documentPath, `${path2}.properties.style.width`, 'is required when element.type is "field-actor".');
+      }
+      if (style.height === void 0) {
+        contractError(documentPath, `${path2}.properties.style.height`, 'is required when element.type is "field-actor".');
       }
     }
     if (String(element2.type).trim() === "strip") {
@@ -36090,6 +36147,44 @@
     }
     return normalized;
   }
+  function synthesizeWorldPlainElement(elements, worldPlain) {
+    const plain = isPlainObject(worldPlain) ? worldPlain : {};
+    const style = isPlainObject(plain.style) ? plain.style : void 0;
+    return {
+      type: "world-plain",
+      content: "",
+      children: elements,
+      properties: {
+        ...style ? { style } : {},
+        _worldPlainOptions: {
+          frameOverflow: plain.frameOverflow === "move-whole" ? "move-whole" : plain.frameOverflow === "continue" ? "continue" : void 0,
+          worldBehavior: plain.worldBehavior === "fixed" || plain.worldBehavior === "spanning" || plain.worldBehavior === "expandable" ? plain.worldBehavior : void 0,
+          rootFlowMode: plain.rootFlowMode === "traverse" ? "traverse" : plain.rootFlowMode === "wrapped" ? "wrapped" : void 0,
+          traversalInteractionDefault: VALID_TRAVERSAL_INTERACTIONS.has(String(plain.traversalInteractionDefault)) ? plain.traversalInteractionDefault : void 0
+        }
+      }
+    };
+  }
+  function shouldAssignElementToTraversingWorldHost(element2) {
+    const type = String(element2.type || "").trim().toLowerCase();
+    if (type === "field-actor") return true;
+    return !!(element2.properties?.spatialField || element2.properties?.zoneField);
+  }
+  function synthesizeWorldPlainRootElements(elements, worldPlain) {
+    const plain = isPlainObject(worldPlain) ? worldPlain : {};
+    if (plain.rootFlowMode !== "traverse") {
+      return [synthesizeWorldPlainElement(elements, worldPlain)];
+    }
+    const worldElements = elements.filter((element2) => shouldAssignElementToTraversingWorldHost(element2));
+    const traversingElements = elements.filter((element2) => !shouldAssignElementToTraversingWorldHost(element2));
+    if (worldElements.length === 0) {
+      return traversingElements;
+    }
+    return [
+      synthesizeWorldPlainElement(worldElements, worldPlain),
+      ...traversingElements
+    ];
+  }
   function normalizeDocumentToIR(document4, documentPath) {
     const sourceVersion = String(document4?.documentVersion || "").trim();
     if (sourceVersion !== CURRENT_DOCUMENT_VERSION) {
@@ -36124,7 +36219,8 @@
       fontFamily: regular
     });
     const normalizedStyles = deepSortObject(document4.styles || {});
-    const normalizedElements = document4.elements.map((element2) => normalizeElementNode(element2));
+    const rootElements = document4.elements.map((element2) => normalizeElementNode(element2));
+    const normalizedElements = document4.layout.worldPlain !== void 0 ? synthesizeWorldPlainRootElements(rootElements, document4.layout.worldPlain) : rootElements;
     return {
       documentVersion: CURRENT_DOCUMENT_VERSION,
       irVersion: CURRENT_IR_VERSION,
@@ -45863,9 +45959,19 @@
   function reorderFamiliesByPreference(families, preferredFamilies) {
     if (preferredFamilies.length === 0) return families;
     const preferredSet = new Set(preferredFamilies);
-    const preferred = families.filter((family) => preferredSet.has(family));
+    const familySet = new Set(families);
+    const preferred = preferredFamilies.filter((family) => familySet.has(family));
     const rest = families.filter((family) => !preferredSet.has(family));
     return [...preferred, ...rest];
+  }
+  function reorderFallbacksPreservingBase(baseFamily, fallbackFamilies, preferredFamilies) {
+    return [
+      baseFamily,
+      ...reorderFamiliesByPreference(
+        fallbackFamilies.filter((family) => family !== baseFamily),
+        preferredFamilies.filter((family) => family !== baseFamily)
+      )
+    ];
   }
   function deriveLocalePreferredFamilies(locale) {
     if (locale.startsWith("ja")) return ["Noto Sans JP"];
@@ -46051,7 +46157,7 @@
     const locale = normalizeLocale(params.preferredLocale);
     const fallbackOrder = params.fallbackFamilies.filter((family) => family !== baseFamily);
     const localePreferredFamilies = deriveLocalePreferredFamilies(locale);
-    const familyOrder = [baseFamily, ...reorderFamiliesByPreference(fallbackOrder, localePreferredFamilies)];
+    const familyOrder = reorderFallbacksPreservingBase(baseFamily, fallbackOrder, localePreferredFamilies);
     const resolveRegularFont = (family) => {
       try {
         return params.resolveLoadedFamilyFont(family, 400);
@@ -46091,7 +46197,7 @@
         if (clusterPrefKey === lastClusterPrefKey) {
           preferredFamilyOrder = lastPreferredFamilyOrder;
         } else {
-          preferredFamilyOrder = reorderFamiliesByPreference(familyOrder, clusterPreferredFamilies);
+          preferredFamilyOrder = reorderFallbacksPreservingBase(baseFamily, fallbackOrder, clusterPreferredFamilies);
           lastClusterPrefKey = clusterPrefKey;
           lastPreferredFamilyOrder = preferredFamilyOrder;
         }
@@ -46520,12 +46626,132 @@
     return parsed;
   }
   var fontVerticalMetricsCache = /* @__PURE__ */ new WeakMap();
+  var FontkitTextMeasurer = class {
+    constructor(getClusterCodePoints, isIgnorableCodePoint, cloneShapedGlyphs) {
+      this.getClusterCodePoints = getClusterCodePoints;
+      this.isIgnorableCodePoint = isIgnorableCodePoint;
+      this.cloneShapedGlyphs = cloneShapedGlyphs;
+    }
+    getVerticalMetrics(font) {
+      if (!font) {
+        throw new Error("[FontkitTextMeasurer] Missing font object for vertical metric extraction.");
+      }
+      const cached = fontVerticalMetricsCache.get(font);
+      if (cached) return cached;
+      const upm = Number(font.unitsPerEm);
+      const rawAscent = Number(font.ascent);
+      const rawDescent = Number(font.descent);
+      if (!Number.isFinite(upm) || upm <= 0 || !Number.isFinite(rawAscent) || !Number.isFinite(rawDescent)) {
+        const fontKey = font.postscriptName || font.familyName || "unknown";
+        throw new Error(`[FontkitTextMeasurer] Invalid vertical metrics for font "${fontKey}".`);
+      }
+      const metrics = {
+        ascent: rawAscent / upm * 1e3,
+        descent: Math.abs(rawDescent) / upm * 1e3
+      };
+      fontVerticalMetricsCache.set(font, metrics);
+      return metrics;
+    }
+    supportsCluster(font, cluster) {
+      if (!font || !cluster) return false;
+      for (const cp of this.getClusterCodePoints(cluster)) {
+        if (this.isIgnorableCodePoint(cp)) continue;
+        const glyph = font.glyphForCodePoint(cp);
+        if (!glyph || glyph.id === 0) return false;
+      }
+      return true;
+    }
+    measure(text5, font, fontSize, options = {}) {
+      if (!text5) {
+        const metrics2 = this.getVerticalMetrics(font);
+        return {
+          width: 0,
+          glyphs: [],
+          ascent: metrics2.ascent,
+          descent: metrics2.descent
+        };
+      }
+      if (!font) {
+        throw new Error(`[FontkitTextMeasurer] Missing measurement font for text "${text5.slice(0, 24)}".`);
+      }
+      const upm = Number(font.unitsPerEm);
+      if (!Number.isFinite(upm) || upm <= 0) {
+        const fontKey = font.postscriptName || font.familyName || "unknown";
+        throw new Error(`[FontkitTextMeasurer] Invalid unitsPerEm for font "${fontKey}".`);
+      }
+      const scale = fontSize / upm;
+      const SCRIPT_MAP = {
+        arabic: "arab",
+        devanagari: "deva",
+        thai: "thai",
+        korean: "hang",
+        cjk: "hani"
+      };
+      const otScript = SCRIPT_MAP[options.scriptClass || ""] || "latn";
+      const otDirection = options.direction === "rtl" ? "rtl" : "ltr";
+      const isWhitespaceOnly = /^\s+$/u.test(text5);
+      const layoutText = isWhitespaceOnly ? text5.replace(/[\u00A0\u202F]/g, " ") : text5;
+      const containsRtlScript = /[\u0590-\u08FF\uFB1D-\uFDFD\uFE70-\uFEFC]/u.test(layoutText);
+      const isRtl = otDirection === "rtl" && containsRtlScript;
+      let run;
+      try {
+        run = !isWhitespaceOnly && isRtl ? font.layout(
+          layoutText,
+          ["ccmp", "isol", "init", "medi", "fina", "rlig", "liga", "calt", "curs", "kern"],
+          otScript,
+          void 0,
+          otDirection
+        ) : font.layout(layoutText);
+      } catch {
+        run = font.layout(layoutText);
+      }
+      let width = 0;
+      const glyphs = [];
+      const shapedGlyphs = [];
+      for (let i2 = 0; i2 < run.glyphs.length; i2++) {
+        const glyph = run.glyphs[i2];
+        const pos = run.positions[i2];
+        const drawX = width + (pos.xOffset || 0) * scale;
+        const drawY = (pos.yOffset || 0) * scale;
+        const char = glyph.codePoints && glyph.codePoints.length > 0 ? String.fromCodePoint(...glyph.codePoints) : "";
+        glyphs.push({ char, x: drawX, y: drawY });
+        const xAdvance = pos.xAdvance !== void 0 ? pos.xAdvance : glyph.advanceWidth;
+        if (xAdvance === void 0 || !Number.isFinite(xAdvance)) {
+          const fontKey = font.postscriptName || font.familyName || "unknown";
+          throw new Error(`[FontkitTextMeasurer] Missing xAdvance for glyph in "${fontKey}".`);
+        }
+        if (isRtl) {
+          shapedGlyphs.push({
+            id: glyph.id,
+            codePoints: glyph.codePoints ? [...glyph.codePoints] : [],
+            xAdvance: xAdvance * scale,
+            xOffset: (pos.xOffset || 0) * scale,
+            yOffset: (pos.yOffset || 0) * scale
+          });
+        }
+        width += xAdvance * scale + (options.letterSpacing || 0);
+      }
+      const metrics = this.getVerticalMetrics(font);
+      return {
+        width,
+        glyphs,
+        shapedGlyphs: isRtl ? this.cloneShapedGlyphs(shapedGlyphs) : void 0,
+        ascent: metrics.ascent,
+        descent: metrics.descent
+      };
+    }
+  };
   var _a3;
   var TextProcessor = (_a3 = class extends FontProcessor {
-    constructor() {
-      super(...arguments);
+    constructor(config, runtime) {
+      super(config, runtime);
       this.wordSegmenterCache = /* @__PURE__ */ new Map();
       this.styleSignatureCache = new StyleSignatureCache();
+      this.textMeasurer = new FontkitTextMeasurer(
+        (cluster) => this.getClusterCodePoints(cluster),
+        (codePoint) => this.isIgnorableCodePoint(codePoint),
+        (glyphs) => glyphs.map((glyph) => ({ ...glyph, codePoints: [...glyph.codePoints] }))
+      );
     }
     cloneGlyphs(glyphs) {
       const out = new Array(glyphs.length);
@@ -46534,6 +46760,28 @@
         out[i2] = { char: glyph.char, x: glyph.x, y: glyph.y };
       }
       return out;
+    }
+    getTextMeasurer() {
+      return this.textMeasurer;
+    }
+    resolveMeasurementFontForStyle(style) {
+      if (!style.fontFamily) return this.font;
+      try {
+        return this.resolveLoadedFamilyFont(
+          style.fontFamily,
+          style.fontWeight ?? 400,
+          style.fontStyle ?? "normal"
+        );
+      } catch {
+        return this.font;
+      }
+    }
+    getTextMeasurementBindings() {
+      return {
+        textMeasurer: this.textMeasurer,
+        resolveMeasurementFontForStyle: (style) => this.resolveMeasurementFontForStyle(style),
+        measureText: (text5, font, fontSize, letterSpacing = 0) => this.measureTextForLayout(text5, font, fontSize, letterSpacing)
+      };
     }
     getSegmenterLocale(style) {
       const raw = String(style?.lang || this.config.layout.lang || LAYOUT_DEFAULTS.textLayout.lang || "und").trim();
@@ -46595,33 +46843,10 @@
       codePoint >= 917760 && codePoint <= 917999;
     }
     fontSupportsCluster(font, cluster) {
-      if (!font || !cluster) return false;
-      for (const cp of this.getClusterCodePoints(cluster)) {
-        if (this.isIgnorableCodePoint(cp)) continue;
-        const glyph = font.glyphForCodePoint(cp);
-        if (!glyph || glyph.id === 0) return false;
-      }
-      return true;
+      return this.textMeasurer.supportsCluster(font, cluster);
     }
     getFontVerticalMetrics(font) {
-      if (!font) {
-        throw new Error("[TextProcessor] Missing font object for vertical metric extraction.");
-      }
-      const cached = fontVerticalMetricsCache.get(font);
-      if (cached) return cached;
-      const upm = Number(font.unitsPerEm);
-      const rawAscent = Number(font.ascent);
-      const rawDescent = Number(font.descent);
-      if (!Number.isFinite(upm) || upm <= 0 || !Number.isFinite(rawAscent) || !Number.isFinite(rawDescent)) {
-        const fontKey = font.postscriptName || font.familyName || "unknown";
-        throw new Error(`[TextProcessor] Invalid vertical metrics for font "${fontKey}".`);
-      }
-      const metrics = {
-        ascent: rawAscent / upm * 1e3,
-        descent: Math.abs(rawDescent) / upm * 1e3
-      };
-      fontVerticalMetricsCache.set(font, metrics);
-      return metrics;
+      return this.textMeasurer.getVerticalMetrics(font);
     }
     createEmptyMeasuredSegment(font, fontFamily, style) {
       const metrics = this.getFontVerticalMetrics(font);
@@ -46774,64 +46999,17 @@
         return cached.width;
       }
       session?.recordProfile?.("textMeasurementCacheMisses", 1);
-      const upm = measurementFont.unitsPerEm;
-      if (!upm || !Number.isFinite(upm)) {
-        throw new Error(`[TextProcessor] Invalid unitsPerEm for font "${fontKey}".`);
-      }
-      const scale = measurementFontSize / upm;
       try {
-        const SCRIPT_MAP = {
-          arabic: "arab",
-          devanagari: "deva",
-          thai: "thai",
-          korean: "hang",
-          cjk: "hani"
-        };
-        const otScript = SCRIPT_MAP[populateSegment?.scriptClass || ""] || "latn";
-        const otDirection = populateSegment?.direction === "rtl" ? "rtl" : "ltr";
-        const isWhitespaceOnly = /^\s+$/u.test(text5);
-        const layoutText = isWhitespaceOnly ? text5.replace(/[\u00A0\u202F]/g, " ") : text5;
-        const containsRtlScript = hasRtlScript(layoutText);
-        const isRtl = otDirection === "rtl" && containsRtlScript;
-        let run;
-        try {
-          run = !isWhitespaceOnly && isRtl ? measurementFont.layout(
-            layoutText,
-            ["ccmp", "isol", "init", "medi", "fina", "rlig", "liga", "calt", "curs", "kern"],
-            otScript,
-            void 0,
-            otDirection
-          ) : measurementFont.layout(layoutText);
-        } catch {
-          run = measurementFont.layout(layoutText);
-        }
-        let width = 0;
-        const glyphs = [];
-        const shapedGlyphs = [];
-        for (let i2 = 0; i2 < run.glyphs.length; i2++) {
-          const glyph = run.glyphs[i2];
-          const pos = run.positions[i2];
-          const drawX = width + (pos.xOffset || 0) * scale;
-          const drawY = (pos.yOffset || 0) * scale;
-          const char = glyph.codePoints && glyph.codePoints.length > 0 ? String.fromCodePoint(...glyph.codePoints) : "";
-          glyphs.push({ char, x: drawX, y: drawY });
-          const xAdvance = pos.xAdvance !== void 0 ? pos.xAdvance : glyph.advanceWidth;
-          if (xAdvance === void 0 || !Number.isFinite(xAdvance)) {
-            throw new Error(`[TextProcessor] Missing xAdvance for glyph in "${fontKey}".`);
-          }
-          if (isRtl) {
-            shapedGlyphs.push({
-              id: glyph.id,
-              codePoints: glyph.codePoints ? [...glyph.codePoints] : [],
-              xAdvance: xAdvance * scale,
-              xOffset: (pos.xOffset || 0) * scale,
-              yOffset: (pos.yOffset || 0) * scale
-            });
-          }
-          width += xAdvance * scale + letterSpacing;
-        }
-        const { ascent, descent } = this.getFontVerticalMetrics(measurementFont);
-        this.runtime.measurementCache.set(cacheKey, { width, glyphs, shapedGlyphs: isRtl ? shapedGlyphs : void 0, ascent, descent });
+        const measured = this.textMeasurer.measure(text5, measurementFont, measurementFontSize, {
+          letterSpacing,
+          direction: populateSegment?.direction === "rtl" ? "rtl" : "ltr",
+          scriptClass: populateSegment?.scriptClass || "none"
+        });
+        const width = measured.width;
+        const glyphs = measured.glyphs;
+        const shapedGlyphs = measured.shapedGlyphs;
+        const { ascent, descent } = measured;
+        this.runtime.measurementCache.set(cacheKey, { width, glyphs, shapedGlyphs, ascent, descent });
         if (this.runtime.measurementCache.size > 5e4) {
           let evictCount = 500;
           for (const key of this.runtime.measurementCache.keys()) {
@@ -46841,7 +47019,7 @@
         }
         if (populateSegment) {
           populateSegment.glyphs = glyphs;
-          if (isRtl) populateSegment.shapedGlyphs = shapedGlyphs;
+          if (shapedGlyphs) populateSegment.shapedGlyphs = shapedGlyphs;
           populateSegment.width = width;
           populateSegment.ascent = ascent;
           populateSegment.descent = descent;
@@ -46850,6 +47028,9 @@
       } catch (e) {
         throw new Error(`[TextProcessor] Failed strict matrix measurement for "${text5.slice(0, 24)}" using "${fontKey}": ${e?.message || e}`);
       }
+    }
+    measureTextForLayout(text5, font, fontSize, letterSpacing = 0) {
+      return this.measureText(text5, font, fontSize, letterSpacing);
     }
     resolveLoadedFamilyFont(familyName, weight, style = "normal") {
       const match = LayoutUtils.resolveFontMatch(familyName, weight, style, this.runtime.fontRegistry, this.runtime.fontManager);
@@ -47357,6 +47538,10 @@
     if (linesA_Count < orphans || linesB_Count < widows) return null;
     const linesA = box.lines.slice(0, linesA_Count);
     const linesB = box.lines.slice(linesA_Count);
+    const partALineYOffsets = sourceLineYOffsets ? sourceLineYOffsets.slice(0, linesA_Count) : void 0;
+    const partBLineYOffsetsRaw = sourceLineYOffsets ? sourceLineYOffsets.slice(linesA_Count, totalLines) : void 0;
+    const partBLineYOffsetBase = partBLineYOffsetsRaw && partBLineYOffsetsRaw.length > 0 ? Number(partBLineYOffsetsRaw[0] || 0) : 0;
+    const partBLineYOffsets = partBLineYOffsetsRaw ? partBLineYOffsetsRaw.map((offset) => Number(offset || 0) - partBLineYOffsetBase) : void 0;
     const partAStyle = createLeadingFragmentStyle(style);
     const partBStyle = createContinuationFragmentStyle(style);
     const partAMeta = createLeadingFragmentMeta(box.meta);
@@ -47365,7 +47550,7 @@
       ...box.properties,
       _lineOffsets: Array.isArray(box.properties?._lineOffsets) ? box.properties._lineOffsets.slice(0, linesA.length) : void 0,
       _lineWidths: Array.isArray(box.properties?._lineWidths) ? box.properties._lineWidths.slice(0, linesA.length) : void 0,
-      _lineYOffsets: Array.isArray(box.properties?._lineYOffsets) ? box.properties._lineYOffsets.slice(0, linesA.length) : void 0,
+      _lineYOffsets: partALineYOffsets,
       _isFirstLine: true,
       _isLastLine: false
     });
@@ -47374,12 +47559,134 @@
       ...box.properties,
       _lineOffsets: Array.isArray(box.properties?._lineOffsets) ? box.properties._lineOffsets.slice(linesA_Count, totalLines) : void 0,
       _lineWidths: Array.isArray(box.properties?._lineWidths) ? box.properties._lineWidths.slice(linesA_Count, totalLines) : void 0,
-      _lineYOffsets: Array.isArray(box.properties?._lineYOffsets) ? box.properties._lineYOffsets.slice(linesA_Count, totalLines) : void 0,
+      _lineYOffsets: partBLineYOffsets,
       _isFirstLine: false,
       _isLastLine: true
     });
     partB.marginTop = 0;
     return { partA, partB };
+  }
+  function reflowTextElementAgainstSpatialField(options) {
+    const anyProcessor = options.processor;
+    const flowBox = anyProcessor.shapeElement(options.element, { path: options.path });
+    if (!flowBox || flowBox._materializationMode !== "reflowable") return null;
+    const style = flowBox.style || {};
+    const authoredStyle = options.element.properties?.style;
+    const queryZIndex = Number.isFinite(Number(style.zIndex)) ? Number(style.zIndex) : Number.isFinite(Number(authoredStyle?.zIndex)) ? Number(authoredStyle?.zIndex) : 0;
+    const fontSize = Number(style.fontSize || anyProcessor.config.layout.fontSize);
+    const lineHeightRatio = Number(style.lineHeight || anyProcessor.config.layout.lineHeight);
+    const uniformLH = lineHeightRatio * fontSize;
+    const richSegments = anyProcessor.getRichSegments(options.element, style);
+    if (!Array.isArray(richSegments) || richSegments.length === 0) return null;
+    const font = anyProcessor.resolveMeasurementFontForStyle(style);
+    const letterSpacing = Number(style.letterSpacing || 0);
+    const textIndent = Number(style.textIndent || 0);
+    const insetH = LayoutUtils.getHorizontalInsets(style);
+    const insetV = LayoutUtils.getVerticalInsets(style);
+    const contentWidth = Math.max(0, options.availableWidth - insetH);
+    const minUsableSlotWidth = Math.max(0, Number(options.minUsableSlotWidth || 0));
+    const marginTop = Math.max(0, flowBox.marginTop);
+    const marginBottom = Math.max(0, flowBox.marginBottom);
+    const cursorBase = options.clearTopBeforeStart ? options.spatialMap.topBottomClearY(options.currentY, queryZIndex) : options.currentY;
+    const elementStartY = cursorBase + Math.max(0, options.layoutBefore);
+    let accumulatedYBonus = 0;
+    let physicalLineCount = 0;
+    const pendingSlots = [];
+    const lineLayoutOut = {
+      widths: [],
+      offsets: [],
+      yOffsets: []
+    };
+    const lineSlotWidths = [];
+    const resolver2 = () => {
+      if (pendingSlots.length > 0) {
+        const slot2 = pendingSlots.shift();
+        lineSlotWidths.push(slot2.width);
+        return slot2;
+      }
+      let lineY = elementStartY + physicalLineCount * uniformLH + accumulatedYBonus;
+      while (options.spatialMap.hasTopBottomBlock(lineY, uniformLH, queryZIndex)) {
+        const clearY = options.spatialMap.topBottomClearY(lineY, queryZIndex);
+        accumulatedYBonus += clearY - lineY;
+        lineY = elementStartY + physicalLineCount * uniformLH + accumulatedYBonus;
+      }
+      const yOffset = physicalLineCount * uniformLH + accumulatedYBonus;
+      physicalLineCount++;
+      const rawIntervals = options.spatialMap.getAvailableIntervals(
+        lineY,
+        uniformLH,
+        options.availableWidth,
+        options.opticalUnderhang ? { opticalUnderhang: true, queryZIndex } : { queryZIndex }
+      );
+      const intervals = rawIntervals.filter((interval) => Math.max(0, interval.w - insetH) >= minUsableSlotWidth);
+      const usableIntervals = intervals.length > 0 ? intervals : rawIntervals;
+      if (usableIntervals.length === 0) {
+        lineSlotWidths.push(contentWidth);
+        return { width: contentWidth, xOffset: 0, yOffset };
+      }
+      if (usableIntervals.length > 1) {
+        for (let i2 = 1; i2 < usableIntervals.length; i2++) {
+          pendingSlots.push({
+            width: Math.max(0, usableIntervals[i2].w - insetH),
+            xOffset: usableIntervals[i2].x,
+            yOffset
+          });
+        }
+      }
+      const slot = {
+        width: Math.max(0, usableIntervals[0].w - insetH),
+        xOffset: usableIntervals[0].x,
+        yOffset
+      };
+      lineSlotWidths.push(slot.width);
+      return slot;
+    };
+    const lines = anyProcessor.wrapRichSegments(
+      richSegments,
+      contentWidth,
+      font,
+      fontSize,
+      letterSpacing,
+      textIndent,
+      resolver2,
+      lineLayoutOut
+    );
+    if (!Array.isArray(lines) || lines.length === 0) return null;
+    const linesHeight = anyProcessor.calculateLineBlockHeight(lines, style, lineLayoutOut.yOffsets);
+    const contentHeight = linesHeight + insetV;
+    return {
+      flowBox,
+      lines,
+      lineOffsets: lineLayoutOut.offsets,
+      lineWidths: lineLayoutOut.widths,
+      lineSlotWidths,
+      lineYOffsets: lineLayoutOut.yOffsets,
+      contentHeight,
+      insetV,
+      marginTop,
+      marginBottom,
+      uniformLineHeight: uniformLH,
+      elementStartY,
+      box: {
+        type: flowBox.type,
+        x: Number(options.leftMargin || 0) + Number(options.xOffset || 0),
+        y: elementStartY,
+        w: options.availableWidth + insetH,
+        h: contentHeight,
+        lines,
+        style,
+        properties: {
+          ...flowBox.properties || {},
+          _lineOffsets: lineLayoutOut.offsets,
+          _lineWidths: lineLayoutOut.widths,
+          _lineYOffsets: lineLayoutOut.yOffsets,
+          _isFirstLine: true,
+          _isLastLine: true,
+          ...Number.isFinite(options.worldY) ? { _worldY: Number(options.worldY) } : {}
+        },
+        meta: flowBox.meta ? { ...flowBox.meta, pageIndex: Number(options.pageIndex || 0) } : { pageIndex: Number(options.pageIndex || 0) }
+      }
+    };
   }
   function normalizePath(path2) {
     if (!Array.isArray(path2) || path2.length === 0) return [0];
@@ -47429,12 +47736,251 @@
       continuationOf: identity.actorId
     };
   }
+  var SpatialMap = class {
+    constructor() {
+      this.rects = [];
+    }
+    register(rect) {
+      this.rects.push(rect);
+    }
+    /**
+     * Returns available X-intervals for a text line at [y, y+lineH] within
+     * the column [0, totalWidth].
+     *
+     * Returns an empty array when a 'top-bottom' obstacle blocks the entire
+     * line — the caller must advance Y via `topBottomClearY` and retry.
+     */
+    getAvailableIntervals(y2, lineH, totalWidth, options) {
+      let available = [{ x: 0, w: totalWidth }];
+      const lineBottom = y2 + lineH;
+      const lineTop = y2;
+      const queryZIndex = normalizeZIndex(options?.queryZIndex);
+      for (const rect of this.rects) {
+        if (rect.wrap === "none") continue;
+        if (!intersectsDepth(rect, queryZIndex)) continue;
+        const useOpticalUnderhang = options?.opticalUnderhang && rect.wrap === "around";
+        if (rect.shape === "circle") {
+          const cx = rect.x + rect.w / 2;
+          const cy = rect.circleCy ?? rect.y + rect.h / 2;
+          const r = rect.w / 2 + rect.gap;
+          const circleTop = cy - r;
+          const circleBottom = useOpticalUnderhang ? cy + rect.w / 2 : cy + r;
+          if (lineBottom <= circleTop || lineTop >= circleBottom) continue;
+          if (rect.wrap === "top-bottom") return [];
+          const yClosest = Math.max(lineTop, Math.min(lineBottom, cy));
+          const dy = yClosest - cy;
+          const chordHalfW = Math.sqrt(Math.max(0, r * r - dy * dy));
+          const align = rect.align ?? "center";
+          const carveLeft = align === "right" ? cx - chordHalfW : align === "center" ? cx - chordHalfW : rect.x - r - 1;
+          const carveRight = align === "left" ? cx + chordHalfW : align === "center" ? cx + chordHalfW : rect.x + rect.w + r + 1;
+          available = carveInterval(available, carveLeft, carveRight);
+        } else {
+          const g2 = rect.gap;
+          const gapTop = rect.gapTop ?? g2;
+          const gapBottom = rect.gapBottom ?? g2;
+          const obsTop = rect.y - gapTop;
+          const obsBottom = rect.y + rect.h + gapBottom;
+          const overlapBottom = useOpticalUnderhang ? rect.y + rect.h : obsBottom;
+          if (lineBottom <= obsTop || lineTop >= overlapBottom) continue;
+          if (rect.wrap === "top-bottom") return [];
+          const obsLeft = rect.x - g2;
+          const obsRight = rect.x + rect.w + g2;
+          available = carveInterval(available, obsLeft, obsRight);
+        }
+      }
+      return available.filter((iv) => iv.w > 0.5);
+    }
+    /** Returns true when any top-bottom obstacle overlaps [y, y+lineH]. */
+    hasTopBottomBlock(y2, lineH, queryZIndex = 0) {
+      const lineBottom = y2 + lineH;
+      return this.rects.some((r) => {
+        if (r.wrap !== "top-bottom") return false;
+        if (!intersectsDepth(r, queryZIndex)) return false;
+        const gapTop = r.gapTop ?? r.gap;
+        const gapBottom = r.gapBottom ?? r.gap;
+        const obsTop = r.y - gapTop;
+        const obsBottom = r.y + r.h + gapBottom;
+        return lineBottom > obsTop && y2 < obsBottom;
+      });
+    }
+    /**
+     * Returns the first Y at which no top-bottom obstacle blocks [y, …).
+     * Iterates to handle chained consecutive obstacles.
+     */
+    topBottomClearY(y2, queryZIndex = 0) {
+      let clearY = y2;
+      let changed = true;
+      while (changed) {
+        changed = false;
+        for (const r of this.rects) {
+          if (r.wrap !== "top-bottom") continue;
+          if (!intersectsDepth(r, queryZIndex)) continue;
+          const gapTop = r.gapTop ?? r.gap;
+          const gapBottom = r.gapBottom ?? r.gap;
+          const obsTop = r.y - gapTop;
+          const obsBottom = r.y + r.h + gapBottom;
+          if (clearY < obsBottom && clearY >= obsTop) {
+            clearY = obsBottom;
+            changed = true;
+          }
+        }
+      }
+      return clearY;
+    }
+    /** The Y of the lowest point among all registered obstacles. */
+    maxObstacleBottom() {
+      return this.rects.reduce(
+        (max, r) => Math.max(max, r.y + r.h + (r.gapBottom ?? r.gap)),
+        0
+      );
+    }
+    /** Read-only access to registered rects (used by split carry-over logic). */
+    getRects() {
+      return this.rects;
+    }
+  };
+  function carveInterval(intervals, removeLeft, removeRight) {
+    const result = [];
+    for (const iv of intervals) {
+      const ivRight = iv.x + iv.w;
+      if (removeRight <= iv.x || removeLeft >= ivRight) {
+        result.push(iv);
+        continue;
+      }
+      if (removeLeft > iv.x) {
+        result.push({ x: iv.x, w: removeLeft - iv.x });
+      }
+      if (removeRight < ivRight) {
+        result.push({ x: removeRight, w: ivRight - removeRight });
+      }
+    }
+    return result;
+  }
+  function normalizeZIndex(value) {
+    return Number.isFinite(Number(value)) ? Number(value) : 0;
+  }
+  function intersectsDepth(rect, queryZIndex) {
+    const policy = rect.traversalInteraction ?? "auto";
+    if (policy === "ignore" || policy === "overpass") {
+      return false;
+    }
+    if (policy === "wrap") {
+      return true;
+    }
+    return normalizeZIndex(rect.zIndex) === normalizeZIndex(queryZIndex);
+  }
+  function resolvePackagerChunkOriginWorldY(context) {
+    if (Number.isFinite(context.chunkOriginWorldY)) {
+      return Number(context.chunkOriginWorldY);
+    }
+    return void 0;
+  }
+  function resolvePackagerWorldYAtCursor(context) {
+    const chunkOriginWorldY = resolvePackagerChunkOriginWorldY(context);
+    if (!Number.isFinite(chunkOriginWorldY) || !Number.isFinite(context.cursorY)) {
+      return void 0;
+    }
+    return Number(chunkOriginWorldY) + Number(context.cursorY);
+  }
+  function bindPackagerSignalPublisher(publishActorSignal, pageIndex, cursorY, worldY) {
+    return (signal) => publishActorSignal({
+      ...signal,
+      pageIndex: Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : pageIndex,
+      cursorY: Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : cursorY,
+      ...Number.isFinite(signal.worldY) ? { worldY: Number(signal.worldY) } : Number.isFinite(worldY) ? { worldY: Number(worldY) } : {}
+    });
+  }
+  function resolvePackagerZIndex(unit) {
+    const raw = unit.getZIndex?.();
+    return Number.isFinite(Number(raw)) ? Number(raw) : 0;
+  }
+  function packagerOccupiesFlowSpace(unit) {
+    return unit.occupiesFlowSpace?.() ?? true;
+  }
+  function preparePackagerForPhase(unit, phase, availableWidth, availableHeight, context) {
+    if (phase === "lookahead" && unit.prepareLookahead) {
+      unit.prepareLookahead(availableWidth, availableHeight, context);
+      return;
+    }
+    unit.prepare(availableWidth, availableHeight, context);
+  }
+  function resolvePackagerPlacementPreference(unit, fullAvailableWidth, context) {
+    const consolidated = unit.getPlacementPreference?.(fullAvailableWidth, context);
+    if (consolidated) {
+      return consolidated;
+    }
+    const minimumWidth = unit.getMinimumPlacementWidth?.(fullAvailableWidth, context) ?? null;
+    if (minimumWidth === null || minimumWidth === void 0) {
+      return null;
+    }
+    return { minimumWidth };
+  }
+  function rejectsPlacementFrame(unit, frameAvailableWidth, fullAvailableWidth, context) {
+    const preference = resolvePackagerPlacementPreference(unit, fullAvailableWidth, context);
+    if (preference && preference.minimumWidth !== null && preference.minimumWidth !== void 0 && frameAvailableWidth + 0 < preference.minimumWidth) {
+      return true;
+    }
+    if (preference && preference.acceptsFrame !== null && preference.acceptsFrame !== void 0) {
+      return preference.acceptsFrame === false;
+    }
+    if (unit.acceptsPlacementFrame) {
+      return !unit.acceptsPlacementFrame(frameAvailableWidth, fullAvailableWidth, context);
+    }
+    return false;
+  }
+  function resolvePackagerTransformProfile(unit) {
+    const profile = unit.getTransformProfile?.();
+    if (!profile) {
+      return null;
+    }
+    const normalizedCapabilities = /* @__PURE__ */ new Map();
+    if (Array.isArray(profile.capabilities)) {
+      for (const capability of profile.capabilities) {
+        if (!capability || !capability.kind) continue;
+        normalizedCapabilities.set(capability.kind, {
+          kind: capability.kind,
+          preservesIdentity: capability.preservesIdentity,
+          producesContinuation: capability.producesContinuation,
+          reflowsContent: capability.reflowsContent,
+          clonesStableSubstructure: capability.clonesStableSubstructure
+        });
+      }
+    }
+    if (Array.isArray(profile.supportedTransforms)) {
+      for (const kind of profile.supportedTransforms) {
+        if (!normalizedCapabilities.has(kind)) {
+          normalizedCapabilities.set(kind, { kind });
+        }
+      }
+    }
+    if (normalizedCapabilities.size === 0) {
+      return null;
+    }
+    return {
+      supportedTransforms: Array.from(normalizedCapabilities.keys()),
+      capabilities: Array.from(normalizedCapabilities.values())
+    };
+  }
+  function normalizeObservationResult(result) {
+    if (!result) {
+      return null;
+    }
+    const updateKind = result.updateKind ?? (result.geometryChanged ? "geometry" : result.changed ? "content-only" : "none");
+    return {
+      ...result,
+      geometryChanged: updateKind === "geometry",
+      changed: result.changed,
+      updateKind
+    };
+  }
   var FlowBoxPackager = class _FlowBoxPackager {
     constructor(processor, flowBox, identity) {
       this.lastAvailableWidth = -1;
       this.lastContentWidth = -1;
       this.lastAvailableHeight = -1;
       this.cachedBoxes = null;
+      this.cachedSpatialBoxes = null;
+      this.cachedSpatialKey = null;
       this.requiredHeight = 0;
       this.isMaterialized = false;
       this.processor = processor;
@@ -47451,6 +47997,33 @@
     }
     get keepWithNext() {
       return this.flowBox.keepWithNext;
+    }
+    getLiveContent() {
+      return String(this.flowBox._sourceElement?.content || "");
+    }
+    rebuildLiveFlowBox() {
+      const sourceElement = this.flowBox._sourceElement;
+      if (!sourceElement) return false;
+      const shaper = this.processor;
+      const path2 = this.flowBox._normalizedFlowBlock?.identitySeed?.path ?? [0];
+      const normalized = shaper.normalizeFlowBlock(sourceElement, { path: path2 });
+      this.flowBox = shaper.shapeNormalizedFlowBlock(normalized);
+      this.isMaterialized = false;
+      this.cachedBoxes = null;
+      this.cachedSpatialBoxes = null;
+      this.cachedSpatialKey = null;
+      this.lastAvailableWidth = -1;
+      this.lastContentWidth = -1;
+      this.lastAvailableHeight = -1;
+      return true;
+    }
+    setLiveContent(content3) {
+      const sourceElement = this.flowBox._sourceElement;
+      if (!sourceElement) return false;
+      const nextContent = String(content3);
+      if (this.getLiveContent() === nextContent) return false;
+      sourceElement.content = nextContent;
+      return this.rebuildLiveFlowBox();
     }
     materialize(availableWidth, contentWidth = -1) {
       const processor = this.processor;
@@ -47470,6 +48043,7 @@
       const contentWidth = context.contentWidthOverride ?? -1;
       this.materialize(availableWidth, contentWidth);
       this.lastAvailableHeight = availableHeight;
+      this.prepareSpatialPlacement(context);
     }
     getPlacementPreference(_fullAvailableWidth, _context) {
       if (this.flowBox.image) {
@@ -47498,6 +48072,14 @@
       return { capabilities };
     }
     emitBoxes(availableWidth, availableHeight, context) {
+      this.prepareSpatialPlacement(context);
+      if (this.cachedSpatialBoxes) {
+        return this.cachedSpatialBoxes.map((box) => ({
+          ...box,
+          properties: { ...box.properties || {} },
+          meta: box.meta ? { ...box.meta } : box.meta
+        }));
+      }
       const processor = this.processor;
       this.prepare(availableWidth, availableHeight, context);
       const positioned = processor.positionFlowBox(
@@ -47518,6 +48100,10 @@
     getRequiredHeight() {
       return this.requiredHeight;
     }
+    getZIndex() {
+      const style = this.flowBox.style;
+      return Number.isFinite(Number(style?.zIndex)) ? Number(style?.zIndex) : 0;
+    }
     isUnbreakable(availableHeight) {
       if (!this.flowBox.allowLineSplit) return true;
       if (!this.flowBox.lines || this.flowBox.lines.length <= 1) return true;
@@ -47529,6 +48115,81 @@
     }
     getMarginBottom() {
       return this.flowBox.marginBottom;
+    }
+    prepareSpatialPlacement(context) {
+      const sourceElement = this.flowBox._sourceElement;
+      const exclusions = context.getWorldTraversalExclusions?.(context.pageIndex) ?? (context.getPageExclusions?.(context.pageIndex) ?? []).filter((exclusion) => exclusion.surface === "world-traversal");
+      if (!sourceElement || this.flowBox.image || exclusions.length === 0) {
+        this.cachedSpatialBoxes = null;
+        this.cachedSpatialKey = null;
+        return;
+      }
+      const key = [
+        context.pageIndex,
+        Number(context.cursorY).toFixed(3),
+        Number(context.layoutBefore ?? this.flowBox.marginTop).toFixed(3),
+        ...exclusions.map((exclusion) => [
+          exclusion.id || "",
+          Number(exclusion.x).toFixed(3),
+          Number(exclusion.y).toFixed(3),
+          Number(exclusion.w).toFixed(3),
+          Number(exclusion.h).toFixed(3),
+          String(exclusion.wrap || "around"),
+          Number(exclusion.gap ?? 0).toFixed(3),
+          Number(exclusion.gapTop ?? exclusion.gap ?? 0).toFixed(3),
+          Number(exclusion.gapBottom ?? exclusion.gap ?? 0).toFixed(3),
+          String(exclusion.shape || "rect"),
+          String(exclusion.align || ""),
+          String(exclusion.traversalInteraction || "auto"),
+          Number(exclusion.zIndex ?? 0).toFixed(3)
+        ].join(":"))
+      ].join("|");
+      if (this.cachedSpatialKey === key && this.cachedSpatialBoxes) return;
+      const spatialMap = new SpatialMap();
+      for (const exclusion of exclusions) {
+        this.registerSpatialExclusion(spatialMap, exclusion, context);
+      }
+      const path2 = this.flowBox._normalizedFlowBlock?.identitySeed?.path ?? [0];
+      const placed = reflowTextElementAgainstSpatialField({
+        processor: this.processor,
+        element: sourceElement,
+        path: path2,
+        availableWidth: Math.max(0, context.pageWidth - context.margins.left - context.margins.right),
+        currentY: 0,
+        layoutBefore: context.layoutBefore ?? this.flowBox.marginTop,
+        spatialMap,
+        leftMargin: context.margins.left,
+        pageIndex: context.pageIndex,
+        ...Number.isFinite(resolvePackagerChunkOriginWorldY(context)) ? { worldY: Number(resolvePackagerChunkOriginWorldY(context)) } : {},
+        clearTopBeforeStart: false
+      });
+      if (!placed) {
+        this.cachedSpatialBoxes = null;
+        this.cachedSpatialKey = null;
+        return;
+      }
+      this.cachedSpatialBoxes = [{
+        ...placed.box,
+        y: Number(placed.box.y || 0)
+      }];
+      this.cachedSpatialKey = key;
+      this.requiredHeight = placed.marginTop + placed.contentHeight + placed.marginBottom;
+    }
+    registerSpatialExclusion(spatialMap, exclusion, context) {
+      spatialMap.register({
+        x: Number(exclusion.x || 0) - context.margins.left,
+        y: Number(exclusion.y || 0) - context.cursorY,
+        w: Math.max(0, Number(exclusion.w || 0)),
+        h: Math.max(0, Number(exclusion.h || 0)),
+        wrap: exclusion.wrap ?? "around",
+        gap: Number.isFinite(Number(exclusion.gap)) ? Math.max(0, Number(exclusion.gap)) : 0,
+        gapTop: Number.isFinite(Number(exclusion.gapTop)) ? Math.max(0, Number(exclusion.gapTop)) : void 0,
+        gapBottom: Number.isFinite(Number(exclusion.gapBottom)) ? Math.max(0, Number(exclusion.gapBottom)) : void 0,
+        shape: exclusion.shape === "circle" ? "circle" : "rect",
+        align: exclusion.align,
+        traversalInteraction: exclusion.traversalInteraction ?? "auto",
+        zIndex: Number.isFinite(Number(exclusion.zIndex)) ? Number(exclusion.zIndex) : 0
+      });
     }
     split(availableHeight, context) {
       const processor = this.processor;
@@ -47726,7 +48387,8 @@
     headingTelemetry: "headingTelemetry",
     asyncThoughtSummary: "asyncThoughtSummary",
     temporalPresentationTimeline: "temporalPresentationTimeline",
-    interactionMap: "interactionMap"
+    interactionMap: "interactionMap",
+    viewportCaptureSummary: "viewportCaptureSummary"
   };
   var knownSimulationArtifactKeys = [
     simulationArtifactKeys.fragmentationSummary,
@@ -47742,7 +48404,8 @@
     simulationArtifactKeys.headingTelemetry,
     simulationArtifactKeys.asyncThoughtSummary,
     simulationArtifactKeys.temporalPresentationTimeline,
-    simulationArtifactKeys.interactionMap
+    simulationArtifactKeys.interactionMap,
+    simulationArtifactKeys.viewportCaptureSummary
   ];
   function getSimulationArtifact(report, key) {
     return report?.artifacts?.[key];
@@ -47764,7 +48427,9 @@
       actorCount: report?.actorCount ?? 0,
       splitTransitionCount: report?.splitTransitionCount ?? 0,
       generatedBoxCount: report?.generatedBoxCount ?? 0,
+      world: report?.world,
       progression: report?.progression,
+      capture: report?.capture,
       profile: report?.profile,
       get: (key) => getSimulationArtifact(report, key),
       has: (key) => hasSimulationArtifact(report, key),
@@ -47785,7 +48450,8 @@
           sourceActorId,
           splitCount: 0,
           continuationCount: 0,
-          pageIndices: []
+          pageIndices: [],
+          pageAnchors: []
         };
         for (const transition of session.getFragmentTransitionsBySource(sourceActorId)) {
           summary.splitCount += 1;
@@ -47795,8 +48461,26 @@
           if (!summary.pageIndices.includes(transition.pageIndex)) {
             summary.pageIndices.push(transition.pageIndex);
           }
+          const existingAnchor = summary.pageAnchors.find((entry) => entry.pageIndex === transition.pageIndex);
+          const cursorY = Number.isFinite(transition.cursorY) ? Number(transition.cursorY) : void 0;
+          if (!existingAnchor) {
+            summary.pageAnchors.push({
+              pageIndex: transition.pageIndex,
+              ...cursorY !== void 0 ? { cursorY } : {}
+            });
+            continue;
+          }
+          if (cursorY !== void 0 && (!Number.isFinite(existingAnchor.cursorY) || cursorY < Number(existingAnchor.cursorY))) {
+            existingAnchor.cursorY = cursorY;
+          }
         }
         summary.pageIndices.sort((a2, b2) => a2 - b2);
+        summary.pageAnchors.sort((a2, b2) => {
+          if (a2.pageIndex !== b2.pageIndex) return a2.pageIndex - b2.pageIndex;
+          const aCursorY = Number.isFinite(a2.cursorY) ? Number(a2.cursorY) : Number.POSITIVE_INFINITY;
+          const bCursorY = Number.isFinite(b2.cursorY) ? Number(b2.cursorY) : Number.POSITIVE_INFINITY;
+          return aCursorY - bCursorY;
+        });
         return summary;
       });
       session.publishArtifact(simulationArtifactKeys.fragmentationSummary, summaries);
@@ -47943,6 +48627,7 @@
         publisherActorKind: typeof actor.actorKind === "string" ? actor.actorKind : "heading",
         fragmentIndex: actor.fragmentIndex,
         pageIndex: surface.pageIndex,
+        cursorY: Number.isFinite(y2) ? y2 : 0,
         signalKey: `heading:${actor.sourceId}`,
         payload: {
           heading: heading2,
@@ -47994,15 +48679,15 @@
       const footerMaterialized = resolved.footer ? materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber) : null;
       const headerContent = headerActor ? headerActor.emitCurrentBoxes() : headerMaterialized ? this.callbacks.layoutRegion(headerMaterialized, headerRect, page.index, "header") : [];
       const footerContent = footerActor ? footerActor.emitCurrentBoxes() : footerMaterialized ? this.callbacks.layoutRegion(footerMaterialized, footerRect, page.index, "footer") : [];
-      const viewport = session.sessionWorldRuntime.createViewportDescriptor({
+      const capture = session.sessionWorldRuntime.createPageCaptureState({
         pageIndex: page.index,
+        worldTopY: page.index * page.height,
         pageWidth: page.width,
         pageHeight: page.height,
         margins: this.config.layout.margins,
         headerRect,
         footerRect
       });
-      const worldSpace = session.sessionWorldRuntime.createWorldSpace(page.index, page.width, page.height);
       if (headerContent.length > 0) {
         surface.boxes.push(...headerContent);
       }
@@ -48015,6 +48700,13 @@
       if (footerActor) {
         session.notifyActorSpawn(footerActor);
       }
+      session.recordPageCapture({
+        pageIndex: page.index,
+        physicalPageNumber,
+        logicalPageNumber: logicalNumber,
+        usesLogicalNumbering: usesLogical,
+        capture
+      });
       session.recordPageFinalization({
         pageIndex: page.index,
         physicalPageNumber,
@@ -48026,8 +48718,9 @@
         footerOverride: resolveOverrideState(override?.footer),
         renderedHeader: headerContent.length > 0,
         renderedFooter: footerContent.length > 0,
-        worldSpace,
-        viewport
+        capture,
+        worldSpace: capture.worldSpace,
+        viewport: capture.viewport
       });
     }
     onSimulationStart(session) {
@@ -48401,29 +49094,16 @@
   };
   var PageRegionArtifactCollaborator = class {
     onSimulationComplete(session) {
-      const pages = session.getFinalizedPages();
-      const summaries = pages.map((page) => {
-        let headerBoxes = 0;
-        let footerBoxes = 0;
-        let generatedBoxes = 0;
-        for (const box of page.boxes || []) {
-          if (box.meta?.generated === true) {
-            generatedBoxes += 1;
-          }
-          if (box.meta?.sourceType === "header") {
-            headerBoxes += 1;
-          } else if (box.meta?.sourceType === "footer") {
-            footerBoxes += 1;
-          }
-        }
-        return {
-          pageIndex: page.index,
-          headerBoxes,
-          footerBoxes,
-          generatedBoxes
-        };
-      });
-      session.publishArtifact(simulationArtifactKeys.pageRegionSummary, summaries);
+      session.publishArtifact(
+        simulationArtifactKeys.pageRegionSummary,
+        session.getPageRegionSummaries().map((summary) => ({
+          ...summary,
+          debugRegions: summary.debugRegions.map((region) => ({
+            ...region,
+            participants: region.participants.map((participant) => ({ ...participant }))
+          }))
+        }))
+      );
     }
   };
   function formationRequiresPageAdvance(plan) {
@@ -48473,82 +49153,6 @@
       splitCandidate,
       replaceCount: members.length,
       splitMarkerReserve: plan.splitMarkerReserve ?? 0
-    };
-  }
-  function preparePackagerForPhase(unit, phase, availableWidth, availableHeight, context) {
-    if (phase === "lookahead" && unit.prepareLookahead) {
-      unit.prepareLookahead(availableWidth, availableHeight, context);
-      return;
-    }
-    unit.prepare(availableWidth, availableHeight, context);
-  }
-  function resolvePackagerPlacementPreference(unit, fullAvailableWidth, context) {
-    const consolidated = unit.getPlacementPreference?.(fullAvailableWidth, context);
-    if (consolidated) {
-      return consolidated;
-    }
-    const minimumWidth = unit.getMinimumPlacementWidth?.(fullAvailableWidth, context) ?? null;
-    if (minimumWidth === null || minimumWidth === void 0) {
-      return null;
-    }
-    return { minimumWidth };
-  }
-  function rejectsPlacementFrame(unit, frameAvailableWidth, fullAvailableWidth, context) {
-    const preference = resolvePackagerPlacementPreference(unit, fullAvailableWidth, context);
-    if (preference && preference.minimumWidth !== null && preference.minimumWidth !== void 0 && frameAvailableWidth + 0 < preference.minimumWidth) {
-      return true;
-    }
-    if (preference && preference.acceptsFrame !== null && preference.acceptsFrame !== void 0) {
-      return preference.acceptsFrame === false;
-    }
-    if (unit.acceptsPlacementFrame) {
-      return !unit.acceptsPlacementFrame(frameAvailableWidth, fullAvailableWidth, context);
-    }
-    return false;
-  }
-  function resolvePackagerTransformProfile(unit) {
-    const profile = unit.getTransformProfile?.();
-    if (!profile) {
-      return null;
-    }
-    const normalizedCapabilities = /* @__PURE__ */ new Map();
-    if (Array.isArray(profile.capabilities)) {
-      for (const capability of profile.capabilities) {
-        if (!capability || !capability.kind) continue;
-        normalizedCapabilities.set(capability.kind, {
-          kind: capability.kind,
-          preservesIdentity: capability.preservesIdentity,
-          producesContinuation: capability.producesContinuation,
-          reflowsContent: capability.reflowsContent,
-          clonesStableSubstructure: capability.clonesStableSubstructure
-        });
-      }
-    }
-    if (Array.isArray(profile.supportedTransforms)) {
-      for (const kind of profile.supportedTransforms) {
-        if (!normalizedCapabilities.has(kind)) {
-          normalizedCapabilities.set(kind, { kind });
-        }
-      }
-    }
-    if (normalizedCapabilities.size === 0) {
-      return null;
-    }
-    return {
-      supportedTransforms: Array.from(normalizedCapabilities.keys()),
-      capabilities: Array.from(normalizedCapabilities.values())
-    };
-  }
-  function normalizeObservationResult(result) {
-    if (!result) {
-      return null;
-    }
-    const updateKind = result.updateKind ?? (result.geometryChanged ? "geometry" : result.changed ? "content-only" : "none");
-    return {
-      ...result,
-      geometryChanged: updateKind === "geometry",
-      changed: result.changed,
-      updateKind
     };
   }
   var resolveLayoutBefore = (prevAfter, marginTop) => prevAfter + marginTop;
@@ -48862,7 +49466,9 @@
         publisherActorKind: signal.publisherActorKind,
         tick: Number.isFinite(signal.tick) ? Math.max(0, Math.floor(Number(signal.tick))) : 0,
         fragmentIndex: Math.max(0, Math.floor(Number(signal.fragmentIndex || 0))),
-        pageIndex: Number.isFinite(signal.pageIndex) ? Math.max(0, Number(signal.pageIndex)) : 0,
+        ...Number.isFinite(signal.pageIndex) ? { pageIndex: Math.max(0, Number(signal.pageIndex)) } : {},
+        ...Number.isFinite(signal.cursorY) ? { cursorY: Math.max(0, Number(signal.cursorY)) } : {},
+        ...Number.isFinite(signal.worldY) ? { worldY: Math.max(0, Number(signal.worldY)) } : {},
         signalKey: signal.signalKey,
         payload: signal.payload ? { ...signal.payload } : void 0,
         sequence: ++this.sequence
@@ -49069,7 +49675,25 @@
         this.actorIndexBySourceId.set(actor.sourceId, actorIndex);
       }
     }
-    recordSafeCheckpoint(actorQueue, actorIndex, pagesPrefix, currentPageBoxes, currentPageIndex2, kind, captureTransitionSnapshot, captureBranchStateSnapshot) {
+    resolveKnownActorIndex(actor) {
+      return this.actorIndexByActorId.get(actor.actorId) ?? this.actorIndexBySourceId.get(actor.sourceId);
+    }
+    resolveActorCheckpointFrontier(actor, actorIndex) {
+      const resolvedActorIndex = Number.isFinite(actorIndex) ? Number(actorIndex) : this.resolveKnownActorIndex(actor);
+      const candidates = this.safeCheckpoints.filter(
+        (checkpoint) => checkpoint.kind === "actor" && (checkpoint.anchorActorId === actor.actorId || checkpoint.anchorSourceId === actor.sourceId || Number.isFinite(resolvedActorIndex) && checkpoint.actorIndex === resolvedActorIndex)
+      ).sort(sortCheckpointsAscending);
+      return candidates[0]?.frontier;
+    }
+    resolveQueueCheckpointFrontier(actorIndex) {
+      if (!Number.isFinite(actorIndex)) {
+        return void 0;
+      }
+      const resolvedActorIndex = Number(actorIndex);
+      const candidates = this.safeCheckpoints.filter((checkpoint) => checkpoint.actorIndex === resolvedActorIndex).sort(sortCheckpointsAscending);
+      return candidates[0]?.frontier;
+    }
+    recordSafeCheckpoint(actorQueue, actorIndex, pagesPrefix, currentPageBoxes, currentPageIndex2, currentY, currentWorldY, kind, captureTransitionSnapshot, captureBranchStateSnapshot) {
       const anchorActor = actorQueue[actorIndex];
       const checkpoint = {
         id: `checkpoint:${++this.safeCheckpointSequence}`,
@@ -49081,6 +49705,8 @@
         anchorSourceId: anchorActor?.sourceId,
         frontier: {
           pageIndex: currentPageIndex2,
+          cursorY: currentY,
+          ...Number.isFinite(currentWorldY) ? { worldY: Number(currentWorldY) } : {},
           actorIndex,
           actorId: anchorActor?.actorId,
           sourceId: anchorActor?.sourceId
@@ -49093,17 +49719,13 @@
         }
       };
       const existingIndex = this.safeCheckpoints.findIndex(
-        (entry) => entry.pageIndex === currentPageIndex2 && entry.actorIndex === actorIndex && entry.kind === kind
+        (entry) => entry.pageIndex === currentPageIndex2 && areWorldYEquivalent(entry.frontier.worldY, currentWorldY) && areCursorYEquivalent(entry.frontier.cursorY, currentY) && entry.actorIndex === actorIndex && entry.kind === kind
       );
       if (existingIndex >= 0) {
         this.safeCheckpoints.splice(existingIndex, 1, checkpoint);
       } else {
         this.safeCheckpoints.push(checkpoint);
-        this.safeCheckpoints.sort((a2, b2) => {
-          if (a2.pageIndex !== b2.pageIndex) return a2.pageIndex - b2.pageIndex;
-          if (a2.actorIndex !== b2.actorIndex) return a2.actorIndex - b2.actorIndex;
-          return a2.id.localeCompare(b2.id);
-        });
+        this.safeCheckpoints.sort(sortCheckpointsAscending);
       }
       return checkpoint;
     }
@@ -49216,16 +49838,14 @@
       return { changed, geometryChanged, earliestAffectedFrontier, contentOnlyActors };
     }
     resolveSafeCheckpoint(frontier) {
+      const frontierActorIndex = frontier.actorIndex ?? (frontier.sourceId ? this.actorIndexBySourceId.get(frontier.sourceId) : void 0) ?? (frontier.actorId ? this.actorIndexByActorId.get(frontier.actorId) : void 0) ?? Number.POSITIVE_INFINITY;
       const anchoredCandidates = this.safeCheckpoints.filter(
-        (checkpoint) => checkpoint.pageIndex === frontier.pageIndex && (frontier.sourceId && checkpoint.anchorSourceId === frontier.sourceId || frontier.actorId && checkpoint.anchorActorId === frontier.actorId)
+        (checkpoint) => isCheckpointAtOrBeforeFrontier(checkpoint, frontier, frontierActorIndex) && (frontier.sourceId && checkpoint.anchorSourceId === frontier.sourceId || frontier.actorId && checkpoint.anchorActorId === frontier.actorId)
       ).sort(sortCheckpointsDescending);
       if (anchoredCandidates.length > 0) {
         return anchoredCandidates[0];
       }
-      const frontierActorIndex = frontier.actorIndex ?? (frontier.sourceId ? this.actorIndexBySourceId.get(frontier.sourceId) : void 0) ?? (frontier.actorId ? this.actorIndexByActorId.get(frontier.actorId) : void 0) ?? Number.POSITIVE_INFINITY;
-      const candidates = this.safeCheckpoints.filter(
-        (checkpoint) => checkpoint.pageIndex < frontier.pageIndex || checkpoint.pageIndex === frontier.pageIndex && checkpoint.actorIndex <= frontierActorIndex
-      ).sort(sortCheckpointsDescending);
+      const candidates = this.safeCheckpoints.filter((checkpoint) => isCheckpointAtOrBeforeFrontier(checkpoint, frontier, frontierActorIndex)).sort(sortCheckpointsDescending);
       return candidates[0] ?? null;
     }
     restoreSafeCheckpoint(pages, actorQueue, checkpoint, restoreBranchStateSnapshot) {
@@ -49236,6 +49856,9 @@
         currentY: checkpoint.snapshot.currentY,
         lastSpacingAfter: checkpoint.snapshot.lastSpacingAfter
       };
+    }
+    invalidateSafeCheckpointsAfterFrontier(frontier) {
+      this.safeCheckpoints = this.safeCheckpoints.filter((checkpoint) => compareSpatialFrontiersAscending(checkpoint.frontier, frontier) <= 0);
     }
     awakenObserversForSignal(topic) {
       const normalizedTopic = String(topic || "").trim();
@@ -49259,17 +49882,69 @@
     if (!current) {
       return true;
     }
-    if (result.earliestAffectedFrontier.pageIndex !== current.pageIndex) {
-      return result.earliestAffectedFrontier.pageIndex < current.pageIndex;
-    }
-    const nextActorIndex = Number.isFinite(result.earliestAffectedFrontier.actorIndex) ? Number(result.earliestAffectedFrontier.actorIndex) : Number.POSITIVE_INFINITY;
-    const currentActorIndex = Number.isFinite(current.actorIndex) ? Number(current.actorIndex) : Number.POSITIVE_INFINITY;
-    return nextActorIndex < currentActorIndex;
+    return compareSpatialFrontiersAscending(result.earliestAffectedFrontier, current) < 0;
   }
   function sortCheckpointsDescending(a2, b2) {
-    if (a2.pageIndex !== b2.pageIndex) return b2.pageIndex - a2.pageIndex;
-    if (a2.actorIndex !== b2.actorIndex) return b2.actorIndex - a2.actorIndex;
+    const delta = compareSpatialFrontiersAscending(a2.frontier, b2.frontier);
+    if (delta !== 0) return -delta;
     return b2.id.localeCompare(a2.id);
+  }
+  function sortCheckpointsAscending(a2, b2) {
+    const delta = compareSpatialFrontiersAscending(a2.frontier, b2.frontier);
+    if (delta !== 0) return delta;
+    return a2.id.localeCompare(b2.id);
+  }
+  function isCheckpointAtOrBeforeFrontier(checkpoint, frontier, frontierActorIndex) {
+    return compareSpatialFrontiersAscending(
+      checkpoint.frontier,
+      {
+        ...frontier,
+        ...Number.isFinite(frontier.actorIndex) ? {} : { actorIndex: frontierActorIndex }
+      }
+    ) <= 0;
+  }
+  function areCursorYEquivalent(left, right) {
+    const resolvedLeft = Number.isFinite(left) ? Number(left) : Number.NaN;
+    const resolvedRight = Number.isFinite(right) ? Number(right) : Number.NaN;
+    if (!Number.isFinite(resolvedLeft) && !Number.isFinite(resolvedRight)) {
+      return true;
+    }
+    if (!Number.isFinite(resolvedLeft) || !Number.isFinite(resolvedRight)) {
+      return false;
+    }
+    return Math.abs(resolvedLeft - resolvedRight) <= 0.01;
+  }
+  function areWorldYEquivalent(left, right) {
+    const resolvedLeft = Number.isFinite(left) ? Number(left) : Number.NaN;
+    const resolvedRight = Number.isFinite(right) ? Number(right) : Number.NaN;
+    if (!Number.isFinite(resolvedLeft) && !Number.isFinite(resolvedRight)) {
+      return true;
+    }
+    if (!Number.isFinite(resolvedLeft) || !Number.isFinite(resolvedRight)) {
+      return false;
+    }
+    return Math.abs(resolvedLeft - resolvedRight) <= 0.01;
+  }
+  function compareSpatialFrontiersAscending(left, right) {
+    const leftWorldY = Number.isFinite(left.worldY) ? Number(left.worldY) : Number.NaN;
+    const rightWorldY = Number.isFinite(right.worldY) ? Number(right.worldY) : Number.NaN;
+    if (Number.isFinite(leftWorldY) && Number.isFinite(rightWorldY) && Math.abs(leftWorldY - rightWorldY) > 0.01) {
+      return leftWorldY - rightWorldY;
+    }
+    if (left.pageIndex !== right.pageIndex) {
+      return left.pageIndex - right.pageIndex;
+    }
+    const leftCursorY = Number.isFinite(left.cursorY) ? Number(left.cursorY) : Number.POSITIVE_INFINITY;
+    const rightCursorY = Number.isFinite(right.cursorY) ? Number(right.cursorY) : Number.POSITIVE_INFINITY;
+    if (Math.abs(leftCursorY - rightCursorY) > 0.01) {
+      return leftCursorY - rightCursorY;
+    }
+    const leftActorIndex = Number.isFinite(left.actorIndex) ? Number(left.actorIndex) : Number.POSITIVE_INFINITY;
+    const rightActorIndex = Number.isFinite(right.actorIndex) ? Number(right.actorIndex) : Number.POSITIVE_INFINITY;
+    if (leftActorIndex !== rightActorIndex) {
+      return leftActorIndex - rightActorIndex;
+    }
+    return 0;
   }
   function clonePage(page) {
     return {
@@ -49427,9 +50102,18 @@
         };
         const boxes = actor.emitBoxes(state.availableWidth, availableHeight, context) || [];
         for (const box of boxes) {
+          const placedY = (box.y || 0) + currentY + layoutDelta;
+          const regionDebugPage = box.properties?.__vmprintRegionDebugPage;
           const placed = {
             ...box,
-            y: (box.y || 0) + currentY + layoutDelta
+            y: placedY,
+            properties: regionDebugPage ? {
+              ...box.properties || {},
+              __vmprintRegionDebugPage: {
+                ...regionDebugPage,
+                y: Number(regionDebugPage.y || 0) + currentY + layoutDelta
+              }
+            } : box.properties
           };
           if (placed.meta) {
             placed.meta = { ...placed.meta, pageIndex: state.pageIndex };
@@ -49438,9 +50122,10 @@
         }
         const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
         const requiredHeight = contentHeight + layoutBefore + marginBottom;
-        const effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+        const occupiesFlowSpace = packagerOccupiesFlowSpace(actor);
+        const effectiveHeight = occupiesFlowSpace ? Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight) : 0;
         currentY += effectiveHeight - marginBottom;
-        lastSpacingAfter = marginBottom;
+        lastSpacingAfter = occupiesFlowSpace ? marginBottom : 0;
       }
       return { boxes: placedBoxes, currentY, lastSpacingAfter };
     }
@@ -49494,9 +50179,18 @@
     }
     commitFragmentBoxes(actor, boxes, state) {
       const committedBoxes = boxes.map((box) => {
+        const placedY = (box.y || 0) + state.currentY + state.layoutDelta;
+        const regionDebugPage = box.properties?.__vmprintRegionDebugPage;
         const committed = {
           ...box,
-          y: (box.y || 0) + state.currentY + state.layoutDelta
+          y: placedY,
+          properties: regionDebugPage ? {
+            ...box.properties || {},
+            __vmprintRegionDebugPage: {
+              ...regionDebugPage,
+              y: Number(regionDebugPage.y || 0) + state.currentY + state.layoutDelta
+            }
+          } : box.properties
         };
         if (committed.meta) {
           committed.meta = { ...committed.meta, actorId: actor.actorId, pageIndex: state.pageIndex };
@@ -49544,11 +50238,12 @@
       const layoutBefore = input.lastSpacingAfter + marginTop;
       const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
       const requiredHeight = contentHeight + layoutBefore + marginBottom;
+      const occupiesFlowSpace = packagerOccupiesFlowSpace(actor);
       return {
         currentY: input.currentY,
         layoutDelta: input.layoutDelta,
-        effectiveHeight: Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight),
-        marginBottom,
+        effectiveHeight: occupiesFlowSpace ? Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight) : 0,
+        marginBottom: occupiesFlowSpace ? marginBottom : 0,
         pageIndex: input.pageIndex,
         actorId: actor.actorId,
         lastSpacingAfter: input.lastSpacingAfter,
@@ -49634,6 +50329,7 @@
         continuationActorId: result.continuationFragment?.actorId ?? null,
         sourceActorId: attempt.actor.sourceId,
         pageIndex: attempt.context.pageIndex,
+        cursorY: Number.isFinite(attempt.context.cursorY) ? Number(attempt.context.cursorY) : void 0,
         availableWidth: attempt.availableWidth,
         availableHeight: attempt.availableHeight,
         continuationEnqueued: false
@@ -50027,8 +50723,8 @@
       const overflowPreviewBoxes = input.isAtPageTop ? true : !!input.actor.emitBoxes(input.availableWidth, input.availableHeightAdjusted, input.context);
       const isSpatialGridPackager = this.hasSpatialGridFlowBox(input.actor);
       const isStoryPackager = this.hasStoryElement(input.actor);
-      const isContinuingZonePackager = this.hasContinuingZoneField(input.actor);
-      const allowsMidPageSplit = isSpatialGridPackager || isStoryPackager || isContinuingZonePackager;
+      const isContinuingRegionPackager = this.hasContinuingRegionField(input.actor);
+      const allowsMidPageSplit = isSpatialGridPackager || isStoryPackager || isContinuingRegionPackager;
       const emptyLayoutBefore = input.marginTop;
       const emptyAvailable = input.pageLimit - input.pageTop;
       const requiredOnEmpty = input.contentHeight + emptyLayoutBefore + input.marginBottom;
@@ -50046,35 +50742,248 @@
     hasStoryElement(actor) {
       return !!actor.storyElement;
     }
-    hasContinuingZoneField(actor) {
-      const zoneActor = actor;
-      return zoneActor.frameOverflowMode === "continue" && zoneActor.worldBehaviorMode === "expandable";
+    hasContinuingRegionField(actor) {
+      const regionActor = actor;
+      if (regionActor.frameOverflowMode !== "continue") return false;
+      if (regionActor.worldBehaviorMode === "expandable") return true;
+      return regionActor.worldBehaviorMode === "spanning";
     }
   };
+  var SequentialPageChunkPolicy = class {
+    resolveChunkOriginWorldY(chunkIndex, chunkHeight) {
+      const normalizedIndex = Number.isFinite(chunkIndex) ? Math.max(0, Number(chunkIndex)) : 0;
+      const normalizedHeight = Number.isFinite(chunkHeight) ? Math.max(0, Number(chunkHeight)) : 0;
+      return normalizedIndex * normalizedHeight;
+    }
+    advanceChunk(input) {
+      if (input.currentChunkBoxes.length > 0) {
+        input.pages.push(
+          input.finalizeChunk(
+            input.currentChunkIndex,
+            input.chunkWidth,
+            input.chunkHeight,
+            input.currentChunkBoxes
+          )
+        );
+      }
+      const nextChunkIndex = input.currentChunkIndex + 1;
+      const nextChunkBoxes = [];
+      input.notifyChunkStart(nextChunkIndex, input.chunkWidth, input.chunkHeight, nextChunkBoxes);
+      return {
+        nextChunkIndex,
+        nextChunkBoxes,
+        nextCurrentY: input.nextChunkStartY,
+        nextLastSpacingAfter: 0
+      };
+    }
+  };
+  function intersectsRegion(region, box) {
+    const left = Number(box.x || 0);
+    const top = Number(box.y || 0);
+    const width = Math.max(0, Number(box.w || 0));
+    const height = Math.max(0, Number(box.h || 0));
+    const right = left + width;
+    const bottom = top + height;
+    const regionRight = region.x + region.w;
+    const regionBottom = region.y + region.h;
+    return right > region.x && left < regionRight && bottom > region.y && top < regionBottom;
+  }
+  function buildPageRegionStableKey(region) {
+    return [
+      region.sourceKind,
+      region.fieldSourceId,
+      region.regionId ?? region.zoneId ?? `#${region.regionIndex}`
+    ].join(":");
+  }
+  function toPageRegionDebugSummary(page, region) {
+    const participants = /* @__PURE__ */ new Map();
+    for (const box of page.boxes || []) {
+      const sourceId = typeof box.meta?.sourceId === "string" ? box.meta.sourceId : "";
+      if (!sourceId) continue;
+      if (box.meta?.generated === true) continue;
+      if (!intersectsRegion(region, box)) continue;
+      if (!participants.has(sourceId)) {
+        participants.set(sourceId, {
+          sourceId,
+          sourceType: typeof box.meta?.sourceType === "string" ? box.meta.sourceType : null
+        });
+      }
+    }
+    const sortedParticipants = Array.from(participants.values()).sort(
+      (a2, b2) => a2.sourceId.localeCompare(b2.sourceId)
+    );
+    return {
+      stableKey: buildPageRegionStableKey(region),
+      sourceKind: region.sourceKind,
+      regionId: region.regionId,
+      regionIndex: region.regionIndex,
+      zoneId: region.zoneId,
+      zoneIndex: region.zoneIndex,
+      fieldActorId: region.fieldActorId,
+      fieldSourceId: region.fieldSourceId,
+      frameOverflowMode: region.frameOverflowMode,
+      worldBehaviorMode: region.worldBehaviorMode,
+      x: region.x,
+      y: region.y,
+      w: region.w,
+      h: region.h,
+      participants: sortedParticipants,
+      participantCount: sortedParticipants.length
+    };
+  }
+  function summarizePageRegions(page) {
+    let headerBoxes = 0;
+    let footerBoxes = 0;
+    let generatedBoxes = 0;
+    for (const box of page.boxes || []) {
+      if (box.meta?.generated === true) {
+        generatedBoxes += 1;
+      }
+      if (box.meta?.sourceType === "header") {
+        headerBoxes += 1;
+      } else if (box.meta?.sourceType === "footer") {
+        footerBoxes += 1;
+      }
+    }
+    const debugRegions = (page.debugRegions || []).map((region) => toPageRegionDebugSummary(page, region));
+    return {
+      pageIndex: page.index,
+      headerBoxes,
+      footerBoxes,
+      generatedBoxes,
+      debugRegionCount: debugRegions.length,
+      debugRegions
+    };
+  }
+  function collectScriptRegionsFromPageSummaries(pageSummaries) {
+    const regions = /* @__PURE__ */ new Map();
+    for (const page of pageSummaries) {
+      for (const region of page.debugRegions || []) {
+        const stableKey = region.stableKey;
+        const current = regions.get(stableKey);
+        const slice = {
+          pageIndex: page.pageIndex,
+          x: region.x,
+          y: region.y,
+          w: region.w,
+          h: region.h
+        };
+        if (!current) {
+          regions.set(stableKey, {
+            name: region.regionId ?? region.zoneId ?? `region-${region.regionIndex + 1}`,
+            stableKey,
+            sourceKind: region.sourceKind,
+            regionId: region.regionId,
+            regionIndex: region.regionIndex,
+            zoneId: region.zoneId,
+            zoneIndex: region.zoneIndex,
+            fieldActorId: region.fieldActorId,
+            fieldSourceId: region.fieldSourceId,
+            frameOverflowMode: region.frameOverflowMode,
+            worldBehaviorMode: region.worldBehaviorMode,
+            pages: [page.pageIndex],
+            slices: [slice],
+            pageCount: 1,
+            firstPageIndex: page.pageIndex,
+            participants: [],
+            participantCount: 0
+          });
+          continue;
+        }
+        if (!current.pages.includes(page.pageIndex)) {
+          current.pages.push(page.pageIndex);
+          current.pages.sort((a2, b2) => a2 - b2);
+          current.pageCount = current.pages.length;
+          current.firstPageIndex = current.pages[0] ?? null;
+        }
+        current.slices.push(slice);
+        current.slices.sort((a2, b2) => a2.pageIndex - b2.pageIndex || a2.y - b2.y || a2.x - b2.x);
+      }
+    }
+    for (const region of regions.values()) {
+      const participants = /* @__PURE__ */ new Map();
+      for (const page of pageSummaries) {
+        if (!region.pages.includes(page.pageIndex)) continue;
+        const pageSlices = page.debugRegions.filter((slice) => slice.stableKey === region.stableKey);
+        if (pageSlices.length === 0) continue;
+        for (const slice of pageSlices) {
+          for (const participant of slice.participants || []) {
+            const sourceId = participant.sourceId;
+            if (!sourceId) continue;
+            const current = participants.get(sourceId);
+            if (!current) {
+              participants.set(sourceId, {
+                sourceId,
+                sourceType: participant.sourceType ?? null,
+                pages: [page.pageIndex],
+                pageCount: 1,
+                firstPageIndex: page.pageIndex
+              });
+              continue;
+            }
+            if (!current.pages.includes(page.pageIndex)) {
+              current.pages.push(page.pageIndex);
+              current.pages.sort((a2, b2) => a2 - b2);
+              current.pageCount = current.pages.length;
+              current.firstPageIndex = current.pages[0] ?? null;
+            }
+          }
+        }
+      }
+      region.participants = Array.from(participants.values()).sort(
+        (a2, b2) => a2.sourceId.localeCompare(b2.sourceId) || (a2.firstPageIndex ?? 0) - (b2.firstPageIndex ?? 0)
+      );
+      region.participantCount = region.participants.length;
+    }
+    return Array.from(regions.values()).sort(
+      (a2, b2) => a2.name.localeCompare(b2.name) || a2.firstPageIndex - b2.firstPageIndex
+    );
+  }
+  function findScriptRegionByNameInRegions(regions, name) {
+    const normalized = String(name || "").trim();
+    if (!normalized) return null;
+    return regions.find(
+      (region) => region.name === normalized || region.regionId === normalized || region.zoneId === normalized
+    ) ?? null;
+  }
   var LifecycleRuntime = class {
-    constructor(host) {
+    constructor(host, chunkPolicy = new SequentialPageChunkPolicy()) {
       this.host = host;
       this.pageFinalizationStates = /* @__PURE__ */ new Map();
       this.logicalPageNumberCursor = 0;
       this.finalizedPages = [];
+      this.pageRegionSummaries = [];
+      this.cachedScriptRegions = null;
+      this.chunkPolicy = chunkPolicy;
     }
     resetForSimulation() {
       this.finalizedPages = [];
+      this.pageRegionSummaries = [];
+      this.cachedScriptRegions = null;
       this.pageFinalizationStates.clear();
       this.logicalPageNumberCursor = 0;
     }
+    recordFinalizedPage(page) {
+      this.finalizedPages.push(page);
+      this.pageRegionSummaries.push(summarizePageRegions(page));
+      this.cachedScriptRegions = null;
+    }
     advancePage(pages, currentPageBoxes, currentPageIndex2, pageWidth, pageHeight, nextPageTopY) {
-      if (currentPageBoxes.length > 0) {
-        pages.push(this.host.finalizeCommittedPage(currentPageIndex2, pageWidth, pageHeight, currentPageBoxes));
-      }
-      const nextPageIndex = currentPageIndex2 + 1;
-      const nextPageBoxes = [];
-      this.host.notifyPageStart(nextPageIndex, pageWidth, pageHeight, nextPageBoxes);
+      const advanced = this.chunkPolicy.advanceChunk({
+        pages,
+        currentChunkBoxes: currentPageBoxes,
+        currentChunkIndex: currentPageIndex2,
+        chunkWidth: pageWidth,
+        chunkHeight: pageHeight,
+        nextChunkStartY: nextPageTopY,
+        finalizeChunk: (chunkIndex, width, height, boxes) => this.host.finalizeCommittedPage(chunkIndex, width, height, boxes),
+        notifyChunkStart: (chunkIndex, width, height, boxes) => this.host.notifyPageStart(chunkIndex, width, height, boxes)
+      });
       return {
-        nextPageIndex,
-        nextPageBoxes,
-        nextCurrentY: nextPageTopY,
-        nextLastSpacingAfter: 0
+        nextPageIndex: advanced.nextChunkIndex,
+        nextPageBoxes: advanced.nextChunkBoxes,
+        nextCurrentY: advanced.nextCurrentY,
+        nextLastSpacingAfter: advanced.nextLastSpacingAfter
       };
     }
     closePagination(pages, currentPageBoxes, currentPageIndex2, pageWidth, pageHeight) {
@@ -50120,11 +51029,31 @@
     getPageFinalizationStates() {
       return Array.from(this.pageFinalizationStates.values()).sort((a2, b2) => a2.pageIndex - b2.pageIndex);
     }
+    resolveChunkOriginWorldY(chunkIndex, chunkHeight) {
+      return this.chunkPolicy.resolveChunkOriginWorldY(chunkIndex, chunkHeight);
+    }
     setFinalizedPages(pages) {
       this.finalizedPages = pages;
+      this.pageRegionSummaries = pages.map((page) => summarizePageRegions(page));
+      this.cachedScriptRegions = null;
     }
     getFinalizedPages() {
       return this.finalizedPages;
+    }
+    getPageRegionSummaries() {
+      return this.pageRegionSummaries;
+    }
+    getScriptRegions() {
+      if (this.cachedScriptRegions) {
+        return this.cachedScriptRegions;
+      }
+      this.cachedScriptRegions = collectScriptRegionsFromPageSummaries(this.pageRegionSummaries);
+      return this.cachedScriptRegions;
+    }
+    findScriptRegionByName(name) {
+      const normalized = String(name || "").trim();
+      if (!normalized) return null;
+      return findScriptRegionByNameInRegions(this.getScriptRegions(), normalized);
     }
   };
   var PaginationLoopRuntime = class {
@@ -50528,12 +51457,12 @@
     }
   };
   var PageSurface = class {
-    constructor(pageIndex, width, height, boxes, debugZones = []) {
+    constructor(pageIndex, width, height, boxes, debugRegions = []) {
       this.pageIndex = pageIndex;
       this.width = width;
       this.height = height;
       this.boxes = boxes;
-      this.debugZones = debugZones;
+      this.debugRegions = debugRegions;
     }
     finalize() {
       return {
@@ -50541,7 +51470,7 @@
         width: this.width,
         height: this.height,
         boxes: this.boxes,
-        ...this.debugZones.length > 0 ? { debugZones: this.debugZones.map((zone) => ({ ...zone })) } : {}
+        ...this.debugRegions.length > 0 ? { debugRegions: this.debugRegions.map((region) => ({ ...region })) } : {}
       };
     }
   };
@@ -50620,17 +51549,26 @@
         this.host.recordProfile("exclusionLaneApplications", 1);
       }
       availableWidth = placementFrame.availableWidth;
+      const resolvedChunkOriginWorldY = resolvePackagerChunkOriginWorldY(input.contextBase);
+      const chunkOriginWorldY = Number.isFinite(resolvedChunkOriginWorldY) ? Number(resolvedChunkOriginWorldY) : input.currentPageIndex * input.pageHeight;
       const context = {
         ...input.contextBase,
         pageIndex: input.currentPageIndex,
         cursorY: currentY,
-        viewportWorldY: input.currentPageIndex * input.pageHeight,
+        layoutBefore,
+        chunkOriginWorldY,
         viewportHeight: input.pageHeight,
         margins: {
           ...input.margins,
           left: placementFrame.margins.left,
           right: placementFrame.margins.right
-        }
+        },
+        publishActorSignal: bindPackagerSignalPublisher(
+          input.contextBase.publishActorSignal,
+          input.currentPageIndex,
+          currentY,
+          chunkOriginWorldY + currentY
+        )
       };
       const availableHeightAdjusted = constraintField.effectiveAvailableHeight;
       const effectiveAvailableHeight = layoutDelta + availableHeightAdjusted;
@@ -50864,12 +51802,13 @@
       const marginBottom = actor.getMarginBottom();
       const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
       const requiredHeight = contentHeight + layoutBefore + marginBottom;
+      const occupiesFlowSpace = packagerOccupiesFlowSpace(actor);
       const measurement = {
         marginTop,
         marginBottom,
         contentHeight,
-        requiredHeight,
-        effectiveHeight: Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight)
+        requiredHeight: occupiesFlowSpace ? requiredHeight : 0,
+        effectiveHeight: occupiesFlowSpace ? Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight) : 0
       };
       this.host.recordActorMeasurementByKind(actor.actorKind, performance2.now() - startedAt);
       return measurement;
@@ -50889,19 +51828,21 @@
         width,
         height,
         boxes: [...boxes],
-        debugZones: [],
+        debugRegions: [],
         finalize() {
           return {
             index: this.pageIndex,
             width: this.width,
             height: this.height,
             boxes: this.boxes,
-            ...this.debugZones.length > 0 ? { debugZones: this.debugZones.map((zone) => ({ ...zone })) } : {}
+            ...this.debugRegions.length > 0 ? { debugRegions: this.debugRegions.map((region) => ({ ...region })) } : {}
           };
         }
       };
       this.eventDispatcher.onPageFinalized(surface, this.host.getSession());
-      return surface.finalize();
+      const page = surface.finalize();
+      this.lifecycleRuntime.recordFinalizedPage(page);
+      return page;
     }
     closePagination(pages, currentPageBoxes, currentPageIndex2, pageWidth, pageHeight) {
       this.lifecycleRuntime.closePagination(
@@ -50927,6 +51868,24 @@
     }
     getFinalizedPages() {
       return this.lifecycleRuntime.getFinalizedPages();
+    }
+    getPageRegionSummaries() {
+      return this.lifecycleRuntime.getPageRegionSummaries();
+    }
+    getScriptRegions() {
+      return this.lifecycleRuntime.getScriptRegions();
+    }
+    findScriptRegionByName(name) {
+      return this.lifecycleRuntime.findScriptRegionByName(name);
+    }
+    recordPageCapture(record) {
+      this.sessionWorldRuntime.recordPageCapture(record);
+    }
+    getPageCapture(pageIndex) {
+      return this.sessionWorldRuntime.getPageCapture(pageIndex);
+    }
+    getPageCaptures() {
+      return this.sessionWorldRuntime.getPageCaptures();
     }
     recordPageFinalization(state) {
       this.lifecycleRuntime.recordPageFinalization(state);
@@ -50964,6 +51923,9 @@
     getPageExclusions(pageIndex) {
       return this.sessionWorldRuntime.getPageExclusions(pageIndex);
     }
+    getWorldTraversalExclusions(pageIndex) {
+      return this.sessionWorldRuntime.getWorldTraversalExclusions(pageIndex);
+    }
     getExclusionPageIndices() {
       return this.sessionWorldRuntime.getExclusionPageIndices();
     }
@@ -50996,6 +51958,18 @@
     constructor(kernel, host) {
       this.kernel = kernel;
       this.host = host;
+      this.pageCaptures = /* @__PURE__ */ new Map();
+      this.simulationProgressionPolicy = "until-settled";
+      this.simulationCapturePolicy = "settle-immediately";
+      this.simulationCaptureMaxTicks = null;
+      this.simulationStopReason = "settled";
+    }
+    resetForSimulation() {
+      this.pageCaptures.clear();
+      this.simulationProgressionPolicy = "until-settled";
+      this.simulationCapturePolicy = "settle-immediately";
+      this.simulationCaptureMaxTicks = null;
+      this.simulationStopReason = "settled";
     }
     publishArtifact(key, value) {
       this.kernel.publishArtifact(key, value);
@@ -51033,7 +52007,16 @@
         x: Number.isFinite(exclusion.x) ? Number(exclusion.x) : 0,
         y: Number.isFinite(exclusion.y) ? Math.max(0, Number(exclusion.y)) : 0,
         w: Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0,
-        h: Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0
+        h: Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0,
+        surface: exclusion.surface === "world-traversal" ? "world-traversal" : "page",
+        ...typeof exclusion.wrap === "string" ? { wrap: exclusion.wrap } : {},
+        ...Number.isFinite(exclusion.gap) ? { gap: Math.max(0, Number(exclusion.gap)) } : {},
+        ...Number.isFinite(exclusion.gapTop) ? { gapTop: Math.max(0, Number(exclusion.gapTop)) } : {},
+        ...Number.isFinite(exclusion.gapBottom) ? { gapBottom: Math.max(0, Number(exclusion.gapBottom)) } : {},
+        ...typeof exclusion.shape === "string" ? { shape: exclusion.shape } : {},
+        ...typeof exclusion.align === "string" ? { align: exclusion.align } : {},
+        ...typeof exclusion.traversalInteraction === "string" ? { traversalInteraction: exclusion.traversalInteraction } : {},
+        ...Number.isFinite(exclusion.zIndex) ? { zIndex: Number(exclusion.zIndex) } : {}
       };
       if (!(normalized.w > 0) || !(normalized.h > 0)) return;
       this.kernel.storePageExclusion(pageIndex, this.host.getCurrentPageIndex(), normalized);
@@ -51041,22 +52024,204 @@
     getPageExclusions(pageIndex) {
       return this.kernel.getPageExclusions(pageIndex);
     }
+    getWorldTraversalExclusions(pageIndex) {
+      return this.kernel.getPageExclusions(pageIndex).filter((exclusion) => exclusion.surface === "world-traversal");
+    }
     getExclusionPageIndices() {
       return this.kernel.getExclusionPageIndices();
     }
     getSpatialConstraintPageIndices() {
       return this.kernel.getSpatialConstraintPageIndices();
     }
-    createWorldSpace(pageIndex, pageWidth, pageHeight) {
-      const normalizedPageIndex = Number.isFinite(pageIndex) ? Math.max(0, Math.floor(pageIndex)) : 0;
+    recordPageCapture(record) {
+      this.pageCaptures.set(record.pageIndex, {
+        ...record,
+        capture: {
+          worldSpace: { ...record.capture.worldSpace },
+          viewport: {
+            ...record.capture.viewport,
+            contentRect: { ...record.capture.viewport.contentRect },
+            terrain: {
+              ...record.capture.viewport.terrain,
+              margins: { ...record.capture.viewport.terrain.margins },
+              marginBlocks: record.capture.viewport.terrain.marginBlocks.map((block) => ({ ...block })),
+              headerBlock: record.capture.viewport.terrain.headerBlock ? { ...record.capture.viewport.terrain.headerBlock } : null,
+              footerBlock: record.capture.viewport.terrain.footerBlock ? { ...record.capture.viewport.terrain.footerBlock } : null,
+              reservationBlocks: record.capture.viewport.terrain.reservationBlocks.map((block) => ({ ...block })),
+              exclusionBlocks: record.capture.viewport.terrain.exclusionBlocks.map((block) => ({ ...block })),
+              blockedRects: record.capture.viewport.terrain.blockedRects.map((block) => ({ ...block }))
+            }
+          }
+        }
+      });
+    }
+    getPageCapture(pageIndex) {
+      return this.pageCaptures.get(pageIndex);
+    }
+    getPageCaptures() {
+      return Array.from(this.pageCaptures.values()).sort((a2, b2) => a2.pageIndex - b2.pageIndex);
+    }
+    configureSimulationRun(config) {
+      this.simulationProgressionPolicy = config.policy;
+      this.simulationCapturePolicy = config.policy === "fixed-tick-count" ? "fixed-tick-count" : "settle-immediately";
+      this.simulationCaptureMaxTicks = config.policy === "fixed-tick-count" ? Math.max(1, Math.floor(Number(config.maxTicks))) : null;
+      this.simulationStopReason = "settled";
+    }
+    beginSimulationRun(config) {
+      this.configureSimulationRun(config);
+    }
+    shouldContinueAfterPaginationFinalized(input) {
+      const currentTick = Number.isFinite(input.currentTick) ? Math.max(0, Math.floor(input.currentTick)) : 0;
+      if (this.simulationProgressionPolicy === "fixed-tick-count") {
+        const maxTicks = Number.isFinite(this.simulationCaptureMaxTicks) ? Math.max(1, Math.floor(Number(this.simulationCaptureMaxTicks))) : 1;
+        if (currentTick < maxTicks) {
+          return true;
+        }
+      }
+      return input.hasActiveSteppedActors;
+    }
+    resolveSimulationStopReason(currentTick) {
+      if (this.simulationProgressionPolicy === "fixed-tick-count" && currentTick >= (this.simulationCaptureMaxTicks ?? 0)) {
+        return "fixed-tick-count";
+      }
+      return "settled";
+    }
+    stopSimulationRun(reason) {
+      this.simulationStopReason = reason;
+    }
+    setSimulationProgressionPolicy(policy) {
+      this.simulationProgressionPolicy = policy;
+    }
+    getSimulationProgressionPolicy() {
+      return this.simulationProgressionPolicy;
+    }
+    setSimulationCapturePolicy(policy, maxTicks = null) {
+      this.simulationCapturePolicy = policy;
+      this.simulationCaptureMaxTicks = Number.isFinite(maxTicks) ? Math.max(1, Math.floor(Number(maxTicks))) : null;
+    }
+    getSimulationCapturePolicy() {
+      return this.simulationCapturePolicy;
+    }
+    getSimulationCaptureMaxTicks() {
+      return this.simulationCaptureMaxTicks;
+    }
+    setSimulationStopReason(reason) {
+      this.simulationStopReason = reason;
+    }
+    getSimulationStopReason() {
+      return this.simulationStopReason;
+    }
+    getCurrentTick() {
+      return this.host.getSimulationTickRaw();
+    }
+    advanceSimulationTick() {
+      return this.host.advanceSimulationTickRaw();
+    }
+    isSimulationProgressionActive() {
+      return !this.host.isSimulationProgressionStoppedRaw();
+    }
+    resumeSimulationRun() {
+      return this.host.resumeSimulationProgressionClockRaw();
+    }
+    stopSimulationRunClock() {
+      return this.host.stopSimulationProgressionClockRaw();
+    }
+    stopSimulationProgression(reason = "settled") {
+      if (!this.stopSimulationRunClock()) return false;
+      this.stopSimulationRun(reason);
+      this.host.recordProgressionStop();
+      return true;
+    }
+    resumeSimulationProgression() {
+      if (!this.resumeSimulationRun()) return false;
+      this.setSimulationStopReason("settled");
+      this.host.recordProgressionResume();
+      return true;
+    }
+    captureSimulationClockSnapshot() {
+      this.host.recordProgressionSnapshot();
+      return this.host.captureSimulationClockSnapshotRaw();
+    }
+    restoreSimulationClockSnapshot(snapshot) {
+      this.host.restoreSimulationClockSnapshotRaw(snapshot);
+    }
+    captureProgressionStateSnapshot() {
+      return {
+        simulationClockSnapshot: this.captureSimulationClockSnapshot()
+      };
+    }
+    restoreProgressionStateSnapshot(snapshot) {
+      this.restoreSimulationClockSnapshot(snapshot.simulationClockSnapshot);
+    }
+    preserveCurrentProgressionState(run) {
+      const current = this.captureProgressionStateSnapshot();
+      try {
+        return run();
+      } finally {
+        this.restoreProgressionStateSnapshot(current);
+      }
+    }
+    captureSessionBranchStateSnapshot(actorQueue) {
+      return {
+        ...this.kernel.captureLocalBranchStateSnapshot(actorQueue),
+        ...this.captureProgressionStateSnapshot()
+      };
+    }
+    restoreSessionBranchStateSnapshot(actorQueue, snapshot) {
+      this.kernel.restoreLocalBranchStateSnapshot(
+        actorQueue,
+        snapshot
+      );
+      this.restoreProgressionStateSnapshot(snapshot);
+    }
+    getSimulationWorldSummary() {
+      return {
+        currentTick: this.getCurrentTick(),
+        progressionPolicy: this.simulationProgressionPolicy,
+        stopReason: this.simulationStopReason,
+        progressionStopped: this.host.isSimulationProgressionStoppedRaw(),
+        capturePolicy: this.simulationCapturePolicy,
+        captureMaxTicks: this.simulationCaptureMaxTicks,
+        pageCaptures: this.getPageCaptures()
+      };
+    }
+    getSimulationProgressionSummary() {
+      const world = this.getSimulationWorldSummary();
+      return {
+        policy: world.progressionPolicy,
+        stopReason: world.stopReason,
+        captureKind: "finalized-pages",
+        finalTick: world.currentTick,
+        progressionStopped: world.progressionStopped
+      };
+    }
+    getSimulationCaptureSummary() {
+      const world = this.getSimulationWorldSummary();
+      return {
+        policy: world.capturePolicy,
+        requestedMaxTicks: world.captureMaxTicks,
+        captureKind: "finalized-pages",
+        satisfiedBy: world.stopReason,
+        capturedAtTick: world.currentTick
+      };
+    }
+    createPageCaptureState(input) {
+      const viewport = this.createViewportDescriptor(input);
+      const worldSpace = this.createWorldSpace(input.worldTopY, input.pageWidth, input.pageHeight);
+      return {
+        worldSpace,
+        viewport
+      };
+    }
+    createWorldSpace(worldTopY, pageWidth, pageHeight) {
+      const normalizedWorldTopY = Number.isFinite(worldTopY) ? Number(worldTopY) : 0;
       const normalizedWidth = Number.isFinite(pageWidth) ? Math.max(0, Number(pageWidth)) : 0;
       const normalizedHeight = Number.isFinite(pageHeight) ? Math.max(0, Number(pageHeight)) : 0;
-      const worldY = normalizedPageIndex * normalizedHeight;
       return {
         originX: 0,
-        originY: 0,
+        originY: normalizedWorldTopY,
         width: normalizedWidth,
-        exploredBottom: worldY + normalizedHeight
+        exploredBottom: normalizedWorldTopY + normalizedHeight
       };
     }
     createViewportDescriptor(input) {
@@ -51086,7 +52251,7 @@
       return {
         pageIndex,
         worldX: 0,
-        worldY: pageIndex * pageHeight,
+        worldY: Number.isFinite(input.worldTopY) ? Number(input.worldTopY) : 0,
         width: pageWidth,
         height: pageHeight,
         contentRect,
@@ -51258,6 +52423,17 @@
       this.currentTick = Number.isFinite(snapshot.tick) ? Math.max(0, Math.floor(snapshot.tick)) : 0;
     }
   };
+  function buildChunkPageContext(contextBase, pageIndex, cursorY, pageHeight) {
+    const resolvedChunkOriginWorldY = resolvePackagerChunkOriginWorldY(contextBase);
+    const chunkOriginWorldY = Number.isFinite(resolvedChunkOriginWorldY) ? Number(resolvedChunkOriginWorldY) : pageIndex * pageHeight;
+    return {
+      ...contextBase,
+      pageIndex,
+      cursorY,
+      chunkOriginWorldY,
+      viewportHeight: pageHeight
+    };
+  }
   var TransitionsRuntime = class {
     constructor(host) {
       this.host = host;
@@ -51462,11 +52638,12 @@
           if (!(partA && partB)) {
             return { accept: false };
           }
-          const partAContext = {
-            ...contextBase,
-            pageIndex: currentPageIndex2,
-            cursorY: placedPrefix.currentY
-          };
+          const partAContext = buildChunkPageContext(
+            contextBase,
+            currentPageIndex2,
+            placedPrefix.currentY,
+            pageHeight
+          );
           const partABoxes = partA.emitBoxes(
             state.availableWidth,
             splitExecution.emitAvailableHeight,
@@ -51662,13 +52839,16 @@
     executeGenericSplitBranch(pages, currentPageBoxes, currentPageIndex2, pageWidth, pageHeight, nextPageTopY, currentActorIndex, actorQueue, packager, splitExecution, state, contextBase, resolveDeferredCursorY, positionMarker) {
       const { currentFragment: fitsCurrent, continuationFragment: pushedNext } = splitExecution.result;
       if (!fitsCurrent) {
-        const boxes = state.currentY === state.pageTop ? packager.emitBoxes(state.availableWidth, state.availableHeightAdjusted, {
-          ...contextBase,
-          pageIndex: currentPageIndex2,
-          cursorY: state.currentY,
-          viewportWorldY: currentPageIndex2 * pageHeight,
-          viewportHeight: pageHeight
-        }) || [] : null;
+        const boxes = state.currentY === state.pageTop ? packager.emitBoxes(
+          state.availableWidth,
+          state.availableHeightAdjusted,
+          buildChunkPageContext(
+            contextBase,
+            currentPageIndex2,
+            state.currentY,
+            pageHeight
+          )
+        ) || [] : null;
         const outcome = this.host.resolveActorSplitFailure(
           packager,
           boxes,
@@ -51694,13 +52874,12 @@
           outcome
         );
       }
-      const splitContext = {
-        ...contextBase,
-        pageIndex: currentPageIndex2,
-        cursorY: state.currentY,
-        viewportWorldY: currentPageIndex2 * pageHeight,
-        viewportHeight: pageHeight
-      };
+      const splitContext = buildChunkPageContext(
+        contextBase,
+        currentPageIndex2,
+        state.currentY,
+        pageHeight
+      );
       const fitsMarginBottom = fitsCurrent.getMarginBottom();
       const fitsMarginTop = fitsCurrent.getMarginTop();
       const fitsLayoutBefore = state.lastSpacingAfter + fitsMarginTop;
@@ -51806,7 +52985,8 @@
         headingTelemetry: publishedArtifacts.get(simulationArtifactKeys.headingTelemetry),
         asyncThoughtSummary: publishedArtifacts.get(simulationArtifactKeys.asyncThoughtSummary),
         temporalPresentationTimeline: publishedArtifacts.get(simulationArtifactKeys.temporalPresentationTimeline),
-        interactionMap: publishedArtifacts.get(simulationArtifactKeys.interactionMap)
+        interactionMap: publishedArtifacts.get(simulationArtifactKeys.interactionMap),
+        viewportCaptureSummary: publishedArtifacts.get(simulationArtifactKeys.viewportCaptureSummary)
       };
       for (const [key, value] of publishedArtifacts.entries()) {
         if (key in artifacts && artifacts[key] !== void 0) continue;
@@ -51822,19 +53002,17 @@
         }, 0);
       }, 0);
       const profile = this.host.getProfileSnapshot();
-      const progression = {
-        policy: this.host.getSimulationProgressionPolicy(),
-        stopReason: this.host.getSimulationStopReason(),
-        captureKind: "finalized-pages",
-        finalTick: this.host.getSimulationTick(),
-        progressionStopped: this.host.isSimulationProgressionStopped()
-      };
+      const world = this.host.getSimulationWorldSummary();
+      const progression = this.host.getSimulationProgressionSummary();
+      const capture = this.host.getSimulationCaptureSummary();
       return {
         pageCount: pages.length,
         actorCount: this.host.getRegisteredActors().length,
         splitTransitionCount: this.host.getFragmentTransitions().length,
         generatedBoxCount,
+        world,
         progression,
+        capture,
         profile: {
           ...profile,
           keepWithNextPrepareByKind: { ...profile.keepWithNextPrepareByKind },
@@ -51988,8 +53166,6 @@
       };
       this.paginationLoopState = null;
       this.speculativeBranchSequence = 0;
-      this.simulationProgressionPolicy = "until-settled";
-      this.simulationStopReason = "settled";
       this.flowResolveSignaturesSeen = /* @__PURE__ */ new Set();
       this.scriptReplayRequested = false;
       this.currentPageIndex = 0;
@@ -52057,7 +53233,17 @@
         resolveNextActorIndex: (currentIndex, shouldAdvanceIndex) => this.paginationLoopRuntime.resolveNextActorIndex(currentIndex, shouldAdvanceIndex),
         toPaginationLoopAction: (outcome) => this.paginationLoopRuntime.toPaginationLoopAction(outcome)
       });
-      this.simulationReportBridge = new SimulationReportBridge(this);
+      this.simulationReportBridge = new SimulationReportBridge({
+        getFinalizedPages: () => this.sessionCollaborationRuntime.getFinalizedPages(),
+        getRegisteredActors: () => this.getRegisteredActors(),
+        getFragmentTransitions: () => this.getFragmentTransitions(),
+        getPublishedArtifacts: () => this.getPublishedArtifacts(),
+        getProfileSnapshot: () => this.getProfileSnapshot(),
+        getSimulationWorldSummary: () => this.sessionWorldRuntime.getSimulationWorldSummary(),
+        getSimulationProgressionSummary: () => this.sessionWorldRuntime.getSimulationProgressionSummary(),
+        getSimulationCaptureSummary: () => this.sessionWorldRuntime.getSimulationCaptureSummary(),
+        onSimulationComplete: () => this.sessionCollaborationRuntime.onSimulationComplete()
+      });
       this.sessionCollaborationRuntime = new SessionCollaborationRuntime(
         this.eventDispatcher,
         this.lifecycleRuntime,
@@ -52115,11 +53301,18 @@
       this.kernel.resetForSimulation();
       this.actorCommunicationRuntime.resetForSimulation();
       this.lifecycleRuntime.resetForSimulation();
+      this.sessionWorldRuntime.resetForSimulation();
       this.eventDispatcher.onSimulationStart(this);
     }
     publishActorSignal(signal) {
+      const resolvedPageIndex = Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : this.currentPageIndex;
+      const resolvedCursorY = Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : !Number.isFinite(signal.pageIndex) || resolvedPageIndex === this.currentPageIndex ? this.currentY : void 0;
+      const resolvedWorldY = Number.isFinite(signal.worldY) ? Number(signal.worldY) : Number.isFinite(resolvedCursorY) && this.currentSurface && resolvedPageIndex === this.currentPageIndex ? Math.max(0, resolvedPageIndex * this.currentSurface.height + Number(resolvedCursorY)) : void 0;
       return this.actorCommunicationRuntime.publishActorSignal({
         ...signal,
+        pageIndex: resolvedPageIndex,
+        ...Number.isFinite(resolvedCursorY) ? { cursorY: Number(resolvedCursorY) } : {},
+        ...Number.isFinite(resolvedWorldY) ? { worldY: Number(resolvedWorldY) } : {},
         tick: this.getSimulationTick()
       });
     }
@@ -52133,21 +53326,153 @@
       this.kernel.registerActor(actor);
       this.actorCommunicationRuntime.notifyActorSpawn(actor);
       this.eventDispatcher.onActorSpawn(actor, this);
+      const hostedActors = getHostedRuntimeActors(actor);
+      for (const hostedActor of hostedActors) {
+        this.notifyActorSpawn(hostedActor);
+      }
     }
     notifyActorDespawn(actor) {
+      const hostedActors = getHostedRuntimeActors(actor);
+      for (const hostedActor of hostedActors) {
+        this.notifyActorDespawn(hostedActor);
+      }
       this.kernel.unregisterActor(actor);
       this.actorCommunicationRuntime.notifyActorDespawn(actor);
     }
-    insertActorsInLiveQueue(targetActor, insertions, position2) {
+    noteActorRuntimeIndex(actor, actorIndex) {
+      this.actorCommunicationRuntime.noteActorIndex(actor, actorIndex);
+    }
+    resolveActorRuntimeFrontier(actor, options) {
+      const owner = findHostedActorController(this.kernel.actorRegistry, actor) ?? actor;
+      const state = this.paginationLoopState;
+      const finalizedPages = this.getFinalizedPages();
+      const currentPageBoxes = state?.paginationState.currentPageBoxes ?? [];
+      const currentPageIndex2 = state?.paginationState.currentPageIndex ?? this.currentPageIndex;
+      const refs = collectActorBoxRefs(finalizedPages, currentPageBoxes, currentPageIndex2, owner.actorId);
+      const queueIndex = state?.actorQueue.findIndex((entry) => entry.actorId === owner.actorId);
+      const resolvedActorIndexCandidate = options?.actorIndex ?? this.actorCommunicationRuntime.resolveKnownActorIndex(owner) ?? (queueIndex !== void 0 && queueIndex >= 0 ? queueIndex : void 0);
+      const resolvedActorIndex = Number.isFinite(resolvedActorIndexCandidate) && Number(resolvedActorIndexCandidate) >= 0 ? Number(resolvedActorIndexCandidate) : void 0;
+      const checkpointFrontier = this.actorCommunicationRuntime.resolveActorCheckpointFrontier(owner, resolvedActorIndex);
+      if (checkpointFrontier) {
+        return {
+          ...checkpointFrontier,
+          ...Number.isFinite(resolvedActorIndex) ? { actorIndex: resolvedActorIndex } : {},
+          actorId: owner.actorId,
+          sourceId: owner.sourceId
+        };
+      }
+      if (refs.length > 0) {
+        let earliest = refs[0];
+        for (const ref of refs.slice(1)) {
+          const currentY = Number(ref.box.y || 0);
+          const earliestY = Number(earliest.box.y || 0);
+          if (ref.pageIndex < earliest.pageIndex || ref.pageIndex === earliest.pageIndex && currentY < earliestY) {
+            earliest = ref;
+          }
+        }
+        const pageHeight = finalizedPages.find((page) => page.index === earliest.pageIndex)?.height ?? (earliest.pageIndex === currentPageIndex2 ? state?.context.pageHeight ?? this.currentSurface?.height : this.currentSurface?.height);
+        const cursorY = Number(earliest.box.y || 0);
+        const chunkOriginWorldY = Number.isFinite(pageHeight) ? this.resolveChunkOriginWorldY(earliest.pageIndex, Number(pageHeight)) : void 0;
+        return {
+          pageIndex: earliest.pageIndex,
+          cursorY,
+          ...Number.isFinite(chunkOriginWorldY) ? { worldY: Math.max(0, Number(chunkOriginWorldY) + cursorY) } : {},
+          ...Number.isFinite(resolvedActorIndex) ? { actorIndex: Number(resolvedActorIndex) } : {},
+          actorId: owner.actorId,
+          sourceId: owner.sourceId
+        };
+      }
+      if (Number.isFinite(resolvedActorIndex) && state) {
+        return {
+          pageIndex: state.paginationState.currentPageIndex,
+          cursorY: state.paginationState.currentY,
+          ...Number.isFinite(this.currentSurface?.height) ? {
+            worldY: Math.max(
+              0,
+              state.paginationState.currentPageIndex * Number(this.currentSurface?.height) + state.paginationState.currentY
+            )
+          } : {},
+          actorIndex: Number(resolvedActorIndex),
+          actorId: owner.actorId,
+          sourceId: owner.sourceId
+        };
+      }
+      return null;
+    }
+    resolveRuntimeFrontierAtActorIndex(actorIndex) {
+      if (!Number.isFinite(actorIndex)) {
+        return null;
+      }
+      const resolvedActorIndex = Number(actorIndex);
+      const checkpointFrontier = this.actorCommunicationRuntime.resolveQueueCheckpointFrontier(resolvedActorIndex);
+      if (checkpointFrontier) {
+        return {
+          ...checkpointFrontier,
+          actorIndex: resolvedActorIndex
+        };
+      }
+      const state = this.paginationLoopState;
+      if (!state) {
+        return null;
+      }
+      const currentPageIndex2 = state.paginationState.currentPageIndex;
+      const currentY = state.paginationState.currentY;
+      const pageHeight = this.currentSurface?.height;
+      const chunkOriginWorldY = Number.isFinite(pageHeight) ? this.resolveChunkOriginWorldY(currentPageIndex2, Number(pageHeight)) : void 0;
+      return {
+        pageIndex: currentPageIndex2,
+        cursorY: currentY,
+        ...Number.isFinite(chunkOriginWorldY) ? { worldY: Math.max(0, Number(chunkOriginWorldY) + currentY) } : {},
+        actorIndex: resolvedActorIndex
+      };
+    }
+    invalidateSafeCheckpointsAfterFrontier(frontier) {
+      this.actorCommunicationRuntime.invalidateSafeCheckpointsAfterFrontier(frontier);
+    }
+    insertActorsInLiveQueue(targetActor, insertions, position2, sourceElements) {
       if (insertions.length === 0) return null;
       const state = this.paginationLoopState;
       if (!state) return null;
       const actorQueue = state.actorQueue;
       const index2 = actorQueue.findIndex((actor) => actor.actorId === targetActor.actorId);
-      if (index2 < 0) return null;
+      if (index2 < 0) {
+        return this.insertHostedActorsInLiveQueue(targetActor, insertions, position2, sourceElements);
+      }
       const insertionIndex = position2 === "before" ? index2 : index2 + 1;
       actorQueue.splice(insertionIndex, 0, ...insertions);
       this.actorCommunicationRuntime.insertActorsInCheckpointQueues(targetActor.actorId, insertions, position2);
+      for (const actor of insertions) {
+        this.notifyActorSpawn(actor);
+      }
+      return insertionIndex;
+    }
+    prependActorsInLiveQueue(insertions) {
+      if (insertions.length === 0) return null;
+      const state = this.paginationLoopState;
+      if (!state) return null;
+      const actorQueue = state.actorQueue;
+      const anchor = actorQueue[0] ?? null;
+      actorQueue.splice(0, 0, ...insertions);
+      if (anchor) {
+        this.actorCommunicationRuntime.insertActorsInCheckpointQueues(anchor.actorId, insertions, "before");
+      }
+      for (const actor of insertions) {
+        this.notifyActorSpawn(actor);
+      }
+      state.actorIndex += insertions.length;
+      return 0;
+    }
+    appendActorsInLiveQueue(insertions) {
+      if (insertions.length === 0) return null;
+      const state = this.paginationLoopState;
+      if (!state) return null;
+      const actorQueue = state.actorQueue;
+      const anchor = actorQueue[actorQueue.length - 1] ?? null;
+      const insertionIndex = actorQueue.length;
+      actorQueue.push(...insertions);
+      if (anchor) {
+        this.actorCommunicationRuntime.insertActorsInCheckpointQueues(anchor.actorId, insertions, "after");
+      }
       for (const actor of insertions) {
         this.notifyActorSpawn(actor);
       }
@@ -52158,7 +53483,9 @@
       if (!state) return null;
       const actorQueue = state.actorQueue;
       const index2 = actorQueue.findIndex((actor) => actor.actorId === targetActor.actorId);
-      if (index2 < 0) return null;
+      if (index2 < 0) {
+        return this.deleteHostedActorInLiveQueue(targetActor);
+      }
       actorQueue.splice(index2, 1);
       this.notifyActorDespawn(targetActor);
       this.actorCommunicationRuntime.deleteActorInCheckpointQueues(targetActor.actorId);
@@ -52169,12 +53496,14 @@
       }
       return index2;
     }
-    replaceActorInLiveQueue(targetActor, replacements) {
+    replaceActorInLiveQueue(targetActor, replacements, sourceElements) {
       const state = this.paginationLoopState;
       if (!state) return null;
       const actorQueue = state.actorQueue;
       const index2 = actorQueue.findIndex((actor) => actor.actorId === targetActor.actorId);
-      if (index2 < 0) return null;
+      if (index2 < 0) {
+        return this.replaceHostedActorInLiveQueue(targetActor, replacements, sourceElements);
+      }
       actorQueue.splice(index2, 1, ...replacements);
       this.notifyActorDespawn(targetActor);
       this.actorCommunicationRuntime.replaceActorInCheckpointQueues(targetActor.actorId, replacements);
@@ -52187,6 +53516,50 @@
         state.actorIndex = index2;
       }
       return index2;
+    }
+    insertHostedActorsInLiveQueue(targetActor, insertions, position2, sourceElements) {
+      const state = this.paginationLoopState;
+      if (!state) return null;
+      const host = findHostedActorController(this.kernel.actorRegistry, targetActor);
+      if (!host) return null;
+      const inserted = host.insertHostedRuntimeActors?.(targetActor, insertions, position2, sourceElements);
+      if (!inserted) return null;
+      for (const actor of insertions) {
+        this.notifyActorSpawn(actor);
+      }
+      return state.actorQueue.findIndex((actor) => actor.actorId === host.actorId);
+    }
+    deleteHostedActorInLiveQueue(targetActor) {
+      const state = this.paginationLoopState;
+      if (!state) return null;
+      const host = findHostedActorController(this.kernel.actorRegistry, targetActor);
+      if (!host) return null;
+      const deleted = host.deleteHostedRuntimeActor?.(targetActor);
+      if (!deleted) return null;
+      this.notifyActorDespawn(targetActor);
+      return state.actorQueue.findIndex((actor) => actor.actorId === host.actorId);
+    }
+    replaceHostedActorInLiveQueue(targetActor, replacements, sourceElements) {
+      const state = this.paginationLoopState;
+      if (!state) return null;
+      const host = findHostedActorController(this.kernel.actorRegistry, targetActor);
+      if (!host) return null;
+      const replaced = host.replaceHostedRuntimeActor?.(targetActor, replacements, sourceElements);
+      if (!replaced) return null;
+      this.notifyActorDespawn(targetActor);
+      for (const actor of replacements) {
+        this.notifyActorSpawn(actor);
+      }
+      return state.actorQueue.findIndex((actor) => actor.actorId === host.actorId);
+    }
+    noteHostedRuntimeActorContentMutation(targetActor) {
+      const state = this.paginationLoopState;
+      if (!state) return null;
+      const host = findHostedActorController(this.kernel.actorRegistry, targetActor);
+      if (!host) return null;
+      const refreshed = host.refreshHostedRuntimeActor?.(targetActor);
+      if (!refreshed) return null;
+      return state.actorQueue.findIndex((actor) => actor.actorId === host.actorId);
     }
     hasCommittedSignalObservers() {
       return this.actorCommunicationRuntime.hasCommittedSignalObservers();
@@ -52207,11 +53580,15 @@
       this.currentConstraintField = constraints;
       const startedAt = performance2.now();
       this.recordProfile("reservationConstraintNegotiationCalls", 1);
+      const actorZIndex = resolvePackagerZIndex(actor);
       for (const reservation of this.kernel.getCurrentPageReservations()) {
         constraints.reservations.push({ ...reservation });
         this.recordProfile("reservationConstraintApplications", 1);
       }
       for (const exclusion of this.kernel.getCurrentPageExclusions()) {
+        if (Number.isFinite(exclusion.zIndex) && Number(exclusion.zIndex) !== actorZIndex) {
+          continue;
+        }
         constraints.exclusions.push({ ...exclusion });
       }
       this.recordProfile("reservationConstraintNegotiationMs", performance2.now() - startedAt);
@@ -52282,13 +53659,15 @@
     closePagination(pages, currentPageBoxes, currentPageIndex2, pageWidth, pageHeight) {
       this.sessionCollaborationRuntime.closePagination(pages, currentPageBoxes, currentPageIndex2, pageWidth, pageHeight);
     }
-    recordSafeCheckpoint(actorQueue, actorIndex, pagesPrefix, currentPageBoxes, currentPageIndex2, currentY, lastSpacingAfter, kind) {
+    recordSafeCheckpoint(actorQueue, actorIndex, pagesPrefix, currentPageBoxes, currentPageIndex2, currentY, currentPageHeight, lastSpacingAfter, kind) {
       return this.actorCommunicationRuntime.recordSafeCheckpoint(
         actorQueue,
         actorIndex,
         pagesPrefix,
         currentPageBoxes,
         currentPageIndex2,
+        currentY,
+        Math.max(0, currentPageIndex2 * currentPageHeight + currentY),
         kind,
         () => this.fragmentSessionRuntime.captureLocalTransitionSnapshot(currentPageBoxes, currentY, lastSpacingAfter),
         () => this.captureSessionBranchStateSnapshot(actorQueue)
@@ -52304,15 +53683,15 @@
       return this.actorCommunicationRuntime.resolveSafeCheckpoint(frontier);
     }
     restoreSafeCheckpoint(pages, actorQueue, checkpoint) {
-      const currentClock = this.captureSimulationClockSnapshot();
-      const restored = this.actorCommunicationRuntime.restoreSafeCheckpoint(
-        pages,
-        actorQueue,
-        checkpoint,
-        (restoredQueue, snapshot) => this.restoreSessionBranchStateSnapshot(restoredQueue, snapshot)
+      this.recordProfile("progressionSnapshotCalls", 1);
+      return this.sessionWorldRuntime.preserveCurrentProgressionState(
+        () => this.actorCommunicationRuntime.restoreSafeCheckpoint(
+          pages,
+          actorQueue,
+          checkpoint,
+          (restoredQueue, snapshot) => this.restoreSessionBranchStateSnapshot(restoredQueue, snapshot)
+        )
       );
-      this.restoreSimulationClockSnapshot(currentClock);
-      return restored;
     }
     executeSpeculativeBranch(input) {
       const startedAt = performance2.now();
@@ -52389,15 +53768,21 @@
     applyContentOnlyActorUpdates(pages, currentPageBoxes, actors, contextBase) {
       let patchedActors = 0;
       for (const actor of actors) {
-        const refs = collectActorBoxRefs(pages, currentPageBoxes, actor.actorId);
+        const refs = collectActorBoxRefs(pages, currentPageBoxes, this.currentPageIndex, actor.actorId);
         if (refs.length === 0) continue;
         const first = refs[0].box;
-        const pageIndex = Number(first.meta?.pageIndex ?? 0);
+        const pageIndex = refs[0].pageIndex;
         const cursorY = refs.reduce((best, ref) => Math.min(best, Number(ref.box.y || 0)), Number.POSITIVE_INFINITY);
         const context = {
           ...contextBase,
           pageIndex,
-          cursorY: Number.isFinite(cursorY) ? cursorY : 0
+          cursorY: Number.isFinite(cursorY) ? cursorY : 0,
+          publishActorSignal: bindPackagerSignalPublisher(
+            contextBase.publishActorSignal,
+            pageIndex,
+            Number.isFinite(cursorY) ? cursorY : 0,
+            this.currentSurface && pageIndex === this.currentPageIndex && Number.isFinite(cursorY) ? pageIndex * this.currentSurface.height + Number(cursorY) : void 0
+          )
         };
         const availableWidth = Math.max(0, contextBase.pageWidth - contextBase.margins.left - contextBase.margins.right);
         const availableHeight = Math.max(0, contextBase.pageHeight - context.cursorY - contextBase.margins.bottom);
@@ -52429,6 +53814,24 @@
     }
     getFinalizedPages() {
       return this.sessionCollaborationRuntime.getFinalizedPages();
+    }
+    getPageRegionSummaries() {
+      return this.sessionCollaborationRuntime.getPageRegionSummaries();
+    }
+    getScriptRegions() {
+      return this.sessionCollaborationRuntime.getScriptRegions();
+    }
+    findScriptRegionByName(name) {
+      return this.sessionCollaborationRuntime.findScriptRegionByName(name);
+    }
+    recordPageCapture(record) {
+      this.sessionCollaborationRuntime.recordPageCapture(record);
+    }
+    getPageCapture(pageIndex) {
+      return this.sessionCollaborationRuntime.getPageCapture(pageIndex);
+    }
+    getPageCaptures() {
+      return this.sessionCollaborationRuntime.getPageCaptures();
     }
     recordPageFinalization(state) {
       this.sessionCollaborationRuntime.recordPageFinalization(state);
@@ -52466,6 +53869,9 @@
     getPageExclusions(pageIndex) {
       return this.sessionCollaborationRuntime.getPageExclusions(pageIndex);
     }
+    getWorldTraversalExclusions(pageIndex) {
+      return this.sessionCollaborationRuntime.getWorldTraversalExclusions(pageIndex);
+    }
     getExclusionPageIndices() {
       return this.sessionCollaborationRuntime.getExclusionPageIndices();
     }
@@ -52494,7 +53900,7 @@
       return this.sessionCollaborationRuntime.getProfileSnapshot();
     }
     getSimulationTick() {
-      return this.simulationClock.tick;
+      return this.sessionWorldRuntime.getCurrentTick();
     }
     requestAsyncThought(request) {
       return this.asyncThoughtHost?.request(request);
@@ -52506,58 +53912,110 @@
       return this.asyncThoughtHost?.hasPending() ?? false;
     }
     setSimulationProgressionPolicy(policy) {
-      this.simulationProgressionPolicy = policy;
+      this.sessionWorldRuntime.setSimulationProgressionPolicy(policy);
+    }
+    configureSimulationRun(config) {
+      this.sessionWorldRuntime.configureSimulationRun(config);
+    }
+    beginSimulationRun(config) {
+      this.sessionWorldRuntime.beginSimulationRun(config);
+      this.sessionWorldRuntime.resumeSimulationProgression();
     }
     getSimulationProgressionPolicy() {
-      return this.simulationProgressionPolicy;
+      return this.sessionWorldRuntime.getSimulationProgressionPolicy();
+    }
+    setSimulationCapturePolicy(policy, maxTicks = null) {
+      this.sessionWorldRuntime.setSimulationCapturePolicy(policy, maxTicks);
+    }
+    getSimulationCapturePolicy() {
+      return this.sessionWorldRuntime.getSimulationCapturePolicy();
+    }
+    getSimulationCaptureMaxTicks() {
+      return this.sessionWorldRuntime.getSimulationCaptureMaxTicks();
+    }
+    getSimulationWorldSummary() {
+      return this.sessionWorldRuntime.getSimulationWorldSummary();
+    }
+    getSimulationProgressionSummary() {
+      return this.sessionWorldRuntime.getSimulationProgressionSummary();
+    }
+    getSimulationCaptureSummary() {
+      return this.sessionWorldRuntime.getSimulationCaptureSummary();
     }
     getSimulationStopReason() {
-      return this.simulationStopReason;
+      return this.sessionWorldRuntime.getSimulationStopReason();
+    }
+    shouldContinueAfterPaginationFinalized(input) {
+      return this.sessionWorldRuntime.shouldContinueAfterPaginationFinalized(input);
+    }
+    resolveSimulationStopReason(currentTick) {
+      return this.sessionWorldRuntime.resolveSimulationStopReason(currentTick);
     }
     isSimulationProgressionStopped() {
-      return this.simulationClock.isStopped;
+      return !this.sessionWorldRuntime.isSimulationProgressionActive();
     }
-    advanceSimulationTick() {
-      const previousTick = this.simulationClock.tick;
+    advanceSimulationTickRaw() {
+      const previousTick = this.getSimulationTick();
       const nextTick = this.simulationClock.advance();
       if (nextTick !== previousTick) {
         this.recordProfile("simulationTickCount", 1);
       }
       return nextTick;
     }
+    advanceSimulationTick() {
+      return this.sessionWorldRuntime.advanceSimulationTick();
+    }
     stopSimulationProgression(reason = "settled") {
-      if (this.simulationClock.isStopped) return;
-      this.simulationStopReason = reason;
-      this.simulationClock.stop();
-      this.recordProfile("progressionStopCalls", 1);
+      this.sessionWorldRuntime.stopSimulationProgression(reason);
     }
     resumeSimulationProgression() {
-      if (!this.simulationClock.isStopped) return;
-      this.simulationClock.resume();
-      this.recordProfile("progressionResumeCalls", 1);
-    }
-    captureSimulationClockSnapshot() {
-      this.recordProfile("progressionSnapshotCalls", 1);
-      return this.simulationClock.captureSnapshot();
-    }
-    restoreSimulationClockSnapshot(snapshot) {
-      this.simulationClock.restoreSnapshot(snapshot);
+      this.sessionWorldRuntime.resumeSimulationProgression();
     }
     captureSessionBranchStateSnapshot(actorQueue) {
-      return {
-        ...this.kernel.captureLocalBranchStateSnapshot(actorQueue),
-        simulationClockSnapshot: this.captureSimulationClockSnapshot()
-      };
+      return this.sessionWorldRuntime.captureSessionBranchStateSnapshot(actorQueue);
     }
     restoreSessionBranchStateSnapshot(actorQueue, snapshot) {
-      this.kernel.restoreLocalBranchStateSnapshot(actorQueue, snapshot);
-      this.restoreSimulationClockSnapshot(snapshot.simulationClockSnapshot);
+      this.sessionWorldRuntime.restoreSessionBranchStateSnapshot(actorQueue, snapshot);
     }
     getCurrentPageIndex() {
       return this.currentPageIndex;
     }
+    resolveChunkOriginWorldY(chunkIndex, chunkHeight) {
+      return this.lifecycleRuntime.resolveChunkOriginWorldY(chunkIndex, chunkHeight);
+    }
+    getSimulationTickRaw() {
+      return this.simulationClock.tick;
+    }
+    isSimulationProgressionStoppedRaw() {
+      return this.simulationClock.isStopped;
+    }
+    resumeSimulationProgressionClockRaw() {
+      if (!this.simulationClock.isStopped) return false;
+      this.simulationClock.resume();
+      return true;
+    }
+    stopSimulationProgressionClockRaw() {
+      if (this.simulationClock.isStopped) return false;
+      this.simulationClock.stop();
+      return true;
+    }
+    captureSimulationClockSnapshotRaw() {
+      return this.simulationClock.captureSnapshot();
+    }
+    restoreSimulationClockSnapshotRaw(snapshot) {
+      this.simulationClock.restoreSnapshot(snapshot);
+    }
     recordReservationWrite() {
       this.recordProfile("reservationWrites", 1);
+    }
+    recordProgressionStop() {
+      this.recordProfile("progressionStopCalls", 1);
+    }
+    recordProgressionResume() {
+      this.recordProfile("progressionResumeCalls", 1);
+    }
+    recordProgressionSnapshot() {
+      this.recordProfile("progressionSnapshotCalls", 1);
     }
     getPublishedArtifacts() {
       return this.fragmentSessionRuntime.getPublishedArtifacts();
@@ -52690,20 +54148,20 @@
       this.recordProfile("flowResolveSignatureUniqueCalls", 1);
     }
   };
-  function collectActorBoxRefs(pages, currentPageBoxes, actorId) {
+  function collectActorBoxRefs(pages, currentPageBoxes, currentPageIndex2, actorId) {
     const refs = [];
     for (const page of pages) {
       for (let index2 = 0; index2 < page.boxes.length; index2++) {
         const box = page.boxes[index2];
         if (box.meta?.actorId === actorId) {
-          refs.push({ container: page.boxes, index: index2, box });
+          refs.push({ container: page.boxes, index: index2, box, pageIndex: page.index });
         }
       }
     }
     for (let index2 = 0; index2 < currentPageBoxes.length; index2++) {
       const box = currentPageBoxes[index2];
       if (box.meta?.actorId === actorId) {
-        refs.push({ container: currentPageBoxes, index: index2, box });
+        refs.push({ container: currentPageBoxes, index: index2, box, pageIndex: currentPageIndex2 });
       }
     }
     return refs;
@@ -52727,6 +54185,20 @@
       h: committed.h,
       meta: nextMeta
     };
+  }
+  function getHostedRuntimeActors(actor) {
+    const maybeHost = actor;
+    return maybeHost.getHostedRuntimeActors?.() ?? [];
+  }
+  function findHostedActorController(actors, targetActor) {
+    for (const actor of actors) {
+      if (actor.actorId === targetActor.actorId) continue;
+      const maybeController = actor;
+      if (maybeController.handlesHostedRuntimeActor?.(targetActor)) {
+        return maybeController;
+      }
+    }
+    return null;
   }
   var SourcePositionArtifactCollaborator = class {
     onSimulationComplete(session) {
@@ -53010,13 +54482,22 @@
       };
     }
     createDocRef(session) {
+      const getRegions = () => {
+        session.recordProfile("docQueryCalls", 1);
+        return session.getScriptRegions();
+      };
       return {
         name: "doc",
         type: "document",
         vars: this.host.getScriptVars(),
         getPageCount: () => {
           session.recordProfile("docQueryCalls", 1);
-          return 0;
+          return session.getFinalizedPages().length;
+        },
+        getRegions,
+        findRegionByName: (name) => {
+          session.recordProfile("docQueryCalls", 1);
+          return session.findScriptRegionByName(name);
         },
         findElementByName: (name) => {
           session.recordProfile("docQueryCalls", 1);
@@ -53538,41 +55019,1328 @@ ${source}`)
       );
     }
   };
-  function buildExclusionFieldObstacles(descriptor) {
-    const gap = Math.max(0, Number(descriptor.gap ?? 0));
-    const normalizedShape = descriptor.shape ?? "rect";
-    const assemblyMembers = Array.isArray(descriptor.exclusionAssembly?.members) ? descriptor.exclusionAssembly.members : [];
-    if (assemblyMembers.length === 0) {
-      return [{
-        x: descriptor.x,
-        y: descriptor.y,
-        w: descriptor.w,
-        h: descriptor.h,
-        wrap: descriptor.wrap,
-        gap,
-        shape: normalizedShape,
-        align: descriptor.align
-      }];
-    }
-    return assemblyMembers.map((member) => ({
-      x: descriptor.x + Number(member.x ?? 0),
-      y: descriptor.y + Number(member.y ?? 0),
-      w: Math.max(0, Number(member.w ?? 0)),
-      h: Math.max(0, Number(member.h ?? 0)),
-      wrap: descriptor.wrap,
-      gap,
-      shape: member.shape ?? "rect"
-      // Deliberately omit align here: assembled members should carve as local
-      // lobes, not inherit the solitary edge-extension heuristic used for
-      // single left/right circles.
-    })).filter((member) => member.w > 0 && member.h > 0);
+  function regionKey(region) {
+    return [
+      region.fieldActorId,
+      region.sourceKind,
+      region.regionIndex,
+      region.x,
+      region.y,
+      region.w,
+      region.h
+    ].join(":");
   }
+  var RegionDebugOverlayCollaborator = class {
+    onActorCommitted(actor, _committed, surface, _session) {
+      const debugActor = actor;
+      const regions = debugActor.getDebugRegions?.();
+      if (!regions || regions.length === 0) return;
+      const existing = new Set(surface.debugRegions.map(regionKey));
+      for (const region of regions) {
+        const key = regionKey(region);
+        if (existing.has(key)) continue;
+        surface.debugRegions.push({ ...region });
+        existing.add(key);
+      }
+    }
+    onPageFinalized(surface, _session) {
+      const existing = new Set(surface.debugRegions.map(regionKey));
+      const aggregated = /* @__PURE__ */ new Map();
+      for (const box of surface.boxes) {
+        const tag = box.properties?.__vmprintRegionDebugPage;
+        if (!tag) continue;
+        const key = [
+          tag.fieldActorId,
+          tag.sourceKind,
+          tag.regionIndex,
+          tag.x,
+          tag.y,
+          tag.w
+        ].join(":");
+        const bottom = Number(box.y || 0) + Number(box.h || 0);
+        const current = aggregated.get(key);
+        if (!current) {
+          aggregated.set(key, {
+            fieldActorId: tag.fieldActorId,
+            fieldSourceId: tag.fieldSourceId,
+            sourceKind: tag.sourceKind,
+            regionId: tag.regionId ?? tag.zoneId,
+            regionIndex: tag.regionIndex,
+            zoneId: tag.zoneId,
+            zoneIndex: tag.zoneIndex,
+            x: tag.x,
+            y: tag.y,
+            w: tag.w,
+            h: Math.max(
+              Number(tag.explicitHeight || 0),
+              Math.max(0, bottom - tag.y)
+            ),
+            frameOverflowMode: tag.frameOverflowMode,
+            worldBehaviorMode: tag.worldBehaviorMode
+          });
+          continue;
+        }
+        current.h = Math.max(
+          current.h,
+          Math.max(0, bottom - current.y),
+          Number(tag.explicitHeight || 0)
+        );
+      }
+      for (const region of aggregated.values()) {
+        const key = regionKey(region);
+        if (existing.has(key)) continue;
+        surface.debugRegions.push(region);
+        existing.add(key);
+      }
+    }
+  };
+  function snapshotBox(box) {
+    return {
+      type: String(box.type || ""),
+      x: Number((box.x || 0).toFixed(6)),
+      y: Number((box.y || 0).toFixed(6)),
+      w: Number((box.w || 0).toFixed(6)),
+      h: Number((box.h || 0).toFixed(6)),
+      sourceId: String(box.meta?.sourceId || ""),
+      engineKey: String(box.meta?.engineKey || ""),
+      sourceType: String(box.meta?.sourceType || ""),
+      fragmentIndex: Number(box.meta?.fragmentIndex || 0),
+      isContinuation: Boolean(box.meta?.isContinuation),
+      lines: (box.lines || []).map((line) => line.map((segment) => ({
+        text: String(segment.text || ""),
+        width: Number((segment.width || 0).toFixed(6)),
+        ascent: Number((segment.ascent || 0).toFixed(6)),
+        descent: Number((segment.descent || 0).toFixed(6)),
+        fontFamily: String(segment.fontFamily || "")
+      })))
+    };
+  }
+  function snapshotPage(page) {
+    return {
+      index: page.index,
+      width: Number((page.width || 0).toFixed(6)),
+      height: Number((page.height || 0).toFixed(6)),
+      boxes: (page.boxes || []).map((box) => snapshotBox(box))
+    };
+  }
+  function clonePageSnapshot(page) {
+    return {
+      index: page.index,
+      width: page.width,
+      height: page.height,
+      boxes: page.boxes.map((box) => ({
+        ...box,
+        lines: box.lines.map((line) => line.map((segment) => ({ ...segment })))
+      }))
+    };
+  }
+  function cloneTimeline(frames) {
+    return frames.map((frame, index2) => ({
+      captureIndex: index2,
+      tick: frame.tick,
+      pageCount: frame.pageCount,
+      pages: frame.pages.map((page) => clonePageSnapshot(page))
+    }));
+  }
+  var TemporalPresentationCollaborator = class {
+    constructor() {
+      this.latestPages = /* @__PURE__ */ new Map();
+      this.frames = [];
+    }
+    onSimulationStart() {
+      this.latestPages.clear();
+      this.frames = [];
+    }
+    onPageFinalized(surface, session) {
+      const page = surface.finalize();
+      this.latestPages.set(page.index, snapshotPage(page));
+      const pages = Array.from(this.latestPages.values()).sort((a2, b2) => a2.index - b2.index).map((entry) => clonePageSnapshot(entry));
+      this.frames.push({
+        captureIndex: this.frames.length,
+        tick: session.getSimulationTick(),
+        pageCount: pages.length,
+        pages
+      });
+    }
+    onSimulationComplete(session) {
+      session.publishArtifact(
+        simulationArtifactKeys.temporalPresentationTimeline,
+        cloneTimeline(this.frames)
+      );
+    }
+  };
+  var AsyncThoughtRuntimeCollaborator = class {
+    constructor(host) {
+      this.host = host;
+    }
+    onSimulationComplete(session) {
+      session.publishArtifact(
+        simulationArtifactKeys.asyncThoughtSummary,
+        this.host.getSummary()
+      );
+    }
+  };
+  var lineEndsWithForcedBreak2 = (line) => {
+    if (!Array.isArray(line) || line.length === 0) return false;
+    return !!line[line.length - 1]?.forcedBreakAfter;
+  };
+  var getReferenceAscentScale = (line) => {
+    if (line.length === 0) return 0;
+    const textLikeSegments = line.filter((seg) => !seg?.inlineObject);
+    const source = textLikeSegments.length > 0 ? textLikeSegments : line;
+    let maxAscent = 0;
+    for (const seg of source) {
+      if (seg.ascent === void 0) {
+        throw new Error(`[Renderer] Missing precomputed ascent for segment "${(seg.text || "").slice(0, 24)}".`);
+      }
+      if (seg.ascent > maxAscent) maxAscent = seg.ascent;
+    }
+    return maxAscent / 1e3;
+  };
+  var computeEffectiveLineHeight = (line, baseFontSize, lineHeight, referenceAscentScale) => {
+    const lineFontSize = line.reduce(
+      (max, seg) => Math.max(max, Number(seg.style?.fontSize || baseFontSize)),
+      Number(baseFontSize)
+    );
+    const nominal = lineFontSize * lineHeight;
+    if (line.length === 0) return nominal;
+    let maxAscentFromBaseline = 0;
+    let maxDescentFromBaseline = 0;
+    for (const seg of line) {
+      const segFontSize = Number(seg.style?.fontSize || baseFontSize);
+      if (seg.ascent === void 0) {
+        throw new Error(`[Renderer] Missing precomputed ascent for segment "${(seg.text || "").slice(0, 24)}".`);
+      }
+      const segAscent = seg.ascent / 1e3 * segFontSize;
+      if (segAscent > maxAscentFromBaseline) maxAscentFromBaseline = segAscent;
+      if (seg.descent === void 0) {
+        throw new Error(`[Renderer] Missing precomputed descent for segment "${(seg.text || "").slice(0, 24)}".`);
+      }
+      const segDescent = seg.descent / 1e3 * segFontSize;
+      if (segDescent > maxDescentFromBaseline) maxDescentFromBaseline = segDescent;
+    }
+    const baselineOffset = referenceAscentScale * lineFontSize;
+    const neededAscentFromTop = Math.max(maxAscentFromBaseline, baselineOffset);
+    const neededTextHeight = neededAscentFromTop + maxDescentFromBaseline;
+    const lead = nominal - lineFontSize;
+    const neededHeight = neededTextHeight + lead;
+    return Math.max(nominal, neededHeight);
+  };
+  var buildParagraphMetrics = (lines, fontSize, lineHeight) => {
+    const lineHasInlineObject = (line) => line.some((seg) => !!seg?.inlineObject);
+    const paragraphHasInlineObjects = lines.some((line) => Array.isArray(line) && lineHasInlineObject(line));
+    let paragraphReferenceAscentScale = 0;
+    for (const line of lines) {
+      if (!Array.isArray(line)) continue;
+      const ref = getReferenceAscentScale(line);
+      if (ref > paragraphReferenceAscentScale) paragraphReferenceAscentScale = ref;
+    }
+    const lineMetrics = lines.map((line) => {
+      if (!Array.isArray(line)) {
+        return {
+          lineFontSize: Number(fontSize),
+          referenceAscentScale: paragraphReferenceAscentScale,
+          effectiveLineHeight: Number(fontSize) * lineHeight
+        };
+      }
+      const lineFontSize = line.reduce(
+        (max, seg) => Math.max(max, Number(seg.style?.fontSize || fontSize)),
+        Number(fontSize)
+      );
+      const referenceAscentScale = paragraphHasInlineObjects ? getReferenceAscentScale(line) : paragraphReferenceAscentScale;
+      return {
+        lineFontSize,
+        referenceAscentScale,
+        effectiveLineHeight: computeEffectiveLineHeight(line, fontSize, lineHeight, referenceAscentScale)
+      };
+    });
+    let uniformLineHeight = 0;
+    for (const metric of lineMetrics) {
+      if (metric.effectiveLineHeight > uniformLineHeight) uniformLineHeight = metric.effectiveLineHeight;
+    }
+    return {
+      paragraphHasInlineObjects,
+      paragraphReferenceAscentScale,
+      lineMetrics,
+      uniformLineHeight
+    };
+  };
+  var computeLineWidth = (line) => {
+    if (!Array.isArray(line)) return 0;
+    return line.reduce((width, seg) => {
+      if (seg.width === void 0) {
+        throw new Error(`[Renderer] Missing precomputed width for segment "${(seg.text || "").slice(0, 24)}".`);
+      }
+      return width + seg.width;
+    }, 0);
+  };
+  var computeAlignedLineX = (lineIndex, lineDirection, lineOriginX, lineWidthLimit, textIndent, align, adjustedLineWidth) => {
+    let lineX = lineIndex === 0 ? lineOriginX + textIndent : lineOriginX;
+    if (lineDirection === "rtl") {
+      lineX = lineIndex === 0 ? lineOriginX + lineWidthLimit - textIndent : lineOriginX + lineWidthLimit;
+      if (align === "right") {
+        lineX = lineOriginX + adjustedLineWidth;
+      } else if (align === "center") {
+        lineX = lineOriginX + (lineWidthLimit + adjustedLineWidth) / 2;
+      }
+      return lineX;
+    }
+    if (align && align !== "left") {
+      if (align === "right") {
+        lineX = lineOriginX + (lineWidthLimit - adjustedLineWidth);
+      } else if (align === "center") {
+        lineX = lineOriginX + (lineWidthLimit - adjustedLineWidth) / 2;
+      }
+    }
+    return lineX;
+  };
+  var computeJustifyExtraAfter = (line, lineIndex, lineCount, align, justifyEngine, lineWidthLimit, lineWidth) => {
+    if (align !== "justify") return [];
+    if (lineIndex === lineCount - 1) return [];
+    if (lineEndsWithForcedBreak2(line)) return [];
+    if (!Array.isArray(line)) return [];
+    if (justifyEngine === "advanced") {
+      return line.map((seg) => Number(seg.justifyAfter || 0));
+    }
+    const availableExtra = lineWidthLimit - lineWidth;
+    if (availableExtra <= 1e-4) return [];
+    const hasWhitespace = line.some((seg) => /\s/.test(seg.text || ""));
+    const isCjkLike = (text5) => /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]/.test(text5);
+    const isPunct = (text5) => /^[\s.,;:!?\uFF0C\u3002\uFF1B\uFF1A\uFF01\uFF1F\u3001\uFF08\uFF09()\u300A\u300B\u3010\u3011'"\u201C\u201D\u2018\u2019\u2026-]*$/.test(text5);
+    const shouldStretchBoundary2 = (left, right) => {
+      if (!left || !right) return false;
+      if (/\s$/.test(left) || /^\s/.test(right)) return true;
+      if (hasWhitespace) return false;
+      if (isPunct(left) || isPunct(right)) return false;
+      return isCjkLike(left) && isCjkLike(right);
+    };
+    const boundaries = [];
+    for (let i2 = 0; i2 < line.length - 1; i2++) {
+      const left = line[i2]?.text || "";
+      const right = line[i2 + 1]?.text || "";
+      if (shouldStretchBoundary2(left, right)) boundaries.push(i2);
+    }
+    if (boundaries.length === 0) return [];
+    const perBoundary = availableExtra / boundaries.length;
+    const justifyExtraAfter = new Array(line.length).fill(0);
+    boundaries.forEach((idx) => {
+      justifyExtraAfter[idx] = perBoundary;
+    });
+    return justifyExtraAfter;
+  };
+  var createLineFrameAccessors = (boxProperties, startY2, width) => {
+    const lineOffsets = Array.isArray(boxProperties?._lineOffsets) ? boxProperties._lineOffsets : [];
+    const lineWidths = Array.isArray(boxProperties?._lineWidths) ? boxProperties._lineWidths : [];
+    const lineYOffsets = Array.isArray(boxProperties?._lineYOffsets) ? boxProperties._lineYOffsets : [];
+    const hasExplicitLineYOffsets = lineYOffsets.length > 0;
+    return {
+      hasExplicitLineYOffsets,
+      getLineOffset: (lineIndex) => {
+        const candidate = lineOffsets[lineIndex];
+        return Number.isFinite(candidate) ? Number(candidate) : 0;
+      },
+      getLineWidth: (lineIndex) => {
+        const candidate = lineWidths[lineIndex];
+        if (Number.isFinite(candidate) && Number(candidate) > 0) return Number(candidate);
+        return width;
+      },
+      getLineY: (lineIndex) => {
+        if (!hasExplicitLineYOffsets) return null;
+        const candidate = lineYOffsets[lineIndex];
+        if (!Number.isFinite(candidate)) return null;
+        return startY2 + Math.max(0, Number(candidate));
+      }
+    };
+  };
+  var getStrongDirection2 = (text5) => {
+    for (const ch of text5 || "") {
+      const cp = ch.codePointAt(0) || 0;
+      const isRtl = cp >= 1424 && cp <= 2303 || // Hebrew + Arabic + Syriac + Thaana etc.
+      cp >= 64285 && cp <= 65023 || cp >= 65136 && cp <= 65279;
+      if (isRtl) return "rtl";
+      if (new RegExp("\\p{L}", "u").test(ch)) return "ltr";
+    }
+    return "neutral";
+  };
+  var resolveParagraphDirection = (lines, containerStyle, layoutDirection, defaultDirection) => {
+    const configured = String(containerStyle.direction || layoutDirection || defaultDirection);
+    if (configured === "rtl") return "rtl";
+    if (configured === "ltr") return "ltr";
+    const paragraphText = (lines || []).map((line) => Array.isArray(line) ? line.map((seg) => seg?.text || "").join("") : String(line || "")).join("\n");
+    const strong2 = getStrongDirection2(paragraphText);
+    return strong2 === "rtl" ? "rtl" : "ltr";
+  };
+  var reorderItemsForVisualBidi = (items, baseDirection) => {
+    if (items.length <= 1) return items;
+    const resolveStrongDirAt = (index2) => {
+      const text5 = items[index2]?.seg?.text || "";
+      return getStrongDirection2(text5);
+    };
+    const resolvedDirs = new Array(items.length);
+    for (let i2 = 0; i2 < items.length; i2++) {
+      const strong2 = resolveStrongDirAt(i2);
+      if (strong2 !== "neutral") {
+        resolvedDirs[i2] = strong2;
+        continue;
+      }
+      const segText = items[i2]?.seg?.text || "";
+      const segDir = items[i2]?.seg?.direction;
+      const isWhitespace = segText.trim().length === 0;
+      if (!isWhitespace && segDir) {
+        resolvedDirs[i2] = segDir;
+        continue;
+      }
+      let prevStrong = null;
+      for (let j2 = i2 - 1; j2 >= 0; j2--) {
+        const d2 = resolveStrongDirAt(j2);
+        if (d2 !== "neutral") {
+          prevStrong = d2;
+          break;
+        }
+      }
+      let nextStrong = null;
+      for (let j2 = i2 + 1; j2 < items.length; j2++) {
+        const d2 = resolveStrongDirAt(j2);
+        if (d2 !== "neutral") {
+          nextStrong = d2;
+          break;
+        }
+      }
+      if (prevStrong && nextStrong && prevStrong === nextStrong) {
+        resolvedDirs[i2] = prevStrong;
+      } else if (prevStrong) {
+        resolvedDirs[i2] = prevStrong;
+      } else if (nextStrong) {
+        resolvedDirs[i2] = nextStrong;
+      } else if (segDir) {
+        resolvedDirs[i2] = segDir;
+      } else {
+        resolvedDirs[i2] = baseDirection;
+      }
+    }
+    const runs = [];
+    let currentRun = [];
+    let currentDir = baseDirection;
+    for (let i2 = 0; i2 < items.length; i2++) {
+      const item = items[i2];
+      const effectiveDir = resolvedDirs[i2];
+      if (currentRun.length === 0) {
+        currentRun = [item];
+        currentDir = effectiveDir;
+        continue;
+      }
+      if (effectiveDir !== currentDir) {
+        runs.push({ dir: currentDir, items: currentRun });
+        currentRun = [item];
+        currentDir = effectiveDir;
+        continue;
+      }
+      currentRun.push(item);
+    }
+    if (currentRun.length > 0) runs.push({ dir: currentDir, items: currentRun });
+    if (baseDirection === "rtl") {
+      return runs.reverse().flatMap((run) => run.dir === "ltr" ? [...run.items].reverse() : run.items);
+    }
+    return runs.flatMap((run) => run.dir === "rtl" ? [...run.items].reverse() : run.items);
+  };
+  var getSelectionEntries = (selection) => {
+    if (!selection) return [];
+    if (selection.targetSelections?.length) return selection.targetSelections;
+    return [{
+      targetId: selection.targetId,
+      sourceId: selection.sourceId,
+      selectedOffsets: selection.selectedOffsets
+    }];
+  };
+  var toNumber = (value, fallback = 0) => {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : fallback;
+  };
+  var sortUniqueNumbers = (values) => Array.from(new Set(values)).sort((a2, b2) => a2 - b2);
+  var clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  var isTextSelectableBox = (box) => {
+    const sourceId = String(box.meta?.sourceId || "");
+    if (!sourceId) return false;
+    return Array.isArray(box.lines) && box.lines.length > 0 || typeof box.content === "string" && box.content.length > 0 || Array.isArray(box.glyphs) && box.glyphs.length > 0;
+  };
+  var isInteractableBox = (box) => {
+    const sourceId = String(box.meta?.sourceId || "");
+    if (!sourceId) return false;
+    return isTextSelectableBox(box) || !!box.image || box.type === "image" || box.type === "field-actor" || box.type === "box";
+  };
+  var buildTargetId = (meta, pageIndex) => {
+    const engineKey = String(meta?.engineKey || "");
+    if (engineKey) return engineKey;
+    const sourceId = String(meta?.sourceId || "unknown");
+    const fragmentIndex = Number(meta?.fragmentIndex || 0);
+    return `${sourceId}#${fragmentIndex}@${pageIndex}`;
+  };
+  var resolveContentBox = (box) => {
+    const style = box.style || {};
+    const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? 0);
+    const paddingRight = LayoutUtils.validateUnit(style.paddingRight ?? style.padding ?? 0);
+    const paddingTop = LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? 0);
+    const paddingBottom = LayoutUtils.validateUnit(style.paddingBottom ?? style.padding ?? 0);
+    const borderLeft = LayoutUtils.validateUnit(style.borderLeftWidth ?? style.borderWidth ?? 0);
+    const borderRight = LayoutUtils.validateUnit(style.borderRightWidth ?? style.borderWidth ?? 0);
+    const borderTop = LayoutUtils.validateUnit(style.borderTopWidth ?? style.borderWidth ?? 0);
+    const borderBottom = LayoutUtils.validateUnit(style.borderBottomWidth ?? style.borderWidth ?? 0);
+    return {
+      x: box.x + paddingLeft + borderLeft,
+      y: box.y + paddingTop + borderTop,
+      w: Math.max(0, box.w - paddingLeft - paddingRight - borderLeft - borderRight),
+      h: Math.max(0, box.h - paddingTop - paddingBottom - borderTop - borderBottom)
+    };
+  };
+  var buildFallbackUnits = (text5, drawX, lineIndex, top, bottom, absoluteOffsetRef, width, segmentMeta) => {
+    const glyphs = Array.from(text5 || "");
+    if (glyphs.length === 0) return [];
+    const unitWidth = glyphs.length > 0 ? width / glyphs.length : 0;
+    return glyphs.map((glyph, unitIndex) => {
+      const x0 = drawX + unitIndex * unitWidth;
+      const x1 = unitIndex === glyphs.length - 1 ? drawX + width : x0 + unitWidth;
+      const unit = {
+        absoluteOffset: absoluteOffsetRef.value,
+        lineIndex,
+        unitIndex,
+        text: glyph,
+        x0,
+        x1,
+        y0: top,
+        y1: bottom,
+        segmentKey: segmentMeta?.key,
+        segmentUnitCount: segmentMeta?.unitCount,
+        segmentX0: segmentMeta?.x0,
+        segmentX1: segmentMeta?.x1,
+        segmentIsShaped: segmentMeta?.shaped,
+        segmentLogicalIndex: segmentMeta?.logicalIndex,
+        segmentDirection: segmentMeta?.direction
+      };
+      absoluteOffsetRef.value += 1;
+      return unit;
+    });
+  };
+  var buildGlyphUnits = (glyphs, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth, segmentMeta) => {
+    if (!Array.isArray(glyphs) || glyphs.length === 0) return [];
+    return glyphs.map((glyph, unitIndex) => {
+      const start = drawX + toNumber(glyph.x, 0);
+      const next = glyphs[unitIndex + 1];
+      const fallbackEnd = drawX + segmentWidth;
+      const end = next ? Math.max(start, drawX + toNumber(next.x, segmentWidth)) : fallbackEnd;
+      const unit = {
+        absoluteOffset: absoluteOffsetRef.value,
+        lineIndex,
+        unitIndex,
+        text: String(glyph.char || ""),
+        x0: start,
+        x1: end,
+        y0: top,
+        y1: bottom,
+        segmentKey: segmentMeta?.key,
+        segmentUnitCount: segmentMeta?.unitCount,
+        segmentX0: segmentMeta?.x0,
+        segmentX1: segmentMeta?.x1,
+        segmentIsShaped: segmentMeta?.shaped,
+        segmentLogicalIndex: segmentMeta?.logicalIndex,
+        segmentDirection: segmentMeta?.direction
+      };
+      absoluteOffsetRef.value += 1;
+      return unit;
+    });
+  };
+  var buildSegmentUnits = (segment, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentMeta) => {
+    const segmentWidth = Math.max(0, toNumber(segment.width, 0));
+    if (Array.isArray(segment.glyphs) && segment.glyphs.length > 0) {
+      return buildGlyphUnits(segment.glyphs, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth, segmentMeta);
+    }
+    return buildFallbackUnits(String(segment.text || ""), drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth, segmentMeta);
+  };
+  var buildInteractionTarget = (box, pageIndex, layout) => {
+    if (!isInteractableBox(box)) return null;
+    const rendererLines = box.lines || [];
+    const boxStyle = box.style || {};
+    const contentBox = resolveContentBox(box);
+    const baseFontSize = Number(boxStyle.fontSize || layout.fontSize);
+    const lineHeight = Number(boxStyle.lineHeight || layout.lineHeight);
+    const paragraphMetrics = buildParagraphMetrics(rendererLines, baseFontSize, lineHeight);
+    const lineFrame = createLineFrameAccessors(box.properties || {}, contentBox.y, contentBox.w);
+    const paragraphDirection = resolveParagraphDirection(
+      rendererLines,
+      boxStyle,
+      layout.direction,
+      LAYOUT_DEFAULTS.textLayout.direction
+    );
+    const letterSpacing = LayoutUtils.validateUnit(boxStyle.letterSpacing || 0);
+    const textIndent = LayoutUtils.validateUnit(boxStyle.textIndent || 0);
+    const align = boxStyle.textAlign;
+    const justifyEngine = boxStyle.justifyEngine || layout.justifyEngine || LAYOUT_DEFAULTS.textLayout.justifyEngine;
+    const lines = [];
+    const units = [];
+    const absoluteOffsetRef = { value: 0 };
+    let currentY = contentBox.y;
+    rendererLines.forEach((line, lineIndex) => {
+      if (!Array.isArray(line)) return;
+      const metric = paragraphMetrics.lineMetrics[lineIndex];
+      const actualLineFontSize = metric?.lineFontSize ?? baseFontSize;
+      const referenceAscentScale = metric?.referenceAscentScale ?? paragraphMetrics.paragraphReferenceAscentScale;
+      const effectiveLineHeight = paragraphMetrics.paragraphHasInlineObjects ? metric?.effectiveLineHeight ?? paragraphMetrics.uniformLineHeight : paragraphMetrics.uniformLineHeight;
+      const nominalLineHeight = actualLineFontSize * lineHeight;
+      const nominalLeading = nominalLineHeight - actualLineFontSize;
+      const vOffset = nominalLeading / 2;
+      const lineOffset = lineFrame.getLineOffset(lineIndex);
+      const lineWidthLimit = lineFrame.getLineWidth(lineIndex);
+      const lineOriginX = contentBox.x + lineOffset;
+      const lineTop = lineFrame.getLineY(lineIndex) ?? currentY;
+      const baseline = lineTop + vOffset + referenceAscentScale * actualLineFontSize;
+      const bottom = lineTop + effectiveLineHeight;
+      const lineWidth = computeLineWidth(line);
+      const adjustedLineWidth = lineWidth - letterSpacing;
+      const lineX = computeAlignedLineX(
+        lineIndex,
+        paragraphDirection,
+        lineOriginX,
+        lineWidthLimit,
+        textIndent,
+        align,
+        adjustedLineWidth
+      );
+      const justifyExtraAfter = computeJustifyExtraAfter(
+        line,
+        lineIndex,
+        rendererLines.length,
+        align,
+        justifyEngine,
+        lineWidthLimit,
+        lineWidth
+      );
+      const rawItems = line.map((seg, index2) => ({
+        seg,
+        extra: justifyExtraAfter[index2] || 0,
+        logicalIndex: index2
+      }));
+      const lineItems = reorderItemsForVisualBidi(rawItems, paragraphDirection);
+      const lineStartOffset = absoluteOffsetRef.value;
+      let currentX = lineX;
+      const lineUnits = [];
+      for (let segmentIndex = 0; segmentIndex < lineItems.length; segmentIndex += 1) {
+        const { seg, extra } = lineItems[segmentIndex];
+        const segWidth = Math.max(0, toNumber(seg.width, 0));
+        if (paragraphDirection === "rtl") {
+          currentX -= segWidth;
+        }
+        const drawX = currentX;
+        const segmentText = String(seg.text || "");
+        const segmentUnitCount = Array.from(segmentText).length || seg.glyphs?.length || 0;
+        const segmentDirection = seg.direction === "rtl" ? "rtl" : "ltr";
+        const segmentMeta = {
+          key: `${pageIndex}:${buildTargetId(box.meta, pageIndex)}:${lineIndex}:${segmentIndex}`,
+          unitCount: segmentUnitCount,
+          x0: drawX,
+          x1: drawX + segWidth,
+          shaped: Array.isArray(seg.shapedGlyphs) && seg.shapedGlyphs.length > 0 && seg.direction === "rtl",
+          logicalIndex: lineItems[segmentIndex].logicalIndex,
+          direction: segmentDirection
+        };
+        lineUnits.push(...buildSegmentUnits(seg, drawX, lineIndex, lineTop, bottom, absoluteOffsetRef, segmentMeta));
+        if (paragraphDirection === "rtl") {
+          currentX -= extra;
+        } else {
+          currentX += segWidth + extra;
+        }
+      }
+      units.push(...lineUnits);
+      const left = lineUnits.length > 0 ? Math.min(...lineUnits.map((unit) => unit.x0)) : lineX;
+      const right = lineUnits.length > 0 ? Math.max(...lineUnits.map((unit) => unit.x1)) : lineX;
+      lines.push({
+        index: lineIndex,
+        startOffset: lineStartOffset,
+        endOffset: absoluteOffsetRef.value,
+        top: lineTop,
+        baseline,
+        bottom,
+        left,
+        right,
+        direction: paragraphDirection
+      });
+      if (lineIndex < rendererLines.length - 1) {
+        absoluteOffsetRef.value += 1;
+      }
+      if (lineFrame.hasExplicitLineYOffsets) {
+        currentY = Math.max(currentY, bottom);
+      } else {
+        currentY += effectiveLineHeight;
+      }
+    });
+    const properties = box.properties || {};
+    return {
+      targetId: buildTargetId(box.meta, pageIndex),
+      pageIndex,
+      sourceId: String(box.meta?.sourceId || ""),
+      engineKey: String(box.meta?.engineKey || ""),
+      sourceType: String(box.meta?.sourceType || ""),
+      semanticRole: typeof box.meta?.semanticRole === "string" ? box.meta.semanticRole : void 0,
+      selectableText: isTextSelectableBox(box),
+      fragmentIndex: Number(box.meta?.fragmentIndex || 0),
+      isContinuation: Boolean(box.meta?.isContinuation),
+      generated: Boolean(box.meta?.generated),
+      transformKind: box.meta?.transformKind,
+      x: Number(box.x || 0),
+      y: Number(box.y || 0),
+      w: Number(box.w || 0),
+      h: Number(box.h || 0),
+      contentBox,
+      containerSourceId: typeof properties._interactionContainerSourceId === "string" ? properties._interactionContainerSourceId : void 0,
+      containerType: typeof properties._interactionContainerType === "string" ? properties._interactionContainerType : void 0,
+      containerEngineKey: typeof properties._interactionContainerEngineKey === "string" ? properties._interactionContainerEngineKey : void 0,
+      tableCell: Boolean(properties._tableCell) || String(box.meta?.sourceType || "") === "table_cell",
+      tableRowIndex: Number.isFinite(Number(properties._tableRowIndex)) ? Number(properties._tableRowIndex) : void 0,
+      tableViewportRowIndex: Number.isFinite(Number(properties._tableViewportRowIndex)) ? Number(properties._tableViewportRowIndex) : void 0,
+      tableColIndex: Number.isFinite(Number(properties._tableColIndex)) ? Number(properties._tableColIndex) : void 0,
+      totalLength: absoluteOffsetRef.value,
+      units,
+      lines
+    };
+  };
+  var buildFlattenedInteractionSpans = (pageIndex, targets) => sortTargetsInVisualOrder(targets).map((target, order2) => ({
+    order: order2,
+    pageIndex,
+    targetId: target.targetId,
+    sourceId: target.sourceId,
+    selectableText: target.selectableText,
+    containerSourceId: target.containerSourceId,
+    containerType: target.containerType,
+    top: target.y,
+    bottom: target.y + target.h,
+    left: target.x,
+    right: target.x + target.w
+  }));
+  var buildInteractionPages = (pages, layout) => pages.map((page) => {
+    const index2 = Number(page.index || 0);
+    const targets = (page.boxes || []).map((box) => buildInteractionTarget(box, index2, layout)).filter((target) => target !== null);
+    return {
+      index: index2,
+      width: Number(page.width || 0),
+      height: Number(page.height || 0),
+      targets,
+      flattenedSpans: buildFlattenedInteractionSpans(index2, targets)
+    };
+  });
+  var findInteractionTarget = (page, targetId) => {
+    const normalized = String(targetId || "");
+    if (!normalized) return null;
+    return page?.targets.find((target) => target.targetId === normalized) ?? null;
+  };
+  var sortTargetsInVisualOrder = (targets) => [...targets].sort((left, right) => {
+    const byY = left.y - right.y;
+    if (Math.abs(byY) > 0.5) return byY;
+    const byX = left.x - right.x;
+    if (Math.abs(byX) > 0.5) return byX;
+    return left.targetId.localeCompare(right.targetId);
+  });
+  var getFlattenedTraversalTargets = (page) => page.flattenedSpans.map((span) => findInteractionTarget(page, span.targetId)).filter((target) => target !== null);
+  var getRectDistanceSq = (rect, point3) => {
+    const nearestX = clamp(point3.x, rect.x, rect.x + rect.w);
+    const nearestY = clamp(point3.y, rect.y, rect.y + rect.h);
+    const dx = point3.x - nearestX;
+    const dy = point3.y - nearestY;
+    return dx * dx + dy * dy;
+  };
+  var hitTestInteractionTarget = (page, x2, y2) => {
+    const targets = page?.targets || [];
+    for (let index2 = targets.length - 1; index2 >= 0; index2 -= 1) {
+      const target = targets[index2];
+      if (x2 >= target.x && x2 <= target.x + target.w && y2 >= target.y && y2 <= target.y + target.h) {
+        return target;
+      }
+    }
+    return null;
+  };
+  var hitTestInteraction = (page, x2, y2) => {
+    const target = hitTestInteractionTarget(page, x2, y2);
+    if (!target) return null;
+    return {
+      pageIndex: target.pageIndex,
+      targetId: target.targetId,
+      sourceId: target.sourceId,
+      selectableText: target.selectableText,
+      containerSourceId: target.containerSourceId,
+      containerType: target.containerType,
+      point: { x: x2, y: y2 }
+    };
+  };
+  var resolveFocusTarget = (page, anchorTarget, point3) => {
+    const direct = hitTestInteractionTarget(page, point3.x, point3.y);
+    const group = getFlattenedTraversalTargets(page);
+    if (direct && group.some((candidate) => candidate.targetId === direct.targetId)) {
+      return direct;
+    }
+    let nearest = anchorTarget;
+    let nearestDistance = getRectDistanceSq(anchorTarget, point3);
+    for (const candidate of group) {
+      const distance = getRectDistanceSq(candidate, point3);
+      if (distance < nearestDistance) {
+        nearest = candidate;
+        nearestDistance = distance;
+      }
+    }
+    return nearest;
+  };
+  var getNearestInteractionSelectionOffset = (target, x2, y2) => {
+    if (target.units.length === 0) return 0;
+    const lineIndexes = sortUniqueNumbers(target.units.map((unit) => unit.lineIndex));
+    let targetLineIndex = lineIndexes[0] || 0;
+    let nearestLineDistance = Number.POSITIVE_INFINITY;
+    for (const lineIndex of lineIndexes) {
+      const line2 = target.lines.find((candidate) => candidate.index === lineIndex);
+      if (!line2) continue;
+      const lineCenterY = (line2.top + line2.bottom) / 2;
+      const lineDistance = y2 < line2.top ? line2.top - y2 : y2 > line2.bottom ? y2 - line2.bottom : Math.abs(lineCenterY - y2) * 0.25;
+      if (lineDistance < nearestLineDistance) {
+        nearestLineDistance = lineDistance;
+        targetLineIndex = lineIndex;
+      }
+    }
+    const line = target.lines.find((candidate) => candidate.index === targetLineIndex);
+    const lineUnits = target.units.filter((unit) => unit.lineIndex === targetLineIndex);
+    if (!line || lineUnits.length === 0) return 0;
+    const first = lineUnits[0];
+    const last = lineUnits[lineUnits.length - 1];
+    if (x2 <= first.x0) return line.startOffset;
+    if (x2 >= last.x1) return line.endOffset;
+    for (const unit of lineUnits) {
+      const centerX = (unit.x0 + unit.x1) / 2;
+      if (x2 < centerX) return unit.absoluteOffset;
+      if (x2 <= unit.x1) return unit.absoluteOffset + 1;
+    }
+    return line.endOffset;
+  };
+  var createInteractionSelectionPoint = (page, x2, y2) => {
+    const hit = hitTestInteraction(page, x2, y2);
+    if (!hit) return null;
+    const target = findInteractionTarget(page, hit.targetId);
+    if (!target) return null;
+    return {
+      pageIndex: hit.pageIndex,
+      targetId: hit.targetId,
+      sourceId: hit.sourceId,
+      x: x2,
+      y: y2,
+      absoluteOffset: getNearestInteractionSelectionOffset(target, x2, y2)
+    };
+  };
+  var normalizeInteractionSelectedOffsets = (target, offsets) => {
+    const validOffsets = new Set(target.units.map((unit) => unit.absoluteOffset));
+    return sortUniqueNumbers(offsets.filter((offset) => validOffsets.has(offset)));
+  };
+  var getSpatiallySelectedInteractionOffsets = (target, anchor, point3) => {
+    const x0 = Math.min(anchor.x, point3.x);
+    const y0 = Math.min(anchor.y, point3.y) - 4;
+    const x1 = Math.max(anchor.x, point3.x);
+    const y1 = Math.max(anchor.y, point3.y) + 4;
+    return normalizeInteractionSelectedOffsets(
+      target,
+      target.units.filter((unit) => {
+        const centerX = (unit.x0 + unit.x1) / 2;
+        const centerY = (unit.y0 + unit.y1) / 2;
+        return centerX >= x0 && centerX <= x1 && centerY >= y0 && centerY <= y1;
+      }).map((unit) => unit.absoluteOffset)
+    );
+  };
+  var buildContinuousInteractionOffsets = (target, anchorOffset, focusOffset) => {
+    const start = Math.max(0, Math.min(anchorOffset, focusOffset));
+    const end = Math.max(0, Math.max(anchorOffset, focusOffset));
+    const offsets = [];
+    for (let offset = start; offset < end; offset += 1) {
+      offsets.push(offset);
+    }
+    return normalizeInteractionSelectedOffsets(target, offsets);
+  };
+  var getInteractionCaretRect = (target, offset) => {
+    if (target.lines.length === 0) return null;
+    for (const line of target.lines) {
+      const lineUnits = target.units.filter((unit) => unit.lineIndex === line.index);
+      if (lineUnits.length === 0) continue;
+      if (offset <= line.startOffset) {
+        return { x: lineUnits[0].x0, y0: line.top, y1: line.bottom };
+      }
+      if (offset <= line.endOffset) {
+        const unit = lineUnits.find((candidate) => candidate.absoluteOffset + 1 >= offset);
+        if (!unit) {
+          return { x: lineUnits[lineUnits.length - 1].x1, y0: line.top, y1: line.bottom };
+        }
+        const x2 = offset <= unit.absoluteOffset ? unit.x0 : unit.x1;
+        return { x: x2, y0: line.top, y1: line.bottom };
+      }
+    }
+    const lastLine = target.lines[target.lines.length - 1];
+    const lastUnits = target.units.filter((unit) => unit.lineIndex === lastLine.index);
+    if (lastUnits.length === 0) return null;
+    return { x: lastUnits[lastUnits.length - 1].x1, y0: lastLine.top, y1: lastLine.bottom };
+  };
+  var buildInteractionSelectionRects = (target, selection) => {
+    if (!selection || selection.pageIndex !== target.pageIndex) {
+      return [];
+    }
+    const targetSelection = selection.targetSelections?.find((entry) => entry.targetId === target.targetId);
+    const offsets = new Set(targetSelection?.selectedOffsets ?? (selection.targetId === target.targetId ? selection.selectedOffsets : []));
+    const rects = [];
+    for (const line of target.lines) {
+      const selectedLineUnits = target.units.filter((unit) => unit.lineIndex === line.index && offsets.has(unit.absoluteOffset)).sort((a2, b2) => a2.x0 - b2.x0);
+      if (selectedLineUnits.length === 0) continue;
+      const lineUnitsBySegment = /* @__PURE__ */ new Map();
+      for (const unit of target.units.filter((candidate) => candidate.lineIndex === line.index && candidate.segmentKey)) {
+        const key = String(unit.segmentKey);
+        const bucket = lineUnitsBySegment.get(key);
+        if (bucket) {
+          bucket.push(unit);
+        } else {
+          lineUnitsBySegment.set(key, [unit]);
+        }
+      }
+      const mergedLineUnits = [];
+      let index2 = 0;
+      while (index2 < selectedLineUnits.length) {
+        const unit = selectedLineUnits[index2];
+        if (unit.segmentIsShaped && unit.segmentKey) {
+          const sameSegmentSelected = selectedLineUnits.filter((candidate) => candidate.segmentKey === unit.segmentKey);
+          const sameSegmentAll = lineUnitsBySegment.get(unit.segmentKey) || sameSegmentSelected;
+          const fullySelected = sameSegmentAll.length > 0 && sameSegmentSelected.length === sameSegmentAll.length;
+          mergedLineUnits.push({
+            x0: fullySelected ? unit.segmentX0 ?? sameSegmentSelected[0].x0 : Math.min(...sameSegmentSelected.map((candidate) => candidate.x0)),
+            x1: fullySelected ? unit.segmentX1 ?? sameSegmentSelected[sameSegmentSelected.length - 1].x1 : Math.max(...sameSegmentSelected.map((candidate) => candidate.x1)),
+            y0: Math.min(...sameSegmentSelected.map((candidate) => candidate.y0)),
+            y1: Math.max(...sameSegmentSelected.map((candidate) => candidate.y1)),
+            absoluteOffset: Math.min(...sameSegmentSelected.map((candidate) => candidate.absoluteOffset))
+          });
+          index2 += sameSegmentSelected.length;
+          continue;
+        }
+        mergedLineUnits.push({
+          x0: unit.x0,
+          x1: unit.x1,
+          y0: unit.y0,
+          y1: unit.y1,
+          absoluteOffset: unit.absoluteOffset
+        });
+        index2 += 1;
+      }
+      let current = {
+        x: mergedLineUnits[0].x0,
+        y: mergedLineUnits[0].y0,
+        w: Math.max(1, mergedLineUnits[0].x1 - mergedLineUnits[0].x0),
+        h: Math.max(1, mergedLineUnits[0].y1 - mergedLineUnits[0].y0)
+      };
+      for (let index22 = 1; index22 < mergedLineUnits.length; index22 += 1) {
+        const unit = mergedLineUnits[index22];
+        const gap = unit.x0 - (current.x + current.w);
+        const previousUnit = mergedLineUnits[index22 - 1];
+        const visuallyContiguous = gap <= 1.5;
+        const logicallyContiguous = unit.absoluteOffset <= previousUnit.absoluteOffset + 1;
+        if (visuallyContiguous || logicallyContiguous) {
+          current.w = Math.max(1, unit.x1 - current.x);
+          current.h = Math.max(current.h, unit.y1 - current.y);
+          continue;
+        }
+        rects.push(current);
+        current = {
+          x: unit.x0,
+          y: unit.y0,
+          w: Math.max(1, unit.x1 - unit.x0),
+          h: Math.max(1, unit.y1 - unit.y0)
+        };
+      }
+      rects.push(current);
+    }
+    return rects;
+  };
+  var resolveInteractionSelection = (page, anchor, focusPoint, mode = "continuous") => {
+    if (!page || !anchor) return null;
+    const anchorTarget = findInteractionTarget(page, anchor.targetId);
+    if (!anchorTarget) return null;
+    const focusTarget = resolveFocusTarget(page, anchorTarget, focusPoint);
+    const caretOffset = getNearestInteractionSelectionOffset(focusTarget, focusPoint.x, focusPoint.y);
+    if (mode === "spatial" || focusTarget.targetId === anchorTarget.targetId) {
+      const selectedOffsets = mode === "spatial" ? getSpatiallySelectedInteractionOffsets(anchorTarget, anchor, focusPoint) : buildContinuousInteractionOffsets(anchorTarget, anchor.absoluteOffset, caretOffset);
+      return {
+        pageIndex: anchor.pageIndex,
+        targetId: anchor.targetId,
+        sourceId: anchor.sourceId,
+        selectedOffsets,
+        caretOffset,
+        caretTargetId: focusTarget.targetId,
+        targetSelections: [{
+          targetId: anchorTarget.targetId,
+          sourceId: anchorTarget.sourceId,
+          selectedOffsets
+        }]
+      };
+    }
+    const group = getFlattenedTraversalTargets(page);
+    const anchorIndex = group.findIndex((target) => target.targetId === anchorTarget.targetId);
+    const focusIndex = group.findIndex((target) => target.targetId === focusTarget.targetId);
+    if (anchorIndex < 0 || focusIndex < 0) return null;
+    const forward = focusIndex >= anchorIndex;
+    const startIndex = Math.min(anchorIndex, focusIndex);
+    const endIndex = Math.max(anchorIndex, focusIndex);
+    const targetSelections = group.slice(startIndex, endIndex + 1).map((target, relativeIndex, slice) => {
+      const isFirst = relativeIndex === 0;
+      const isLast = relativeIndex === slice.length - 1;
+      let selectedOffsets;
+      if (forward) {
+        if (isFirst) {
+          selectedOffsets = buildContinuousInteractionOffsets(target, anchor.absoluteOffset, target.totalLength);
+        } else if (isLast) {
+          selectedOffsets = buildContinuousInteractionOffsets(target, 0, caretOffset);
+        } else {
+          selectedOffsets = normalizeInteractionSelectedOffsets(
+            target,
+            target.units.map((unit) => unit.absoluteOffset)
+          );
+        }
+      } else {
+        if (isFirst) {
+          selectedOffsets = buildContinuousInteractionOffsets(target, 0, caretOffset);
+        } else if (isLast) {
+          selectedOffsets = buildContinuousInteractionOffsets(target, anchor.absoluteOffset, target.totalLength);
+        } else {
+          selectedOffsets = normalizeInteractionSelectedOffsets(
+            target,
+            target.units.map((unit) => unit.absoluteOffset)
+          );
+        }
+      }
+      return {
+        targetId: target.targetId,
+        sourceId: target.sourceId,
+        selectedOffsets
+      };
+    });
+    return {
+      pageIndex: anchor.pageIndex,
+      targetId: anchorTarget.targetId,
+      sourceId: anchor.sourceId,
+      selectedOffsets: targetSelections.find((entry) => entry.targetId === anchorTarget.targetId)?.selectedOffsets ?? [],
+      caretOffset,
+      caretTargetId: focusTarget.targetId,
+      targetSelections
+    };
+  };
+  var buildInteractionOverlayModel = (page, selection, selectedTargetId2) => {
+    const targetId = String(selectedTargetId2 || selection?.targetId || "");
+    if (!page || !targetId) return null;
+    const target = findInteractionTarget(page, targetId);
+    if (!target) return null;
+    const caretTarget = selection?.caretTargetId ? findInteractionTarget(page, selection.caretTargetId) : target;
+    return {
+      targetId: target.targetId,
+      sourceId: target.sourceId,
+      frameRect: { x: target.x, y: target.y, w: target.w, h: target.h },
+      selectionRects: selection?.targetSelections?.length ? selection.targetSelections.flatMap((entry) => {
+        const selectionTarget = findInteractionTarget(page, entry.targetId);
+        if (!selectionTarget) return [];
+        return buildInteractionSelectionRects(selectionTarget, selection);
+      }) : buildInteractionSelectionRects(target, selection),
+      caretRect: selection && caretTarget ? getInteractionCaretRect(caretTarget, selection.caretOffset) : null
+    };
+  };
+  var serializeInteractionSelectionText = (page, selection) => {
+    if (!page || !selection) return "";
+    const selectedEntryMap = new Map(
+      getSelectionEntries(selection).map((entry) => [entry.targetId, entry])
+    );
+    const pieces = [];
+    let previousTarget = null;
+    for (const span of page.flattenedSpans) {
+      const entry = selectedEntryMap.get(span.targetId);
+      if (!entry) continue;
+      const target = findInteractionTarget(page, entry.targetId);
+      if (!target || target.selectableText && entry.selectedOffsets.length === 0) continue;
+      const text5 = serializeInteractionTargetPlainText(target, entry.selectedOffsets);
+      if (!text5) continue;
+      if (pieces.length > 0 && previousTarget) {
+        const sameTable = previousTarget.tableCell && target.tableCell && previousTarget.containerSourceId && target.containerSourceId && previousTarget.containerSourceId === target.containerSourceId;
+        const sameViewportRow = sameTable && previousTarget.tableViewportRowIndex !== void 0 && target.tableViewportRowIndex !== void 0 && previousTarget.tableViewportRowIndex === target.tableViewportRowIndex;
+        pieces.push(sameViewportRow ? "	" : "\n");
+      }
+      pieces.push(text5);
+      previousTarget = target;
+    }
+    return pieces.join("");
+  };
+  var serializeInteractionTargetPlainText = (target, selectedOffsets) => {
+    if (!target.selectableText) {
+      const normalizedType = String(target.sourceType || "").trim().toLowerCase();
+      if (normalizedType === "image") return "[Image]";
+      if (normalizedType === "table_cell") return "[Cell]";
+      if (normalizedType) {
+        return `[${normalizedType.replace(/[_-]+/g, " ")}]`;
+      }
+      return "[Object]";
+    }
+    if (selectedOffsets.length === 0) return "";
+    const selectedOffsetSet = new Set(selectedOffsets);
+    const lineChunks = [];
+    for (const line of target.lines) {
+      const selectedLineUnits = target.units.filter((unit) => unit.lineIndex === line.index && selectedOffsetSet.has(unit.absoluteOffset));
+      if (selectedLineUnits.length === 0) continue;
+      const bySegment = /* @__PURE__ */ new Map();
+      for (const unit of selectedLineUnits) {
+        const key = unit.segmentKey || `${unit.lineIndex}:${unit.segmentLogicalIndex ?? 0}`;
+        const bucket = bySegment.get(key);
+        if (bucket) bucket.push(unit);
+        else bySegment.set(key, [unit]);
+      }
+      const lineText = [...bySegment.values()].sort((left, right) => {
+        const leftIndex = left[0]?.segmentLogicalIndex ?? 0;
+        const rightIndex = right[0]?.segmentLogicalIndex ?? 0;
+        return leftIndex - rightIndex;
+      }).map((segmentUnits) => {
+        const direction = segmentUnits[0]?.segmentDirection || "ltr";
+        const orderedUnits = [...segmentUnits].sort((left, right) => direction === "rtl" ? right.x0 - left.x0 : left.x0 - right.x0);
+        return orderedUnits.map((unit) => unit.text).join("");
+      }).join("");
+      if (lineText) lineChunks.push(lineText);
+    }
+    return lineChunks.join("\n");
+  };
+  var inferHeadingLevel = (target) => {
+    const semantic = String(target.semanticRole || "").trim().toLowerCase();
+    const sourceType = String(target.sourceType || "").trim().toLowerCase();
+    const combined = `${semantic} ${sourceType}`;
+    const match = combined.match(/heading[-_ ]?([1-6])|h([1-6])/);
+    const numeric = Number(match?.[1] || match?.[2] || 0);
+    if (numeric >= 1 && numeric <= 6) return numeric;
+    if (semantic === "header") return 2;
+    return null;
+  };
+  var serializeInteractionTargetMarkdown = (target, plainText) => {
+    const normalizedType = String(target.sourceType || "").trim().toLowerCase();
+    const normalizedRole = String(target.semanticRole || "").trim().toLowerCase();
+    const text5 = plainText.trimEnd();
+    if (!target.selectableText) {
+      if (normalizedType === "image") return "![Image]()";
+      if (normalizedType) return `[${normalizedType.replace(/[_-]+/g, " ")}]`;
+      return "[Object]";
+    }
+    const headingLevel = inferHeadingLevel(target);
+    if (headingLevel) return `${"#".repeat(headingLevel)} ${text5}`;
+    if (normalizedType.includes("blockquote") || normalizedRole.includes("blockquote")) {
+      return text5.split("\n").map((line) => `> ${line}`).join("\n");
+    }
+    if (normalizedType.includes("ordered-list") || normalizedType === "ordered_item" || normalizedType === "ordered-item") {
+      return text5.split("\n").map((line, index2) => `${index2 + 1}. ${line}`).join("\n");
+    }
+    if (normalizedType.includes("unordered-list") || normalizedType === "list_item" || normalizedType === "list-item" || normalizedType === "bullet-item") {
+      return text5.split("\n").map((line) => `- ${line}`).join("\n");
+    }
+    if (normalizedType.includes("code") || normalizedRole === "code") {
+      return `\`\`\`
+${text5}
+\`\`\``;
+    }
+    return text5;
+  };
+  var serializeInteractionSelectionMarkdown = (page, selection) => {
+    if (!page || !selection) return "";
+    const selectedEntryMap = new Map(
+      getSelectionEntries(selection).map((entry) => [entry.targetId, entry])
+    );
+    const items = page.flattenedSpans.map((span) => {
+      const entry = selectedEntryMap.get(span.targetId);
+      if (!entry) return null;
+      const target = findInteractionTarget(page, entry.targetId);
+      if (!target || target.selectableText && entry.selectedOffsets.length === 0) return null;
+      const plainText = serializeInteractionTargetPlainText(target, entry.selectedOffsets);
+      return plainText ? { span, entry, target, plainText, markdown: serializeInteractionTargetMarkdown(target, plainText) } : null;
+    }).filter((item) => item !== null);
+    const pieces = [];
+    let index2 = 0;
+    while (index2 < items.length) {
+      const current = items[index2];
+      if (!current.target.tableCell) {
+        if (pieces.length > 0) pieces.push("\n\n");
+        pieces.push(current.markdown);
+        index2 += 1;
+        continue;
+      }
+      const tableRun = [];
+      while (index2 < items.length && items[index2].target.tableCell) {
+        tableRun.push(items[index2]);
+        index2 += 1;
+      }
+      const rows = /* @__PURE__ */ new Map();
+      for (const item of tableRun) {
+        const rowKey = item.target.tableViewportRowIndex ?? item.target.tableRowIndex ?? 0;
+        const row = rows.get(rowKey) || [];
+        row.push({
+          col: item.target.tableColIndex ?? row.length,
+          text: item.plainText.replace(/\n+/g, " ").trim(),
+          isHeader: rowKey === 0 || String(item.target.semanticRole || "").trim().toLowerCase() === "header"
+        });
+        rows.set(rowKey, row);
+      }
+      const orderedRows = [...rows.entries()].sort((left, right) => left[0] - right[0]).map(([, row]) => row.sort((left, right) => left.col - right.col));
+      const tableMarkdownRows = orderedRows.map((row) => `| ${row.map((cell) => cell.text.replace(/\|/g, "\\|")).join(" | ")} |`);
+      if (tableMarkdownRows.length > 0) {
+        const shouldEmitHeaderSeparator = orderedRows[0]?.some((cell) => cell.isHeader);
+        if (shouldEmitHeaderSeparator) {
+          const separator = `| ${orderedRows[0].map(() => "---").join(" | ")} |`;
+          tableMarkdownRows.splice(1, 0, separator);
+        }
+      }
+      if (pieces.length > 0) pieces.push("\n\n");
+      pieces.push(tableMarkdownRows.join("\n"));
+    }
+    return pieces.join("");
+  };
+  var InteractionArtifactCollaborator = class {
+    constructor(layout) {
+      this.layout = layout;
+    }
+    onSimulationComplete(session) {
+      session.publishArtifact(
+        simulationArtifactKeys.interactionMap,
+        buildInteractionPages(session.getFinalizedPages(), this.layout)
+      );
+    }
+  };
+  var ViewportCaptureArtifactCollaborator = class {
+    onSimulationComplete(session) {
+      const summaries = session.getPageCaptures().map((record) => ({
+        pageIndex: record.pageIndex,
+        physicalPageNumber: record.physicalPageNumber,
+        logicalPageNumber: record.logicalPageNumber,
+        worldSpace: {
+          originX: record.capture.worldSpace.originX,
+          originY: record.capture.worldSpace.originY,
+          width: record.capture.worldSpace.width,
+          exploredBottom: record.capture.worldSpace.exploredBottom
+        },
+        viewport: {
+          worldX: record.capture.viewport.worldX,
+          worldY: record.capture.viewport.worldY,
+          width: record.capture.viewport.width,
+          height: record.capture.viewport.height,
+          contentRect: {
+            x: record.capture.viewport.contentRect.x,
+            y: record.capture.viewport.contentRect.y,
+            w: record.capture.viewport.contentRect.w,
+            h: record.capture.viewport.contentRect.h
+          }
+        },
+        terrain: {
+          marginBlockCount: record.capture.viewport.terrain.marginBlocks.length,
+          reservationBlockCount: record.capture.viewport.terrain.reservationBlocks.length,
+          exclusionBlockCount: record.capture.viewport.terrain.exclusionBlocks.length,
+          worldTraversalExclusionCount: record.capture.viewport.terrain.exclusionBlocks.filter(
+            (block) => block.surface === "world-traversal"
+          ).length,
+          blockedRectCount: record.capture.viewport.terrain.blockedRects.length
+        }
+      }));
+      session.publishArtifact(simulationArtifactKeys.viewportCaptureSummary, summaries);
+    }
+  };
+  var AsyncThoughtHost = class {
+    constructor() {
+      this.entries = /* @__PURE__ */ new Map();
+      this.completionVersion = 0;
+      this.waiters = /* @__PURE__ */ new Set();
+    }
+    request(request) {
+      const existing = this.entries.get(request.key);
+      if (existing) {
+        return {
+          key: existing.key,
+          state: existing.state,
+          result: existing.result,
+          error: existing.error,
+          completedAt: existing.completedAt,
+          metadata: existing.metadata
+        };
+      }
+      const entry = {
+        key: request.key,
+        state: "pending",
+        metadata: request.metadata
+      };
+      entry.promise = request.executor().then((result) => {
+        entry.state = "completed";
+        entry.result = result;
+        entry.completedAt = Date.now();
+        this.notifyCompletion();
+      }).catch((error) => {
+        entry.state = "failed";
+        entry.error = error instanceof Error ? error.message : String(error);
+        entry.completedAt = Date.now();
+        this.notifyCompletion();
+      });
+      this.entries.set(request.key, entry);
+      return {
+        key: entry.key,
+        state: entry.state,
+        metadata: entry.metadata
+      };
+    }
+    read(key) {
+      const entry = this.entries.get(key);
+      if (!entry) return void 0;
+      return {
+        key: entry.key,
+        state: entry.state,
+        result: entry.result,
+        error: entry.error,
+        completedAt: entry.completedAt,
+        metadata: entry.metadata
+      };
+    }
+    hasPending() {
+      for (const entry of this.entries.values()) {
+        if (entry.state === "pending") return true;
+      }
+      return false;
+    }
+    getSummary() {
+      return Array.from(this.entries.values()).map((entry) => ({
+        key: entry.key,
+        state: entry.state,
+        result: entry.result,
+        error: entry.error,
+        completedAt: entry.completedAt,
+        metadata: entry.metadata
+      }));
+    }
+    async waitForNextCompletion(timeoutMs) {
+      if (!this.hasPending()) return false;
+      const observedVersion = this.completionVersion;
+      if (this.completionVersion > observedVersion) return true;
+      return await new Promise((resolve) => {
+        let settled = false;
+        const finish = (value) => {
+          if (settled) return;
+          settled = true;
+          if (timer) clearTimeout(timer);
+          this.waiters.delete(onCompletion);
+          resolve(value);
+        };
+        const onCompletion = () => finish(true);
+        this.waiters.add(onCompletion);
+        const timer = timeoutMs > 0 ? setTimeout(() => finish(false), timeoutMs) : null;
+      });
+    }
+    notifyCompletion() {
+      this.completionVersion += 1;
+      for (const waiter of Array.from(this.waiters)) {
+        waiter();
+      }
+    }
+  };
   var EPSILON = 1e-6;
   function toUnit(value, fallback) {
     if (value === void 0 || value === null || value === "") return fallback;
     return LayoutUtils.validateUnit(value);
   }
-  function clamp(value, min, max) {
+  function clamp2(value, min, max) {
     if (value < min) return min;
     if (value > max) return max;
     return value;
@@ -53599,7 +56367,7 @@ ${source}`)
     const authoredMax = definition3.max === void 0 ? Number.POSITIVE_INFINITY : Math.max(0, toUnit(definition3.max, min));
     const max = mode === "auto" && definition3.max === void 0 ? Math.max(min, maxContent) : Math.max(min, authoredMax);
     const rawBasis = definition3.basis !== void 0 ? toUnit(definition3.basis, min) : mode === "auto" ? maxContent : min;
-    const basis = clamp(Math.max(0, rawBasis), min, max);
+    const basis = clamp2(Math.max(0, rawBasis), min, max);
     if (mode === "flex") {
       const fr = Math.max(EPSILON, toUnit(definition3.fr, 1));
       return {
@@ -53751,548 +56519,6 @@ ${source}`)
       overflowContent
     };
   }
-  var DropCapFragmentPackager = class {
-    get pageBreakBefore() {
-      return this.wrap.pageBreakBefore;
-    }
-    get keepWithNext() {
-      return this.wrap.keepWithNext;
-    }
-    constructor(processor, dropCap, wrap2, body, wrapOffsetX, unifiedLayoutBefore, identity) {
-      this.processor = processor;
-      this.dropCap = dropCap;
-      this.wrap = wrap2;
-      this.body = body;
-      this.wrapOffsetX = wrapOffsetX;
-      this.unifiedLayoutBefore = unifiedLayoutBefore;
-      this.actorId = identity.actorId;
-      this.sourceId = identity.sourceId;
-      this.actorKind = identity.actorKind;
-      this.fragmentIndex = identity.fragmentIndex;
-      this.continuationOf = identity.continuationOf;
-      const capHeight = Math.max(0, this.dropCap.measuredContentHeight);
-      const wrapHeight = Math.max(0, this.wrap.measuredContentHeight);
-      let required = this.unifiedLayoutBefore + Math.max(capHeight, wrapHeight);
-      if (this.body) {
-        required += Math.max(0, this.body.measuredContentHeight) + Math.max(0, this.body.marginBottom);
-      } else {
-        required += Math.max(this.dropCap.marginBottom || 0, this.wrap.marginBottom || 0);
-      }
-      this.requiredHeight = required;
-    }
-    prepare(_availableWidth, _availableHeight, _context) {
-    }
-    getPlacementPreference(fullAvailableWidth, _context) {
-      return {
-        minimumWidth: fullAvailableWidth,
-        acceptsFrame: true
-      };
-    }
-    getTransformProfile() {
-      return {
-        capabilities: [
-          {
-            kind: "split",
-            preservesIdentity: true,
-            producesContinuation: true
-          }
-        ]
-      };
-    }
-    emitBoxes(availableWidth, _availableHeight, context) {
-      const dropCap = { ...this.dropCap, properties: { ...this.dropCap.properties } };
-      const wrap2 = { ...this.wrap, properties: { ...this.wrap.properties, _glueOffsetX: this.wrapOffsetX } };
-      const body = this.body ? { ...this.body, properties: { ...this.body.properties } } : null;
-      const positionedDrop = this.processor.positionFlowBox(
-        dropCap,
-        0,
-        this.unifiedLayoutBefore,
-        context.margins,
-        availableWidth,
-        0
-      );
-      const positionedWrap = this.processor.positionFlowBox(
-        wrap2,
-        0,
-        this.unifiedLayoutBefore,
-        context.margins,
-        availableWidth,
-        0
-      );
-      const boxes = [];
-      boxes.push(...Array.isArray(positionedDrop) ? positionedDrop : [positionedDrop]);
-      boxes.push(...Array.isArray(positionedWrap) ? positionedWrap : [positionedWrap]);
-      const capHeight = Math.max(0, dropCap.measuredContentHeight);
-      const wrapHeight = Math.max(0, wrap2.measuredContentHeight);
-      let y2 = this.unifiedLayoutBefore + Math.max(capHeight, wrapHeight);
-      if (body) {
-        const positionedBody = this.processor.positionFlowBox(
-          body,
-          y2,
-          0,
-          context.margins,
-          availableWidth,
-          0
-        );
-        boxes.push(...Array.isArray(positionedBody) ? positionedBody : [positionedBody]);
-      }
-      for (const b2 of boxes) {
-        if (b2.meta) b2.meta = { ...b2.meta };
-      }
-      return boxes;
-    }
-    split(_availableHeight, _context) {
-      return { currentFragment: null, continuationFragment: this };
-    }
-    getRequiredHeight() {
-      return this.requiredHeight;
-    }
-    isUnbreakable(_availableHeight) {
-      return true;
-    }
-    getMarginTop() {
-      return this.wrap.marginTop;
-    }
-    getMarginBottom() {
-      return this.body ? Math.max(0, this.body.marginBottom) : Math.max(0, this.wrap.marginBottom);
-    }
-  };
-  function resolveFontMetricScales(font) {
-    const upm = Number(font?.unitsPerEm);
-    if (upm > 0) {
-      const rawAscent = Number(font?.ascent);
-      const rawDescent = Number(font?.descent);
-      if (Number.isFinite(rawAscent) && rawAscent > 0 && Number.isFinite(rawDescent)) {
-        return {
-          ascentScale: rawAscent / upm,
-          descentScale: Math.abs(rawDescent) / upm
-        };
-      }
-    }
-    return { ascentScale: 0.8, descentScale: 0.2 };
-  }
-  function resolveGlyphMetricScales(font, text5) {
-    if (!font || !text5) return null;
-    const upm = Number(font?.unitsPerEm);
-    if (!Number.isFinite(upm) || upm <= 0) return null;
-    if (typeof font.layout !== "function") return null;
-    try {
-      const run = font.layout(text5);
-      if (!run?.glyphs || run.glyphs.length === 0) return null;
-      let maxY = -Infinity;
-      let minY = Infinity;
-      for (const glyph of run.glyphs) {
-        const bbox = glyph?.bbox || (typeof glyph?.getBBox === "function" ? glyph.getBBox() : null);
-        const yMax = Number(bbox?.maxY ?? bbox?.yMax);
-        const yMin = Number(bbox?.minY ?? bbox?.yMin);
-        if (Number.isFinite(yMax)) {
-          if (yMax > maxY) maxY = yMax;
-        }
-        if (Number.isFinite(yMin)) {
-          if (yMin < minY) minY = yMin;
-        }
-        const rawYMax = Number(glyph?.yMax);
-        const rawYMin = Number(glyph?.yMin);
-        if (Number.isFinite(rawYMax) && rawYMax > maxY) maxY = rawYMax;
-        if (Number.isFinite(rawYMin) && rawYMin < minY) minY = rawYMin;
-      }
-      if (!Number.isFinite(maxY) || maxY <= 0) return null;
-      if (!Number.isFinite(minY)) {
-        minY = 0;
-      }
-      if (maxY <= 0) return null;
-      const ascentScale = maxY / upm;
-      const descentScale = Math.max(0, Math.abs(minY) / upm);
-      if (!Number.isFinite(ascentScale) || ascentScale <= 0) return null;
-      return { ascentScale, descentScale };
-    } catch {
-      return null;
-    }
-  }
-  function computeCapFontSize(lines, bodyFontSize, lineHeight, bodyAscentScale, bodyDescentScale, capAscentScale, capDescentScale) {
-    const bodyExcess = Math.max(0, bodyAscentScale + bodyDescentScale - 1);
-    const uniformBodyLH = (lineHeight + bodyExcess) * bodyFontSize;
-    const vOffsetBody = (uniformBodyLH - bodyFontSize) / 2;
-    const targetBaseline = (lines - 1) * uniformBodyLH + vOffsetBody + bodyAscentScale * bodyFontSize;
-    const sizeByTop = targetBaseline / Math.max(0.01, capAscentScale);
-    const availableBelow = Math.max(0, lines * uniformBodyLH - targetBaseline);
-    const sizeByBottom = capDescentScale > 0 ? availableBelow / capDescentScale : sizeByTop;
-    const capFontSize = Math.max(1, Math.min(sizeByTop, sizeByBottom));
-    return { capFontSize, uniformBodyLH, vOffsetBody };
-  }
-  var DropCapPackager = class {
-    constructor(processor, element2, index2, spec, identity) {
-      this.cachedParts = null;
-      this.cachedAvailableWidth = -1;
-      this.requiredHeight = 0;
-      this.processor = processor;
-      this.element = element2;
-      this.index = index2;
-      this.spec = spec;
-      const resolvedIdentity = identity ?? createElementPackagerIdentity(element2, [index2]);
-      this.actorId = resolvedIdentity.actorId;
-      this.sourceId = resolvedIdentity.sourceId;
-      this.actorKind = resolvedIdentity.actorKind;
-      this.fragmentIndex = resolvedIdentity.fragmentIndex;
-      this.continuationOf = resolvedIdentity.continuationOf;
-    }
-    get pageBreakBefore() {
-      return this.cachedParts?.wrap.pageBreakBefore ?? false;
-    }
-    get keepWithNext() {
-      return this.cachedParts?.wrap.keepWithNext ?? false;
-    }
-    materialize(availableWidth, context) {
-      if (this.cachedAvailableWidth === availableWidth && this.cachedParts) return;
-      const baseFlow = this.processor.shapeElement(this.element, { path: [this.index] });
-      const text5 = this.processor.getElementText(this.element);
-      const charCount = Math.max(1, Math.floor(Number(this.spec.characters ?? 1)));
-      const graphemes = Array.from(text5 || "");
-      const capChars = graphemes.slice(0, charCount).join("");
-      if (!capChars) {
-        this.cachedParts = null;
-        this.requiredHeight = 0;
-        return;
-      }
-      const charUnitLength = capChars.length;
-      const specLines = Number.isFinite(this.spec.lines) ? Math.max(1, Math.floor(Number(this.spec.lines))) : 3;
-      const gap = Number.isFinite(this.spec.gap) ? Math.max(0, Number(this.spec.gap)) : 6;
-      const characterStyle = this.spec.characterStyle || {};
-      const bodyFontSize = Number(baseFlow.style.fontSize || this.processor.config.layout.fontSize);
-      const lineHeight = Number(baseFlow.style.lineHeight || this.processor.config.layout.lineHeight);
-      const bodyFontFamily = baseFlow.style.fontFamily || this.processor.config.layout.fontFamily;
-      const bodyFontWeight = baseFlow.style.fontWeight ?? 400;
-      const bodyFontStyle = baseFlow.style.fontStyle ?? "normal";
-      let bodyFont;
-      try {
-        bodyFont = this.processor.resolveLoadedFamilyFont(bodyFontFamily, bodyFontWeight, bodyFontStyle);
-      } catch {
-        bodyFont = this.processor.font;
-      }
-      const { ascentScale: bodyAscentScale, descentScale: bodyDescentScale } = resolveFontMetricScales(bodyFont);
-      const capFontFamily = String(characterStyle.fontFamily || bodyFontFamily);
-      const capFontWeight = characterStyle.fontWeight ?? bodyFontWeight;
-      const capFontStyle = characterStyle.fontStyle ?? bodyFontStyle;
-      let capFont;
-      try {
-        capFont = this.processor.resolveLoadedFamilyFont(capFontFamily, capFontWeight, capFontStyle);
-      } catch {
-        capFont = bodyFont;
-      }
-      const { ascentScale: capAscentScale, descentScale: capDescentScale } = resolveFontMetricScales(capFont);
-      const glyphMetrics = resolveGlyphMetricScales(capFont, capChars);
-      const capAscentScaleEffective = glyphMetrics?.ascentScale ?? capAscentScale;
-      const capDescentScaleEffective = glyphMetrics?.descentScale ?? capDescentScale;
-      const { capFontSize, uniformBodyLH } = computeCapFontSize(
-        specLines,
-        bodyFontSize,
-        lineHeight,
-        bodyAscentScale,
-        bodyDescentScale,
-        capAscentScaleEffective,
-        capDescentScaleEffective
-      );
-      const dropCapStyle = {
-        ...baseFlow.style,
-        ...characterStyle,
-        fontSize: capFontSize,
-        lineHeight: 1,
-        marginTop: 0,
-        marginBottom: 0,
-        paddingTop: LayoutUtils.validateUnit(characterStyle.paddingTop ?? characterStyle.padding ?? 0),
-        paddingBottom: LayoutUtils.validateUnit(characterStyle.paddingBottom ?? characterStyle.padding ?? 0),
-        paddingLeft: LayoutUtils.validateUnit(characterStyle.paddingLeft ?? characterStyle.padding ?? 0),
-        paddingRight: LayoutUtils.validateUnit(characterStyle.paddingRight ?? characterStyle.padding ?? 0)
-      };
-      const dropCapElement = {
-        type: "dropcap",
-        content: capChars,
-        properties: { style: dropCapStyle }
-      };
-      const dropCapFlow = this.processor.shapeElement(dropCapElement, {
-        path: [this.index, 0],
-        sourceId: `${baseFlow.meta.sourceId}:dropcap`,
-        engineKey: `${baseFlow.meta.engineKey}:dropcap`,
-        sourceType: "dropcap",
-        semanticRole: baseFlow.meta.semanticRole,
-        reflowKey: baseFlow.meta.reflowKey,
-        fragmentIndex: 0,
-        isContinuation: false
-      });
-      this.processor.materializeFlowBox(dropCapFlow, {
-        pageIndex: 0,
-        cursorY: 0,
-        contentWidth: availableWidth
-      });
-      if (Array.isArray(dropCapFlow.lines)) {
-        const segAscent = capAscentScaleEffective * 1e3;
-        const segDescent = capDescentScaleEffective * 1e3;
-        for (const line of dropCapFlow.lines) {
-          if (!Array.isArray(line)) continue;
-          for (const seg of line) {
-            if (seg && !seg.inlineObject) {
-              seg.ascent = segAscent;
-              seg.descent = segDescent;
-              seg.glyphs = void 0;
-            }
-          }
-        }
-      }
-      dropCapFlow.properties = { ...dropCapFlow.properties || {}, _lineYOffsets: [0] };
-      dropCapFlow.measuredContentHeight = specLines * uniformBodyLH;
-      let dropCapWidth = Number.isFinite(dropCapFlow.measuredWidth) ? Math.max(0, Number(dropCapFlow.measuredWidth)) : 0;
-      if (!dropCapWidth && Array.isArray(dropCapFlow.lines) && dropCapFlow.lines.length > 0) {
-        const firstLine = dropCapFlow.lines[0] || [];
-        const lineWidth = firstLine.reduce((sum, seg) => sum + Number(seg.width || 0), 0);
-        const insets = LayoutUtils.getHorizontalInsets(dropCapFlow.style);
-        dropCapWidth = Math.max(0, lineWidth + insets);
-      }
-      if (!dropCapWidth) {
-        dropCapWidth = LayoutUtils.getBoxWidth(this.processor.config, dropCapFlow.style);
-      }
-      const dropCapHeight = Math.max(0, dropCapFlow.measuredContentHeight);
-      const wrapOffsetX = dropCapWidth + gap;
-      const wrapContentWidth = availableWidth - wrapOffsetX;
-      const minWrapWidth = Math.max(24, bodyFontSize * 2);
-      if (!Number.isFinite(wrapContentWidth) || wrapContentWidth < minWrapWidth || dropCapHeight <= 0) {
-        this.cachedParts = null;
-        this.requiredHeight = 0;
-        return;
-      }
-      let remainingElement;
-      if (Array.isArray(this.element.children) && this.element.children.length > 0) {
-        const children = this.processor.sliceElements(this.element.children, charUnitLength, text5.length);
-        remainingElement = {
-          ...this.element,
-          type: this.element.type,
-          content: "",
-          children
-        };
-      } else {
-        remainingElement = {
-          ...this.element,
-          type: this.element.type,
-          content: text5.slice(charUnitLength)
-        };
-      }
-      remainingElement = this.processor.trimLeadingContinuationWhitespace(remainingElement);
-      const wrapLinesResult = this.processor.resolveLines(
-        remainingElement,
-        baseFlow.style,
-        bodyFontSize,
-        { pageIndex: 0, cursorY: 0, contentWidth: wrapContentWidth }
-      );
-      const wrapLines = wrapLinesResult.lines || [];
-      if (wrapLines.length === 0) {
-        this.cachedParts = null;
-        this.requiredHeight = 0;
-        return;
-      }
-      const verticalInsets = LayoutUtils.getVerticalInsets(baseFlow.style);
-      let maxLinesFit = 0;
-      for (let count = 1; count <= wrapLines.length; count += 1) {
-        const candidateLines = wrapLines.slice(0, count);
-        const candidateHeight = this.processor.calculateLineBlockHeight(
-          candidateLines,
-          baseFlow.style,
-          wrapLinesResult.lineYOffsets?.slice(0, count)
-        );
-        if (candidateHeight + verticalInsets <= dropCapHeight + LAYOUT_DEFAULTS.wrapTolerance) {
-          maxLinesFit = count;
-          continue;
-        }
-        break;
-      }
-      if (maxLinesFit <= 0) {
-        this.cachedParts = null;
-        this.requiredHeight = 0;
-        return;
-      }
-      const linesA = wrapLines.slice(0, maxLinesFit);
-      const renderedTextA = this.processor.getJoinedLineText(linesA);
-      const remainingText = this.processor.getElementText(remainingElement);
-      const consumedNow = this.processor.resolveConsumedSourceChars(remainingText, renderedTextA);
-      const remainingChars = Math.max(0, remainingText.length - consumedNow);
-      let elementB = null;
-      if (remainingChars > 0) {
-        if (Array.isArray(remainingElement.children) && remainingElement.children.length > 0) {
-          elementB = {
-            ...remainingElement,
-            type: remainingElement.type,
-            content: "",
-            children: this.processor.sliceElements(remainingElement.children, consumedNow, consumedNow + remainingChars)
-          };
-        } else {
-          elementB = {
-            ...remainingElement,
-            type: remainingElement.type,
-            content: this.processor.getElementText(remainingElement).slice(consumedNow)
-          };
-        }
-        elementB = this.processor.trimLeadingContinuationWhitespace(elementB);
-      }
-      const wrapStyle = elementB ? createLeadingFragmentStyle(baseFlow.style) : { ...baseFlow.style };
-      const wrapMeta = createLeadingFragmentMeta(baseFlow.meta);
-      const wrapProps = {
-        ...baseFlow.properties,
-        _isFirstLine: true,
-        _isLastLine: !elementB
-      };
-      const wrapFlow = this.processor.rebuildFlowBox(baseFlow, linesA, wrapStyle, wrapMeta, wrapProps);
-      wrapFlow.measuredWidth = wrapContentWidth + LayoutUtils.getHorizontalInsets(wrapStyle);
-      if (elementB) wrapFlow.marginBottom = 0;
-      let bodyFlow = null;
-      if (elementB && this.processor.getElementText(elementB)) {
-        const bodyStyle = createContinuationFragmentStyle(baseFlow.style);
-        const bodyLinesResult = this.processor.resolveLines(
-          elementB,
-          bodyStyle,
-          bodyFontSize,
-          { pageIndex: 0, cursorY: 0, contentWidth: availableWidth }
-        );
-        if (bodyLinesResult.lines && bodyLinesResult.lines.length > 0) {
-          const bodyMeta = createContinuationFragmentMeta(baseFlow.meta, baseFlow.meta.fragmentIndex + 1);
-          const bodyProps = { ...baseFlow.properties, _isFirstLine: false, _isLastLine: true };
-          bodyFlow = this.processor.rebuildFlowBox(baseFlow, bodyLinesResult.lines, bodyStyle, bodyMeta, bodyProps);
-          bodyFlow.marginTop = 0;
-        }
-      }
-      const unifiedLayoutBefore = Math.max(Math.max(0, dropCapFlow.marginTop), Math.max(0, wrapFlow.marginTop));
-      const capHeight = Math.max(0, dropCapFlow.measuredContentHeight);
-      const wrapHeight = Math.max(0, wrapFlow.measuredContentHeight);
-      let required = unifiedLayoutBefore + Math.max(capHeight, wrapHeight);
-      if (bodyFlow) {
-        required += Math.max(0, bodyFlow.measuredContentHeight) + Math.max(0, bodyFlow.marginBottom);
-      } else {
-        required += Math.max(dropCapFlow.marginBottom || 0, wrapFlow.marginBottom || 0);
-      }
-      this.cachedParts = {
-        dropCap: dropCapFlow,
-        wrap: wrapFlow,
-        body: bodyFlow,
-        wrapOffsetX,
-        unifiedLayoutBefore
-      };
-      this.cachedAvailableWidth = availableWidth;
-      this.requiredHeight = required;
-    }
-    prepare(availableWidth, _availableHeight, context) {
-      this.materialize(availableWidth, context);
-    }
-    getPlacementPreference(fullAvailableWidth, _context) {
-      return {
-        minimumWidth: fullAvailableWidth,
-        acceptsFrame: true
-      };
-    }
-    getTransformProfile() {
-      return {
-        capabilities: [
-          {
-            kind: "split",
-            preservesIdentity: true,
-            producesContinuation: true
-          },
-          {
-            kind: "morph",
-            preservesIdentity: true,
-            reflowsContent: true
-          }
-        ]
-      };
-    }
-    emitBoxes(availableWidth, availableHeight, context) {
-      this.prepare(availableWidth, availableHeight, context);
-      if (!this.cachedParts) {
-        const fallback = new FlowBoxPackager(
-          this.processor,
-          this.processor.shapeElement(this.element, { path: [this.index] }),
-          {
-            actorId: this.actorId,
-            sourceId: this.sourceId,
-            actorKind: this.actorKind,
-            fragmentIndex: this.fragmentIndex,
-            continuationOf: this.continuationOf
-          }
-        );
-        fallback.prepare(availableWidth, availableHeight, context);
-        return fallback.emitBoxes(availableWidth, availableHeight, context);
-      }
-      const fragment = new DropCapFragmentPackager(
-        this.processor,
-        this.cachedParts.dropCap,
-        this.cachedParts.wrap,
-        this.cachedParts.body,
-        this.cachedParts.wrapOffsetX,
-        this.cachedParts.unifiedLayoutBefore,
-        this
-      );
-      return fragment.emitBoxes(availableWidth, availableHeight, context);
-    }
-    split(availableHeight, context) {
-      if (this.isUnbreakable(availableHeight)) {
-        return { currentFragment: null, continuationFragment: this };
-      }
-      const availableWidth = this.cachedAvailableWidth > 0 ? this.cachedAvailableWidth : context.pageWidth - context.margins.left - context.margins.right;
-      this.prepare(availableWidth, availableHeight, context);
-      if (!this.cachedParts) {
-        return { currentFragment: null, continuationFragment: this };
-      }
-      const { dropCap, wrap: wrap2, body, wrapOffsetX, unifiedLayoutBefore } = this.cachedParts;
-      const capHeight = Math.max(0, dropCap.measuredContentHeight);
-      const wrapHeight = Math.max(0, wrap2.measuredContentHeight);
-      const firstBlockHeight = unifiedLayoutBefore + Math.max(capHeight, wrapHeight);
-      if (availableHeight <= firstBlockHeight + LAYOUT_DEFAULTS.wrapTolerance) {
-        return { currentFragment: null, continuationFragment: this };
-      }
-      if (!body) {
-        return { currentFragment: null, continuationFragment: this };
-      }
-      const splitAvailable = availableHeight - firstBlockHeight;
-      const splitResult = this.processor.splitFlowBox(body, splitAvailable, 0);
-      if (!splitResult) {
-        return { currentFragment: null, continuationFragment: this };
-      }
-      const partA = splitResult.partA;
-      const partB = splitResult.partB;
-      const fitsCurrent = new DropCapFragmentPackager(
-        this.processor,
-        dropCap,
-        wrap2,
-        partA,
-        wrapOffsetX,
-        unifiedLayoutBefore,
-        this
-      );
-      const pushedNext = new FlowBoxPackager(
-        this.processor,
-        partB,
-        createContinuationIdentity(this, partB.meta?.fragmentIndex)
-      );
-      return { currentFragment: fitsCurrent, continuationFragment: pushedNext };
-    }
-    getRequiredHeight() {
-      return this.requiredHeight;
-    }
-    isUnbreakable(_availableHeight) {
-      const flowBox = this.processor.shapeElement(this.element, { path: [this.index] });
-      if (!flowBox.allowLineSplit) return true;
-      if (flowBox.overflowPolicy === "move-whole") return true;
-      return false;
-    }
-    getMarginTop() {
-      if (this.cachedParts) return this.cachedParts.wrap.marginTop;
-      const flowBox = this.processor.shapeElement(this.element, { path: [this.index] });
-      return flowBox.marginTop || 0;
-    }
-    getMarginBottom() {
-      if (this.cachedParts) {
-        return this.cachedParts.body ? Math.max(0, this.cachedParts.body.marginBottom) : Math.max(0, this.cachedParts.wrap.marginBottom || 0);
-      }
-      const flowBox = this.processor.shapeElement(this.element, { path: [this.index] });
-      return flowBox.marginBottom || 0;
-    }
-  };
   var TABLE_OPTION_DEFAULTS = {
     headerRows: 1,
     repeatHeader: true,
@@ -55135,6 +57361,8 @@ ${source}`)
             _tableViewportRowIndex: displayRowIndex,
             _tableWorldRowOffset: rowWorldOffset,
             _tableIsRepeatedHeaderClone: isRepeatedHeaderClone,
+            ...Number.isFinite(unit.properties?._tableViewportWorldY) ? { _tableViewportWorldY: Number(unit.properties?._tableViewportWorldY) } : {},
+            ...Number.isFinite(unit.properties?._tableViewportHeight) ? { _tableViewportHeight: Number(unit.properties?._tableViewportHeight) } : {},
             _tableColIndex: colStart,
             _tableColStart: colStart,
             _tableColSpan: colSpan,
@@ -55171,6 +57399,655 @@ ${source}`)
     }
     return out;
   }
+  var DropCapFragmentPackager = class {
+    get pageBreakBefore() {
+      return this.wrap.pageBreakBefore;
+    }
+    get keepWithNext() {
+      return this.wrap.keepWithNext;
+    }
+    constructor(processor, dropCap, wrap2, body, wrapOffsetX, unifiedLayoutBefore, identity) {
+      this.processor = processor;
+      this.dropCap = dropCap;
+      this.wrap = wrap2;
+      this.body = body;
+      this.wrapOffsetX = wrapOffsetX;
+      this.unifiedLayoutBefore = unifiedLayoutBefore;
+      this.actorId = identity.actorId;
+      this.sourceId = identity.sourceId;
+      this.actorKind = identity.actorKind;
+      this.fragmentIndex = identity.fragmentIndex;
+      this.continuationOf = identity.continuationOf;
+      const capHeight = Math.max(0, this.dropCap.measuredContentHeight);
+      const wrapHeight = Math.max(0, this.wrap.measuredContentHeight);
+      let required = this.unifiedLayoutBefore + Math.max(capHeight, wrapHeight);
+      if (this.body) {
+        required += Math.max(0, this.body.measuredContentHeight) + Math.max(0, this.body.marginBottom);
+      } else {
+        required += Math.max(this.dropCap.marginBottom || 0, this.wrap.marginBottom || 0);
+      }
+      this.requiredHeight = required;
+    }
+    prepare(_availableWidth, _availableHeight, _context) {
+    }
+    getPlacementPreference(fullAvailableWidth, _context) {
+      return {
+        minimumWidth: fullAvailableWidth,
+        acceptsFrame: true
+      };
+    }
+    getTransformProfile() {
+      return {
+        capabilities: [
+          {
+            kind: "split",
+            preservesIdentity: true,
+            producesContinuation: true
+          }
+        ]
+      };
+    }
+    emitBoxes(availableWidth, _availableHeight, context) {
+      const dropCap = { ...this.dropCap, properties: { ...this.dropCap.properties } };
+      const wrap2 = { ...this.wrap, properties: { ...this.wrap.properties, _glueOffsetX: this.wrapOffsetX } };
+      const body = this.body ? { ...this.body, properties: { ...this.body.properties } } : null;
+      const positionedDrop = this.processor.positionFlowBox(
+        dropCap,
+        0,
+        this.unifiedLayoutBefore,
+        context.margins,
+        availableWidth,
+        0
+      );
+      const positionedWrap = this.processor.positionFlowBox(
+        wrap2,
+        0,
+        this.unifiedLayoutBefore,
+        context.margins,
+        availableWidth,
+        0
+      );
+      const boxes = [];
+      boxes.push(...Array.isArray(positionedDrop) ? positionedDrop : [positionedDrop]);
+      boxes.push(...Array.isArray(positionedWrap) ? positionedWrap : [positionedWrap]);
+      const capHeight = Math.max(0, dropCap.measuredContentHeight);
+      const wrapHeight = Math.max(0, wrap2.measuredContentHeight);
+      let y2 = this.unifiedLayoutBefore + Math.max(capHeight, wrapHeight);
+      if (body) {
+        const positionedBody = this.processor.positionFlowBox(
+          body,
+          y2,
+          0,
+          context.margins,
+          availableWidth,
+          0
+        );
+        boxes.push(...Array.isArray(positionedBody) ? positionedBody : [positionedBody]);
+      }
+      for (const b2 of boxes) {
+        if (b2.meta) b2.meta = { ...b2.meta };
+      }
+      return boxes;
+    }
+    split(_availableHeight, _context) {
+      return { currentFragment: null, continuationFragment: this };
+    }
+    getRequiredHeight() {
+      return this.requiredHeight;
+    }
+    isUnbreakable(_availableHeight) {
+      return true;
+    }
+    getMarginTop() {
+      return this.wrap.marginTop;
+    }
+    getMarginBottom() {
+      return this.body ? Math.max(0, this.body.marginBottom) : Math.max(0, this.wrap.marginBottom);
+    }
+  };
+  function resolveFontMetricScales(font) {
+    const upm = Number(font?.unitsPerEm);
+    if (upm > 0) {
+      const rawAscent = Number(font?.ascent);
+      const rawDescent = Number(font?.descent);
+      if (Number.isFinite(rawAscent) && rawAscent > 0 && Number.isFinite(rawDescent)) {
+        return {
+          ascentScale: rawAscent / upm,
+          descentScale: Math.abs(rawDescent) / upm
+        };
+      }
+    }
+    return { ascentScale: 0.8, descentScale: 0.2 };
+  }
+  function resolveGlyphMetricScales(font, text5) {
+    if (!font || !text5) return null;
+    const upm = Number(font?.unitsPerEm);
+    if (!Number.isFinite(upm) || upm <= 0) return null;
+    if (typeof font.layout !== "function") return null;
+    try {
+      const run = font.layout(text5);
+      if (!run?.glyphs || run.glyphs.length === 0) return null;
+      let maxY = -Infinity;
+      let minY = Infinity;
+      for (const glyph of run.glyphs) {
+        const bbox = glyph?.bbox || (typeof glyph?.getBBox === "function" ? glyph.getBBox() : null);
+        const yMax = Number(bbox?.maxY ?? bbox?.yMax);
+        const yMin = Number(bbox?.minY ?? bbox?.yMin);
+        if (Number.isFinite(yMax)) {
+          if (yMax > maxY) maxY = yMax;
+        }
+        if (Number.isFinite(yMin)) {
+          if (yMin < minY) minY = yMin;
+        }
+        const rawYMax = Number(glyph?.yMax);
+        const rawYMin = Number(glyph?.yMin);
+        if (Number.isFinite(rawYMax) && rawYMax > maxY) maxY = rawYMax;
+        if (Number.isFinite(rawYMin) && rawYMin < minY) minY = rawYMin;
+      }
+      if (!Number.isFinite(maxY) || maxY <= 0) return null;
+      if (!Number.isFinite(minY)) {
+        minY = 0;
+      }
+      if (maxY <= 0) return null;
+      const ascentScale = maxY / upm;
+      const descentScale = Math.max(0, Math.abs(minY) / upm);
+      if (!Number.isFinite(ascentScale) || ascentScale <= 0) return null;
+      return { ascentScale, descentScale };
+    } catch {
+      return null;
+    }
+  }
+  function computeCapFontSize(lines, bodyFontSize, lineHeight, bodyAscentScale, bodyDescentScale, capAscentScale, capDescentScale) {
+    const bodyExcess = Math.max(0, bodyAscentScale + bodyDescentScale - 1);
+    const uniformBodyLH = (lineHeight + bodyExcess) * bodyFontSize;
+    const vOffsetBody = (uniformBodyLH - bodyFontSize) / 2;
+    const targetBaseline = (lines - 1) * uniformBodyLH + vOffsetBody + bodyAscentScale * bodyFontSize;
+    const sizeByTop = targetBaseline / Math.max(0.01, capAscentScale);
+    const availableBelow = Math.max(0, lines * uniformBodyLH - targetBaseline);
+    const sizeByBottom = capDescentScale > 0 ? availableBelow / capDescentScale : sizeByTop;
+    const capFontSize = Math.max(1, Math.min(sizeByTop, sizeByBottom));
+    return { capFontSize, uniformBodyLH, vOffsetBody };
+  }
+  var DropCapPackager = class {
+    constructor(processor, element2, index2, spec, identity) {
+      this.cachedParts = null;
+      this.cachedAvailableWidth = -1;
+      this.requiredHeight = 0;
+      this.processor = processor;
+      this.element = element2;
+      this.index = index2;
+      this.spec = spec;
+      const resolvedIdentity = identity ?? createElementPackagerIdentity(element2, [index2]);
+      this.actorId = resolvedIdentity.actorId;
+      this.sourceId = resolvedIdentity.sourceId;
+      this.actorKind = resolvedIdentity.actorKind;
+      this.fragmentIndex = resolvedIdentity.fragmentIndex;
+      this.continuationOf = resolvedIdentity.continuationOf;
+    }
+    get pageBreakBefore() {
+      return this.cachedParts?.wrap.pageBreakBefore ?? false;
+    }
+    get keepWithNext() {
+      return this.cachedParts?.wrap.keepWithNext ?? false;
+    }
+    materialize(availableWidth, context) {
+      if (this.cachedAvailableWidth === availableWidth && this.cachedParts) return;
+      const measurementContext = {
+        pageIndex: Number.isFinite(context.pageIndex) ? Number(context.pageIndex) : 0,
+        cursorY: Number.isFinite(context.cursorY) ? Number(context.cursorY) : 0
+      };
+      const baseFlow = this.processor.shapeElement(this.element, { path: [this.index] });
+      const text5 = this.processor.getElementText(this.element);
+      const charCount = Math.max(1, Math.floor(Number(this.spec.characters ?? 1)));
+      const graphemes = Array.from(text5 || "");
+      const capChars = graphemes.slice(0, charCount).join("");
+      if (!capChars) {
+        this.cachedParts = null;
+        this.requiredHeight = 0;
+        return;
+      }
+      const charUnitLength = capChars.length;
+      const specLines = Number.isFinite(this.spec.lines) ? Math.max(1, Math.floor(Number(this.spec.lines))) : 3;
+      const gap = Number.isFinite(this.spec.gap) ? Math.max(0, Number(this.spec.gap)) : 6;
+      const characterStyle = this.spec.characterStyle || {};
+      const bodyFontSize = Number(baseFlow.style.fontSize || this.processor.config.layout.fontSize);
+      const lineHeight = Number(baseFlow.style.lineHeight || this.processor.config.layout.lineHeight);
+      const bodyFontFamily = baseFlow.style.fontFamily || this.processor.config.layout.fontFamily;
+      const bodyFontWeight = baseFlow.style.fontWeight ?? 400;
+      const bodyFontStyle = baseFlow.style.fontStyle ?? "normal";
+      let bodyFont;
+      try {
+        bodyFont = this.processor.resolveLoadedFamilyFont(bodyFontFamily, bodyFontWeight, bodyFontStyle);
+      } catch {
+        bodyFont = this.processor.font;
+      }
+      const { ascentScale: bodyAscentScale, descentScale: bodyDescentScale } = resolveFontMetricScales(bodyFont);
+      const capFontFamily = String(characterStyle.fontFamily || bodyFontFamily);
+      const capFontWeight = characterStyle.fontWeight ?? bodyFontWeight;
+      const capFontStyle = characterStyle.fontStyle ?? bodyFontStyle;
+      let capFont;
+      try {
+        capFont = this.processor.resolveLoadedFamilyFont(capFontFamily, capFontWeight, capFontStyle);
+      } catch {
+        capFont = bodyFont;
+      }
+      const { ascentScale: capAscentScale, descentScale: capDescentScale } = resolveFontMetricScales(capFont);
+      const glyphMetrics = resolveGlyphMetricScales(capFont, capChars);
+      const capAscentScaleEffective = glyphMetrics?.ascentScale ?? capAscentScale;
+      const capDescentScaleEffective = glyphMetrics?.descentScale ?? capDescentScale;
+      const { capFontSize, uniformBodyLH } = computeCapFontSize(
+        specLines,
+        bodyFontSize,
+        lineHeight,
+        bodyAscentScale,
+        bodyDescentScale,
+        capAscentScaleEffective,
+        capDescentScaleEffective
+      );
+      const dropCapStyle = {
+        ...baseFlow.style,
+        ...characterStyle,
+        fontSize: capFontSize,
+        lineHeight: 1,
+        marginTop: 0,
+        marginBottom: 0,
+        paddingTop: LayoutUtils.validateUnit(characterStyle.paddingTop ?? characterStyle.padding ?? 0),
+        paddingBottom: LayoutUtils.validateUnit(characterStyle.paddingBottom ?? characterStyle.padding ?? 0),
+        paddingLeft: LayoutUtils.validateUnit(characterStyle.paddingLeft ?? characterStyle.padding ?? 0),
+        paddingRight: LayoutUtils.validateUnit(characterStyle.paddingRight ?? characterStyle.padding ?? 0)
+      };
+      const dropCapElement = {
+        type: "dropcap",
+        content: capChars,
+        properties: { style: dropCapStyle }
+      };
+      const dropCapFlow = this.processor.shapeElement(dropCapElement, {
+        path: [this.index, 0],
+        sourceId: `${baseFlow.meta.sourceId}:dropcap`,
+        engineKey: `${baseFlow.meta.engineKey}:dropcap`,
+        sourceType: "dropcap",
+        semanticRole: baseFlow.meta.semanticRole,
+        reflowKey: baseFlow.meta.reflowKey,
+        fragmentIndex: 0,
+        isContinuation: false
+      });
+      this.processor.materializeFlowBox(dropCapFlow, {
+        pageIndex: measurementContext.pageIndex,
+        cursorY: measurementContext.cursorY,
+        contentWidth: availableWidth
+      });
+      if (Array.isArray(dropCapFlow.lines)) {
+        const segAscent = capAscentScaleEffective * 1e3;
+        const segDescent = capDescentScaleEffective * 1e3;
+        for (const line of dropCapFlow.lines) {
+          if (!Array.isArray(line)) continue;
+          for (const seg of line) {
+            if (seg && !seg.inlineObject) {
+              seg.ascent = segAscent;
+              seg.descent = segDescent;
+              seg.glyphs = void 0;
+            }
+          }
+        }
+      }
+      dropCapFlow.properties = { ...dropCapFlow.properties || {}, _lineYOffsets: [0] };
+      dropCapFlow.measuredContentHeight = specLines * uniformBodyLH;
+      let dropCapWidth = Number.isFinite(dropCapFlow.measuredWidth) ? Math.max(0, Number(dropCapFlow.measuredWidth)) : 0;
+      if (!dropCapWidth && Array.isArray(dropCapFlow.lines) && dropCapFlow.lines.length > 0) {
+        const firstLine = dropCapFlow.lines[0] || [];
+        const lineWidth = firstLine.reduce((sum, seg) => sum + Number(seg.width || 0), 0);
+        const insets = LayoutUtils.getHorizontalInsets(dropCapFlow.style);
+        dropCapWidth = Math.max(0, lineWidth + insets);
+      }
+      if (!dropCapWidth) {
+        dropCapWidth = LayoutUtils.getBoxWidth(this.processor.config, dropCapFlow.style);
+      }
+      const dropCapHeight = Math.max(0, dropCapFlow.measuredContentHeight);
+      const wrapOffsetX = dropCapWidth + gap;
+      const wrapContentWidth = availableWidth - wrapOffsetX;
+      const minWrapWidth = Math.max(24, bodyFontSize * 2);
+      if (!Number.isFinite(wrapContentWidth) || wrapContentWidth < minWrapWidth || dropCapHeight <= 0) {
+        this.cachedParts = null;
+        this.requiredHeight = 0;
+        return;
+      }
+      let remainingElement;
+      if (Array.isArray(this.element.children) && this.element.children.length > 0) {
+        const children = this.processor.sliceElements(this.element.children, charUnitLength, text5.length);
+        remainingElement = {
+          ...this.element,
+          type: this.element.type,
+          content: "",
+          children
+        };
+      } else {
+        remainingElement = {
+          ...this.element,
+          type: this.element.type,
+          content: text5.slice(charUnitLength)
+        };
+      }
+      remainingElement = this.processor.trimLeadingContinuationWhitespace(remainingElement);
+      const wrapLinesResult = this.processor.resolveLines(
+        remainingElement,
+        baseFlow.style,
+        bodyFontSize,
+        { ...measurementContext, contentWidth: wrapContentWidth }
+      );
+      const wrapLines = wrapLinesResult.lines || [];
+      if (wrapLines.length === 0) {
+        this.cachedParts = null;
+        this.requiredHeight = 0;
+        return;
+      }
+      const verticalInsets = LayoutUtils.getVerticalInsets(baseFlow.style);
+      let maxLinesFit = 0;
+      for (let count = 1; count <= wrapLines.length; count += 1) {
+        const candidateLines = wrapLines.slice(0, count);
+        const candidateHeight = this.processor.calculateLineBlockHeight(
+          candidateLines,
+          baseFlow.style,
+          wrapLinesResult.lineYOffsets?.slice(0, count)
+        );
+        if (candidateHeight + verticalInsets <= dropCapHeight + LAYOUT_DEFAULTS.wrapTolerance) {
+          maxLinesFit = count;
+          continue;
+        }
+        break;
+      }
+      if (maxLinesFit <= 0) {
+        this.cachedParts = null;
+        this.requiredHeight = 0;
+        return;
+      }
+      const linesA = wrapLines.slice(0, maxLinesFit);
+      const renderedTextA = this.processor.getJoinedLineText(linesA);
+      const remainingText = this.processor.getElementText(remainingElement);
+      const consumedNow = this.processor.resolveConsumedSourceChars(remainingText, renderedTextA);
+      const remainingChars = Math.max(0, remainingText.length - consumedNow);
+      let elementB = null;
+      if (remainingChars > 0) {
+        if (Array.isArray(remainingElement.children) && remainingElement.children.length > 0) {
+          elementB = {
+            ...remainingElement,
+            type: remainingElement.type,
+            content: "",
+            children: this.processor.sliceElements(remainingElement.children, consumedNow, consumedNow + remainingChars)
+          };
+        } else {
+          elementB = {
+            ...remainingElement,
+            type: remainingElement.type,
+            content: this.processor.getElementText(remainingElement).slice(consumedNow)
+          };
+        }
+        elementB = this.processor.trimLeadingContinuationWhitespace(elementB);
+      }
+      const wrapStyle = elementB ? createLeadingFragmentStyle(baseFlow.style) : { ...baseFlow.style };
+      const wrapMeta = createLeadingFragmentMeta(baseFlow.meta);
+      const wrapProps = {
+        ...baseFlow.properties,
+        _isFirstLine: true,
+        _isLastLine: !elementB
+      };
+      const wrapFlow = this.processor.rebuildFlowBox(baseFlow, linesA, wrapStyle, wrapMeta, wrapProps);
+      wrapFlow.measuredWidth = wrapContentWidth + LayoutUtils.getHorizontalInsets(wrapStyle);
+      if (elementB) wrapFlow.marginBottom = 0;
+      let bodyFlow = null;
+      if (elementB && this.processor.getElementText(elementB)) {
+        const bodyStyle = createContinuationFragmentStyle(baseFlow.style);
+        const bodyLinesResult = this.processor.resolveLines(
+          elementB,
+          bodyStyle,
+          bodyFontSize,
+          { ...measurementContext, contentWidth: availableWidth }
+        );
+        if (bodyLinesResult.lines && bodyLinesResult.lines.length > 0) {
+          const bodyMeta = createContinuationFragmentMeta(baseFlow.meta, baseFlow.meta.fragmentIndex + 1);
+          const bodyProps = { ...baseFlow.properties, _isFirstLine: false, _isLastLine: true };
+          bodyFlow = this.processor.rebuildFlowBox(baseFlow, bodyLinesResult.lines, bodyStyle, bodyMeta, bodyProps);
+          bodyFlow.marginTop = 0;
+        }
+      }
+      const unifiedLayoutBefore = Math.max(Math.max(0, dropCapFlow.marginTop), Math.max(0, wrapFlow.marginTop));
+      const capHeight = Math.max(0, dropCapFlow.measuredContentHeight);
+      const wrapHeight = Math.max(0, wrapFlow.measuredContentHeight);
+      let required = unifiedLayoutBefore + Math.max(capHeight, wrapHeight);
+      if (bodyFlow) {
+        required += Math.max(0, bodyFlow.measuredContentHeight) + Math.max(0, bodyFlow.marginBottom);
+      } else {
+        required += Math.max(dropCapFlow.marginBottom || 0, wrapFlow.marginBottom || 0);
+      }
+      this.cachedParts = {
+        dropCap: dropCapFlow,
+        wrap: wrapFlow,
+        body: bodyFlow,
+        wrapOffsetX,
+        unifiedLayoutBefore
+      };
+      this.cachedAvailableWidth = availableWidth;
+      this.requiredHeight = required;
+    }
+    prepare(availableWidth, _availableHeight, context) {
+      this.materialize(availableWidth, context);
+    }
+    getPlacementPreference(fullAvailableWidth, _context) {
+      return {
+        minimumWidth: fullAvailableWidth,
+        acceptsFrame: true
+      };
+    }
+    getTransformProfile() {
+      return {
+        capabilities: [
+          {
+            kind: "split",
+            preservesIdentity: true,
+            producesContinuation: true
+          },
+          {
+            kind: "morph",
+            preservesIdentity: true,
+            reflowsContent: true
+          }
+        ]
+      };
+    }
+    emitBoxes(availableWidth, availableHeight, context) {
+      this.prepare(availableWidth, availableHeight, context);
+      if (!this.cachedParts) {
+        const fallback = new FlowBoxPackager(
+          this.processor,
+          this.processor.shapeElement(this.element, { path: [this.index] }),
+          {
+            actorId: this.actorId,
+            sourceId: this.sourceId,
+            actorKind: this.actorKind,
+            fragmentIndex: this.fragmentIndex,
+            continuationOf: this.continuationOf
+          }
+        );
+        fallback.prepare(availableWidth, availableHeight, context);
+        return fallback.emitBoxes(availableWidth, availableHeight, context);
+      }
+      const fragment = new DropCapFragmentPackager(
+        this.processor,
+        this.cachedParts.dropCap,
+        this.cachedParts.wrap,
+        this.cachedParts.body,
+        this.cachedParts.wrapOffsetX,
+        this.cachedParts.unifiedLayoutBefore,
+        this
+      );
+      return fragment.emitBoxes(availableWidth, availableHeight, context);
+    }
+    split(availableHeight, context) {
+      if (this.isUnbreakable(availableHeight)) {
+        return { currentFragment: null, continuationFragment: this };
+      }
+      const availableWidth = this.cachedAvailableWidth > 0 ? this.cachedAvailableWidth : context.pageWidth - context.margins.left - context.margins.right;
+      this.prepare(availableWidth, availableHeight, context);
+      if (!this.cachedParts) {
+        return { currentFragment: null, continuationFragment: this };
+      }
+      const { dropCap, wrap: wrap2, body, wrapOffsetX, unifiedLayoutBefore } = this.cachedParts;
+      const capHeight = Math.max(0, dropCap.measuredContentHeight);
+      const wrapHeight = Math.max(0, wrap2.measuredContentHeight);
+      const firstBlockHeight = unifiedLayoutBefore + Math.max(capHeight, wrapHeight);
+      if (availableHeight <= firstBlockHeight + LAYOUT_DEFAULTS.wrapTolerance) {
+        return { currentFragment: null, continuationFragment: this };
+      }
+      if (!body) {
+        return { currentFragment: null, continuationFragment: this };
+      }
+      const splitAvailable = availableHeight - firstBlockHeight;
+      const splitResult = this.processor.splitFlowBox(body, splitAvailable, 0);
+      if (!splitResult) {
+        return { currentFragment: null, continuationFragment: this };
+      }
+      const partA = splitResult.partA;
+      const partB = splitResult.partB;
+      const fitsCurrent = new DropCapFragmentPackager(
+        this.processor,
+        dropCap,
+        wrap2,
+        partA,
+        wrapOffsetX,
+        unifiedLayoutBefore,
+        this
+      );
+      const pushedNext = new FlowBoxPackager(
+        this.processor,
+        partB,
+        createContinuationIdentity(this, partB.meta?.fragmentIndex)
+      );
+      return { currentFragment: fitsCurrent, continuationFragment: pushedNext };
+    }
+    getRequiredHeight() {
+      return this.requiredHeight;
+    }
+    isUnbreakable(_availableHeight) {
+      const flowBox = this.processor.shapeElement(this.element, { path: [this.index] });
+      if (!flowBox.allowLineSplit) return true;
+      if (flowBox.overflowPolicy === "move-whole") return true;
+      return false;
+    }
+    getMarginTop() {
+      if (this.cachedParts) return this.cachedParts.wrap.marginTop;
+      const flowBox = this.processor.shapeElement(this.element, { path: [this.index] });
+      return flowBox.marginTop || 0;
+    }
+    getMarginBottom() {
+      if (this.cachedParts) {
+        return this.cachedParts.body ? Math.max(0, this.cachedParts.body.marginBottom) : Math.max(0, this.cachedParts.wrap.marginBottom || 0);
+      }
+      const flowBox = this.processor.shapeElement(this.element, { path: [this.index] });
+      return flowBox.marginBottom || 0;
+    }
+  };
+  function resolveFieldActorStyle(processor, element2) {
+    const typeStyle = processor.config?.styles?.[element2.type] || {};
+    const propertyStyle = element2.properties?.style || {};
+    return {
+      ...typeStyle,
+      ...propertyStyle
+    };
+  }
+  function buildClipProperties(element2) {
+    const field = element2.properties?.spatialField ?? element2.properties?.zoneField;
+    const placement = element2.placement;
+    const assembly = field?.exclusionAssembly ?? placement?.exclusionAssembly;
+    const shape = field?.shape ?? placement?.shape;
+    return {
+      ...assembly?.members ? {
+        _clipAssembly: assembly.members.map((member) => ({
+          x: Number(member.x ?? 0),
+          y: Number(member.y ?? 0),
+          w: Math.max(0, Number(member.w ?? 0)),
+          h: Math.max(0, Number(member.h ?? 0)),
+          shape: member.shape ?? "rect"
+        }))
+      } : {},
+      ...shape ? { _clipShape: shape } : {}
+    };
+  }
+  function isFieldActorElement(element2) {
+    return String(element2?.type || "").trim().toLowerCase() === "field-actor";
+  }
+  var FieldActorPackager = class {
+    constructor(element2, processor, identity) {
+      this.element = element2;
+      const resolvedIdentity = identity ?? createElementPackagerIdentity(element2, [0]);
+      this.style = resolveFieldActorStyle(processor, element2);
+      this.width = Math.max(0, LayoutUtils.validateUnit(this.style.width ?? 0));
+      this.height = Math.max(0, LayoutUtils.validateUnit(this.style.height ?? 0));
+      this.marginTop = Math.max(0, LayoutUtils.validateUnit(this.style.marginTop ?? 0));
+      this.marginBottom = LayoutUtils.validateUnit(this.style.marginBottom ?? 0);
+      this.properties = {
+        ...element2.properties || {},
+        ...buildClipProperties(element2)
+      };
+      this.actorId = resolvedIdentity.actorId;
+      this.sourceId = resolvedIdentity.sourceId;
+      this.actorKind = "field-actor";
+      this.fragmentIndex = resolvedIdentity.fragmentIndex;
+      this.continuationOf = resolvedIdentity.continuationOf;
+    }
+    get pageBreakBefore() {
+      return Boolean(this.style.pageBreakBefore);
+    }
+    get keepWithNext() {
+      return Boolean(this.element.properties?.keepWithNext ?? this.style.keepWithNext);
+    }
+    prepare(_availableWidth, _availableHeight, _context) {
+    }
+    getPlacementPreference(_fullAvailableWidth, _context) {
+      return { minimumWidth: this.width };
+    }
+    getTransformProfile() {
+      return {
+        capabilities: []
+      };
+    }
+    emitBoxes(_availableWidth, _availableHeight, _context) {
+      return [{
+        type: "field-actor",
+        x: 0,
+        y: 0,
+        w: this.width,
+        h: this.height,
+        style: this.style,
+        properties: this.properties,
+        lines: [],
+        meta: {
+          actorId: this.actorId,
+          sourceId: this.sourceId,
+          engineKey: this.actorId,
+          sourceType: this.element.type,
+          fragmentIndex: this.fragmentIndex,
+          isContinuation: false
+        }
+      }];
+    }
+    getRequiredHeight() {
+      return this.marginTop + this.height + this.marginBottom;
+    }
+    getZIndex() {
+      return Number.isFinite(Number(this.style.zIndex)) ? Number(this.style.zIndex) : 0;
+    }
+    isUnbreakable(_availableHeight) {
+      return true;
+    }
+    getMarginTop() {
+      return this.marginTop;
+    }
+    getMarginBottom() {
+      return this.marginBottom;
+    }
+    split(_availableHeight, _context) {
+      return { currentFragment: null, continuationFragment: this };
+    }
+  };
   var SpatialGridPackager = class _SpatialGridPackager {
     constructor(processor, flowBox, identity) {
       this.lastAvailableWidth = -1;
@@ -55265,6 +58142,14 @@ ${source}`)
     emitBoxes(availableWidth, _availableHeight, context) {
       const processor = this.processor;
       this.prepare(availableWidth, _availableHeight, context);
+      const resolvedChunkOriginWorldY = resolvePackagerChunkOriginWorldY(context);
+      const chunkOriginWorldY = Number.isFinite(resolvedChunkOriginWorldY) ? Math.max(0, Number(resolvedChunkOriginWorldY)) : null;
+      const viewportHeight = Number.isFinite(context.viewportHeight) ? Math.max(0, Number(context.viewportHeight)) : Math.max(0, Number(context.pageHeight || 0));
+      this.flowBox.properties = {
+        ...this.flowBox.properties || {},
+        ...chunkOriginWorldY !== null ? { _tableViewportWorldY: chunkOriginWorldY } : {},
+        _tableViewportHeight: viewportHeight
+      };
       const positioned = processor.positionFlowBox(
         this.flowBox,
         0,
@@ -55273,8 +58158,6 @@ ${source}`)
         availableWidth,
         context.pageIndex
       );
-      const viewportWorldY = Number.isFinite(context.viewportWorldY) ? Math.max(0, Number(context.viewportWorldY)) : Math.max(0, Number(context.pageIndex || 0)) * Math.max(0, Number(context.pageHeight || 0));
-      const viewportHeight = Number.isFinite(context.viewportHeight) ? Math.max(0, Number(context.viewportHeight)) : Math.max(0, Number(context.pageHeight || 0));
       const boxes = (Array.isArray(positioned) ? positioned : [positioned]).map((box) => {
         if (box.type !== "table_cell") {
           return box;
@@ -55283,7 +58166,7 @@ ${source}`)
           ...box,
           properties: {
             ...box.properties || {},
-            _tableViewportWorldY: viewportWorldY,
+            ...chunkOriginWorldY !== null ? { _tableViewportWorldY: chunkOriginWorldY } : {},
             _tableViewportHeight: viewportHeight
           }
         };
@@ -55335,6 +58218,39 @@ ${source}`)
       return { currentFragment: partA, continuationFragment: partB };
     }
   };
+  function buildExclusionFieldObstacles(descriptor) {
+    const gap = Math.max(0, Number(descriptor.gap ?? 0));
+    const normalizedShape = descriptor.shape ?? "rect";
+    const assemblyMembers = Array.isArray(descriptor.exclusionAssembly?.members) ? descriptor.exclusionAssembly.members : [];
+    if (assemblyMembers.length === 0) {
+      return [{
+        x: descriptor.x,
+        y: descriptor.y,
+        w: descriptor.w,
+        h: descriptor.h,
+        wrap: descriptor.wrap,
+        gap,
+        shape: normalizedShape,
+        align: descriptor.align,
+        zIndex: Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0,
+        traversalInteraction: descriptor.traversalInteraction ?? "auto"
+      }];
+    }
+    return assemblyMembers.map((member) => ({
+      x: descriptor.x + Number(member.x ?? 0),
+      y: descriptor.y + Number(member.y ?? 0),
+      w: Math.max(0, Number(member.w ?? 0)),
+      h: Math.max(0, Number(member.h ?? 0)),
+      wrap: descriptor.wrap,
+      gap,
+      shape: member.shape ?? "rect",
+      zIndex: Number.isFinite(Number(member.zIndex)) ? Number(member.zIndex) : Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0,
+      traversalInteraction: member.traversalInteraction ?? descriptor.traversalInteraction ?? "auto"
+      // Deliberately omit align here: assembled members should carve as local
+      // lobes, not inherit the solitary edge-extension heuristic used for
+      // single left/right circles.
+    })).filter((member) => member.w > 0 && member.h > 0);
+  }
   function normalizeLayout(layout) {
     if (!layout) return void 0;
     const normalizedMembers = Array.isArray(layout.exclusionAssembly?.members) ? layout.exclusionAssembly.members.map((member) => ({
@@ -55387,122 +58303,6 @@ ${source}`)
       balance,
       children
     };
-  }
-  var SpatialMap = class {
-    constructor() {
-      this.rects = [];
-    }
-    register(rect) {
-      this.rects.push(rect);
-    }
-    /**
-     * Returns available X-intervals for a text line at [y, y+lineH] within
-     * the column [0, totalWidth].
-     *
-     * Returns an empty array when a 'top-bottom' obstacle blocks the entire
-     * line — the caller must advance Y via `topBottomClearY` and retry.
-     */
-    getAvailableIntervals(y2, lineH, totalWidth, options) {
-      let available = [{ x: 0, w: totalWidth }];
-      const lineBottom = y2 + lineH;
-      const lineTop = y2;
-      for (const rect of this.rects) {
-        if (rect.wrap === "none") continue;
-        const useOpticalUnderhang = options?.opticalUnderhang && rect.wrap === "around";
-        if (rect.shape === "circle") {
-          const cx = rect.x + rect.w / 2;
-          const cy = rect.circleCy ?? rect.y + rect.h / 2;
-          const r = rect.w / 2 + rect.gap;
-          const circleTop = cy - r;
-          const circleBottom = useOpticalUnderhang ? cy + rect.w / 2 : cy + r;
-          if (lineBottom <= circleTop || lineTop >= circleBottom) continue;
-          if (rect.wrap === "top-bottom") return [];
-          const yClosest = Math.max(lineTop, Math.min(lineBottom, cy));
-          const dy = yClosest - cy;
-          const chordHalfW = Math.sqrt(Math.max(0, r * r - dy * dy));
-          const align = rect.align ?? "center";
-          const carveLeft = align === "right" ? cx - chordHalfW : align === "center" ? cx - chordHalfW : rect.x - r - 1;
-          const carveRight = align === "left" ? cx + chordHalfW : align === "center" ? cx + chordHalfW : rect.x + rect.w + r + 1;
-          available = carveInterval(available, carveLeft, carveRight);
-        } else {
-          const g2 = rect.gap;
-          const gapTop = rect.gapTop ?? g2;
-          const gapBottom = rect.gapBottom ?? g2;
-          const obsTop = rect.y - gapTop;
-          const obsBottom = rect.y + rect.h + gapBottom;
-          const overlapBottom = useOpticalUnderhang ? rect.y + rect.h : obsBottom;
-          if (lineBottom <= obsTop || lineTop >= overlapBottom) continue;
-          if (rect.wrap === "top-bottom") return [];
-          const obsLeft = rect.x - g2;
-          const obsRight = rect.x + rect.w + g2;
-          available = carveInterval(available, obsLeft, obsRight);
-        }
-      }
-      return available.filter((iv) => iv.w > 0.5);
-    }
-    /** Returns true when any top-bottom obstacle overlaps [y, y+lineH]. */
-    hasTopBottomBlock(y2, lineH) {
-      const lineBottom = y2 + lineH;
-      return this.rects.some((r) => {
-        if (r.wrap !== "top-bottom") return false;
-        const gapTop = r.gapTop ?? r.gap;
-        const gapBottom = r.gapBottom ?? r.gap;
-        const obsTop = r.y - gapTop;
-        const obsBottom = r.y + r.h + gapBottom;
-        return lineBottom > obsTop && y2 < obsBottom;
-      });
-    }
-    /**
-     * Returns the first Y at which no top-bottom obstacle blocks [y, …).
-     * Iterates to handle chained consecutive obstacles.
-     */
-    topBottomClearY(y2) {
-      let clearY = y2;
-      let changed = true;
-      while (changed) {
-        changed = false;
-        for (const r of this.rects) {
-          if (r.wrap !== "top-bottom") continue;
-          const gapTop = r.gapTop ?? r.gap;
-          const gapBottom = r.gapBottom ?? r.gap;
-          const obsTop = r.y - gapTop;
-          const obsBottom = r.y + r.h + gapBottom;
-          if (clearY < obsBottom && clearY >= obsTop) {
-            clearY = obsBottom;
-            changed = true;
-          }
-        }
-      }
-      return clearY;
-    }
-    /** The Y of the lowest point among all registered obstacles. */
-    maxObstacleBottom() {
-      return this.rects.reduce(
-        (max, r) => Math.max(max, r.y + r.h + (r.gapBottom ?? r.gap)),
-        0
-      );
-    }
-    /** Read-only access to registered rects (used by split carry-over logic). */
-    getRects() {
-      return this.rects;
-    }
-  };
-  function carveInterval(intervals, removeLeft, removeRight) {
-    const result = [];
-    for (const iv of intervals) {
-      const ivRight = iv.x + iv.w;
-      if (removeRight <= iv.x || removeLeft >= ivRight) {
-        result.push(iv);
-        continue;
-      }
-      if (removeLeft > iv.x) {
-        result.push({ x: iv.x, w: removeLeft - iv.x });
-      }
-      if (removeRight < ivRight) {
-        result.push({ x: removeRight, w: ivRight - removeRight });
-      }
-    }
-    return result;
   }
   var FrozenStoryPackager = class {
     constructor(boxes, height, identity, minimumPlacementWidth) {
@@ -55577,6 +58377,10 @@ ${source}`)
       this.actorKind = resolvedIdentity.actorKind;
       this.fragmentIndex = resolvedIdentity.fragmentIndex;
       this.continuationOf = resolvedIdentity.continuationOf;
+      this.storyActorEntries = this.normalizedStory.children.map((child) => ({
+        ...child,
+        actor: buildPackagerForElement(child.element, child.childIndex, this.processor)
+      }));
     }
     // -- PackagerUnit ---------------------------------------------------------
     prepare(availableWidth, availableHeight, context) {
@@ -55648,6 +58452,69 @@ ${source}`)
     getMarginBottom() {
       return 0;
     }
+    getHostedRuntimeActors() {
+      return this.storyActorEntries.map((entry) => entry.actor);
+    }
+    handlesHostedRuntimeActor(targetActor) {
+      return this.findHostedActorIndex(targetActor) >= 0;
+    }
+    insertHostedRuntimeActors(targetActor, insertions, position2, sourceElements) {
+      const targetIndex = this.findHostedActorIndex(targetActor);
+      if (targetIndex < 0 || !sourceElements || sourceElements.length !== insertions.length) return false;
+      const children = [...this.storyElement.children ?? []];
+      const insertionIndex = position2 === "before" ? targetIndex : targetIndex + 1;
+      children.splice(insertionIndex, 0, ...sourceElements);
+      this.storyElement.children = children;
+      this.storyActorEntries.splice(
+        insertionIndex,
+        0,
+        ...insertions.map((actor, index2) => ({
+          childIndex: -1,
+          element: sourceElements[index2],
+          kind: "flow",
+          actor
+        }))
+      );
+      this.refreshStoryActorEntries();
+      this.invalidateCachedStoryLayout();
+      return true;
+    }
+    deleteHostedRuntimeActor(targetActor) {
+      const targetIndex = this.findHostedActorIndex(targetActor);
+      if (targetIndex < 0) return false;
+      const children = [...this.storyElement.children ?? []];
+      children.splice(targetIndex, 1);
+      this.storyElement.children = children;
+      this.storyActorEntries.splice(targetIndex, 1);
+      this.refreshStoryActorEntries();
+      this.invalidateCachedStoryLayout();
+      return true;
+    }
+    replaceHostedRuntimeActor(targetActor, replacements, sourceElements) {
+      const targetIndex = this.findHostedActorIndex(targetActor);
+      if (targetIndex < 0 || !sourceElements || sourceElements.length !== replacements.length) return false;
+      const children = [...this.storyElement.children ?? []];
+      children.splice(targetIndex, 1, ...sourceElements);
+      this.storyElement.children = children;
+      this.storyActorEntries.splice(
+        targetIndex,
+        1,
+        ...replacements.map((actor, index2) => ({
+          childIndex: -1,
+          element: sourceElements[index2],
+          kind: "flow",
+          actor
+        }))
+      );
+      this.refreshStoryActorEntries();
+      this.invalidateCachedStoryLayout();
+      return true;
+    }
+    refreshHostedRuntimeActor(targetActor) {
+      if (this.findHostedActorIndex(targetActor) < 0) return false;
+      this.invalidateCachedStoryLayout();
+      return true;
+    }
     split(availableHeight, context) {
       const availableWidth = this.lastAvailableWidth > 0 ? this.lastAvailableWidth : context.pageWidth - context.margins.left - context.margins.right;
       const columnConfig = this.getStoryColumnConfig();
@@ -55660,7 +58527,7 @@ ${source}`)
     // -- Core pour ------------------------------------------------------------
     pourAll(availableWidth, context) {
       const margins = context.margins;
-      const children = this.normalizedStory.children;
+      const children = this.storyActorEntries;
       const storyMap = new SpatialMap();
       const registeredObstacles = [];
       const imageMetricsCache = /* @__PURE__ */ new Map();
@@ -55742,7 +58609,7 @@ ${source}`)
             const { img: imgData, w: imgW, h: imgH } = metrics;
             if (localY + imgH < 0) continue;
             const x2 = layout.x;
-            const box = this.buildImageBox(child.element, margins.left + x2, effectiveY, imgW, imgH, imgData, child.childIndex);
+            const box = this.buildImageBox(child.element, margins.left + x2, effectiveY, imgW, imgH, imgData, child.childIndex, child.actor);
             allBoxes.push(box);
             placedElements.push({
               kind: "image",
@@ -55758,7 +58625,7 @@ ${source}`)
           const dims = this.measureFloatBox(child.element, availableWidth);
           if (!dims) continue;
           if (localY + dims.h < 0) continue;
-          const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+          const pkg = child.actor;
           const absoluteContext = {
             ...this.createLocalFrameContext(
               context,
@@ -55816,7 +58683,8 @@ ${source}`)
             imgW,
             imgH,
             imgData,
-            child.childIndex
+            child.childIndex,
+            child.actor
           );
           allBoxes.push(box);
           placedElements.push({
@@ -55852,7 +58720,7 @@ ${source}`)
                 registeredObstacles.push(obstacle);
               }
             }
-            const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+            const pkg = child.actor;
             const floatContext = {
               ...this.createLocalFrameContext(
                 context,
@@ -55900,7 +58768,8 @@ ${source}`)
             imgW,
             imgH,
             imgData,
-            child.childIndex
+            child.childIndex,
+            child.actor
           );
           allBoxes.push(box);
           placedElements.push({
@@ -55921,7 +58790,9 @@ ${source}`)
           availableWidth,
           margins,
           storyMap,
-          cursorY
+          cursorY,
+          0,
+          child.actor
         );
         if (placed) {
           allBoxes.push(placed.box);
@@ -55933,122 +58804,49 @@ ${source}`)
       return { placedElements, registeredObstacles, totalHeight, allBoxes };
     }
     // -- Text element pour ---------------------------------------------------
-    pourTextChild(element2, childIndex, availableWidth, margins, storyMap, cursorY, xOffset = 0) {
-      const flowBox = this.processor.shapeElement(
+    pourTextChild(element2, childIndex, availableWidth, margins, storyMap, cursorY, xOffset = 0, actor) {
+      const opticalUnderhang = !!this.processor.config?.layout?.storyWrapOpticalUnderhang;
+      const session = this.processor.getCurrentLayoutSession();
+      const shaped = this.processor.shapeElement(
         element2,
         { path: [this.storyIndex, childIndex] }
       );
-      const style = flowBox.style;
-      const fontSize = Number(style.fontSize || this.processor.config.layout.fontSize);
-      const lineHeightRatio = Number(style.lineHeight || this.processor.config.layout.lineHeight);
-      const uniformLH = lineHeightRatio * fontSize;
-      const marginTop = Math.max(0, flowBox.marginTop);
-      const marginBottom = Math.max(0, flowBox.marginBottom);
-      cursorY = storyMap.topBottomClearY(cursorY);
-      const elementStartY = cursorY + marginTop;
-      const richSegments = this.processor.getRichSegments(element2, style);
-      const font = this.processor.resolveMeasurementFontForStyle(style);
-      const letterSpacing = Number(style.letterSpacing || 0);
-      const textIndent = Number(style.textIndent || 0);
-      const insetH = LayoutUtils.getHorizontalInsets(style);
-      const insetV = LayoutUtils.getVerticalInsets(style);
-      const contentWidth = Math.max(0, availableWidth - insetH);
-      const opticalUnderhang = !!this.processor.config?.layout?.storyWrapOpticalUnderhang;
-      let accumulatedYBonus = 0;
-      let physicalLineCount = 0;
-      const pendingSlots = [];
-      const lineLayoutOut = {
-        widths: [],
-        offsets: [],
-        yOffsets: []
-      };
-      const resolver2 = (lineIndex) => {
-        if (pendingSlots.length > 0) {
-          return pendingSlots.shift();
-        }
-        let lineY = elementStartY + physicalLineCount * uniformLH + accumulatedYBonus;
-        while (storyMap.hasTopBottomBlock(lineY, uniformLH)) {
-          const clearY = storyMap.topBottomClearY(lineY);
-          accumulatedYBonus += clearY - lineY;
-          lineY = elementStartY + physicalLineCount * uniformLH + accumulatedYBonus;
-        }
-        const yOffset = physicalLineCount * uniformLH + accumulatedYBonus;
-        physicalLineCount++;
-        const resolvedIntervals = storyMap.getAvailableIntervals(
-          lineY,
-          uniformLH,
-          availableWidth,
-          opticalUnderhang ? { opticalUnderhang: true } : void 0
-        );
-        if (resolvedIntervals.length === 0) {
-          return { width: contentWidth, xOffset: 0, yOffset };
-        }
-        if (resolvedIntervals.length > 1) {
-          for (let j2 = 1; j2 < resolvedIntervals.length; j2++) {
-            pendingSlots.push({
-              width: Math.max(0, resolvedIntervals[j2].w - insetH),
-              xOffset: resolvedIntervals[j2].x,
-              yOffset
-            });
-          }
-        }
-        return {
-          width: Math.max(0, resolvedIntervals[0].w - insetH),
-          xOffset: resolvedIntervals[0].x,
-          yOffset
-        };
-      };
-      const lines = this.processor.wrapRichSegments(
-        richSegments,
-        contentWidth,
-        font,
-        fontSize,
-        letterSpacing,
-        textIndent,
-        resolver2,
-        lineLayoutOut
-      );
-      if (!lines || lines.length === 0) return null;
-      const linesH = this.processor.calculateLineBlockHeight(
-        lines,
-        style,
-        lineLayoutOut.yOffsets
-      );
-      const contentH = linesH + insetV;
-      const box = {
-        type: element2.type,
-        x: margins.left + xOffset,
-        y: elementStartY,
-        w: availableWidth + insetH,
-        h: contentH,
-        lines,
-        style,
-        properties: {
-          ...flowBox.properties || {},
-          _lineOffsets: lineLayoutOut.offsets,
-          _lineWidths: lineLayoutOut.widths,
-          _lineYOffsets: lineLayoutOut.yOffsets,
-          _isFirstLine: true,
-          _isLastLine: true
-        },
-        meta: { ...flowBox.meta, pageIndex: 0 }
-      };
+      const marginTop = Math.max(0, shaped.marginTop);
+      const placed = reflowTextElementAgainstSpatialField({
+        processor: this.processor,
+        element: element2,
+        path: [this.storyIndex, childIndex],
+        availableWidth,
+        currentY: cursorY,
+        layoutBefore: marginTop,
+        spatialMap: storyMap,
+        xOffset,
+        leftMargin: margins.left,
+        pageIndex: session ? session.getCurrentPageIndex() : 0,
+        opticalUnderhang,
+        clearTopBeforeStart: true
+      });
+      if (!placed) return null;
+      const box = actor ? {
+        ...placed.box,
+        meta: placed.box.meta ? { ...placed.box.meta, actorId: actor.actorId, sourceId: placed.box.meta.sourceId ?? actor.sourceId } : { actorId: actor.actorId, sourceId: actor.sourceId }
+      } : placed.box;
       return {
         kind: "text",
         childIndex,
         box,
-        topY: elementStartY,
-        contentH,
-        insetV,
-        marginTop,
-        marginBottom,
-        cursorAfter: elementStartY + contentH + marginBottom,
+        topY: placed.elementStartY,
+        contentH: placed.contentHeight,
+        insetV: placed.insetV,
+        marginTop: placed.marginTop,
+        marginBottom: placed.marginBottom,
+        cursorAfter: placed.elementStartY + placed.contentHeight + placed.marginBottom,
         sourceElement: element2,
-        lines,
-        lineYOffsets: lineLayoutOut.yOffsets,
-        lineOffsets: lineLayoutOut.offsets,
-        lineWidths: lineLayoutOut.widths,
-        uniformLH
+        lines: placed.lines,
+        lineYOffsets: placed.lineYOffsets,
+        lineOffsets: placed.lineOffsets,
+        lineWidths: placed.lineWidths,
+        uniformLH: placed.uniformLineHeight
       };
     }
     // -- Split ---------------------------------------------------------------
@@ -56156,7 +58954,7 @@ ${source}`)
           continuation: null
         };
       }
-      const children = this.normalizedStory.children;
+      const children = this.storyActorEntries;
       const registeredObstacles = [];
       const allObstacles = [];
       const allBoxes = [];
@@ -56325,7 +59123,8 @@ ${source}`)
               imgW,
               imgH,
               imgData,
-              child.childIndex
+              child.childIndex,
+              child.actor
             );
             allBoxes.push(box);
             continue;
@@ -56335,7 +59134,7 @@ ${source}`)
           if (localY + dims.h < 0 || localY > resolveRegionStackHeight(regions)) continue;
           const region = regions[projected.regionIndex];
           const regionStartY = resolveRegionStartY(regions, region.index);
-          const pkg2 = buildPackagerForElement(child.element, child.childIndex, this.processor);
+          const pkg2 = child.actor;
           const absoluteContext = {
             ...this.createLocalFrameContext(
               context,
@@ -56370,7 +59169,7 @@ ${source}`)
               Math.max(0, availableHeight - spanTopY)
             )
           };
-          const pkg2 = buildPackagerForElement(child.element, child.childIndex, this.processor);
+          const pkg2 = child.actor;
           pkg2.prepare(availableWidth, availableHeight - spanTopY, spanContext);
           const spanH = pkg2.getRequiredHeight();
           if (spanTopY + spanH > availableHeight + 0.1) {
@@ -56405,11 +59204,7 @@ ${source}`)
                   remainingAfterSpan
                 )
               };
-              const nextPkg = buildPackagerForElement(
-                nextFlowChild.element,
-                nextFlowChild.childIndex,
-                this.processor
-              );
+              const nextPkg = nextFlowChild.actor;
               if (nextPkg.prepareLookahead) {
                 nextPkg.prepareLookahead(resumeRegion.w, remainingAfterSpan, nextCtx);
               } else {
@@ -56463,7 +59258,7 @@ ${source}`)
                 registeredObstacles.push(obstacle);
               }
             }
-            const box = this.buildImageBox(child.element, margins.left + x2, anchorY, Math.min(imgW, region.w), imgH, imgData, child.childIndex);
+            const box = this.buildImageBox(child.element, margins.left + x2, anchorY, Math.min(imgW, region.w), imgH, imgData, child.childIndex, child.actor);
             allBoxes.push(box);
             cursorY = anchorY;
             break;
@@ -56503,7 +59298,7 @@ ${source}`)
                   registeredObstacles.push(obstacle);
                 }
               }
-              const pkg2 = buildPackagerForElement(child.element, child.childIndex, this.processor);
+              const pkg2 = child.actor;
               const regionStartY = resolveRegionStartY(regions, region.index);
               const floatContext = {
                 ...this.createLocalFrameContext(
@@ -56544,7 +59339,7 @@ ${source}`)
             const marginBottom = Math.max(0, flowBox.marginBottom);
             const y2 = top + marginTop;
             if (y2 + imgH + marginBottom <= region.h + 0.1) {
-              const box = this.buildImageBox(child.element, margins.left + region.x, y2, Math.min(imgW, region.w), imgH, imgData, child.childIndex);
+              const box = this.buildImageBox(child.element, margins.left + region.x, y2, Math.min(imgW, region.w), imgH, imgData, child.childIndex, child.actor);
               allBoxes.push(box);
               cursorY = y2 + imgH + marginBottom;
               break;
@@ -56556,7 +59351,7 @@ ${source}`)
           }
           continue;
         }
-        const pkg = buildPackagerForElement(child.element, child.childIndex, this.processor);
+        const pkg = child.actor;
         if (!(pkg instanceof FlowBoxPackager)) {
           const completed = placeOpaquePackager(pkg, i2, (continuation2) => {
             continuationPackager = continuation2;
@@ -56570,12 +59365,13 @@ ${source}`)
           const regionMap = this.createRegionMap(region, allObstacles);
           const placed = this.pourTextChild(
             workingElement,
-            i2,
+            child.childIndex,
             region.w,
             { left: margins.left },
             regionMap,
             cursorY,
-            region.x
+            region.x,
+            child.actor
           );
           if (!placed) break;
           if (placed.cursorAfter <= region.h + 0.1) {
@@ -56836,11 +59632,12 @@ ${source}`)
       if (!Number.isFinite(h2) || h2 <= 0) return null;
       return { w: Math.min(w2, availableWidth), h: h2 };
     }
-    buildImageBox(element2, absX, storyY, w2, h2, imgData, childIndex) {
+    buildImageBox(element2, absX, storyY, w2, h2, imgData, childIndex, actor) {
       const flowBox = this.processor.shapeElement(
         element2,
         { path: [this.storyIndex, childIndex] }
       );
+      const session = this.processor.getCurrentLayoutSession();
       return {
         type: element2.type,
         x: absX,
@@ -56851,8 +59648,8 @@ ${source}`)
         style: flowBox.style,
         properties: {
           ...flowBox.properties || {},
-          _imageClipShape: element2.placement?.shape,
-          _imageClipAssembly: element2.placement?.exclusionAssembly?.members ? element2.placement.exclusionAssembly.members.map((member) => ({
+          _clipShape: element2.placement?.shape,
+          _clipAssembly: element2.placement?.exclusionAssembly?.members ? element2.placement.exclusionAssembly.members.map((member) => ({
             x: Number(member.x ?? 0),
             y: Number(member.y ?? 0),
             w: Math.max(0, Number(member.w ?? 0)),
@@ -56864,8 +59661,29 @@ ${source}`)
           _isFirstFragmentInLine: true,
           _isLastFragmentInLine: true
         },
-        meta: { ...flowBox.meta, pageIndex: 0 }
+        meta: {
+          ...flowBox.meta,
+          ...actor ? { actorId: actor.actorId, sourceId: flowBox.meta?.sourceId ?? actor.sourceId } : {},
+          pageIndex: session ? session.getCurrentPageIndex() : 0
+        }
       };
+    }
+    findHostedActorIndex(targetActor) {
+      return this.storyActorEntries.findIndex((entry) => entry.actor.actorId === targetActor.actorId);
+    }
+    refreshStoryActorEntries() {
+      const previousActors = this.storyActorEntries.map((entry) => entry.actor);
+      this.normalizedStory = normalizeStoryElement(this.storyElement);
+      this.storyActorEntries = this.normalizedStory.children.map((child, index2) => ({
+        ...child,
+        actor: previousActors[index2] ?? buildPackagerForElement(child.element, child.childIndex, this.processor)
+      }));
+    }
+    invalidateCachedStoryLayout() {
+      this.lastResult = null;
+      this.lastAvailableWidth = -1;
+      this.lastAvailableHeight = -1;
+      this.lastViewportSnapshot = null;
     }
     /**
      * Creates a source element containing only the text that comes after
@@ -56903,21 +59721,27 @@ ${source}`)
       return this.processor.trimLeadingContinuationWhitespace(continuation);
     }
     createNestedPackagerContext(context, overrides) {
+      const resolvedPageIndex = Number.isFinite(overrides.pageIndex) ? Number(overrides.pageIndex) : context.pageIndex;
+      const resolvedCursorY = Number.isFinite(overrides.cursorY) ? Number(overrides.cursorY) : context.cursorY;
       return {
         ...context,
         ...overrides,
         processor: this.processor,
-        publishActorSignal: (signal) => {
+        publishActorSignal: bindPackagerSignalPublisher((signal) => {
           const session = this.processor.getCurrentLayoutSession();
           if (!session) {
             return {
               ...signal,
-              pageIndex: signal.pageIndex ?? context.pageIndex ?? 0,
+              ...Number.isFinite(signal.pageIndex) || Number.isFinite(resolvedPageIndex) ? { pageIndex: Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : Number(resolvedPageIndex) } : {},
+              ...Number.isFinite(signal.cursorY) || Number.isFinite(resolvedCursorY) ? { cursorY: Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : Number(resolvedCursorY) } : {},
               sequence: -1
             };
           }
           return session.publishActorSignal(signal);
-        },
+        }, resolvedPageIndex, resolvedCursorY, resolvePackagerWorldYAtCursor({
+          ...context,
+          cursorY: resolvedCursorY
+        })),
         readActorSignals: (topic) => {
           const session = this.processor.getCurrentLayoutSession();
           return session ? session.getActorSignals(topic) : [];
@@ -56927,13 +59751,13 @@ ${source}`)
     createLocalFrameContext(context, localFrameWidth, overrides, localWorldOffsetY = 0, localViewportHeight) {
       const nested = this.createNestedPackagerContext(context, overrides);
       const normalizedLocalFrameWidth = Math.max(0, Number(localFrameWidth) || 0);
-      const outerViewportWorldY = Number.isFinite(context.viewportWorldY) ? Math.max(0, Number(context.viewportWorldY)) : Math.max(0, Number(context.pageIndex || 0)) * Math.max(0, Number(context.pageHeight || 0));
+      const outerChunkOriginWorldY = Number.isFinite(resolvePackagerChunkOriginWorldY(context)) ? Math.max(0, Number(resolvePackagerChunkOriginWorldY(context))) : null;
       const resolvedViewportHeight = localViewportHeight !== void 0 ? Math.max(0, Number(localViewportHeight) || 0) : Number.isFinite(nested.viewportHeight) ? Math.max(0, Number(nested.viewportHeight)) : Math.max(0, Number(nested.pageHeight || 0));
       return {
         ...nested,
         pageWidth: nested.margins.left + normalizedLocalFrameWidth + nested.margins.right,
         contentWidthOverride: normalizedLocalFrameWidth,
-        viewportWorldY: outerViewportWorldY + Math.max(0, Number(localWorldOffsetY) || 0),
+        ...outerChunkOriginWorldY !== null ? { chunkOriginWorldY: outerChunkOriginWorldY + Math.max(0, Number(localWorldOffsetY) || 0) } : {},
         viewportHeight: resolvedViewportHeight
       };
     }
@@ -56958,13 +59782,13 @@ ${source}`)
   function resolveViewportSnapshot(context) {
     return {
       pageIndex: Number.isFinite(context.pageIndex) ? Number(context.pageIndex) : 0,
-      viewportWorldY: Number.isFinite(context.viewportWorldY) ? Number(context.viewportWorldY) : null,
+      chunkOriginWorldY: Number.isFinite(resolvePackagerChunkOriginWorldY(context)) ? Number(resolvePackagerChunkOriginWorldY(context)) : null,
       viewportHeight: Number.isFinite(context.viewportHeight) ? Number(context.viewportHeight) : null
     };
   }
   function sameViewportSnapshot(left, right) {
     if (!left || !right) return left === right;
-    return left.pageIndex === right.pageIndex && left.viewportWorldY === right.viewportWorldY && left.viewportHeight === right.viewportHeight;
+    return left.pageIndex === right.pageIndex && left.chunkOriginWorldY === right.chunkOriginWorldY && left.viewportHeight === right.viewportHeight;
   }
   function collectDeferredStoryAbsoluteChildren(children, cutoffChildIndex) {
     if (!Number.isFinite(cutoffChildIndex) || cutoffChildIndex <= 0) {
@@ -57045,6 +59869,1908 @@ ${source}`)
     }
     return cursor;
   }
+  function buildHostedRegionActorEntries(zone, processor) {
+    return (zone.elements ?? []).map((element2, index2) => ({
+      element: element2,
+      actor: buildPackagerForElement(element2, index2, processor)
+    }));
+  }
+  function buildHostedRegionActorQueuesFromZones(zones, processor) {
+    return zones.map((zone) => ({
+      id: zone.id,
+      rect: { ...zone.rect },
+      style: zone.style,
+      actors: buildHostedRegionActorEntries(zone, processor)
+    }));
+  }
+  function buildHostedRegionActorQueues(strip, processor) {
+    return buildHostedRegionActorQueuesFromZones(strip.zones, processor);
+  }
+  function cloneHostedRegionBoxes(boxes) {
+    return boxes.map((box) => ({
+      ...box,
+      properties: { ...box.properties || {} },
+      meta: box.meta ? { ...box.meta } : box.meta
+    }));
+  }
+  function attachHostedRegionDebugTag(box, tag) {
+    return {
+      ...box,
+      properties: {
+        ...box.properties || {},
+        __vmprintZoneDebug: {
+          fieldActorId: tag.fieldActorId,
+          fieldSourceId: tag.fieldSourceId,
+          sourceKind: tag.sourceKind,
+          zoneId: tag.zoneId,
+          zoneIndex: tag.zoneIndex,
+          rect: { ...tag.rect }
+        }
+      }
+    };
+  }
+  function readHostedRegionDebugTag(box) {
+    const tag = box.properties?.__vmprintZoneDebug;
+    if (!tag || typeof tag !== "object") return null;
+    return tag;
+  }
+  function buildHostedRegionContinuationQueue(zone, continuation) {
+    if (!continuation) {
+      return {
+        ...zone,
+        actors: []
+      };
+    }
+    const nextActors = [];
+    if (continuation.prefixActors?.length) {
+      nextActors.push(...continuation.prefixActors);
+    }
+    if (continuation.continuationFragment) {
+      nextActors.push({
+        actor: continuation.continuationFragment,
+        element: zone.actors[continuation.nextActorIndex]?.element
+      });
+    }
+    const untouchedStart = continuation.nextActorIndex + (continuation.continuationFragment ? 1 : 0);
+    for (let actorIndex = untouchedStart; actorIndex < zone.actors.length; actorIndex++) {
+      nextActors.push(zone.actors[actorIndex]);
+    }
+    return {
+      ...zone,
+      actors: nextActors
+    };
+  }
+  function resolveHostedRegionVisibleHeight(zone, fieldAvailableHeight) {
+    const heightWithinViewport = Math.max(0, fieldAvailableHeight - zone.rect.y);
+    if (zone.rect.height === void 0) {
+      return heightWithinViewport;
+    }
+    return Math.min(heightWithinViewport, Math.max(0, Number(zone.rect.height)));
+  }
+  function resolveHostedRegionFootprintHeight(zone, contentHeight) {
+    const authoredHeight = zone.rect.height !== void 0 ? Math.max(0, Number(zone.rect.height)) : 0;
+    return Math.max(Math.max(0, contentHeight), authoredHeight);
+  }
+  function createHostedRegionSessionContextBase(availableWidth, processor) {
+    const session = processor.getCurrentLayoutSession();
+    return {
+      processor,
+      margins: { top: 0, right: 0, bottom: 0, left: 0 },
+      pageWidth: availableWidth,
+      pageHeight: Infinity,
+      publishActorSignal: (signal) => {
+        if (!session) {
+          return {
+            ...signal,
+            ...Number.isFinite(signal.cursorY) ? { cursorY: Number(signal.cursorY) } : {},
+            sequence: -1
+          };
+        }
+        return session.publishActorSignal(signal);
+      },
+      readActorSignals: (topic) => session ? session.getActorSignals(topic) : [],
+      requestAsyncThought: (request) => session?.requestAsyncThought(request),
+      readAsyncThoughtResult: (key) => session?.readAsyncThoughtResult(key)
+    };
+  }
+  function materializeHostedRegionsMoveWhole(queues, sourceKind, fieldActorId, fieldSourceId, runRegionSession, contextBase) {
+    const allBoxes = [];
+    let totalHeight = 0;
+    for (let zoneIndex = 0; zoneIndex < queues.length; zoneIndex++) {
+      const zone = queues[zoneIndex];
+      const result = runRegionSession(zone, contextBase);
+      const zoneTag = {
+        fieldActorId,
+        fieldSourceId,
+        sourceKind,
+        zoneId: zone.id,
+        zoneIndex,
+        rect: { ...zone.rect }
+      };
+      for (const box of result.boxes) {
+        allBoxes.push({
+          ...attachHostedRegionDebugTag(box, zoneTag),
+          x: (box.x || 0) + zone.rect.x,
+          y: (box.y || 0) + zone.rect.y
+        });
+      }
+      totalHeight = Math.max(totalHeight, zone.rect.y + resolveHostedRegionFootprintHeight(zone, result.height));
+    }
+    return { boxes: allBoxes, totalHeight };
+  }
+  function materializeHostedRegionsBounded(queues, sourceKind, fieldActorId, fieldSourceId, availableHeight, runRegionSessionBounded, contextBase) {
+    const allBoxes = [];
+    let occupiedHeight = 0;
+    let hasOverflow = false;
+    const continuationQueues = [];
+    for (let zoneIndex = 0; zoneIndex < queues.length; zoneIndex++) {
+      const zone = queues[zoneIndex];
+      const zoneVisibleHeight = resolveHostedRegionVisibleHeight(zone, Math.max(0, availableHeight));
+      if (zoneVisibleHeight <= 0) {
+        occupiedHeight = Math.max(occupiedHeight, zone.rect.y + resolveHostedRegionFootprintHeight(zone, 0));
+        hasOverflow = hasOverflow || zone.actors.length > 0;
+        continuationQueues.push(zone);
+        continue;
+      }
+      const result = runRegionSessionBounded(zone, contextBase, zoneVisibleHeight);
+      const zoneTag = {
+        fieldActorId,
+        fieldSourceId,
+        sourceKind,
+        zoneId: zone.id,
+        zoneIndex,
+        rect: {
+          ...zone.rect,
+          height: zoneVisibleHeight
+        }
+      };
+      for (const box of result.boxes) {
+        allBoxes.push({
+          ...attachHostedRegionDebugTag(box, zoneTag),
+          x: (box.x || 0) + zone.rect.x,
+          y: (box.y || 0) + zone.rect.y
+        });
+      }
+      occupiedHeight = Math.max(occupiedHeight, zone.rect.y + resolveHostedRegionFootprintHeight(zone, result.height));
+      hasOverflow = hasOverflow || result.hasOverflow;
+      continuationQueues.push(buildHostedRegionContinuationQueue(zone, result.continuation));
+    }
+    return {
+      boxes: allBoxes,
+      occupiedHeight,
+      hasOverflow,
+      continuationQueues,
+      totalHeight: hasOverflow ? Math.max(occupiedHeight, Math.max(0, availableHeight) + 1) : occupiedHeight
+    };
+  }
+  function normalizeHostedRegionLineConstraint(value, fallback) {
+    const numeric = Math.max(1, Math.floor(Number(value) || 0));
+    return Number.isFinite(numeric) && numeric > 0 ? numeric : fallback;
+  }
+  function isPoorHostedRegionContinuationStart(placement, availableWidth) {
+    const lineWidths = Array.isArray(placement?.lineWidths) ? placement.lineWidths : [];
+    if (!placement || lineWidths.length === 0) return false;
+    const firstLineWidth = Number(lineWidths[0] || 0);
+    const minimumContentWidth = Math.max(availableWidth * 0.4, 72);
+    const wideRestartSlot = Math.max(availableWidth * 0.75, 120);
+    const firstLineText = Array.isArray(placement.lines?.[0]) ? placement.lines[0].map((run) => String(run?.text || "")).join("").replace(/\s+/g, " ").trim() : "";
+    const firstLineWordCount = firstLineText.length > 0 ? firstLineText.split(/\s+/).filter(Boolean).length : 0;
+    const effectiveSlotWidth = Math.max(
+      Number(placement.box?.w || 0),
+      ...(Array.isArray(placement?.lineSlotWidths) ? placement.lineSlotWidths : []).slice(0, 1).map((value) => Number(value || 0))
+    );
+    return effectiveSlotWidth >= wideRestartSlot && (firstLineWidth < minimumContentWidth || firstLineWordCount <= 1);
+  }
+  function isPoorHostedRegionSplitTail(placement, consumedLineCount, availableWidth) {
+    const lineWidths = Array.isArray(placement?.lineWidths) ? placement.lineWidths : [];
+    if (consumedLineCount <= 0 || consumedLineCount > lineWidths.length) return false;
+    const lastLeadingLineWidth = Number(lineWidths[consumedLineCount - 1] || 0);
+    const minimumContentWidth = Math.max(availableWidth * 0.4, 72);
+    const wideRestartSlot = Math.max(availableWidth * 0.75, 120);
+    const effectiveSlotWidth = Math.max(Number(placement.box?.w || 0), availableWidth);
+    return effectiveSlotWidth >= wideRestartSlot && lastLeadingLineWidth < minimumContentWidth;
+  }
+  var HostedRegionCarryoverFieldPackager = class {
+    constructor(boxesTemplate, actor) {
+      this.boxesTemplate = boxesTemplate;
+      this.actorId = actor.actorId;
+      this.sourceId = actor.sourceId;
+      this.actorKind = actor.actorKind;
+      this.fragmentIndex = actor.fragmentIndex;
+      this.continuationOf = actor.continuationOf;
+    }
+    prepare(_availableWidth, _availableHeight, _context) {
+    }
+    getPlacementPreference(fullAvailableWidth, _context) {
+      return { minimumWidth: fullAvailableWidth };
+    }
+    getTransformProfile() {
+      return { capabilities: [] };
+    }
+    emitBoxes(_availableWidth, _availableHeight, context) {
+      return this.boxesTemplate.map((box) => ({
+        ...box,
+        properties: { ...box.properties || {} },
+        meta: box.meta ? { ...box.meta, pageIndex: context.pageIndex } : box.meta
+      }));
+    }
+    getRequiredHeight() {
+      return Math.max(0, this.boxesTemplate[0]?.h || 0);
+    }
+    isUnbreakable(_availableHeight) {
+      return true;
+    }
+    getMarginTop() {
+      return 0;
+    }
+    getMarginBottom() {
+      return 0;
+    }
+    split(_availableHeight, _context) {
+      return { currentFragment: null, continuationFragment: this };
+    }
+  };
+  function readHostedRegionFieldDirective(boxes) {
+    for (const box of boxes) {
+      const directive = box.properties?.spatialField ?? box.properties?.zoneField;
+      if (directive && typeof directive === "object") {
+        return directive;
+      }
+    }
+    return null;
+  }
+  function readHostedRegionElementFieldDirective(element2) {
+    const directive = element2.properties?.spatialField ?? element2.properties?.zoneField;
+    return directive && typeof directive === "object" ? directive : null;
+  }
+  function resolveHostedRegionFieldAnchorX(align, regionWidth, fieldWidth) {
+    if (align === "right") return Math.max(0, regionWidth - fieldWidth);
+    if (align === "center") return Math.max(0, (regionWidth - fieldWidth) / 2);
+    return 0;
+  }
+  function buildHostedRegionFieldState(emitted, directive, regionWidth, baseY, zIndex) {
+    const anchorBox = emitted[0];
+    const align = directive.align ?? "left";
+    const wrap2 = directive.wrap ?? "around";
+    const hidden = directive.hidden === true;
+    const fieldWidth = Math.max(0, anchorBox?.w || 0);
+    const fieldHeight = Math.max(0, anchorBox?.h || 0);
+    const fieldX = Number.isFinite(directive.x) ? Math.max(0, Number(directive.x)) : resolveHostedRegionFieldAnchorX(align, regionWidth, fieldWidth);
+    const fieldY = Number.isFinite(directive.y) ? Math.max(0, Number(directive.y)) : baseY;
+    const translatedBoxes = emitted.map((box) => ({
+      ...box,
+      x: (box.x || 0) + fieldX,
+      y: (box.y || 0) + fieldY,
+      properties: {
+        ...box.properties || {},
+        ...directive.exclusionAssembly?.members ? {
+          _clipAssembly: directive.exclusionAssembly.members.map((member) => ({
+            x: Number(member.x ?? 0),
+            y: Number(member.y ?? 0),
+            w: Math.max(0, Number(member.w ?? 0)),
+            h: Math.max(0, Number(member.h ?? 0)),
+            shape: member.shape ?? "rect"
+          }))
+        } : directive.shape ? { _clipShape: directive.shape } : {},
+        ...hidden ? { opacity: 0 } : {}
+      }
+    }));
+    return {
+      boxes: translatedBoxes,
+      field: {
+        wrap: wrap2,
+        hidden,
+        obstacles: buildExclusionFieldObstacles({
+          x: fieldX,
+          y: fieldY,
+          w: fieldWidth,
+          h: fieldHeight,
+          gap: directive.gap ?? 0,
+          shape: directive.shape ?? "rect",
+          align,
+          zIndex,
+          wrap: wrap2,
+          exclusionAssembly: directive.exclusionAssembly
+        })
+      }
+    };
+  }
+  function materializeHostedRegionFieldPublisher(actor, element2, regionWidth, availableHeight, context, baseY, zIndex) {
+    actor.prepare(regionWidth, availableHeight, {
+      ...context,
+      contentWidthOverride: regionWidth,
+      pageWidth: regionWidth
+    });
+    const emitted = actor.emitBoxes(regionWidth, availableHeight, {
+      ...context,
+      contentWidthOverride: regionWidth,
+      pageWidth: regionWidth
+    }) || [];
+    const directive = readHostedRegionFieldDirective(emitted) ?? readHostedRegionElementFieldDirective(element2);
+    if (!directive) return null;
+    const fieldState = buildHostedRegionFieldState(
+      emitted,
+      directive,
+      regionWidth,
+      baseY,
+      Number.isFinite(Number(directive.zIndex)) ? Number(directive.zIndex) : zIndex
+    );
+    return {
+      boxes: annotateHostedActorBoxes(actor, fieldState.boxes),
+      field: fieldState.field,
+      directive
+    };
+  }
+  function cloneShiftedFieldDirective(directive, deltaY) {
+    return {
+      ...directive,
+      y: Math.max(0, Number(directive.y ?? 0) - deltaY)
+    };
+  }
+  function buildHostedRegionFieldCarryoverEntry(entry, emitted, directive, deltaY) {
+    const shiftedDirective = cloneShiftedFieldDirective(directive, deltaY);
+    const explicitFieldX = Number.isFinite(directive.x) ? Math.max(0, Number(directive.x)) : null;
+    const explicitFieldY = Number.isFinite(directive.y) ? Math.max(0, Number(directive.y)) : null;
+    const anchorBox = emitted[0];
+    const emittedAlreadyIncludesFieldX = explicitFieldX !== null && Math.abs(Number(anchorBox?.x || 0) - explicitFieldX) <= 0.01;
+    const emittedAlreadyIncludesFieldY = explicitFieldY !== null && Math.abs(Number(anchorBox?.y || 0) - explicitFieldY) <= 0.01;
+    const shiftedBoxes = emitted.map((box) => ({
+      ...box,
+      x: explicitFieldX !== null && emittedAlreadyIncludesFieldX ? Number(box.x || 0) - explicitFieldX : Number(box.x || 0),
+      y: explicitFieldY !== null && emittedAlreadyIncludesFieldY ? Number(box.y || 0) - explicitFieldY : Number(box.y || 0),
+      properties: {
+        ...box.properties || {},
+        ...box.properties?.spatialField ? { spatialField: shiftedDirective } : {},
+        ...box.properties?.zoneField ? { zoneField: shiftedDirective } : {}
+      },
+      meta: box.meta ? { ...box.meta } : box.meta
+    }));
+    return {
+      actor: new HostedRegionCarryoverFieldPackager(shiftedBoxes, entry.actor),
+      element: {
+        ...entry.element,
+        properties: {
+          ...entry.element.properties || {},
+          ...entry.element.properties?.spatialField ? { spatialField: shiftedDirective } : {},
+          ...entry.element.properties?.zoneField ? { zoneField: shiftedDirective } : {}
+        }
+      }
+    };
+  }
+  function annotateHostedActorBoxes(actor, boxes) {
+    return boxes.map((box) => ({
+      ...box,
+      meta: box.meta ? { ...box.meta, actorId: actor.actorId, sourceId: box.meta.sourceId ?? actor.sourceId } : { actorId: actor.actorId, sourceId: actor.sourceId }
+    }));
+  }
+  function intersectsVertically(obstacle, top, bottom) {
+    const obstacleTop = obstacle.y;
+    const obstacleBottom = obstacle.y + obstacle.h;
+    return obstacleBottom > top && obstacleTop < bottom;
+  }
+  function resolveHostedRegionLane(regionWidth, top, height, fields, queryZIndex) {
+    const bottom = top + Math.max(0, height);
+    const occupied = [];
+    for (const field of fields) {
+      if (field.wrap !== "around") continue;
+      for (const obstacle of field.obstacles) {
+        if (Number(obstacle.zIndex ?? 0) !== queryZIndex) continue;
+        if (!intersectsVertically(obstacle, top, bottom)) continue;
+        occupied.push({
+          start: Math.max(0, obstacle.x),
+          end: Math.min(regionWidth, obstacle.x + obstacle.w)
+        });
+      }
+    }
+    if (occupied.length === 0) {
+      return { x: 0, width: regionWidth };
+    }
+    occupied.sort((a2, b2) => a2.start - b2.start || a2.end - b2.end);
+    const merged = [];
+    for (const segment of occupied) {
+      if (segment.end <= segment.start) continue;
+      const previous3 = merged[merged.length - 1];
+      if (!previous3 || segment.start > previous3.end) {
+        merged.push({ ...segment });
+        continue;
+      }
+      previous3.end = Math.max(previous3.end, segment.end);
+    }
+    let bestX = 0;
+    let bestWidth = 0;
+    let cursor = 0;
+    for (const segment of merged) {
+      const gapWidth = Math.max(0, segment.start - cursor);
+      if (gapWidth > bestWidth) {
+        bestX = cursor;
+        bestWidth = gapWidth;
+      }
+      cursor = Math.max(cursor, segment.end);
+    }
+    const trailingWidth = Math.max(0, regionWidth - cursor);
+    if (trailingWidth > bestWidth) {
+      bestX = cursor;
+      bestWidth = trailingWidth;
+    }
+    return { x: bestX, width: bestWidth };
+  }
+  function resolveHostedRegionActorZIndex(element2) {
+    const style = element2.properties?.style;
+    return Number.isFinite(Number(style?.zIndex)) ? Number(style?.zIndex) : 0;
+  }
+  function buildHostedRegionSpatialMap(fields) {
+    const map5 = new SpatialMap();
+    for (const field of fields) {
+      for (const obstacle of field.obstacles) {
+        map5.register(obstacle);
+      }
+    }
+    return map5;
+  }
+  function materializeHostedRegionFieldStates(entries, regionWidth, contextBase, pageIndex) {
+    const fields = [];
+    for (const entry of entries) {
+      const directive = readHostedRegionElementFieldDirective(entry.element);
+      if (!directive) continue;
+      const zIndex = resolveHostedRegionActorZIndex(entry.element);
+      const context = {
+        ...contextBase,
+        pageIndex,
+        cursorY: 0,
+        publishActorSignal: bindPackagerSignalPublisher(
+          contextBase.publishActorSignal,
+          pageIndex,
+          0,
+          resolvePackagerChunkOriginWorldY(contextBase)
+        )
+      };
+      const materialized = materializeHostedRegionFieldPublisher(
+        entry.actor,
+        entry.element,
+        regionWidth,
+        Infinity,
+        context,
+        0,
+        zIndex
+      );
+      if (materialized) {
+        fields.push(materialized.field);
+      }
+    }
+    return fields;
+  }
+  function resolveHostedRegionContinuationStartClearY(top, lineHeight, fields, queryZIndex) {
+    let clearY = null;
+    for (const field of fields) {
+      if (field.wrap !== "around") continue;
+      for (const obstacle of field.obstacles) {
+        if (Number(obstacle.zIndex ?? 0) !== queryZIndex) continue;
+        if (!intersectsVertically(obstacle, top, top + Math.max(0, lineHeight))) continue;
+        clearY = clearY === null ? obstacle.y + obstacle.h : Math.max(clearY, obstacle.y + obstacle.h);
+      }
+    }
+    return clearY;
+  }
+  function tryPlaceHostedRegionTextActor(actor, element2, processor, availableWidth, currentY, layoutBefore, activeFields) {
+    if (activeFields.length === 0) return null;
+    if (String(element2.type || "").toLowerCase() === "image") return null;
+    const session = processor.getCurrentLayoutSession();
+    const spatialMap = buildHostedRegionSpatialMap(activeFields);
+    const minUsableSlotWidth = Math.max(
+      24,
+      Number(element2.properties?.style?.fontSize || 0) * 3
+    );
+    const placeAgainstCurrentY = (reflowCurrentY) => reflowTextElementAgainstSpatialField({
+      processor,
+      element: element2,
+      path: [0],
+      availableWidth,
+      currentY: reflowCurrentY,
+      layoutBefore,
+      spatialMap,
+      pageIndex: session ? session.getCurrentPageIndex() : 0,
+      clearTopBeforeStart: false,
+      minUsableSlotWidth
+    });
+    let placed = placeAgainstCurrentY(currentY);
+    if (!placed) return null;
+    const isContinuation = Boolean(actor.continuationOf) || Number(actor.fragmentIndex || 0) > 0;
+    if (isContinuation && placed.lineSlotWidths.length > 0) {
+      const leadingSlotWidths = placed.lineSlotWidths.slice(0, Math.min(3, placed.lineSlotWidths.length));
+      const narrowestLeadingSlot = Math.min(...leadingSlotWidths);
+      const narrowContinuationThreshold = Math.max(availableWidth * 0.6, 96);
+      if (narrowestLeadingSlot < narrowContinuationThreshold) {
+        const actorZIndex = resolveHostedRegionActorZIndex(element2);
+        const clearY = resolveHostedRegionContinuationStartClearY(
+          placed.elementStartY,
+          placed.uniformLineHeight,
+          activeFields,
+          actorZIndex
+        );
+        if (clearY !== null) {
+          const adjustedCurrentY = Math.max(currentY, clearY - Math.max(0, layoutBefore));
+          if (adjustedCurrentY > currentY + 0.01) {
+            const restarted = placeAgainstCurrentY(adjustedCurrentY);
+            if (restarted) {
+              placed = restarted;
+            }
+          }
+        }
+      }
+    }
+    const consumedTop = Math.max(0, placed.elementStartY - currentY);
+    const requiredHeight = consumedTop + placed.contentHeight + placed.marginBottom;
+    return {
+      boxes: [placed.box],
+      requiredHeight: Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight),
+      marginBottom: placed.marginBottom,
+      reflowedPlacement: placed
+    };
+  }
+  function sliceHostedRegionSourceElement(processor, element2, lines, consumedLineCount) {
+    const renderedText = processor.getJoinedLineText(
+      lines.slice(0, consumedLineCount)
+    );
+    const continuationRenderedText = processor.getJoinedLineText(
+      lines.slice(consumedLineCount)
+    );
+    const sourceText = processor.getElementText(element2);
+    let consumedChars = processor.resolveConsumedSourceChars(
+      sourceText,
+      renderedText
+    );
+    const normalizeContinuationProbe = (text5) => String(text5 || "").replace(/\u00AD/g, "").replace(/\s+/g, " ").trim();
+    const continuationProbe = normalizeContinuationProbe(continuationRenderedText).slice(0, 48);
+    if (continuationProbe.length > 0) {
+      const baseline = Math.max(0, Math.min(sourceText.length, consumedChars));
+      const matchesProbe = (candidate) => {
+        const remainder = normalizeContinuationProbe(sourceText.slice(candidate));
+        return remainder.startsWith(continuationProbe);
+      };
+      if (!matchesProbe(baseline)) {
+        for (let candidate = baseline - 1; candidate >= 0; candidate--) {
+          if (!matchesProbe(candidate)) continue;
+          consumedChars = candidate;
+          break;
+        }
+      }
+    }
+    const remaining = Math.max(0, sourceText.length - consumedChars);
+    let continuation;
+    if (Array.isArray(element2.children) && element2.children.length > 0) {
+      continuation = {
+        ...element2,
+        content: "",
+        children: processor.sliceElements(
+          element2.children,
+          consumedChars,
+          consumedChars + remaining
+        )
+      };
+    } else {
+      continuation = {
+        ...element2,
+        content: sourceText.slice(consumedChars)
+      };
+    }
+    return processor.trimLeadingContinuationWhitespace(continuation);
+  }
+  function trySplitHostedRegionTextPlacement(actor, entry, processor, placement, currentY, availableHeight, availableWidth, activeFields, continuationFields) {
+    if (!placement) return null;
+    const consumedTop = Math.max(0, placement.elementStartY - currentY);
+    const splitAvailableHeight = Math.max(0, availableHeight - consumedTop);
+    if (splitAvailableHeight <= 0.01) return null;
+    const reflowedFlowBox = processor.rebuildFlowBox(
+      placement.flowBox,
+      placement.lines,
+      placement.flowBox.style,
+      placement.flowBox.meta,
+      {
+        ...placement.flowBox.properties || {},
+        _lineOffsets: placement.lineOffsets.slice(),
+        _lineWidths: placement.lineWidths.slice(),
+        _lineYOffsets: placement.lineYOffsets.slice(),
+        _isFirstLine: true,
+        _isLastLine: true
+      }
+    );
+    const split = processor.splitFlowBox(
+      reflowedFlowBox,
+      splitAvailableHeight,
+      placement.marginTop
+    );
+    if (!split?.partA) return null;
+    const maxConsumedLineCount = Array.isArray(split.partA.lines) ? split.partA.lines.length : 0;
+    if (maxConsumedLineCount <= 0) return null;
+    const totalLines = placement.lines.length;
+    const orphans = normalizeHostedRegionLineConstraint(reflowedFlowBox.orphans, LAYOUT_DEFAULTS.orphans);
+    const widows = normalizeHostedRegionLineConstraint(reflowedFlowBox.widows, LAYOUT_DEFAULTS.widows);
+    const buildCandidate = (consumedLineCount2) => {
+      if (consumedLineCount2 < orphans) return null;
+      if (totalLines - consumedLineCount2 < widows) return null;
+      const leadingLines = placement.lines.slice(0, consumedLineCount2);
+      const continuationLines = placement.lines.slice(consumedLineCount2);
+      const leadingYOffsets = placement.lineYOffsets.slice(0, consumedLineCount2);
+      const continuationYOffsetsRaw = placement.lineYOffsets.slice(consumedLineCount2, totalLines);
+      const continuationYOffsetBase = continuationYOffsetsRaw[0] ?? 0;
+      const continuationYOffsets = continuationYOffsetsRaw.map((offset) => Number(offset || 0) - Number(continuationYOffsetBase || 0));
+      if (leadingLines.length === 0 || continuationLines.length === 0) return null;
+      const leadingFlow = processor.rebuildFlowBox(
+        reflowedFlowBox,
+        leadingLines,
+        createLeadingFragmentStyle(reflowedFlowBox.style),
+        createLeadingFragmentMeta(reflowedFlowBox.meta),
+        {
+          ...reflowedFlowBox.properties || {},
+          _lineOffsets: placement.lineOffsets.slice(0, consumedLineCount2),
+          _lineWidths: placement.lineWidths.slice(0, consumedLineCount2),
+          _lineYOffsets: leadingYOffsets,
+          _isFirstLine: true,
+          _isLastLine: false
+        }
+      );
+      leadingFlow.marginBottom = 0;
+      const continuationFlow = processor.rebuildFlowBox(
+        reflowedFlowBox,
+        continuationLines,
+        createContinuationFragmentStyle(reflowedFlowBox.style),
+        createContinuationFragmentMeta(reflowedFlowBox.meta, reflowedFlowBox.meta.fragmentIndex + 1),
+        {
+          ...reflowedFlowBox.properties || {},
+          _lineOffsets: placement.lineOffsets.slice(consumedLineCount2, totalLines),
+          _lineWidths: placement.lineWidths.slice(consumedLineCount2, totalLines),
+          _lineYOffsets: continuationYOffsets,
+          _isFirstLine: false,
+          _isLastLine: true
+        }
+      );
+      continuationFlow.marginTop = 0;
+      const leadingPackager = new FlowBoxPackager(processor, leadingFlow, {
+        actorId: actor.actorId,
+        sourceId: actor.sourceId,
+        actorKind: actor.actorKind,
+        fragmentIndex: actor.fragmentIndex,
+        continuationOf: actor.continuationOf
+      });
+      const leadingBoxes = leadingPackager.emitBoxes(
+        placement.box.w,
+        splitAvailableHeight,
+        {
+          processor,
+          margins: { top: 0, right: 0, bottom: 0, left: 0 },
+          pageWidth: placement.box.w,
+          pageHeight: splitAvailableHeight,
+          pageIndex: 0,
+          cursorY: 0,
+          publishActorSignal: (() => ({ sequence: -1 })),
+          readActorSignals: (() => [])
+        }
+      );
+      if (!leadingBoxes || leadingBoxes.length === 0) return null;
+      const referenceBox = leadingBoxes[0];
+      const shiftedLeadingBoxes = leadingBoxes.map((box) => ({
+        ...box,
+        x: Number(box.x || 0) + (Number(placement.box.x || 0) - Number(referenceBox?.x || 0)),
+        y: Number(box.y || 0) + (Number(placement.box.y || 0) - Number(referenceBox?.y || 0)),
+        properties: { ...box.properties || {} },
+        meta: box.meta ? { ...box.meta } : box.meta
+      }));
+      const continuationElement = sliceHostedRegionSourceElement(
+        processor,
+        entry.element,
+        placement.lines,
+        consumedLineCount2
+      );
+      const continuationActor = new FlowBoxPackager(
+        processor,
+        continuationFlow,
+        createContinuationIdentity(actor, continuationFlow.meta?.fragmentIndex)
+      );
+      return {
+        boxes: shiftedLeadingBoxes,
+        requiredHeight: consumedTop + leadingPackager.getRequiredHeight(),
+        continuationEntry: {
+          actor: continuationActor,
+          element: continuationElement
+        }
+      };
+    };
+    let consumedLineCount = maxConsumedLineCount;
+    let candidate = buildCandidate(consumedLineCount);
+    while (candidate) {
+      const continuationPlacement = tryPlaceHostedRegionTextActor(
+        candidate.continuationEntry.actor,
+        candidate.continuationEntry.element,
+        processor,
+        availableWidth,
+        0,
+        candidate.continuationEntry.actor.getMarginTop(),
+        continuationFields.length > 0 ? continuationFields : activeFields
+      );
+      if (!isPoorHostedRegionContinuationStart(continuationPlacement, availableWidth) && !isPoorHostedRegionSplitTail(placement, consumedLineCount, availableWidth)) {
+        break;
+      }
+      if (consumedLineCount <= orphans) {
+        break;
+      }
+      consumedLineCount -= 1;
+      candidate = buildCandidate(consumedLineCount);
+    }
+    return candidate;
+  }
+  function resolveHostedRegionPageIndex(contextBase) {
+    const session = contextBase.processor.getCurrentLayoutSession?.();
+    return session ? session.getCurrentPageIndex() : 0;
+  }
+  function placePackagersInHostedRegion(packagers, availableWidth, contextBase) {
+    const placedBoxes = [];
+    const activeFields = [];
+    const pageIndex = resolveHostedRegionPageIndex(contextBase);
+    let currentY = 0;
+    let lastSpacingAfter = 0;
+    for (const entry of packagers) {
+      const actor = entry.actor;
+      const fieldDirective = readHostedRegionElementFieldDirective(entry.element);
+      const actorZIndex = resolveHostedRegionActorZIndex(entry.element);
+      const marginTop = actor.getMarginTop();
+      const marginBottom = actor.getMarginBottom();
+      const layoutBefore = lastSpacingAfter + marginTop;
+      const layoutDelta = lastSpacingAfter;
+      const blockTop = currentY + layoutDelta;
+      if (fieldDirective) {
+        const context2 = {
+          ...contextBase,
+          pageIndex,
+          cursorY: currentY,
+          publishActorSignal: bindPackagerSignalPublisher(
+            contextBase.publishActorSignal,
+            pageIndex,
+            currentY,
+            resolvePackagerWorldYAtCursor({
+              ...contextBase,
+              cursorY: currentY
+            })
+          )
+        };
+        const fieldPublisher = materializeHostedRegionFieldPublisher(
+          actor,
+          entry.element,
+          availableWidth,
+          Infinity,
+          context2,
+          blockTop,
+          actorZIndex
+        );
+        if (fieldPublisher) {
+          placedBoxes.push(...fieldPublisher.boxes);
+          activeFields.push(fieldPublisher.field);
+          continue;
+        }
+      }
+      const textPlacement = tryPlaceHostedRegionTextActor(
+        actor,
+        entry.element,
+        contextBase.processor,
+        availableWidth,
+        currentY,
+        layoutBefore,
+        activeFields
+      );
+      if (textPlacement) {
+        placedBoxes.push(...annotateHostedActorBoxes(actor, textPlacement.boxes));
+        currentY += textPlacement.requiredHeight - marginBottom;
+        lastSpacingAfter = marginBottom;
+        continue;
+      }
+      const initialLane = resolveHostedRegionLane(availableWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields, actorZIndex);
+      const context = {
+        ...contextBase,
+        pageIndex,
+        cursorY: currentY,
+        publishActorSignal: bindPackagerSignalPublisher(
+          contextBase.publishActorSignal,
+          pageIndex,
+          currentY,
+          resolvePackagerWorldYAtCursor({
+            ...contextBase,
+            cursorY: currentY
+          })
+        )
+      };
+      const initialContext = {
+        ...context,
+        contentWidthOverride: initialLane.width || availableWidth,
+        pageWidth: initialLane.width || availableWidth
+      };
+      actor.prepare(initialLane.width || availableWidth, Infinity, initialContext);
+      const provisionalHeight = Math.max(
+        LAYOUT_DEFAULTS.minEffectiveHeight,
+        actor.getRequiredHeight() - marginTop - marginBottom + layoutBefore + marginBottom
+      );
+      const lane = resolveHostedRegionLane(availableWidth, blockTop, provisionalHeight, activeFields, actorZIndex);
+      const laneContext = {
+        ...context,
+        contentWidthOverride: lane.width || availableWidth,
+        pageWidth: lane.width || availableWidth
+      };
+      if (Math.abs(lane.width - initialLane.width) > 0.1) {
+        actor.prepare(lane.width || availableWidth, Infinity, laneContext);
+      }
+      const emitted = actor.emitBoxes(lane.width || availableWidth, Infinity, laneContext) || [];
+      const emittedFieldDirective = readHostedRegionFieldDirective(emitted);
+      if (emittedFieldDirective) {
+        const fieldState = buildHostedRegionFieldState(
+          emitted,
+          emittedFieldDirective,
+          availableWidth,
+          blockTop,
+          Number.isFinite(Number(emittedFieldDirective.zIndex)) ? Number(emittedFieldDirective.zIndex) : actorZIndex
+        );
+        placedBoxes.push(...annotateHostedActorBoxes(actor, fieldState.boxes));
+        activeFields.push(fieldState.field);
+        continue;
+      }
+      for (const box of annotateHostedActorBoxes(actor, emitted)) {
+        placedBoxes.push({
+          ...box,
+          x: (box.x || 0) + lane.x,
+          y: (box.y || 0) + currentY + layoutDelta
+        });
+      }
+      const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
+      const requiredHeight = contentHeight + layoutBefore + marginBottom;
+      const effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+      currentY += effectiveHeight - marginBottom;
+      lastSpacingAfter = marginBottom;
+    }
+    return { boxes: placedBoxes, height: currentY + lastSpacingAfter };
+  }
+  function runHostedRegionSession(zone, contextBase) {
+    const zoneWidth = zone.rect.width;
+    const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
+    const result = placePackagersInHostedRegion(zone.actors, zoneWidth, zoneContextBase);
+    return { boxes: result.boxes, height: result.height };
+  }
+  function runHostedRegionSessionBounded(zone, contextBase, availableHeight) {
+    const zoneWidth = zone.rect.width;
+    const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
+    const placedBoxes = [];
+    const activeFields = [];
+    const carryoverActors = [];
+    const pageIndex = resolveHostedRegionPageIndex(zoneContextBase);
+    let currentY = 0;
+    let lastSpacingAfter = 0;
+    const canAbsorbTrailingMarginOverflow = (requiredHeight, trailingMarginBottom, actorIndex) => {
+      if (actorIndex !== zone.actors.length - 1) return false;
+      if (carryoverActors.length > 0) return false;
+      if (trailingMarginBottom <= 0) return false;
+      return currentY + requiredHeight > availableHeight + 0.01 && currentY + Math.max(0, requiredHeight - trailingMarginBottom) <= availableHeight + 0.01;
+    };
+    for (let actorIndex = 0; actorIndex < zone.actors.length; actorIndex++) {
+      const entry = zone.actors[actorIndex];
+      const actor = entry.actor;
+      const fieldDirective = readHostedRegionElementFieldDirective(entry.element);
+      const actorZIndex = resolveHostedRegionActorZIndex(entry.element);
+      const marginTop = actor.getMarginTop();
+      const marginBottom = actor.getMarginBottom();
+      const layoutBefore = lastSpacingAfter + marginTop;
+      const layoutDelta = lastSpacingAfter;
+      const remainingHeight = Math.max(0, availableHeight - currentY - layoutDelta);
+      const blockTop = currentY + layoutDelta;
+      const initialLane = resolveHostedRegionLane(zoneWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields, actorZIndex);
+      const context = {
+        ...zoneContextBase,
+        pageIndex,
+        cursorY: currentY,
+        publishActorSignal: bindPackagerSignalPublisher(
+          zoneContextBase.publishActorSignal,
+          pageIndex,
+          currentY,
+          resolvePackagerWorldYAtCursor({
+            ...zoneContextBase,
+            cursorY: currentY
+          })
+        )
+      };
+      const initialContext = {
+        ...context,
+        contentWidthOverride: initialLane.width || zoneWidth,
+        pageWidth: initialLane.width || zoneWidth
+      };
+      if (fieldDirective) {
+        const fieldPublisher = materializeHostedRegionFieldPublisher(
+          actor,
+          entry.element,
+          zoneWidth,
+          remainingHeight,
+          context,
+          blockTop,
+          actorZIndex
+        );
+        if (fieldPublisher) {
+          const anchorBox = fieldPublisher.boxes[0];
+          const fieldTop = Number.isFinite(fieldDirective.y) ? Math.max(0, Number(fieldDirective.y)) : blockTop;
+          const fieldBottom = fieldTop + Math.max(0, anchorBox?.h || 0);
+          if (fieldBottom > availableHeight + 0.01) {
+            carryoverActors.push(
+              buildHostedRegionFieldCarryoverEntry(
+                entry,
+                fieldPublisher.boxes,
+                fieldPublisher.directive,
+                availableHeight
+              )
+            );
+          }
+          if (fieldTop >= availableHeight - 0.01) {
+            continue;
+          }
+          placedBoxes.push(...fieldPublisher.boxes);
+          activeFields.push(fieldPublisher.field);
+          continue;
+        }
+      }
+      const textPlacement = tryPlaceHostedRegionTextActor(
+        actor,
+        entry.element,
+        zoneContextBase.processor,
+        zoneWidth,
+        currentY,
+        layoutBefore,
+        activeFields
+      );
+      if (textPlacement) {
+        if (canAbsorbTrailingMarginOverflow(textPlacement.requiredHeight, textPlacement.marginBottom, actorIndex)) {
+          placedBoxes.push(...annotateHostedActorBoxes(actor, textPlacement.boxes));
+          currentY += textPlacement.requiredHeight - textPlacement.marginBottom;
+          lastSpacingAfter = 0;
+          continue;
+        }
+        if (currentY + textPlacement.requiredHeight > availableHeight + 0.01) {
+          const splitPlacement = trySplitHostedRegionTextPlacement(
+            actor,
+            entry,
+            zoneContextBase.processor,
+            textPlacement.reflowedPlacement,
+            currentY,
+            remainingHeight,
+            zoneWidth,
+            activeFields,
+            materializeHostedRegionFieldStates(
+              carryoverActors,
+              zoneWidth,
+              zoneContextBase,
+              pageIndex + 1
+            )
+          );
+          if (splitPlacement) {
+            placedBoxes.push(...annotateHostedActorBoxes(actor, splitPlacement.boxes));
+            currentY += splitPlacement.requiredHeight;
+            lastSpacingAfter = 0;
+            return {
+              boxes: placedBoxes,
+              height: currentY + lastSpacingAfter,
+              consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
+              hasOverflow: true,
+              continuation: {
+                nextActorIndex: actorIndex + 1,
+                continuationFragment: null,
+                prefixActors: [
+                  ...carryoverActors.length > 0 ? carryoverActors : [],
+                  splitPlacement.continuationEntry
+                ]
+              }
+            };
+          }
+          return {
+            boxes: placedBoxes,
+            height: currentY + lastSpacingAfter,
+            consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
+            hasOverflow: true,
+            continuation: {
+              nextActorIndex: actorIndex,
+              continuationFragment: actor,
+              prefixActors: carryoverActors.length > 0 ? carryoverActors : void 0
+            }
+          };
+        }
+        placedBoxes.push(...annotateHostedActorBoxes(actor, textPlacement.boxes));
+        currentY += textPlacement.requiredHeight - textPlacement.marginBottom;
+        lastSpacingAfter = textPlacement.marginBottom;
+        continue;
+      }
+      actor.prepare(initialLane.width || zoneWidth, remainingHeight, initialContext);
+      const provisionalHeight = Math.max(
+        LAYOUT_DEFAULTS.minEffectiveHeight,
+        actor.getRequiredHeight() - marginTop - marginBottom + layoutBefore + marginBottom
+      );
+      const lane = resolveHostedRegionLane(zoneWidth, blockTop, provisionalHeight, activeFields, actorZIndex);
+      const laneContext = {
+        ...context,
+        contentWidthOverride: lane.width || zoneWidth,
+        pageWidth: lane.width || zoneWidth
+      };
+      if (Math.abs(lane.width - initialLane.width) > 0.1) {
+        actor.prepare(lane.width || zoneWidth, remainingHeight, laneContext);
+      }
+      const actorRequiredHeight = actor.getRequiredHeight();
+      if (actorRequiredHeight <= remainingHeight + 0.1 || canAbsorbTrailingMarginOverflow(
+        Math.max(
+          LAYOUT_DEFAULTS.minEffectiveHeight,
+          actorRequiredHeight - marginTop - marginBottom + layoutBefore + marginBottom
+        ),
+        marginBottom,
+        actorIndex
+      )) {
+        const emitted = actor.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
+        const fieldDirective2 = readHostedRegionFieldDirective(emitted);
+        if (fieldDirective2) {
+          const anchorBox = emitted[0];
+          const fieldTop = Number.isFinite(fieldDirective2.y) ? Math.max(0, Number(fieldDirective2.y)) : blockTop;
+          const fieldBottom = fieldTop + Math.max(0, anchorBox?.h || 0);
+          if (fieldBottom > availableHeight + 0.01) {
+            carryoverActors.push(buildHostedRegionFieldCarryoverEntry(entry, emitted, fieldDirective2, availableHeight));
+          }
+          if (fieldTop >= availableHeight - 0.01) {
+            continue;
+          }
+          const fieldState = buildHostedRegionFieldState(
+            emitted,
+            fieldDirective2,
+            zoneWidth,
+            blockTop,
+            Number.isFinite(Number(fieldDirective2.zIndex)) ? Number(fieldDirective2.zIndex) : actorZIndex
+          );
+          placedBoxes.push(...annotateHostedActorBoxes(actor, fieldState.boxes));
+          activeFields.push(fieldState.field);
+          continue;
+        }
+        for (const box of annotateHostedActorBoxes(actor, emitted)) {
+          placedBoxes.push({
+            ...box,
+            x: (box.x || 0) + lane.x,
+            y: (box.y || 0) + currentY + layoutDelta
+          });
+        }
+        const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
+        const requiredHeight = contentHeight + layoutBefore + marginBottom;
+        const effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+        currentY += effectiveHeight - marginBottom;
+        lastSpacingAfter = canAbsorbTrailingMarginOverflow(requiredHeight, marginBottom, actorIndex) ? 0 : marginBottom;
+        continue;
+      }
+      if (remainingHeight <= 0 || actor.isUnbreakable(remainingHeight)) {
+        return {
+          boxes: placedBoxes,
+          height: currentY + lastSpacingAfter,
+          consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
+          hasOverflow: true,
+          continuation: {
+            nextActorIndex: actorIndex,
+            continuationFragment: actor,
+            prefixActors: carryoverActors.length > 0 ? carryoverActors : void 0
+          }
+        };
+      }
+      const split = actor.split(remainingHeight, context);
+      if (split.currentFragment) {
+        const emitted = split.currentFragment.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
+        for (const box of annotateHostedActorBoxes(split.currentFragment, emitted)) {
+          placedBoxes.push({
+            ...box,
+            x: (box.x || 0) + lane.x,
+            y: (box.y || 0) + currentY + layoutDelta
+          });
+        }
+        const splitMarginTop = split.currentFragment.getMarginTop();
+        const splitMarginBottom = split.currentFragment.getMarginBottom();
+        const splitContentHeight = Math.max(
+          0,
+          split.currentFragment.getRequiredHeight() - splitMarginTop - splitMarginBottom
+        );
+        const splitRequiredHeight = splitContentHeight + layoutBefore + splitMarginBottom;
+        const splitEffectiveHeight = Math.max(splitRequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
+        currentY += splitEffectiveHeight - splitMarginBottom;
+        lastSpacingAfter = splitMarginBottom;
+      }
+      if (split.continuationFragment) {
+        return {
+          boxes: placedBoxes,
+          height: currentY + lastSpacingAfter,
+          consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
+          hasOverflow: true,
+          continuation: {
+            nextActorIndex: actorIndex,
+            continuationFragment: split.continuationFragment,
+            prefixActors: carryoverActors.length > 0 ? carryoverActors : void 0
+          }
+        };
+      }
+    }
+    if (carryoverActors.length > 0) {
+      return {
+        boxes: placedBoxes,
+        height: currentY + lastSpacingAfter,
+        consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
+        hasOverflow: true,
+        continuation: {
+          nextActorIndex: zone.actors.length,
+          continuationFragment: null,
+          prefixActors: carryoverActors
+        }
+      };
+    }
+    return {
+      boxes: placedBoxes,
+      height: currentY + lastSpacingAfter,
+      consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
+      hasOverflow: false,
+      continuation: null
+    };
+  }
+  function annotateHostedActorBoxes2(actor, boxes) {
+    return boxes.map((box) => ({
+      ...box,
+      meta: box.meta ? { ...box.meta, actorId: actor.actorId, sourceId: box.meta.sourceId ?? actor.sourceId } : { actorId: actor.actorId, sourceId: actor.sourceId }
+    }));
+  }
+  var FrozenHostedRegionPackager = class {
+    constructor(boxes, height, marginTop, marginBottom, sourceKind, frameOverflowMode, worldBehaviorMode, identity) {
+      this.frozenBoxes = cloneHostedRegionBoxes(boxes);
+      this.frozenHeight = height;
+      this.marginTopVal = marginTop;
+      this.marginBottomVal = marginBottom;
+      this.sourceKind = sourceKind;
+      this.frameOverflowMode = frameOverflowMode;
+      this.worldBehaviorMode = worldBehaviorMode;
+      this.actorId = identity.actorId;
+      this.sourceId = identity.sourceId;
+      this.actorKind = identity.actorKind;
+      this.fragmentIndex = identity.fragmentIndex;
+      this.continuationOf = identity.continuationOf;
+    }
+    prepare(_availableWidth, _availableHeight, _context) {
+    }
+    getPlacementPreference(fullAvailableWidth, _context) {
+      return { minimumWidth: fullAvailableWidth, acceptsFrame: true };
+    }
+    getTransformProfile() {
+      return {
+        capabilities: [
+          { kind: "split", preservesIdentity: true, producesContinuation: true }
+        ]
+      };
+    }
+    emitBoxes(_availableWidth, _availableHeight, context) {
+      const leftMargin = context.margins.left;
+      const mt2 = this.marginTopVal;
+      return this.frozenBoxes.map((box) => {
+        const tag = readHostedRegionDebugTag(box);
+        return {
+          ...box,
+          x: (box.x || 0) + leftMargin,
+          y: (box.y || 0) + mt2,
+          properties: tag ? {
+            ...box.properties || {},
+            __vmprintRegionDebugPage: {
+              fieldActorId: this.actorId,
+              fieldSourceId: this.sourceId,
+              sourceKind: this.sourceKind,
+              regionId: tag.zoneId,
+              regionIndex: tag.zoneIndex,
+              zoneId: tag.zoneId,
+              zoneIndex: tag.zoneIndex,
+              x: leftMargin + tag.rect.x,
+              y: mt2 + tag.rect.y,
+              w: tag.rect.width,
+              explicitHeight: tag.rect.height,
+              frameOverflowMode: this.frameOverflowMode,
+              worldBehaviorMode: this.worldBehaviorMode
+            }
+          } : { ...box.properties || {} },
+          meta: box.meta ? { ...box.meta } : box.meta
+        };
+      });
+    }
+    split(_availableHeight, _context) {
+      return { currentFragment: null, continuationFragment: this };
+    }
+    getRequiredHeight() {
+      return this.frozenHeight;
+    }
+    isUnbreakable(_availableHeight) {
+      return true;
+    }
+    getMarginTop() {
+      return this.marginTopVal;
+    }
+    getMarginBottom() {
+      return this.marginBottomVal;
+    }
+  };
+  var HostedRegionPackager = class _HostedRegionPackager {
+    constructor(element2, processor, identity, regionQueues, fragmentMarginTop, fragmentMarginBottom, normalizeStrip, resolveHostLayout, buildInitialQueues, describeRegions) {
+      this.element = element2;
+      this.processor = processor;
+      this.hostedRuntimeActorIds = /* @__PURE__ */ new Set();
+      this.lastAvailableWidth = -1;
+      this.lastAvailableHeight = -1;
+      this.materializedBoxes = null;
+      this.marginTopVal = 0;
+      this.marginBottomVal = 0;
+      this.totalRegionHeight = 0;
+      this.boundedBoxes = null;
+      this.boundedHeight = 0;
+      this.boundedOverflow = false;
+      this.boundedContinuationQueues = null;
+      this.lastEmittedLeftMargin = 0;
+      this.normalizeStrip = normalizeStrip ?? ((availableWidth) => {
+        throw new Error(`HostedRegionPackager requires normalizeStrip for ${this.element.type} at width ${availableWidth}`);
+      });
+      this.resolveHostLayout = resolveHostLayout ?? ((availableWidth) => {
+        const normalized = this.normalizeStrip(availableWidth);
+        return {
+          sourceKind: normalized.sourceKind,
+          frameOverflow: normalized.frameOverflow,
+          worldBehavior: normalized.worldBehavior,
+          marginTop: normalized.marginTop,
+          marginBottom: normalized.marginBottom
+        };
+      });
+      this.buildInitialQueues = buildInitialQueues;
+      this.describeRegions = describeRegions ?? ((availableWidth) => this.normalizeStrip(availableWidth).zones);
+      const resolved = identity ?? createElementPackagerIdentity(element2, [0]);
+      this.regionQueues = regionQueues ?? null;
+      const hostLayout = this.resolveHostLayout(0);
+      this.sourceKind = hostLayout.sourceKind;
+      this.frameOverflowMode = hostLayout.frameOverflow;
+      this.worldBehaviorMode = hostLayout.worldBehavior;
+      this.fragmentMarginTop = fragmentMarginTop ?? (resolved.fragmentIndex > 0 ? 0 : hostLayout.marginTop);
+      this.fragmentMarginBottom = fragmentMarginBottom ?? hostLayout.marginBottom;
+      this.actorId = resolved.actorId;
+      this.sourceId = resolved.sourceId;
+      this.actorKind = resolved.actorKind;
+      this.fragmentIndex = resolved.fragmentIndex;
+      this.continuationOf = resolved.continuationOf;
+      if (this.usesSpanningContinuation()) {
+        this.marginTopVal = this.fragmentMarginTop;
+        this.marginBottomVal = this.fragmentMarginBottom;
+      }
+    }
+    usesSpanningContinuation() {
+      if (this.frameOverflowMode !== "continue") return false;
+      if (this.worldBehaviorMode === "expandable") return true;
+      return this.worldBehaviorMode === "spanning";
+    }
+    get pageBreakBefore() {
+      if (this.fragmentIndex > 0) return void 0;
+      return this.element.properties?.style?.pageBreakBefore ?? void 0;
+    }
+    get keepWithNext() {
+      if (this.fragmentIndex > 0) return void 0;
+      return this.element.properties?.style?.keepWithNext ?? void 0;
+    }
+    getHostedRuntimeActors() {
+      if (!this.regionQueues) return [];
+      return this.regionQueues.flatMap((zone) => zone.actors.map((entry) => entry.actor));
+    }
+    ensureRegionQueues(availableWidth) {
+      if (this.regionQueues) return this.regionQueues;
+      if (this.buildInitialQueues) {
+        this.regionQueues = this.buildInitialQueues(availableWidth);
+        return this.regionQueues;
+      }
+      const normalizedStrip = this.normalizeStrip(availableWidth);
+      this.regionQueues = buildHostedRegionActorQueues(normalizedStrip, this.processor);
+      return this.regionQueues;
+    }
+    syncHostedActors(actorIndex) {
+      const session = this.processor.getCurrentLayoutSession();
+      if (!session) return;
+      const actors = this.getHostedRuntimeActors();
+      const activeIds = new Set(actors.map((actor) => actor.actorId));
+      for (const actor of actors) {
+        if (!this.hostedRuntimeActorIds.has(actor.actorId)) {
+          session.notifyActorSpawn(actor);
+          this.hostedRuntimeActorIds.add(actor.actorId);
+        }
+        if (actorIndex !== void 0) {
+          session.noteActorRuntimeIndex(actor, actorIndex);
+        }
+      }
+      for (const actorId of [...this.hostedRuntimeActorIds]) {
+        if (activeIds.has(actorId)) continue;
+        const staleActor = session.getRegisteredActors().find((entry) => entry.actorId === actorId);
+        if (staleActor) {
+          session.notifyActorDespawn(staleActor);
+        }
+        this.hostedRuntimeActorIds.delete(actorId);
+      }
+    }
+    annotateHostedActorBoxes(actor, boxes) {
+      return annotateHostedActorBoxes2(actor, boxes);
+    }
+    collectHostedActorIds(actor) {
+      const ids = [actor.actorId];
+      const maybeHosted = actor;
+      for (const hosted of maybeHosted.getHostedRuntimeActors?.() ?? []) {
+        ids.push(...this.collectHostedActorIds(hosted));
+      }
+      return ids;
+    }
+    trackHostedActorsAsActive(actors) {
+      for (const actor of actors) {
+        for (const actorId of this.collectHostedActorIds(actor)) {
+          this.hostedRuntimeActorIds.add(actorId);
+        }
+      }
+    }
+    trackHostedActorsAsRemoved(actors) {
+      for (const actor of actors) {
+        for (const actorId of this.collectHostedActorIds(actor)) {
+          this.hostedRuntimeActorIds.delete(actorId);
+        }
+      }
+    }
+    invalidateMaterialization() {
+      this.materializedBoxes = null;
+      this.boundedBoxes = null;
+      this.boundedContinuationQueues = null;
+      this.boundedHeight = 0;
+      this.boundedOverflow = false;
+      this.totalRegionHeight = 0;
+      this.lastAvailableHeight = -1;
+    }
+    createActorEntries(sourceElements, actors) {
+      if (!sourceElements || sourceElements.length !== actors.length) return null;
+      return actors.map((actor, index2) => ({ actor, element: sourceElements[index2] }));
+    }
+    findHostedActorLocation(targetActor) {
+      if (!this.regionQueues) return null;
+      for (const zone of this.regionQueues) {
+        const actorIndex = zone.actors.findIndex((entry) => entry.actor.actorId === targetActor.actorId);
+        if (actorIndex >= 0) return { zone, actorIndex };
+      }
+      return null;
+    }
+    handlesHostedRuntimeActor(targetActor) {
+      return this.findHostedActorLocation(targetActor) !== null;
+    }
+    insertHostedRuntimeActors(targetActor, insertions, position2, sourceElements) {
+      const location2 = this.findHostedActorLocation(targetActor);
+      const entries = this.createActorEntries(sourceElements, insertions);
+      if (!location2 || !entries) return false;
+      const insertionIndex = position2 === "before" ? location2.actorIndex : location2.actorIndex + 1;
+      location2.zone.actors.splice(insertionIndex, 0, ...entries);
+      this.trackHostedActorsAsActive(insertions);
+      this.invalidateMaterialization();
+      return true;
+    }
+    deleteHostedRuntimeActor(targetActor) {
+      const location2 = this.findHostedActorLocation(targetActor);
+      if (!location2) return false;
+      const [removed] = location2.zone.actors.splice(location2.actorIndex, 1);
+      if (!removed) return false;
+      this.trackHostedActorsAsRemoved([removed.actor]);
+      this.invalidateMaterialization();
+      return true;
+    }
+    replaceHostedRuntimeActor(targetActor, replacements, sourceElements) {
+      const location2 = this.findHostedActorLocation(targetActor);
+      const entries = this.createActorEntries(sourceElements, replacements);
+      if (!location2 || !entries) return false;
+      const [removed] = location2.zone.actors.splice(location2.actorIndex, 1, ...entries);
+      if (!removed) return false;
+      this.trackHostedActorsAsRemoved([removed.actor]);
+      this.trackHostedActorsAsActive(replacements);
+      this.invalidateMaterialization();
+      return true;
+    }
+    refreshHostedRuntimeActor(targetActor) {
+      if (!this.handlesHostedRuntimeActor(targetActor)) return false;
+      this.invalidateMaterialization();
+      return true;
+    }
+    materializeMoveWhole(availableWidth) {
+      if (this.materializedBoxes !== null && this.lastAvailableWidth === availableWidth) return;
+      const contextBase = createHostedRegionSessionContextBase(availableWidth, this.processor);
+      const queues = this.ensureRegionQueues(availableWidth);
+      const { boxes, totalHeight } = materializeHostedRegionsMoveWhole(
+        queues,
+        this.sourceKind,
+        "",
+        "",
+        runHostedRegionSession,
+        contextBase
+      );
+      this.materializedBoxes = boxes.map((box) => {
+        const tag = readHostedRegionDebugTag(box);
+        return tag ? attachHostedRegionDebugTag(box, { ...tag, fieldActorId: this.actorId, fieldSourceId: this.sourceId }) : box;
+      });
+      this.marginTopVal = this.fragmentMarginTop;
+      this.marginBottomVal = this.fragmentMarginBottom;
+      this.totalRegionHeight = totalHeight;
+      this.lastAvailableWidth = availableWidth;
+      this.lastAvailableHeight = Infinity;
+    }
+    materializeBounded(availableWidth, availableHeight) {
+      if (this.boundedBoxes !== null && this.lastAvailableWidth === availableWidth && this.lastAvailableHeight === availableHeight) {
+        return;
+      }
+      if (!Number.isFinite(availableHeight)) {
+        this.materializeMoveWhole(availableWidth);
+        this.boundedBoxes = this.materializedBoxes ? cloneHostedRegionBoxes(this.materializedBoxes) : [];
+        this.boundedHeight = this.totalRegionHeight;
+        this.boundedOverflow = false;
+        this.boundedContinuationQueues = null;
+        return;
+      }
+      const queues = this.ensureRegionQueues(availableWidth);
+      const contextBase = createHostedRegionSessionContextBase(availableWidth, this.processor);
+      const { boxes, occupiedHeight, hasOverflow, continuationQueues, totalHeight } = materializeHostedRegionsBounded(
+        queues,
+        this.sourceKind,
+        this.actorId,
+        this.sourceId,
+        availableHeight,
+        runHostedRegionSessionBounded,
+        contextBase
+      );
+      this.marginTopVal = this.fragmentMarginTop;
+      this.marginBottomVal = hasOverflow ? 0 : this.fragmentMarginBottom;
+      this.boundedBoxes = boxes;
+      this.boundedHeight = occupiedHeight;
+      this.boundedOverflow = hasOverflow;
+      this.boundedContinuationQueues = hasOverflow ? continuationQueues : null;
+      if (hasOverflow) {
+        this.regionQueues = continuationQueues;
+      }
+      this.totalRegionHeight = totalHeight;
+      this.lastAvailableWidth = availableWidth;
+      this.lastAvailableHeight = availableHeight;
+    }
+    materialize(availableWidth, availableHeight) {
+      if (this.usesSpanningContinuation()) {
+        this.materializeBounded(availableWidth, availableHeight);
+        return;
+      }
+      this.materializeMoveWhole(availableWidth);
+    }
+    createFrozenCurrentFragment() {
+      return new FrozenHostedRegionPackager(
+        this.usesSpanningContinuation() ? this.boundedBoxes || [] : this.materializedBoxes || [],
+        this.marginTopVal + (this.usesSpanningContinuation() ? this.boundedHeight : this.totalRegionHeight) + this.marginBottomVal,
+        this.marginTopVal,
+        this.marginBottomVal,
+        this.sourceKind,
+        this.frameOverflowMode,
+        this.worldBehaviorMode,
+        {
+          actorId: this.actorId,
+          sourceId: this.sourceId,
+          actorKind: this.actorKind,
+          fragmentIndex: this.fragmentIndex,
+          continuationOf: this.continuationOf
+        }
+      );
+    }
+    createContinuationPackager() {
+      if (!this.boundedContinuationQueues || this.boundedContinuationQueues.every((zone) => zone.actors.length === 0)) {
+        return null;
+      }
+      return new _HostedRegionPackager(
+        this.element,
+        this.processor,
+        createContinuationIdentity(this),
+        this.boundedContinuationQueues,
+        0,
+        this.fragmentMarginBottom,
+        this.normalizeStrip,
+        this.resolveHostLayout,
+        this.buildInitialQueues,
+        this.describeRegions
+      );
+    }
+    prepare(availableWidth, availableHeight, context) {
+      this.ensureRegionQueues(availableWidth);
+      this.syncHostedActors(context.actorIndex);
+      this.materialize(availableWidth, availableHeight);
+    }
+    getPlacementPreference(fullAvailableWidth, _context) {
+      return { minimumWidth: fullAvailableWidth, acceptsFrame: true };
+    }
+    getTransformProfile() {
+      return { capabilities: [{ kind: "morph", preservesIdentity: true, reflowsContent: true }] };
+    }
+    emitBoxes(availableWidth, availableHeight, context) {
+      this.materialize(availableWidth, availableHeight);
+      const mt2 = this.marginTopVal;
+      const leftMargin = context.margins.left;
+      this.lastEmittedLeftMargin = leftMargin;
+      const boxes = this.usesSpanningContinuation() ? this.boundedBoxes || [] : this.materializedBoxes || [];
+      return boxes.map((b2) => {
+        const tag = readHostedRegionDebugTag(b2);
+        return {
+          ...b2,
+          x: (b2.x || 0) + leftMargin,
+          y: (b2.y || 0) + mt2,
+          properties: tag ? {
+            ...b2.properties || {},
+            __vmprintRegionDebugPage: {
+              fieldActorId: this.actorId,
+              fieldSourceId: this.sourceId,
+              sourceKind: tag.sourceKind,
+              regionId: tag.zoneId,
+              regionIndex: tag.zoneIndex,
+              zoneId: tag.zoneId,
+              zoneIndex: tag.zoneIndex,
+              x: leftMargin + tag.rect.x,
+              y: mt2 + tag.rect.y,
+              w: tag.rect.width,
+              explicitHeight: tag.rect.height,
+              frameOverflowMode: this.frameOverflowMode,
+              worldBehaviorMode: this.worldBehaviorMode
+            }
+          } : b2.properties
+        };
+      });
+    }
+    getDebugRegions() {
+      const availableWidth = this.lastAvailableWidth > 0 ? this.lastAvailableWidth : 0;
+      const regions = this.describeRegions(availableWidth);
+      const boxes = this.usesSpanningContinuation() ? this.boundedBoxes || [] : this.materializedBoxes || [];
+      const bottomsByZone = /* @__PURE__ */ new Map();
+      for (const box of boxes) {
+        const tag = readHostedRegionDebugTag(box);
+        if (!tag) continue;
+        const localBottom = (box.y || 0) + (box.h || 0);
+        const currentBottom = bottomsByZone.get(tag.zoneIndex) ?? tag.rect.y;
+        if (localBottom > currentBottom) {
+          bottomsByZone.set(tag.zoneIndex, localBottom);
+        }
+      }
+      return regions.map((zone, zoneIndex) => {
+        const explicitHeight = zone.rect.height !== void 0 ? Math.max(0, Number(zone.rect.height)) : 0;
+        const contentHeight = Math.max(0, (bottomsByZone.get(zoneIndex) ?? zone.rect.y) - zone.rect.y);
+        const visibleHeight = this.usesSpanningContinuation() ? resolveHostedRegionVisibleHeight({ id: zone.id, rect: { ...zone.rect }, style: zone.style, actors: [] }, Math.max(0, this.lastAvailableHeight)) : contentHeight;
+        const height = Math.max(explicitHeight, contentHeight, visibleHeight);
+        return {
+          fieldActorId: this.actorId,
+          fieldSourceId: this.sourceId,
+          sourceKind: this.sourceKind,
+          regionId: zone.id,
+          regionIndex: zoneIndex,
+          zoneId: zone.id,
+          zoneIndex,
+          x: this.lastEmittedLeftMargin + zone.rect.x,
+          y: this.marginTopVal + zone.rect.y,
+          w: zone.rect.width,
+          h: height,
+          frameOverflowMode: this.frameOverflowMode,
+          worldBehaviorMode: this.worldBehaviorMode
+        };
+      }).filter((zone) => zone.w > 0 && zone.h > 0);
+    }
+    getRequiredHeight() {
+      const regionHeight = this.usesSpanningContinuation() ? this.boundedHeight : this.totalRegionHeight;
+      const reportedHeight = this.usesSpanningContinuation() && this.boundedOverflow ? Math.max(regionHeight, this.lastAvailableHeight + 1) : regionHeight;
+      return this.marginTopVal + reportedHeight + this.marginBottomVal;
+    }
+    isUnbreakable(_availableHeight) {
+      return !this.usesSpanningContinuation();
+    }
+    getMarginTop() {
+      return this.marginTopVal;
+    }
+    getMarginBottom() {
+      return this.marginBottomVal;
+    }
+    split(availableHeight, context) {
+      if (!this.usesSpanningContinuation()) {
+        return { currentFragment: null, continuationFragment: this };
+      }
+      const availableWidth = this.lastAvailableWidth > 0 ? this.lastAvailableWidth : context.pageWidth - context.margins.left - context.margins.right;
+      this.materializeBounded(availableWidth, availableHeight);
+      if ((this.boundedBoxes || []).length === 0) {
+        return { currentFragment: null, continuationFragment: this };
+      }
+      const currentFragment = this.createFrozenCurrentFragment();
+      if (!this.boundedOverflow) {
+        return { currentFragment, continuationFragment: null };
+      }
+      return {
+        currentFragment,
+        continuationFragment: this.createContinuationPackager()
+      };
+    }
+  };
+  function isWorldPlainElement(element2) {
+    return String(element2?.type || "").trim().toLowerCase() === "world-plain";
+  }
+  function resolveWorldPlainHostLayout(element2) {
+    const style = element2.properties?.style ?? {};
+    const options = element2.properties?._worldPlainOptions ?? {};
+    return {
+      sourceKind: "world-plain",
+      frameOverflow: options.frameOverflow === "move-whole" ? "move-whole" : "continue",
+      worldBehavior: options.worldBehavior === "fixed" || options.worldBehavior === "spanning" || options.worldBehavior === "expandable" ? options.worldBehavior : "expandable",
+      rootFlowMode: options.rootFlowMode === "traverse" ? "traverse" : "wrapped",
+      traversalInteractionDefault: options.traversalInteractionDefault === "wrap" || options.traversalInteractionDefault === "overpass" || options.traversalInteractionDefault === "ignore" || options.traversalInteractionDefault === "auto" ? options.traversalInteractionDefault : "auto",
+      marginTop: Math.max(0, Number(style.marginTop ?? 0) || 0),
+      marginBottom: Math.max(0, Number(style.marginBottom ?? 0) || 0)
+    };
+  }
+  function buildWorldPlainRegionQueues(element2, availableWidth, processor) {
+    return buildHostedRegionActorQueuesFromZones(
+      [
+        {
+          id: "plain",
+          rect: {
+            x: 0,
+            y: 0,
+            width: Math.max(0, availableWidth)
+          },
+          elements: [...element2.children || []]
+        }
+      ],
+      processor
+    );
+  }
+  function describeWorldPlainRegions(availableWidth) {
+    return [
+      {
+        id: "plain",
+        rect: {
+          x: 0,
+          y: 0,
+          width: Math.max(0, availableWidth)
+        }
+      }
+    ];
+  }
+  function normalizeWorldPlainElement(element2) {
+    const hostLayout = resolveWorldPlainHostLayout(element2);
+    return {
+      kind: "world-plain",
+      sourceKind: hostLayout.sourceKind,
+      frameOverflow: hostLayout.frameOverflow,
+      worldBehavior: hostLayout.worldBehavior,
+      rootFlowMode: hostLayout.rootFlowMode,
+      traversalInteractionDefault: hostLayout.traversalInteractionDefault,
+      marginTop: hostLayout.marginTop,
+      marginBottom: hostLayout.marginBottom
+    };
+  }
+  var WorldPlainPackager = class {
+    constructor(element2, processor, identity) {
+      this.element = element2;
+      const resolvedIdentity = identity ?? createElementPackagerIdentity(element2, [0]);
+      const normalized = normalizeWorldPlainElement(element2);
+      this.inner = new HostedRegionPackager(element2, processor, {
+        ...resolvedIdentity,
+        actorKind: "world-plain"
+      }, void 0, void 0, void 0, void 0, () => normalized, (availableWidth) => buildWorldPlainRegionQueues(element2, availableWidth, processor), describeWorldPlainRegions);
+      this.actorId = resolvedIdentity.actorId;
+      this.sourceId = resolvedIdentity.sourceId;
+      this.actorKind = "world-plain";
+      this.fragmentIndex = resolvedIdentity.fragmentIndex;
+      this.continuationOf = resolvedIdentity.continuationOf;
+      this.frameOverflowMode = this.inner.frameOverflowMode;
+      this.worldBehaviorMode = this.inner.worldBehaviorMode;
+      this.rootFlowMode = normalized.rootFlowMode;
+      this.traversalInteractionDefault = normalized.traversalInteractionDefault;
+    }
+    get pageBreakBefore() {
+      return this.rootFlowMode === "traverse" ? void 0 : this.inner.pageBreakBefore;
+    }
+    get keepWithNext() {
+      return this.rootFlowMode === "traverse" ? void 0 : this.inner.keepWithNext;
+    }
+    getHostedRuntimeActors() {
+      return this.inner.getHostedRuntimeActors();
+    }
+    getDebugRegions() {
+      return this.inner.getDebugRegions();
+    }
+    handlesHostedRuntimeActor(targetActor) {
+      return this.inner.handlesHostedRuntimeActor(targetActor);
+    }
+    insertHostedRuntimeActors(targetActor, insertions, position2, sourceElements) {
+      return this.inner.insertHostedRuntimeActors(targetActor, insertions, position2, sourceElements);
+    }
+    deleteHostedRuntimeActor(targetActor) {
+      return this.inner.deleteHostedRuntimeActor(targetActor);
+    }
+    replaceHostedRuntimeActor(targetActor, replacements, sourceElements) {
+      return this.inner.replaceHostedRuntimeActor(targetActor, replacements, sourceElements);
+    }
+    refreshHostedRuntimeActor(targetActor) {
+      return this.inner.refreshHostedRuntimeActor?.(targetActor) ?? false;
+    }
+    prepare(availableWidth, availableHeight, context) {
+      this.inner.prepare(availableWidth, availableHeight, context);
+    }
+    getPlacementPreference(fullAvailableWidth, context) {
+      return this.inner.getPlacementPreference(fullAvailableWidth, context);
+    }
+    getTransformProfile() {
+      return this.inner.getTransformProfile();
+    }
+    emitBoxes(availableWidth, availableHeight, context) {
+      const boxes = this.inner.emitBoxes(availableWidth, availableHeight, context);
+      if (this.rootFlowMode === "traverse") {
+        this.publishTraversingFlowExclusions(boxes, context);
+      }
+      return boxes;
+    }
+    getRequiredHeight() {
+      return this.rootFlowMode === "traverse" ? 0 : this.inner.getRequiredHeight();
+    }
+    getZIndex() {
+      return 0;
+    }
+    isUnbreakable(availableHeight) {
+      return this.inner.isUnbreakable(availableHeight);
+    }
+    getMarginTop() {
+      return this.rootFlowMode === "traverse" ? 0 : this.inner.getMarginTop();
+    }
+    getMarginBottom() {
+      return this.rootFlowMode === "traverse" ? 0 : this.inner.getMarginBottom();
+    }
+    occupiesFlowSpace() {
+      return this.rootFlowMode !== "traverse";
+    }
+    split(availableHeight, context) {
+      return this.inner.split(availableHeight, context);
+    }
+    publishTraversingFlowExclusions(boxes, context) {
+      const session = context.processor.getCurrentLayoutSession?.() ?? null;
+      if (!session || !Array.isArray(boxes)) return;
+      for (const box of boxes) {
+        const directive = box.properties?.spatialField ?? box.properties?.zoneField;
+        if (!directive || directive.kind !== void 0 && directive.kind !== "exclude") continue;
+        const sourceId = String(box.meta?.sourceId || this.sourceId || "world-plain");
+        const obstacles = buildExclusionFieldObstacles({
+          x: Number(box.x || 0),
+          y: Number(box.y || 0) + context.cursorY,
+          w: Math.max(0, Number(box.w || 0)),
+          h: Math.max(0, Number(box.h || 0)),
+          wrap: directive.wrap ?? "around",
+          gap: directive.gap ?? 0,
+          shape: directive.shape,
+          align: directive.align,
+          exclusionAssembly: directive.exclusionAssembly,
+          traversalInteraction: directive.traversalInteraction ?? this.traversalInteractionDefault,
+          zIndex: Number.isFinite(Number(directive.zIndex)) ? Number(directive.zIndex) : Number.isFinite(Number(box.style?.zIndex)) ? Number(box.style?.zIndex) : 0
+        });
+        obstacles.forEach((obstacle, index2) => {
+          session.excludePageSpace({
+            id: `world-plain:traverse:${context.pageIndex}:${sourceId}:${index2}`,
+            x: obstacle.x,
+            y: obstacle.y,
+            w: obstacle.w,
+            h: obstacle.h,
+            surface: "world-traversal",
+            source: `world-plain:${sourceId}`,
+            wrap: obstacle.wrap,
+            gap: obstacle.gap,
+            gapTop: obstacle.gapTop,
+            gapBottom: obstacle.gapBottom,
+            shape: obstacle.shape,
+            align: obstacle.align,
+            traversalInteraction: obstacle.traversalInteraction,
+            zIndex: obstacle.zIndex
+          }, context.pageIndex);
+        });
+      }
+    }
+  };
+  function isZoneMapElement(element2) {
+    return String(element2?.type || "").trim().toLowerCase() === "zone-map";
+  }
+  function resolveTrackWidths(columns, columnCount, availableWidth, gap) {
+    if (columns && columns.length > 0) {
+      const tracks = columns.map((c2) => ({
+        mode: c2.mode || "auto",
+        value: c2.value,
+        fr: c2.fr,
+        min: c2.min,
+        max: c2.max,
+        basis: c2.basis,
+        minContent: c2.minContent,
+        maxContent: c2.maxContent,
+        grow: c2.grow,
+        shrink: c2.shrink
+      }));
+      return solveTrackSizing({ containerWidth: availableWidth, tracks, gap }).sizes;
+    }
+    const colWidth = (availableWidth - gap * Math.max(0, columnCount - 1)) / Math.max(1, columnCount);
+    return Array(columnCount).fill(Math.max(0, colWidth));
+  }
+  function normalizeZoneMapElement(element2, availableWidth) {
+    const style = element2.properties?.style ?? {};
+    const marginTop = Math.max(0, LayoutUtils.validateUnit(style.marginTop ?? 0));
+    const marginBottom = Math.max(0, LayoutUtils.validateUnit(style.marginBottom ?? 0));
+    const options = element2.zoneLayout ?? {};
+    const gap = Math.max(0, LayoutUtils.validateUnit(options.gap ?? 0));
+    const frameOverflow = options.frameOverflow === "continue" ? "continue" : "move-whole";
+    const worldBehavior = options.worldBehavior === "spanning" || options.worldBehavior === "expandable" ? options.worldBehavior : "fixed";
+    const zoneDefs = Array.isArray(element2.zones) ? element2.zones : [];
+    const columnCount = zoneDefs.length;
+    if (columnCount === 0) {
+      return {
+        kind: "zone-strip",
+        overflow: "independent",
+        sourceKind: "zone-map",
+        frameOverflow,
+        worldBehavior,
+        marginTop,
+        marginBottom,
+        gap,
+        blockStyle: Object.keys(style).length > 0 ? style : void 0,
+        zones: []
+      };
+    }
+    const columnWidths = resolveTrackWidths(options.columns, columnCount, availableWidth, gap);
+    const xOffsets = [];
+    let xCursor = 0;
+    for (let i2 = 0; i2 < columnCount; i2++) {
+      xOffsets.push(xCursor);
+      xCursor += (columnWidths[i2] ?? 0) + (i2 < columnCount - 1 ? gap : 0);
+    }
+    return {
+      kind: "zone-strip",
+      overflow: "independent",
+      sourceKind: "zone-map",
+      frameOverflow,
+      worldBehavior,
+      marginTop,
+      marginBottom,
+      gap,
+      blockStyle: Object.keys(style).length > 0 ? style : void 0,
+      zones: zoneDefs.map((zone, index2) => ({
+        id: zone.id,
+        rect: zone.region ? {
+          x: Math.max(0, LayoutUtils.validateUnit(zone.region.x ?? 0)),
+          y: Math.max(0, LayoutUtils.validateUnit(zone.region.y ?? 0)),
+          width: Math.max(0, LayoutUtils.validateUnit(zone.region.width ?? 0)),
+          ...zone.region.height !== void 0 ? { height: Math.max(0, LayoutUtils.validateUnit(zone.region.height)) } : {}
+        } : {
+          x: xOffsets[index2] ?? 0,
+          y: 0,
+          width: columnWidths[index2] ?? 0
+        },
+        elements: zone.elements ?? [],
+        style: zone.style
+      }))
+    };
+  }
+  var ZonePackager = class extends HostedRegionPackager {
+    constructor(element2, processor, identity, zoneQueues, fragmentMarginTop, fragmentMarginBottom, normalizeStrip, resolveHostLayout, buildInitialQueues, describeRegions) {
+      const zoneNormalizeStrip = normalizeStrip ?? ((availableWidth) => normalizeZoneMapElement(element2, availableWidth));
+      super(
+        element2,
+        processor,
+        identity ?? createElementPackagerIdentity(element2, [0]),
+        zoneQueues,
+        fragmentMarginTop,
+        fragmentMarginBottom,
+        zoneNormalizeStrip,
+        resolveHostLayout ?? ((availableWidth) => {
+          const normalized = zoneNormalizeStrip(availableWidth);
+          return {
+            sourceKind: normalized.sourceKind,
+            frameOverflow: normalized.frameOverflow,
+            worldBehavior: normalized.worldBehavior,
+            marginTop: normalized.marginTop,
+            marginBottom: normalized.marginBottom
+          };
+        }),
+        buildInitialQueues,
+        describeRegions ?? ((availableWidth) => zoneNormalizeStrip(availableWidth).zones)
+      );
+    }
+  };
   var ENTRY_HEIGHT = 20;
   var TITLE_HEIGHT = 28;
   var PADDING = 16;
@@ -57068,9 +61794,41 @@ ${source}`)
     const indent2 = entry.level && entry.level > 1 ? "  ".repeat(entry.level - 1) : "";
     return `${indent2}${entry.heading}  ${page}`;
   }
+  function compareTocEntries(a2, b2) {
+    if (a2.pageIndex !== b2.pageIndex) {
+      return a2.pageIndex - b2.pageIndex;
+    }
+    const aCursorY = Number.isFinite(a2.cursorY) ? Number(a2.cursorY) : Number.POSITIVE_INFINITY;
+    const bCursorY = Number.isFinite(b2.cursorY) ? Number(b2.cursorY) : Number.POSITIVE_INFINITY;
+    if (aCursorY !== bCursorY) {
+      return aCursorY - bCursorY;
+    }
+    const aLevel = Number.isFinite(a2.level) ? Number(a2.level) : Number.POSITIVE_INFINITY;
+    const bLevel = Number.isFinite(b2.level) ? Number(b2.level) : Number.POSITIVE_INFINITY;
+    if (aLevel !== bLevel) {
+      return aLevel - bLevel;
+    }
+    return a2.heading.localeCompare(b2.heading);
+  }
   function resolvedHeight(entryCount, isContinuation) {
     if (isContinuation) return entryCount * ENTRY_HEIGHT + PADDING;
     return TITLE_HEIGHT + entryCount * ENTRY_HEIGHT + PADDING;
+  }
+  function isEarlierCommittedPosition(pageIndex, cursorY, actorIndex, currentPageIndex2, currentCursorY, currentActorIndex) {
+    if (currentPageIndex2 === null) {
+      return true;
+    }
+    if (pageIndex !== currentPageIndex2) {
+      return pageIndex < currentPageIndex2;
+    }
+    const nextCursorY = Number.isFinite(cursorY) ? Number(cursorY) : Number.POSITIVE_INFINITY;
+    const existingCursorY = Number.isFinite(currentCursorY) ? Number(currentCursorY) : Number.POSITIVE_INFINITY;
+    if (Math.abs(nextCursorY - existingCursorY) > 0.01) {
+      return nextCursorY < existingCursorY;
+    }
+    const nextActorIndex = Number.isFinite(actorIndex) ? Number(actorIndex) : Number.POSITIVE_INFINITY;
+    const existingActorIndex = Number.isFinite(currentActorIndex) ? Number(currentActorIndex) : Number.POSITIVE_INFINITY;
+    return nextActorIndex < existingActorIndex;
   }
   var TocPackager = class _TocPackager {
     constructor(processor, flowBox, identity) {
@@ -57083,6 +61841,8 @@ ${source}`)
       this.geometrySignature = null;
       this.firstCommittedPageIndex = null;
       this.firstCommittedActorIndex = null;
+      this.firstCommittedCursorY = null;
+      this.firstCommittedWorldY = null;
       this.actorKind = "toc";
       this.actorId = identity.actorId;
       this.sourceId = identity.sourceId;
@@ -57108,9 +61868,18 @@ ${source}`)
       };
     }
     emitBoxes(availableWidth, availableHeight, context) {
-      if (this.firstCommittedPageIndex === null) this.firstCommittedPageIndex = context.pageIndex;
-      if (this.firstCommittedActorIndex === null && typeof context.actorIndex === "number") {
-        this.firstCommittedActorIndex = context.actorIndex;
+      if (isEarlierCommittedPosition(
+        context.pageIndex,
+        context.cursorY,
+        typeof context.actorIndex === "number" ? context.actorIndex : void 0,
+        this.firstCommittedPageIndex,
+        this.firstCommittedCursorY,
+        this.firstCommittedActorIndex
+      )) {
+        this.firstCommittedPageIndex = context.pageIndex;
+        this.firstCommittedActorIndex = typeof context.actorIndex === "number" ? context.actorIndex : this.firstCommittedActorIndex;
+        this.firstCommittedCursorY = Number.isFinite(context.cursorY) ? Number(context.cursorY) : this.firstCommittedCursorY;
+        this.firstCommittedWorldY = Number.isFinite(resolvePackagerWorldYAtCursor(context)) ? Number(resolvePackagerWorldYAtCursor(context)) : this.firstCommittedWorldY;
       }
       const packager = this.base ?? this.buildPackager(context);
       return packager.emitBoxes(availableWidth, availableHeight, context);
@@ -57161,8 +61930,10 @@ ${source}`)
         changed,
         geometryChanged,
         updateKind: geometryChanged ? "geometry" : changed ? "content-only" : "none",
-        earliestAffectedFrontier: geometryChanged ? {
-          pageIndex: this.firstCommittedPageIndex ?? 0,
+        earliestAffectedFrontier: geometryChanged && this.firstCommittedPageIndex !== null ? {
+          pageIndex: this.firstCommittedPageIndex,
+          ...Number.isFinite(this.firstCommittedCursorY) ? { cursorY: Number(this.firstCommittedCursorY) } : {},
+          ...Number.isFinite(this.firstCommittedWorldY) ? { worldY: Number(this.firstCommittedWorldY) } : {},
           actorIndex: this.firstCommittedActorIndex ?? void 0,
           actorId: this.actorId,
           sourceId: this.sourceId
@@ -57175,9 +61946,10 @@ ${source}`)
       const signals = context.readActorSignals(HEADING_SIGNAL_TOPIC);
       return signals.map((signal) => ({
         heading: String(signal.payload?.heading ?? ""),
-        pageIndex: signal.pageIndex,
+        pageIndex: Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : Number.POSITIVE_INFINITY,
+        cursorY: Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : void 0,
         level: signal.payload?.level != null ? Number(signal.payload.level) : void 0
-      })).filter((e) => e.heading.length > 0).filter((e) => !levelFilter || levelFilter.length === 0 || e.level != null && levelFilter.includes(e.level));
+      })).filter((e) => e.heading.length > 0).filter((e) => Number.isFinite(e.pageIndex)).filter((e) => !levelFilter || levelFilter.length === 0 || e.level != null && levelFilter.includes(e.level)).sort(compareTocEntries);
     }
     getTocProperties() {
       return this.flowBox.properties?.toc ?? {};
@@ -57267,6 +62039,27 @@ ${source}`)
     if (Array.isArray(value)) return value.map((element2) => normalizeRuntimeElement2(element2));
     if (value && typeof value === "object") return [normalizeRuntimeElement2(value)];
     return [];
+  }
+  function chooseEarlierFrontier(current, next) {
+    if (!current) {
+      return next;
+    }
+    const nextWorldY = Number.isFinite(next.worldY) ? Number(next.worldY) : Number.NaN;
+    const currentWorldY = Number.isFinite(current.worldY) ? Number(current.worldY) : Number.NaN;
+    if (Number.isFinite(nextWorldY) && Number.isFinite(currentWorldY) && Math.abs(nextWorldY - currentWorldY) > 0.01) {
+      return nextWorldY < currentWorldY ? next : current;
+    }
+    if (next.pageIndex !== current.pageIndex) {
+      return next.pageIndex < current.pageIndex ? next : current;
+    }
+    const nextCursorY = Number.isFinite(next.cursorY) ? Number(next.cursorY) : Number.POSITIVE_INFINITY;
+    const currentCursorY = Number.isFinite(current.cursorY) ? Number(current.cursorY) : Number.POSITIVE_INFINITY;
+    if (Math.abs(nextCursorY - currentCursorY) > 0.01) {
+      return nextCursorY < currentCursorY ? next : current;
+    }
+    const nextActorIndex = Number.isFinite(next.actorIndex) ? Number(next.actorIndex) : Number.POSITIVE_INFINITY;
+    const currentActorIndex = Number.isFinite(current.actorIndex) ? Number(current.actorIndex) : Number.POSITIVE_INFINITY;
+    return nextActorIndex < currentActorIndex ? next : current;
   }
   function normalizeRuntimeElement2(element2) {
     const cloned = cloneElementTree2(element2);
@@ -57412,7 +62205,7 @@ ${source}`)
       to: targetSourceId
     };
   }
-  var ScriptedFlowBoxPackager = class {
+  var ScriptedFlowBoxPackager = class _ScriptedFlowBoxPackager {
     constructor(processor, flowBox, host, sourceElement, identity, rootPath, elements) {
       this.processor = processor;
       this.host = host;
@@ -57423,6 +62216,7 @@ ${source}`)
       this.lastHandledMessageSequence = 0;
       this.lastObservedPageIndex = 0;
       this.lastObservedActorIndex = 0;
+      this.lastObservedCursorY = 0;
       this.pendingLiveStructuralChange = false;
       this.pendingLiveFrontier = null;
       this.inner = new FlowBoxPackager(processor, flowBox, identity);
@@ -57446,20 +62240,32 @@ ${source}`)
       const nextFlowBox = shaper.shapeNormalizedFlowBlock(normalized);
       this.inner = new FlowBoxPackager(this.processor, nextFlowBox, this.identity);
     }
+    getLiveContent() {
+      return String(this.sourceElement.content || "");
+    }
+    setLiveContent(content3) {
+      const nextContent = String(content3);
+      if (this.getLiveContent() === nextContent) return false;
+      this.sourceElement.content = nextContent;
+      this.rebuildInner();
+      return true;
+    }
     replaceLiveSelf(session, elements) {
       const processorWithFactory = this.processor;
       const packagerFactory = processorWithFactory.getPackagerFactory?.();
       const replacements = createPackagers(elements, this.processor, packagerFactory);
       if (replacements.length === 0) return false;
-      const replacedIndex = session.replaceActorInLiveQueue(this, replacements);
+      const replacedIndex = session.replaceActorInLiveQueue(this, replacements, elements);
       if (replacedIndex === null) return false;
       this.pendingLiveStructuralChange = true;
-      this.pendingLiveFrontier = {
+      this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, {
         pageIndex: this.lastObservedPageIndex,
+        cursorY: this.lastObservedCursorY,
+        ...Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {},
         actorIndex: replacedIndex,
         actorId: replacements[0]?.actorId ?? this.actorId,
         sourceId: replacements[0]?.sourceId ?? this.sourceId
-      };
+      });
       return true;
     }
     insertLiveRelativeToSelf(session, elements, position2) {
@@ -57467,16 +62273,31 @@ ${source}`)
       const packagerFactory = processorWithFactory.getPackagerFactory?.();
       const insertions = createPackagers(elements, this.processor, packagerFactory);
       if (insertions.length === 0) return false;
-      const insertedIndex = session.insertActorsInLiveQueue(this, insertions, position2);
+      const insertedIndex = session.insertActorsInLiveQueue(this, insertions, position2, elements);
       if (insertedIndex === null) return false;
-      this.pendingLiveStructuralChange = true;
-      this.pendingLiveFrontier = {
+      const mutationFrontier = session.resolveRuntimeFrontierAtActorIndex(insertedIndex) ?? {
         pageIndex: this.lastObservedPageIndex,
-        actorIndex: insertedIndex,
-        actorId: insertions[0]?.actorId,
-        sourceId: insertions[0]?.sourceId
+        cursorY: this.lastObservedCursorY,
+        ...Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {},
+        actorIndex: insertedIndex
       };
+      session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+      this.pendingLiveStructuralChange = true;
+      this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, mutationFrontier);
       return true;
+    }
+    isLiveContentActor(actor) {
+      return !!actor && (actor instanceof FlowBoxPackager || actor instanceof _ScriptedFlowBoxPackager) && typeof actor.getLiveContent === "function" && typeof actor.setLiveContent === "function";
+    }
+    resolveLiveMutationFrontier(session, actor, options) {
+      return session.resolveActorRuntimeFrontier(actor, options) ?? {
+        pageIndex: this.lastObservedPageIndex,
+        cursorY: this.lastObservedCursorY,
+        ...Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {},
+        ...Number.isFinite(options?.actorIndex) ? { actorIndex: Number(options?.actorIndex) } : {},
+        actorId: options?.actorId ?? actor.actorId,
+        sourceId: options?.sourceId ?? actor.sourceId
+      };
     }
     resolveLiveActor(session, target) {
       const sourceId = this.resolveSourceId(target);
@@ -57497,15 +62318,47 @@ ${source}`)
       const packagerFactory = processorWithFactory.getPackagerFactory?.();
       const replacements = createPackagers(elements, this.processor, packagerFactory);
       if (replacements.length === 0) return false;
-      const replacedIndex = session.replaceActorInLiveQueue(actor, replacements);
+      const replacedIndex = session.replaceActorInLiveQueue(actor, replacements, elements);
       if (replacedIndex === null) return false;
-      this.pendingLiveStructuralChange = true;
-      this.pendingLiveFrontier = {
-        pageIndex: this.lastObservedPageIndex,
+      const mutationFrontier = this.resolveLiveMutationFrontier(session, actor, {
         actorIndex: replacedIndex,
-        actorId: replacements[0]?.actorId ?? actor.actorId,
-        sourceId: replacements[0]?.sourceId ?? actor.sourceId
-      };
+        actorId: actor.actorId,
+        sourceId: actor.sourceId
+      });
+      session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+      this.pendingLiveStructuralChange = true;
+      this.pendingLiveFrontier = chooseEarlierFrontier(
+        this.pendingLiveFrontier,
+        mutationFrontier
+      );
+      return true;
+    }
+    setLiveActorContent(session, target, content3) {
+      const actor = this.resolveLiveActor(session, target);
+      if (!this.isLiveContentActor(actor)) return false;
+      const nextContent = String(content3);
+      const changed = actor.setLiveContent(nextContent);
+      if (!changed) return false;
+      const shadowNode = actor.sourceId ? findBySourceId2(this.elements, actor.sourceId) : null;
+      if (shadowNode) {
+        shadowNode.content = nextContent;
+      }
+      const hostActorIndex = session.noteHostedRuntimeActorContentMutation(actor);
+      const mutationFrontier = Number.isFinite(hostActorIndex) ? session.resolveRuntimeFrontierAtActorIndex(Number(hostActorIndex)) : this.resolveLiveMutationFrontier(session, actor);
+      if (mutationFrontier) {
+        session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+      }
+      this.pendingLiveStructuralChange = true;
+      this.pendingLiveFrontier = chooseEarlierFrontier(
+        this.pendingLiveFrontier,
+        mutationFrontier ?? {
+          pageIndex: this.lastObservedPageIndex,
+          cursorY: this.lastObservedCursorY,
+          ...Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {},
+          actorIndex: hostActorIndex ?? this.lastObservedActorIndex,
+          ...hostActorIndex !== null ? {} : { actorId: actor.actorId, sourceId: actor.sourceId }
+        }
+      );
       return true;
     }
     insertLiveRelative(session, target, elements, position2) {
@@ -57518,29 +62371,38 @@ ${source}`)
       const packagerFactory = processorWithFactory.getPackagerFactory?.();
       const insertions = createPackagers(elements, this.processor, packagerFactory);
       if (insertions.length === 0) return false;
-      const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position2);
+      const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position2, elements);
       if (insertedIndex === null) return false;
-      this.pendingLiveStructuralChange = true;
-      this.pendingLiveFrontier = {
-        pageIndex: this.lastObservedPageIndex,
+      const mutationFrontier = this.resolveLiveMutationFrontier(session, actor, {
         actorIndex: insertedIndex,
-        actorId: insertions[0]?.actorId,
-        sourceId: insertions[0]?.sourceId
-      };
+        actorId: actor.actorId,
+        sourceId: actor.sourceId
+      });
+      session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+      this.pendingLiveStructuralChange = true;
+      this.pendingLiveFrontier = chooseEarlierFrontier(
+        this.pendingLiveFrontier,
+        mutationFrontier
+      );
       return true;
     }
     deleteLiveActor(session, target) {
       const actor = this.resolveLiveActor(session, target);
       if (!actor) return false;
+      const mutationFrontier = this.resolveLiveMutationFrontier(session, actor);
       const deletedIndex = session.deleteActorInLiveQueue(actor);
       if (deletedIndex === null) return false;
+      session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
       this.pendingLiveStructuralChange = true;
-      this.pendingLiveFrontier = {
-        pageIndex: this.lastObservedPageIndex,
-        actorIndex: deletedIndex,
-        actorId: actor.actorId,
-        sourceId: actor.sourceId
-      };
+      this.pendingLiveFrontier = chooseEarlierFrontier(
+        this.pendingLiveFrontier,
+        {
+          ...mutationFrontier,
+          actorIndex: deletedIndex,
+          actorId: actor.actorId,
+          sourceId: actor.sourceId
+        }
+      );
       return true;
     }
     publishScriptMessage(context, recipient, msg) {
@@ -57561,6 +62423,7 @@ ${source}`)
         publisherActorKind: this.actorKind,
         fragmentIndex: this.fragmentIndex,
         pageIndex: context.pageIndex,
+        cursorY: context.cursorY,
         payload: {
           ...message,
           from: this.sourceId,
@@ -57596,6 +62459,13 @@ ${source}`)
           return String(element2.content || "");
         },
         setContent: (content3) => {
+          if (sourceId) {
+            const liveChanged = this.setLiveActorContent(session, sourceId, content3);
+            if (liveChanged) {
+              session.recordProfile("setContentCalls", 1);
+              return true;
+            }
+          }
           const nextContent = String(content3);
           if (String(element2.content || "") === nextContent) return false;
           element2.content = nextContent;
@@ -57671,10 +62541,19 @@ ${source}`)
       };
     }
     createDocRef(session, context) {
+      const getRegions = () => {
+        session.recordProfile("docQueryCalls", 1);
+        return session.getScriptRegions();
+      };
       return {
         name: "doc",
         type: "document",
         vars: this.host.getScriptVars(),
+        getRegions,
+        findRegionByName: (name) => {
+          session.recordProfile("docQueryCalls", 1);
+          return session.findScriptRegionByName(name);
+        },
         findElementByName: (name) => {
           session.recordProfile("docQueryCalls", 1);
           const node2 = findBySourceId2(this.elements, name);
@@ -57746,6 +62625,11 @@ ${source}`)
         setContent: (target, content3) => {
           const sourceId = this.resolveSourceId(target);
           if (!sourceId || sourceId === "doc") return false;
+          const liveChanged = this.setLiveActorContent(session, sourceId, content3);
+          if (liveChanged) {
+            session.recordProfile("setContentCalls", 1);
+            return true;
+          }
           const node2 = findBySourceId2(this.elements, sourceId);
           if (!node2) return false;
           const nextContent = String(content3);
@@ -57853,6 +62737,8 @@ ${source}`)
     prepare(availableWidth, availableHeight, context) {
       this.lastObservedPageIndex = context.pageIndex;
       this.lastObservedActorIndex = Number.isFinite(context.actorIndex) ? Number(context.actorIndex) : this.lastObservedActorIndex;
+      this.lastObservedCursorY = Number.isFinite(context.cursorY) ? Number(context.cursorY) : this.lastObservedCursorY;
+      this.lastObservedWorldY = Number.isFinite(resolvePackagerWorldYAtCursor(context)) ? Number(resolvePackagerWorldYAtCursor(context)) : this.lastObservedWorldY;
       this.inner.prepare(availableWidth, availableHeight, context);
     }
     getPlacementPreference(fullAvailableWidth, context) {
@@ -57906,6 +62792,8 @@ ${source}`)
         this.pendingLiveStructuralChange = false;
         const frontier = this.pendingLiveFrontier || {
           pageIndex: this.lastObservedPageIndex,
+          cursorY: this.lastObservedCursorY,
+          ...Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {},
           actorIndex: this.lastObservedActorIndex,
           actorId: this.actorId,
           sourceId: this.sourceId
@@ -57930,6 +62818,8 @@ ${source}`)
         updateKind,
         earliestAffectedFrontier: {
           pageIndex: this.lastObservedPageIndex,
+          cursorY: this.lastObservedCursorY,
+          ...Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {},
           actorIndex: this.lastObservedActorIndex,
           actorId: this.actorId,
           sourceId: this.sourceId
@@ -57941,6 +62831,12 @@ ${source}`)
     }
     getRequiredHeight() {
       return this.inner.getRequiredHeight();
+    }
+    getZIndex() {
+      return this.inner.getZIndex?.() ?? 0;
+    }
+    occupiesFlowSpace() {
+      return this.inner.occupiesFlowSpace?.() ?? true;
     }
     isUnbreakable(availableHeight) {
       return this.inner.isUnbreakable(availableHeight);
@@ -57960,6 +62856,12 @@ ${source}`)
     const identity = createElementPackagerIdentity(item, [index2]);
     if (item.type === "story") {
       return new StoryPackager(item, processor, index2, void 0, void 0, identity);
+    }
+    if (isWorldPlainElement(item)) {
+      return new WorldPlainPackager(item, processor, identity);
+    }
+    if (isFieldActorElement(item)) {
+      return new FieldActorPackager(item, processor, identity);
     }
     if (isZoneMapElement(item)) {
       return new ZonePackager(item, processor, identity);
@@ -57989,2109 +62891,6 @@ ${source}`)
   function createPackagers(elements, processor, externalFactory) {
     return elements.map((element2, i2) => buildPackagerForElement(element2, i2, processor, elements, externalFactory));
   }
-  function isZoneMapElement(element2) {
-    return String(element2?.type || "").trim().toLowerCase() === "zone-map";
-  }
-  function readZoneFieldDirective(boxes) {
-    for (const box of boxes) {
-      const directive = box.properties?.spatialField ?? box.properties?.zoneField;
-      if (directive && typeof directive === "object") {
-        return directive;
-      }
-    }
-    return null;
-  }
-  function resolveZoneFieldAnchorX(align, zoneWidth, fieldWidth) {
-    if (align === "right") return Math.max(0, zoneWidth - fieldWidth);
-    if (align === "center") return Math.max(0, (zoneWidth - fieldWidth) / 2);
-    return 0;
-  }
-  function buildZoneFieldState(emitted, directive, zoneWidth, baseY) {
-    const anchorBox = emitted[0];
-    const align = directive.align ?? "left";
-    const wrap2 = directive.wrap ?? "around";
-    const hidden = directive.hidden === true;
-    const fieldWidth = Math.max(0, anchorBox?.w || 0);
-    const fieldHeight = Math.max(0, anchorBox?.h || 0);
-    const fieldX = Number.isFinite(directive.x) ? Math.max(0, Number(directive.x)) : resolveZoneFieldAnchorX(align, zoneWidth, fieldWidth);
-    const fieldY = Number.isFinite(directive.y) ? Math.max(0, Number(directive.y)) : baseY;
-    const translatedBoxes = emitted.map((box) => ({
-      ...box,
-      x: (box.x || 0) + fieldX,
-      y: (box.y || 0) + fieldY,
-      properties: {
-        ...box.properties || {},
-        ...directive.exclusionAssembly?.members ? {
-          _imageClipAssembly: directive.exclusionAssembly.members.map((member) => ({
-            x: Number(member.x ?? 0),
-            y: Number(member.y ?? 0),
-            w: Math.max(0, Number(member.w ?? 0)),
-            h: Math.max(0, Number(member.h ?? 0)),
-            shape: member.shape ?? "rect"
-          }))
-        } : directive.shape ? { _imageClipShape: directive.shape } : {},
-        ...hidden ? { opacity: 0 } : {}
-      }
-    }));
-    return {
-      boxes: translatedBoxes,
-      field: {
-        wrap: wrap2,
-        hidden,
-        obstacles: buildExclusionFieldObstacles({
-          x: fieldX,
-          y: fieldY,
-          width: fieldWidth,
-          height: fieldHeight,
-          gap: directive.gap ?? 0,
-          shape: directive.shape ?? "rect",
-          align,
-          wrap: wrap2,
-          exclusionAssembly: directive.exclusionAssembly
-        })
-      }
-    };
-  }
-  function intersectsVertically(obstacle, top, bottom) {
-    const obstacleTop = obstacle.y;
-    const obstacleBottom = obstacle.y + obstacle.h;
-    return obstacleBottom > top && obstacleTop < bottom;
-  }
-  function resolveZoneLane(zoneWidth, top, height, fields) {
-    const bottom = top + Math.max(0, height);
-    const occupied = [];
-    for (const field of fields) {
-      if (field.wrap !== "around") continue;
-      for (const obstacle of field.obstacles) {
-        if (!intersectsVertically(obstacle, top, bottom)) continue;
-        occupied.push({
-          start: Math.max(0, obstacle.x),
-          end: Math.min(zoneWidth, obstacle.x + obstacle.w)
-        });
-      }
-    }
-    if (occupied.length === 0) {
-      return { x: 0, width: zoneWidth };
-    }
-    occupied.sort((a2, b2) => a2.start - b2.start || a2.end - b2.end);
-    const merged = [];
-    for (const segment of occupied) {
-      if (segment.end <= segment.start) continue;
-      const previous3 = merged[merged.length - 1];
-      if (!previous3 || segment.start > previous3.end) {
-        merged.push({ ...segment });
-        continue;
-      }
-      previous3.end = Math.max(previous3.end, segment.end);
-    }
-    let bestX = 0;
-    let bestWidth = 0;
-    let cursor = 0;
-    for (const segment of merged) {
-      const gapWidth = Math.max(0, segment.start - cursor);
-      if (gapWidth > bestWidth) {
-        bestX = cursor;
-        bestWidth = gapWidth;
-      }
-      cursor = Math.max(cursor, segment.end);
-    }
-    const trailingWidth = Math.max(0, zoneWidth - cursor);
-    if (trailingWidth > bestWidth) {
-      bestX = cursor;
-      bestWidth = trailingWidth;
-    }
-    return {
-      x: bestX,
-      width: bestWidth
-    };
-  }
-  function placePackagersInZone(packagers, availableWidth, contextBase) {
-    const placedBoxes = [];
-    const activeFields = [];
-    let currentY = 0;
-    let lastSpacingAfter = 0;
-    for (const actor of packagers) {
-      const marginTop = actor.getMarginTop();
-      const marginBottom = actor.getMarginBottom();
-      const layoutBefore = lastSpacingAfter + marginTop;
-      const layoutDelta = lastSpacingAfter;
-      const blockTop = currentY + layoutDelta;
-      const initialLane = resolveZoneLane(availableWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields);
-      const context = {
-        ...contextBase,
-        pageIndex: 0,
-        cursorY: currentY
-      };
-      const initialContext = {
-        ...context,
-        contentWidthOverride: initialLane.width || availableWidth,
-        pageWidth: initialLane.width || availableWidth
-      };
-      actor.prepare(initialLane.width || availableWidth, Infinity, initialContext);
-      const provisionalHeight = Math.max(
-        LAYOUT_DEFAULTS.minEffectiveHeight,
-        actor.getRequiredHeight() - marginTop - marginBottom + layoutBefore + marginBottom
-      );
-      const lane = resolveZoneLane(availableWidth, blockTop, provisionalHeight, activeFields);
-      const laneContext = {
-        ...context,
-        contentWidthOverride: lane.width || availableWidth,
-        pageWidth: lane.width || availableWidth
-      };
-      if (Math.abs(lane.width - initialLane.width) > 0.1) {
-        actor.prepare(lane.width || availableWidth, Infinity, laneContext);
-      }
-      const emitted = actor.emitBoxes(lane.width || availableWidth, Infinity, laneContext) || [];
-      const zoneField = readZoneFieldDirective(emitted);
-      if (zoneField) {
-        const fieldState = buildZoneFieldState(emitted, zoneField, availableWidth, blockTop);
-        placedBoxes.push(...fieldState.boxes);
-        activeFields.push(fieldState.field);
-        continue;
-      }
-      for (const box of emitted) {
-        placedBoxes.push({
-          ...box,
-          x: (box.x || 0) + lane.x,
-          y: (box.y || 0) + currentY + layoutDelta
-        });
-      }
-      const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
-      const requiredHeight = contentHeight + layoutBefore + marginBottom;
-      const effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-      currentY += effectiveHeight - marginBottom;
-      lastSpacingAfter = marginBottom;
-    }
-    return { boxes: placedBoxes, height: currentY + lastSpacingAfter };
-  }
-  function cloneZoneBoxes(boxes) {
-    return boxes.map((box) => ({
-      ...box,
-      properties: { ...box.properties || {} },
-      meta: box.meta ? { ...box.meta } : box.meta
-    }));
-  }
-  function attachZoneDebugTag(box, tag) {
-    return {
-      ...box,
-      properties: {
-        ...box.properties || {},
-        __vmprintZoneDebug: {
-          fieldActorId: tag.fieldActorId,
-          fieldSourceId: tag.fieldSourceId,
-          zoneId: tag.zoneId,
-          zoneIndex: tag.zoneIndex,
-          rect: { ...tag.rect }
-        }
-      }
-    };
-  }
-  function readZoneDebugTag(box) {
-    const tag = box.properties?.__vmprintZoneDebug;
-    if (!tag || typeof tag !== "object") return null;
-    return tag;
-  }
-  function buildZoneContinuationQueue(zone, continuation) {
-    if (!continuation) {
-      return {
-        ...zone,
-        actors: []
-      };
-    }
-    const nextActors = [];
-    if (continuation.continuationFragment) {
-      nextActors.push(continuation.continuationFragment);
-    }
-    const untouchedStart = continuation.nextActorIndex + (continuation.continuationFragment ? 1 : 0);
-    for (let actorIndex = untouchedStart; actorIndex < zone.actors.length; actorIndex++) {
-      nextActors.push(zone.actors[actorIndex]);
-    }
-    return {
-      ...zone,
-      actors: nextActors
-    };
-  }
-  function resolveZoneVisibleHeight(zone, fieldAvailableHeight) {
-    const heightWithinViewport = Math.max(0, fieldAvailableHeight - zone.rect.y);
-    if (zone.rect.height === void 0) {
-      return heightWithinViewport;
-    }
-    return Math.min(heightWithinViewport, Math.max(0, Number(zone.rect.height)));
-  }
-  function resolveZoneFootprintHeight(zone, contentHeight) {
-    const authoredHeight = zone.rect.height !== void 0 ? Math.max(0, Number(zone.rect.height)) : 0;
-    return Math.max(Math.max(0, contentHeight), authoredHeight);
-  }
-  function resolveTrackWidths(columns, columnCount, availableWidth, gap) {
-    if (columns && columns.length > 0) {
-      const tracks = columns.map((c2) => ({
-        mode: c2.mode || "auto",
-        value: c2.value,
-        fr: c2.fr,
-        min: c2.min,
-        max: c2.max,
-        basis: c2.basis,
-        minContent: c2.minContent,
-        maxContent: c2.maxContent,
-        grow: c2.grow,
-        shrink: c2.shrink
-      }));
-      return solveTrackSizing({ containerWidth: availableWidth, tracks, gap }).sizes;
-    }
-    const colWidth = (availableWidth - gap * Math.max(0, columnCount - 1)) / Math.max(1, columnCount);
-    return Array(columnCount).fill(Math.max(0, colWidth));
-  }
-  function normalizeZoneMapElement(element2, availableWidth) {
-    const style = element2.properties?.style ?? {};
-    const marginTop = Math.max(0, LayoutUtils.validateUnit(style.marginTop ?? 0));
-    const marginBottom = Math.max(0, LayoutUtils.validateUnit(style.marginBottom ?? 0));
-    const options = element2.zoneLayout ?? {};
-    const gap = Math.max(0, LayoutUtils.validateUnit(options.gap ?? 0));
-    const frameOverflow = options.frameOverflow === "continue" ? "continue" : "move-whole";
-    const worldBehavior = options.worldBehavior === "spanning" || options.worldBehavior === "expandable" ? options.worldBehavior : "fixed";
-    const zoneDefs = Array.isArray(element2.zones) ? element2.zones : [];
-    const columnCount = zoneDefs.length;
-    if (columnCount === 0) {
-      return {
-        kind: "zone-strip",
-        overflow: "independent",
-        sourceKind: "zone-map",
-        frameOverflow,
-        worldBehavior,
-        marginTop,
-        marginBottom,
-        gap,
-        blockStyle: Object.keys(style).length > 0 ? style : void 0,
-        zones: []
-      };
-    }
-    const columnWidths = resolveTrackWidths(options.columns, columnCount, availableWidth, gap);
-    const xOffsets = [];
-    let xCursor = 0;
-    for (let i2 = 0; i2 < columnCount; i2++) {
-      xOffsets.push(xCursor);
-      xCursor += (columnWidths[i2] ?? 0) + (i2 < columnCount - 1 ? gap : 0);
-    }
-    return {
-      kind: "zone-strip",
-      overflow: "independent",
-      sourceKind: "zone-map",
-      frameOverflow,
-      worldBehavior,
-      marginTop,
-      marginBottom,
-      gap,
-      blockStyle: Object.keys(style).length > 0 ? style : void 0,
-      zones: zoneDefs.map((zone, index2) => ({
-        id: zone.id,
-        rect: zone.region ? {
-          x: Math.max(0, LayoutUtils.validateUnit(zone.region.x ?? 0)),
-          y: Math.max(0, LayoutUtils.validateUnit(zone.region.y ?? 0)),
-          width: Math.max(0, LayoutUtils.validateUnit(zone.region.width ?? 0)),
-          ...zone.region.height !== void 0 ? { height: Math.max(0, LayoutUtils.validateUnit(zone.region.height)) } : {}
-        } : {
-          x: xOffsets[index2] ?? 0,
-          y: 0,
-          width: columnWidths[index2] ?? 0
-        },
-        elements: zone.elements ?? [],
-        style: zone.style
-      }))
-    };
-  }
-  function createZoneSessionContextBase(availableWidth, processor) {
-    return {
-      processor,
-      margins: { top: 0, right: 0, bottom: 0, left: 0 },
-      pageWidth: availableWidth,
-      pageHeight: Infinity,
-      publishActorSignal: (_signal) => ({
-        topic: "",
-        publisherActorId: "",
-        publisherSourceId: "",
-        publisherActorKind: "",
-        tick: 0,
-        fragmentIndex: 0,
-        pageIndex: 0,
-        sequence: 0
-      }),
-      readActorSignals: () => []
-    };
-  }
-  function buildZonePackagers(zone, processor) {
-    return (zone.elements ?? []).map((actor, j2) => buildPackagerForElement(actor, j2, processor));
-  }
-  function buildZoneActorQueues(strip, processor) {
-    return strip.zones.map((zone) => ({
-      id: zone.id,
-      rect: { ...zone.rect },
-      style: zone.style,
-      actors: buildZonePackagers(zone, processor)
-    }));
-  }
-  function runZoneSession(zone, processor, contextBase) {
-    const packagers = buildZonePackagers(zone, processor);
-    const zoneWidth = zone.rect.width;
-    const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
-    const result = placePackagersInZone(packagers, zoneWidth, zoneContextBase);
-    return { boxes: result.boxes, height: result.height };
-  }
-  function runZoneSessionBounded(zone, contextBase, availableHeight) {
-    const zoneWidth = zone.rect.width;
-    const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
-    const placedBoxes = [];
-    const activeFields = [];
-    let currentY = 0;
-    let lastSpacingAfter = 0;
-    for (let actorIndex = 0; actorIndex < zone.actors.length; actorIndex++) {
-      const actor = zone.actors[actorIndex];
-      const marginTop = actor.getMarginTop();
-      const marginBottom = actor.getMarginBottom();
-      const layoutBefore = lastSpacingAfter + marginTop;
-      const layoutDelta = lastSpacingAfter;
-      const remainingHeight = Math.max(0, availableHeight - currentY - layoutDelta);
-      const blockTop = currentY + layoutDelta;
-      const initialLane = resolveZoneLane(zoneWidth, blockTop, LAYOUT_DEFAULTS.minEffectiveHeight, activeFields);
-      const context = {
-        ...zoneContextBase,
-        pageIndex: 0,
-        cursorY: currentY
-      };
-      const initialContext = {
-        ...context,
-        contentWidthOverride: initialLane.width || zoneWidth,
-        pageWidth: initialLane.width || zoneWidth
-      };
-      actor.prepare(initialLane.width || zoneWidth, remainingHeight, initialContext);
-      const provisionalHeight = Math.max(
-        LAYOUT_DEFAULTS.minEffectiveHeight,
-        actor.getRequiredHeight() - marginTop - marginBottom + layoutBefore + marginBottom
-      );
-      const lane = resolveZoneLane(zoneWidth, blockTop, provisionalHeight, activeFields);
-      const laneContext = {
-        ...context,
-        contentWidthOverride: lane.width || zoneWidth,
-        pageWidth: lane.width || zoneWidth
-      };
-      if (Math.abs(lane.width - initialLane.width) > 0.1) {
-        actor.prepare(lane.width || zoneWidth, remainingHeight, laneContext);
-      }
-      if (actor.getRequiredHeight() <= remainingHeight + 0.1) {
-        const emitted = actor.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
-        const zoneField = readZoneFieldDirective(emitted);
-        if (zoneField) {
-          const fieldState = buildZoneFieldState(emitted, zoneField, zoneWidth, blockTop);
-          placedBoxes.push(...fieldState.boxes);
-          activeFields.push(fieldState.field);
-          continue;
-        }
-        for (const box of emitted) {
-          placedBoxes.push({
-            ...box,
-            x: (box.x || 0) + lane.x,
-            y: (box.y || 0) + currentY + layoutDelta
-          });
-        }
-        const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
-        const requiredHeight = contentHeight + layoutBefore + marginBottom;
-        const effectiveHeight = Math.max(requiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-        currentY += effectiveHeight - marginBottom;
-        lastSpacingAfter = marginBottom;
-        continue;
-      }
-      if (remainingHeight <= 0 || actor.isUnbreakable(remainingHeight)) {
-        return {
-          boxes: placedBoxes,
-          height: currentY + lastSpacingAfter,
-          consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
-          hasOverflow: true,
-          continuation: {
-            nextActorIndex: actorIndex,
-            continuationFragment: actor
-          }
-        };
-      }
-      const split = actor.split(remainingHeight, context);
-      if (split.currentFragment) {
-        const emitted = split.currentFragment.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
-        for (const box of emitted) {
-          placedBoxes.push({
-            ...box,
-            x: (box.x || 0) + lane.x,
-            y: (box.y || 0) + currentY + layoutDelta
-          });
-        }
-        const splitMarginTop = split.currentFragment.getMarginTop();
-        const splitMarginBottom = split.currentFragment.getMarginBottom();
-        const splitContentHeight = Math.max(
-          0,
-          split.currentFragment.getRequiredHeight() - splitMarginTop - splitMarginBottom
-        );
-        const splitRequiredHeight = splitContentHeight + layoutBefore + splitMarginBottom;
-        const splitEffectiveHeight = Math.max(splitRequiredHeight, LAYOUT_DEFAULTS.minEffectiveHeight);
-        currentY += splitEffectiveHeight - splitMarginBottom;
-        lastSpacingAfter = splitMarginBottom;
-      }
-      if (split.continuationFragment) {
-        return {
-          boxes: placedBoxes,
-          height: currentY + lastSpacingAfter,
-          consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
-          hasOverflow: true,
-          continuation: {
-            nextActorIndex: actorIndex,
-            continuationFragment: split.continuationFragment
-          }
-        };
-      }
-    }
-    return {
-      boxes: placedBoxes,
-      height: currentY + lastSpacingAfter,
-      consumedHeight: Math.min(availableHeight, currentY + lastSpacingAfter),
-      hasOverflow: false,
-      continuation: null
-    };
-  }
-  function materializeZoneStrip(strip, availableWidth, processor) {
-    const stubContextBase = createZoneSessionContextBase(availableWidth, processor);
-    const allBoxes = [];
-    let totalHeight = 0;
-    for (let i2 = 0; i2 < strip.zones.length; i2++) {
-      const zone = strip.zones[i2];
-      const result = runZoneSession(zone, processor, stubContextBase);
-      const zoneTag = {
-        fieldActorId: "",
-        fieldSourceId: "",
-        zoneId: zone.id,
-        zoneIndex: i2,
-        rect: { ...zone.rect }
-      };
-      for (const box of result.boxes) {
-        allBoxes.push({
-          ...attachZoneDebugTag(box, zoneTag),
-          x: (box.x || 0) + zone.rect.x,
-          y: (box.y || 0) + zone.rect.y
-        });
-      }
-      totalHeight = Math.max(totalHeight, zone.rect.y + resolveZoneFootprintHeight(zone, result.height));
-    }
-    return { boxes: allBoxes, totalHeight, marginTop: strip.marginTop, marginBottom: strip.marginBottom };
-  }
-  var FrozenZonePackager = class {
-    constructor(boxes, height, marginTop, marginBottom, identity) {
-      this.frozenBoxes = cloneZoneBoxes(boxes);
-      this.frozenHeight = height;
-      this.marginTopVal = marginTop;
-      this.marginBottomVal = marginBottom;
-      this.actorId = identity.actorId;
-      this.sourceId = identity.sourceId;
-      this.actorKind = identity.actorKind;
-      this.fragmentIndex = identity.fragmentIndex;
-      this.continuationOf = identity.continuationOf;
-    }
-    prepare(_availableWidth, _availableHeight, _context) {
-    }
-    getPlacementPreference(fullAvailableWidth, _context) {
-      return {
-        minimumWidth: fullAvailableWidth,
-        acceptsFrame: true
-      };
-    }
-    getTransformProfile() {
-      return {
-        capabilities: [
-          {
-            kind: "split",
-            preservesIdentity: true,
-            producesContinuation: true
-          }
-        ]
-      };
-    }
-    emitBoxes(_availableWidth, _availableHeight, context) {
-      const leftMargin = context.margins.left;
-      const mt2 = this.marginTopVal;
-      return this.frozenBoxes.map((box) => ({
-        ...box,
-        x: (box.x || 0) + leftMargin,
-        y: (box.y || 0) + mt2,
-        properties: { ...box.properties || {} },
-        meta: box.meta ? { ...box.meta } : box.meta
-      }));
-    }
-    split(_availableHeight, _context) {
-      return { currentFragment: null, continuationFragment: this };
-    }
-    getRequiredHeight() {
-      return this.frozenHeight;
-    }
-    isUnbreakable(_availableHeight) {
-      return true;
-    }
-    getMarginTop() {
-      return this.marginTopVal;
-    }
-    getMarginBottom() {
-      return this.marginBottomVal;
-    }
-  };
-  var ZonePackager = class _ZonePackager {
-    constructor(element2, processor, identity, zoneQueues, fragmentMarginTop, fragmentMarginBottom) {
-      this.lastAvailableWidth = -1;
-      this.lastAvailableHeight = -1;
-      this.materializedBoxes = null;
-      this.marginTopVal = 0;
-      this.marginBottomVal = 0;
-      this.totalZoneHeight = 0;
-      this.boundedBoxes = null;
-      this.boundedHeight = 0;
-      this.boundedOverflow = false;
-      this.boundedContinuationQueues = null;
-      this.lastEmittedLeftMargin = 0;
-      this.element = element2;
-      this.processor = processor;
-      const resolved = identity ?? createElementPackagerIdentity(element2, [0]);
-      this.zoneQueues = zoneQueues ?? null;
-      const normalizedForIdentity = normalizeZoneMapElement(element2, 0);
-      this.frameOverflowMode = normalizedForIdentity.frameOverflow;
-      this.worldBehaviorMode = normalizedForIdentity.worldBehavior;
-      this.fragmentMarginTop = fragmentMarginTop ?? (resolved.fragmentIndex > 0 ? 0 : normalizedForIdentity.marginTop);
-      this.fragmentMarginBottom = fragmentMarginBottom ?? normalizedForIdentity.marginBottom;
-      this.actorId = resolved.actorId;
-      this.sourceId = resolved.sourceId;
-      this.actorKind = resolved.actorKind;
-      this.fragmentIndex = resolved.fragmentIndex;
-      this.continuationOf = resolved.continuationOf;
-      if (this.usesSpanningContinuation()) {
-        this.marginTopVal = this.fragmentMarginTop;
-        this.marginBottomVal = this.fragmentMarginBottom;
-      }
-    }
-    usesSpanningContinuation() {
-      return this.frameOverflowMode === "continue" && this.worldBehaviorMode === "expandable";
-    }
-    get pageBreakBefore() {
-      if (this.fragmentIndex > 0) return void 0;
-      return this.element.properties?.style?.pageBreakBefore ?? void 0;
-    }
-    get keepWithNext() {
-      if (this.fragmentIndex > 0) return void 0;
-      return this.element.properties?.style?.keepWithNext ?? void 0;
-    }
-    materializeMoveWhole(availableWidth) {
-      if (this.materializedBoxes !== null && this.lastAvailableWidth === availableWidth) return;
-      const normalizedStrip = normalizeZoneMapElement(this.element, availableWidth);
-      const result = materializeZoneStrip(normalizedStrip, availableWidth, this.processor);
-      this.materializedBoxes = result.boxes.map((box) => {
-        const tag = readZoneDebugTag(box);
-        return tag ? attachZoneDebugTag(box, {
-          ...tag,
-          fieldActorId: this.actorId,
-          fieldSourceId: this.sourceId
-        }) : box;
-      });
-      this.marginTopVal = this.fragmentMarginTop;
-      this.marginBottomVal = this.fragmentMarginBottom;
-      this.totalZoneHeight = result.totalHeight;
-      this.lastAvailableWidth = availableWidth;
-      this.lastAvailableHeight = Infinity;
-    }
-    materializeBounded(availableWidth, availableHeight) {
-      if (this.boundedBoxes !== null && this.lastAvailableWidth === availableWidth && this.lastAvailableHeight === availableHeight) {
-        return;
-      }
-      if (!Number.isFinite(availableHeight)) {
-        this.materializeMoveWhole(availableWidth);
-        this.boundedBoxes = this.materializedBoxes ? cloneZoneBoxes(this.materializedBoxes) : [];
-        this.boundedHeight = this.totalZoneHeight;
-        this.boundedOverflow = false;
-        this.boundedContinuationQueues = null;
-        return;
-      }
-      const normalizedStrip = normalizeZoneMapElement(this.element, availableWidth);
-      const queues = this.zoneQueues ?? buildZoneActorQueues(normalizedStrip, this.processor);
-      const contextBase = createZoneSessionContextBase(availableWidth, this.processor);
-      const allBoxes = [];
-      let occupiedHeight = 0;
-      let hasOverflow = false;
-      const continuationQueues = [];
-      for (let zoneIndex = 0; zoneIndex < queues.length; zoneIndex++) {
-        const zone = queues[zoneIndex];
-        const zoneVisibleHeight = resolveZoneVisibleHeight(zone, Math.max(0, availableHeight));
-        if (zoneVisibleHeight <= 0) {
-          occupiedHeight = Math.max(occupiedHeight, zone.rect.y + resolveZoneFootprintHeight(zone, 0));
-          hasOverflow = hasOverflow || zone.actors.length > 0;
-          continuationQueues.push(zone);
-          continue;
-        }
-        const result = runZoneSessionBounded(zone, contextBase, zoneVisibleHeight);
-        const zoneTag = {
-          fieldActorId: this.actorId,
-          fieldSourceId: this.sourceId,
-          zoneId: zone.id,
-          zoneIndex,
-          rect: { ...zone.rect }
-        };
-        for (const box of result.boxes) {
-          allBoxes.push({
-            ...attachZoneDebugTag(box, zoneTag),
-            x: (box.x || 0) + zone.rect.x,
-            y: (box.y || 0) + zone.rect.y
-          });
-        }
-        occupiedHeight = Math.max(occupiedHeight, zone.rect.y + resolveZoneFootprintHeight(zone, result.height));
-        hasOverflow = hasOverflow || result.hasOverflow;
-        continuationQueues.push(buildZoneContinuationQueue(zone, result.continuation));
-      }
-      this.marginTopVal = this.fragmentMarginTop;
-      this.marginBottomVal = hasOverflow ? 0 : this.fragmentMarginBottom;
-      this.boundedBoxes = allBoxes;
-      this.boundedHeight = occupiedHeight;
-      this.boundedOverflow = hasOverflow;
-      this.boundedContinuationQueues = hasOverflow ? continuationQueues : null;
-      this.totalZoneHeight = hasOverflow ? Math.max(occupiedHeight, Math.max(0, availableHeight) + 1) : occupiedHeight;
-      this.lastAvailableWidth = availableWidth;
-      this.lastAvailableHeight = availableHeight;
-    }
-    materialize(availableWidth, availableHeight) {
-      if (this.usesSpanningContinuation()) {
-        this.materializeBounded(availableWidth, availableHeight);
-        return;
-      }
-      this.materializeMoveWhole(availableWidth);
-    }
-    createFrozenCurrentFragment() {
-      return new FrozenZonePackager(
-        this.usesSpanningContinuation() ? this.boundedBoxes || [] : this.materializedBoxes || [],
-        this.marginTopVal + (this.usesSpanningContinuation() ? this.boundedHeight : this.totalZoneHeight) + this.marginBottomVal,
-        this.marginTopVal,
-        this.marginBottomVal,
-        {
-          actorId: this.actorId,
-          sourceId: this.sourceId,
-          actorKind: this.actorKind,
-          fragmentIndex: this.fragmentIndex,
-          continuationOf: this.continuationOf
-        }
-      );
-    }
-    createContinuationPackager() {
-      if (!this.boundedContinuationQueues || this.boundedContinuationQueues.every((zone) => zone.actors.length === 0)) {
-        return null;
-      }
-      return new _ZonePackager(
-        this.element,
-        this.processor,
-        createContinuationIdentity(this),
-        this.boundedContinuationQueues,
-        0,
-        this.fragmentMarginBottom
-      );
-    }
-    prepare(availableWidth, availableHeight, _context) {
-      this.materialize(availableWidth, availableHeight);
-    }
-    getPlacementPreference(fullAvailableWidth, _context) {
-      return { minimumWidth: fullAvailableWidth, acceptsFrame: true };
-    }
-    getTransformProfile() {
-      return {
-        capabilities: [
-          { kind: "morph", preservesIdentity: true, reflowsContent: true }
-        ]
-      };
-    }
-    /**
-     * Emits zone-map boxes shifted into page space.
-     *
-     * y-shift: adds the zone-map's own marginTop so that `commitFragmentBoxes`
-     * (which adds `currentY + layoutDelta`) produces the correct final page y.
-     *
-     * x-shift: adds `context.margins.left` because `positionFlowBox` was called
-     * inside the zone sub-session with `margins.left = 0` (zone-local coordinates
-     * start at x=0). The page left margin must be applied here so boxes land in
-     * the content area, not at the page edge.
-     */
-    emitBoxes(availableWidth, _availableHeight, context) {
-      this.materialize(availableWidth, _availableHeight);
-      const mt2 = this.marginTopVal;
-      const leftMargin = context.margins.left;
-      this.lastEmittedLeftMargin = leftMargin;
-      const boxes = this.usesSpanningContinuation() ? this.boundedBoxes || [] : this.materializedBoxes || [];
-      return boxes.map((b2) => {
-        const pageX = (b2.x || 0) + leftMargin;
-        const pageY = (b2.y || 0) + mt2;
-        const tag = readZoneDebugTag(b2);
-        return {
-          ...b2,
-          x: pageX,
-          y: pageY,
-          properties: tag ? {
-            ...b2.properties || {},
-            __vmprintZoneDebugPage: {
-              fieldActorId: this.actorId,
-              fieldSourceId: this.sourceId,
-              zoneId: tag.zoneId,
-              zoneIndex: tag.zoneIndex,
-              x: leftMargin + tag.rect.x,
-              y: mt2 + tag.rect.y,
-              w: tag.rect.width,
-              explicitHeight: tag.rect.height,
-              frameOverflowMode: this.frameOverflowMode,
-              worldBehaviorMode: this.worldBehaviorMode
-            }
-          } : b2.properties
-        };
-      });
-    }
-    getDebugRegions() {
-      const availableWidth = this.lastAvailableWidth > 0 ? this.lastAvailableWidth : 0;
-      const normalizedStrip = normalizeZoneMapElement(this.element, availableWidth);
-      const boxes = this.usesSpanningContinuation() ? this.boundedBoxes || [] : this.materializedBoxes || [];
-      const bottomsByZone = /* @__PURE__ */ new Map();
-      for (const box of boxes) {
-        const tag = readZoneDebugTag(box);
-        if (!tag) continue;
-        const localBottom = (box.y || 0) + (box.h || 0);
-        const currentBottom = bottomsByZone.get(tag.zoneIndex) ?? tag.rect.y;
-        if (localBottom > currentBottom) {
-          bottomsByZone.set(tag.zoneIndex, localBottom);
-        }
-      }
-      return normalizedStrip.zones.map((zone, zoneIndex) => {
-        const explicitHeight = zone.rect.height !== void 0 ? Math.max(0, Number(zone.rect.height)) : 0;
-        const contentHeight = Math.max(0, (bottomsByZone.get(zoneIndex) ?? zone.rect.y) - zone.rect.y);
-        const visibleHeight = this.usesSpanningContinuation() ? resolveZoneVisibleHeight(
-          {
-            id: zone.id,
-            rect: { ...zone.rect },
-            style: zone.style,
-            actors: []
-          },
-          Math.max(0, this.lastAvailableHeight)
-        ) : contentHeight;
-        const height = Math.max(explicitHeight, contentHeight, visibleHeight);
-        return {
-          fieldActorId: this.actorId,
-          fieldSourceId: this.sourceId,
-          zoneId: zone.id,
-          zoneIndex,
-          x: this.lastEmittedLeftMargin + zone.rect.x,
-          y: this.marginTopVal + zone.rect.y,
-          w: zone.rect.width,
-          h: height,
-          frameOverflowMode: this.frameOverflowMode,
-          worldBehaviorMode: this.worldBehaviorMode
-        };
-      }).filter((zone) => zone.w > 0 && zone.h > 0);
-    }
-    getRequiredHeight() {
-      const zoneHeight = this.usesSpanningContinuation() ? this.boundedHeight : this.totalZoneHeight;
-      const reportedHeight = this.usesSpanningContinuation() && this.boundedOverflow ? Math.max(zoneHeight, this.lastAvailableHeight + 1) : zoneHeight;
-      return this.marginTopVal + reportedHeight + this.marginBottomVal;
-    }
-    /** Zone fields are unbreakable only in `move-whole` mode. */
-    isUnbreakable(_availableHeight) {
-      return !this.usesSpanningContinuation();
-    }
-    getMarginTop() {
-      return this.marginTopVal;
-    }
-    getMarginBottom() {
-      return this.marginBottomVal;
-    }
-    split(availableHeight, context) {
-      if (!this.usesSpanningContinuation()) {
-        return { currentFragment: null, continuationFragment: this };
-      }
-      const availableWidth = this.lastAvailableWidth > 0 ? this.lastAvailableWidth : context.pageWidth - context.margins.left - context.margins.right;
-      this.materializeBounded(availableWidth, availableHeight);
-      if ((this.boundedBoxes || []).length === 0) {
-        return { currentFragment: null, continuationFragment: this };
-      }
-      const currentFragment = this.createFrozenCurrentFragment();
-      if (!this.boundedOverflow) {
-        return { currentFragment, continuationFragment: null };
-      }
-      return {
-        currentFragment,
-        continuationFragment: this.createContinuationPackager()
-      };
-    }
-  };
-  function zoneKey(zone) {
-    return [
-      zone.fieldActorId,
-      zone.zoneIndex,
-      zone.x,
-      zone.y,
-      zone.w,
-      zone.h
-    ].join(":");
-  }
-  var ZoneDebugOverlayCollaborator = class {
-    onActorCommitted(actor, _committed, surface, _session) {
-      if (!(actor instanceof ZonePackager)) return;
-      const existing = new Set(surface.debugZones.map(zoneKey));
-      for (const zone of actor.getDebugRegions()) {
-        const key = zoneKey(zone);
-        if (existing.has(key)) continue;
-        surface.debugZones.push({ ...zone });
-        existing.add(key);
-      }
-    }
-    onPageFinalized(surface, _session) {
-      const existing = new Set(surface.debugZones.map(zoneKey));
-      const aggregated = /* @__PURE__ */ new Map();
-      for (const box of surface.boxes) {
-        const tag = box.properties?.__vmprintZoneDebugPage;
-        if (!tag) continue;
-        const key = [
-          tag.fieldActorId,
-          tag.zoneIndex,
-          tag.x,
-          tag.y,
-          tag.w
-        ].join(":");
-        const bottom = Number(box.y || 0) + Number(box.h || 0);
-        const current = aggregated.get(key);
-        if (!current) {
-          aggregated.set(key, {
-            fieldActorId: tag.fieldActorId,
-            fieldSourceId: tag.fieldSourceId,
-            zoneId: tag.zoneId,
-            zoneIndex: tag.zoneIndex,
-            x: tag.x,
-            y: tag.y,
-            w: tag.w,
-            h: Math.max(
-              Number(tag.explicitHeight || 0),
-              Math.max(0, bottom - tag.y)
-            ),
-            frameOverflowMode: tag.frameOverflowMode,
-            worldBehaviorMode: tag.worldBehaviorMode
-          });
-          continue;
-        }
-        current.h = Math.max(
-          current.h,
-          Math.max(0, bottom - current.y),
-          Number(tag.explicitHeight || 0)
-        );
-      }
-      for (const zone of aggregated.values()) {
-        const key = zoneKey(zone);
-        if (existing.has(key)) continue;
-        surface.debugZones.push(zone);
-        existing.add(key);
-      }
-    }
-  };
-  function snapshotBox(box) {
-    return {
-      type: String(box.type || ""),
-      x: Number((box.x || 0).toFixed(6)),
-      y: Number((box.y || 0).toFixed(6)),
-      w: Number((box.w || 0).toFixed(6)),
-      h: Number((box.h || 0).toFixed(6)),
-      sourceId: String(box.meta?.sourceId || ""),
-      engineKey: String(box.meta?.engineKey || ""),
-      sourceType: String(box.meta?.sourceType || ""),
-      fragmentIndex: Number(box.meta?.fragmentIndex || 0),
-      isContinuation: Boolean(box.meta?.isContinuation),
-      lines: (box.lines || []).map((line) => line.map((segment) => ({
-        text: String(segment.text || ""),
-        width: Number((segment.width || 0).toFixed(6)),
-        ascent: Number((segment.ascent || 0).toFixed(6)),
-        descent: Number((segment.descent || 0).toFixed(6)),
-        fontFamily: String(segment.fontFamily || "")
-      })))
-    };
-  }
-  function snapshotPage(page) {
-    return {
-      index: page.index,
-      width: Number((page.width || 0).toFixed(6)),
-      height: Number((page.height || 0).toFixed(6)),
-      boxes: (page.boxes || []).map((box) => snapshotBox(box))
-    };
-  }
-  function clonePageSnapshot(page) {
-    return {
-      index: page.index,
-      width: page.width,
-      height: page.height,
-      boxes: page.boxes.map((box) => ({
-        ...box,
-        lines: box.lines.map((line) => line.map((segment) => ({ ...segment })))
-      }))
-    };
-  }
-  function cloneTimeline(frames) {
-    return frames.map((frame, index2) => ({
-      captureIndex: index2,
-      tick: frame.tick,
-      pageCount: frame.pageCount,
-      pages: frame.pages.map((page) => clonePageSnapshot(page))
-    }));
-  }
-  var TemporalPresentationCollaborator = class {
-    constructor() {
-      this.latestPages = /* @__PURE__ */ new Map();
-      this.frames = [];
-    }
-    onSimulationStart() {
-      this.latestPages.clear();
-      this.frames = [];
-    }
-    onPageFinalized(surface, session) {
-      const page = surface.finalize();
-      this.latestPages.set(page.index, snapshotPage(page));
-      const pages = Array.from(this.latestPages.values()).sort((a2, b2) => a2.index - b2.index).map((entry) => clonePageSnapshot(entry));
-      this.frames.push({
-        captureIndex: this.frames.length,
-        tick: session.getSimulationTick(),
-        pageCount: pages.length,
-        pages
-      });
-    }
-    onSimulationComplete(session) {
-      session.publishArtifact(
-        simulationArtifactKeys.temporalPresentationTimeline,
-        cloneTimeline(this.frames)
-      );
-    }
-  };
-  var AsyncThoughtRuntimeCollaborator = class {
-    constructor(host) {
-      this.host = host;
-    }
-    onSimulationComplete(session) {
-      session.publishArtifact(
-        simulationArtifactKeys.asyncThoughtSummary,
-        this.host.getSummary()
-      );
-    }
-  };
-  var lineEndsWithForcedBreak2 = (line) => {
-    if (!Array.isArray(line) || line.length === 0) return false;
-    return !!line[line.length - 1]?.forcedBreakAfter;
-  };
-  var getReferenceAscentScale = (line) => {
-    if (line.length === 0) return 0;
-    const textLikeSegments = line.filter((seg) => !seg?.inlineObject);
-    const source = textLikeSegments.length > 0 ? textLikeSegments : line;
-    let maxAscent = 0;
-    for (const seg of source) {
-      if (seg.ascent === void 0) {
-        throw new Error(`[Renderer] Missing precomputed ascent for segment "${(seg.text || "").slice(0, 24)}".`);
-      }
-      if (seg.ascent > maxAscent) maxAscent = seg.ascent;
-    }
-    return maxAscent / 1e3;
-  };
-  var computeEffectiveLineHeight = (line, baseFontSize, lineHeight, referenceAscentScale) => {
-    const lineFontSize = line.reduce(
-      (max, seg) => Math.max(max, Number(seg.style?.fontSize || baseFontSize)),
-      Number(baseFontSize)
-    );
-    const nominal = lineFontSize * lineHeight;
-    if (line.length === 0) return nominal;
-    let maxAscentFromBaseline = 0;
-    let maxDescentFromBaseline = 0;
-    for (const seg of line) {
-      const segFontSize = Number(seg.style?.fontSize || baseFontSize);
-      if (seg.ascent === void 0) {
-        throw new Error(`[Renderer] Missing precomputed ascent for segment "${(seg.text || "").slice(0, 24)}".`);
-      }
-      const segAscent = seg.ascent / 1e3 * segFontSize;
-      if (segAscent > maxAscentFromBaseline) maxAscentFromBaseline = segAscent;
-      if (seg.descent === void 0) {
-        throw new Error(`[Renderer] Missing precomputed descent for segment "${(seg.text || "").slice(0, 24)}".`);
-      }
-      const segDescent = seg.descent / 1e3 * segFontSize;
-      if (segDescent > maxDescentFromBaseline) maxDescentFromBaseline = segDescent;
-    }
-    const baselineOffset = referenceAscentScale * lineFontSize;
-    const neededAscentFromTop = Math.max(maxAscentFromBaseline, baselineOffset);
-    const neededTextHeight = neededAscentFromTop + maxDescentFromBaseline;
-    const lead = nominal - lineFontSize;
-    const neededHeight = neededTextHeight + lead;
-    return Math.max(nominal, neededHeight);
-  };
-  var buildParagraphMetrics = (lines, fontSize, lineHeight) => {
-    const lineHasInlineObject = (line) => line.some((seg) => !!seg?.inlineObject);
-    const paragraphHasInlineObjects = lines.some((line) => Array.isArray(line) && lineHasInlineObject(line));
-    let paragraphReferenceAscentScale = 0;
-    for (const line of lines) {
-      if (!Array.isArray(line)) continue;
-      const ref = getReferenceAscentScale(line);
-      if (ref > paragraphReferenceAscentScale) paragraphReferenceAscentScale = ref;
-    }
-    const lineMetrics = lines.map((line) => {
-      if (!Array.isArray(line)) {
-        return {
-          lineFontSize: Number(fontSize),
-          referenceAscentScale: paragraphReferenceAscentScale,
-          effectiveLineHeight: Number(fontSize) * lineHeight
-        };
-      }
-      const lineFontSize = line.reduce(
-        (max, seg) => Math.max(max, Number(seg.style?.fontSize || fontSize)),
-        Number(fontSize)
-      );
-      const referenceAscentScale = paragraphHasInlineObjects ? getReferenceAscentScale(line) : paragraphReferenceAscentScale;
-      return {
-        lineFontSize,
-        referenceAscentScale,
-        effectiveLineHeight: computeEffectiveLineHeight(line, fontSize, lineHeight, referenceAscentScale)
-      };
-    });
-    let uniformLineHeight = 0;
-    for (const metric of lineMetrics) {
-      if (metric.effectiveLineHeight > uniformLineHeight) uniformLineHeight = metric.effectiveLineHeight;
-    }
-    return {
-      paragraphHasInlineObjects,
-      paragraphReferenceAscentScale,
-      lineMetrics,
-      uniformLineHeight
-    };
-  };
-  var computeLineWidth = (line) => {
-    if (!Array.isArray(line)) return 0;
-    return line.reduce((width, seg) => {
-      if (seg.width === void 0) {
-        throw new Error(`[Renderer] Missing precomputed width for segment "${(seg.text || "").slice(0, 24)}".`);
-      }
-      return width + seg.width;
-    }, 0);
-  };
-  var computeAlignedLineX = (lineIndex, lineDirection, lineOriginX, lineWidthLimit, textIndent, align, adjustedLineWidth) => {
-    let lineX = lineIndex === 0 ? lineOriginX + textIndent : lineOriginX;
-    if (lineDirection === "rtl") {
-      lineX = lineIndex === 0 ? lineOriginX + lineWidthLimit - textIndent : lineOriginX + lineWidthLimit;
-      if (align === "right") {
-        lineX = lineOriginX + adjustedLineWidth;
-      } else if (align === "center") {
-        lineX = lineOriginX + (lineWidthLimit + adjustedLineWidth) / 2;
-      }
-      return lineX;
-    }
-    if (align && align !== "left") {
-      if (align === "right") {
-        lineX = lineOriginX + (lineWidthLimit - adjustedLineWidth);
-      } else if (align === "center") {
-        lineX = lineOriginX + (lineWidthLimit - adjustedLineWidth) / 2;
-      }
-    }
-    return lineX;
-  };
-  var computeJustifyExtraAfter = (line, lineIndex, lineCount, align, justifyEngine, lineWidthLimit, lineWidth) => {
-    if (align !== "justify") return [];
-    if (lineIndex === lineCount - 1) return [];
-    if (lineEndsWithForcedBreak2(line)) return [];
-    if (!Array.isArray(line)) return [];
-    if (justifyEngine === "advanced") {
-      return line.map((seg) => Number(seg.justifyAfter || 0));
-    }
-    const availableExtra = lineWidthLimit - lineWidth;
-    if (availableExtra <= 1e-4) return [];
-    const hasWhitespace = line.some((seg) => /\s/.test(seg.text || ""));
-    const isCjkLike = (text5) => /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]/.test(text5);
-    const isPunct = (text5) => /^[\s.,;:!?\uFF0C\u3002\uFF1B\uFF1A\uFF01\uFF1F\u3001\uFF08\uFF09()\u300A\u300B\u3010\u3011'"\u201C\u201D\u2018\u2019\u2026-]*$/.test(text5);
-    const shouldStretchBoundary2 = (left, right) => {
-      if (!left || !right) return false;
-      if (/\s$/.test(left) || /^\s/.test(right)) return true;
-      if (hasWhitespace) return false;
-      if (isPunct(left) || isPunct(right)) return false;
-      return isCjkLike(left) && isCjkLike(right);
-    };
-    const boundaries = [];
-    for (let i2 = 0; i2 < line.length - 1; i2++) {
-      const left = line[i2]?.text || "";
-      const right = line[i2 + 1]?.text || "";
-      if (shouldStretchBoundary2(left, right)) boundaries.push(i2);
-    }
-    if (boundaries.length === 0) return [];
-    const perBoundary = availableExtra / boundaries.length;
-    const justifyExtraAfter = new Array(line.length).fill(0);
-    boundaries.forEach((idx) => {
-      justifyExtraAfter[idx] = perBoundary;
-    });
-    return justifyExtraAfter;
-  };
-  var createLineFrameAccessors = (boxProperties, startY2, width) => {
-    const lineOffsets = Array.isArray(boxProperties?._lineOffsets) ? boxProperties._lineOffsets : [];
-    const lineWidths = Array.isArray(boxProperties?._lineWidths) ? boxProperties._lineWidths : [];
-    const lineYOffsets = Array.isArray(boxProperties?._lineYOffsets) ? boxProperties._lineYOffsets : [];
-    const hasExplicitLineYOffsets = lineYOffsets.length > 0;
-    return {
-      hasExplicitLineYOffsets,
-      getLineOffset: (lineIndex) => {
-        const candidate = lineOffsets[lineIndex];
-        return Number.isFinite(candidate) ? Number(candidate) : 0;
-      },
-      getLineWidth: (lineIndex) => {
-        const candidate = lineWidths[lineIndex];
-        if (Number.isFinite(candidate) && Number(candidate) > 0) return Number(candidate);
-        return width;
-      },
-      getLineY: (lineIndex) => {
-        if (!hasExplicitLineYOffsets) return null;
-        const candidate = lineYOffsets[lineIndex];
-        if (!Number.isFinite(candidate)) return null;
-        return startY2 + Math.max(0, Number(candidate));
-      }
-    };
-  };
-  var getStrongDirection2 = (text5) => {
-    for (const ch of text5 || "") {
-      const cp = ch.codePointAt(0) || 0;
-      const isRtl = cp >= 1424 && cp <= 2303 || // Hebrew + Arabic + Syriac + Thaana etc.
-      cp >= 64285 && cp <= 65023 || cp >= 65136 && cp <= 65279;
-      if (isRtl) return "rtl";
-      if (new RegExp("\\p{L}", "u").test(ch)) return "ltr";
-    }
-    return "neutral";
-  };
-  var resolveParagraphDirection = (lines, containerStyle, layoutDirection, defaultDirection) => {
-    const configured = String(containerStyle.direction || layoutDirection || defaultDirection);
-    if (configured === "rtl") return "rtl";
-    if (configured === "ltr") return "ltr";
-    const paragraphText = (lines || []).map((line) => Array.isArray(line) ? line.map((seg) => seg?.text || "").join("") : String(line || "")).join("\n");
-    const strong2 = getStrongDirection2(paragraphText);
-    return strong2 === "rtl" ? "rtl" : "ltr";
-  };
-  var reorderItemsForVisualBidi = (items, baseDirection) => {
-    if (items.length <= 1) return items;
-    const resolveStrongDirAt = (index2) => {
-      const text5 = items[index2]?.seg?.text || "";
-      return getStrongDirection2(text5);
-    };
-    const resolvedDirs = new Array(items.length);
-    for (let i2 = 0; i2 < items.length; i2++) {
-      const strong2 = resolveStrongDirAt(i2);
-      if (strong2 !== "neutral") {
-        resolvedDirs[i2] = strong2;
-        continue;
-      }
-      const segText = items[i2]?.seg?.text || "";
-      const segDir = items[i2]?.seg?.direction;
-      const isWhitespace = segText.trim().length === 0;
-      if (!isWhitespace && segDir) {
-        resolvedDirs[i2] = segDir;
-        continue;
-      }
-      let prevStrong = null;
-      for (let j2 = i2 - 1; j2 >= 0; j2--) {
-        const d2 = resolveStrongDirAt(j2);
-        if (d2 !== "neutral") {
-          prevStrong = d2;
-          break;
-        }
-      }
-      let nextStrong = null;
-      for (let j2 = i2 + 1; j2 < items.length; j2++) {
-        const d2 = resolveStrongDirAt(j2);
-        if (d2 !== "neutral") {
-          nextStrong = d2;
-          break;
-        }
-      }
-      if (prevStrong && nextStrong && prevStrong === nextStrong) {
-        resolvedDirs[i2] = prevStrong;
-      } else if (prevStrong) {
-        resolvedDirs[i2] = prevStrong;
-      } else if (nextStrong) {
-        resolvedDirs[i2] = nextStrong;
-      } else if (segDir) {
-        resolvedDirs[i2] = segDir;
-      } else {
-        resolvedDirs[i2] = baseDirection;
-      }
-    }
-    const runs = [];
-    let currentRun = [];
-    let currentDir = baseDirection;
-    for (let i2 = 0; i2 < items.length; i2++) {
-      const item = items[i2];
-      const effectiveDir = resolvedDirs[i2];
-      if (currentRun.length === 0) {
-        currentRun = [item];
-        currentDir = effectiveDir;
-        continue;
-      }
-      if (effectiveDir !== currentDir) {
-        runs.push({ dir: currentDir, items: currentRun });
-        currentRun = [item];
-        currentDir = effectiveDir;
-        continue;
-      }
-      currentRun.push(item);
-    }
-    if (currentRun.length > 0) runs.push({ dir: currentDir, items: currentRun });
-    if (baseDirection === "rtl") {
-      return runs.reverse().flatMap((run) => run.dir === "ltr" ? [...run.items].reverse() : run.items);
-    }
-    return runs.flatMap((run) => run.dir === "rtl" ? [...run.items].reverse() : run.items);
-  };
-  var getSelectionEntries = (selection) => {
-    if (!selection) return [];
-    if (selection.targetSelections?.length) return selection.targetSelections;
-    return [{
-      targetId: selection.targetId,
-      sourceId: selection.sourceId,
-      selectedOffsets: selection.selectedOffsets
-    }];
-  };
-  var toNumber = (value, fallback = 0) => {
-    const numeric = Number(value);
-    return Number.isFinite(numeric) ? numeric : fallback;
-  };
-  var sortUniqueNumbers = (values) => Array.from(new Set(values)).sort((a2, b2) => a2 - b2);
-  var clamp2 = (value, min, max) => Math.max(min, Math.min(max, value));
-  var isTextSelectableBox = (box) => {
-    const sourceId = String(box.meta?.sourceId || "");
-    if (!sourceId) return false;
-    return Array.isArray(box.lines) && box.lines.length > 0 || typeof box.content === "string" && box.content.length > 0 || Array.isArray(box.glyphs) && box.glyphs.length > 0;
-  };
-  var isInteractableBox = (box) => {
-    const sourceId = String(box.meta?.sourceId || "");
-    if (!sourceId) return false;
-    return isTextSelectableBox(box) || !!box.image || box.type === "image" || box.type === "box";
-  };
-  var buildTargetId = (meta, pageIndex) => {
-    const engineKey = String(meta?.engineKey || "");
-    if (engineKey) return engineKey;
-    const sourceId = String(meta?.sourceId || "unknown");
-    const fragmentIndex = Number(meta?.fragmentIndex || 0);
-    return `${sourceId}#${fragmentIndex}@${pageIndex}`;
-  };
-  var resolveContentBox = (box) => {
-    const style = box.style || {};
-    const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? 0);
-    const paddingRight = LayoutUtils.validateUnit(style.paddingRight ?? style.padding ?? 0);
-    const paddingTop = LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? 0);
-    const paddingBottom = LayoutUtils.validateUnit(style.paddingBottom ?? style.padding ?? 0);
-    const borderLeft = LayoutUtils.validateUnit(style.borderLeftWidth ?? style.borderWidth ?? 0);
-    const borderRight = LayoutUtils.validateUnit(style.borderRightWidth ?? style.borderWidth ?? 0);
-    const borderTop = LayoutUtils.validateUnit(style.borderTopWidth ?? style.borderWidth ?? 0);
-    const borderBottom = LayoutUtils.validateUnit(style.borderBottomWidth ?? style.borderWidth ?? 0);
-    return {
-      x: box.x + paddingLeft + borderLeft,
-      y: box.y + paddingTop + borderTop,
-      w: Math.max(0, box.w - paddingLeft - paddingRight - borderLeft - borderRight),
-      h: Math.max(0, box.h - paddingTop - paddingBottom - borderTop - borderBottom)
-    };
-  };
-  var buildFallbackUnits = (text5, drawX, lineIndex, top, bottom, absoluteOffsetRef, width, segmentMeta) => {
-    const glyphs = Array.from(text5 || "");
-    if (glyphs.length === 0) return [];
-    const unitWidth = glyphs.length > 0 ? width / glyphs.length : 0;
-    return glyphs.map((glyph, unitIndex) => {
-      const x0 = drawX + unitIndex * unitWidth;
-      const x1 = unitIndex === glyphs.length - 1 ? drawX + width : x0 + unitWidth;
-      const unit = {
-        absoluteOffset: absoluteOffsetRef.value,
-        lineIndex,
-        unitIndex,
-        text: glyph,
-        x0,
-        x1,
-        y0: top,
-        y1: bottom,
-        segmentKey: segmentMeta?.key,
-        segmentUnitCount: segmentMeta?.unitCount,
-        segmentX0: segmentMeta?.x0,
-        segmentX1: segmentMeta?.x1,
-        segmentIsShaped: segmentMeta?.shaped,
-        segmentLogicalIndex: segmentMeta?.logicalIndex,
-        segmentDirection: segmentMeta?.direction
-      };
-      absoluteOffsetRef.value += 1;
-      return unit;
-    });
-  };
-  var buildGlyphUnits = (glyphs, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth, segmentMeta) => {
-    if (!Array.isArray(glyphs) || glyphs.length === 0) return [];
-    return glyphs.map((glyph, unitIndex) => {
-      const start = drawX + toNumber(glyph.x, 0);
-      const next = glyphs[unitIndex + 1];
-      const fallbackEnd = drawX + segmentWidth;
-      const end = next ? Math.max(start, drawX + toNumber(next.x, segmentWidth)) : fallbackEnd;
-      const unit = {
-        absoluteOffset: absoluteOffsetRef.value,
-        lineIndex,
-        unitIndex,
-        text: String(glyph.char || ""),
-        x0: start,
-        x1: end,
-        y0: top,
-        y1: bottom,
-        segmentKey: segmentMeta?.key,
-        segmentUnitCount: segmentMeta?.unitCount,
-        segmentX0: segmentMeta?.x0,
-        segmentX1: segmentMeta?.x1,
-        segmentIsShaped: segmentMeta?.shaped,
-        segmentLogicalIndex: segmentMeta?.logicalIndex,
-        segmentDirection: segmentMeta?.direction
-      };
-      absoluteOffsetRef.value += 1;
-      return unit;
-    });
-  };
-  var buildSegmentUnits = (segment, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentMeta) => {
-    const segmentWidth = Math.max(0, toNumber(segment.width, 0));
-    if (Array.isArray(segment.glyphs) && segment.glyphs.length > 0) {
-      return buildGlyphUnits(segment.glyphs, drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth, segmentMeta);
-    }
-    return buildFallbackUnits(String(segment.text || ""), drawX, lineIndex, top, bottom, absoluteOffsetRef, segmentWidth, segmentMeta);
-  };
-  var buildInteractionTarget = (box, pageIndex, layout) => {
-    if (!isInteractableBox(box)) return null;
-    const rendererLines = box.lines || [];
-    const boxStyle = box.style || {};
-    const contentBox = resolveContentBox(box);
-    const baseFontSize = Number(boxStyle.fontSize || layout.fontSize);
-    const lineHeight = Number(boxStyle.lineHeight || layout.lineHeight);
-    const paragraphMetrics = buildParagraphMetrics(rendererLines, baseFontSize, lineHeight);
-    const lineFrame = createLineFrameAccessors(box.properties || {}, contentBox.y, contentBox.w);
-    const paragraphDirection = resolveParagraphDirection(
-      rendererLines,
-      boxStyle,
-      layout.direction,
-      LAYOUT_DEFAULTS.textLayout.direction
-    );
-    const letterSpacing = LayoutUtils.validateUnit(boxStyle.letterSpacing || 0);
-    const textIndent = LayoutUtils.validateUnit(boxStyle.textIndent || 0);
-    const align = boxStyle.textAlign;
-    const justifyEngine = boxStyle.justifyEngine || layout.justifyEngine || LAYOUT_DEFAULTS.textLayout.justifyEngine;
-    const lines = [];
-    const units = [];
-    const absoluteOffsetRef = { value: 0 };
-    let currentY = contentBox.y;
-    rendererLines.forEach((line, lineIndex) => {
-      if (!Array.isArray(line)) return;
-      const metric = paragraphMetrics.lineMetrics[lineIndex];
-      const actualLineFontSize = metric?.lineFontSize ?? baseFontSize;
-      const referenceAscentScale = metric?.referenceAscentScale ?? paragraphMetrics.paragraphReferenceAscentScale;
-      const effectiveLineHeight = paragraphMetrics.paragraphHasInlineObjects ? metric?.effectiveLineHeight ?? paragraphMetrics.uniformLineHeight : paragraphMetrics.uniformLineHeight;
-      const nominalLineHeight = actualLineFontSize * lineHeight;
-      const nominalLeading = nominalLineHeight - actualLineFontSize;
-      const vOffset = nominalLeading / 2;
-      const lineOffset = lineFrame.getLineOffset(lineIndex);
-      const lineWidthLimit = lineFrame.getLineWidth(lineIndex);
-      const lineOriginX = contentBox.x + lineOffset;
-      const lineTop = lineFrame.getLineY(lineIndex) ?? currentY;
-      const baseline = lineTop + vOffset + referenceAscentScale * actualLineFontSize;
-      const bottom = lineTop + effectiveLineHeight;
-      const lineWidth = computeLineWidth(line);
-      const adjustedLineWidth = lineWidth - letterSpacing;
-      const lineX = computeAlignedLineX(
-        lineIndex,
-        paragraphDirection,
-        lineOriginX,
-        lineWidthLimit,
-        textIndent,
-        align,
-        adjustedLineWidth
-      );
-      const justifyExtraAfter = computeJustifyExtraAfter(
-        line,
-        lineIndex,
-        rendererLines.length,
-        align,
-        justifyEngine,
-        lineWidthLimit,
-        lineWidth
-      );
-      const rawItems = line.map((seg, index2) => ({
-        seg,
-        extra: justifyExtraAfter[index2] || 0,
-        logicalIndex: index2
-      }));
-      const lineItems = reorderItemsForVisualBidi(rawItems, paragraphDirection);
-      const lineStartOffset = absoluteOffsetRef.value;
-      let currentX = lineX;
-      const lineUnits = [];
-      for (let segmentIndex = 0; segmentIndex < lineItems.length; segmentIndex += 1) {
-        const { seg, extra } = lineItems[segmentIndex];
-        const segWidth = Math.max(0, toNumber(seg.width, 0));
-        if (paragraphDirection === "rtl") {
-          currentX -= segWidth;
-        }
-        const drawX = currentX;
-        const segmentText = String(seg.text || "");
-        const segmentUnitCount = Array.from(segmentText).length || seg.glyphs?.length || 0;
-        const segmentDirection = seg.direction === "rtl" ? "rtl" : "ltr";
-        const segmentMeta = {
-          key: `${pageIndex}:${buildTargetId(box.meta, pageIndex)}:${lineIndex}:${segmentIndex}`,
-          unitCount: segmentUnitCount,
-          x0: drawX,
-          x1: drawX + segWidth,
-          shaped: Array.isArray(seg.shapedGlyphs) && seg.shapedGlyphs.length > 0 && seg.direction === "rtl",
-          logicalIndex: lineItems[segmentIndex].logicalIndex,
-          direction: segmentDirection
-        };
-        lineUnits.push(...buildSegmentUnits(seg, drawX, lineIndex, lineTop, bottom, absoluteOffsetRef, segmentMeta));
-        if (paragraphDirection === "rtl") {
-          currentX -= extra;
-        } else {
-          currentX += segWidth + extra;
-        }
-      }
-      units.push(...lineUnits);
-      const left = lineUnits.length > 0 ? Math.min(...lineUnits.map((unit) => unit.x0)) : lineX;
-      const right = lineUnits.length > 0 ? Math.max(...lineUnits.map((unit) => unit.x1)) : lineX;
-      lines.push({
-        index: lineIndex,
-        startOffset: lineStartOffset,
-        endOffset: absoluteOffsetRef.value,
-        top: lineTop,
-        baseline,
-        bottom,
-        left,
-        right,
-        direction: paragraphDirection
-      });
-      if (lineIndex < rendererLines.length - 1) {
-        absoluteOffsetRef.value += 1;
-      }
-      if (lineFrame.hasExplicitLineYOffsets) {
-        currentY = Math.max(currentY, bottom);
-      } else {
-        currentY += effectiveLineHeight;
-      }
-    });
-    const properties = box.properties || {};
-    return {
-      targetId: buildTargetId(box.meta, pageIndex),
-      pageIndex,
-      sourceId: String(box.meta?.sourceId || ""),
-      engineKey: String(box.meta?.engineKey || ""),
-      sourceType: String(box.meta?.sourceType || ""),
-      semanticRole: typeof box.meta?.semanticRole === "string" ? box.meta.semanticRole : void 0,
-      selectableText: isTextSelectableBox(box),
-      fragmentIndex: Number(box.meta?.fragmentIndex || 0),
-      isContinuation: Boolean(box.meta?.isContinuation),
-      generated: Boolean(box.meta?.generated),
-      transformKind: box.meta?.transformKind,
-      x: Number(box.x || 0),
-      y: Number(box.y || 0),
-      w: Number(box.w || 0),
-      h: Number(box.h || 0),
-      contentBox,
-      containerSourceId: typeof properties._interactionContainerSourceId === "string" ? properties._interactionContainerSourceId : void 0,
-      containerType: typeof properties._interactionContainerType === "string" ? properties._interactionContainerType : void 0,
-      containerEngineKey: typeof properties._interactionContainerEngineKey === "string" ? properties._interactionContainerEngineKey : void 0,
-      tableCell: Boolean(properties._tableCell) || String(box.meta?.sourceType || "") === "table_cell",
-      tableRowIndex: Number.isFinite(Number(properties._tableRowIndex)) ? Number(properties._tableRowIndex) : void 0,
-      tableViewportRowIndex: Number.isFinite(Number(properties._tableViewportRowIndex)) ? Number(properties._tableViewportRowIndex) : void 0,
-      tableColIndex: Number.isFinite(Number(properties._tableColIndex)) ? Number(properties._tableColIndex) : void 0,
-      totalLength: absoluteOffsetRef.value,
-      units,
-      lines
-    };
-  };
-  var buildFlattenedInteractionSpans = (pageIndex, targets) => sortTargetsInVisualOrder(targets).map((target, order2) => ({
-    order: order2,
-    pageIndex,
-    targetId: target.targetId,
-    sourceId: target.sourceId,
-    selectableText: target.selectableText,
-    containerSourceId: target.containerSourceId,
-    containerType: target.containerType,
-    top: target.y,
-    bottom: target.y + target.h,
-    left: target.x,
-    right: target.x + target.w
-  }));
-  var buildInteractionPages = (pages, layout) => pages.map((page) => {
-    const index2 = Number(page.index || 0);
-    const targets = (page.boxes || []).map((box) => buildInteractionTarget(box, index2, layout)).filter((target) => target !== null);
-    return {
-      index: index2,
-      width: Number(page.width || 0),
-      height: Number(page.height || 0),
-      targets,
-      flattenedSpans: buildFlattenedInteractionSpans(index2, targets)
-    };
-  });
-  var findInteractionTarget = (page, targetId) => {
-    const normalized = String(targetId || "");
-    if (!normalized) return null;
-    return page?.targets.find((target) => target.targetId === normalized) ?? null;
-  };
-  var sortTargetsInVisualOrder = (targets) => [...targets].sort((left, right) => {
-    const byY = left.y - right.y;
-    if (Math.abs(byY) > 0.5) return byY;
-    const byX = left.x - right.x;
-    if (Math.abs(byX) > 0.5) return byX;
-    return left.targetId.localeCompare(right.targetId);
-  });
-  var getFlattenedTraversalTargets = (page) => page.flattenedSpans.map((span) => findInteractionTarget(page, span.targetId)).filter((target) => target !== null);
-  var getRectDistanceSq = (rect, point3) => {
-    const nearestX = clamp2(point3.x, rect.x, rect.x + rect.w);
-    const nearestY = clamp2(point3.y, rect.y, rect.y + rect.h);
-    const dx = point3.x - nearestX;
-    const dy = point3.y - nearestY;
-    return dx * dx + dy * dy;
-  };
-  var hitTestInteractionTarget = (page, x2, y2) => {
-    const targets = page?.targets || [];
-    for (let index2 = targets.length - 1; index2 >= 0; index2 -= 1) {
-      const target = targets[index2];
-      if (x2 >= target.x && x2 <= target.x + target.w && y2 >= target.y && y2 <= target.y + target.h) {
-        return target;
-      }
-    }
-    return null;
-  };
-  var hitTestInteraction = (page, x2, y2) => {
-    const target = hitTestInteractionTarget(page, x2, y2);
-    if (!target) return null;
-    return {
-      pageIndex: target.pageIndex,
-      targetId: target.targetId,
-      sourceId: target.sourceId,
-      selectableText: target.selectableText,
-      containerSourceId: target.containerSourceId,
-      containerType: target.containerType,
-      point: { x: x2, y: y2 }
-    };
-  };
-  var resolveFocusTarget = (page, anchorTarget, point3) => {
-    const direct = hitTestInteractionTarget(page, point3.x, point3.y);
-    const group = getFlattenedTraversalTargets(page);
-    if (direct && group.some((candidate) => candidate.targetId === direct.targetId)) {
-      return direct;
-    }
-    let nearest = anchorTarget;
-    let nearestDistance = getRectDistanceSq(anchorTarget, point3);
-    for (const candidate of group) {
-      const distance = getRectDistanceSq(candidate, point3);
-      if (distance < nearestDistance) {
-        nearest = candidate;
-        nearestDistance = distance;
-      }
-    }
-    return nearest;
-  };
-  var getNearestInteractionSelectionOffset = (target, x2, y2) => {
-    if (target.units.length === 0) return 0;
-    const lineIndexes = sortUniqueNumbers(target.units.map((unit) => unit.lineIndex));
-    let targetLineIndex = lineIndexes[0] || 0;
-    let nearestLineDistance = Number.POSITIVE_INFINITY;
-    for (const lineIndex of lineIndexes) {
-      const line2 = target.lines.find((candidate) => candidate.index === lineIndex);
-      if (!line2) continue;
-      const lineCenterY = (line2.top + line2.bottom) / 2;
-      const lineDistance = y2 < line2.top ? line2.top - y2 : y2 > line2.bottom ? y2 - line2.bottom : Math.abs(lineCenterY - y2) * 0.25;
-      if (lineDistance < nearestLineDistance) {
-        nearestLineDistance = lineDistance;
-        targetLineIndex = lineIndex;
-      }
-    }
-    const line = target.lines.find((candidate) => candidate.index === targetLineIndex);
-    const lineUnits = target.units.filter((unit) => unit.lineIndex === targetLineIndex);
-    if (!line || lineUnits.length === 0) return 0;
-    const first = lineUnits[0];
-    const last = lineUnits[lineUnits.length - 1];
-    if (x2 <= first.x0) return line.startOffset;
-    if (x2 >= last.x1) return line.endOffset;
-    for (const unit of lineUnits) {
-      const centerX = (unit.x0 + unit.x1) / 2;
-      if (x2 < centerX) return unit.absoluteOffset;
-      if (x2 <= unit.x1) return unit.absoluteOffset + 1;
-    }
-    return line.endOffset;
-  };
-  var createInteractionSelectionPoint = (page, x2, y2) => {
-    const hit = hitTestInteraction(page, x2, y2);
-    if (!hit) return null;
-    const target = findInteractionTarget(page, hit.targetId);
-    if (!target) return null;
-    return {
-      pageIndex: hit.pageIndex,
-      targetId: hit.targetId,
-      sourceId: hit.sourceId,
-      x: x2,
-      y: y2,
-      absoluteOffset: getNearestInteractionSelectionOffset(target, x2, y2)
-    };
-  };
-  var normalizeInteractionSelectedOffsets = (target, offsets) => {
-    const validOffsets = new Set(target.units.map((unit) => unit.absoluteOffset));
-    return sortUniqueNumbers(offsets.filter((offset) => validOffsets.has(offset)));
-  };
-  var getSpatiallySelectedInteractionOffsets = (target, anchor, point3) => {
-    const x0 = Math.min(anchor.x, point3.x);
-    const y0 = Math.min(anchor.y, point3.y) - 4;
-    const x1 = Math.max(anchor.x, point3.x);
-    const y1 = Math.max(anchor.y, point3.y) + 4;
-    return normalizeInteractionSelectedOffsets(
-      target,
-      target.units.filter((unit) => {
-        const centerX = (unit.x0 + unit.x1) / 2;
-        const centerY = (unit.y0 + unit.y1) / 2;
-        return centerX >= x0 && centerX <= x1 && centerY >= y0 && centerY <= y1;
-      }).map((unit) => unit.absoluteOffset)
-    );
-  };
-  var buildContinuousInteractionOffsets = (target, anchorOffset, focusOffset) => {
-    const start = Math.max(0, Math.min(anchorOffset, focusOffset));
-    const end = Math.max(0, Math.max(anchorOffset, focusOffset));
-    const offsets = [];
-    for (let offset = start; offset < end; offset += 1) {
-      offsets.push(offset);
-    }
-    return normalizeInteractionSelectedOffsets(target, offsets);
-  };
-  var getInteractionCaretRect = (target, offset) => {
-    if (target.lines.length === 0) return null;
-    for (const line of target.lines) {
-      const lineUnits = target.units.filter((unit) => unit.lineIndex === line.index);
-      if (lineUnits.length === 0) continue;
-      if (offset <= line.startOffset) {
-        return { x: lineUnits[0].x0, y0: line.top, y1: line.bottom };
-      }
-      if (offset <= line.endOffset) {
-        const unit = lineUnits.find((candidate) => candidate.absoluteOffset + 1 >= offset);
-        if (!unit) {
-          return { x: lineUnits[lineUnits.length - 1].x1, y0: line.top, y1: line.bottom };
-        }
-        const x2 = offset <= unit.absoluteOffset ? unit.x0 : unit.x1;
-        return { x: x2, y0: line.top, y1: line.bottom };
-      }
-    }
-    const lastLine = target.lines[target.lines.length - 1];
-    const lastUnits = target.units.filter((unit) => unit.lineIndex === lastLine.index);
-    if (lastUnits.length === 0) return null;
-    return { x: lastUnits[lastUnits.length - 1].x1, y0: lastLine.top, y1: lastLine.bottom };
-  };
-  var buildInteractionSelectionRects = (target, selection) => {
-    if (!selection || selection.pageIndex !== target.pageIndex) {
-      return [];
-    }
-    const targetSelection = selection.targetSelections?.find((entry) => entry.targetId === target.targetId);
-    const offsets = new Set(targetSelection?.selectedOffsets ?? (selection.targetId === target.targetId ? selection.selectedOffsets : []));
-    const rects = [];
-    for (const line of target.lines) {
-      const selectedLineUnits = target.units.filter((unit) => unit.lineIndex === line.index && offsets.has(unit.absoluteOffset)).sort((a2, b2) => a2.x0 - b2.x0);
-      if (selectedLineUnits.length === 0) continue;
-      const lineUnitsBySegment = /* @__PURE__ */ new Map();
-      for (const unit of target.units.filter((candidate) => candidate.lineIndex === line.index && candidate.segmentKey)) {
-        const key = String(unit.segmentKey);
-        const bucket = lineUnitsBySegment.get(key);
-        if (bucket) {
-          bucket.push(unit);
-        } else {
-          lineUnitsBySegment.set(key, [unit]);
-        }
-      }
-      const mergedLineUnits = [];
-      let index2 = 0;
-      while (index2 < selectedLineUnits.length) {
-        const unit = selectedLineUnits[index2];
-        if (unit.segmentIsShaped && unit.segmentKey) {
-          const sameSegmentSelected = selectedLineUnits.filter((candidate) => candidate.segmentKey === unit.segmentKey);
-          const sameSegmentAll = lineUnitsBySegment.get(unit.segmentKey) || sameSegmentSelected;
-          const fullySelected = sameSegmentAll.length > 0 && sameSegmentSelected.length === sameSegmentAll.length;
-          mergedLineUnits.push({
-            x0: fullySelected ? unit.segmentX0 ?? sameSegmentSelected[0].x0 : Math.min(...sameSegmentSelected.map((candidate) => candidate.x0)),
-            x1: fullySelected ? unit.segmentX1 ?? sameSegmentSelected[sameSegmentSelected.length - 1].x1 : Math.max(...sameSegmentSelected.map((candidate) => candidate.x1)),
-            y0: Math.min(...sameSegmentSelected.map((candidate) => candidate.y0)),
-            y1: Math.max(...sameSegmentSelected.map((candidate) => candidate.y1)),
-            absoluteOffset: Math.min(...sameSegmentSelected.map((candidate) => candidate.absoluteOffset))
-          });
-          index2 += sameSegmentSelected.length;
-          continue;
-        }
-        mergedLineUnits.push({
-          x0: unit.x0,
-          x1: unit.x1,
-          y0: unit.y0,
-          y1: unit.y1,
-          absoluteOffset: unit.absoluteOffset
-        });
-        index2 += 1;
-      }
-      let current = {
-        x: mergedLineUnits[0].x0,
-        y: mergedLineUnits[0].y0,
-        w: Math.max(1, mergedLineUnits[0].x1 - mergedLineUnits[0].x0),
-        h: Math.max(1, mergedLineUnits[0].y1 - mergedLineUnits[0].y0)
-      };
-      for (let index22 = 1; index22 < mergedLineUnits.length; index22 += 1) {
-        const unit = mergedLineUnits[index22];
-        const gap = unit.x0 - (current.x + current.w);
-        const previousUnit = mergedLineUnits[index22 - 1];
-        const visuallyContiguous = gap <= 1.5;
-        const logicallyContiguous = unit.absoluteOffset <= previousUnit.absoluteOffset + 1;
-        if (visuallyContiguous || logicallyContiguous) {
-          current.w = Math.max(1, unit.x1 - current.x);
-          current.h = Math.max(current.h, unit.y1 - current.y);
-          continue;
-        }
-        rects.push(current);
-        current = {
-          x: unit.x0,
-          y: unit.y0,
-          w: Math.max(1, unit.x1 - unit.x0),
-          h: Math.max(1, unit.y1 - unit.y0)
-        };
-      }
-      rects.push(current);
-    }
-    return rects;
-  };
-  var resolveInteractionSelection = (page, anchor, focusPoint, mode = "continuous") => {
-    if (!page || !anchor) return null;
-    const anchorTarget = findInteractionTarget(page, anchor.targetId);
-    if (!anchorTarget) return null;
-    const focusTarget = resolveFocusTarget(page, anchorTarget, focusPoint);
-    const caretOffset = getNearestInteractionSelectionOffset(focusTarget, focusPoint.x, focusPoint.y);
-    if (mode === "spatial" || focusTarget.targetId === anchorTarget.targetId) {
-      const selectedOffsets = mode === "spatial" ? getSpatiallySelectedInteractionOffsets(anchorTarget, anchor, focusPoint) : buildContinuousInteractionOffsets(anchorTarget, anchor.absoluteOffset, caretOffset);
-      return {
-        pageIndex: anchor.pageIndex,
-        targetId: anchor.targetId,
-        sourceId: anchor.sourceId,
-        selectedOffsets,
-        caretOffset,
-        caretTargetId: focusTarget.targetId,
-        targetSelections: [{
-          targetId: anchorTarget.targetId,
-          sourceId: anchorTarget.sourceId,
-          selectedOffsets
-        }]
-      };
-    }
-    const group = getFlattenedTraversalTargets(page);
-    const anchorIndex = group.findIndex((target) => target.targetId === anchorTarget.targetId);
-    const focusIndex = group.findIndex((target) => target.targetId === focusTarget.targetId);
-    if (anchorIndex < 0 || focusIndex < 0) return null;
-    const forward = focusIndex >= anchorIndex;
-    const startIndex = Math.min(anchorIndex, focusIndex);
-    const endIndex = Math.max(anchorIndex, focusIndex);
-    const targetSelections = group.slice(startIndex, endIndex + 1).map((target, relativeIndex, slice) => {
-      const isFirst = relativeIndex === 0;
-      const isLast = relativeIndex === slice.length - 1;
-      let selectedOffsets;
-      if (forward) {
-        if (isFirst) {
-          selectedOffsets = buildContinuousInteractionOffsets(target, anchor.absoluteOffset, target.totalLength);
-        } else if (isLast) {
-          selectedOffsets = buildContinuousInteractionOffsets(target, 0, caretOffset);
-        } else {
-          selectedOffsets = normalizeInteractionSelectedOffsets(
-            target,
-            target.units.map((unit) => unit.absoluteOffset)
-          );
-        }
-      } else {
-        if (isFirst) {
-          selectedOffsets = buildContinuousInteractionOffsets(target, 0, caretOffset);
-        } else if (isLast) {
-          selectedOffsets = buildContinuousInteractionOffsets(target, anchor.absoluteOffset, target.totalLength);
-        } else {
-          selectedOffsets = normalizeInteractionSelectedOffsets(
-            target,
-            target.units.map((unit) => unit.absoluteOffset)
-          );
-        }
-      }
-      return {
-        targetId: target.targetId,
-        sourceId: target.sourceId,
-        selectedOffsets
-      };
-    });
-    return {
-      pageIndex: anchor.pageIndex,
-      targetId: anchorTarget.targetId,
-      sourceId: anchor.sourceId,
-      selectedOffsets: targetSelections.find((entry) => entry.targetId === anchorTarget.targetId)?.selectedOffsets ?? [],
-      caretOffset,
-      caretTargetId: focusTarget.targetId,
-      targetSelections
-    };
-  };
-  var buildInteractionOverlayModel = (page, selection, selectedTargetId2) => {
-    const targetId = String(selectedTargetId2 || selection?.targetId || "");
-    if (!page || !targetId) return null;
-    const target = findInteractionTarget(page, targetId);
-    if (!target) return null;
-    const caretTarget = selection?.caretTargetId ? findInteractionTarget(page, selection.caretTargetId) : target;
-    return {
-      targetId: target.targetId,
-      sourceId: target.sourceId,
-      frameRect: { x: target.x, y: target.y, w: target.w, h: target.h },
-      selectionRects: selection?.targetSelections?.length ? selection.targetSelections.flatMap((entry) => {
-        const selectionTarget = findInteractionTarget(page, entry.targetId);
-        if (!selectionTarget) return [];
-        return buildInteractionSelectionRects(selectionTarget, selection);
-      }) : buildInteractionSelectionRects(target, selection),
-      caretRect: selection && caretTarget ? getInteractionCaretRect(caretTarget, selection.caretOffset) : null
-    };
-  };
-  var serializeInteractionSelectionText = (page, selection) => {
-    if (!page || !selection) return "";
-    const selectedEntryMap = new Map(
-      getSelectionEntries(selection).map((entry) => [entry.targetId, entry])
-    );
-    const pieces = [];
-    let previousTarget = null;
-    for (const span of page.flattenedSpans) {
-      const entry = selectedEntryMap.get(span.targetId);
-      if (!entry) continue;
-      const target = findInteractionTarget(page, entry.targetId);
-      if (!target || target.selectableText && entry.selectedOffsets.length === 0) continue;
-      const text5 = serializeInteractionTargetPlainText(target, entry.selectedOffsets);
-      if (!text5) continue;
-      if (pieces.length > 0 && previousTarget) {
-        const sameTable = previousTarget.tableCell && target.tableCell && previousTarget.containerSourceId && target.containerSourceId && previousTarget.containerSourceId === target.containerSourceId;
-        const sameViewportRow = sameTable && previousTarget.tableViewportRowIndex !== void 0 && target.tableViewportRowIndex !== void 0 && previousTarget.tableViewportRowIndex === target.tableViewportRowIndex;
-        pieces.push(sameViewportRow ? "	" : "\n");
-      }
-      pieces.push(text5);
-      previousTarget = target;
-    }
-    return pieces.join("");
-  };
-  var serializeInteractionTargetPlainText = (target, selectedOffsets) => {
-    if (!target.selectableText) {
-      const normalizedType = String(target.sourceType || "").trim().toLowerCase();
-      if (normalizedType === "image") return "[Image]";
-      if (normalizedType === "table_cell") return "[Cell]";
-      if (normalizedType) {
-        return `[${normalizedType.replace(/[_-]+/g, " ")}]`;
-      }
-      return "[Object]";
-    }
-    if (selectedOffsets.length === 0) return "";
-    const selectedOffsetSet = new Set(selectedOffsets);
-    const lineChunks = [];
-    for (const line of target.lines) {
-      const selectedLineUnits = target.units.filter((unit) => unit.lineIndex === line.index && selectedOffsetSet.has(unit.absoluteOffset));
-      if (selectedLineUnits.length === 0) continue;
-      const bySegment = /* @__PURE__ */ new Map();
-      for (const unit of selectedLineUnits) {
-        const key = unit.segmentKey || `${unit.lineIndex}:${unit.segmentLogicalIndex ?? 0}`;
-        const bucket = bySegment.get(key);
-        if (bucket) bucket.push(unit);
-        else bySegment.set(key, [unit]);
-      }
-      const lineText = [...bySegment.values()].sort((left, right) => {
-        const leftIndex = left[0]?.segmentLogicalIndex ?? 0;
-        const rightIndex = right[0]?.segmentLogicalIndex ?? 0;
-        return leftIndex - rightIndex;
-      }).map((segmentUnits) => {
-        const direction = segmentUnits[0]?.segmentDirection || "ltr";
-        const orderedUnits = [...segmentUnits].sort((left, right) => direction === "rtl" ? right.x0 - left.x0 : left.x0 - right.x0);
-        return orderedUnits.map((unit) => unit.text).join("");
-      }).join("");
-      if (lineText) lineChunks.push(lineText);
-    }
-    return lineChunks.join("\n");
-  };
-  var inferHeadingLevel = (target) => {
-    const semantic = String(target.semanticRole || "").trim().toLowerCase();
-    const sourceType = String(target.sourceType || "").trim().toLowerCase();
-    const combined = `${semantic} ${sourceType}`;
-    const match = combined.match(/heading[-_ ]?([1-6])|h([1-6])/);
-    const numeric = Number(match?.[1] || match?.[2] || 0);
-    if (numeric >= 1 && numeric <= 6) return numeric;
-    if (semantic === "header") return 2;
-    return null;
-  };
-  var serializeInteractionTargetMarkdown = (target, plainText) => {
-    const normalizedType = String(target.sourceType || "").trim().toLowerCase();
-    const normalizedRole = String(target.semanticRole || "").trim().toLowerCase();
-    const text5 = plainText.trimEnd();
-    if (!target.selectableText) {
-      if (normalizedType === "image") return "![Image]()";
-      if (normalizedType) return `[${normalizedType.replace(/[_-]+/g, " ")}]`;
-      return "[Object]";
-    }
-    const headingLevel = inferHeadingLevel(target);
-    if (headingLevel) return `${"#".repeat(headingLevel)} ${text5}`;
-    if (normalizedType.includes("blockquote") || normalizedRole.includes("blockquote")) {
-      return text5.split("\n").map((line) => `> ${line}`).join("\n");
-    }
-    if (normalizedType.includes("ordered-list") || normalizedType === "ordered_item" || normalizedType === "ordered-item") {
-      return text5.split("\n").map((line, index2) => `${index2 + 1}. ${line}`).join("\n");
-    }
-    if (normalizedType.includes("unordered-list") || normalizedType === "list_item" || normalizedType === "list-item" || normalizedType === "bullet-item") {
-      return text5.split("\n").map((line) => `- ${line}`).join("\n");
-    }
-    if (normalizedType.includes("code") || normalizedRole === "code") {
-      return `\`\`\`
-${text5}
-\`\`\``;
-    }
-    return text5;
-  };
-  var serializeInteractionSelectionMarkdown = (page, selection) => {
-    if (!page || !selection) return "";
-    const selectedEntryMap = new Map(
-      getSelectionEntries(selection).map((entry) => [entry.targetId, entry])
-    );
-    const items = page.flattenedSpans.map((span) => {
-      const entry = selectedEntryMap.get(span.targetId);
-      if (!entry) return null;
-      const target = findInteractionTarget(page, entry.targetId);
-      if (!target || target.selectableText && entry.selectedOffsets.length === 0) return null;
-      const plainText = serializeInteractionTargetPlainText(target, entry.selectedOffsets);
-      return plainText ? { span, entry, target, plainText, markdown: serializeInteractionTargetMarkdown(target, plainText) } : null;
-    }).filter((item) => item !== null);
-    const pieces = [];
-    let index2 = 0;
-    while (index2 < items.length) {
-      const current = items[index2];
-      if (!current.target.tableCell) {
-        if (pieces.length > 0) pieces.push("\n\n");
-        pieces.push(current.markdown);
-        index2 += 1;
-        continue;
-      }
-      const tableRun = [];
-      while (index2 < items.length && items[index2].target.tableCell) {
-        tableRun.push(items[index2]);
-        index2 += 1;
-      }
-      const rows = /* @__PURE__ */ new Map();
-      for (const item of tableRun) {
-        const rowKey = item.target.tableViewportRowIndex ?? item.target.tableRowIndex ?? 0;
-        const row = rows.get(rowKey) || [];
-        row.push({
-          col: item.target.tableColIndex ?? row.length,
-          text: item.plainText.replace(/\n+/g, " ").trim(),
-          isHeader: rowKey === 0 || String(item.target.semanticRole || "").trim().toLowerCase() === "header"
-        });
-        rows.set(rowKey, row);
-      }
-      const orderedRows = [...rows.entries()].sort((left, right) => left[0] - right[0]).map(([, row]) => row.sort((left, right) => left.col - right.col));
-      const tableMarkdownRows = orderedRows.map((row) => `| ${row.map((cell) => cell.text.replace(/\|/g, "\\|")).join(" | ")} |`);
-      if (tableMarkdownRows.length > 0) {
-        const shouldEmitHeaderSeparator = orderedRows[0]?.some((cell) => cell.isHeader);
-        if (shouldEmitHeaderSeparator) {
-          const separator = `| ${orderedRows[0].map(() => "---").join(" | ")} |`;
-          tableMarkdownRows.splice(1, 0, separator);
-        }
-      }
-      if (pieces.length > 0) pieces.push("\n\n");
-      pieces.push(tableMarkdownRows.join("\n"));
-    }
-    return pieces.join("");
-  };
-  var InteractionArtifactCollaborator = class {
-    constructor(layout) {
-      this.layout = layout;
-    }
-    onSimulationComplete(session) {
-      session.publishArtifact(
-        simulationArtifactKeys.interactionMap,
-        buildInteractionPages(session.getFinalizedPages(), this.layout)
-      );
-    }
-  };
-  var AsyncThoughtHost = class {
-    constructor() {
-      this.entries = /* @__PURE__ */ new Map();
-      this.completionVersion = 0;
-      this.waiters = /* @__PURE__ */ new Set();
-    }
-    request(request) {
-      const existing = this.entries.get(request.key);
-      if (existing) {
-        return {
-          key: existing.key,
-          state: existing.state,
-          result: existing.result,
-          error: existing.error,
-          completedAt: existing.completedAt,
-          metadata: existing.metadata
-        };
-      }
-      const entry = {
-        key: request.key,
-        state: "pending",
-        metadata: request.metadata
-      };
-      entry.promise = request.executor().then((result) => {
-        entry.state = "completed";
-        entry.result = result;
-        entry.completedAt = Date.now();
-        this.notifyCompletion();
-      }).catch((error) => {
-        entry.state = "failed";
-        entry.error = error instanceof Error ? error.message : String(error);
-        entry.completedAt = Date.now();
-        this.notifyCompletion();
-      });
-      this.entries.set(request.key, entry);
-      return {
-        key: entry.key,
-        state: entry.state,
-        metadata: entry.metadata
-      };
-    }
-    read(key) {
-      const entry = this.entries.get(key);
-      if (!entry) return void 0;
-      return {
-        key: entry.key,
-        state: entry.state,
-        result: entry.result,
-        error: entry.error,
-        completedAt: entry.completedAt,
-        metadata: entry.metadata
-      };
-    }
-    hasPending() {
-      for (const entry of this.entries.values()) {
-        if (entry.state === "pending") return true;
-      }
-      return false;
-    }
-    getSummary() {
-      return Array.from(this.entries.values()).map((entry) => ({
-        key: entry.key,
-        state: entry.state,
-        result: entry.result,
-        error: entry.error,
-        completedAt: entry.completedAt,
-        metadata: entry.metadata
-      }));
-    }
-    async waitForNextCompletion(timeoutMs) {
-      if (!this.hasPending()) return false;
-      const observedVersion = this.completionVersion;
-      if (this.completionVersion > observedVersion) return true;
-      return await new Promise((resolve) => {
-        let settled = false;
-        const finish = (value) => {
-          if (settled) return;
-          settled = true;
-          if (timer) clearTimeout(timer);
-          this.waiters.delete(onCompletion);
-          resolve(value);
-        };
-        const onCompletion = () => finish(true);
-        this.waiters.add(onCompletion);
-        const timer = timeoutMs > 0 ? setTimeout(() => finish(false), timeoutMs) : null;
-      });
-    }
-    notifyCompletion() {
-      this.completionVersion += 1;
-      for (const waiter of Array.from(this.waiters)) {
-        waiter();
-      }
-    }
-  };
   function cloneElementTree3(value) {
     return JSON.parse(JSON.stringify(value));
   }
@@ -60167,6 +62966,27 @@ ${text5}
     if (Array.isArray(value)) return value.map((element2) => normalizeRuntimeElement3(element2));
     if (value && typeof value === "object") return [normalizeRuntimeElement3(value)];
     return [];
+  }
+  function chooseEarlierFrontier2(current, next) {
+    if (!current) {
+      return next;
+    }
+    const nextWorldY = Number.isFinite(next.worldY) ? Number(next.worldY) : Number.NaN;
+    const currentWorldY = Number.isFinite(current.worldY) ? Number(current.worldY) : Number.NaN;
+    if (Number.isFinite(nextWorldY) && Number.isFinite(currentWorldY) && Math.abs(nextWorldY - currentWorldY) > 0.01) {
+      return nextWorldY < currentWorldY ? next : current;
+    }
+    if (next.pageIndex !== current.pageIndex) {
+      return next.pageIndex < current.pageIndex ? next : current;
+    }
+    const nextCursorY = Number.isFinite(next.cursorY) ? Number(next.cursorY) : Number.POSITIVE_INFINITY;
+    const currentCursorY = Number.isFinite(current.cursorY) ? Number(current.cursorY) : Number.POSITIVE_INFINITY;
+    if (Math.abs(nextCursorY - currentCursorY) > 0.01) {
+      return nextCursorY < currentCursorY ? next : current;
+    }
+    const nextActorIndex = Number.isFinite(next.actorIndex) ? Number(next.actorIndex) : Number.POSITIVE_INFINITY;
+    const currentActorIndex = Number.isFinite(current.actorIndex) ? Number(current.actorIndex) : Number.POSITIVE_INFINITY;
+    return nextActorIndex < currentActorIndex ? next : current;
   }
   function applyStructuralOperationBySourceId3(nodes, sourceId, operation) {
     let mutated = false;
@@ -60277,11 +63097,16 @@ ${text5}
       this.replayRequested = false;
       this.pendingLiveStructuralChange = false;
       this.pendingLiveFrontier = null;
+      this.lastObservedPageIndex = 0;
+      this.lastObservedActorIndex = 0;
+      this.lastObservedCursorY = 0;
     }
     createDocumentFrontier() {
       return {
-        pageIndex: 0,
-        actorIndex: 0,
+        pageIndex: this.lastObservedPageIndex,
+        cursorY: this.lastObservedCursorY,
+        ...Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {},
+        actorIndex: this.lastObservedActorIndex,
         actorId: this.actorId,
         sourceId: this.sourceId
       };
@@ -60295,8 +63120,21 @@ ${text5}
       this.lifecycleState.runtimeMutationVersion += 1;
       this.pendingLiveStructuralChange = true;
       if (frontier) {
-        this.pendingLiveFrontier = frontier;
+        this.pendingLiveFrontier = chooseEarlierFrontier2(this.pendingLiveFrontier, frontier);
       }
+    }
+    resolveLiveMutationFrontier(session, actor, options) {
+      return session.resolveActorRuntimeFrontier(actor, options) ?? {
+        pageIndex: this.lastObservedPageIndex,
+        cursorY: this.lastObservedCursorY,
+        ...Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {},
+        ...Number.isFinite(options?.actorIndex) ? { actorIndex: Number(options?.actorIndex) } : {},
+        actorId: options?.actorId ?? actor.actorId,
+        sourceId: options?.sourceId ?? actor.sourceId
+      };
+    }
+    isLiveContentActor(actor) {
+      return !!actor && (actor instanceof FlowBoxPackager || actor instanceof ScriptedFlowBoxPackager) && typeof actor.getLiveContent === "function" && typeof actor.setLiveContent === "function";
     }
     resolveLiveActor(session, target) {
       const sourceId = this.resolveSourceId(target);
@@ -60318,14 +63156,15 @@ ${text5}
       const elements = normalizeScriptElements3(value);
       const replacements = this.createLivePackagers(context, elements);
       if (replacements.length === 0) return false;
-      const replacedIndex = session.replaceActorInLiveQueue(actor, replacements);
+      const replacedIndex = session.replaceActorInLiveQueue(actor, replacements, elements);
       if (replacedIndex === null) return false;
-      this.recordRuntimeMutation({
-        pageIndex: 0,
+      const mutationFrontier = this.resolveLiveMutationFrontier(session, actor, {
         actorIndex: replacedIndex,
-        actorId: replacements[0]?.actorId ?? actor.actorId,
-        sourceId: replacements[0]?.sourceId ?? actor.sourceId
+        actorId: actor.actorId,
+        sourceId: actor.sourceId
       });
+      session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+      this.recordRuntimeMutation(mutationFrontier);
       return true;
     }
     insertLiveRelative(session, context, target, value, position2) {
@@ -60334,33 +63173,100 @@ ${text5}
       const elements = normalizeScriptElements3(value);
       const insertions = this.createLivePackagers(context, elements);
       if (insertions.length === 0) return false;
-      const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position2);
+      const insertedIndex = session.insertActorsInLiveQueue(actor, insertions, position2, elements);
       if (insertedIndex === null) return false;
-      this.recordRuntimeMutation({
-        pageIndex: 0,
+      const mutationFrontier = this.resolveLiveMutationFrontier(session, actor, {
         actorIndex: insertedIndex,
-        actorId: insertions[0]?.actorId,
-        sourceId: insertions[0]?.sourceId
+        actorId: actor.actorId,
+        sourceId: actor.sourceId
       });
+      session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+      this.recordRuntimeMutation(mutationFrontier);
       return true;
     }
     deleteLiveActor(session, target) {
       const actor = this.resolveLiveActor(session, target);
       if (!actor) return false;
+      const mutationFrontier = this.resolveLiveMutationFrontier(session, actor);
       const deletedIndex = session.deleteActorInLiveQueue(actor);
       if (deletedIndex === null) return false;
-      this.recordRuntimeMutation({
+      session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+      this.recordRuntimeMutation(
+        {
+          ...mutationFrontier,
+          actorIndex: deletedIndex,
+          actorId: actor.actorId,
+          sourceId: actor.sourceId
+        }
+      );
+      return true;
+    }
+    setLiveActorContent(session, target, content3) {
+      const actor = this.resolveLiveActor(session, target);
+      if (!this.isLiveContentActor(actor)) return false;
+      const nextContent = String(content3);
+      const changed = actor.setLiveContent(nextContent);
+      if (!changed) return false;
+      const shadowNode = actor.sourceId ? findBySourceId3(this.elements, actor.sourceId) : null;
+      if (shadowNode) {
+        shadowNode.content = nextContent;
+      }
+      const hostActorIndex = session.noteHostedRuntimeActorContentMutation(actor);
+      const mutationFrontier = Number.isFinite(hostActorIndex) ? session.resolveRuntimeFrontierAtActorIndex(Number(hostActorIndex)) : this.resolveLiveMutationFrontier(session, actor);
+      if (mutationFrontier) {
+        session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+        this.recordRuntimeMutation(mutationFrontier);
+      }
+      return true;
+    }
+    prependLiveDocument(session, context, value) {
+      const elements = normalizeScriptElements3(value);
+      const insertions = this.createLivePackagers(context, elements);
+      if (insertions.length === 0) return false;
+      const insertedIndex = session.prependActorsInLiveQueue(insertions);
+      if (insertedIndex === null) return false;
+      const mutationFrontier = session.resolveRuntimeFrontierAtActorIndex(insertedIndex) ?? {
         pageIndex: 0,
-        actorIndex: deletedIndex,
-        actorId: actor.actorId,
-        sourceId: actor.sourceId
-      });
+        cursorY: 0,
+        worldY: 0,
+        actorIndex: insertedIndex
+      };
+      session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+      this.recordRuntimeMutation(mutationFrontier);
+      return true;
+    }
+    appendLiveDocument(session, context, value) {
+      const elements = normalizeScriptElements3(value);
+      const insertions = this.createLivePackagers(context, elements);
+      if (insertions.length === 0) return false;
+      const insertedIndex = session.appendActorsInLiveQueue(insertions);
+      if (insertedIndex === null) return false;
+      const mutationFrontier = session.resolveRuntimeFrontierAtActorIndex(insertedIndex) ?? {
+        pageIndex: this.lastObservedPageIndex,
+        cursorY: this.lastObservedCursorY,
+        ...Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {},
+        actorIndex: insertedIndex
+      };
+      session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
+      this.recordRuntimeMutation(mutationFrontier);
       return true;
     }
     createLiveActorRef(session, context, actor) {
       return {
         name: toPublicScriptName2(actor.sourceId),
         type: String(actor.actorKind || ""),
+        get content() {
+          if (this.isLiveContentActor(actor)) {
+            return actor.getLiveContent();
+          }
+          return "";
+        },
+        setContent: (content3) => {
+          const changed = this.setLiveActorContent(session, actor.sourceId, content3);
+          if (!changed) return false;
+          session.recordProfile("setContentCalls", 1);
+          return true;
+        },
         replace: (value) => {
           const replaced = this.replaceLiveActor(session, context, actor.sourceId, value);
           if (!replaced) return false;
@@ -60406,6 +63312,19 @@ ${text5}
         type: String(element2.type || ""),
         get content() {
           return String(element2.content || "");
+        },
+        setContent: (content3) => {
+          if (!sourceId) return false;
+          const liveChanged = context ? this.setLiveActorContent(session, sourceId, content3) : false;
+          if (liveChanged) {
+            session.recordProfile("setContentCalls", 1);
+            return true;
+          }
+          const nextContent = String(content3);
+          if (String(element2.content || "") === nextContent) return false;
+          element2.content = nextContent;
+          session.recordProfile("setContentCalls", 1);
+          return true;
         },
         replace: (value) => {
           if (!sourceId) return false;
@@ -60454,10 +63373,19 @@ ${text5}
       };
     }
     createDocRef(session, context) {
+      const getRegions = () => {
+        session.recordProfile("docQueryCalls", 1);
+        return session.getScriptRegions();
+      };
       return {
         name: "doc",
         type: "document",
         vars: this.host.getScriptVars(),
+        getRegions,
+        findRegionByName: (name) => {
+          session.recordProfile("docQueryCalls", 1);
+          return session.findScriptRegionByName(name);
+        },
         findElementByName: (name) => {
           session.recordProfile("docQueryCalls", 1);
           const node2 = findBySourceId3(this.elements, name);
@@ -60528,12 +63456,19 @@ ${text5}
         return true;
       };
       const setContent = (target, content3) => {
+        const liveChanged = this.setLiveActorContent(session, target, content3);
+        if (liveChanged) {
+          session.recordProfile("setContentCalls", 1);
+          return true;
+        }
         const sourceId = this.resolveSourceId(target);
         if (!sourceId) return false;
         if (sourceId === "doc") return false;
         const node2 = findBySourceId3(this.elements, sourceId);
         if (!node2) return false;
-        node2.content = String(content3);
+        const nextContent = String(content3);
+        if (String(node2.content || "") === nextContent) return false;
+        node2.content = nextContent;
         session.recordProfile("setContentCalls", 1);
         return true;
       };
@@ -60616,6 +63551,7 @@ ${text5}
             publisherActorKind: this.actorKind,
             fragmentIndex: this.fragmentIndex,
             pageIndex: context.pageIndex,
+            cursorY: context.cursorY,
             payload: {
               ...message,
               from: this.sourceId,
@@ -60655,6 +63591,10 @@ ${text5}
     }
     updateCommittedState(context) {
       const session = getCurrentLayoutSession2(context);
+      this.lastObservedPageIndex = Number.isFinite(context.pageIndex) ? Number(context.pageIndex) : this.lastObservedPageIndex;
+      this.lastObservedActorIndex = Number.isFinite(context.actorIndex) ? Number(context.actorIndex) : this.lastObservedActorIndex;
+      this.lastObservedCursorY = Number.isFinite(context.cursorY) ? Number(context.cursorY) : this.lastObservedCursorY;
+      this.lastObservedWorldY = Number.isFinite(resolvePackagerWorldYAtCursor(context)) ? Number(resolvePackagerWorldYAtCursor(context)) : this.lastObservedWorldY;
       const globals = this.createGlobals(session, context);
       const beforeDigest = this.host.createDocumentDigest(this.elements);
       const beforeMutationVersion = this.lifecycleState.runtimeMutationVersion;
@@ -60799,19 +63739,23 @@ ${text5}
     };
     const pageLimit = contextBase.pageHeight - margins.bottom;
     const resolveLayoutBefore2 = (prevAfter, marginTop) => prevAfter + marginTop;
-    session.setSimulationProgressionPolicy(progression.policy);
-    session.resumeSimulationProgression();
+    const buildChunkContextBase = () => ({
+      ...contextBase,
+      chunkOriginWorldY: session.resolveChunkOriginWorldY(currentPageIndex2, contextBase.pageHeight)
+    });
+    session.beginSimulationRun(progression);
     session.notifyPageStart(currentPageIndex2, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
     if (reactiveCheckpointsEnabled()) {
-      session.recordSafeCheckpoint(packagers, i2, pages, currentPageBoxes, currentPageIndex2, currentY, lastSpacingAfter, "page");
+      session.recordSafeCheckpoint(packagers, i2, pages, currentPageBoxes, currentPageIndex2, currentY, contextBase.pageHeight, lastSpacingAfter, "page");
     }
     const maybeSettleAtCheckpoint = () => {
       if (!reactiveCheckpointsEnabled()) {
         return false;
       }
-      const observation = session.evaluateObserverRegistry(contextBase, currentPageIndex2, currentY);
+      const chunkContextBase = buildChunkContextBase();
+      const observation = session.evaluateObserverRegistry(chunkContextBase, currentPageIndex2, currentY);
       if (!observation.geometryChanged && observation.contentOnlyActors.length > 0) {
-        session.applyContentOnlyActorUpdates(pages, currentPageBoxes, observation.contentOnlyActors, contextBase);
+        session.applyContentOnlyActorUpdates(pages, currentPageBoxes, observation.contentOnlyActors, chunkContextBase);
         return false;
       }
       if (!observation.geometryChanged || !observation.earliestAffectedFrontier) {
@@ -60821,28 +63765,22 @@ ${text5}
       if (!checkpoint) {
         return false;
       }
-      const signature = [
-        checkpoint.kind,
-        checkpoint.pageIndex,
-        checkpoint.actorIndex,
-        checkpoint.anchorActorId ?? "na",
-        checkpoint.anchorSourceId ?? "na",
-        observation.earliestAffectedFrontier.pageIndex,
-        observation.earliestAffectedFrontier.actorIndex ?? "na",
-        observation.earliestAffectedFrontier.actorId ?? "na",
-        observation.earliestAffectedFrontier.sourceId ?? "na",
+      const signature = buildReactiveResettlementSignature(
+        "observer",
+        checkpoint,
+        observation.earliestAffectedFrontier,
         session.getActorSignalSequence()
-      ].join("|");
+      );
       if (reactiveResettlementSignatures.has(signature)) {
         session.recordProfile("actorUpdateRepeatedStateDetections", 1);
         throw new Error(
-          `[executeSimulationMarch] Reactive geometry oscillation detected at checkpoint "${checkpoint.id}" (frontier page=${observation.earliestAffectedFrontier.pageIndex}, actor=${observation.earliestAffectedFrontier.actorId ?? observation.earliestAffectedFrontier.sourceId ?? "unknown"}, signalSequence=${session.getActorSignalSequence()}).`
+          `[executeSimulationMarch] Reactive geometry oscillation detected at checkpoint "${checkpoint.id}" (frontier page=${observation.earliestAffectedFrontier.pageIndex}, cursorY=${Number.isFinite(observation.earliestAffectedFrontier.cursorY) ? Number(observation.earliestAffectedFrontier.cursorY).toFixed(3) : "na"}, actor=${observation.earliestAffectedFrontier.actorId ?? observation.earliestAffectedFrontier.sourceId ?? "unknown"}, signalSequence=${session.getActorSignalSequence()}).`
         );
       }
       if (reactiveResettlementCycles >= maxReactiveResettlementCycles) {
         session.recordProfile("actorUpdateResettlementCapHits", 1);
         throw new Error(
-          `[executeSimulationMarch] Reactive geometry resettlement exceeded the cycle cap (${maxReactiveResettlementCycles}) at checkpoint "${checkpoint.id}" (frontier page=${observation.earliestAffectedFrontier.pageIndex}, actor=${observation.earliestAffectedFrontier.actorId ?? observation.earliestAffectedFrontier.sourceId ?? "unknown"}, signalSequence=${session.getActorSignalSequence()}).`
+          `[executeSimulationMarch] Reactive geometry resettlement exceeded the cycle cap (${maxReactiveResettlementCycles}) at checkpoint "${checkpoint.id}" (frontier page=${observation.earliestAffectedFrontier.pageIndex}, cursorY=${Number.isFinite(observation.earliestAffectedFrontier.cursorY) ? Number(observation.earliestAffectedFrontier.cursorY).toFixed(3) : "na"}, actor=${observation.earliestAffectedFrontier.actorId ?? observation.earliestAffectedFrontier.sourceId ?? "unknown"}, signalSequence=${session.getActorSignalSequence()}).`
         );
       }
       reactiveResettlementSignatures.add(signature);
@@ -60863,16 +63801,17 @@ ${text5}
       });
       i2 = checkpoint.actorIndex;
       session.notifyPageStart(currentPageIndex2, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
-      session.recordSafeCheckpoint(packagers, i2, pages, currentPageBoxes, currentPageIndex2, currentY, lastSpacingAfter, checkpoint.kind);
+      session.recordSafeCheckpoint(packagers, i2, pages, currentPageBoxes, currentPageIndex2, currentY, contextBase.pageHeight, lastSpacingAfter, checkpoint.kind);
       return true;
     };
     const maybeAdvanceSteppedActorsAtTick = () => {
       if (!steppedActorsEnabled()) {
         return false;
       }
+      const chunkContextBase = buildChunkContextBase();
       const stepped = session.evaluateSteppedActors(
         {
-          ...contextBase,
+          ...chunkContextBase,
           simulationTick: session.getSimulationTick()
         },
         currentPageIndex2,
@@ -60884,7 +63823,7 @@ ${text5}
           currentPageBoxes,
           stepped.contentOnlyActors,
           {
-            ...contextBase,
+            ...chunkContextBase,
             simulationTick: session.getSimulationTick()
           }
         );
@@ -60906,7 +63845,7 @@ ${text5}
       });
       i2 = checkpoint.actorIndex;
       session.notifyPageStart(currentPageIndex2, contextBase.pageWidth, contextBase.pageHeight, currentPageBoxes);
-      session.recordSafeCheckpoint(packagers, i2, pages, currentPageBoxes, currentPageIndex2, currentY, lastSpacingAfter, checkpoint.kind);
+      session.recordSafeCheckpoint(packagers, i2, pages, currentPageBoxes, currentPageIndex2, currentY, contextBase.pageHeight, lastSpacingAfter, checkpoint.kind);
       return true;
     };
     const afterPotentialBoundary = (previousPageIndex, previousActorIndex) => {
@@ -60926,7 +63865,7 @@ ${text5}
       session.recordProfile("boundaryCheckpointCalls", 1);
       const checkpointRecordStart = performance2.now();
       session.recordProfile("checkpointRecordCalls", 1);
-      session.recordSafeCheckpoint(packagers, i2, pages, currentPageBoxes, currentPageIndex2, currentY, lastSpacingAfter, checkpointKind);
+      session.recordSafeCheckpoint(packagers, i2, pages, currentPageBoxes, currentPageIndex2, currentY, contextBase.pageHeight, lastSpacingAfter, checkpointKind);
       session.recordProfile("checkpointRecordMs", performance2.now() - checkpointRecordStart);
       const observerBoundaryStart = performance2.now();
       session.recordProfile("observerBoundaryCheckCalls", 1);
@@ -61226,30 +64165,30 @@ ${text5}
         publisherSourceId: "system:pagination-finalizer",
         publisherActorKind: "system",
         fragmentIndex: 0,
-        pageIndex: Math.max(0, pages.length - 1),
+        pageIndex: currentPageIndex2,
+        cursorY: currentY,
         signalKey: "pagination:finalized",
         payload: {
           totalPageCount: pages.length
         }
       });
       if (!maybeSettleAtCheckpoint()) {
-        const fixedTickHorizonReached = progression.policy === "fixed-tick-count" && session.getSimulationTick() >= progression.maxTicks;
-        if (!fixedTickHorizonReached && progression.policy === "fixed-tick-count") {
-          continue;
-        }
-        if (!fixedTickHorizonReached && steppedActorsEnabled() && session.hasActiveSteppedActors(
+        const currentTick = session.getSimulationTick();
+        const hasActiveSteppedActors = steppedActorsEnabled() && session.hasActiveSteppedActors(
           {
             ...contextBase,
-            simulationTick: session.getSimulationTick()
+            simulationTick: currentTick
           },
           currentPageIndex2,
           currentY
-        )) {
+        );
+        if (session.shouldContinueAfterPaginationFinalized({
+          currentTick,
+          hasActiveSteppedActors
+        })) {
           continue;
         }
-        session.stopSimulationProgression(
-          fixedTickHorizonReached ? "fixed-tick-count" : "settled"
-        );
+        session.stopSimulationProgression(session.resolveSimulationStopReason(currentTick));
         break;
       }
     }
@@ -61261,6 +64200,25 @@ ${text5}
       return Math.floor(raw);
     }
     return 8;
+  }
+  function buildReactiveResettlementSignature(kind, checkpoint, frontier, sequenceOrTick) {
+    return [
+      kind,
+      checkpoint.kind,
+      checkpoint.pageIndex,
+      Number.isFinite(checkpoint.frontier.cursorY) ? Number(checkpoint.frontier.cursorY).toFixed(3) : "na",
+      Number.isFinite(checkpoint.frontier.worldY) ? Number(checkpoint.frontier.worldY).toFixed(3) : "na",
+      checkpoint.actorIndex,
+      checkpoint.anchorActorId ?? "na",
+      checkpoint.anchorSourceId ?? "na",
+      frontier.pageIndex,
+      Number.isFinite(frontier.cursorY) ? Number(frontier.cursorY).toFixed(3) : "na",
+      Number.isFinite(frontier.worldY) ? Number(frontier.worldY).toFixed(3) : "na",
+      frontier.actorIndex ?? "na",
+      frontier.actorId ?? "na",
+      frontier.sourceId ?? "na",
+      sequenceOrTick
+    ].join("|");
   }
   var _a4;
   var LayoutProcessor = (_a4 = class extends TextProcessor {
@@ -61335,8 +64293,12 @@ ${text5}
       const numeric = Number.isFinite(value) ? value : fallback;
       return Math.max(1, Math.floor(numeric));
     }
-    createFlowMaterializationContext(pageIndex, cursorY, contentWidth) {
-      const ctx = { pageIndex, cursorY };
+    createFlowMaterializationContext(pageIndex, cursorY, contentWidth, worldY) {
+      const ctx = {
+        pageIndex,
+        cursorY,
+        ...Number.isFinite(worldY) ? { worldY: Number(worldY) } : {}
+      };
       if (Number.isFinite(contentWidth) && contentWidth >= 0) {
         ctx.contentWidth = contentWidth;
       }
@@ -61345,8 +64307,9 @@ ${text5}
     getMaterializationContextKey(unit, context) {
       if (!context) return "default";
       const top = Number(context.cursorY).toFixed(3);
+      const worldKey = Number.isFinite(context.worldY) ? Number(context.worldY).toFixed(3) : "na";
       const widthKey = Number.isFinite(context.contentWidth) ? Number(context.contentWidth).toFixed(3) : "auto";
-      return `${context.pageIndex}:${top}:${unit.type}:${widthKey}`;
+      return `${context.pageIndex}:${top}:${worldKey}:${unit.type}:${widthKey}`;
     }
     hashTextContent(text5) {
       let hash = 2166136261;
@@ -61497,8 +64460,8 @@ ${text5}
           const pageDims = this.getPageDimensions();
           const packagerContext = {
             processor: this,
-            pageIndex: context?.pageIndex ?? 0,
-            cursorY: context?.cursorY ?? 0,
+            pageIndex: Number.isFinite(context?.pageIndex) ? Number(context?.pageIndex) : 0,
+            cursorY: Number.isFinite(context?.cursorY) ? Number(context?.cursorY) : 0,
             margins: { top: 0, right: 0, bottom: 0, left: 0 },
             pageWidth: Number.isFinite(width) ? Math.max(0, Number(width)) : pageDims.width,
             pageHeight: pageDims.height,
@@ -61646,8 +64609,7 @@ ${text5}
           renderedIndex += 1;
           continue;
         }
-        renderedIndex += 1;
-        sourceIndex += 1;
+        break;
       }
       return Math.max(0, Math.min(sourceText.length, sourceIndex));
     }
@@ -61783,6 +64745,7 @@ ${text5}
           pageHeight,
           margins: this.config.layout.margins,
           getPageExclusions: (pageIndex) => session.getPageExclusions(pageIndex),
+          getWorldTraversalExclusions: (pageIndex) => session.getWorldTraversalExclusions(pageIndex),
           publishActorSignal: (signal) => session.publishActorSignal(signal),
           readActorSignals: (topic) => session.getActorSignals(topic),
           requestAsyncThought: (request) => session.requestAsyncThought(request),
@@ -62211,7 +65174,8 @@ ${text5}
           ...asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : [],
           new TemporalPresentationCollaborator(),
           new InteractionArtifactCollaborator(this.config.layout),
-          new ZoneDebugOverlayCollaborator(),
+          new ViewportCaptureArtifactCollaborator(),
+          new RegionDebugOverlayCollaborator(),
           new PageRegionCollaborator(this.config, {
             layoutRegion: (content3, rect, pageIndex, sourceType, actorId) => this.layoutRegion(content3, rect, pageIndex, sourceType, actorId)
           }),
@@ -62731,8 +65695,8 @@ ${text5}
       dash: [dashA, dashB]
     };
   };
-  var getZoneDebugStyle = (zone) => {
-    const signature = `${zone.fieldSourceId}:${zone.zoneId || zone.zoneIndex}`;
+  var getRegionDebugStyle = (region) => {
+    const signature = `${region.fieldSourceId}:${region.regionId || region.zoneId || region.regionIndex}`;
     const seed = Array.from(signature).reduce((acc, ch) => acc * 33 + ch.charCodeAt(0) >>> 0, 17);
     const baseHues = [164, 206, 28, 332, 48, 262];
     const hue = (baseHues[seed % baseHues.length] + (seed >> 3) % 11 - 5 + 360) % 360;
@@ -62792,20 +65756,57 @@ ${text5}
     context.text(`margin bottom: ${margins.bottom.toFixed(1)}`, left + 2, Math.max(2, bottom + 2), { ascent: labelFontAscent });
     context.restore();
   };
-  var drawDebugZoneOverlay = (context, zone, labelFontId, labelFontAscent) => {
-    const zoneStyle = getZoneDebugStyle(zone);
-    const title = zone.zoneId ? `zone:${zone.zoneId}` : `zone#${zone.zoneIndex + 1}`;
-    const subtitle = `${zone.frameOverflowMode}/${zone.worldBehaviorMode}`;
+  var drawDebugRegionOverlay = (context, region, labelFontId, labelFontAscent) => {
+    const zoneStyle = getRegionDebugStyle(region);
+    const titlePrefix = region.sourceKind === "world-plain" ? "plain" : "zone";
+    const labelId = region.regionId ?? region.zoneId;
+    const labelIndex = region.regionIndex ?? region.zoneIndex;
+    const title = labelId ? `${titlePrefix}:${labelId}` : `${titlePrefix}#${labelIndex + 1}`;
+    const subtitle = `${region.sourceKind} ${region.frameOverflowMode}/${region.worldBehaviorMode}`;
     context.save();
-    context.opacity(zoneStyle.fillOpacity).fillColor(zoneStyle.fill).rect(zone.x, zone.y, zone.w, zone.h).fill();
-    context.opacity(zoneStyle.strokeOpacity).lineWidth(0.8).strokeColor(zoneStyle.stroke).dash(zoneStyle.dash[0], { space: zoneStyle.dash[1] }).rect(zone.x, zone.y, zone.w, zone.h).stroke().undash();
-    context.opacity(zoneStyle.accentOpacity).lineWidth(0.45).strokeColor(zoneStyle.stroke).moveTo(zone.x, zone.y).lineTo(zone.x + Math.min(18, zone.w), zone.y).moveTo(zone.x, zone.y).lineTo(zone.x, zone.y + Math.min(18, zone.h)).stroke();
+    context.opacity(zoneStyle.fillOpacity).fillColor(zoneStyle.fill).rect(region.x, region.y, region.w, region.h).fill();
+    context.opacity(zoneStyle.strokeOpacity).lineWidth(0.8).strokeColor(zoneStyle.stroke).dash(zoneStyle.dash[0], { space: zoneStyle.dash[1] }).rect(region.x, region.y, region.w, region.h).stroke().undash();
+    context.opacity(zoneStyle.accentOpacity).lineWidth(0.45).strokeColor(zoneStyle.stroke).moveTo(region.x, region.y).lineTo(region.x + Math.min(18, region.w), region.y).moveTo(region.x, region.y).lineTo(region.x, region.y + Math.min(18, region.h)).stroke();
     context.font(labelFontId).fontSize(5.5);
     context.opacity(0.82).fillColor(zoneStyle.label);
-    context.text(title, Math.max(2, zone.x + 3), Math.max(2, zone.y + 4), { ascent: labelFontAscent });
+    context.text(title, Math.max(2, region.x + 3), Math.max(2, region.y + 4), { ascent: labelFontAscent });
     context.opacity(0.58).fillColor(zoneStyle.label);
-    context.text(subtitle, Math.max(2, zone.x + 3), Math.max(2, zone.y + 10), { ascent: labelFontAscent });
+    context.text(subtitle, Math.max(2, region.x + 3), Math.max(2, region.y + 10), { ascent: labelFontAscent });
     context.restore();
+  };
+  var resolveClipDescriptor = (box) => ({
+    shape: String(box.properties?._clipShape || box.properties?._imageClipShape || "").trim(),
+    assembly: Array.isArray(box.properties?._clipAssembly) ? box.properties?._clipAssembly : Array.isArray(box.properties?._imageClipAssembly) ? box.properties?._imageClipAssembly : []
+  });
+  var applyClipPath = (context, x2, y2, w2, h2, clip) => {
+    if (clip.assembly.length > 0) {
+      for (const member of clip.assembly) {
+        const memberX = x2 + Number(member.x || 0);
+        const memberY = y2 + Number(member.y || 0);
+        const memberW = Math.max(0, Number(member.w || 0));
+        const memberH = Math.max(0, Number(member.h || 0));
+        if (memberW <= 0 || memberH <= 0) continue;
+        if (member.shape === "circle") {
+          context.circle(
+            memberX + memberW / 2,
+            memberY + memberH / 2,
+            Math.max(0, Math.min(memberW, memberH) / 2)
+          );
+        } else {
+          context.rect(memberX, memberY, memberW, memberH);
+        }
+      }
+      context.clip();
+      return true;
+    }
+    if (clip.shape === "circle") {
+      const radius = Math.max(0, Math.min(w2, h2) / 2);
+      if (radius > 0) {
+        context.circle(x2 + w2 / 2, y2 + h2 / 2, radius).clip();
+        return true;
+      }
+    }
+    return false;
   };
   var drawLine = (context, x1, y1, x2, y2, options) => {
     context.save();
@@ -62821,7 +65822,17 @@ ${text5}
   };
   var drawBoxBackground = (context, box, boxStyle) => {
     if (!boxStyle.backgroundColor) return;
+    const clip = resolveClipDescriptor(box);
     const radius = boxStyle.borderRadius || 0;
+    if (clip.assembly.length > 0 || clip.shape === "circle") {
+      context.save();
+      if (applyClipPath(context, box.x, box.y, box.w, box.h, clip)) {
+        context.rect(box.x, box.y, box.w, box.h).fillColor(boxStyle.backgroundColor).fill();
+        context.restore();
+        return;
+      }
+      context.restore();
+    }
     if (radius > 0) {
       context.roundedRect(box.x, box.y, box.w, box.h, radius).fillColor(boxStyle.backgroundColor).fill();
       return;
@@ -62859,8 +65870,9 @@ ${text5}
       drawY = contentY + (contentHeight - drawHeight) / 2;
     }
     const bytes = getImageBytes(image2.base64Data);
-    const clipShape = String(box.properties?._imageClipShape || "").trim();
-    const clipAssembly = Array.isArray(box.properties?._imageClipAssembly) ? box.properties?._imageClipAssembly : [];
+    const clip = resolveClipDescriptor(box);
+    const clipShape = clip.shape;
+    const clipAssembly = clip.assembly;
     if (clipAssembly.length > 0) {
       const scaleX = box.w > 0 ? drawWidth / box.w : 1;
       const scaleY = box.h > 0 ? drawHeight / box.h : 1;
@@ -63423,9 +66435,9 @@ ${text5}
             debugLabelFontId,
             debugLabelFontAscent
           );
-          (page.debugZones || []).forEach((zone) => drawDebugZoneOverlay(
+          (page.debugRegions || []).forEach((region) => drawDebugRegionOverlay(
             context,
-            zone,
+            region,
             debugLabelFontId,
             debugLabelFontAscent
           ));

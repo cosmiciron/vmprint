@@ -428,7 +428,7 @@ export class LayoutProcessor extends TextProcessor {
         };
     }
 
-    private resolveMeasurementFontForStyle(style: ElementStyle): any {
+    resolveMeasurementFontForStyle(style: ElementStyle): any {
         if (!style.fontFamily) return this.font;
         try {
             return this.resolveLoadedFamilyFont(

@@ -938,7 +938,12 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
     }
 
     if (String(element.type).trim() === 'field-actor') {
-        const style = isPlainObject(element.properties?.style) ? element.properties.style as Record<string, unknown> : {};
+        const properties = isPlainObject(element.properties)
+            ? element.properties as Record<string, unknown>
+            : null;
+        const style = isPlainObject(properties?.style)
+            ? properties.style as Record<string, unknown>
+            : {};
         if (style.width === undefined) {
             contractError(documentPath, `${path}.properties.style.width`, 'is required when element.type is "field-actor".');
         }

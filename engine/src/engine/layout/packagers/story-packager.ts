@@ -59,7 +59,9 @@ import {
     PackagerPlacementPreference,
     PackagerSplitResult,
     PackagerTransformProfile,
-    PackagerUnit
+    PackagerUnit,
+    resolvePackagerChunkOriginWorldY,
+    resolvePackagerWorldYAtCursor
 } from './packager-types';
 import { OccupiedRect, SpatialMap } from './spatial-map';
 
@@ -156,7 +158,7 @@ type StoryPourResult = FullPourResult | MultiColumnPourResult;
 
 type StoryViewportSnapshot = {
     pageIndex: number;
-    viewportWorldY: number | null;
+    chunkOriginWorldY: number | null;
     viewportHeight: number | null;
 };
 
@@ -1941,9 +1943,10 @@ export class StoryPackager implements PackagerUnit {
                     } as any;
                 }
                 return session.publishActorSignal(signal);
-            }, resolvedPageIndex, resolvedCursorY, Number.isFinite(context.viewportWorldY)
-                ? Number(context.viewportWorldY) + resolvedCursorY
-                : undefined),
+            }, resolvedPageIndex, resolvedCursorY, resolvePackagerWorldYAtCursor({
+                ...context,
+                cursorY: resolvedCursorY
+            })),
             readActorSignals: (topic?: string) => {
                 const session = this.processor.getCurrentLayoutSession();
                 return session ? session.getActorSignals(topic) : [];
@@ -1960,8 +1963,8 @@ export class StoryPackager implements PackagerUnit {
     ): PackagerContext {
         const nested = this.createNestedPackagerContext(context, overrides);
         const normalizedLocalFrameWidth = Math.max(0, Number(localFrameWidth) || 0);
-        const outerViewportWorldY = Number.isFinite(context.viewportWorldY)
-            ? Math.max(0, Number(context.viewportWorldY))
+        const outerChunkOriginWorldY = Number.isFinite(resolvePackagerChunkOriginWorldY(context))
+            ? Math.max(0, Number(resolvePackagerChunkOriginWorldY(context)))
             : null;
         const resolvedViewportHeight = localViewportHeight !== undefined
             ? Math.max(0, Number(localViewportHeight) || 0)
@@ -1974,8 +1977,8 @@ export class StoryPackager implements PackagerUnit {
             ...nested,
             pageWidth: nested.margins.left + normalizedLocalFrameWidth + nested.margins.right,
             contentWidthOverride: normalizedLocalFrameWidth,
-            ...(outerViewportWorldY !== null
-                ? { viewportWorldY: outerViewportWorldY + Math.max(0, Number(localWorldOffsetY) || 0) }
+            ...(outerChunkOriginWorldY !== null
+                ? { chunkOriginWorldY: outerChunkOriginWorldY + Math.max(0, Number(localWorldOffsetY) || 0) }
                 : {}),
             viewportHeight: resolvedViewportHeight
         };
@@ -2019,7 +2022,9 @@ function cloneBoxes(boxes: Box[], pageIndex?: number): Box[] {
 function resolveViewportSnapshot(context: PackagerContext): StoryViewportSnapshot {
     return {
         pageIndex: Number.isFinite(context.pageIndex) ? Number(context.pageIndex) : 0,
-        viewportWorldY: Number.isFinite(context.viewportWorldY) ? Number(context.viewportWorldY) : null,
+        chunkOriginWorldY: Number.isFinite(resolvePackagerChunkOriginWorldY(context))
+            ? Number(resolvePackagerChunkOriginWorldY(context))
+            : null,
         viewportHeight: Number.isFinite(context.viewportHeight) ? Number(context.viewportHeight) : null
     };
 }
@@ -2030,7 +2035,7 @@ function sameViewportSnapshot(
 ): boolean {
     if (!left || !right) return left === right;
     return left.pageIndex === right.pageIndex
-        && left.viewportWorldY === right.viewportWorldY
+        && left.chunkOriginWorldY === right.chunkOriginWorldY
         && left.viewportHeight === right.viewportHeight;
 }
 

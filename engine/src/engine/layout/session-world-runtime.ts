@@ -6,7 +6,6 @@ import type {
 } from '../types';
 import type { PackagerUnit } from './packagers/packager-types';
 import type {
-    KernelBranchStateSnapshot,
     SimulationCapturePolicy,
     SimulationCaptureSummary,
     SimulationProgressionSummary,
@@ -17,9 +16,11 @@ import type {
     PageCaptureRecord,
     PageCaptureState,
     PageExclusionIntent,
+    KernelBranchStateSnapshot,
     PageReservationIntent,
     ProgressionStateSnapshot,
     RegionReservation,
+    SessionBranchStateSnapshot,
     SimulationClockSnapshot,
     SpatialExclusion,
     ViewportDescriptor,

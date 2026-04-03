@@ -64,7 +64,6 @@ function buildChunkPageContext(
         pageIndex,
         cursorY,
         chunkOriginWorldY,
-        viewportWorldY: chunkOriginWorldY,
         viewportHeight: pageHeight
     };
 }

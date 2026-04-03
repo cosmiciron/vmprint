@@ -1,4 +1,4 @@
-import type { MeasureTextOptions, TextMeasurer, VerticalTextMetrics } from '@vmprint/contracts';
+import type { MeasureTextOptions, MeasuredTextResult, TextMeasurer, VerticalTextMetrics } from '@vmprint/contracts';
 
 const fontVerticalMetricsCache = new WeakMap<object, VerticalTextMetrics>();
 

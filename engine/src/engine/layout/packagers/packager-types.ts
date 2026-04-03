@@ -35,8 +35,6 @@ export interface PackagerContext {
     actorIndex?: number;
     layoutBefore?: number;
     chunkOriginWorldY?: number;
-    /** @deprecated Use chunkOriginWorldY. */
-    viewportWorldY?: number;
     viewportHeight?: number;
     getPageExclusions?: (pageIndex: number) => ReadonlyArray<SpatialExclusion>;
     getWorldTraversalExclusions?: (pageIndex: number) => ReadonlyArray<SpatialExclusion>;
@@ -58,19 +56,16 @@ export interface PackagerContext {
 }
 
 export function resolvePackagerChunkOriginWorldY(
-    context: Pick<PackagerContext, 'chunkOriginWorldY' | 'viewportWorldY'>
+    context: Pick<PackagerContext, 'chunkOriginWorldY'>
 ): number | undefined {
     if (Number.isFinite(context.chunkOriginWorldY)) {
         return Number(context.chunkOriginWorldY);
-    }
-    if (Number.isFinite(context.viewportWorldY)) {
-        return Number(context.viewportWorldY);
     }
     return undefined;
 }
 
 export function resolvePackagerWorldYAtCursor(
-    context: Pick<PackagerContext, 'chunkOriginWorldY' | 'viewportWorldY' | 'cursorY'>
+    context: Pick<PackagerContext, 'chunkOriginWorldY' | 'cursorY'>
 ): number | undefined {
     const chunkOriginWorldY = resolvePackagerChunkOriginWorldY(context);
     if (!Number.isFinite(chunkOriginWorldY) || !Number.isFinite(context.cursorY)) {

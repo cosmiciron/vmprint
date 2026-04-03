@@ -1,4 +1,5 @@
 import type { Box, Page } from '../types';
+import { SequentialPageChunkPolicy, type ChunkPolicy } from './chunk-policy';
 import type {
     PageAdvanceOutcome,
     PageFinalizationState,
@@ -6,7 +7,7 @@ import type {
     PaginationState
 } from './layout-session-types';
 import {
-    collectScriptRegions,
+    collectScriptRegionsFromPageSummaries,
     findScriptRegionByNameInRegions,
     type ScriptRegionRef
 } from './script-region-query';
@@ -32,10 +33,14 @@ export class LifecycleRuntime {
     private finalizedPages: Page[] = [];
     private pageRegionSummaries: PageRegionSummary[] = [];
     private cachedScriptRegions: readonly ScriptRegionRef[] | null = null;
+    private readonly chunkPolicy: ChunkPolicy;
 
     constructor(
-        private readonly host: LifecycleRuntimeHost
-    ) { }
+        private readonly host: LifecycleRuntimeHost,
+        chunkPolicy: ChunkPolicy = new SequentialPageChunkPolicy()
+    ) {
+        this.chunkPolicy = chunkPolicy;
+    }
 
     resetForSimulation(): void {
         this.finalizedPages = [];
@@ -59,19 +64,24 @@ export class LifecycleRuntime {
         pageHeight: number,
         nextPageTopY: number
     ): PageAdvanceOutcome {
-        if (currentPageBoxes.length > 0) {
-            pages.push(this.host.finalizeCommittedPage(currentPageIndex, pageWidth, pageHeight, currentPageBoxes));
-        }
-
-        const nextPageIndex = currentPageIndex + 1;
-        const nextPageBoxes: Box[] = [];
-        this.host.notifyPageStart(nextPageIndex, pageWidth, pageHeight, nextPageBoxes);
+        const advanced = this.chunkPolicy.advanceChunk({
+            pages,
+            currentChunkBoxes: currentPageBoxes,
+            currentChunkIndex: currentPageIndex,
+            chunkWidth: pageWidth,
+            chunkHeight: pageHeight,
+            nextChunkStartY: nextPageTopY,
+            finalizeChunk: (chunkIndex, width, height, boxes) =>
+                this.host.finalizeCommittedPage(chunkIndex, width, height, boxes),
+            notifyChunkStart: (chunkIndex, width, height, boxes) =>
+                this.host.notifyPageStart(chunkIndex, width, height, boxes)
+        });
 
         return {
-            nextPageIndex,
-            nextPageBoxes,
-            nextCurrentY: nextPageTopY,
-            nextLastSpacingAfter: 0
+            nextPageIndex: advanced.nextChunkIndex,
+            nextPageBoxes: advanced.nextChunkBoxes,
+            nextCurrentY: advanced.nextCurrentY,
+            nextLastSpacingAfter: advanced.nextLastSpacingAfter
         };
     }
 
@@ -139,6 +149,10 @@ export class LifecycleRuntime {
         return Array.from(this.pageFinalizationStates.values()).sort((a, b) => a.pageIndex - b.pageIndex);
     }
 
+    resolveChunkOriginWorldY(chunkIndex: number, chunkHeight: number): number {
+        return this.chunkPolicy.resolveChunkOriginWorldY(chunkIndex, chunkHeight);
+    }
+
     setFinalizedPages(pages: Page[]): void {
         this.finalizedPages = pages;
         this.pageRegionSummaries = pages.map((page) => summarizePageRegions(page));
@@ -157,7 +171,7 @@ export class LifecycleRuntime {
         if (this.cachedScriptRegions) {
             return this.cachedScriptRegions;
         }
-        this.cachedScriptRegions = collectScriptRegions(this.finalizedPages, this.pageRegionSummaries);
+        this.cachedScriptRegions = collectScriptRegionsFromPageSummaries(this.pageRegionSummaries);
         return this.cachedScriptRegions;
     }
 

@@ -14,7 +14,13 @@ import type { HostedRegionActorEntry, HostedRegionActorQueue } from './region-ac
 import type { BoundedHostedRegionSessionResult, HostedRegionSessionResult } from './hosted-region-runtime';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity } from './packager-identity';
-import { bindPackagerSignalPublisher, type PackagerContext, type PackagerUnit } from './packager-types';
+import {
+    bindPackagerSignalPublisher,
+    resolvePackagerChunkOriginWorldY,
+    resolvePackagerWorldYAtCursor,
+    type PackagerContext,
+    type PackagerUnit
+} from './packager-types';
 
 type HostedRegionFieldState = {
     wrap: 'around' | 'top-bottom' | 'none';
@@ -414,9 +420,7 @@ function materializeHostedRegionFieldStates(
                 contextBase.publishActorSignal,
                 pageIndex,
                 0,
-                Number.isFinite(contextBase.viewportWorldY)
-                    ? Number(contextBase.viewportWorldY)
-                    : undefined
+                resolvePackagerChunkOriginWorldY(contextBase)
             )
         };
         const materialized = materializeHostedRegionFieldPublisher(
@@ -789,9 +793,10 @@ function placePackagersInHostedRegion(
                     contextBase.publishActorSignal,
                     pageIndex,
                     currentY,
-                    Number.isFinite(contextBase.viewportWorldY)
-                        ? Number(contextBase.viewportWorldY) + currentY
-                        : undefined
+                    resolvePackagerWorldYAtCursor({
+                        ...contextBase,
+                        cursorY: currentY
+                    })
                 )
             };
             const fieldPublisher = materializeHostedRegionFieldPublisher(
@@ -835,9 +840,10 @@ function placePackagersInHostedRegion(
                 contextBase.publishActorSignal,
                 pageIndex,
                 currentY,
-                Number.isFinite(contextBase.viewportWorldY)
-                    ? Number(contextBase.viewportWorldY) + currentY
-                    : undefined
+                resolvePackagerWorldYAtCursor({
+                    ...contextBase,
+                    cursorY: currentY
+                })
             )
         };
         const initialContext: PackagerContext = {
@@ -949,9 +955,10 @@ export function runHostedRegionSessionBounded(
                 zoneContextBase.publishActorSignal,
                 pageIndex,
                 currentY,
-                Number.isFinite(zoneContextBase.viewportWorldY)
-                    ? Number(zoneContextBase.viewportWorldY) + currentY
-                    : undefined
+                resolvePackagerWorldYAtCursor({
+                    ...zoneContextBase,
+                    cursorY: currentY
+                })
             )
         };
         const initialContext: PackagerContext = {

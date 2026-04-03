@@ -1294,7 +1294,7 @@ async function main() {
                 processor: engine,
                 pageIndex: 0,
                 cursorY: 0,
-                viewportWorldY: 0,
+                chunkOriginWorldY: 0,
                 viewportHeight: 420,
                 margins: { left: 24, right: 24, top: 24, bottom: 24 },
                 pageWidth: 420,
@@ -1315,7 +1315,7 @@ async function main() {
             const continuationBoxes = continuation.emitBoxes(availableWidth, 1200, {
                 ...pageOneContext,
                 pageIndex: 1,
-                viewportWorldY: 420
+                chunkOriginWorldY: 420
             });
             assert.ok(continuationBoxes.length > 0, 'expected boxes on the continuation fragment');
             assert.ok(
@@ -1475,7 +1475,7 @@ async function main() {
                 processor: engine,
                 pageIndex: 0,
                 cursorY: 0,
-                viewportWorldY: 0,
+                chunkOriginWorldY: 0,
                 viewportHeight: 120,
                 margins: { left: 24, right: 24, top: 24, bottom: 24 },
                 pageWidth: 420,
@@ -1493,7 +1493,7 @@ async function main() {
             const continuationBoxes = split.continuationFragment!.emitBoxes(372, 120, {
                 ...context,
                 pageIndex: 1,
-                viewportWorldY: 120
+                chunkOriginWorldY: 120
             }) as any[];
 
             assert.ok(currentBoxes.some((box) => box.properties?.mockLabel === 'mock-start-partA'), 'expected page 1 to contain the leading actor fragment');
@@ -1574,7 +1574,7 @@ async function main() {
                 processor: engine,
                 pageIndex: 0,
                 cursorY: 0,
-                viewportWorldY: 0,
+                chunkOriginWorldY: 0,
                 viewportHeight: 120,
                 margins: { left: 24, right: 24, top: 24, bottom: 24 },
                 pageWidth: 420,
@@ -1591,7 +1591,7 @@ async function main() {
             const continuationBoxes = split.continuationFragment!.emitBoxes(372, 120, {
                 ...context,
                 pageIndex: 1,
-                viewportWorldY: 120
+                chunkOriginWorldY: 120
             }) as any[];
 
             assert.ok(continuationBoxes.some((box) => box.properties?.mockLabel === 'mock-solo-continued'), 'expected the deferred actor to survive into the continuation story');

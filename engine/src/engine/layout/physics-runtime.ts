@@ -174,8 +174,6 @@ export class PhysicsRuntime {
             cursorY: currentY,
             layoutBefore,
             chunkOriginWorldY,
-            // Preserve the legacy field while callers migrate.
-            viewportWorldY: chunkOriginWorldY,
             viewportHeight: input.pageHeight,
             margins: {
                 ...input.margins,

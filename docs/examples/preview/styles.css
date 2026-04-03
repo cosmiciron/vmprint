@@ -370,6 +370,7 @@ canvas.canvas-pending {
 
 .btn-secondary { background-color: var(--gray-800); color: var(--gray-200); border: 1px solid var(--border-subtle); }
 .btn-secondary:hover { background-color: var(--gray-700); border-color: var(--gray-500); }
+.compact-btn { padding: 0.35rem 0.7rem; font-size: 0.78rem; min-width: 4.5rem; justify-content: center; }
 
 /* Footer / Status Bar */
 #preview-footer {
