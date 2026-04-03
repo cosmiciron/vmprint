@@ -7,6 +7,10 @@ export type FragmentationSummary = {
     splitCount: number;
     continuationCount: number;
     pageIndices: number[];
+    pageAnchors: Array<{
+        pageIndex: number;
+        cursorY?: number;
+    }>;
 };
 
 export class FragmentTransitionArtifactCollaborator implements Collaborator {
@@ -16,7 +20,8 @@ export class FragmentTransitionArtifactCollaborator implements Collaborator {
                 sourceActorId,
                 splitCount: 0,
                 continuationCount: 0,
-                pageIndices: []
+                pageIndices: [],
+                pageAnchors: []
             };
 
             for (const transition of session.getFragmentTransitionsBySource(sourceActorId)) {
@@ -27,9 +32,30 @@ export class FragmentTransitionArtifactCollaborator implements Collaborator {
                 if (!summary.pageIndices.includes(transition.pageIndex)) {
                     summary.pageIndices.push(transition.pageIndex);
                 }
+                const existingAnchor = summary.pageAnchors.find((entry) => entry.pageIndex === transition.pageIndex);
+                const cursorY = Number.isFinite(transition.cursorY) ? Number(transition.cursorY) : undefined;
+                if (!existingAnchor) {
+                    summary.pageAnchors.push({
+                        pageIndex: transition.pageIndex,
+                        ...(cursorY !== undefined ? { cursorY } : {})
+                    });
+                    continue;
+                }
+                if (
+                    cursorY !== undefined
+                    && (!Number.isFinite(existingAnchor.cursorY) || cursorY < Number(existingAnchor.cursorY))
+                ) {
+                    existingAnchor.cursorY = cursorY;
+                }
             }
 
             summary.pageIndices.sort((a, b) => a - b);
+            summary.pageAnchors.sort((a, b) => {
+                if (a.pageIndex !== b.pageIndex) return a.pageIndex - b.pageIndex;
+                const aCursorY = Number.isFinite(a.cursorY) ? Number(a.cursorY) : Number.POSITIVE_INFINITY;
+                const bCursorY = Number.isFinite(b.cursorY) ? Number(b.cursorY) : Number.POSITIVE_INFINITY;
+                return aCursorY - bCursorY;
+            });
             return summary;
         });
 

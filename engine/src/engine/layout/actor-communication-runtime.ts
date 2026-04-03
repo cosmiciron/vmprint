@@ -286,6 +286,7 @@ export class ActorCommunicationRuntime<
 
         const existingIndex = this.safeCheckpoints.findIndex((entry) =>
             entry.pageIndex === currentPageIndex
+            && areCursorYEquivalent(entry.frontier.cursorY, currentY)
             && entry.actorIndex === actorIndex
             && entry.kind === kind
         );
@@ -593,6 +594,20 @@ function isCheckpointAtOrBeforeFrontier<
     }
 
     return checkpoint.actorIndex <= frontierActorIndex;
+}
+
+function areCursorYEquivalent(left: number | undefined, right: number | undefined): boolean {
+    const resolvedLeft = Number.isFinite(left) ? Number(left) : Number.NaN;
+    const resolvedRight = Number.isFinite(right) ? Number(right) : Number.NaN;
+    if (!Number.isFinite(resolvedLeft) && !Number.isFinite(resolvedRight)) {
+        return true;
+    }
+
+    if (!Number.isFinite(resolvedLeft) || !Number.isFinite(resolvedRight)) {
+        return false;
+    }
+
+    return Math.abs(resolvedLeft - resolvedRight) <= 0.01;
 }
 
 function clonePage(page: Page): Page {

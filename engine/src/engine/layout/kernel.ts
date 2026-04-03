@@ -63,6 +63,7 @@ export class Kernel {
             continuationActorId: result.continuationFragment?.actorId ?? null,
             sourceActorId: attempt.actor.sourceId,
             pageIndex: attempt.context.pageIndex,
+            cursorY: Number.isFinite(attempt.context.cursorY) ? Number(attempt.context.cursorY) : undefined,
             availableWidth: attempt.availableWidth,
             availableHeight: attempt.availableHeight,
             continuationEnqueued: false

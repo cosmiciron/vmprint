@@ -1019,6 +1019,7 @@ export type FragmentTransition = {
     continuationActorId: string | null;
     sourceActorId: string;
     pageIndex: number;
+    cursorY?: number;
     availableWidth: number;
     availableHeight: number;
     continuationEnqueued: boolean;

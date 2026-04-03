@@ -90,24 +90,18 @@ export function executeSimulationMarch(
             return false;
         }
 
-        const signature = [
-            checkpoint.kind,
-            checkpoint.pageIndex,
-            checkpoint.actorIndex,
-            checkpoint.anchorActorId ?? 'na',
-            checkpoint.anchorSourceId ?? 'na',
-            observation.earliestAffectedFrontier.pageIndex,
-            observation.earliestAffectedFrontier.actorIndex ?? 'na',
-            observation.earliestAffectedFrontier.actorId ?? 'na',
-            observation.earliestAffectedFrontier.sourceId ?? 'na',
+        const signature = buildReactiveResettlementSignature(
+            'observer',
+            checkpoint,
+            observation.earliestAffectedFrontier,
             session.getActorSignalSequence()
-        ].join('|');
+        );
 
         if (reactiveResettlementSignatures.has(signature)) {
             session.recordProfile('actorUpdateRepeatedStateDetections', 1);
             throw new Error(
                 `[executeSimulationMarch] Reactive geometry oscillation detected at checkpoint "${checkpoint.id}" `
-                + `(frontier page=${observation.earliestAffectedFrontier.pageIndex}, actor=${observation.earliestAffectedFrontier.actorId ?? observation.earliestAffectedFrontier.sourceId ?? 'unknown'}, `
+                + `(frontier page=${observation.earliestAffectedFrontier.pageIndex}, cursorY=${Number.isFinite(observation.earliestAffectedFrontier.cursorY) ? Number(observation.earliestAffectedFrontier.cursorY).toFixed(3) : 'na'}, actor=${observation.earliestAffectedFrontier.actorId ?? observation.earliestAffectedFrontier.sourceId ?? 'unknown'}, `
                 + `signalSequence=${session.getActorSignalSequence()}).`
             );
         }
@@ -117,7 +111,7 @@ export function executeSimulationMarch(
             throw new Error(
                 `[executeSimulationMarch] Reactive geometry resettlement exceeded the cycle cap `
                 + `(${maxReactiveResettlementCycles}) at checkpoint "${checkpoint.id}" `
-                + `(frontier page=${observation.earliestAffectedFrontier.pageIndex}, actor=${observation.earliestAffectedFrontier.actorId ?? observation.earliestAffectedFrontier.sourceId ?? 'unknown'}, `
+                + `(frontier page=${observation.earliestAffectedFrontier.pageIndex}, cursorY=${Number.isFinite(observation.earliestAffectedFrontier.cursorY) ? Number(observation.earliestAffectedFrontier.cursorY).toFixed(3) : 'na'}, actor=${observation.earliestAffectedFrontier.actorId ?? observation.earliestAffectedFrontier.sourceId ?? 'unknown'}, `
                 + `signalSequence=${session.getActorSignalSequence()}).`
             );
         }
@@ -560,4 +554,27 @@ function resolveReactiveResettlementCycleCap(): number {
         return Math.floor(raw);
     }
     return 8;
+}
+
+function buildReactiveResettlementSignature(
+    kind: 'observer',
+    checkpoint: { kind: string; pageIndex: number; actorIndex: number; anchorActorId?: string; anchorSourceId?: string; frontier: { cursorY?: number } },
+    frontier: { pageIndex: number; cursorY?: number; actorIndex?: number; actorId?: string; sourceId?: string },
+    sequenceOrTick: number
+): string {
+    return [
+        kind,
+        checkpoint.kind,
+        checkpoint.pageIndex,
+        Number.isFinite(checkpoint.frontier.cursorY) ? Number(checkpoint.frontier.cursorY).toFixed(3) : 'na',
+        checkpoint.actorIndex,
+        checkpoint.anchorActorId ?? 'na',
+        checkpoint.anchorSourceId ?? 'na',
+        frontier.pageIndex,
+        Number.isFinite(frontier.cursorY) ? Number(frontier.cursorY).toFixed(3) : 'na',
+        frontier.actorIndex ?? 'na',
+        frontier.actorId ?? 'na',
+        frontier.sourceId ?? 'na',
+        sequenceOrTick
+    ].join('|');
 }
