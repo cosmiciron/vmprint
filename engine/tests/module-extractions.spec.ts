@@ -19,6 +19,7 @@ import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, resolveDocumentPaths, toL
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { solveTrackSizing } from '../src/engine/layout/track-sizing';
 import { createEngineRuntime } from '../src/engine/runtime';
+import { FontkitTextMeasurer } from '../src/engine/layout/text-measurer';
 import { loadFont } from '../src/font-management/font-cache-loader';
 import { loadLocalFontManager } from './harness/engine-harness';
 import { getFontsByFamily, registerFont, resolveFontFamilyAlias } from '../src/font-management/ops';
@@ -1219,6 +1220,43 @@ async function testStandardFontSentinelProxy(): Promise<void> {
     logStep('PASS: standard font sentinel AFM proxy path');
 }
 
+async function testFontkitTextMeasurerExtraction(): Promise<void> {
+    logStep('CHECK: text measurer extraction keeps fontkit precision path');
+    logStep('EXPECT: extracted FontkitTextMeasurer returns stable metrics and glyph data');
+
+    const sentinelFontManager = {
+        getFontRegistrySnapshot: () => [],
+        resolveFamilyAlias: (family: string) => family,
+        getAllFonts: (registry: any[]) => registry,
+        getEnabledFallbackFonts: () => [],
+        getFontsByFamily: () => [],
+        getFallbackFamilies: () => [],
+        registerFont: () => { },
+        loadFontBuffer: async () => createStandardFontSentinelBuffer(0x00)
+    };
+
+    const runtime = createEngineRuntime({ fontManager: sentinelFontManager as any });
+    const loaded: any = await loadFont('standard://helvetica', runtime);
+    const measurer = new FontkitTextMeasurer(
+        (cluster) => Array.from(cluster).map((char) => char.codePointAt(0) || 0),
+        () => false,
+        (glyphs) => glyphs.map((glyph) => ({ ...glyph, codePoints: [...glyph.codePoints] }))
+    );
+
+    const metrics = measurer.getVerticalMetrics(loaded);
+    assert.ok(metrics.ascent > 0);
+    assert.ok(metrics.descent >= 0);
+    assert.equal(measurer.supportsCluster(loaded, 'A'), true);
+
+    const measured = measurer.measure('Hello', loaded, 12, { letterSpacing: 0 });
+    assert.ok(measured.width > 0);
+    assert.ok(measured.glyphs.length > 0);
+    assert.ok(measured.ascent > 0);
+    assert.ok(measured.descent >= 0);
+
+    logStep('PASS: text measurer extraction keeps fontkit precision path');
+}
+
 async function run() {
     LocalFontManager = await loadLocalFontManager();
     logStep('Scenario: extracted text layout modules preserve core behavior');
@@ -1241,6 +1279,7 @@ async function run() {
     testLocalFontManagerOverride();
     testEngineCoreDomainAgnosticBoundary();
     await testStandardFontSentinelProxy();
+    await testFontkitTextMeasurerExtraction();
     logStep('OK');
 }
 
@@ -1248,4 +1287,3 @@ run().catch((err) => {
     console.error('[module-extractions.spec] FAILED', err);
     process.exit(1);
 });
-

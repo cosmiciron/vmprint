@@ -22,9 +22,8 @@ import {
 import { tryHyphenateSegmentToFit as hyphenateSegmentToFit } from './text-hyphenation';
 import { applyAdvancedJustification as applyJustification } from './text-justification';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
-
-/** Module-level cache for font vertical metrics (ascent/descent), keyed by font object. */
-const fontVerticalMetricsCache = new WeakMap<object, { ascent: number; descent: number }>();
+import type { TextMeasurer } from '@vmprint/contracts';
+import { FontkitTextMeasurer } from './text-measurer';
 
 export class TextProcessor extends FontProcessor {
 
@@ -32,6 +31,16 @@ export class TextProcessor extends FontProcessor {
     private wordSegmenterCache = new Map<string, any>();
 
     private styleSignatureCache = new StyleSignatureCache();
+    private readonly textMeasurer: TextMeasurer;
+
+    constructor(config: any, runtime?: any) {
+        super(config, runtime);
+        this.textMeasurer = new FontkitTextMeasurer(
+            (cluster) => this.getClusterCodePoints(cluster),
+            (codePoint) => this.isIgnorableCodePoint(codePoint),
+            (glyphs) => glyphs.map((glyph) => ({ ...glyph, codePoints: [...glyph.codePoints] }))
+        );
+    }
 
 
     protected cloneGlyphs(glyphs: Array<{ char: string; x: number; y: number }>): Array<{ char: string; x: number; y: number }> {
@@ -41,6 +50,33 @@ export class TextProcessor extends FontProcessor {
             out[i] = { char: glyph.char, x: glyph.x, y: glyph.y };
         }
         return out;
+    }
+
+    getTextMeasurer(): TextMeasurer {
+        return this.textMeasurer;
+    }
+
+    resolveMeasurementFontForStyle(style: ElementStyle): any {
+        if (!style.fontFamily) return this.font;
+        try {
+            return this.resolveLoadedFamilyFont(
+                style.fontFamily,
+                style.fontWeight ?? 400,
+                style.fontStyle ?? 'normal'
+            );
+        } catch {
+            return this.font;
+        }
+    }
+
+    getTextMeasurementBindings() {
+        return {
+            textMeasurer: this.textMeasurer,
+            resolveMeasurementFontForStyle: (style: ElementStyle) =>
+                this.resolveMeasurementFontForStyle(style),
+            measureText: (text: string, font: any, fontSize: number, letterSpacing: number = 0) =>
+                this.measureTextForLayout(text, font, fontSize, letterSpacing)
+        };
     }
 
     private getSegmenterLocale(style?: ElementStyle | Record<string, any>): string | undefined {
@@ -111,36 +147,11 @@ export class TextProcessor extends FontProcessor {
     }
 
     protected fontSupportsCluster(font: any, cluster: string): boolean {
-        if (!font || !cluster) return false;
-        for (const cp of this.getClusterCodePoints(cluster)) {
-            if (this.isIgnorableCodePoint(cp)) continue;
-            const glyph = font.glyphForCodePoint(cp);
-            if (!glyph || glyph.id === 0) return false;
-        }
-        return true;
+        return this.textMeasurer.supportsCluster(font, cluster);
     }
 
     private getFontVerticalMetrics(font: any): { ascent: number; descent: number } {
-        if (!font) {
-            throw new Error('[TextProcessor] Missing font object for vertical metric extraction.');
-        }
-        const cached = fontVerticalMetricsCache.get(font);
-        if (cached) return cached;
-
-        const upm = Number(font.unitsPerEm);
-        const rawAscent = Number(font.ascent);
-        const rawDescent = Number(font.descent);
-        if (!Number.isFinite(upm) || upm <= 0 || !Number.isFinite(rawAscent) || !Number.isFinite(rawDescent)) {
-            const fontKey = font.postscriptName || font.familyName || 'unknown';
-            throw new Error(`[TextProcessor] Invalid vertical metrics for font "${fontKey}".`);
-        }
-
-        const metrics = {
-            ascent: (rawAscent / upm) * 1000,
-            descent: (Math.abs(rawDescent) / upm) * 1000
-        };
-        fontVerticalMetricsCache.set(font, metrics);
-        return metrics;
+        return this.textMeasurer.getVerticalMetrics(font);
     }
 
     private createEmptyMeasuredSegment(font: any, fontFamily?: string, style?: Record<string, any>): TextSegment {
@@ -325,84 +336,19 @@ export class TextProcessor extends FontProcessor {
         }
         session?.recordProfile?.('textMeasurementCacheMisses', 1);
 
-        const upm = measurementFont.unitsPerEm;
-        if (!upm || !Number.isFinite(upm)) {
-            throw new Error(`[TextProcessor] Invalid unitsPerEm for font "${fontKey}".`);
-        }
-
-        const scale = measurementFontSize / upm;
         try {
-            const SCRIPT_MAP: Record<string, string> = {
-                arabic: 'arab',
-                devanagari: 'deva',
-                thai: 'thai',
-                korean: 'hang',
-                cjk: 'hani'
-            };
-            const otScript = SCRIPT_MAP[populateSegment?.scriptClass || ''] || 'latn';
-            const otDirection = populateSegment?.direction === 'rtl' ? 'rtl' : 'ltr';
-            const isWhitespaceOnly = /^\s+$/u.test(text);
-            const layoutText = isWhitespaceOnly ? text.replace(/[\u00A0\u202F]/g, ' ') : text;
-            const containsRtlScript = detectRtlScript(layoutText);
-            const isRtl = otDirection === 'rtl' && containsRtlScript;
-
-            // Keep explicit OT feature forcing only on RTL runs. For LTR/other scripts,
-            // use fontkit defaults so measurement matches render-path defaults.
-            let run: any;
-            try {
-                run = (!isWhitespaceOnly && isRtl)
-                    ? measurementFont.layout(
-                        layoutText,
-                        ['ccmp', 'isol', 'init', 'medi', 'fina', 'rlig', 'liga', 'calt', 'curs', 'kern'],
-                        otScript,
-                        undefined,
-                        otDirection
-                    )
-                    : measurementFont.layout(layoutText);
-            } catch {
-                // Fallback path: for edge glyphs (e.g. NBSP in a RTL-tagged run),
-                // use default shaping to keep layout resilient.
-                run = measurementFont.layout(layoutText);
-            }
-            let width = 0;
-            const glyphs: { char: string, x: number, y: number }[] = [];
-            const shapedGlyphs: import('../types').ShapedGlyph[] = [];
-
-            for (let i = 0; i < run.glyphs.length; i++) {
-                const glyph = run.glyphs[i];
-                const pos = run.positions[i];
-
-                const drawX = width + (pos.xOffset || 0) * scale;
-                const drawY = (pos.yOffset || 0) * scale;
-                const char = (glyph.codePoints && glyph.codePoints.length > 0) ? String.fromCodePoint(...glyph.codePoints) : '';
-
-                glyphs.push({ char, x: drawX, y: drawY });
-
-                const xAdvance = pos.xAdvance !== undefined ? pos.xAdvance : glyph.advanceWidth;
-                if (xAdvance === undefined || !Number.isFinite(xAdvance)) {
-                    throw new Error(`[TextProcessor] Missing xAdvance for glyph in "${fontKey}".`);
-                }
-
-                // For RTL segments, store raw fontkit glyph IDs so the renderer can emit them
-                // directly via PDFKit's subset without re-running shaping. This preserves the
-                // contextual substitution forms (fina/medi/init/liga) that fontkit computed here.
-                if (isRtl) {
-                    shapedGlyphs.push({
-                        id: glyph.id,
-                        codePoints: glyph.codePoints ? [...glyph.codePoints] : [],
-                        xAdvance: xAdvance * scale,
-                        xOffset: (pos.xOffset || 0) * scale,
-                        yOffset: (pos.yOffset || 0) * scale
-                    });
-                }
-
-                width += (xAdvance * scale) + letterSpacing;
-            }
-
-            const { ascent, descent } = this.getFontVerticalMetrics(measurementFont);
+            const measured = this.textMeasurer.measure(text, measurementFont, measurementFontSize, {
+                letterSpacing,
+                direction: populateSegment?.direction === 'rtl' ? 'rtl' : 'ltr',
+                scriptClass: populateSegment?.scriptClass || 'none'
+            });
+            const width = measured.width;
+            const glyphs = measured.glyphs;
+            const shapedGlyphs = measured.shapedGlyphs;
+            const { ascent, descent } = measured;
 
             // Save to cache (LRU eviction: keep at most 50,000 entries)
-            this.runtime.measurementCache.set(cacheKey, { width, glyphs, shapedGlyphs: isRtl ? shapedGlyphs : undefined, ascent, descent });
+            this.runtime.measurementCache.set(cacheKey, { width, glyphs, shapedGlyphs, ascent, descent });
             if (this.runtime.measurementCache.size > 50_000) {
                 // Evict 500 entries (1%) at once to amortize the cost of eviction
                 // across subsequent inserts rather than paying it on every cache miss.
@@ -415,7 +361,7 @@ export class TextProcessor extends FontProcessor {
 
             if (populateSegment) {
                 populateSegment.glyphs = glyphs;
-                if (isRtl) populateSegment.shapedGlyphs = shapedGlyphs;
+                if (shapedGlyphs) populateSegment.shapedGlyphs = shapedGlyphs;
                 populateSegment.width = width;
                 populateSegment.ascent = ascent;
                 populateSegment.descent = descent;
@@ -425,6 +371,10 @@ export class TextProcessor extends FontProcessor {
         } catch (e: any) {
             throw new Error(`[TextProcessor] Failed strict matrix measurement for "${text.slice(0, 24)}" using "${fontKey}": ${e?.message || e}`);
         }
+    }
+
+    measureTextForLayout(text: string, font: any, fontSize: number, letterSpacing: number = 0): number {
+        return this.measureText(text, font, fontSize, letterSpacing);
     }
 
     protected resolveLoadedFamilyFont(familyName: string, weight: number | string, style: string = 'normal'): any {
@@ -853,6 +803,3 @@ export class TextProcessor extends FontProcessor {
         return wrapped;
     }
 }
-
-
-

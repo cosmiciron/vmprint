@@ -13,3 +13,4 @@ export * from './engine/layout/exclusion-field';
 export * from './engine/layout/simulation-report';
 export { buildDataUri, parseEmbeddedImagePayloadCached } from './engine/image-data';
 export { LayoutUtils } from './engine/layout/layout-utils';
+export * from './engine/layout/text-measurer';
