@@ -779,6 +779,7 @@ export class StoryPackager implements PackagerUnit {
         actor?: PackagerUnit
     ): PlacedTextElement | null {
         const opticalUnderhang = !!((this.processor as any).config?.layout?.storyWrapOpticalUnderhang);
+        const session = this.processor.getCurrentLayoutSession();
         const shaped = (this.processor as any).shapeElement(
             element, { path: [this.storyIndex, childIndex] }
         );
@@ -793,7 +794,7 @@ export class StoryPackager implements PackagerUnit {
             spatialMap: storyMap,
             xOffset,
             leftMargin: margins.left,
-            pageIndex: 0,
+            pageIndex: session ? session.getCurrentPageIndex() : 0,
             opticalUnderhang,
             clearTopBeforeStart: true
         });
@@ -1818,6 +1819,7 @@ export class StoryPackager implements PackagerUnit {
         const flowBox = (this.processor as any).shapeElement(
             element, { path: [this.storyIndex, childIndex] }
         );
+        const session = this.processor.getCurrentLayoutSession();
         return {
             type: element.type,
             x: absX,
@@ -1846,7 +1848,7 @@ export class StoryPackager implements PackagerUnit {
             meta: {
                 ...flowBox.meta,
                 ...(actor ? { actorId: actor.actorId, sourceId: flowBox.meta?.sourceId ?? actor.sourceId } : {}),
-                pageIndex: 0
+                pageIndex: session ? session.getCurrentPageIndex() : 0
             }
         };
     }

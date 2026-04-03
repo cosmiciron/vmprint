@@ -324,6 +324,10 @@ export class DropCapPackager implements PackagerUnit {
 
     private materialize(availableWidth: number, context: PackagerContext): void {
         if (this.cachedAvailableWidth === availableWidth && this.cachedParts) return;
+        const measurementContext = {
+            pageIndex: Number.isFinite(context.pageIndex) ? Number(context.pageIndex) : 0,
+            cursorY: Number.isFinite(context.cursorY) ? Number(context.cursorY) : 0
+        };
 
         const baseFlow = (this.processor as any).shapeElement(this.element, { path: [this.index] }) as FlowBox;
         const text = (this.processor as any).getElementText(this.element) as string;
@@ -418,8 +422,8 @@ export class DropCapPackager implements PackagerUnit {
         }) as FlowBox;
 
         (this.processor as any).materializeFlowBox(dropCapFlow, {
-            pageIndex: 0,
-            cursorY: 0,
+            pageIndex: measurementContext.pageIndex,
+            cursorY: measurementContext.cursorY,
             contentWidth: availableWidth
         });
 
@@ -500,7 +504,7 @@ export class DropCapPackager implements PackagerUnit {
             remainingElement,
             baseFlow.style,
             bodyFontSize,
-            { pageIndex: 0, cursorY: 0, contentWidth: wrapContentWidth }
+            { ...measurementContext, contentWidth: wrapContentWidth }
         );
 
         const wrapLines = wrapLinesResult.lines || [];
@@ -581,7 +585,7 @@ export class DropCapPackager implements PackagerUnit {
                 elementB,
                 bodyStyle,
                 bodyFontSize,
-                { pageIndex: 0, cursorY: 0, contentWidth: availableWidth }
+                { ...measurementContext, contentWidth: availableWidth }
             );
             if (bodyLinesResult.lines && bodyLinesResult.lines.length > 0) {
                 const bodyMeta = createContinuationFragmentMeta(baseFlow.meta, baseFlow.meta.fragmentIndex + 1);
