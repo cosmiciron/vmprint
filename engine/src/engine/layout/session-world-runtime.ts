@@ -366,6 +366,7 @@ export class SessionWorldRuntime {
 
     createPageCaptureState(input: {
         pageIndex: number;
+        worldTopY: number;
         pageWidth: number;
         pageHeight: number;
         margins: { top: number; right: number; bottom: number; left: number };
@@ -373,29 +374,29 @@ export class SessionWorldRuntime {
         footerRect?: ViewportRect | null;
     }): PageCaptureState {
         const viewport = this.createViewportDescriptor(input);
-        const worldSpace = this.createWorldSpace(input.pageIndex, input.pageWidth, input.pageHeight);
+        const worldSpace = this.createWorldSpace(input.worldTopY, input.pageWidth, input.pageHeight);
         return {
             worldSpace,
             viewport
         };
     }
 
-    createWorldSpace(pageIndex: number, pageWidth: number, pageHeight: number): WorldSpace {
-        const normalizedPageIndex = Number.isFinite(pageIndex) ? Math.max(0, Math.floor(pageIndex)) : 0;
+    createWorldSpace(worldTopY: number, pageWidth: number, pageHeight: number): WorldSpace {
+        const normalizedWorldTopY = Number.isFinite(worldTopY) ? Number(worldTopY) : 0;
         const normalizedWidth = Number.isFinite(pageWidth) ? Math.max(0, Number(pageWidth)) : 0;
         const normalizedHeight = Number.isFinite(pageHeight) ? Math.max(0, Number(pageHeight)) : 0;
-        const worldY = normalizedPageIndex * normalizedHeight;
 
         return {
             originX: 0,
-            originY: 0,
+            originY: normalizedWorldTopY,
             width: normalizedWidth,
-            exploredBottom: worldY + normalizedHeight
+            exploredBottom: normalizedWorldTopY + normalizedHeight
         };
     }
 
     createViewportDescriptor(input: {
         pageIndex: number;
+        worldTopY: number;
         pageWidth: number;
         pageHeight: number;
         margins: { top: number; right: number; bottom: number; left: number };
@@ -429,7 +430,7 @@ export class SessionWorldRuntime {
         return {
             pageIndex,
             worldX: 0,
-            worldY: pageIndex * pageHeight,
+            worldY: Number.isFinite(input.worldTopY) ? Number(input.worldTopY) : 0,
             width: pageWidth,
             height: pageHeight,
             contentRect,

@@ -1931,8 +1931,12 @@ export class StoryPackager implements PackagerUnit {
                 if (!session) {
                     return {
                         ...signal,
-                        pageIndex: signal.pageIndex ?? resolvedPageIndex ?? 0,
-                        cursorY: signal.cursorY ?? resolvedCursorY ?? 0,
+                        ...(Number.isFinite(signal.pageIndex) || Number.isFinite(resolvedPageIndex)
+                            ? { pageIndex: Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : Number(resolvedPageIndex) }
+                            : {}),
+                        ...(Number.isFinite(signal.cursorY) || Number.isFinite(resolvedCursorY)
+                            ? { cursorY: Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : Number(resolvedCursorY) }
+                            : {}),
                         sequence: -1
                     } as any;
                 }

@@ -20,7 +20,7 @@ export type ActorSignal = {
     publisherActorKind: string;
     tick: number;
     fragmentIndex: number;
-    pageIndex: number;
+    pageIndex?: number;
     cursorY?: number;
     signalKey?: string;
     payload?: ActorSignalPayload;
@@ -57,7 +57,7 @@ export class ActorEventBus {
             publisherActorKind: signal.publisherActorKind,
             tick: Number.isFinite(signal.tick) ? Math.max(0, Math.floor(Number(signal.tick))) : 0,
             fragmentIndex: Math.max(0, Math.floor(Number(signal.fragmentIndex || 0))),
-            pageIndex: Number.isFinite(signal.pageIndex) ? Math.max(0, Number(signal.pageIndex)) : 0,
+            ...(Number.isFinite(signal.pageIndex) ? { pageIndex: Math.max(0, Number(signal.pageIndex)) } : {}),
             ...(Number.isFinite(signal.cursorY) ? { cursorY: Math.max(0, Number(signal.cursorY)) } : {}),
             signalKey: signal.signalKey,
             payload: signal.payload ? { ...signal.payload } : undefined,

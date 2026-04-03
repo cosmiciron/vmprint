@@ -1057,11 +1057,11 @@ export class LayoutSession {
     ): number {
         let patchedActors = 0;
         for (const actor of actors) {
-            const refs = collectActorBoxRefs(pages, currentPageBoxes, actor.actorId);
+            const refs = collectActorBoxRefs(pages, currentPageBoxes, this.currentPageIndex, actor.actorId);
             if (refs.length === 0) continue;
 
             const first = refs[0].box;
-            const pageIndex = Number(first.meta?.pageIndex ?? 0);
+            const pageIndex = refs[0].pageIndex;
             const cursorY = refs.reduce((best, ref) => Math.min(best, Number(ref.box.y || 0)), Number.POSITIVE_INFINITY);
             const context: PackagerContext = {
                 ...contextBase,
@@ -1565,22 +1565,28 @@ type BoxRef = {
     container: Box[];
     index: number;
     box: Box;
+    pageIndex: number;
 };
 
-function collectActorBoxRefs(pages: Page[], currentPageBoxes: Box[], actorId: string): BoxRef[] {
+function collectActorBoxRefs(
+    pages: Page[],
+    currentPageBoxes: Box[],
+    currentPageIndex: number,
+    actorId: string
+): BoxRef[] {
     const refs: BoxRef[] = [];
     for (const page of pages) {
         for (let index = 0; index < page.boxes.length; index++) {
             const box = page.boxes[index];
             if (box.meta?.actorId === actorId) {
-                refs.push({ container: page.boxes, index, box });
+                refs.push({ container: page.boxes, index, box, pageIndex: page.index });
             }
         }
     }
     for (let index = 0; index < currentPageBoxes.length; index++) {
         const box = currentPageBoxes[index];
         if (box.meta?.actorId === actorId) {
-            refs.push({ container: currentPageBoxes, index, box });
+            refs.push({ container: currentPageBoxes, index, box, pageIndex: currentPageIndex });
         }
     }
     return refs;

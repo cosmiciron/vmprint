@@ -79,6 +79,7 @@ export class PageRegionCollaborator implements Collaborator {
 
         const capture = session.sessionWorldRuntime.createPageCaptureState({
             pageIndex: page.index,
+            worldTopY: page.index * page.height,
             pageWidth: page.width,
             pageHeight: page.height,
             margins: this.config.layout.margins,

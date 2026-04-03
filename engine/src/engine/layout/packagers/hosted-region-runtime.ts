@@ -133,7 +133,6 @@ export function createHostedRegionSessionContextBase(
             if (!session) {
                 return {
                     ...signal,
-                    pageIndex: signal.pageIndex ?? 0,
                     ...(Number.isFinite(signal.cursorY) ? { cursorY: Number(signal.cursorY) } : {}),
                     sequence: -1
                 } as any;

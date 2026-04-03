@@ -403,8 +403,8 @@ export class LayoutProcessor extends TextProcessor {
                 const pageDims = this.getPageDimensions();
                 const packagerContext: PackagerContext = {
                     processor: this,
-                    pageIndex: context?.pageIndex ?? 0,
-                    cursorY: context?.cursorY ?? 0,
+                    pageIndex: Number.isFinite(context?.pageIndex) ? Number(context?.pageIndex) : 0,
+                    cursorY: Number.isFinite(context?.cursorY) ? Number(context?.cursorY) : 0,
                     margins: { top: 0, right: 0, bottom: 0, left: 0 },
                     pageWidth: Number.isFinite(width) ? Math.max(0, Number(width)) : pageDims.width,
                     pageHeight: pageDims.height,

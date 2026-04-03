@@ -228,9 +228,12 @@ export class TocPackager implements PackagerUnit {
             geometryChanged,
             updateKind: geometryChanged ? 'geometry' : (changed ? 'content-only' : 'none'),
             earliestAffectedFrontier: geometryChanged
+                && this.firstCommittedPageIndex !== null
                 ? {
-                    pageIndex: this.firstCommittedPageIndex ?? 0,
-                    cursorY: this.firstCommittedCursorY ?? 0,
+                    pageIndex: this.firstCommittedPageIndex,
+                    ...(Number.isFinite(this.firstCommittedCursorY)
+                        ? { cursorY: Number(this.firstCommittedCursorY) }
+                        : {}),
                     actorIndex: this.firstCommittedActorIndex ?? undefined,
                     actorId: this.actorId,
                     sourceId: this.sourceId
@@ -246,11 +249,12 @@ export class TocPackager implements PackagerUnit {
         return signals
             .map((signal) => ({
                 heading: String(signal.payload?.heading ?? ''),
-                pageIndex: signal.pageIndex,
+                pageIndex: Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : Number.POSITIVE_INFINITY,
                 cursorY: Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : undefined,
                 level: signal.payload?.level != null ? Number(signal.payload.level) : undefined
             }))
             .filter((e) => e.heading.length > 0)
+            .filter((e) => Number.isFinite(e.pageIndex))
             .filter((e) => !levelFilter || levelFilter.length === 0 || (e.level != null && levelFilter.includes(e.level)))
             .sort(compareTocEntries);
     }
