@@ -819,6 +819,34 @@ function assertZoneMapAbsoluteRockSignals(pages: any[], fixtureName: string): vo
     );
 }
 
+function assertZoneMapSpanningContinueSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '39-zone-map-spanning-continue.json') return;
+
+    const findPagesForSource = (sourceId: string): number[] => {
+        const indices = new Set<number>();
+        pages.forEach((page: any, pageIndex: number) => {
+            (page.boxes || []).forEach((box: any) => {
+                const actual = String(box.meta?.sourceId || '');
+                if (actual === sourceId || actual.endsWith(`:${sourceId}`)) {
+                    indices.add(pageIndex);
+                }
+            });
+        });
+        return Array.from(indices.values()).sort((a, b) => a - b);
+    };
+
+    assert.deepEqual(findPagesForSource('main-zone-open'), [0], `${fixtureName}: expected main zone opening content to start on page 1`);
+    assert.deepEqual(findPagesForSource('side-zone-label'), [0], `${fixtureName}: expected side zone label to start on page 1`);
+    assert.ok(
+        findPagesForSource('main-zone-tail').some((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: expected tail content to continue onto a later page`
+    );
+    assert.ok(
+        findPagesForSource('post-zone-flow').every((pageIndex) => pageIndex >= 1),
+        `${fixtureName}: expected downstream ordinary flow to remain after the continued zone host`
+    );
+}
+
 function assertWorldPlainAbsoluteRockSignals(pages: any[], fixtureName: string): void {
     const allBoxes = pages.flatMap((page: any) => page.boxes || []);
     const rockBoxes = allBoxes.filter((box: any) =>
@@ -2028,6 +2056,15 @@ async function run() {
                 'an absolute-positioned field actor should exist in map space while ordinary zone labels settle around it',
                 () => {
                     assertZoneMapAbsoluteRockSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '39-zone-map-spanning-continue.json') {
+            _check(
+                `${fixture.name} zone-map spanning continuation signals`,
+                'continue plus spanning should begin in the current page chunk and continue later instead of collapsing back to conservative fixed behavior',
+                () => {
+                    assertZoneMapSpanningContinueSignals(pagesA, fixture.name);
                 }
             );
         }

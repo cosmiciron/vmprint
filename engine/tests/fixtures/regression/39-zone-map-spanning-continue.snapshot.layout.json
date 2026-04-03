@@ -1,0 +1,752 @@
+[
+  {
+    "index": 0,
+    "width": 360,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Zone Map Spanning Continue",
+              "width": 282.197266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 63.34375,
+        "w": 312,
+        "h": 65.625,
+        "lines": [
+          [
+            {
+              "text": "This regression proves that a zone host can begin in the ",
+              "width": 301.511719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "current page chunk and continue later when authored as ",
+              "width": 303.539063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continue plus spanning, instead of collapsing back to the ",
+              "width": 303.539063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "conservative move-whole behavior.",
+              "width": 187.429688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 148.96875,
+        "w": 198.666667,
+        "h": 164.0625,
+        "lines": [
+          [
+            {
+              "text": "Main zone opening paragraph. This ",
+              "width": 192.123047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should appear on the first page when",
+              "width": 197.472656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the spanning continuation path is ",
+              "width": 178.798828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "active. Main zone opening ",
+              "width": 142.757813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph. This should appear on ",
+              "width": 183.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the first page when the spanning ",
+              "width": 176.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation path is active. Main ",
+              "width": 174.099609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zone opening paragraph. This should",
+              "width": 198.140625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "appear on the first page when the ",
+              "width": 182.126953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "spanning continuation path is active.",
+              "width": 193.464844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-label",
+        "x": 236.666667,
+        "y": 148.96875,
+        "w": 99.333333,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Sidebar Zone",
+              "width": 84.039063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-note",
+        "x": 236.666667,
+        "y": 170.640625,
+        "w": 99.333333,
+        "h": 171.479688,
+        "lines": [
+          [
+            {
+              "text": "A persistent side rail",
+              "width": 99.042969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should be able to ",
+              "width": 86.845215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "begin in the first ",
+              "width": 80.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "frame and keep ",
+              "width": 79.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "filling its own ",
+              "width": 65.414551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "regional frame ",
+              "width": 73.369141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "independently as ",
+              "width": 86.23291,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later chunks ",
+              "width": 62.36377,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "intersect the same ",
+              "width": 92.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zone. A persistent ",
+              "width": 91.104492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "side rail should be ",
+              "width": 91.722168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 360,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 198.666667,
+        "h": 229.6875,
+        "lines": [
+          [
+            {
+              "text": "Main zone middle paragraph. It ",
+              "width": 168.761719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keeps the regional simulation going ",
+              "width": 191.455078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "across the next frame. Main zone ",
+              "width": 180.75,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "middle paragraph. It keeps the ",
+              "width": 165.433594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "regional simulation going across the ",
+              "width": 194.777344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "next frame. Main zone middle ",
+              "width": 160.740234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph. It keeps the regional ",
+              "width": 172.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation going across the next ",
+              "width": 174.761719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "frame. Main zone middle paragraph. ",
+              "width": 196.101563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "It keeps the regional simulation going",
+              "width": 198.123047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "across the next frame. Main zone ",
+              "width": 180.75,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "middle paragraph. It keeps the ",
+              "width": 165.433594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "regional simulation going across the ",
+              "width": 194.777344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "next frame.",
+              "width": 60.023438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 263.6875,
+        "w": 198.666667,
+        "h": 65.625,
+        "lines": [
+          [
+            {
+              "text": "Main zone tail paragraph. This ",
+              "width": 164.753906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should survive into the continuation ",
+              "width": 190.787109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "frame if the first one fills up. Main ",
+              "width": 179.402344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zone tail paragraph. This should ",
+              "width": 174.105469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-note",
+        "x": 236.666667,
+        "y": 24,
+        "w": 99.333333,
+        "h": 265.014063,
+        "lines": [
+          [
+            {
+              "text": "able to begin in the ",
+              "width": 96.019043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "first frame and keep",
+              "width": 97.211426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "filling its own ",
+              "width": 65.414551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "regional frame ",
+              "width": 73.369141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "independently as ",
+              "width": 86.23291,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later chunks ",
+              "width": 62.36377,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "intersect the same ",
+              "width": 92.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zone. A persistent ",
+              "width": 91.104492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "side rail should be ",
+              "width": 91.722168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "able to begin in the ",
+              "width": 96.019043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "first frame and keep",
+              "width": 97.211426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "filling its own ",
+              "width": 65.414551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "regional frame ",
+              "width": 73.369141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "independently as ",
+              "width": 86.23291,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "later chunks ",
+              "width": 62.36377,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "intersect the same ",
+              "width": 92.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zone.",
+              "width": 26.90918,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 360,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 198.666667,
+        "h": 131.25,
+        "lines": [
+          [
+            {
+              "text": "survive into the continuation frame if ",
+              "width": 195.433594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the first one fills up. Main zone tail ",
+              "width": 184.089844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph. This should survive into ",
+              "width": 190.101563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the continuation frame if the first one ",
+              "width": 197.443359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "fills up. Main zone tail paragraph. ",
+              "width": 179.431641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "This should survive into the ",
+              "width": 148.740234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation frame if the first one fills ",
+              "width": 198.09375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "up.",
+              "width": 16.681641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 175.25,
+        "w": 312,
+        "h": 16.40625,
+        "lines": [
+          [
+            {
+              "text": "Normal document flow resumes after the zone-map body.",
+              "width": 304.582031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

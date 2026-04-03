@@ -242,7 +242,8 @@ export interface ZoneLayoutOptions {
     /**
      * How the zone field behaves at page boundaries.
      * `move-whole` preserves the shipped V1 behavior.
-     * `continue` is reserved for future page-framed zone continuation.
+     * `continue` allows the zone host to begin in the current chunk/page frame
+     * and continue onto later ones according to `worldBehavior`.
      */
     frameOverflow?: ZoneFrameOverflow;
     /**

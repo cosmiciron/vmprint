@@ -288,6 +288,7 @@ export class ActorCommunicationRuntime<
 
         const existingIndex = this.safeCheckpoints.findIndex((entry) =>
             entry.pageIndex === currentPageIndex
+            && areWorldYEquivalent(entry.frontier.worldY, currentWorldY)
             && areCursorYEquivalent(entry.frontier.cursorY, currentY)
             && entry.actorIndex === actorIndex
             && entry.kind === kind
@@ -520,37 +521,7 @@ function isEarlierFrontier(
         return true;
     }
 
-    const nextWorldY = Number.isFinite(result.earliestAffectedFrontier.worldY)
-        ? Number(result.earliestAffectedFrontier.worldY)
-        : Number.NaN;
-    const currentWorldY = Number.isFinite(current.worldY)
-        ? Number(current.worldY)
-        : Number.NaN;
-    if (Number.isFinite(nextWorldY) && Number.isFinite(currentWorldY) && Math.abs(nextWorldY - currentWorldY) > 0.01) {
-        return nextWorldY < currentWorldY;
-    }
-
-    if (result.earliestAffectedFrontier.pageIndex !== current.pageIndex) {
-        return result.earliestAffectedFrontier.pageIndex < current.pageIndex;
-    }
-
-    const nextCursorY = Number.isFinite(result.earliestAffectedFrontier.cursorY)
-        ? Number(result.earliestAffectedFrontier.cursorY)
-        : Number.POSITIVE_INFINITY;
-    const currentCursorY = Number.isFinite(current.cursorY)
-        ? Number(current.cursorY)
-        : Number.POSITIVE_INFINITY;
-    if (Math.abs(nextCursorY - currentCursorY) > 0.01) {
-        return nextCursorY < currentCursorY;
-    }
-
-    const nextActorIndex = Number.isFinite(result.earliestAffectedFrontier.actorIndex)
-        ? Number(result.earliestAffectedFrontier.actorIndex)
-        : Number.POSITIVE_INFINITY;
-    const currentActorIndex = Number.isFinite(current.actorIndex)
-        ? Number(current.actorIndex)
-        : Number.POSITIVE_INFINITY;
-    return nextActorIndex < currentActorIndex;
+    return compareSpatialFrontiersAscending(result.earliestAffectedFrontier, current) < 0;
 }
 
 function sortCheckpointsDescending<
@@ -560,14 +531,8 @@ function sortCheckpointsDescending<
     a: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>,
     b: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>
 ): number {
-    const aWorldY = Number.isFinite(a.frontier.worldY) ? Number(a.frontier.worldY) : Number.NaN;
-    const bWorldY = Number.isFinite(b.frontier.worldY) ? Number(b.frontier.worldY) : Number.NaN;
-    if (Number.isFinite(aWorldY) && Number.isFinite(bWorldY) && Math.abs(aWorldY - bWorldY) > 0.01) return bWorldY - aWorldY;
-    if (a.pageIndex !== b.pageIndex) return b.pageIndex - a.pageIndex;
-    const aCursorY = Number.isFinite(a.frontier.cursorY) ? Number(a.frontier.cursorY) : Number.NEGATIVE_INFINITY;
-    const bCursorY = Number.isFinite(b.frontier.cursorY) ? Number(b.frontier.cursorY) : Number.NEGATIVE_INFINITY;
-    if (Math.abs(aCursorY - bCursorY) > 0.01) return bCursorY - aCursorY;
-    if (a.actorIndex !== b.actorIndex) return b.actorIndex - a.actorIndex;
+    const delta = compareSpatialFrontiersAscending(a.frontier, b.frontier);
+    if (delta !== 0) return -delta;
     return b.id.localeCompare(a.id);
 }
 
@@ -578,14 +543,8 @@ function sortCheckpointsAscending<
     a: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>,
     b: SafeCheckpoint<TTransitionSnapshot, TBranchStateSnapshot>
 ): number {
-    const aWorldY = Number.isFinite(a.frontier.worldY) ? Number(a.frontier.worldY) : Number.NaN;
-    const bWorldY = Number.isFinite(b.frontier.worldY) ? Number(b.frontier.worldY) : Number.NaN;
-    if (Number.isFinite(aWorldY) && Number.isFinite(bWorldY) && Math.abs(aWorldY - bWorldY) > 0.01) return aWorldY - bWorldY;
-    if (a.pageIndex !== b.pageIndex) return a.pageIndex - b.pageIndex;
-    const aCursorY = Number.isFinite(a.frontier.cursorY) ? Number(a.frontier.cursorY) : Number.POSITIVE_INFINITY;
-    const bCursorY = Number.isFinite(b.frontier.cursorY) ? Number(b.frontier.cursorY) : Number.POSITIVE_INFINITY;
-    if (Math.abs(aCursorY - bCursorY) > 0.01) return aCursorY - bCursorY;
-    if (a.actorIndex !== b.actorIndex) return a.actorIndex - b.actorIndex;
+    const delta = compareSpatialFrontiersAscending(a.frontier, b.frontier);
+    if (delta !== 0) return delta;
     return a.id.localeCompare(b.id);
 }
 
@@ -597,27 +556,13 @@ function isCheckpointAtOrBeforeFrontier<
     frontier: SpatialFrontier,
     frontierActorIndex: number
 ): boolean {
-    const checkpointWorldY = Number.isFinite(checkpoint.frontier.worldY) ? Number(checkpoint.frontier.worldY) : Number.NaN;
-    const frontierWorldY = Number.isFinite(frontier.worldY) ? Number(frontier.worldY) : Number.NaN;
-    if (Number.isFinite(checkpointWorldY) && Number.isFinite(frontierWorldY) && Math.abs(checkpointWorldY - frontierWorldY) > 0.01) {
-        return checkpointWorldY <= frontierWorldY;
-    }
-
-    if (checkpoint.pageIndex !== frontier.pageIndex) {
-        return checkpoint.pageIndex < frontier.pageIndex;
-    }
-
-    const checkpointCursorY = Number.isFinite(checkpoint.frontier.cursorY)
-        ? Number(checkpoint.frontier.cursorY)
-        : Number.POSITIVE_INFINITY;
-    const frontierCursorY = Number.isFinite(frontier.cursorY)
-        ? Number(frontier.cursorY)
-        : Number.POSITIVE_INFINITY;
-    if (Number.isFinite(checkpointCursorY) && Number.isFinite(frontierCursorY) && Math.abs(checkpointCursorY - frontierCursorY) > 0.01) {
-        return checkpointCursorY <= frontierCursorY;
-    }
-
-    return checkpoint.actorIndex <= frontierActorIndex;
+    return compareSpatialFrontiersAscending(
+        checkpoint.frontier,
+        {
+            ...frontier,
+            ...(Number.isFinite(frontier.actorIndex) ? {} : { actorIndex: frontierActorIndex })
+        }
+    ) <= 0;
 }
 
 function areCursorYEquivalent(left: number | undefined, right: number | undefined): boolean {
@@ -632,6 +577,46 @@ function areCursorYEquivalent(left: number | undefined, right: number | undefine
     }
 
     return Math.abs(resolvedLeft - resolvedRight) <= 0.01;
+}
+
+function areWorldYEquivalent(left: number | undefined, right: number | undefined): boolean {
+    const resolvedLeft = Number.isFinite(left) ? Number(left) : Number.NaN;
+    const resolvedRight = Number.isFinite(right) ? Number(right) : Number.NaN;
+    if (!Number.isFinite(resolvedLeft) && !Number.isFinite(resolvedRight)) {
+        return true;
+    }
+
+    if (!Number.isFinite(resolvedLeft) || !Number.isFinite(resolvedRight)) {
+        return false;
+    }
+
+    return Math.abs(resolvedLeft - resolvedRight) <= 0.01;
+}
+
+function compareSpatialFrontiersAscending(left: SpatialFrontier, right: SpatialFrontier): number {
+    const leftWorldY = Number.isFinite(left.worldY) ? Number(left.worldY) : Number.NaN;
+    const rightWorldY = Number.isFinite(right.worldY) ? Number(right.worldY) : Number.NaN;
+    if (Number.isFinite(leftWorldY) && Number.isFinite(rightWorldY) && Math.abs(leftWorldY - rightWorldY) > 0.01) {
+        return leftWorldY - rightWorldY;
+    }
+
+    if (left.pageIndex !== right.pageIndex) {
+        return left.pageIndex - right.pageIndex;
+    }
+
+    const leftCursorY = Number.isFinite(left.cursorY) ? Number(left.cursorY) : Number.POSITIVE_INFINITY;
+    const rightCursorY = Number.isFinite(right.cursorY) ? Number(right.cursorY) : Number.POSITIVE_INFINITY;
+    if (Math.abs(leftCursorY - rightCursorY) > 0.01) {
+        return leftCursorY - rightCursorY;
+    }
+
+    const leftActorIndex = Number.isFinite(left.actorIndex) ? Number(left.actorIndex) : Number.POSITIVE_INFINITY;
+    const rightActorIndex = Number.isFinite(right.actorIndex) ? Number(right.actorIndex) : Number.POSITIVE_INFINITY;
+    if (leftActorIndex !== rightActorIndex) {
+        return leftActorIndex - rightActorIndex;
+    }
+
+    return 0;
 }
 
 function clonePage(page: Page): Page {

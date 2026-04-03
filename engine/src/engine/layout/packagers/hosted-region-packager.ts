@@ -188,7 +188,7 @@ export class HostedRegionPackager implements PackagerUnit {
     private usesSpanningContinuation(): boolean {
         if (this.frameOverflowMode !== 'continue') return false;
         if (this.worldBehaviorMode === 'expandable') return true;
-        return this.sourceKind === 'world-plain' && this.worldBehaviorMode === 'spanning';
+        return this.worldBehaviorMode === 'spanning';
     }
 
     get pageBreakBefore(): boolean | undefined {

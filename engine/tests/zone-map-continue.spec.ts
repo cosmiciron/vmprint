@@ -185,17 +185,21 @@ async function main() {
 
     const moveWholeResolved = resolveDocumentPaths(buildZoneContinuationDoc('move-whole'), 'zone-move-whole.json');
     const fixedContinueResolved = resolveDocumentPaths(buildZoneContinuationDoc('continue', 'fixed'), 'zone-continue-fixed.json');
+    const spanningContinueResolved = resolveDocumentPaths(buildZoneContinuationDoc('continue', 'spanning'), 'zone-continue-spanning.json');
     const continueResolved = resolveDocumentPaths(buildZoneContinuationDoc('continue', 'expandable'), 'zone-continue.json');
 
     const moveWholeEngine = new LayoutEngine(toLayoutConfig(moveWholeResolved, false), runtime);
     const fixedContinueEngine = new LayoutEngine(toLayoutConfig(fixedContinueResolved, false), runtime);
+    const spanningContinueEngine = new LayoutEngine(toLayoutConfig(spanningContinueResolved, false), runtime);
     const continueEngine = new LayoutEngine(toLayoutConfig(continueResolved, false), runtime);
     await moveWholeEngine.waitForFonts();
     await fixedContinueEngine.waitForFonts();
+    await spanningContinueEngine.waitForFonts();
     await continueEngine.waitForFonts();
 
     const moveWholePages = moveWholeEngine.simulate(moveWholeResolved.elements);
     const fixedContinuePages = fixedContinueEngine.simulate(fixedContinueResolved.elements);
+    const spanningContinuePages = spanningContinueEngine.simulate(spanningContinueResolved.elements);
     const continuePages = continueEngine.simulate(continueResolved.elements);
 
     _check(
@@ -765,6 +769,20 @@ async function main() {
         () => {
             assert.deepEqual(findPagesForSource(fixedContinuePages, 'main-zone-open'), [1]);
             assert.deepEqual(findPagesForSource(fixedContinuePages, 'side-zone-label'), [1]);
+        }
+    );
+
+    _check(
+        'spanning zone-map is a real host continuation mode',
+        'explicit continue/spanning should begin in the current frame and continue later instead of collapsing back to fixed conservative behavior',
+        () => {
+            const spanningPackager = buildPackagerForElement(spanningContinueResolved.elements[2], 2, spanningContinueEngine) as any;
+
+            assert.equal(spanningPackager.frameOverflowMode, 'continue');
+            assert.equal(spanningPackager.worldBehaviorMode, 'spanning');
+            assert.deepEqual(findPagesForSource(spanningContinuePages, 'main-zone-open'), [0]);
+            assert.deepEqual(findPagesForSource(spanningContinuePages, 'side-zone-label'), [0]);
+            assert.ok(findPagesForSource(spanningContinuePages, 'main-zone-tail').some((pageIndex) => pageIndex >= 1), 'tail content should continue beyond page 1');
         }
     );
 

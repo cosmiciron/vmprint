@@ -343,6 +343,6 @@ export class CollisionRuntime {
         const regionActor = actor as PackagerWithRegionContinuation;
         if (regionActor.frameOverflowMode !== 'continue') return false;
         if (regionActor.worldBehaviorMode === 'expandable') return true;
-        return regionActor.actorKind === 'world-plain' && regionActor.worldBehaviorMode === 'spanning';
+        return regionActor.worldBehaviorMode === 'spanning';
     }
 }
