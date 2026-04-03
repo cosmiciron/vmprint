@@ -878,7 +878,7 @@ function assertZoneMapSpanningFieldCarryoverSignals(pages: any[], fixtureName: s
     );
 }
 
-function assertZoneMapSpanningMultiParticipantSignals(pages: any[], fixtureName: string): void {
+function assertZoneMapSpanningMultiParticipantSignals(pages: any[], fixtureName: string, engine: any): void {
     if (fixtureName !== '41-zone-map-spanning-multi-participant.json') return;
 
     const findPagesForSource = (sourceId: string): number[] => {
@@ -921,6 +921,30 @@ function assertZoneMapSpanningMultiParticipantSignals(pages: any[], fixtureName:
     assert.ok(
         postFlowPages.every((pageIndex) => pageIndex >= 1),
         `${fixtureName}: expected downstream flow only after the multi-participant zone continuation`
+    );
+
+    const reader = engine.getLastSimulationReportReader?.();
+    assert.ok(reader?.has(simulationArtifactKeys.pageRegionSummary), `${fixtureName}: expected pageRegionSummary in simulation report`);
+    const pageRegionSummary = reader.require(simulationArtifactKeys.pageRegionSummary);
+    const findRegionPages = (regionId: string): number[] => pageRegionSummary
+        .filter((item: any) => Array.isArray(item?.debugRegions) && item.debugRegions.some((region: any) =>
+            region?.sourceKind === 'zone-map' && (region?.regionId === regionId || region?.zoneId === regionId)
+        ))
+        .map((item: any) => Number(item?.pageIndex))
+        .filter((pageIndex: number) => Number.isFinite(pageIndex))
+        .sort((a: number, b: number) => a - b);
+    const mainRegionPages = findRegionPages('main');
+    const sideRegionPages = findRegionPages('side');
+
+    assert.ok(mainRegionPages.includes(0), `${fixtureName}: expected report to mark main region on first page`);
+    assert.ok(sideRegionPages.includes(0), `${fixtureName}: expected report to mark side region on first page`);
+    assert.ok(
+        mainRegionPages.some((pageIndex: number) => pageIndex >= 1),
+        `${fixtureName}: expected report to preserve main region identity across later pages`
+    );
+    assert.ok(
+        sideRegionPages.some((pageIndex: number) => pageIndex >= 1),
+        `${fixtureName}: expected report to preserve side region identity across later pages`
     );
 }
 
@@ -1717,6 +1741,19 @@ function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: s
         pageRegionSummary.reduce((sum: number, item: any) => sum + Number(item?.generatedBoxes || 0), 0),
         `${fixtureName}: simulation report generatedBoxCount mismatch`
     );
+    assert.equal(
+        pageRegionSummary.length,
+        pages.length,
+        `${fixtureName}: pageRegionSummary page count mismatch`
+    );
+    pageRegionSummary.forEach((item: any, pageIndex: number) => {
+        assert.ok(Array.isArray(item?.debugRegions), `${fixtureName}: pageRegionSummary[${pageIndex}] should expose debugRegions`);
+        assert.equal(
+            Number(item?.debugRegionCount || 0),
+            item.debugRegions.length,
+            `${fixtureName}: pageRegionSummary[${pageIndex}] debugRegionCount mismatch`
+        );
+    });
 }
 
 function resolveSnapshotPath(fixtureName: string): string {
@@ -2159,7 +2196,7 @@ async function run() {
                 `${fixture.name} zone-map spanning multi participant signals`,
                 'a spanning zone should carry multiple persistent regional participants and continuing regional body flow across later chunk intersections',
                 () => {
-                    assertZoneMapSpanningMultiParticipantSignals(pagesA, fixture.name);
+                    assertZoneMapSpanningMultiParticipantSignals(pagesA, fixture.name, engine);
                 }
             );
         }
