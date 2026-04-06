@@ -1,83 +1,98 @@
 import type { Box } from '../types';
 import type { PackagerReshapeResult, PackagerUnit } from './packagers/packager-types';
-import type { LayoutSession } from './layout-session';
-import type { Collaborator, ConstraintField, PageSurface, SplitAttempt } from './layout-session-types';
+import type { Collaborator, CollaboratorHost, ConstraintField, PageSurface, SplitAttempt } from './layout-session-types';
 
 export class EventDispatcher {
-    constructor(
-        private readonly collaborators: readonly Collaborator[]
-    ) { }
+    private readonly coordinators: readonly Collaborator[];
+    private readonly observers: readonly Collaborator[];
 
-    onSimulationStart(session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onSimulationStart?.(session);
+    constructor(collaborators: readonly Collaborator[]) {
+        this.coordinators = collaborators.filter((c) => (c.mutationMode ?? 'coordinator') !== 'observer');
+        this.observers = collaborators.filter((c) => c.mutationMode === 'observer');
+    }
+
+    private get all(): readonly Collaborator[] {
+        return [...this.coordinators, ...this.observers];
+    }
+
+    onSimulationStart(host: CollaboratorHost): void {
+        for (const collaborator of this.all) {
+            collaborator.onSimulationStart?.(host);
         }
     }
 
-    onActorSpawn(actor: PackagerUnit, session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onActorSpawn?.(actor, session);
+    onActorSpawn(actor: PackagerUnit, host: CollaboratorHost): void {
+        for (const collaborator of this.all) {
+            collaborator.onActorSpawn?.(actor, host);
         }
     }
 
-    onPageStart(pageIndex: number, surface: PageSurface, session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onPageStart?.(pageIndex, surface, session);
+    onPageStart(pageIndex: number, surface: PageSurface, host: CollaboratorHost): void {
+        for (const collaborator of this.all) {
+            collaborator.onPageStart?.(pageIndex, surface, host);
         }
     }
 
-    onConstraintNegotiation(actor: PackagerUnit, constraints: ConstraintField, session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onConstraintNegotiation?.(actor, constraints, session);
+    onConstraintNegotiation(actor: PackagerUnit, constraints: ConstraintField, host: CollaboratorHost): void {
+        for (const collaborator of this.all) {
+            collaborator.onConstraintNegotiation?.(actor, constraints, host);
         }
     }
 
-    onActorPrepared(actor: PackagerUnit, session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onActorPrepared?.(actor, session);
+    onActorPrepared(actor: PackagerUnit, host: CollaboratorHost): void {
+        for (const collaborator of this.all) {
+            collaborator.onActorPrepared?.(actor, host);
         }
     }
 
-    onSplitAttempt(attempt: SplitAttempt, session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onSplitAttempt?.(attempt, session);
+    onSplitAttempt(attempt: SplitAttempt, host: CollaboratorHost): void {
+        for (const collaborator of this.all) {
+            collaborator.onSplitAttempt?.(attempt, host);
         }
     }
 
-    onSplitAccepted(attempt: SplitAttempt, result: PackagerReshapeResult, session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onSplitAccepted?.(attempt, result, session);
+    onSplitAccepted(attempt: SplitAttempt, result: PackagerReshapeResult, host: CollaboratorHost): void {
+        for (const collaborator of this.all) {
+            collaborator.onSplitAccepted?.(attempt, result, host);
         }
     }
 
-    onActorCommitted(actor: PackagerUnit, committed: Box[], surface: PageSurface, session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onActorCommitted?.(actor, committed, surface, session);
+    onActorCommitted(actor: PackagerUnit, committed: Box[], surface: PageSurface, host: CollaboratorHost): void {
+        for (const collaborator of this.all) {
+            collaborator.onActorCommitted?.(actor, committed, surface, host);
         }
     }
 
-    onContinuationProduced(predecessor: PackagerUnit, successor: PackagerUnit, session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onContinuationProduced?.(predecessor, successor, session);
+    onContinuationProduced(predecessor: PackagerUnit, successor: PackagerUnit, host: CollaboratorHost): void {
+        for (const collaborator of this.all) {
+            collaborator.onContinuationProduced?.(predecessor, successor, host);
         }
     }
 
-    onContinuationEnqueued(predecessor: PackagerUnit, successor: PackagerUnit, session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onContinuationEnqueued?.(predecessor, successor, session);
-            collaborator.onContinuationProduced?.(predecessor, successor, session);
+    onContinuationEnqueued(predecessor: PackagerUnit, successor: PackagerUnit, host: CollaboratorHost): void {
+        for (const collaborator of this.all) {
+            collaborator.onContinuationEnqueued?.(predecessor, successor, host);
+            collaborator.onContinuationProduced?.(predecessor, successor, host);
         }
     }
 
-    onPageFinalized(surface: PageSurface, session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onPageFinalized?.(surface, session);
+    // Coordinators run before observers — a coordinator may mutate state that observers then read.
+    onPageFinalized(surface: PageSurface, host: CollaboratorHost): void {
+        for (const collaborator of this.coordinators) {
+            collaborator.onPageFinalized?.(surface, host);
+        }
+        for (const collaborator of this.observers) {
+            collaborator.onPageFinalized?.(surface, host);
         }
     }
 
-    onSimulationComplete(session: LayoutSession): void {
-        for (const collaborator of this.collaborators) {
-            collaborator.onSimulationComplete?.(session);
+    // Coordinators run before observers — same reason as onPageFinalized.
+    onSimulationComplete(host: CollaboratorHost): void {
+        for (const collaborator of this.coordinators) {
+            collaborator.onSimulationComplete?.(host);
+        }
+        for (const collaborator of this.observers) {
+            collaborator.onSimulationComplete?.(host);
         }
     }
 }

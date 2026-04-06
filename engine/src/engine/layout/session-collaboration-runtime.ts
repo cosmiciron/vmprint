@@ -2,7 +2,7 @@ import type { Box, Page, PageReservationSelector } from '../types';
 import type { PageRegionSummary } from './page-region-summary';
 import type { ScriptRegionRef } from './script-region-query';
 import type { EventDispatcher } from './event-dispatcher';
-import type { LayoutSession } from './layout-session';
+import type { CollaboratorHost } from './layout-session-types';
 import type {
     LayoutProfileMetrics,
     PageCaptureRecord,
@@ -25,7 +25,7 @@ import type { LifecycleRuntime } from './lifecycle-runtime';
 import type { SessionWorldRuntime } from './session-world-runtime';
 
 export type SessionCollaborationRuntimeHost = {
-    getSession(): LayoutSession;
+    getCollaboratorHost(): CollaboratorHost;
     getCurrentPageIndex(): number;
     getProfileSnapshot(): LayoutProfileMetrics;
 };
@@ -56,7 +56,7 @@ export class SessionCollaborationRuntime {
                 };
             }
         };
-        this.eventDispatcher.onPageFinalized(surface, this.host.getSession());
+        this.eventDispatcher.onPageFinalized(surface, this.host.getCollaboratorHost());
         const page = surface.finalize();
         this.lifecycleRuntime.recordFinalizedPage(page);
         return page;
@@ -84,7 +84,7 @@ export class SessionCollaborationRuntime {
     }
 
     onSimulationComplete(): void {
-        this.eventDispatcher.onSimulationComplete(this.host.getSession());
+        this.eventDispatcher.onSimulationComplete(this.host.getCollaboratorHost());
     }
 
     publishArtifact<K extends SimulationArtifactKey>(key: K, value: SimulationArtifactMap[K]): void;

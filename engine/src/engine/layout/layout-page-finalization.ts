@@ -1,9 +1,6 @@
 import { Box, LayoutConfig, Page, PageRegionContent, PageRegionDefinition } from '../types';
 import { LayoutUtils } from './layout-utils';
-import {
-    LayoutSession,
-} from './layout-session';
-import type { Collaborator, PageOverrideState, PageSurface } from './layout-session-types';
+import type { Collaborator, CollaboratorHost, PageOverrideState, PageSurface } from './layout-session-types';
 import type { ActorSignal } from './actor-event-bus';
 import type { LayoutBox, ObservationResult, PackagerContext, PackagerReshapeResult, PackagerUnit } from './packagers/packager-types';
 
@@ -32,13 +29,13 @@ export class PageRegionCollaborator implements Collaborator {
         private readonly callbacks: FinalizePagesCallbacks
     ) { }
 
-    onPageFinalized(surface: PageSurface, session: LayoutSession): void {
+    onPageFinalized(surface: PageSurface, host: CollaboratorHost): void {
         const page: Page = surface.finalize();
         const baseline = resolveBaselineRegions(this.config, page.index);
         const override = findWinningPageOverride(page);
         const resolved = applyPageOverride(baseline, override);
         const usesLogical = regionContainsLogicalPageNumber(resolved.header) || regionContainsLogicalPageNumber(resolved.footer);
-        const logicalNumber = session.allocateLogicalPageNumber(usesLogical);
+        const logicalNumber = host.allocateLogicalPageNumber(usesLogical);
         const physicalPageNumber = page.index + 1;
 
         const headerRect = getHeaderRect(this.config, page);
@@ -77,7 +74,7 @@ export class PageRegionCollaborator implements Collaborator {
             ? footerActor.emitCurrentBoxes()
             : (footerMaterialized ? this.callbacks.layoutRegion(footerMaterialized, footerRect, page.index, 'footer') : []);
 
-        const capture = session.sessionWorldRuntime.createPageCaptureState({
+        const capture = host.createPageCaptureState({
             pageIndex: page.index,
             worldTopY: page.index * page.height,
             pageWidth: page.width,
@@ -95,13 +92,13 @@ export class PageRegionCollaborator implements Collaborator {
         }
 
         if (headerActor) {
-            session.notifyActorSpawn(headerActor);
+            host.notifyActorSpawn(headerActor);
         }
         if (footerActor) {
-            session.notifyActorSpawn(footerActor);
+            host.notifyActorSpawn(footerActor);
         }
 
-        session.recordPageCapture({
+        host.recordPageCapture({
             pageIndex: page.index,
             physicalPageNumber,
             logicalPageNumber: logicalNumber,
@@ -109,7 +106,7 @@ export class PageRegionCollaborator implements Collaborator {
             capture
         });
 
-        session.recordPageFinalization({
+        host.recordPageFinalization({
             pageIndex: page.index,
             physicalPageNumber,
             logicalPageNumber: logicalNumber,
@@ -126,9 +123,9 @@ export class PageRegionCollaborator implements Collaborator {
         });
     }
 
-    onSimulationStart(session: LayoutSession): void {
+    onSimulationStart(host: CollaboratorHost): void {
         this.reactiveRegionSequence = 0;
-        session.resetLogicalPageNumbering(Number(this.config.layout.pageNumberStart ?? 1));
+        host.resetLogicalPageNumbering(Number(this.config.layout.pageNumberStart ?? 1));
     }
 }
 

@@ -1,6 +1,7 @@
+import type { CollaboratorHost } from '../layout-host-types';
 import type { Element } from '../../types';
-import type { Collaborator } from '../layout-session-types';
-import type { LayoutSession } from '../layout-session';
+import type { Collaborator } from '../layout-host-types';
+
 import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../script-runtime-host';
 
 type ScriptMessage = {
@@ -223,9 +224,9 @@ export class ScriptRuntimeCollaborator implements Collaborator {
         private readonly lifecycleState: ScriptLifecycleState
     ) { }
 
-    private recordReplayRequest(session: LayoutSession): void {
+    private recordReplayRequest(host: CollaboratorHost): void {
         this.replayRequested = true;
-        session.recordProfile('replayRequests', 1);
+        host.recordProfile('replayRequests', 1);
     }
 
     private resolveSourceId(target: unknown): string | null {
@@ -248,7 +249,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
     }
 
     private createElementRef(
-        session: LayoutSession,
+        host: CollaboratorHost,
         element: Element
     ): Record<string, unknown> {
         const sourceId = typeof element.properties?.sourceId === 'string' ? element.properties.sourceId : null;
@@ -261,7 +262,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
             },
             setContent: (content: string) => {
                 element.content = String(content);
-                session.recordProfile('setContentCalls', 1);
+                host.recordProfile('setContentCalls', 1);
                 return true;
             },
             replace: (value: unknown) => {
@@ -270,7 +271,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 const result = replaceBySourceId(this.elements, sourceId, elements);
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
-                session.recordProfile('replaceCalls', 1);
+                host.recordProfile('replaceCalls', 1);
                 return true;
             },
             append: (value: unknown) => {
@@ -280,7 +281,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 const result = insertBySourceId(this.elements, sourceId, elements, 'after');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
-                session.recordProfile('insertCalls', 1);
+                host.recordProfile('insertCalls', 1);
                 return true;
             },
             prepend: (value: unknown) => {
@@ -290,7 +291,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 const result = insertBySourceId(this.elements, sourceId, elements, 'before');
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
-                session.recordProfile('insertCalls', 1);
+                host.recordProfile('insertCalls', 1);
                 return true;
             },
             replaceWith: (elements: Element[]) => {
@@ -298,79 +299,79 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 const result = replaceBySourceId(this.elements, sourceId, elements);
                 if (!result.replaced) return false;
                 this.elements.splice(0, this.elements.length, ...result.nextNodes);
-                session.recordProfile('replaceCalls', 1);
+                host.recordProfile('replaceCalls', 1);
                 return true;
             },
-            sendMessage: (recipient: unknown, msg: unknown) => this.deliverMessage(recipient, msg, element, session)
+            sendMessage: (recipient: unknown, msg: unknown) => this.deliverMessage(recipient, msg, element, host)
         };
     }
 
-    private createDocRef(session: LayoutSession): Record<string, unknown> {
+    private createDocRef(host: CollaboratorHost): Record<string, unknown> {
         const getRegions = () => {
-            session.recordProfile('docQueryCalls', 1);
-            return session.getScriptRegions();
+            host.recordProfile('docQueryCalls', 1);
+            return host.getScriptRegions();
         };
         return {
             name: 'doc',
             type: 'document',
             vars: this.host.getScriptVars(),
             getPageCount: () => {
-                session.recordProfile('docQueryCalls', 1);
-                return session.getFinalizedPages().length;
+                host.recordProfile('docQueryCalls', 1);
+                return host.getFinalizedPages().length;
             },
             getRegions,
             findRegionByName: (name: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                return session.findScriptRegionByName(name);
+                host.recordProfile('docQueryCalls', 1);
+                return host.findScriptRegionByName(name);
             },
             findElementByName: (name: string) => {
-                session.recordProfile('docQueryCalls', 1);
+                host.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
-                return node ? this.createElementRef(session, node) : null;
+                return node ? this.createElementRef(host, node) : null;
             },
             findElementsByType: (type: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
+                host.recordProfile('docQueryCalls', 1);
+                return findByType(this.elements, type).map((node) => this.createElementRef(host, node));
             },
             append: (value: unknown) => {
                 const elements = normalizeScriptElements(value);
                 if (elements.length === 0) return false;
                 this.elements.push(...elements);
-                session.recordProfile('insertCalls', 1);
+                host.recordProfile('insertCalls', 1);
                 return true;
             },
             prepend: (value: unknown) => {
                 const elements = normalizeScriptElements(value);
                 if (elements.length === 0) return false;
                 this.elements.splice(0, 0, ...elements);
-                session.recordProfile('insertCalls', 1);
+                host.recordProfile('insertCalls', 1);
                 return true;
             },
             replace: (value: unknown) => {
                 const elements = normalizeScriptElements(value);
                 this.elements.splice(0, this.elements.length, ...elements);
-                session.recordProfile('replaceCalls', 1);
+                host.recordProfile('replaceCalls', 1);
                 return true;
             }
         };
     }
 
     private createGlobals(
-        session: LayoutSession,
+        host: CollaboratorHost,
         options?: {
             self?: Element;
             message?: ScriptMessage;
         }
     ): ScriptGlobals {
         const self = options?.self;
-        const docRef = this.createDocRef(session);
+        const docRef = this.createDocRef(host);
         const setContent = (target: unknown, content: string) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
             const node = findBySourceId(this.elements, sourceId);
             if (!node) return false;
             node.content = String(content);
-            session.recordProfile('setContentCalls', 1);
+            host.recordProfile('setContentCalls', 1);
             return true;
         };
         const replaceElement = (target: unknown, elements: Element[]) => {
@@ -380,7 +381,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
             const result = replaceBySourceId(this.elements, sourceId, normalizedElements);
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
-            session.recordProfile('replaceCalls', 1);
+            host.recordProfile('replaceCalls', 1);
             return true;
         };
         const insertElementsBefore = (target: unknown, elements: Element[]) => {
@@ -390,7 +391,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
             const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'before');
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
-            session.recordProfile('insertCalls', 1);
+            host.recordProfile('insertCalls', 1);
             return true;
         };
         const insertElementsAfter = (target: unknown, elements: Element[]) => {
@@ -400,7 +401,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
             const result = insertBySourceId(this.elements, sourceId, normalizedElements, 'after');
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
-            session.recordProfile('insertCalls', 1);
+            host.recordProfile('insertCalls', 1);
             return true;
         };
         const deleteElement = (target: unknown) => {
@@ -409,21 +410,21 @@ export class ScriptRuntimeCollaborator implements Collaborator {
             const result = deleteBySourceId(this.elements, sourceId);
             if (!result.replaced) return false;
             this.elements.splice(0, this.elements.length, ...result.nextNodes);
-            session.recordProfile('removeCalls', 1);
+            host.recordProfile('removeCalls', 1);
             return true;
         };
         return {
             doc: docRef,
-            self: self ? this.createElementRef(session, self) : docRef,
-            sendMessage: (recipient: unknown, msg: unknown) => this.deliverMessage(recipient, msg, self, session),
+            self: self ? this.createElementRef(host, self) : docRef,
+            sendMessage: (recipient: unknown, msg: unknown) => this.deliverMessage(recipient, msg, self, host),
             element: (name: string) => {
-                session.recordProfile('docQueryCalls', 1);
+                host.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
-                return node ? this.createElementRef(session, node) : null;
+                return node ? this.createElementRef(host, node) : null;
             },
             elementsByType: (type: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
+                host.recordProfile('docQueryCalls', 1);
+                return findByType(this.elements, type).map((node) => this.createElementRef(host, node));
             },
             replace: (value: unknown) => {
                 const elements = normalizeScriptElements(value);
@@ -436,7 +437,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 } else {
                     this.elements.splice(0, this.elements.length, ...elements);
                 }
-                session.recordProfile('replaceCalls', 1);
+                host.recordProfile('replaceCalls', 1);
                 return true;
             },
             append: (value: unknown) => {
@@ -451,7 +452,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 } else {
                     this.elements.push(...elements);
                 }
-                session.recordProfile('insertCalls', 1);
+                host.recordProfile('insertCalls', 1);
                 return true;
             },
             prepend: (value: unknown) => {
@@ -466,7 +467,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 } else {
                     this.elements.splice(0, 0, ...elements);
                 }
-                session.recordProfile('insertCalls', 1);
+                host.recordProfile('insertCalls', 1);
                 return true;
             },
             setContent,
@@ -475,13 +476,13 @@ export class ScriptRuntimeCollaborator implements Collaborator {
             insertAfter: insertElementsAfter,
             deleteElement,
             findElementByName: (name: string) => {
-                session.recordProfile('docQueryCalls', 1);
+                host.recordProfile('docQueryCalls', 1);
                 const node = findBySourceId(this.elements, name);
-                return node ? this.createElementRef(session, node) : null;
+                return node ? this.createElementRef(host, node) : null;
             },
             findElementsByType: (type: string) => {
-                session.recordProfile('docQueryCalls', 1);
-                return findByType(this.elements, type).map((node) => this.createElementRef(session, node));
+                host.recordProfile('docQueryCalls', 1);
+                return findByType(this.elements, type).map((node) => this.createElementRef(host, node));
             },
             insertElementsBefore,
             insertElementsAfter
@@ -492,7 +493,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
         recipient: unknown,
         msg: unknown,
         sender: Element | undefined,
-        session: LayoutSession
+        host: CollaboratorHost
     ): boolean {
         const targetSourceId = this.resolveSourceId(recipient);
         if (!targetSourceId) return false;
@@ -508,10 +509,10 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                     typeof legacyName === 'string' && legacyName ? legacyName : 'message';
             }
             delete (message as Record<string, unknown>).name;
-            const globals = this.createGlobals(session);
-            const fromRef = sender ? this.createElementRef(session, sender) : { name: 'doc', type: 'document' };
-            session.recordProfile('messageSendCalls', 1);
-            this.host.runHandler(handlerName, 'onMessage', globals, { from: fromRef, msg: message }, session);
+            const globals = this.createGlobals(host);
+            const fromRef = sender ? this.createElementRef(host, sender) : { name: 'doc', type: 'document' };
+            host.recordProfile('messageSendCalls', 1);
+            this.host.runHandler(handlerName, 'onMessage', globals, { from: fromRef, msg: message }, host);
             return true;
         }
         const target = findBySourceId(this.elements, targetSourceId);
@@ -534,12 +535,12 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 typeof legacyName === 'string' && legacyName ? legacyName : 'message';
         }
         delete (message as Record<string, unknown>).name;
-        const globals = this.createGlobals(session, {
+        const globals = this.createGlobals(host, {
             self: target,
         });
-        const fromRef = sender ? this.createElementRef(session, sender) : { name: 'doc', type: 'document' };
+        const fromRef = sender ? this.createElementRef(host, sender) : { name: 'doc', type: 'document' };
 
-        session.recordProfile('messageSendCalls', 1);
+        host.recordProfile('messageSendCalls', 1);
         this.host.runHandler(
             handlerName,
             'onMessage',
@@ -548,18 +549,18 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 from: fromRef,
                 msg: message
             },
-            session
+            host
         );
         return true;
     }
 
-    onSimulationStart(session: LayoutSession): void {
+    onSimulationStart(host: CollaboratorHost): void {
         this.replayRequested = false;
         const documentHandlerName = !this.lifecycleState.didLoad
             ? this.host.getDocumentHandlerName('onLoad')
             : null;
         if (documentHandlerName) {
-            this.host.runHandler(documentHandlerName, 'onLoad', this.createGlobals(session), {}, session);
+            this.host.runHandler(documentHandlerName, 'onLoad', this.createGlobals(host), {}, host);
             this.lifecycleState.didLoad = true;
         }
 
@@ -571,7 +572,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 : null;
             const handlerName = this.host.getElementHandlerName(sourceId, 'onCreate', explicitHandlerName);
             if (handlerName) {
-                this.host.runHandler(handlerName, 'onCreate', this.createGlobals(session, { self: element }), {}, session);
+                this.host.runHandler(handlerName, 'onCreate', this.createGlobals(host, { self: element }), {}, host);
             }
             this.lifecycleState.createdElements.add(sourceId);
         }

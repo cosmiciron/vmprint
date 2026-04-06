@@ -1,5 +1,6 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 
 export type ViewportCaptureSummary = {
@@ -34,8 +35,8 @@ export type ViewportCaptureSummary = {
 };
 
 export class ViewportCaptureArtifactCollaborator implements Collaborator {
-    onSimulationComplete(session: LayoutSession): void {
-        const summaries: ViewportCaptureSummary[] = session.getPageCaptures().map((record) => ({
+    onSimulationComplete(host: CollaboratorHost): void {
+        const summaries: ViewportCaptureSummary[] = host.getPageCaptures().map((record) => ({
             pageIndex: record.pageIndex,
             physicalPageNumber: record.physicalPageNumber,
             logicalPageNumber: record.logicalPageNumber,
@@ -68,6 +69,6 @@ export class ViewportCaptureArtifactCollaborator implements Collaborator {
             }
         }));
 
-        session.publishArtifact(simulationArtifactKeys.viewportCaptureSummary, summaries);
+        host.publishArtifact(simulationArtifactKeys.viewportCaptureSummary, summaries);
     }
 }

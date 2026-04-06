@@ -1,5 +1,6 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 
 export type PageNumberSummary = {
@@ -12,8 +13,8 @@ export type PageNumberSummary = {
 };
 
 export class PageNumberArtifactCollaborator implements Collaborator {
-    onSimulationComplete(session: LayoutSession): void {
-        const summaries: PageNumberSummary[] = session.getPageFinalizationStates().map((state) => ({
+    onSimulationComplete(host: CollaboratorHost): void {
+        const summaries: PageNumberSummary[] = host.getPageFinalizationStates().map((state) => ({
             pageIndex: state.pageIndex,
             physicalPageNumber: state.physicalPageNumber,
             logicalPageNumber: state.logicalPageNumber,
@@ -22,6 +23,6 @@ export class PageNumberArtifactCollaborator implements Collaborator {
             renderedFooter: state.renderedFooter
         }));
 
-        session.publishArtifact(simulationArtifactKeys.pageNumberSummary, summaries);
+        host.publishArtifact(simulationArtifactKeys.pageNumberSummary, summaries);
     }
 }

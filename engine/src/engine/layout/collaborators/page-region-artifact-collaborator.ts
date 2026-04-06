@@ -1,5 +1,6 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 export type {
     PageRegionDebugSummary,
@@ -8,10 +9,10 @@ export type {
 } from '../page-region-summary';
 
 export class PageRegionArtifactCollaborator implements Collaborator {
-    onSimulationComplete(session: LayoutSession): void {
-        session.publishArtifact(
+    onSimulationComplete(host: CollaboratorHost): void {
+        host.publishArtifact(
             simulationArtifactKeys.pageRegionSummary,
-            session.getPageRegionSummaries().map((summary) => ({
+            host.getPageRegionSummaries().map((summary) => ({
                 ...summary,
                 debugRegions: summary.debugRegions.map((region) => ({
                     ...region,

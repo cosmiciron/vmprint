@@ -1,6 +1,7 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import { LayoutConfig, PageReservationSelector } from '../../types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 
 function resolvePageStartReservationHeight(config: LayoutConfig): number {
     const value = config.layout.pageReservationOnFirstPageStart;
@@ -21,10 +22,10 @@ export class PageStartReservationCollaborator implements Collaborator {
         this.selector = resolvePageStartReservationSelector(config);
     }
 
-    onPageStart(pageIndex: number, _surface: unknown, session: LayoutSession): void {
+    onPageStart(pageIndex: number, _surface: unknown, host: CollaboratorHost): void {
         if (!(this.reservationHeight > 0)) return;
 
-        session.reservePageSpace({
+        host.reservePageSpace({
             id: `layout:page-start-reservation:${this.selector}:${pageIndex}`,
             height: this.reservationHeight,
             source: 'layout',

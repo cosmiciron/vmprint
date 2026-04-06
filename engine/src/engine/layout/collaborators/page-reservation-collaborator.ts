@@ -1,5 +1,6 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { PackagerUnit } from '../packagers/packager-types';
 
 function resolveReservationHeight(actor: PackagerUnit): number {
@@ -11,14 +12,14 @@ function resolveReservationHeight(actor: PackagerUnit): number {
 }
 
 export class PageReservationCollaborator implements Collaborator {
-    onActorCommitted(actor: PackagerUnit, _committed: unknown, _surface: unknown, session: LayoutSession): void {
+    onActorCommitted(actor: PackagerUnit, _committed: unknown, _surface: unknown, host: CollaboratorHost): void {
         const startedAt = performance.now();
-        session.recordProfile('reservationCommitProbeCalls', 1);
+        host.recordProfile('reservationCommitProbeCalls', 1);
         const height = resolveReservationHeight(actor);
-        session.recordProfile('reservationCommitProbeMs', performance.now() - startedAt);
+        host.recordProfile('reservationCommitProbeMs', performance.now() - startedAt);
         if (!(height > 0)) return;
 
-        session.reserveCurrentPageSpace({
+        host.reserveCurrentPageSpace({
             id: `${actor.actorId}:page-reserve-after`,
             height,
             source: actor.sourceId

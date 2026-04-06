@@ -1,6 +1,7 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import { LayoutConfig, PageReservationSelector } from '../../types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 
 function resolvePageStartExclusionTop(config: LayoutConfig): number {
     const value = config.layout.pageStartExclusionTop;
@@ -53,7 +54,7 @@ export class PageStartExclusionCollaborator implements Collaborator {
         this.selector = resolvePageStartExclusionSelector(config);
     }
 
-    onPageStart(pageIndex: number, surface: { width: number }, session: LayoutSession): void {
+    onPageStart(pageIndex: number, surface: { width: number }, host: CollaboratorHost): void {
         if (!(this.height > 0)) return;
         if (!(surface.width > 0)) return;
 
@@ -62,7 +63,7 @@ export class PageStartExclusionCollaborator implements Collaborator {
                 const x = Math.max(0, Math.min(surface.width, rectangle.x));
                 const width = Math.max(0, Math.min(rectangle.width, surface.width - x));
                 if (!(width > 0)) return;
-                session.excludePageSpace({
+                host.excludePageSpace({
                     id: `layout:page-start-exclusion:explicit:${index}:${this.selector}:${pageIndex}`,
                     x,
                     y: this.top,
@@ -80,7 +81,7 @@ export class PageStartExclusionCollaborator implements Collaborator {
 
         if (leftWidth > 0 || rightWidth > 0) {
             if (leftWidth > 0) {
-                session.excludePageSpace({
+                host.excludePageSpace({
                     id: `layout:page-start-exclusion:left:${this.selector}:${pageIndex}`,
                     x: 0,
                     y: this.top,
@@ -91,7 +92,7 @@ export class PageStartExclusionCollaborator implements Collaborator {
                 }, pageIndex);
             }
             if (rightWidth > 0) {
-                session.excludePageSpace({
+                host.excludePageSpace({
                     id: `layout:page-start-exclusion:right:${this.selector}:${pageIndex}`,
                     x: Math.max(0, surface.width - rightWidth),
                     y: this.top,
@@ -104,7 +105,7 @@ export class PageStartExclusionCollaborator implements Collaborator {
             return;
         }
 
-        session.excludePageSpace({
+        host.excludePageSpace({
             id: `layout:page-start-exclusion:${this.selector}:${pageIndex}`,
             x: 0,
             y: this.top,

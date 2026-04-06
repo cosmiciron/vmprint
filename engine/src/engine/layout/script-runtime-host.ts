@@ -1,6 +1,6 @@
 import { performance } from 'node:perf_hooks';
 import type { Element, LayoutScriptingConfig } from '../types';
-import type { LayoutSession } from './layout-session';
+import type { CollaboratorHost } from './layout-session-types';
 
 export type ScriptPhase = 'onLoad' | 'onCreate' | 'onReady' | 'onRefresh' | 'onChanged' | 'onMessage';
 
@@ -217,7 +217,7 @@ export class ScriptRuntimeHost {
         phase: ScriptPhase,
         globals: ScriptGlobals,
         eventParams: Record<string, unknown>,
-        session: LayoutSession
+        host: CollaboratorHost
     ): void {
         const handler = this.handlers.get(handlerName);
         if (!handler) {
@@ -225,25 +225,25 @@ export class ScriptRuntimeHost {
         }
 
         const startedAt = performance.now();
-        session.recordProfile('handlerCalls', 1);
+        host.recordProfile('handlerCalls', 1);
         switch (phase) {
             case 'onLoad':
-                session.recordProfile('loadCalls', 1);
+                host.recordProfile('loadCalls', 1);
                 break;
             case 'onCreate':
-                session.recordProfile('createCalls', 1);
+                host.recordProfile('createCalls', 1);
                 break;
             case 'onReady':
-                session.recordProfile('readyCalls', 1);
+                host.recordProfile('readyCalls', 1);
                 break;
             case 'onRefresh':
-                session.recordProfile('refreshCalls', 1);
+                host.recordProfile('refreshCalls', 1);
                 break;
             case 'onChanged':
-                session.recordProfile('documentChangedCalls', 1);
+                host.recordProfile('documentChangedCalls', 1);
                 break;
             case 'onMessage':
-                session.recordProfile('messageHandlerCalls', 1);
+                host.recordProfile('messageHandlerCalls', 1);
                 break;
         }
 
@@ -264,22 +264,22 @@ export class ScriptRuntimeHost {
         handler.invoke(...orderedArgs);
 
         const elapsed = performance.now() - startedAt;
-        session.recordProfile('handlerMs', elapsed);
+        host.recordProfile('handlerMs', elapsed);
         switch (phase) {
             case 'onLoad':
-                session.recordProfile('loadMs', elapsed);
+                host.recordProfile('loadMs', elapsed);
                 break;
             case 'onCreate':
-                session.recordProfile('createMs', elapsed);
+                host.recordProfile('createMs', elapsed);
                 break;
             case 'onReady':
-                session.recordProfile('readyMs', elapsed);
+                host.recordProfile('readyMs', elapsed);
                 break;
             case 'onRefresh':
-                session.recordProfile('refreshMs', elapsed);
+                host.recordProfile('refreshMs', elapsed);
                 break;
             case 'onChanged':
-                session.recordProfile('documentChangedMs', elapsed);
+                host.recordProfile('documentChangedMs', elapsed);
                 break;
             case 'onMessage':
                 break;

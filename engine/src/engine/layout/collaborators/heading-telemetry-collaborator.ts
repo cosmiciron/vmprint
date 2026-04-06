@@ -1,6 +1,7 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Box } from '../../types';
 import type { Collaborator, PageSurface } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 import type { PackagerUnit } from '../packagers/packager-types';
 
@@ -79,7 +80,7 @@ export class HeadingTelemetryCollaborator implements Collaborator {
         actor: PackagerUnit,
         committed: Box[],
         surface: PageSurface,
-        _session: LayoutSession
+        _host: CollaboratorHost
     ): void {
         if (actor.fragmentIndex > 0 || actor.continuationOf) return;
         if (!committed.length) return;
@@ -117,8 +118,8 @@ export class HeadingTelemetryCollaborator implements Collaborator {
         }
     }
 
-    onSimulationComplete(session: LayoutSession): void {
-        session.publishArtifact(
+    onSimulationComplete(host: CollaboratorHost): void {
+        host.publishArtifact(
             simulationArtifactKeys.headingTelemetry,
             Array.from(this.headings.values()).sort((a, b) =>
                 a.pageIndex - b.pageIndex ||

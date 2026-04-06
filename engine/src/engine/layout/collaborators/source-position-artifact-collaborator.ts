@@ -1,5 +1,6 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 
 export type SourcePositionSummary = {
@@ -12,8 +13,8 @@ export type SourcePositionSummary = {
 };
 
 export class SourcePositionArtifactCollaborator implements Collaborator {
-    onSimulationComplete(session: LayoutSession): void {
-        const pages = session.getFinalizedPages();
+    onSimulationComplete(host: CollaboratorHost): void {
+        const pages = host.getFinalizedPages();
         const summaries = new Map<string, SourcePositionSummary>();
 
         for (const page of pages) {
@@ -55,6 +56,6 @@ export class SourcePositionArtifactCollaborator implements Collaborator {
             }
         }
 
-        session.publishArtifact(simulationArtifactKeys.sourcePositionMap, Array.from(summaries.values()));
+        host.publishArtifact(simulationArtifactKeys.sourcePositionMap, Array.from(summaries.values()));
     }
 }

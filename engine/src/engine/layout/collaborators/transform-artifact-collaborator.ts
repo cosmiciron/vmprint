@@ -1,5 +1,6 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 
 export type TransformSummary = {
@@ -12,10 +13,10 @@ export type TransformSummary = {
 };
 
 export class TransformArtifactCollaborator implements Collaborator {
-    onSimulationComplete(session: LayoutSession): void {
+    onSimulationComplete(host: CollaboratorHost): void {
         const summaries = new Map<string, TransformSummary>();
 
-        for (const page of session.getFinalizedPages()) {
+        for (const page of host.getFinalizedPages()) {
             for (const box of page.boxes || []) {
                 const sourceId = String(box.meta?.sourceId || '');
                 const transformKind = box.meta?.transformKind || null;
@@ -61,7 +62,7 @@ export class TransformArtifactCollaborator implements Collaborator {
             }
         }
 
-        session.publishArtifact(
+        host.publishArtifact(
             simulationArtifactKeys.transformSummary,
             Array.from(summaries.values()).sort((a, b) => a.sourceId.localeCompare(b.sourceId))
         );

@@ -1,5 +1,6 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 
 export type PageSpatialConstraintSummary = {
@@ -17,11 +18,11 @@ export type PageSpatialConstraintSummary = {
 };
 
 export class PageSpatialConstraintArtifactCollaborator implements Collaborator {
-    onSimulationComplete(session: LayoutSession): void {
-        const summary = session.getSpatialConstraintPageIndices().map((pageIndex) => {
-            const reservations = session.getPageReservations(pageIndex);
-            const exclusions = session.getPageExclusions(pageIndex);
-            const finalization = session.getPageFinalizationState(pageIndex);
+    onSimulationComplete(host: CollaboratorHost): void {
+        const summary = host.getSpatialConstraintPageIndices().map((pageIndex) => {
+            const reservations = host.getPageReservations(pageIndex);
+            const exclusions = host.getPageExclusions(pageIndex);
+            const finalization = host.getPageFinalizationState(pageIndex);
 
             return {
                 pageIndex,
@@ -38,6 +39,6 @@ export class PageSpatialConstraintArtifactCollaborator implements Collaborator {
             };
         });
 
-        session.publishArtifact(simulationArtifactKeys.pageSpatialConstraintSummary, summary);
+        host.publishArtifact(simulationArtifactKeys.pageSpatialConstraintSummary, summary);
     }
 }
