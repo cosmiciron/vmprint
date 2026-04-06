@@ -4,8 +4,8 @@ import { LayoutUtils } from '../layout-utils';
 import {
     PackagerContext,
     PackagerPlacementPreference,
-    PackagerSplitResult,
-    PackagerTransformProfile,
+    PackagerReshapeResult,
+    PackagerReshapeProfile,
     PackagerUnit
 } from './packager-types';
 import { createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
@@ -102,7 +102,7 @@ export class FieldActorPackager implements PackagerUnit {
         return { minimumWidth: this.width };
     }
 
-    getTransformProfile(): PackagerTransformProfile {
+    getReshapeProfile(): PackagerReshapeProfile {
         return {
             capabilities: []
         };
@@ -141,15 +141,15 @@ export class FieldActorPackager implements PackagerUnit {
         return true;
     }
 
-    getMarginTop(): number {
+    getLeadingSpacing(): number {
         return this.marginTop;
     }
 
-    getMarginBottom(): number {
+    getTrailingSpacing(): number {
         return this.marginBottom;
     }
 
-    split(_availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+    reshape(_availableHeight: number, _context: PackagerContext): PackagerReshapeResult {
         return { currentFragment: null, continuationFragment: this };
     }
 }

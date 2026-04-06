@@ -123,7 +123,7 @@ export class PhysicsRuntime {
             };
         }
 
-        const marginTop = input.actor.getMarginTop();
+        const marginTop = input.actor.getLeadingSpacing();
         const layoutBefore = input.lastSpacingAfter + marginTop;
         const layoutDelta = layoutBefore - marginTop;
         const constraintField = new ConstraintField(availableWidth, availableHeight - layoutDelta);
@@ -510,8 +510,8 @@ export class PhysicsRuntime {
         preparePackagerForPhase(actor, 'commit', availableWidth, availableHeight, context);
         this.host.notifyActorPrepared(actor);
 
-        const marginTop = actor.getMarginTop();
-        const marginBottom = actor.getMarginBottom();
+        const marginTop = actor.getLeadingSpacing();
+        const marginBottom = actor.getTrailingSpacing();
         const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
         const requiredHeight = contentHeight + layoutBefore + marginBottom;
         const occupiesFlowSpace = packagerOccupiesFlowSpace(actor);

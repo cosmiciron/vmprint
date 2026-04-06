@@ -7,8 +7,8 @@ import {
     DebugRegion,
     PackagerContext,
     PackagerPlacementPreference,
-    PackagerSplitResult,
-    PackagerTransformProfile,
+    PackagerReshapeResult,
+    PackagerReshapeProfile,
     PackagerUnit
 } from './packager-types';
 import { HostedRegionPackager } from './hosted-region-packager';
@@ -188,8 +188,8 @@ export class WorldPlainPackager implements PackagerUnit {
         return this.inner.getPlacementPreference(fullAvailableWidth, context);
     }
 
-    getTransformProfile(): PackagerTransformProfile {
-        return this.inner.getTransformProfile();
+    getReshapeProfile(): PackagerReshapeProfile {
+        return this.inner.getReshapeProfile();
     }
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext) {
@@ -212,20 +212,20 @@ export class WorldPlainPackager implements PackagerUnit {
         return this.inner.isUnbreakable(availableHeight);
     }
 
-    getMarginTop(): number {
-        return this.rootFlowMode === 'traverse' ? 0 : this.inner.getMarginTop();
+    getLeadingSpacing(): number {
+        return this.rootFlowMode === 'traverse' ? 0 : this.inner.getLeadingSpacing();
     }
 
-    getMarginBottom(): number {
-        return this.rootFlowMode === 'traverse' ? 0 : this.inner.getMarginBottom();
+    getTrailingSpacing(): number {
+        return this.rootFlowMode === 'traverse' ? 0 : this.inner.getTrailingSpacing();
     }
 
     occupiesFlowSpace(): boolean {
         return this.rootFlowMode !== 'traverse';
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
-        return this.inner.split(availableHeight, context);
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
+        return this.inner.reshape(availableHeight, context);
     }
 
     private publishTraversingFlowExclusions(

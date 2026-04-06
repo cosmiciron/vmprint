@@ -93,32 +93,41 @@ export function bindPackagerSignalPublisher(
         });
 }
 
-export type PackagerSplitResult = {
+export type PackagerReshapeResult = {
     currentFragment: PackagerUnit | null;
     continuationFragment: PackagerUnit | null;
 };
 
 export type PackagerPreparationPhase = 'commit' | 'lookahead';
 
-export type PackagerTransformKind = 'split' | 'clone' | 'morph';
+export type PackagerReshapeKind = 'split' | 'clone' | 'morph' | 'reshape';
 
-export type PackagerTransformCapability = {
-    kind: PackagerTransformKind;
+export type PackagerReshapeCapability = {
+    kind: PackagerReshapeKind;
     preservesIdentity?: boolean;
     producesContinuation?: boolean;
     reflowsContent?: boolean;
     clonesStableSubstructure?: boolean;
 };
 
-export type PackagerTransformProfile = {
-    supportedTransforms?: PackagerTransformKind[];
-    capabilities?: PackagerTransformCapability[];
+export type PackagerReshapeProfile = {
+    supportedReshapes?: PackagerReshapeKind[];
+    capabilities?: PackagerReshapeCapability[];
 };
 
 export type PackagerPlacementPreference = {
     minimumWidth?: number | null;
     acceptsFrame?: boolean | null;
 };
+
+/** @deprecated Use PackagerReshapeResult */
+export type PackagerSplitResult = PackagerReshapeResult;
+/** @deprecated Use PackagerReshapeKind */
+export type PackagerTransformKind = PackagerReshapeKind;
+/** @deprecated Use PackagerReshapeCapability */
+export type PackagerTransformCapability = PackagerReshapeCapability;
+/** @deprecated Use PackagerReshapeProfile */
+export type PackagerTransformProfile = PackagerReshapeProfile;
 
 export interface PackagerUnit {
     readonly actorId: string;
@@ -146,10 +155,10 @@ export interface PackagerUnit {
     getPlacementPreference?(fullAvailableWidth: number, context: PackagerContext): PackagerPlacementPreference | null | undefined;
 
     /**
-     * Declares the transform kinds this actor can legitimately perform as part
+     * Declares the reshape kinds this actor can legitimately perform as part
      * of the runtime simulation.
      */
-    getTransformProfile?(): PackagerTransformProfile | null | undefined;
+    getReshapeProfile?(): PackagerReshapeProfile | null | undefined;
 
     /**
      * The minimum width at which this actor considers a placement frame worth
@@ -175,7 +184,7 @@ export interface PackagerUnit {
      * Allows stateful observers to reevaluate committed bulletin-board state at
      * controlled session checkpoints.
      */
-    observeCommittedSignals?(context: PackagerContext): ObservationResult | null | undefined;
+    observeCommittedState?(context: PackagerContext): ObservationResult | null | undefined;
 
     /**
      * Declares which committed signal topics should wake this actor.
@@ -203,9 +212,9 @@ export interface PackagerUnit {
     wantsSimulationTicks?(context: PackagerContext): boolean;
 
     /**
-     * Splits this unit.
+     * Reshapes this unit for a boundary crossing (split, morph, clone, etc.).
      */
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult;
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult;
 
     /**
      * Required height for the last materialized state (after emitBoxes).
@@ -217,8 +226,8 @@ export interface PackagerUnit {
 
     isUnbreakable(availableHeight: number): boolean;
 
-    getMarginTop(): number;
-    getMarginBottom(): number;
+    getLeadingSpacing(): number;
+    getTrailingSpacing(): number;
 
     readonly pageBreakBefore?: boolean;
     readonly keepWithNext?: boolean;
@@ -293,13 +302,13 @@ export function rejectsPlacementFrame(
     return false;
 }
 
-export function resolvePackagerTransformProfile(unit: PackagerUnit): PackagerTransformProfile | null {
-    const profile = unit.getTransformProfile?.();
+export function resolvePackagerReshapeProfile(unit: PackagerUnit): PackagerReshapeProfile | null {
+    const profile = unit.getReshapeProfile?.();
     if (!profile) {
         return null;
     }
 
-    const normalizedCapabilities = new Map<PackagerTransformKind, PackagerTransformCapability>();
+    const normalizedCapabilities = new Map<PackagerReshapeKind, PackagerReshapeCapability>();
 
     if (Array.isArray(profile.capabilities)) {
         for (const capability of profile.capabilities) {
@@ -314,8 +323,8 @@ export function resolvePackagerTransformProfile(unit: PackagerUnit): PackagerTra
         }
     }
 
-    if (Array.isArray(profile.supportedTransforms)) {
-        for (const kind of profile.supportedTransforms) {
+    if (Array.isArray(profile.supportedReshapes)) {
+        for (const kind of profile.supportedReshapes) {
             if (!normalizedCapabilities.has(kind)) {
                 normalizedCapabilities.set(kind, { kind });
             }
@@ -327,9 +336,14 @@ export function resolvePackagerTransformProfile(unit: PackagerUnit): PackagerTra
     }
 
     return {
-        supportedTransforms: Array.from(normalizedCapabilities.keys()),
+        supportedReshapes: Array.from(normalizedCapabilities.keys()),
         capabilities: Array.from(normalizedCapabilities.values())
     };
+}
+
+/** @deprecated Use resolvePackagerReshapeProfile */
+export function resolvePackagerTransformProfile(unit: PackagerUnit): PackagerReshapeProfile | null {
+    return resolvePackagerReshapeProfile(unit);
 }
 
 export function normalizeObservationResult(result: ObservationResult | null | undefined): ObservationResult | null {

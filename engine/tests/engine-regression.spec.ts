@@ -379,7 +379,7 @@ function assertTransformCapabilitySignals(
     assert.ok(capabilitySummary.length > 0, `${fixtureName}: expected transformCapabilitySummary entries`);
     for (const kind of requiredKinds) {
         assert.ok(
-            capabilitySummary.some((entry: any) => Array.isArray(entry?.supportedTransforms) && entry.supportedTransforms.includes(kind)),
+            capabilitySummary.some((entry: any) => Array.isArray(entry?.supportedReshapes) && entry.supportedReshapes.includes(kind)),
             `${fixtureName}: expected at least one actor capability entry for transform=${kind}`
         );
     }
@@ -404,7 +404,7 @@ function assertTransformCapabilitySourceSignals(
     assert.ok(entry, `${fixtureName}: expected transform capability entry for source=${sourceId}`);
     for (const kind of requiredKinds) {
         assert.ok(
-            Array.isArray(entry?.supportedTransforms) && entry.supportedTransforms.includes(kind),
+            Array.isArray(entry?.supportedReshapes) && entry.supportedReshapes.includes(kind),
             `${fixtureName}: expected source=${sourceId} to support transform=${kind}`
         );
     }
@@ -424,7 +424,7 @@ function assertTransformCapabilityActorKindSignals(
     assert.ok(entry, `${fixtureName}: expected transform capability entry for actorKind=${actorKind}`);
     for (const kind of requiredKinds) {
         assert.ok(
-            Array.isArray(entry?.supportedTransforms) && entry.supportedTransforms.includes(kind),
+            Array.isArray(entry?.supportedReshapes) && entry.supportedReshapes.includes(kind),
             `${fixtureName}: expected actorKind=${actorKind} to support transform=${kind}`
         );
     }

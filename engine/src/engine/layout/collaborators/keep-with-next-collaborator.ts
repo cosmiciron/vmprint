@@ -47,8 +47,8 @@ export function buildKeepWithNextPlanSignature(state: PaginationLoopState, obser
 }
 
 function computeUnitHeight(unit: PackagerUnit, prevSpacingAfter: number): { height: number; nextSpacingAfter: number } {
-    const unitMarginTop = unit.getMarginTop();
-    const unitMarginBottom = unit.getMarginBottom();
+    const unitMarginTop = unit.getLeadingSpacing();
+    const unitMarginBottom = unit.getTrailingSpacing();
     const unitLayoutBefore = resolveLayoutBefore(prevSpacingAfter, unitMarginTop);
     const unitContentHeight = Math.max(0, unit.getRequiredHeight() - unitMarginTop - unitMarginBottom);
     const unitRequiredHeight = unitContentHeight + unitLayoutBefore + unitMarginBottom;

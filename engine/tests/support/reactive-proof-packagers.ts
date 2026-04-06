@@ -161,14 +161,14 @@ export class TestSignalPublisherPackager implements PackagerUnit {
         return this.base.emitBoxes(availableWidth, availableHeight, context);
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
-        return this.base.split(availableHeight, context);
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
+        return this.base.reshape(availableHeight, context);
     }
 
     getRequiredHeight(): number { return this.base.getRequiredHeight(); }
     isUnbreakable(availableHeight: number): boolean { return this.base.isUnbreakable(availableHeight); }
-    getMarginTop(): number { return this.base.getMarginTop(); }
-    getMarginBottom(): number { return this.base.getMarginBottom(); }
+    getLeadingSpacing(): number { return this.base.getLeadingSpacing(); }
+    getTrailingSpacing(): number { return this.base.getTrailingSpacing(); }
 }
 
 export class TestSignalObserverPackager implements PackagerUnit {
@@ -250,15 +250,15 @@ export class TestSignalObserverPackager implements PackagerUnit {
         }));
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const packager = this.base ?? this.createDynamicPackager(context);
-        return packager.split(availableHeight, context);
+        return packager.reshape(availableHeight, context);
     }
 
     getRequiredHeight(): number { return this.base?.getRequiredHeight() ?? 0; }
     isUnbreakable(availableHeight: number): boolean { return this.base?.isUnbreakable(availableHeight) ?? false; }
-    getMarginTop(): number { return this.base?.getMarginTop() ?? this.flowBox.marginTop; }
-    getMarginBottom(): number { return this.base?.getMarginBottom() ?? this.flowBox.marginBottom; }
+    getLeadingSpacing(): number { return this.base?.getLeadingSpacing() ?? this.flowBox.marginTop; }
+    getTrailingSpacing(): number { return this.base?.getTrailingSpacing() ?? this.flowBox.marginBottom; }
 
     getCommittedSignalSubscriptions(): readonly string[] {
         const spec = (this.flowBox.properties?._actorSignalObserve || {}) as SignalObserveSpec;
@@ -501,15 +501,15 @@ export class TestSignalFollowerPackager implements PackagerUnit {
         return packager.emitBoxes(availableWidth, availableHeight, context);
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const packager = this.base ?? this.createDynamicPackager(context);
-        return packager.split(availableHeight, context);
+        return packager.reshape(availableHeight, context);
     }
 
     getRequiredHeight(): number { return this.base?.getRequiredHeight() ?? 0; }
     isUnbreakable(availableHeight: number): boolean { return this.base?.isUnbreakable(availableHeight) ?? false; }
-    getMarginTop(): number { return this.base?.getMarginTop() ?? this.flowBox.marginTop; }
-    getMarginBottom(): number { return this.base?.getMarginBottom() ?? this.flowBox.marginBottom; }
+    getLeadingSpacing(): number { return this.base?.getLeadingSpacing() ?? this.flowBox.marginTop; }
+    getTrailingSpacing(): number { return this.base?.getTrailingSpacing() ?? this.flowBox.marginBottom; }
 
     private readSignals(context: PackagerContext) {
         const spec = (this.flowBox.properties?._actorSignalFollow || {}) as SignalFollowSpec;
@@ -639,15 +639,15 @@ export class TestClockCookingPackager implements PackagerUnit {
         return packager.emitBoxes(availableWidth, availableHeight, context);
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const packager = this.base ?? this.createDynamicPackager(context);
-        return packager.split(availableHeight, context);
+        return packager.reshape(availableHeight, context);
     }
 
     getRequiredHeight(): number { return this.base?.getRequiredHeight() ?? 0; }
     isUnbreakable(availableHeight: number): boolean { return this.base?.isUnbreakable(availableHeight) ?? false; }
-    getMarginTop(): number { return this.base?.getMarginTop() ?? this.flowBox.marginTop; }
-    getMarginBottom(): number { return this.base?.getMarginBottom() ?? this.flowBox.marginBottom; }
+    getLeadingSpacing(): number { return this.base?.getLeadingSpacing() ?? this.flowBox.marginTop; }
+    getTrailingSpacing(): number { return this.base?.getTrailingSpacing() ?? this.flowBox.marginBottom; }
 
     wantsSimulationTicks(context: PackagerContext): boolean {
         if (this.firstCommittedPageIndex === null) {
@@ -834,15 +834,15 @@ export class TestAsyncThoughtPackager implements PackagerUnit {
         return packager.emitBoxes(availableWidth, availableHeight, context);
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const packager = this.base ?? this.createDynamicPackager(context);
-        return packager.split(availableHeight, context);
+        return packager.reshape(availableHeight, context);
     }
 
     getRequiredHeight(): number { return this.base?.getRequiredHeight() ?? 0; }
     isUnbreakable(availableHeight: number): boolean { return this.base?.isUnbreakable(availableHeight) ?? false; }
-    getMarginTop(): number { return this.base?.getMarginTop() ?? this.flowBox.marginTop; }
-    getMarginBottom(): number { return this.base?.getMarginBottom() ?? this.flowBox.marginBottom; }
+    getLeadingSpacing(): number { return this.base?.getLeadingSpacing() ?? this.flowBox.marginTop; }
+    getTrailingSpacing(): number { return this.base?.getTrailingSpacing() ?? this.flowBox.marginBottom; }
 
     private resolveThoughtResult(handle: unknown): Record<string, unknown> | null {
         if (!handle || typeof handle !== 'object') return null;
@@ -1313,15 +1313,15 @@ export class TestReplayMarkerPackager implements PackagerUnit {
         return packager.emitBoxes(availableWidth, availableHeight, context);
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const packager = this.base ?? this.createDynamicPackager(this.preparedRenderCount);
-        return packager.split(availableHeight, context);
+        return packager.reshape(availableHeight, context);
     }
 
     getRequiredHeight(): number { return this.base?.getRequiredHeight() ?? 0; }
     isUnbreakable(availableHeight: number): boolean { return this.base?.isUnbreakable(availableHeight) ?? false; }
-    getMarginTop(): number { return this.base?.getMarginTop() ?? this.flowBox.marginTop; }
-    getMarginBottom(): number { return this.base?.getMarginBottom() ?? this.flowBox.marginBottom; }
+    getLeadingSpacing(): number { return this.base?.getLeadingSpacing() ?? this.flowBox.marginTop; }
+    getTrailingSpacing(): number { return this.base?.getTrailingSpacing() ?? this.flowBox.marginBottom; }
 
     private createDynamicPackager(renderCount: number): FlowBoxPackager {
         const spec = (this.flowBox.properties?._testReplayMarker || {}) as ReplayMarkerSpec;

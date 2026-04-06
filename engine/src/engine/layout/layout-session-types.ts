@@ -6,7 +6,7 @@ import { getTailSplitPostAttemptOutcome } from './actor-formation';
 import type { LocalActorSignalSnapshot, SafeCheckpoint } from './actor-communication-runtime';
 import { LAYOUT_DEFAULTS } from './defaults';
 import type { LayoutSession } from './layout-session';
-import type { ObservationResult, PackagerContext, PackagerSplitResult, SpatialFrontier } from './packagers/packager-types';
+import type { ObservationResult, PackagerContext, PackagerReshapeResult, SpatialFrontier } from './packagers/packager-types';
 import type { PackagerUnit } from './packagers/packager-types';
 
 export type LayoutProfileMetrics = {
@@ -589,7 +589,7 @@ export type SplitAttempt = {
 
 export type SplitExecution = {
     attempt: SplitAttempt;
-    result: PackagerSplitResult;
+    result: PackagerReshapeResult;
 };
 
 export type PositionedSplitExecution = {
@@ -1032,7 +1032,7 @@ export interface Collaborator {
     onConstraintNegotiation?(actor: PackagerUnit, constraints: ConstraintField, session: LayoutSession): void;
     onActorPrepared?(actor: PackagerUnit, session: LayoutSession): void;
     onSplitAttempt?(attempt: SplitAttempt, session: LayoutSession): void;
-    onSplitAccepted?(attempt: SplitAttempt, result: PackagerSplitResult, session: LayoutSession): void;
+    onSplitAccepted?(attempt: SplitAttempt, result: PackagerReshapeResult, session: LayoutSession): void;
     onContinuationEnqueued?(predecessor: PackagerUnit, successor: PackagerUnit, session: LayoutSession): void;
     onActorCommitted?(actor: PackagerUnit, committed: Box[], surface: PageSurface, session: LayoutSession): void;
     onContinuationProduced?(predecessor: PackagerUnit, successor: PackagerUnit, session: LayoutSession): void;

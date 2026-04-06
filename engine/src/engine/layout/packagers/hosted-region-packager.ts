@@ -4,8 +4,8 @@ import type { NormalizedIndependentZoneStrip } from '../normalized-zone-strip';
 import {
     PackagerContext,
     PackagerPlacementPreference,
-    PackagerSplitResult,
-    PackagerTransformProfile,
+    PackagerReshapeResult,
+    PackagerReshapeProfile,
     PackagerUnit
 } from './packager-types';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
@@ -88,7 +88,7 @@ class FrozenHostedRegionPackager implements PackagerUnit {
         return { minimumWidth: fullAvailableWidth, acceptsFrame: true };
     }
 
-    getTransformProfile(): PackagerTransformProfile {
+    getReshapeProfile(): PackagerReshapeProfile {
         return {
             capabilities: [
                 { kind: 'split', preservesIdentity: true, producesContinuation: true }
@@ -130,14 +130,14 @@ class FrozenHostedRegionPackager implements PackagerUnit {
         });
     }
 
-    split(_availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+    reshape(_availableHeight: number, _context: PackagerContext): PackagerReshapeResult {
         return { currentFragment: null, continuationFragment: this };
     }
 
     getRequiredHeight(): number { return this.frozenHeight; }
     isUnbreakable(_availableHeight: number): boolean { return true; }
-    getMarginTop(): number { return this.marginTopVal; }
-    getMarginBottom(): number { return this.marginBottomVal; }
+    getLeadingSpacing(): number { return this.marginTopVal; }
+    getTrailingSpacing(): number { return this.marginBottomVal; }
 }
 
 export class HostedRegionPackager implements PackagerUnit {
@@ -493,7 +493,7 @@ export class HostedRegionPackager implements PackagerUnit {
         return { minimumWidth: fullAvailableWidth, acceptsFrame: true };
     }
 
-    getTransformProfile(): PackagerTransformProfile {
+    getReshapeProfile(): PackagerReshapeProfile {
         return { capabilities: [{ kind: 'morph', preservesIdentity: true, reflowsContent: true }] };
     }
 
@@ -584,10 +584,10 @@ export class HostedRegionPackager implements PackagerUnit {
         return !this.usesSpanningContinuation();
     }
 
-    getMarginTop(): number { return this.marginTopVal; }
-    getMarginBottom(): number { return this.marginBottomVal; }
+    getLeadingSpacing(): number { return this.marginTopVal; }
+    getTrailingSpacing(): number { return this.marginBottomVal; }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         if (!this.usesSpanningContinuation()) {
             return { currentFragment: null, continuationFragment: this };
         }

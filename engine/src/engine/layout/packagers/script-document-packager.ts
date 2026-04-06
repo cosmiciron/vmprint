@@ -11,7 +11,7 @@ import type {
     LayoutBox,
     ObservationResult,
     PackagerContext,
-    PackagerSplitResult,
+    PackagerReshapeResult,
     PackagerUnit,
     SpatialFrontier
 } from './packager-types';
@@ -964,7 +964,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return { changed: false, geometryChanged: false, updateKind: 'none' };
     }
 
-    split(): PackagerSplitResult {
+    reshape(): PackagerReshapeResult {
         return { currentFragment: this, continuationFragment: null };
     }
 
@@ -976,11 +976,11 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return true;
     }
 
-    getMarginTop(): number {
+    getLeadingSpacing(): number {
         return 0;
     }
 
-    getMarginBottom(): number {
+    getTrailingSpacing(): number {
         return 0;
     }
 }

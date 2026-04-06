@@ -15,8 +15,8 @@ import {
     LayoutBox,
     PackagerContext,
     PackagerPlacementPreference,
-    PackagerSplitResult,
-    PackagerTransformProfile,
+    PackagerReshapeResult,
+    PackagerReshapeProfile,
     PackagerUnit
 } from './packager-types';
 
@@ -89,7 +89,7 @@ class DropCapFragmentPackager implements PackagerUnit {
         };
     }
 
-    getTransformProfile(): PackagerTransformProfile {
+    getReshapeProfile(): PackagerReshapeProfile {
         return {
             capabilities: [
                 {
@@ -148,7 +148,7 @@ class DropCapFragmentPackager implements PackagerUnit {
         return boxes;
     }
 
-    split(_availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+    reshape(_availableHeight: number, _context: PackagerContext): PackagerReshapeResult {
         return { currentFragment: null, continuationFragment: this };
     }
 
@@ -160,11 +160,11 @@ class DropCapFragmentPackager implements PackagerUnit {
         return true;
     }
 
-    getMarginTop(): number {
+    getLeadingSpacing(): number {
         return this.wrap.marginTop;
     }
 
-    getMarginBottom(): number {
+    getTrailingSpacing(): number {
         return this.body ? Math.max(0, this.body.marginBottom) : Math.max(0, this.wrap.marginBottom);
     }
 }
@@ -628,7 +628,7 @@ export class DropCapPackager implements PackagerUnit {
         };
     }
 
-    getTransformProfile(): PackagerTransformProfile {
+    getReshapeProfile(): PackagerReshapeProfile {
         return {
             capabilities: [
                 {
@@ -675,7 +675,7 @@ export class DropCapPackager implements PackagerUnit {
         return fragment.emitBoxes(availableWidth, availableHeight, context);
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         if (this.isUnbreakable(availableHeight)) {
             return { currentFragment: null, continuationFragment: this };
         }
@@ -736,13 +736,13 @@ export class DropCapPackager implements PackagerUnit {
         return false;
     }
 
-    getMarginTop(): number {
+    getLeadingSpacing(): number {
         if (this.cachedParts) return this.cachedParts.wrap.marginTop;
         const flowBox = (this.processor as any).shapeElement(this.element, { path: [this.index] }) as FlowBox;
         return flowBox.marginTop || 0;
     }
 
-    getMarginBottom(): number {
+    getTrailingSpacing(): number {
         if (this.cachedParts) {
             return this.cachedParts.body
                 ? Math.max(0, this.cachedParts.body.marginBottom)

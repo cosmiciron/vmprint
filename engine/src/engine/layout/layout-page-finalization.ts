@@ -5,7 +5,7 @@ import {
 } from './layout-session';
 import type { Collaborator, PageOverrideState, PageSurface } from './layout-session-types';
 import type { ActorSignal } from './actor-event-bus';
-import type { LayoutBox, ObservationResult, PackagerContext, PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
+import type { LayoutBox, ObservationResult, PackagerContext, PackagerReshapeResult, PackagerUnit } from './packagers/packager-types';
 
 type RegionRect = {
     x: number;
@@ -454,7 +454,7 @@ class ReactivePageRegionActor implements PackagerUnit {
         return ['pagination:finalized'];
     }
 
-    split(_availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+    reshape(_availableHeight: number, _context: PackagerContext): PackagerReshapeResult {
         return {
             currentFragment: this,
             continuationFragment: null
@@ -469,11 +469,11 @@ class ReactivePageRegionActor implements PackagerUnit {
         return true;
     }
 
-    getMarginTop(): number {
+    getLeadingSpacing(): number {
         return 0;
     }
 
-    getMarginBottom(): number {
+    getTrailingSpacing(): number {
         return 0;
     }
 

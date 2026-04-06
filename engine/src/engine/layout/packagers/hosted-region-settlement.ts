@@ -109,7 +109,7 @@ class HostedRegionCarryoverFieldPackager implements PackagerUnit {
 
     prepare(_availableWidth: number, _availableHeight: number, _context: PackagerContext): void {}
     getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext) { return { minimumWidth: fullAvailableWidth }; }
-    getTransformProfile() { return { capabilities: [] }; }
+    getReshapeProfile() { return { capabilities: [] }; }
     emitBoxes(_availableWidth: number, _availableHeight: number, context: PackagerContext): Box[] {
         return this.boxesTemplate.map((box) => ({
             ...box,
@@ -119,9 +119,9 @@ class HostedRegionCarryoverFieldPackager implements PackagerUnit {
     }
     getRequiredHeight(): number { return Math.max(0, this.boxesTemplate[0]?.h || 0); }
     isUnbreakable(_availableHeight: number): boolean { return true; }
-    getMarginTop(): number { return 0; }
-    getMarginBottom(): number { return 0; }
-    split(_availableHeight: number, _context: PackagerContext) { return { currentFragment: null, continuationFragment: this }; }
+    getLeadingSpacing(): number { return 0; }
+    getTrailingSpacing(): number { return 0; }
+    reshape(_availableHeight: number, _context: PackagerContext) { return { currentFragment: null, continuationFragment: this }; }
 }
 
 function readHostedRegionFieldDirective(boxes: Box[]): SpatialFieldDirective | null {
@@ -737,7 +737,7 @@ function trySplitHostedRegionTextPlacement(
             processor,
             availableWidth,
             0,
-            candidate.continuationEntry.actor.getMarginTop(),
+            candidate.continuationEntry.actor.getLeadingSpacing(),
             continuationFields.length > 0 ? continuationFields : activeFields
         );
         if (
@@ -778,8 +778,8 @@ function placePackagersInHostedRegion(
         const actor = entry.actor;
         const fieldDirective = readHostedRegionElementFieldDirective(entry.element);
         const actorZIndex = resolveHostedRegionActorZIndex(entry.element);
-        const marginTop = actor.getMarginTop();
-        const marginBottom = actor.getMarginBottom();
+        const marginTop = actor.getLeadingSpacing();
+        const marginBottom = actor.getTrailingSpacing();
         const layoutBefore = lastSpacingAfter + marginTop;
         const layoutDelta = lastSpacingAfter;
         const blockTop = currentY + layoutDelta;
@@ -940,8 +940,8 @@ export function runHostedRegionSessionBounded(
         const actor = entry.actor;
         const fieldDirective = readHostedRegionElementFieldDirective(entry.element);
         const actorZIndex = resolveHostedRegionActorZIndex(entry.element);
-        const marginTop = actor.getMarginTop();
-        const marginBottom = actor.getMarginBottom();
+        const marginTop = actor.getLeadingSpacing();
+        const marginBottom = actor.getTrailingSpacing();
         const layoutBefore = lastSpacingAfter + marginTop;
         const layoutDelta = lastSpacingAfter;
         const remainingHeight = Math.max(0, availableHeight - currentY - layoutDelta);
@@ -1151,7 +1151,7 @@ export function runHostedRegionSessionBounded(
             };
         }
 
-        const split = actor.split(remainingHeight, context);
+        const split = actor.reshape(remainingHeight, context);
         if (split.currentFragment) {
             const emitted = split.currentFragment.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
             for (const box of annotateHostedActorBoxes(split.currentFragment, emitted)) {
@@ -1162,8 +1162,8 @@ export function runHostedRegionSessionBounded(
                 });
             }
 
-            const splitMarginTop = split.currentFragment.getMarginTop();
-            const splitMarginBottom = split.currentFragment.getMarginBottom();
+            const splitMarginTop = split.currentFragment.getLeadingSpacing();
+            const splitMarginBottom = split.currentFragment.getTrailingSpacing();
             const splitContentHeight = Math.max(
                 0,
                 split.currentFragment.getRequiredHeight() - splitMarginTop - splitMarginBottom

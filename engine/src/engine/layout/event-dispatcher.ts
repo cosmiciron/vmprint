@@ -1,5 +1,5 @@
 import type { Box } from '../types';
-import type { PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
+import type { PackagerReshapeResult, PackagerUnit } from './packagers/packager-types';
 import type { LayoutSession } from './layout-session';
 import type { Collaborator, ConstraintField, PageSurface, SplitAttempt } from './layout-session-types';
 
@@ -44,7 +44,7 @@ export class EventDispatcher {
         }
     }
 
-    onSplitAccepted(attempt: SplitAttempt, result: PackagerSplitResult, session: LayoutSession): void {
+    onSplitAccepted(attempt: SplitAttempt, result: PackagerReshapeResult, session: LayoutSession): void {
         for (const collaborator of this.collaborators) {
             collaborator.onSplitAccepted?.(attempt, result, session);
         }

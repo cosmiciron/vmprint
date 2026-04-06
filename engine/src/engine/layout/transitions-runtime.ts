@@ -5,7 +5,7 @@ import {
     resolvePackagerChunkOriginWorldY,
     type PackagerContext
 } from './packagers/packager-types';
-import type { PackagerSplitResult, PackagerUnit } from './packagers/packager-types';
+import type { PackagerReshapeResult, PackagerUnit } from './packagers/packager-types';
 import type {
     AcceptedSplitQueueHandling,
     ActorSplitFailureResolution,
@@ -85,7 +85,7 @@ export type TransitionsRuntimeHost = {
     ): LocalBranchSnapshot;
     acceptAndCommitSplitFragment(
         attempt: SplitAttempt,
-        result: PackagerSplitResult,
+        result: PackagerReshapeResult,
         boxes: readonly Box[],
         state: SplitFragmentAftermathState,
         positionMarker: SplitMarkerPositioner
@@ -131,7 +131,7 @@ export type TransitionsRuntimeHost = {
     ): {
         execution: {
             attempt: SplitAttempt;
-            result: PackagerSplitResult;
+            result: PackagerReshapeResult;
         };
         layoutDelta: number;
         emitAvailableHeight: number;
@@ -214,7 +214,7 @@ export class TransitionsRuntime {
         predecessor: PackagerUnit,
         continuation: PackagerUnit | null | undefined,
         attempt: SplitAttempt,
-        result: PackagerSplitResult,
+        result: PackagerReshapeResult,
         boxes: readonly Box[],
         state: SplitFragmentAftermathState,
         positionMarker: SplitMarkerPositioner
@@ -263,7 +263,7 @@ export class TransitionsRuntime {
         predecessor: PackagerUnit,
         continuation: PackagerUnit | null | undefined,
         attempt: SplitAttempt,
-        result: PackagerSplitResult,
+        result: PackagerReshapeResult,
         boxes: readonly Box[],
         state: SplitFragmentAftermathState,
         positionMarker: SplitMarkerPositioner
@@ -310,7 +310,7 @@ export class TransitionsRuntime {
         predecessor: PackagerUnit,
         continuation: PackagerUnit | null | undefined,
         attempt: SplitAttempt,
-        result: PackagerSplitResult,
+        result: PackagerReshapeResult,
         boxes: readonly Box[],
         state: SplitFragmentAftermathState,
         positionMarker: SplitMarkerPositioner
@@ -654,7 +654,7 @@ export class TransitionsRuntime {
         predecessor: PackagerUnit,
         continuation: PackagerUnit | null | undefined,
         attempt: SplitAttempt,
-        result: PackagerSplitResult,
+        result: PackagerReshapeResult,
         currentFragment: PackagerUnit,
         currentBoxes: readonly Box[],
         state: SplitFragmentAftermathState,
@@ -815,8 +815,8 @@ export class TransitionsRuntime {
             state.currentY,
             pageHeight
         );
-        const fitsMarginBottom = fitsCurrent.getMarginBottom();
-        const fitsMarginTop = fitsCurrent.getMarginTop();
+        const fitsMarginBottom = fitsCurrent.getTrailingSpacing();
+        const fitsMarginTop = fitsCurrent.getLeadingSpacing();
         const fitsLayoutBefore = state.lastSpacingAfter + fitsMarginTop;
         const fitsLayoutDelta = fitsLayoutBefore - fitsMarginTop;
         const deferredSplitCursorY = resolveDeferredCursorY(fitsCurrent);

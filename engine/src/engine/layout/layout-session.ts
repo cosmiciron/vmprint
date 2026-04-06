@@ -5,7 +5,7 @@ import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
 import type { PackagerUnit } from './packagers/packager-types';
 import type { ObservationResult, PackagerContext, SpatialFrontier } from './packagers/packager-types';
-import type { PackagerSplitResult } from './packagers/packager-types';
+import type { PackagerReshapeResult } from './packagers/packager-types';
 import { bindPackagerSignalPublisher, resolvePackagerZIndex } from './packagers/packager-types';
 import { AIRuntime } from './ai-runtime';
 import type { ActorSignal, ActorSignalDraft } from './actor-event-bus';
@@ -956,7 +956,7 @@ export class LayoutSession {
         this.notifySplitAttempt(attempt);
         return {
             attempt,
-            result: actor.split(availableHeight, context)
+            result: actor.reshape(availableHeight, context)
         };
     }
 
@@ -970,7 +970,7 @@ export class LayoutSession {
         markerReserve: number,
         contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>
     ): PositionedSplitExecution {
-        const marginTop = actor.getMarginTop();
+        const marginTop = actor.getLeadingSpacing();
         const layoutBefore = lastSpacingAfter + marginTop;
         const layoutDelta = layoutBefore - marginTop;
         const emitAvailableHeight = (pageLimit - currentY) - layoutDelta;
@@ -992,7 +992,7 @@ export class LayoutSession {
         };
     }
 
-    notifySplitAccepted(attempt: SplitAttempt, result: PackagerSplitResult): void {
+    notifySplitAccepted(attempt: SplitAttempt, result: PackagerReshapeResult): void {
         this.kernel.registerSplitAccepted(attempt, result);
         this.eventDispatcher.onSplitAccepted(attempt, result, this);
     }

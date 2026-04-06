@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { LayoutEngine } from '../src/engine/layout-engine';
-import { resolveDocumentPaths, toLayoutConfig, type DocumentIR } from '../src';
+import { parseDocumentSourceText, resolveDocumentPaths, toLayoutConfig, type DocumentIR } from '../src';
 import { HARNESS_REGRESSION_CASES_DIR, loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
 import { getAstFixturePath, listAstFixtureNames } from './harness/ast-fixture-harness';
@@ -34,7 +34,7 @@ async function run(): Promise<void> {
         const fixturePath = getAstFixturePath(fixtureName);
         const snapshotPath = resolveSnapshotPath(fixtureName);
 
-        const rawDocument = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+        const rawDocument = parseDocumentSourceText(fs.readFileSync(fixturePath, 'utf8'), fixturePath);
         const sourceDocument = resolveDocumentPaths(
             rawDocument,
             fixturePath

@@ -1040,7 +1040,7 @@ async function main() {
                 { index: 1, x: 192, w: 180, h: 120 }
             ]);
             packager.prepare(availableWidth, availableHeight, context);
-            const split = packager.split(availableHeight, context);
+            const split = packager.reshape(availableHeight, context);
             const continuation = split.continuationFragment as any;
 
             assert.ok(split.currentFragment, 'expected a current fragment for the uneven-region story');
@@ -1306,7 +1306,7 @@ async function main() {
             const availableWidth = 372;
             const availableHeight = 180;
             packager.prepare(availableWidth, availableHeight, pageOneContext);
-            const split = packager.split(availableHeight, pageOneContext);
+            const split = packager.reshape(availableHeight, pageOneContext);
             const continuation = split.continuationFragment as any;
 
             assert.ok(split.currentFragment, 'expected a current story fragment');
@@ -1430,7 +1430,7 @@ async function main() {
                         meta: { sourceId: this.label, pageIndex: context.pageIndex }
                     } as any];
                 }
-                split(availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+                reshape(availableHeight: number, _context: PackagerContext): PackagerReshapeResult {
                     if (this.continuation && availableHeight < this.requiredHeight) {
                         return {
                             currentFragment: new MockSplitActor(`${this.label}-partA`, Math.max(1, availableHeight)),
@@ -1441,8 +1441,8 @@ async function main() {
                 }
                 getRequiredHeight(): number { return this.requiredHeight; }
                 isUnbreakable(): boolean { return false; }
-                getMarginTop(): number { return 0; }
-                getMarginBottom(): number { return 0; }
+                getLeadingSpacing(): number { return 0; }
+                getTrailingSpacing(): number { return 0; }
             }
 
             const storyElement = {
@@ -1485,7 +1485,7 @@ async function main() {
             };
 
             packager.prepare(372, 120, context);
-            const split = packager.split(120, context);
+            const split = packager.reshape(120, context);
             assert.ok(split.currentFragment, 'expected a current story fragment');
             assert.ok(split.continuationFragment, 'expected a continuation story fragment');
 
@@ -1531,7 +1531,7 @@ async function main() {
                         meta: { sourceId: this.label, pageIndex: context.pageIndex }
                     } as any];
                 }
-                split(availableHeight: number, _context: PackagerContext): PackagerSplitResult {
+                reshape(availableHeight: number, _context: PackagerContext): PackagerReshapeResult {
                     if (this.continuation && availableHeight < this.requiredHeight) {
                         return {
                             currentFragment: new MockSplitActorSolo(`${this.label}-partA`, Math.max(1, availableHeight)),
@@ -1542,8 +1542,8 @@ async function main() {
                 }
                 getRequiredHeight(): number { return this.requiredHeight; }
                 isUnbreakable(): boolean { return false; }
-                getMarginTop(): number { return 0; }
-                getMarginBottom(): number { return 0; }
+                getLeadingSpacing(): number { return 0; }
+                getTrailingSpacing(): number { return 0; }
             }
 
             const storyElement = {
@@ -1584,7 +1584,7 @@ async function main() {
             };
 
             packager.prepare(372, 120, context);
-            const split = packager.split(120, context);
+            const split = packager.reshape(120, context);
             assert.ok(split.currentFragment, 'expected a current story fragment');
             assert.ok(split.continuationFragment, 'expected a continuation fragment even without later source children');
 

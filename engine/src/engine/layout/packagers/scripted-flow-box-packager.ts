@@ -15,8 +15,8 @@ import type {
     ObservationResult,
     PackagerContext,
     PackagerPlacementPreference,
-    PackagerSplitResult,
-    PackagerTransformProfile,
+    PackagerReshapeResult,
+    PackagerReshapeProfile,
     PackagerUnit,
     SpatialFrontier
 } from './packager-types';
@@ -911,8 +911,8 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         return this.inner.getPlacementPreference?.(fullAvailableWidth, context) ?? null;
     }
 
-    getTransformProfile(): PackagerTransformProfile | null | undefined {
-        return this.inner.getTransformProfile?.();
+    getReshapeProfile(): PackagerReshapeProfile | null | undefined {
+        return this.inner.getReshapeProfile?.();
     }
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] | null {
@@ -1012,8 +1012,8 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         };
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
-        return this.inner.split(availableHeight, context);
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
+        return this.inner.reshape(availableHeight, context);
     }
 
     getRequiredHeight(): number {
@@ -1032,11 +1032,11 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         return this.inner.isUnbreakable(availableHeight);
     }
 
-    getMarginTop(): number {
-        return this.inner.getMarginTop();
+    getLeadingSpacing(): number {
+        return this.inner.getLeadingSpacing();
     }
 
-    getMarginBottom(): number {
-        return this.inner.getMarginBottom();
+    getTrailingSpacing(): number {
+        return this.inner.getTrailingSpacing();
     }
 }

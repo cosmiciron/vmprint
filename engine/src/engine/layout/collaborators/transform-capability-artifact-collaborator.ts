@@ -1,14 +1,14 @@
-import type { PackagerTransformCapability } from '../packagers/packager-types';
+import type { PackagerReshapeCapability } from '../packagers/packager-types';
 import type { Collaborator } from '../layout-session-types';
 import { LayoutSession } from '../layout-session';
 import { simulationArtifactKeys } from '../simulation-report';
-import { resolvePackagerTransformProfile } from '../packagers/packager-types';
+import { resolvePackagerReshapeProfile } from '../packagers/packager-types';
 
 export type TransformCapabilitySummary = {
     sourceId: string;
     actorKind: string;
-    supportedTransforms: string[];
-    capabilities: PackagerTransformCapability[];
+    supportedReshapes: string[];
+    capabilities: PackagerReshapeCapability[];
 };
 
 export class TransformCapabilityArtifactCollaborator implements Collaborator {
@@ -16,7 +16,7 @@ export class TransformCapabilityArtifactCollaborator implements Collaborator {
         const summaries = new Map<string, TransformCapabilitySummary>();
 
         for (const actor of session.getRegisteredActors()) {
-            const profile = resolvePackagerTransformProfile(actor);
+            const profile = resolvePackagerReshapeProfile(actor);
             if (!profile) continue;
 
             const key = `${actor.sourceId}::${actor.actorKind}`;
@@ -25,14 +25,14 @@ export class TransformCapabilityArtifactCollaborator implements Collaborator {
                 summaries.set(key, {
                     sourceId: actor.sourceId,
                     actorKind: actor.actorKind,
-                    supportedTransforms: [...(profile.supportedTransforms || [])].sort(),
+                    supportedReshapes: [...(profile.supportedReshapes || [])].sort(),
                     capabilities: [...(profile.capabilities || [])].sort((a, b) => a.kind.localeCompare(b.kind))
                 });
                 continue;
             }
 
-            existing.supportedTransforms = Array.from(
-                new Set([...existing.supportedTransforms, ...(profile.supportedTransforms || [])])
+            existing.supportedReshapes = Array.from(
+                new Set([...existing.supportedReshapes, ...(profile.supportedReshapes || [])])
             ).sort();
             const capabilityMap = new Map(existing.capabilities.map((capability) => [capability.kind, capability] as const));
             for (const capability of profile.capabilities || []) {

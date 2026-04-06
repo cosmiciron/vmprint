@@ -6,8 +6,8 @@ import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIden
 import {
     PackagerContext,
     PackagerPlacementPreference,
-    PackagerSplitResult,
-    PackagerTransformProfile,
+    PackagerReshapeResult,
+    PackagerReshapeProfile,
     PackagerUnit,
     resolvePackagerChunkOriginWorldY
 } from './packager-types';
@@ -124,7 +124,7 @@ export class SpatialGridPackager implements PackagerUnit {
         };
     }
 
-    getTransformProfile(): PackagerTransformProfile {
+    getReshapeProfile(): PackagerReshapeProfile {
         return {
             capabilities: [
                 {
@@ -200,15 +200,15 @@ export class SpatialGridPackager implements PackagerUnit {
         return false;
     }
 
-    getMarginTop(): number {
+    getLeadingSpacing(): number {
         return this.flowBox.marginTop;
     }
 
-    getMarginBottom(): number {
+    getTrailingSpacing(): number {
         return this.flowBox.marginBottom;
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         this.materialize(this.lastAvailableWidth);
         if (this.isUnbreakable(availableHeight)) {
             return { currentFragment: null, continuationFragment: this };
