@@ -13,6 +13,8 @@ export type PageNumberSummary = {
 };
 
 export class PageNumberArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onSimulationComplete(host: CollaboratorHost): void {
         const summaries: PageNumberSummary[] = host.getPageFinalizationStates().map((state) => ({
             pageIndex: state.pageIndex,

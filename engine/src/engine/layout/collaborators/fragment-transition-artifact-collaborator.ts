@@ -15,6 +15,8 @@ export type FragmentationSummary = {
 };
 
 export class FragmentTransitionArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onSimulationComplete(host: CollaboratorHost): void {
         const summaries: FragmentationSummary[] = host.getFragmentTransitionSourceIds().map((sourceActorId) => {
             const summary: FragmentationSummary = {

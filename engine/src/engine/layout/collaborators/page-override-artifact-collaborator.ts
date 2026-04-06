@@ -11,6 +11,8 @@ export type PageOverrideSummary = {
 };
 
 export class PageOverrideArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onSimulationComplete(host: CollaboratorHost): void {
         const summaries: PageOverrideSummary[] = host.getPageFinalizationStates().map((state) => ({
             pageIndex: state.pageIndex,

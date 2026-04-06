@@ -18,6 +18,8 @@ export type PageSpatialConstraintSummary = {
 };
 
 export class PageSpatialConstraintArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onSimulationComplete(host: CollaboratorHost): void {
         const summary = host.getSpatialConstraintPageIndices().map((pageIndex) => {
             const reservations = host.getPageReservations(pageIndex);

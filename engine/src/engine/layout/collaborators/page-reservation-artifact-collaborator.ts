@@ -12,6 +12,8 @@ export type PageReservationSummary = {
 };
 
 export class PageReservationArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onSimulationComplete(host: CollaboratorHost): void {
         const startedAt = performance.now();
         const summaries = host.getReservationPageIndices().map((pageIndex) => {

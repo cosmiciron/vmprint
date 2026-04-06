@@ -1,6 +1,6 @@
-import type { CollaboratorHost } from '../layout-host-types';
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Element } from '../../types';
-import type { Collaborator } from '../layout-host-types';
+import type { Collaborator } from '../layout-session-types';
 
 import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../script-runtime-host';
 

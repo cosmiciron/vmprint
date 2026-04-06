@@ -8,6 +8,8 @@ import { simulationArtifactKeys } from '../simulation-report';
 export type InteractionArtifactSummary = VmprintInteractionPage[];
 
 export class InteractionArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     constructor(
         private readonly layout: LayoutConfig['layout']
     ) { }

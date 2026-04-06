@@ -199,6 +199,12 @@ export interface PackagerUnit {
     updateCommittedState?(context: PackagerContext): ObservationResult | null | undefined;
 
     /**
+     * @deprecated Use observeCommittedState() or updateCommittedState().
+     * Retained as a compatibility fallback for older reactive actors.
+     */
+    observeCommittedSignals?(context: PackagerContext): ObservationResult | null | undefined;
+
+    /**
      * Optional kernel-owned stepped update entrypoint.
      * Called once per simulation tick for actors that opt into active stepping.
      */

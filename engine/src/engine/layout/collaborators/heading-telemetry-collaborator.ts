@@ -70,6 +70,8 @@ function normalizeHeadingText(text: string): string {
 }
 
 export class HeadingTelemetryCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     private readonly headings = new Map<string, HeadingTelemetrySummary>();
 
     onSimulationStart(): void {

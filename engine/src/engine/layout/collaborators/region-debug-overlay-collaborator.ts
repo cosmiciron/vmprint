@@ -21,6 +21,8 @@ function regionKey(region: DebugRegion): string {
 }
 
 export class RegionDebugOverlayCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onActorCommitted(actor: PackagerUnit, _committed: Box[], surface: PageSurface, _host: CollaboratorHost): void {
         const debugActor = actor as DebugRegionActor;
         const regions = debugActor.getDebugRegions?.();

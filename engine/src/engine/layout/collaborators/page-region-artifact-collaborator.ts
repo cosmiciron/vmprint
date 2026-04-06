@@ -9,6 +9,8 @@ export type {
 } from '../page-region-summary';
 
 export class PageRegionArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onSimulationComplete(host: CollaboratorHost): void {
         host.publishArtifact(
             simulationArtifactKeys.pageRegionSummary,

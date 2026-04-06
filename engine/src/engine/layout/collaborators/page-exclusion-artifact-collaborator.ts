@@ -11,6 +11,8 @@ export type PageExclusionSummary = {
 };
 
 export class PageExclusionArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onSimulationComplete(host: CollaboratorHost): void {
         const summary = host.getExclusionPageIndices().map((pageIndex) => {
             const exclusions = host.getPageExclusions(pageIndex);

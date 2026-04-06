@@ -13,6 +13,8 @@ export type TransformCapabilitySummary = {
 };
 
 export class TransformCapabilityArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onSimulationComplete(host: CollaboratorHost): void {
         const summaries = new Map<string, TransformCapabilitySummary>();
 

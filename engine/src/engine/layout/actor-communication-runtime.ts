@@ -119,7 +119,8 @@ export class ActorCommunicationRuntime<
         }
         const hasCommittedUpdater =
             typeof actor.updateCommittedState === 'function'
-            || typeof actor.observeCommittedState === 'function';
+            || typeof actor.observeCommittedState === 'function'
+            || typeof actor.observeCommittedSignals === 'function';
         if (!hasCommittedUpdater) return;
 
         this.observerRegistry.set(actor.actorId, actor);
@@ -378,6 +379,7 @@ export class ActorCommunicationRuntime<
                 const result = normalizeObservationResult(
                     observer.updateCommittedState?.(context)
                     ?? observer.observeCommittedState?.(context)
+                    ?? observer.observeCommittedSignals?.(context)
                 );
                 this.callbacks.recordProfile('actorUpdateMs', performance.now() - startedAt);
 

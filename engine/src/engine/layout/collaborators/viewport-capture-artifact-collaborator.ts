@@ -35,6 +35,8 @@ export type ViewportCaptureSummary = {
 };
 
 export class ViewportCaptureArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onSimulationComplete(host: CollaboratorHost): void {
         const summaries: ViewportCaptureSummary[] = host.getPageCaptures().map((record) => ({
             pageIndex: record.pageIndex,

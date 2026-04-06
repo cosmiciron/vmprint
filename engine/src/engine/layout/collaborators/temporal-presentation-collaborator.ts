@@ -95,6 +95,8 @@ function cloneTimeline(frames: TemporalPresentationTimeline): TemporalPresentati
 }
 
 export class TemporalPresentationCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     private readonly latestPages = new Map<number, TemporalPresentationPageSnapshot>();
     private frames: TemporalPresentationTimeline = [];
 

@@ -172,10 +172,10 @@ export class KeepWithNextCollaborator implements Collaborator {
         const state = host.getPaginationLoopState();
         if (!state) return;
         if (state.actorQueue[state.actorIndex] !== actor) return;
-        const signature = buildKeepWithNextPlanSignature(state, session);
+        const signature = buildKeepWithNextPlanSignature(state, host);
         if (host.getKeepWithNextPlan(actor.actorId, signature)) return;
         const t0 = performance.now();
-        const plan = computeKeepWithNextPlan(state, session);
+        const plan = computeKeepWithNextPlan(state, host);
         const t1 = performance.now();
         host.recordProfile('keepWithNextPlanCalls', 1);
         host.recordProfile('keepWithNextPlanMs', t1 - t0);

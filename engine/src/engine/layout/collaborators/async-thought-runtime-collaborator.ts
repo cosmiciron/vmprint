@@ -7,6 +7,8 @@ import { AsyncThoughtHost, type AsyncThoughtHandle } from '../async-thought-host
 export type AsyncThoughtSummary = AsyncThoughtHandle[];
 
 export class AsyncThoughtRuntimeCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     constructor(
         private readonly host: AsyncThoughtHost
     ) { }

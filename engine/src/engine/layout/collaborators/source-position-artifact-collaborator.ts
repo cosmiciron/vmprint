@@ -13,6 +13,8 @@ export type SourcePositionSummary = {
 };
 
 export class SourcePositionArtifactCollaborator implements Collaborator {
+    readonly mutationMode = 'observer' as const;
+
     onSimulationComplete(host: CollaboratorHost): void {
         const pages = host.getFinalizedPages();
         const summaries = new Map<string, SourcePositionSummary>();
