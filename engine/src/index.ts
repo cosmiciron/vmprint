@@ -5,7 +5,6 @@ export * from './engine/renderer';
 export * from './engine/interaction-model';
 export * from './font-management';
 export * from './font-management/ops';
-export { loadFont, getCachedFont, getCachedBuffer, registerFontBuffer } from './font-management/font-cache-loader';
 export * from './engine/spatial-document';
 export * from './engine/runtime';
 export * from './engine/layout/track-sizing';

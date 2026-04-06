@@ -9,10 +9,12 @@ export const createEngineRuntime = (options: EngineRuntimeOptions): EngineRuntim
         fontManager,
         fontRegistry: options.fontRegistry ? cloneFontRegistry(options.fontRegistry) : fontManager.getFontRegistrySnapshot(),
         textDelegate: options.textDelegate,
+        textDelegateState: {
+            faceCache: {},
+            bufferCache: {},
+            loadingPromises: {}
+        },
         measurementCache: new Map(),
-        fontCache: {},
-        bufferCache: {},
-        loadingPromises: {}
     };
 };
 

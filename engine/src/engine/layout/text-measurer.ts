@@ -1,13 +1,92 @@
-import type { MeasureTextOptions, MeasuredTextResult, TextDelegate, VerticalTextMetrics } from '@vmprint/contracts';
+import * as fontkit from 'fontkit';
+import type { FontManager, MeasureTextOptions, MeasuredTextResult, TextDelegate, TextDelegateState, VerticalTextMetrics } from '@vmprint/contracts';
+import { createAfmFontProxy } from '../../font-management/afm-proxy';
+import { attachStandardFontMetadata, parseStandardFontSentinelBuffer } from '../../font-management/sentinel';
 
 const fontVerticalMetricsCache = new WeakMap<object, VerticalTextMetrics>();
 
+export class TextDelegateLoadError extends Error {
+    constructor(public readonly url: string, message: string, options?: { cause?: unknown }) {
+        super(message);
+        this.name = 'TextDelegateLoadError';
+        if (options?.cause !== undefined) {
+            (this as Error & { cause?: unknown }).cause = options.cause;
+        }
+    }
+}
+
+const cloneShapedGlyphs = (glyphs: import('../types').ShapedGlyph[]): import('../types').ShapedGlyph[] =>
+    glyphs.map((glyph) => ({ ...glyph, codePoints: [...glyph.codePoints] }));
+
+const getClusterCodePoints = (cluster: string): number[] => {
+    const codePoints: number[] = [];
+    for (const ch of cluster) {
+        const cp = ch.codePointAt(0);
+        if (cp !== undefined) codePoints.push(cp);
+    }
+    return codePoints;
+};
+
+const isIgnorableCodePoint = (codePoint: number): boolean =>
+    codePoint === 0x200C ||
+    codePoint === 0x200D ||
+    (codePoint >= 0xFE00 && codePoint <= 0xFE0F) ||
+    (codePoint >= 0xE0100 && codePoint <= 0xE01EF);
+
 export class FontkitTextDelegate implements TextDelegate {
-    constructor(
-        private readonly getClusterCodePoints: (cluster: string) => number[],
-        private readonly isIgnorableCodePoint: (codePoint: number) => boolean,
-        private readonly cloneShapedGlyphs: (glyphs: import('../types').ShapedGlyph[]) => import('../types').ShapedGlyph[]
-    ) { }
+    loadFace(src: string, fontManager: FontManager, state: TextDelegateState): Promise<any> {
+        if (state.faceCache[src]) return Promise.resolve(state.faceCache[src]);
+        if (src in state.loadingPromises) return state.loadingPromises[src];
+
+        state.loadingPromises[src] = (async () => {
+            try {
+                const arrayBuffer = await fontManager.loadFontBuffer(src);
+                if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+                    throw new TextDelegateLoadError(src, 'Loaded font buffer is empty.');
+                }
+                state.bufferCache[src] = arrayBuffer;
+                const standardFontMetadata = parseStandardFontSentinelBuffer(arrayBuffer);
+                const face = standardFontMetadata
+                    ? attachStandardFontMetadata(createAfmFontProxy(standardFontMetadata), standardFontMetadata)
+                    : fontkit.create(new Uint8Array(arrayBuffer));
+                state.faceCache[src] = face;
+                return face;
+            } catch (e: unknown) {
+                delete state.faceCache[src];
+                delete state.bufferCache[src];
+                delete state.loadingPromises[src];
+                if (e instanceof TextDelegateLoadError) throw e;
+                throw new TextDelegateLoadError(src, `Failed to load font "${src}".`, { cause: e });
+            }
+        })();
+
+        return state.loadingPromises[src];
+    }
+
+    getCachedFace(src: string, state: TextDelegateState): any {
+        return state.faceCache[src];
+    }
+
+    getCachedBuffer(src: string, state: TextDelegateState): ArrayBuffer | undefined {
+        return state.bufferCache[src];
+    }
+
+    registerFaceBuffer(src: string, buffer: ArrayBuffer, state: TextDelegateState): void {
+        state.bufferCache[src] = buffer;
+        const standardFontMetadata = parseStandardFontSentinelBuffer(buffer);
+        state.faceCache[src] = standardFontMetadata
+            ? attachStandardFontMetadata(createAfmFontProxy(standardFontMetadata), standardFontMetadata)
+            : fontkit.create(new Uint8Array(buffer));
+        state.loadingPromises[src] = Promise.resolve(state.faceCache[src]);
+    }
+
+    getFaceCacheKey(face: any): string {
+        if (!face) return 'unknown';
+        if (!face._vmFontKey) {
+            face._vmFontKey = face.postscriptName || face.familyName || 'unknown';
+        }
+        return String(face._vmFontKey);
+    }
 
     getVerticalMetrics(font: any): VerticalTextMetrics {
         if (!font) {
@@ -34,8 +113,8 @@ export class FontkitTextDelegate implements TextDelegate {
 
     supportsCluster(font: any, cluster: string): boolean {
         if (!font || !cluster) return false;
-        for (const cp of this.getClusterCodePoints(cluster)) {
-            if (this.isIgnorableCodePoint(cp)) continue;
+        for (const cp of getClusterCodePoints(cluster)) {
+            if (isIgnorableCodePoint(cp)) continue;
             const glyph = font.glyphForCodePoint(cp);
             if (!glyph || glyph.id === 0) return false;
         }
@@ -132,7 +211,7 @@ export class FontkitTextDelegate implements TextDelegate {
         return {
             width,
             glyphs,
-            shapedGlyphs: isRtl ? this.cloneShapedGlyphs(shapedGlyphs) : undefined,
+            shapedGlyphs: isRtl ? cloneShapedGlyphs(shapedGlyphs) : undefined,
             ascent: metrics.ascent,
             descent: metrics.descent
         };

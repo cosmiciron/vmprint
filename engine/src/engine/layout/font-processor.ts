@@ -1,8 +1,8 @@
 import { BaseLayout } from './base-layout';
-import { loadFont, getCachedFont, FontLoadError } from '../../font-management/font-cache-loader';
 import { getEnabledFallbackFonts, getFontsByFamily } from '../../font-management/ops';
 import { LayoutConfig } from '../types';
 import { EngineRuntime } from '../runtime';
+import { FontkitTextDelegate, TextDelegateLoadError } from './text-measurer';
 
 export class FontProcessor extends BaseLayout {
     protected font: any = null;
@@ -24,6 +24,9 @@ export class FontProcessor extends BaseLayout {
 
     protected async initializeFont() {
         if (this.fontPromise) return this.fontPromise;
+        this.runtime.textDelegate = this.runtime.textDelegate || new FontkitTextDelegate();
+        const textDelegate = this.runtime.textDelegate;
+        const delegateState = this.runtime.textDelegateState;
 
         const enabledFallbacks = getEnabledFallbackFonts(this.runtime.fontRegistry, this.runtime.fontManager);
         const primaryFamily = this.config.fonts?.regular || this.config.layout.fontFamily;
@@ -31,14 +34,14 @@ export class FontProcessor extends BaseLayout {
         const primaryUrl = primaryFamilyFonts.find(f => f.style === 'normal' && f.weight === 400)?.src || primaryFamilyFonts[0]?.src;
 
         if (primaryUrl) {
-            const cached = getCachedFont(primaryUrl, this.runtime);
+            const cached = textDelegate.getCachedFace(primaryUrl, delegateState);
             if (cached) {
                 this.font = cached;
             }
         }
 
         this.fallbackFonts = enabledFallbacks
-            .map(f => getCachedFont(f.src, this.runtime))
+            .map(f => textDelegate.getCachedFace(f.src, delegateState))
             .filter(Boolean);
 
         this.fontPromise = (async () => {
@@ -62,7 +65,7 @@ export class FontProcessor extends BaseLayout {
                     console.warn(`[FontProcessor] Requested font family not registered: ${family}`);
                     continue;
                 }
-                familyFonts.forEach(f => loadPromises.push(loadFont(f.src, this.runtime)));
+                familyFonts.forEach(f => loadPromises.push(textDelegate.loadFace(f.src, this.runtime.fontManager, delegateState)));
             }
 
             await Promise.allSettled(loadPromises);
@@ -71,9 +74,9 @@ export class FontProcessor extends BaseLayout {
 
             if (!this.font) {
                 try {
-                    this.font = await loadFont(primaryUrl, this.runtime);
+                    this.font = await textDelegate.loadFace(primaryUrl, this.runtime.fontManager, delegateState);
                 } catch (e) {
-                    const details = e instanceof FontLoadError
+                    const details = e instanceof TextDelegateLoadError
                         ? `${e.message}${(e as Error & { cause?: unknown }).cause ? ` | cause: ${String((e as Error & { cause?: unknown }).cause)}` : ''}`
                         : String(e);
                     throw new Error(`[FontProcessor] Failed to load primary font "${primaryUrl}": ${details}`);
@@ -81,9 +84,9 @@ export class FontProcessor extends BaseLayout {
             }
 
             // Load fallbacks that weren't in cache
-            const missingFallbacks = enabledFallbacks.filter(f => !getCachedFont(f.src, this.runtime));
+            const missingFallbacks = enabledFallbacks.filter(f => !textDelegate.getCachedFace(f.src, delegateState));
             if (missingFallbacks.length > 0) {
-                const results = await Promise.allSettled(missingFallbacks.map(f => loadFont(f.src, this.runtime)));
+                const results = await Promise.allSettled(missingFallbacks.map(f => textDelegate.loadFace(f.src, this.runtime.fontManager, delegateState)));
                 const failures = results
                     .map((result, index) => ({ result, font: missingFallbacks[index] }))
                     .filter(({ result }) => result.status === 'rejected');
@@ -102,10 +105,12 @@ export class FontProcessor extends BaseLayout {
                     .filter(r => r.status === 'fulfilled' && r.value)
                     .map(r => (r as PromiseFulfilledResult<any>).value);
 
-                const currentSources = new Set(this.fallbackFonts.map(f => f.postscriptName));
+                const currentSources = new Set(this.fallbackFonts.map(f => textDelegate.getFaceCacheKey(f)));
                 newFallbacks.forEach(f => {
-                    if (!currentSources.has(f.postscriptName)) {
+                    const faceKey = textDelegate.getFaceCacheKey(f);
+                    if (!currentSources.has(faceKey)) {
                         this.fallbackFonts.push(f);
+                        currentSources.add(faceKey);
                     }
                 });
             }
@@ -114,5 +119,4 @@ export class FontProcessor extends BaseLayout {
         return this.fontPromise;
     }
 }
-
 

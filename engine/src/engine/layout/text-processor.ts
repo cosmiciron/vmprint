@@ -1,7 +1,6 @@
 import { FontProcessor } from './font-processor';
 import { Element, ElementStyle, RichLine, TextSegment } from '../types';
 import { getFallbackFamilies } from '../../font-management/ops';
-import { getCachedFont } from '../../font-management/font-cache-loader';
 import { LayoutUtils } from './layout-utils';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { StyleSignatureCache, appendSegmentToLine, flattenSegmentsByHardBreak, getLineWidthLimit, splitToGraphemes } from './text-wrap-utils';
@@ -35,11 +34,8 @@ export class TextProcessor extends FontProcessor {
 
     constructor(config: any, runtime?: any) {
         super(config, runtime);
-        this.textDelegate = runtime?.textDelegate || new FontkitTextDelegate(
-            (cluster) => this.getClusterCodePoints(cluster),
-            (codePoint) => this.isIgnorableCodePoint(codePoint),
-            (glyphs) => glyphs.map((glyph) => ({ ...glyph, codePoints: [...glyph.codePoints] }))
-        );
+        this.textDelegate = this.runtime.textDelegate || new FontkitTextDelegate();
+        this.runtime.textDelegate = this.textDelegate;
     }
 
 
@@ -316,11 +312,7 @@ export class TextProcessor extends FontProcessor {
         }
 
         // Cache Key: Unique string representing the font, size, letterSpacing and text with context.
-        // Intern fontKey on the font object to avoid repeated property traversal.
-        if (!measurementFont._vmFontKey) {
-            measurementFont._vmFontKey = measurementFont.postscriptName || measurementFont.familyName || 'unknown';
-        }
-        const fontKey: string = measurementFont._vmFontKey;
+        const fontKey: string = this.textDelegate.getFaceCacheKey(measurementFont);
         const ctxDirection = populateSegment?.direction || 'ltr';
         const ctxScriptClass = populateSegment?.scriptClass || 'none';
         const cacheKey = `${fontKey}-${measurementFontSize}-${letterSpacing}-${ctxScriptClass}-${ctxDirection}-${text}`;
@@ -384,7 +376,7 @@ export class TextProcessor extends FontProcessor {
 
     protected resolveLoadedFamilyFont(familyName: string, weight: number | string, style: string = 'normal'): any {
         const match = LayoutUtils.resolveFontMatch(familyName, weight, style, this.runtime.fontRegistry, this.runtime.fontManager);
-        const cached = getCachedFont(match.config.src, this.runtime);
+        const cached = this.textDelegate.getCachedFace(match.config.src, this.runtime.textDelegateState);
         if (!cached) {
             throw new Error(`[TextProcessor] Font "${match.config.name}" is not loaded. Call waitForFonts() before layout.`);
         }

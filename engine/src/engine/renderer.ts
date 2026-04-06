@@ -3,7 +3,7 @@ import {
     LayoutConfig,
     Page
 } from './types';
-import { Context, OverlayBox, OverlayContext, OverlayPage, OverlayProvider } from '@vmprint/contracts';
+import { Context, OverlayBox, OverlayContext, OverlayPage, OverlayProvider, TextDelegateState } from '@vmprint/contracts';
 import { LayoutUtils } from './layout/layout-utils';
 import { EngineRuntime, getDefaultEngineRuntime } from './runtime';
 import {
@@ -18,7 +18,6 @@ import {
 } from './render/box-paint';
 import { registerRendererFonts } from './render/font-registration';
 import { RendererImageBytesCache } from './render/image-bytes-cache';
-import { getCachedFont } from '../font-management/font-cache-loader';
 import { drawRichLines } from './render/rich-lines';
 import { buildParagraphMetrics, createLineFrameAccessors } from './render/rich-line-layout';
 
@@ -166,15 +165,17 @@ export class Renderer {
         let resolvedAscent = 750;
         try {
             const match = LayoutUtils.resolveFontMatch(family, weight, style, this.runtime.fontRegistry, this.runtime.fontManager);
-            const font = getCachedFont(match.config.src, this.runtime) as any;
+            const textDelegate = this.runtime.textDelegate as (typeof this.runtime.textDelegate & {
+                getCachedFace?: (src: string, state: TextDelegateState) => any;
+            }) | undefined;
+            const font = textDelegate?.getCachedFace?.(match.config.src, this.runtime.textDelegateState) as any;
             if (!font) {
                 this.fontAscentCache.set(cacheKey, resolvedAscent);
                 return resolvedAscent;
             }
-            const upm = Number(font.unitsPerEm);
-            const rawAscent = Number(font.ascent);
-            if (Number.isFinite(upm) && upm > 0 && Number.isFinite(rawAscent)) {
-                resolvedAscent = (rawAscent / upm) * 1000;
+            const metrics = textDelegate?.getVerticalMetrics(font);
+            if (metrics && Number.isFinite(metrics.ascent) && metrics.ascent > 0) {
+                resolvedAscent = metrics.ascent;
             }
         } catch {
             resolvedAscent = 750;

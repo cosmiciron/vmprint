@@ -1,5 +1,4 @@
 import { Context } from '@vmprint/contracts';
-import { getCachedBuffer, getCachedFont, loadFont } from '../../font-management/font-cache-loader';
 import { LayoutConfig, Page } from '../types';
 import { getStandardFontMetadata } from '../../font-management/sentinel';
 import { EngineRuntime } from '../runtime';
@@ -118,16 +117,20 @@ export const registerRendererFonts = async ({
         rendererFontRegistrationCache.set(context, cachedRegistrations);
     }
     const registeredIds = new Set<string>();
+    const textDelegate = runtime.textDelegate;
+    if (!textDelegate) {
+        throw new Error('[Renderer] Missing text delegate while registering renderer fonts.');
+    }
 
     for (const fontConfig of allFonts) {
-        let buffer = getCachedBuffer(fontConfig.config.src, runtime);
+        let buffer = textDelegate.getCachedBuffer(fontConfig.config.src, runtime.textDelegateState);
         if (!buffer || buffer.byteLength === 0) {
             try {
-                await loadFont(fontConfig.config.src, runtime);
+                await textDelegate.loadFace(fontConfig.config.src, runtime.fontManager, runtime.textDelegateState);
             } catch (e) {
                 console.warn(`[Renderer] Failed to load font "${fontConfig.config.src}"`, e);
             }
-            buffer = getCachedBuffer(fontConfig.config.src, runtime);
+            buffer = textDelegate.getCachedBuffer(fontConfig.config.src, runtime.textDelegateState);
         }
 
         if (buffer && buffer.byteLength > 0) {
@@ -137,7 +140,7 @@ export const registerRendererFonts = async ({
             if (cachedRegistrations.has(registrationKey)) continue;
             if (registeredIds.has(uniqueId)) continue;
             try {
-                const loadedFont = getCachedFont(fontConfig.config.src, runtime);
+                const loadedFont = textDelegate.getCachedFace(fontConfig.config.src, runtime.textDelegateState);
                 const standardMetadata = getStandardFontMetadata(loadedFont);
                 await context.registerFont(
                     uniqueId,

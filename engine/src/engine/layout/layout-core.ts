@@ -2,7 +2,6 @@ import { TextProcessor } from './text-processor';
 import { LayoutUtils } from './layout-utils';
 import { Box, BoxImagePayload, BoxMeta, Element, ElementStyle, OverflowPolicy, Page, PageRegionContent, RichLine, TextSegment } from '../types';
 import type { SimulationProgressionConfig } from '../types';
-import { getCachedFont } from '../../font-management/font-cache-loader';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
 import {
@@ -1145,7 +1144,7 @@ export class LayoutProcessor extends TextProcessor {
                     this.runtime.fontRegistry,
                     this.runtime.fontManager
                 );
-                const cached = getCachedFont(fontConfig.src, this.runtime);
+                const cached = this.getTextDelegate().getCachedFace(fontConfig.src, this.runtime.textDelegateState);
                 if (cached) measurementFont = cached;
             }
         }
