@@ -1,8 +1,8 @@
-import type { CollaboratorHost } from '../layout-session-types';
-import type { Box } from '../../types';
-import type { Collaborator, PageSurface } from '../layout-session-types';
+import type { CollaboratorHost } from '../../layout-session-types';
+import type { Box } from '../../../types';
+import type { Collaborator, PageSurface } from '../../layout-session-types';
 
-import type { PackagerUnit } from '../packagers/packager-types';
+import type { PackagerUnit } from '../../packagers/packager-types';
 
 export const HEADING_SIGNAL_TOPIC = 'heading:committed';
 

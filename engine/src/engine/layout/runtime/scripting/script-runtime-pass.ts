@@ -1,8 +1,8 @@
-import type { CollaboratorHost } from '../layout-session-types';
-import type { Element } from '../../types';
-import type { Collaborator } from '../layout-session-types';
+import type { CollaboratorHost } from '../../layout-session-types';
+import type { Element } from '../../../types';
+import type { Collaborator } from '../../layout-session-types';
 
-import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../script-runtime-host';
+import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../../script-runtime-host';
 
 type ScriptMessage = {
     subject: string;

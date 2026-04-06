@@ -14,15 +14,15 @@ import {
 } from './layout-core-types';
 import type { NormalizedFlowBlock } from './normalized-flow-block';
 import { getContinuationArtifactsWithCallbacks, splitFlowBoxWithCallbacks } from './layout-flow-splitting';
-import { ContinuationMarkerCollaborator } from './collaborators/continuation-marker-collaborator';
-import { PageReservationCollaborator } from './collaborators/page-reservation-collaborator';
-import { PageStartExclusionCollaborator } from './collaborators/page-start-exclusion-collaborator';
-import { PageStartReservationCollaborator } from './collaborators/page-start-reservation-collaborator';
+import { ContinuationMarkerCollaborator } from './runtime/passes/continuation-marker-pass';
+import { PageReservationCollaborator } from './runtime/passes/page-reservation-pass';
+import { PageStartExclusionCollaborator } from './runtime/passes/page-start-exclusion-pass';
+import { PageStartReservationCollaborator } from './runtime/passes/page-start-reservation-pass';
 import { FragmentTransitionArtifactCollaborator } from './collaborators/fragment-transition-artifact-collaborator';
 import { createMorphedBoxMeta, freezeFlowFragment } from './flow-fragment-state';
 import { HeadingTelemetryCollaborator } from './collaborators/heading-telemetry-collaborator';
-import { HeadingSignalCollaborator } from './collaborators/heading-signal-collaborator';
-import { PageRegionCollaborator } from './layout-page-finalization';
+import { HeadingSignalCollaborator } from './runtime/signals/heading-signal-publisher';
+import { PageRegionCollaborator } from './runtime/page-finalization/page-region-finalization';
 import { PageNumberArtifactCollaborator } from './collaborators/page-number-artifact-collaborator';
 import { PageOverrideArtifactCollaborator } from './collaborators/page-override-artifact-collaborator';
 import { PageExclusionArtifactCollaborator } from './collaborators/page-exclusion-artifact-collaborator';
@@ -39,7 +39,7 @@ import {
     SimulationReportReader
 } from './simulation-report';
 import { SourcePositionArtifactCollaborator } from './collaborators/source-position-artifact-collaborator';
-import { ScriptRuntimeCollaborator } from './collaborators/script-runtime-collaborator';
+import { ScriptRuntimeCollaborator } from './runtime/scripting/script-runtime-pass';
 import { ScriptRuntimeHost } from './script-runtime-host';
 import type { ScriptLifecycleState } from './script-runtime-host';
 import { TransformCapabilityArtifactCollaborator } from './collaborators/transform-capability-artifact-collaborator';
@@ -1290,39 +1290,54 @@ export class LayoutProcessor extends TextProcessor {
         const scriptRuntimeCollaborator = scriptRuntimeHost
             ? new ScriptRuntimeCollaborator(scriptRuntimeHost, elements, scriptLifecycleState ?? scriptRuntimeHost.createLifecycleState())
             : null;
+        const runtimePasses: Collaborator[] = [
+            new ContinuationMarkerCollaborator(),
+            new PageStartExclusionCollaborator(this.config),
+            new PageStartReservationCollaborator(this.config),
+            new PageReservationCollaborator(),
+        ];
+        const runtimeSignals: Collaborator[] = [
+            new HeadingSignalCollaborator(),
+        ];
+        const runtimeExperiments: Collaborator[] = [
+            ...(asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []),
+        ];
+        const pageFinalizationRuntime: Collaborator[] = [
+            new PageRegionCollaborator(this.config, {
+                layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
+                    this.layoutRegion(content, rect, pageIndex, sourceType, actorId)
+            }),
+        ];
+        const scriptingRuntime: Collaborator[] = [
+            ...(scriptRuntimeCollaborator ? [scriptRuntimeCollaborator] : []),
+        ];
+        const artifactCollaborators: Collaborator[] = [
+            new FragmentTransitionArtifactCollaborator(),
+            new TransformCapabilityArtifactCollaborator(),
+            new TransformArtifactCollaborator(),
+            new PageExclusionArtifactCollaborator(),
+            new PageNumberArtifactCollaborator(),
+            new PageOverrideArtifactCollaborator(),
+            new PageReservationArtifactCollaborator(),
+            new PageSpatialConstraintArtifactCollaborator(),
+            new PageRegionArtifactCollaborator(),
+            new SourcePositionArtifactCollaborator(),
+            new HeadingTelemetryCollaborator(),
+            new TemporalPresentationCollaborator(),
+            new InteractionArtifactCollaborator(this.config.layout),
+            new ViewportCaptureArtifactCollaborator(),
+            new RegionDebugOverlayCollaborator(),
+        ];
         return {
             scriptRuntimeHost,
             scriptRuntimeCollaborator,
             collaborators: [
-                // --- Coordinators: shape simulation behavior, run before observers ---
-                new ContinuationMarkerCollaborator(),
-                new PageStartExclusionCollaborator(this.config),
-                new PageStartReservationCollaborator(this.config),
-                new PageReservationCollaborator(),
-                new HeadingSignalCollaborator(),
-                ...(asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []),
-                new PageRegionCollaborator(this.config, {
-                    layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
-                        this.layoutRegion(content, rect, pageIndex, sourceType, actorId)
-                }),
-                ...(scriptRuntimeCollaborator ? [scriptRuntimeCollaborator] : []),
-
-                // --- Observers: read committed state, produce output artifacts ---
-                new FragmentTransitionArtifactCollaborator(),
-                new TransformCapabilityArtifactCollaborator(),
-                new TransformArtifactCollaborator(),
-                new PageExclusionArtifactCollaborator(),
-                new PageNumberArtifactCollaborator(),
-                new PageOverrideArtifactCollaborator(),
-                new PageReservationArtifactCollaborator(),
-                new PageSpatialConstraintArtifactCollaborator(),
-                new PageRegionArtifactCollaborator(),
-                new SourcePositionArtifactCollaborator(),
-                new HeadingTelemetryCollaborator(),
-                new TemporalPresentationCollaborator(),
-                new InteractionArtifactCollaborator(this.config.layout),
-                new ViewportCaptureArtifactCollaborator(),
-                new RegionDebugOverlayCollaborator(),
+                ...runtimePasses,
+                ...runtimeSignals,
+                ...runtimeExperiments,
+                ...pageFinalizationRuntime,
+                ...scriptingRuntime,
+                ...artifactCollaborators,
             ]
         };
     }

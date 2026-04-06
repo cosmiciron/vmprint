@@ -1,8 +1,8 @@
-import { Box, LayoutConfig, Page, PageRegionContent, PageRegionDefinition } from '../types';
-import { LayoutUtils } from './layout-utils';
-import type { Collaborator, CollaboratorHost, PageOverrideState, PageSurface } from './layout-session-types';
-import type { ActorSignal } from './actor-event-bus';
-import type { LayoutBox, ObservationResult, PackagerContext, PackagerReshapeResult, PackagerUnit } from './packagers/packager-types';
+import { Box, LayoutConfig, Page, PageRegionContent, PageRegionDefinition } from '../../../types';
+import { LayoutUtils } from '../../layout-utils';
+import type { Collaborator, CollaboratorHost, PageOverrideState, PageSurface } from '../../layout-session-types';
+import type { ActorSignal } from '../../actor-event-bus';
+import type { LayoutBox, ObservationResult, PackagerContext, PackagerReshapeResult, PackagerUnit } from '../../packagers/packager-types';
 
 type RegionRect = {
     x: number;

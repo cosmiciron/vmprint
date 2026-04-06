@@ -7,7 +7,7 @@ import {
     type KeepWithNextFormationPlan,
     type WholeFormationOverflowHandling
 } from './actor-formation';
-import { buildKeepWithNextPlanSignature, computeKeepWithNextPlan } from './collaborators/keep-with-next-collaborator';
+import { buildKeepWithNextPlanSignature, computeKeepWithNextPlan } from './runtime/passes/keep-with-next-pass';
 import {
     type KeepWithNextOverflowActionInput,
     type LayoutProfileMetrics,

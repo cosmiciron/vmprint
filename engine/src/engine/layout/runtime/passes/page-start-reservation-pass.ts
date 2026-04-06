@@ -1,6 +1,6 @@
-import type { CollaboratorHost } from '../layout-session-types';
-import { LayoutConfig, PageReservationSelector } from '../../types';
-import type { Collaborator } from '../layout-session-types';
+import type { CollaboratorHost } from '../../layout-session-types';
+import { LayoutConfig, PageReservationSelector } from '../../../types';
+import type { Collaborator } from '../../layout-session-types';
 
 
 function resolvePageStartReservationHeight(config: LayoutConfig): number {
