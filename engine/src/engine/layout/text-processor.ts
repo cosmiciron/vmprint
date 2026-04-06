@@ -22,7 +22,7 @@ import { tryHyphenateSegmentToFit as hyphenateSegmentToFit } from './text-hyphen
 import { applyAdvancedJustification as applyJustification } from './text-justification';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
 import type { TextDelegate, TextMeasurer } from '@vmprint/contracts';
-import { FontkitTextDelegate } from './text-measurer';
+import { FontkitTextDelegate } from './text-delegate';
 
 export class TextProcessor extends FontProcessor {
 

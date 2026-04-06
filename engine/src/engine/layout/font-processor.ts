@@ -2,7 +2,7 @@ import { BaseLayout } from './base-layout';
 import { getEnabledFallbackFonts, getFontsByFamily } from '../../font-management/ops';
 import { LayoutConfig } from '../types';
 import { EngineRuntime } from '../runtime';
-import { FontkitTextDelegate, TextDelegateLoadError } from './text-measurer';
+import { FontkitTextDelegate, TextDelegateLoadError } from './text-delegate';
 
 export class FontProcessor extends BaseLayout {
     protected font: any = null;
@@ -119,4 +119,3 @@ export class FontProcessor extends BaseLayout {
         return this.fontPromise;
     }
 }
-
