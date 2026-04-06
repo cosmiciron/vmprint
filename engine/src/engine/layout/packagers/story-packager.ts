@@ -57,8 +57,8 @@ import {
     LayoutBox,
     PackagerContext,
     PackagerPlacementPreference,
-    PackagerSplitResult,
-    PackagerTransformProfile,
+    PackagerReshapeResult,
+    PackagerReshapeProfile,
     PackagerUnit,
     resolvePackagerChunkOriginWorldY,
     resolvePackagerWorldYAtCursor
@@ -208,7 +208,7 @@ class FrozenStoryPackager implements PackagerUnit {
         };
     }
 
-    getTransformProfile(): PackagerTransformProfile {
+    getReshapeProfile(): PackagerReshapeProfile {
         return {
             capabilities: [
                 {
@@ -224,14 +224,14 @@ class FrozenStoryPackager implements PackagerUnit {
         return this.frozenBoxes.map((b) => ({ ...b, properties: { ...(b.properties || {}) } }));
     }
 
-    split(_ah: number, _ctx: PackagerContext): PackagerSplitResult {
+    reshape(_ah: number, _ctx: PackagerContext): PackagerReshapeResult {
         return { currentFragment: null, continuationFragment: this };
     }
 
     getRequiredHeight(): number { return this.frozenHeight; }
     isUnbreakable(_ah: number): boolean { return true; }
-    getMarginTop(): number { return 0; }
-    getMarginBottom(): number { return 0; }
+    getLeadingSpacing(): number { return 0; }
+    getTrailingSpacing(): number { return 0; }
 }
 
 // ---------------------------------------------------------------------------
@@ -355,7 +355,7 @@ export class StoryPackager implements PackagerUnit {
         return null;
     }
 
-    getTransformProfile(): PackagerTransformProfile {
+    getReshapeProfile(): PackagerReshapeProfile {
         return {
             capabilities: [
                 {
@@ -385,8 +385,8 @@ export class StoryPackager implements PackagerUnit {
         return false;
     }
 
-    getMarginTop(): number { return 0; }
-    getMarginBottom(): number { return 0; }
+    getLeadingSpacing(): number { return 0; }
+    getTrailingSpacing(): number { return 0; }
 
     getHostedRuntimeActors(): readonly PackagerUnit[] {
         return this.storyActorEntries.map((entry) => entry.actor);
@@ -466,7 +466,7 @@ export class StoryPackager implements PackagerUnit {
         return true;
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const availableWidth = this.lastAvailableWidth > 0
             ? this.lastAvailableWidth
             : (context.pageWidth - context.margins.left - context.margins.right);
@@ -1074,7 +1074,7 @@ export class StoryPackager implements PackagerUnit {
                     return true;
                 }
 
-                const split = pkg.split(remainingHeight, colContext);
+                const split = pkg.reshape(remainingHeight, colContext);
                 if (split.currentFragment && split.continuationFragment) {
                     const partABoxes = (split.currentFragment.emitBoxes(region.w, remainingHeight, colContext) || []) as Box[];
                     for (const b of partABoxes) {
@@ -1511,7 +1511,7 @@ export class StoryPackager implements PackagerUnit {
         };
     }
 
-    private splitColumns(result: MultiColumnPourResult, availableWidth: number): PackagerSplitResult {
+    private splitColumns(result: MultiColumnPourResult, availableWidth: number): PackagerReshapeResult {
         if (!result.hasOverflow || !result.continuation) {
             return {
                 currentFragment: new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this, availableWidth),
@@ -1558,7 +1558,7 @@ export class StoryPackager implements PackagerUnit {
         splitH: number,
         availableWidth: number,
         margins: { left: number; right: number; top: number; bottom: number }
-    ): PackagerSplitResult {
+    ): PackagerReshapeResult {
         const children = this.storyElement.children ?? [];
 
         const partABoxes: Box[] = [];

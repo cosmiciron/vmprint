@@ -8,8 +8,8 @@ import { SpatialMap } from './spatial-map';
 import {
     PackagerContext,
     PackagerPlacementPreference,
-    PackagerSplitResult,
-    PackagerTransformProfile,
+    PackagerReshapeResult,
+    PackagerReshapeProfile,
     PackagerUnit,
     resolvePackagerChunkOriginWorldY
 } from './packager-types';
@@ -144,8 +144,8 @@ export class FlowBoxPackager implements PackagerUnit {
         return null;
     }
 
-    getTransformProfile(): PackagerTransformProfile {
-        const capabilities: NonNullable<PackagerTransformProfile['capabilities']> = [
+    getReshapeProfile(): PackagerReshapeProfile {
+        const capabilities: NonNullable<PackagerReshapeProfile['capabilities']> = [
             {
                 kind: 'split',
                 preservesIdentity: true,
@@ -208,11 +208,11 @@ export class FlowBoxPackager implements PackagerUnit {
         return false;
     }
 
-    getMarginTop(): number {
+    getLeadingSpacing(): number {
         return this.flowBox.marginTop;
     }
 
-    getMarginBottom(): number {
+    getTrailingSpacing(): number {
         return this.flowBox.marginBottom;
     }
 
@@ -305,7 +305,7 @@ export class FlowBoxPackager implements PackagerUnit {
         });
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const processor = this.processor as unknown as FlowBoxProcessor;
         this.materialize(this.lastAvailableWidth, this.lastContentWidth);
         if (this.isUnbreakable(availableHeight)) {

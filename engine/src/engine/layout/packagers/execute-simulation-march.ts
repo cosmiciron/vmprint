@@ -268,8 +268,8 @@ export function executeSimulationMarch(
             const availableHeightAdjusted = placementPreparation.availableHeightAdjusted;
             const effectiveAvailableHeight = placementPreparation.effectiveAvailableHeight;
             const resolveDeferredCursorY = placementPreparation.resolveDeferredCursorY;
-            const marginTop = packager.getMarginTop();
-            const marginBottom = packager.getMarginBottom();
+            const marginTop = packager.getLeadingSpacing();
+            const marginBottom = packager.getTrailingSpacing();
             session.setPaginationLoopState({
                 actorQueue: packagers,
                 actorIndex: i,
@@ -482,7 +482,7 @@ export function executeSimulationMarch(
                     availableHeightAdjusted,
                     pageLimit,
                     pageTop: margins.top,
-                    layoutBefore: resolveLayoutBefore(lastSpacingAfter, packager.getMarginTop())
+                    layoutBefore: resolveLayoutBefore(lastSpacingAfter, packager.getLeadingSpacing())
                 },
                 contextBase,
                 resolveDeferredCursorY,

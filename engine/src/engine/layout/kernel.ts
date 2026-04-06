@@ -1,6 +1,6 @@
 import type { PackagerUnit } from './packagers/packager-types';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
-import type { PackagerSplitResult } from './packagers/packager-types';
+import type { PackagerReshapeResult } from './packagers/packager-types';
 import type {
     KernelBranchStateSnapshot,
     ContinuationQueueOutcome,
@@ -60,7 +60,7 @@ export class Kernel {
         }
     }
 
-    registerSplitAccepted(attempt: SplitAttempt, result: PackagerSplitResult): void {
+    registerSplitAccepted(attempt: SplitAttempt, result: PackagerReshapeResult): void {
         const transition: FragmentTransition = {
             predecessorActorId: attempt.actor.actorId,
             currentFragmentActorId: result.currentFragment?.actorId ?? null,

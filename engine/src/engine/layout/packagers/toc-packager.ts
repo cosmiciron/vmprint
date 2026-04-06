@@ -9,8 +9,8 @@ import type {
     ObservationResult,
     PackagerContext,
     PackagerPlacementPreference,
-    PackagerSplitResult,
-    PackagerTransformProfile,
+    PackagerReshapeResult,
+    PackagerReshapeProfile,
     PackagerUnit
 } from './packager-types';
 
@@ -104,7 +104,7 @@ function isEarlierCommittedPosition(
 /**
  * A live in-flow Table of Contents actor.
  *
- * Subscribes to committed heading signals via observeCommittedSignals().
+ * Subscribes to committed heading signals via observeCommittedState().
  * Grows its geometry as headings are discovered during layout.
  * Triggers downstream resettlement when its footprint changes.
  *
@@ -155,7 +155,7 @@ export class TocPackager implements PackagerUnit {
         return (this.base ?? this.buildPackager(context)).getPlacementPreference?.(fullAvailableWidth, context) ?? null;
     }
 
-    getTransformProfile(): PackagerTransformProfile {
+    getReshapeProfile(): PackagerReshapeProfile {
         return {
             capabilities: [{ kind: 'split', preservesIdentity: true, producesContinuation: true }]
         };
@@ -185,9 +185,9 @@ export class TocPackager implements PackagerUnit {
         return packager.emitBoxes(availableWidth, availableHeight, context);
     }
 
-    split(availableHeight: number, context: PackagerContext): PackagerSplitResult {
+    reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const packager = this.base ?? this.buildPackager(context);
-        const result = packager.split(availableHeight, context);
+        const result = packager.reshape(availableHeight, context);
         if (!result.continuationFragment) return result;
 
         const continuationIdentity = createContinuationIdentity(this.identity);
@@ -197,18 +197,18 @@ export class TocPackager implements PackagerUnit {
 
     getRequiredHeight(): number { return this.base?.getRequiredHeight() ?? 0; }
     isUnbreakable(availableHeight: number): boolean { return this.base?.isUnbreakable(availableHeight) ?? false; }
-    getMarginTop(): number { return this.base?.getMarginTop() ?? (this.flowBox.marginTop ?? 0); }
-    getMarginBottom(): number { return this.base?.getMarginBottom() ?? (this.flowBox.marginBottom ?? 0); }
+    getLeadingSpacing(): number { return this.base?.getLeadingSpacing() ?? (this.flowBox.marginTop ?? 0); }
+    getTrailingSpacing(): number { return this.base?.getTrailingSpacing() ?? (this.flowBox.marginBottom ?? 0); }
 
     getCommittedSignalSubscriptions(): readonly string[] {
         return [HEADING_SIGNAL_TOPIC];
     }
 
     updateCommittedState(context: PackagerContext): ObservationResult {
-        return this.observeCommittedSignals(context);
+        return this.observeCommittedState(context);
     }
 
-    observeCommittedSignals(context: PackagerContext): ObservationResult {
+    observeCommittedState(context: PackagerContext): ObservationResult {
         if (this.firstCommittedPageIndex === null) {
             return { changed: false, geometryChanged: false, updateKind: 'none' };
         }

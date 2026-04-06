@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import { performance } from 'node:perf_hooks';
 import * as engineModule from '../src/index.ts';
 import * as harnessModule from './harness/engine-harness.ts';
-import { resolveDocumentPaths, toLayoutConfig } from '../src';
+import { parseDocumentSourceText, resolveDocumentPaths, toLayoutConfig } from '../src';
 import { getAstFixturePath, listAstFixtureNames } from './harness/ast-fixture-harness';
 import { transformAstSource } from './harness/ast-transform';
 
@@ -276,7 +276,7 @@ async function measureFixture(
     fixturePath: string,
     profileMode: ProfileMode
 ): Promise<FixtureMetric> {
-    const rawDocument = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+    const rawDocument = parseDocumentSourceText(fs.readFileSync(fixturePath, 'utf8'), fixturePath);
     const document = resolveDocumentPaths(rawDocument, fixturePath);
     const spatialDocument = transformAstSource(rawDocument, fixturePath).spatialDocument;
     const config = toLayoutConfig(document, false);

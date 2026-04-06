@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
+import { parseDocumentSourceText } from '../src';
 import { transformAstSource } from './harness/ast-transform';
 import { loadAstJsonDocumentFixtures } from './harness/ast-fixture-harness';
 
@@ -16,7 +17,7 @@ function run(): void {
 
     for (const fixture of fixtures) {
         log(`Fixture: ${fixture.name}`);
-        const rawDocument = JSON.parse(fs.readFileSync(fixture.filePath, 'utf8'));
+        const rawDocument = parseDocumentSourceText(fs.readFileSync(fixture.filePath, 'utf-8'), fixture.filePath);
         const actualA = transformAstSource(rawDocument, fixture.filePath).spatialDocument;
         const actualB = transformAstSource(rawDocument, fixture.filePath).spatialDocument;
 

@@ -18,7 +18,7 @@ import type {
     SplitFragmentAftermathState,
     SplitMarkerPlacementState
 } from './layout-session-types';
-import { packagerOccupiesFlowSpace, type PackagerContext, type PackagerSplitResult, type PackagerUnit } from './packagers/packager-types';
+import { packagerOccupiesFlowSpace, type PackagerContext, type PackagerReshapeResult, type PackagerUnit } from './packagers/packager-types';
 
 type SplitMarkerPositioner = (
     marker: FlowBox,
@@ -31,7 +31,7 @@ type SplitMarkerPositioner = (
 export type FragmentSessionRuntimeHost = {
     notifyActorSpawn(actor: PackagerUnit): void;
     notifyContinuationEnqueued(predecessor: PackagerUnit, successor: PackagerUnit): void;
-    notifySplitAccepted(attempt: SplitAttempt, result: PackagerSplitResult): void;
+    notifySplitAccepted(attempt: SplitAttempt, result: PackagerReshapeResult): void;
     notifyActorCommitted(actor: PackagerUnit, committed: Box[]): void;
     captureSessionBranchStateSnapshot(actorQueue: readonly PackagerUnit[]): SessionBranchStateSnapshot;
     restoreSessionBranchStateSnapshot(actorQueue: PackagerUnit[], snapshot: SessionBranchStateSnapshot): void;
@@ -129,8 +129,8 @@ export class FragmentSessionRuntime {
         let lastSpacingAfter = state.lastSpacingAfter;
 
         for (const actor of actors) {
-            const marginTop = actor.getMarginTop();
-            const marginBottom = actor.getMarginBottom();
+            const marginTop = actor.getLeadingSpacing();
+            const marginBottom = actor.getTrailingSpacing();
             const layoutBefore = lastSpacingAfter + marginTop;
             const layoutDelta = layoutBefore - marginTop;
             const availableHeight = (state.pageLimit - currentY) - layoutDelta;
@@ -327,7 +327,7 @@ export class FragmentSessionRuntime {
 
     acceptAndCommitSplitFragment(
         attempt: SplitAttempt,
-        result: PackagerSplitResult,
+        result: PackagerReshapeResult,
         boxes: readonly Box[],
         state: SplitFragmentAftermathState,
         positionMarker: SplitMarkerPositioner
@@ -345,8 +345,8 @@ export class FragmentSessionRuntime {
         actor: PackagerUnit,
         input: SplitFragmentAftermathInput
     ): SplitFragmentAftermathState {
-        const marginTop = actor.getMarginTop();
-        const marginBottom = actor.getMarginBottom();
+        const marginTop = actor.getLeadingSpacing();
+        const marginBottom = actor.getTrailingSpacing();
         const layoutBefore = input.lastSpacingAfter + marginTop;
         const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
         const requiredHeight = contentHeight + layoutBefore + marginBottom;
