@@ -1,5 +1,4 @@
-import type { CollaboratorHost } from '../../layout-session-types';
-import type { Collaborator } from '../../layout-session-types';
+import type { Collaborator, CollaboratorHost } from '../session/session-runtime-types';
 
 import { PackagerUnit } from '../../packagers/packager-types';
 

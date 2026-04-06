@@ -3,21 +3,23 @@ import type { LocalActorSignalSnapshot } from './actor-communication-runtime';
 import type { FlowBox, ContinuationArtifacts } from './layout-core-types';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { Kernel } from './kernel';
+import type { SplitAttempt } from './runtime/session/session-lifecycle-types';
 import type {
     ContinuationQueueOutcome,
-    FragmentCommitState,
     LocalBranchSnapshot,
     LocalQueueSnapshot,
     LocalSplitStateSnapshot,
     LocalTransitionSnapshot,
-    SessionBranchStateSnapshot,
     SequencePlacementCheckpoint,
+    SessionBranchStateSnapshot
+} from './runtime/session/session-progression-types';
+import type {
+    FragmentCommitState,
     SequencePlacementState,
-    SplitAttempt,
     SplitFragmentAftermathInput,
     SplitFragmentAftermathState,
     SplitMarkerPlacementState
-} from './layout-session-types';
+} from './runtime/session/session-pagination-types';
 import { packagerOccupiesFlowSpace, type PackagerContext, type PackagerReshapeResult, type PackagerUnit } from './packagers/packager-types';
 
 type SplitMarkerPositioner = (

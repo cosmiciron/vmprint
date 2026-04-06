@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/engine",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Deterministic typesetting engine core. Pure-JS, environment-agnostic document composition.",
   "author": "cosmiciron",
   "license": "Apache-2.0",

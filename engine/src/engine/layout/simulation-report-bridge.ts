@@ -10,7 +10,7 @@ import type {
     SimulationWorldSummary
 } from './simulation-report';
 import { createSimulationReportReader, simulationArtifactKeys } from './simulation-report';
-import type { LayoutProfileMetrics } from './layout-session-types';
+import type { LayoutProfileMetrics } from './runtime/session/session-profile-types';
 
 export type SimulationReportBridgeHost = {
     getFinalizedPages(): readonly Page[];

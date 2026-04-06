@@ -2,7 +2,7 @@ import { performance } from 'node:perf_hooks';
 import type { Box, Page } from '../types';
 import { ActorEventBus, type ActorEventBusSnapshot, type ActorSignal, type ActorSignalDraft } from './actor-event-bus';
 import type { FlowBox } from './layout-core-types';
-import type { LayoutProfileMetrics } from './layout-session-types';
+import type { LayoutProfileMetrics } from './runtime/session/session-profile-types';
 import {
     normalizeObservationResult,
     type ObservationResult,

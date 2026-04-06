@@ -32,20 +32,14 @@
 </ul>
 <hr>
 <h2>1. Pipeline Overview</h2>
-<pre><code class="language-text">Markdown string
-  -&gt; [remark / semantic.ts]
-SemanticDocument                (draft2final intermediate layer)
-  -&gt; [FormatHandler / FormatContext]
-DocumentInput / Element tree    &lt;- public authored source
-  -&gt; [normalize()]
-SpatialDocument / runtime config
-  -&gt; [LayoutEngine]
-Page[] of Box[]                 (flat, positioned output)
-</code></pre>
-<p>Direct callers usually construct <strong><code>DocumentInput</code></strong>. The <code>SemanticDocument</code> layer is only relevant when using <code>draft2final</code>.</p>
-<hr>
-<h2>2. <code>DocumentInput</code></h2>
-<pre><code class="language-typescript">interface DocumentInput {
+<pre><code class="language-text">Direct callers usually construct **`DocumentInput`**. The `SemanticDocument` layer is only relevant when using the [draft2final](https://github.com/cosmiciron/draft2final) standalone CLI.
+
+---
+
+## 2. `DocumentInput`
+
+```typescript
+interface DocumentInput {
     documentVersion: '1.0' | '1.1';
     layout: LayoutConfig;
     fonts?: FontSources;
@@ -150,8 +144,19 @@ Page[] of Box[]                 (flat, positioned output)
     };
 
     storyWrapOpticalUnderhang?: boolean;
+    worldPlain?: WorldPlainOptions;
 }
 </code></pre>
+<h3><code>layout.worldPlain</code></h3>
+<p><code>worldPlain</code> defines the document-stage world substrate. When present, root
+elements inhabit that stage instead of being treated as only sequential flow.</p>
+<pre><code class="language-typescript">interface WorldPlainOptions {
+    style?: Partial&lt;ElementStyle&gt;;
+}
+</code></pre>
+<p><code>worldPlain</code> is authored through <code>layout</code>. Do not author
+<code>{ &quot;type&quot;: &quot;world-plain&quot; }</code> directly; the engine may synthesize an internal
+host wrapper at runtime, but that wrapper is not part of the public AST.</p>
 <hr>
 <h2>4. Font Sources</h2>
 <pre><code class="language-typescript">interface FontSources {
@@ -285,6 +290,8 @@ Page[] of Box[]                 (flat, positioned output)
     sourceRange?: { lineStart: number; colStart: number; lineEnd: number; colEnd: number };
     sourceSyntax?: string;
     language?: string;
+    spatialField?: SpatialFieldDirective;
+    zoneField?: SpatialFieldDirective;
 }
 </code></pre>
 <p>AST <code>1.1</code> keeps <code>properties</code> for overrides, metadata, and cross-cutting controls. Structural payloads live on the element itself.</p>
@@ -362,8 +369,51 @@ Page[] of Box[]                 (flat, positioned output)
 <td>code blocks</td>
 <td>Language hint such as <code>&quot;typescript&quot;</code>.</td>
 </tr>
+<tr>
+<td><code>spatialField</code></td>
+<td>any actor</td>
+<td>Generic actor-published spatial field.</td>
+</tr>
+<tr>
+<td><code>zoneField</code></td>
+<td>any actor</td>
+<td>Compatibility alias for early zone experiments. Prefer <code>spatialField</code>.</td>
+</tr>
 </tbody>
 </table>
+<h3><code>SpatialFieldDirective</code></h3>
+<pre><code class="language-typescript">type StoryFloatShape = 'rect' | 'circle';
+
+interface StoryExclusionAssemblyMember {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    shape?: StoryFloatShape;
+}
+
+interface StoryExclusionAssembly {
+    members: StoryExclusionAssemblyMember[];
+}
+
+interface SpatialFieldDirective {
+    kind?: 'exclude';
+    x?: number;
+    y?: number;
+    align?: 'left' | 'right' | 'center';
+    wrap?: 'around' | 'top-bottom' | 'none';
+    gap?: number;
+    shape?: StoryFloatShape;
+    exclusionAssembly?: StoryExclusionAssembly;
+    hidden?: boolean;
+}
+</code></pre>
+<p>Hosts decide what the field means:</p>
+<ul>
+<li><code>story</code> consumes it as wrap/exclusion geometry</li>
+<li><code>zone-map</code> consumes it as placed spatial presence within a region host</li>
+<li><code>worldPlain</code> consumes it as world-space presence on the stage declared in <code>layout</code></li>
+</ul>
 <hr>
 <h2>7. <code>ElementStyle</code></h2>
 <p>All fields are optional. Common fields include:</p>
@@ -409,6 +459,10 @@ Page[] of Box[]                 (flat, positioned output)
 <tr>
 <td><code>zone-map</code></td>
 <td>Independent-region layout. Uses <code>zones[]</code> plus <code>element.zoneLayout</code>.</td>
+</tr>
+<tr>
+<td><code>field-actor</code></td>
+<td>Visible placeable spatial body, typically paired with <code>properties.spatialField</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -604,7 +658,39 @@ interface ZoneDefinition {
 </code></pre>
 <p>Any block element can float or use <code>story-absolute</code> if it carries explicit obstacle size through style <code>width</code> and <code>height</code>. Images may omit explicit size and derive it from intrinsic image dimensions.</p>
 <hr>
-<h2>13a. Column Span (<code>element.columnSpan</code>)</h2>
+<h2>13b. <code>field-actor</code></h2>
+<p><code>field-actor</code> is the public visible body actor for world/map-style spatial
+presence. It exists so callers do not need to model a rock, hazard, or
+creature as <code>image + spatialField</code>.</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;field-actor&quot;,
+  &quot;content&quot;: &quot;&quot;,
+  &quot;properties&quot;: {
+    &quot;style&quot;: {
+      &quot;width&quot;: 96,
+      &quot;height&quot;: 72,
+      &quot;backgroundColor&quot;: &quot;#0f8b8d&quot;
+    },
+    &quot;spatialField&quot;: {
+      &quot;kind&quot;: &quot;exclude&quot;,
+      &quot;hidden&quot;: false,
+      &quot;x&quot;: 180,
+      &quot;y&quot;: 120,
+      &quot;exclusionAssembly&quot;: {
+        &quot;members&quot;: [
+          { &quot;x&quot;: 0, &quot;y&quot;: 10, &quot;w&quot;: 42, &quot;h&quot;: 42, &quot;shape&quot;: &quot;circle&quot; },
+          { &quot;x&quot;: 28, &quot;y&quot;: 18, &quot;w&quot;: 46, &quot;h&quot;: 18, &quot;shape&quot;: &quot;rect&quot; },
+          { &quot;x&quot;: 54, &quot;y&quot;: 0, &quot;w&quot;: 42, &quot;h&quot;: 42, &quot;shape&quot;: &quot;circle&quot; }
+        ]
+      }
+    }
+  }
+}
+</code></pre>
+<p><code>field-actor</code> must declare <code>properties.style.width</code> and
+<code>properties.style.height</code>.</p>
+<hr>
+<h2>13c. Column Span (<code>element.columnSpan</code>)</h2>
 <p>Declared on children of a multi-column <code>story</code>. A spanned element breaks the column flow, is laid out at full story width, then flow resumes below.</p>
 <pre><code class="language-typescript">columnSpan?: 'all' | number
 </code></pre>
@@ -788,11 +874,11 @@ interface PageRegionContent {
 </tr>
 <tr>
 <td>Markdown compilation core</td>
-<td><a href="https://github.com/cosmiciron/vmprint/blob/main/transmuters/markdown-core/src/index.ts">transmuters/markdown-core/src/index.ts</a></td>
+<td><a href="https://github.com/cosmiciron/vmprint-transmuters/blob/main/markdown-core/src/index.ts">External</a></td>
 </tr>
 <tr>
 <td>Transmuters</td>
-<td><a href="https://github.com/cosmiciron/vmprint/tree/main/transmuters">transmuters/</a></td>
+<td><a href="https://github.com/cosmiciron/vmprint-transmuters">External</a></td>
 </tr>
 <tr>
 <td>Regression fixtures</td>

@@ -2,10 +2,10 @@ import type { Box, Page } from '../types';
 import { SequentialPageChunkPolicy, type ChunkPolicy } from './chunk-policy';
 import type {
     PageAdvanceOutcome,
-    PageFinalizationState,
-    PaginationLoopAction,
-    PaginationState
-} from './layout-session-types';
+    PaginationLoopAction
+} from './runtime/session/session-pagination-types';
+import type { PaginationState } from './runtime/session/session-lifecycle-types';
+import type { PageFinalizationState } from './runtime/session/session-state-types';
 import {
     collectScriptRegionsFromPageSummaries,
     findScriptRegionByNameInRegions,

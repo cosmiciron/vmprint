@@ -1,5 +1,5 @@
 import { FlowBox } from '../../layout-core-types';
-import type { Collaborator, CollaboratorHost } from '../../layout-session-types';
+import type { Collaborator, CollaboratorHost } from '../session/session-runtime-types';
 
 import { PackagerReshapeResult, PackagerUnit } from '../../packagers/packager-types';
 import { FlowBoxPackager } from '../../packagers/flow-box-packager';

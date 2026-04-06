@@ -13,7 +13,8 @@ import type { AsyncThoughtSummary } from './collaborators/async-thought-runtime-
 import type { TemporalPresentationTimeline } from './collaborators/temporal-presentation-collaborator';
 import type { InteractionArtifactSummary } from './collaborators/interaction-artifact-collaborator';
 import type { ViewportCaptureSummary } from './collaborators/viewport-capture-artifact-collaborator';
-import type { LayoutProfileMetrics, PageCaptureRecord } from './layout-session-types';
+import type { LayoutProfileMetrics } from './runtime/session/session-profile-types';
+import type { PageCaptureRecord } from './runtime/session/session-state-types';
 import type { Page } from '../types';
 import type { SimulationProgressionPolicy, SimulationStopReason } from '../types';
 

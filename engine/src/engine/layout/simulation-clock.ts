@@ -1,4 +1,4 @@
-import type { SimulationClockSnapshot, SimulationTick } from './layout-session-types';
+import type { SimulationClockSnapshot, SimulationTick } from './runtime/session/session-progression-types';
 
 export class SimulationClock {
     private currentTick: SimulationTick = 0;

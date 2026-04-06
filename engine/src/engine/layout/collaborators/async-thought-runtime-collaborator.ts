@@ -1,5 +1,4 @@
-import type { CollaboratorHost } from '../layout-session-types';
-import type { Collaborator } from '../layout-session-types';
+import type { Collaborator, CollaboratorHost } from '../runtime/session/session-runtime-types';
 
 import { simulationArtifactKeys } from '../simulation-report';
 import { AsyncThoughtHost, type AsyncThoughtHandle } from '../async-thought-host';

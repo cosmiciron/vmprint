@@ -13,21 +13,25 @@ import type {
 } from './simulation-report';
 import { Kernel } from './kernel';
 import type {
+    KernelBranchStateSnapshot,
+    ProgressionStateSnapshot,
+    SessionBranchStateSnapshot,
+    SimulationClockSnapshot
+} from './runtime/session/session-progression-types';
+import type {
     PageCaptureRecord,
     PageCaptureState,
-    PageExclusionIntent,
-    KernelBranchStateSnapshot,
-    PageReservationIntent,
-    ProgressionStateSnapshot,
-    RegionReservation,
-    SessionBranchStateSnapshot,
-    SimulationClockSnapshot,
-    SpatialExclusion,
     ViewportDescriptor,
     ViewportRect,
     ViewportTerrain,
     WorldSpace
-} from './layout-session-types';
+} from './runtime/session/session-state-types';
+import type {
+    PageExclusionIntent,
+    PageReservationIntent,
+    RegionReservation,
+    SpatialExclusion
+} from './runtime/session/session-spatial-types';
 
 export type SessionWorldRuntimeHost = {
     getCurrentPageIndex(): number;

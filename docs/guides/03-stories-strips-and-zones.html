@@ -36,6 +36,7 @@
 <li>if the content should stay one reading stream, use <code>story</code></li>
 <li>if the content should line up in one band, use <code>strip</code></li>
 <li>if the content lives in separate rooms, use <code>zone-map</code></li>
+<li>if the document needs a stage that actors inhabit directly, use <code>layout.worldPlain</code></li>
 </ul>
 <h2><code>story</code></h2>
 <p>Use <code>story</code> when content should remain one logical flow while moving through multiple columns.</p>
@@ -176,6 +177,57 @@ You do not need to author a raw <code>world-map</code> directly.</p>
 </ul>
 <p>So <code>zone-map</code> is not just “some columns on a page.”
 It is an authored region topology that happens to be revealed through pages.</p>
+<p>If what you want is not a region topology but a true stage where actors exist in
+space, <code>zone-map</code> is no longer the best fit. That is where <code>layout.worldPlain</code>
+comes in.</p>
+<h2><code>layout.worldPlain</code></h2>
+<p><code>worldPlain</code> is authored through the document <code>layout</code>, not as an element. It
+declares that the page/viewport is revealing a broader world stage.</p>
+<pre><code class="language-json">{
+  &quot;layout&quot;: {
+    &quot;pageSize&quot;: &quot;LETTER&quot;,
+    &quot;margins&quot;: { &quot;top&quot;: 72, &quot;right&quot;: 72, &quot;bottom&quot;: 72, &quot;left&quot;: 72 },
+    &quot;fontFamily&quot;: &quot;Times New Roman&quot;,
+    &quot;fontSize&quot;: 12,
+    &quot;lineHeight&quot;: 1.4,
+    &quot;worldPlain&quot;: {
+      &quot;style&quot;: { &quot;backgroundColor&quot;: &quot;#f8fbff&quot; }
+    }
+  },
+  &quot;elements&quot;: [
+    {
+      &quot;type&quot;: &quot;field-actor&quot;,
+      &quot;content&quot;: &quot;&quot;,
+      &quot;properties&quot;: {
+        &quot;style&quot;: {
+          &quot;width&quot;: 96,
+          &quot;height&quot;: 72,
+          &quot;backgroundColor&quot;: &quot;#0f8b8d&quot;
+        },
+        &quot;spatialField&quot;: {
+          &quot;kind&quot;: &quot;exclude&quot;,
+          &quot;x&quot;: 180,
+          &quot;y&quot;: 120,
+          &quot;exclusionAssembly&quot;: {
+            &quot;members&quot;: [
+              { &quot;x&quot;: 0, &quot;y&quot;: 10, &quot;w&quot;: 42, &quot;h&quot;: 42, &quot;shape&quot;: &quot;circle&quot; },
+              { &quot;x&quot;: 28, &quot;y&quot;: 18, &quot;w&quot;: 46, &quot;h&quot;: 18, &quot;shape&quot;: &quot;rect&quot; },
+              { &quot;x&quot;: 54, &quot;y&quot;: 0, &quot;w&quot;: 42, &quot;h&quot;: 42, &quot;shape&quot;: &quot;circle&quot; }
+            ]
+          }
+        }
+      }
+    },
+    { &quot;type&quot;: &quot;label&quot;, &quot;content&quot;: &quot;Ordinary actors can settle around the rock.&quot; }
+  ]
+}
+</code></pre>
+<p>Use <code>worldPlain</code> when:</p>
+<ul>
+<li>actors should exist in world coordinates</li>
+<li>spatial fields should belong to ordinary actors, not only story floats</li>
+<li>the river of document flow should be one inhabitant of the world, not the whole world</li>
+</ul>
 <pre><code class="language-json">{
   &quot;type&quot;: &quot;zone-map&quot;,
   &quot;zoneLayout&quot;: {

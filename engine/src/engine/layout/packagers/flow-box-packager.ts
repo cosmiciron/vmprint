@@ -1,7 +1,7 @@
 import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox, type FlowMaterializationContext } from '../layout-core-types';
-import type { SpatialExclusion } from '../layout-session-types';
+import type { SpatialExclusion } from '../runtime/session/session-spatial-types';
 import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { SpatialMap } from './spatial-map';

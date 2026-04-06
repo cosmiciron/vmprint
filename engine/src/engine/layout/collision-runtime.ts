@@ -1,14 +1,16 @@
 import { LAYOUT_DEFAULTS } from './defaults';
 import {
+    type SplitExecution
+} from './runtime/session/session-progression-types';
+import {
     type ActorOverflowEntryHandlingOutcome,
     type ActorOverflowEntrySettlementOutcome,
     type ActorOverflowPreSplitHandlingOutcome,
     type ActorOverflowResolution,
     type ActorOverflowSplitEntryHandlingOutcome,
     type FragmentCommitState,
-    type PaginationLoopAction,
-    type SplitExecution
-} from './layout-session-types';
+    type PaginationLoopAction
+} from './runtime/session/session-pagination-types';
 import type { Box, Page } from '../types';
 import { getActorOverflowHandling, type ActorOverflowHandling } from './actor-overflow';
 import type { PackagerContext, PackagerUnit } from './packagers/packager-types';

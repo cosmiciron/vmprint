@@ -29,7 +29,8 @@ import { PageExclusionArtifactCollaborator } from './collaborators/page-exclusio
 import { PageReservationArtifactCollaborator } from './collaborators/page-reservation-artifact-collaborator';
 import { PageSpatialConstraintArtifactCollaborator } from './collaborators/page-spatial-constraint-artifact-collaborator';
 import { PageRegionArtifactCollaborator } from './collaborators/page-region-artifact-collaborator';
-import type { Collaborator, LayoutProfileMetrics } from './layout-session-types';
+import type { LayoutProfileMetrics } from './runtime/session/session-profile-types';
+import type { Collaborator } from './runtime/session/session-runtime-types';
 import { LayoutSession } from './layout-session';
 import {
     createPrintPipelineSnapshot,
@@ -1290,28 +1291,28 @@ export class LayoutProcessor extends TextProcessor {
         const scriptRuntimeCollaborator = scriptRuntimeHost
             ? new ScriptRuntimeCollaborator(scriptRuntimeHost, elements, scriptLifecycleState ?? scriptRuntimeHost.createLifecycleState())
             : null;
-        const runtimePasses: Collaborator[] = [
+        const spatialCorePasses: Collaborator[] = [
             new ContinuationMarkerCollaborator(),
             new PageStartExclusionCollaborator(this.config),
             new PageStartReservationCollaborator(this.config),
             new PageReservationCollaborator(),
         ];
-        const runtimeSignals: Collaborator[] = [
+        const spatialCoreSignals: Collaborator[] = [
             new HeadingSignalCollaborator(),
         ];
-        const runtimeExperiments: Collaborator[] = [
+        const spatialCoreExperiments: Collaborator[] = [
             ...(asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []),
         ];
-        const pageFinalizationRuntime: Collaborator[] = [
+        const vmPrintPolicyCollaborators: Collaborator[] = [
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
                     this.layoutRegion(content, rect, pageIndex, sourceType, actorId)
             }),
         ];
-        const scriptingRuntime: Collaborator[] = [
+        const documentScriptingCollaborators: Collaborator[] = [
             ...(scriptRuntimeCollaborator ? [scriptRuntimeCollaborator] : []),
         ];
-        const artifactCollaborators: Collaborator[] = [
+        const observerCollaborators: Collaborator[] = [
             new FragmentTransitionArtifactCollaborator(),
             new TransformCapabilityArtifactCollaborator(),
             new TransformArtifactCollaborator(),
@@ -1332,12 +1333,12 @@ export class LayoutProcessor extends TextProcessor {
             scriptRuntimeHost,
             scriptRuntimeCollaborator,
             collaborators: [
-                ...runtimePasses,
-                ...runtimeSignals,
-                ...runtimeExperiments,
-                ...pageFinalizationRuntime,
-                ...scriptingRuntime,
-                ...artifactCollaborators,
+                ...spatialCorePasses,
+                ...spatialCoreSignals,
+                ...spatialCoreExperiments,
+                ...vmPrintPolicyCollaborators,
+                ...documentScriptingCollaborators,
+                ...observerCollaborators,
             ]
         };
     }

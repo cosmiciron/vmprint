@@ -47740,6 +47740,9 @@
     constructor() {
       this.rects = [];
     }
+    clear() {
+      this.rects.length = 0;
+    }
     register(rect) {
       this.rects.push(rect);
     }
@@ -47928,8 +47931,8 @@
     }
     return false;
   }
-  function resolvePackagerTransformProfile(unit) {
-    const profile = unit.getTransformProfile?.();
+  function resolvePackagerReshapeProfile(unit) {
+    const profile = unit.getReshapeProfile?.();
     if (!profile) {
       return null;
     }
@@ -47946,8 +47949,8 @@
         });
       }
     }
-    if (Array.isArray(profile.supportedTransforms)) {
-      for (const kind of profile.supportedTransforms) {
+    if (Array.isArray(profile.supportedReshapes)) {
+      for (const kind of profile.supportedReshapes) {
         if (!normalizedCapabilities.has(kind)) {
           normalizedCapabilities.set(kind, { kind });
         }
@@ -47957,7 +47960,7 @@
       return null;
     }
     return {
-      supportedTransforms: Array.from(normalizedCapabilities.keys()),
+      supportedReshapes: Array.from(normalizedCapabilities.keys()),
       capabilities: Array.from(normalizedCapabilities.values())
     };
   }
@@ -47980,9 +47983,13 @@
       this.lastAvailableHeight = -1;
       this.cachedBoxes = null;
       this.cachedSpatialBoxes = null;
-      this.cachedSpatialKey = null;
+      this.cachedSpatialExclusions = null;
+      this.cachedSpatialPageIndex = null;
+      this.cachedSpatialCursorY = null;
+      this.cachedSpatialLayoutBefore = null;
       this.requiredHeight = 0;
       this.isMaterialized = false;
+      this.spatialMap = new SpatialMap();
       this.processor = processor;
       this.flowBox = flowBox;
       const resolvedIdentity = createFlowBoxPackagerIdentity(flowBox, identity);
@@ -48010,8 +48017,7 @@
       this.flowBox = shaper.shapeNormalizedFlowBlock(normalized);
       this.isMaterialized = false;
       this.cachedBoxes = null;
-      this.cachedSpatialBoxes = null;
-      this.cachedSpatialKey = null;
+      this.clearSpatialCache();
       this.lastAvailableWidth = -1;
       this.lastContentWidth = -1;
       this.lastAvailableHeight = -1;
@@ -48054,7 +48060,7 @@
       }
       return null;
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       const capabilities = [
         {
           kind: "split",
@@ -48074,11 +48080,7 @@
     emitBoxes(availableWidth, availableHeight, context) {
       this.prepareSpatialPlacement(context);
       if (this.cachedSpatialBoxes) {
-        return this.cachedSpatialBoxes.map((box) => ({
-          ...box,
-          properties: { ...box.properties || {} },
-          meta: box.meta ? { ...box.meta } : box.meta
-        }));
+        return this.cachedSpatialBoxes;
       }
       const processor = this.processor;
       this.prepare(availableWidth, availableHeight, context);
@@ -48110,44 +48112,27 @@
       if (this.flowBox.overflowPolicy === "move-whole") return true;
       return false;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return this.flowBox.marginTop;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return this.flowBox.marginBottom;
     }
     prepareSpatialPlacement(context) {
       const sourceElement = this.flowBox._sourceElement;
       const exclusions = context.getWorldTraversalExclusions?.(context.pageIndex) ?? (context.getPageExclusions?.(context.pageIndex) ?? []).filter((exclusion) => exclusion.surface === "world-traversal");
       if (!sourceElement || this.flowBox.image || exclusions.length === 0) {
-        this.cachedSpatialBoxes = null;
-        this.cachedSpatialKey = null;
+        this.clearSpatialCache();
         return;
       }
-      const key = [
-        context.pageIndex,
-        Number(context.cursorY).toFixed(3),
-        Number(context.layoutBefore ?? this.flowBox.marginTop).toFixed(3),
-        ...exclusions.map((exclusion) => [
-          exclusion.id || "",
-          Number(exclusion.x).toFixed(3),
-          Number(exclusion.y).toFixed(3),
-          Number(exclusion.w).toFixed(3),
-          Number(exclusion.h).toFixed(3),
-          String(exclusion.wrap || "around"),
-          Number(exclusion.gap ?? 0).toFixed(3),
-          Number(exclusion.gapTop ?? exclusion.gap ?? 0).toFixed(3),
-          Number(exclusion.gapBottom ?? exclusion.gap ?? 0).toFixed(3),
-          String(exclusion.shape || "rect"),
-          String(exclusion.align || ""),
-          String(exclusion.traversalInteraction || "auto"),
-          Number(exclusion.zIndex ?? 0).toFixed(3)
-        ].join(":"))
-      ].join("|");
-      if (this.cachedSpatialKey === key && this.cachedSpatialBoxes) return;
-      const spatialMap = new SpatialMap();
+      const layoutBefore = Number(context.layoutBefore ?? this.flowBox.marginTop);
+      const cursorY = Number(context.cursorY);
+      if (this.cachedSpatialBoxes && this.cachedSpatialExclusions === exclusions && this.cachedSpatialPageIndex === context.pageIndex && this.cachedSpatialCursorY === cursorY && this.cachedSpatialLayoutBefore === layoutBefore) {
+        return;
+      }
+      this.spatialMap.clear();
       for (const exclusion of exclusions) {
-        this.registerSpatialExclusion(spatialMap, exclusion, context);
+        this.registerSpatialExclusion(this.spatialMap, exclusion, context);
       }
       const path2 = this.flowBox._normalizedFlowBlock?.identitySeed?.path ?? [0];
       const placed = reflowTextElementAgainstSpatialField({
@@ -48156,24 +48141,34 @@
         path: path2,
         availableWidth: Math.max(0, context.pageWidth - context.margins.left - context.margins.right),
         currentY: 0,
-        layoutBefore: context.layoutBefore ?? this.flowBox.marginTop,
-        spatialMap,
+        layoutBefore,
+        spatialMap: this.spatialMap,
         leftMargin: context.margins.left,
         pageIndex: context.pageIndex,
         ...Number.isFinite(resolvePackagerChunkOriginWorldY(context)) ? { worldY: Number(resolvePackagerChunkOriginWorldY(context)) } : {},
         clearTopBeforeStart: false
       });
       if (!placed) {
-        this.cachedSpatialBoxes = null;
-        this.cachedSpatialKey = null;
+        this.clearSpatialCache();
         return;
       }
       this.cachedSpatialBoxes = [{
         ...placed.box,
         y: Number(placed.box.y || 0)
       }];
-      this.cachedSpatialKey = key;
+      this.cachedSpatialExclusions = exclusions;
+      this.cachedSpatialPageIndex = context.pageIndex;
+      this.cachedSpatialCursorY = cursorY;
+      this.cachedSpatialLayoutBefore = layoutBefore;
       this.requiredHeight = placed.marginTop + placed.contentHeight + placed.marginBottom;
+    }
+    clearSpatialCache() {
+      this.cachedSpatialBoxes = null;
+      this.cachedSpatialExclusions = null;
+      this.cachedSpatialPageIndex = null;
+      this.cachedSpatialCursorY = null;
+      this.cachedSpatialLayoutBefore = null;
+      this.spatialMap.clear();
     }
     registerSpatialExclusion(spatialMap, exclusion, context) {
       spatialMap.register({
@@ -48191,7 +48186,7 @@
         zIndex: Number.isFinite(Number(exclusion.zIndex)) ? Number(exclusion.zIndex) : 0
       });
     }
-    split(availableHeight, context) {
+    reshape(availableHeight, context) {
       const processor = this.processor;
       this.materialize(this.lastAvailableWidth, this.lastContentWidth);
       if (this.isUnbreakable(availableHeight)) {
@@ -48218,19 +48213,21 @@
         splitResult.partB,
         createContinuationIdentity(this, splitResult.partB.meta?.fragmentIndex)
       );
+      this.cachedBoxes = null;
+      this.clearSpatialCache();
       return { currentFragment: partA, continuationFragment: partB };
     }
   };
   var ContinuationMarkerCollaborator = class {
-    onActorPrepared(actor, session) {
-      const artifacts = session.ensureContinuationArtifacts(actor);
+    onActorPrepared(actor, host) {
+      const artifacts = host.ensureContinuationArtifacts(actor);
       if (!artifacts) return;
     }
-    onSplitAccepted(attempt, result, session) {
-      const artifacts = session.ensureContinuationArtifacts(attempt.actor);
+    onSplitAccepted(attempt, result, host) {
+      const artifacts = host.ensureContinuationArtifacts(attempt.actor);
       if (!artifacts) return;
       if (result.currentFragment && artifacts.markerAfterSplit) {
-        session.stageMarkersAfterSplit(result.currentFragment.actorId, [artifacts.markerAfterSplit]);
+        host.stageMarkersAfterSplit(result.currentFragment.actorId, [artifacts.markerAfterSplit]);
       }
       const continuation = result.continuationFragment;
       if (!continuation) return;
@@ -48240,7 +48237,7 @@
       const markerPackagers = artifacts.markersBeforeContinuation.map(
         (marker) => new FlowBoxPackager(processor, marker)
       );
-      session.stageActorsBeforeContinuation(continuation.actorId, markerPackagers);
+      host.stageActorsBeforeContinuation(continuation.actorId, markerPackagers);
     }
   };
   function resolveReservationHeight(actor) {
@@ -48249,13 +48246,13 @@
     return Number.isFinite(value) ? Math.max(0, Number(value)) : 0;
   }
   var PageReservationCollaborator = class {
-    onActorCommitted(actor, _committed, _surface, session) {
+    onActorCommitted(actor, _committed, _surface, host) {
       const startedAt = performance.now();
-      session.recordProfile("reservationCommitProbeCalls", 1);
+      host.recordProfile("reservationCommitProbeCalls", 1);
       const height = resolveReservationHeight(actor);
-      session.recordProfile("reservationCommitProbeMs", performance.now() - startedAt);
+      host.recordProfile("reservationCommitProbeMs", performance.now() - startedAt);
       if (!(height > 0)) return;
-      session.reserveCurrentPageSpace({
+      host.reserveCurrentPageSpace({
         id: `${actor.actorId}:page-reserve-after`,
         height,
         source: actor.sourceId
@@ -48292,7 +48289,7 @@
       this.rightWidth = Number.isFinite(config.layout.pageStartExclusionRightWidth) ? Math.max(0, Number(config.layout.pageStartExclusionRightWidth)) : 0;
       this.selector = resolvePageStartExclusionSelector(config);
     }
-    onPageStart(pageIndex, surface, session) {
+    onPageStart(pageIndex, surface, host) {
       if (!(this.height > 0)) return;
       if (!(surface.width > 0)) return;
       if (this.explicitRectangles.length > 0) {
@@ -48300,7 +48297,7 @@
           const x2 = Math.max(0, Math.min(surface.width, rectangle.x));
           const width = Math.max(0, Math.min(rectangle.width, surface.width - x2));
           if (!(width > 0)) return;
-          session.excludePageSpace({
+          host.excludePageSpace({
             id: `layout:page-start-exclusion:explicit:${index2}:${this.selector}:${pageIndex}`,
             x: x2,
             y: this.top,
@@ -48316,7 +48313,7 @@
       const rightWidth = this.rightWidth > 0 ? Math.min(surface.width, this.rightWidth) : 0;
       if (leftWidth > 0 || rightWidth > 0) {
         if (leftWidth > 0) {
-          session.excludePageSpace({
+          host.excludePageSpace({
             id: `layout:page-start-exclusion:left:${this.selector}:${pageIndex}`,
             x: 0,
             y: this.top,
@@ -48327,7 +48324,7 @@
           }, pageIndex);
         }
         if (rightWidth > 0) {
-          session.excludePageSpace({
+          host.excludePageSpace({
             id: `layout:page-start-exclusion:right:${this.selector}:${pageIndex}`,
             x: Math.max(0, surface.width - rightWidth),
             y: this.top,
@@ -48339,7 +48336,7 @@
         }
         return;
       }
-      session.excludePageSpace({
+      host.excludePageSpace({
         id: `layout:page-start-exclusion:${this.selector}:${pageIndex}`,
         x: 0,
         y: this.top,
@@ -48363,9 +48360,9 @@
       this.reservationHeight = resolvePageStartReservationHeight(config);
       this.selector = resolvePageStartReservationSelector(config);
     }
-    onPageStart(pageIndex, _surface, session) {
+    onPageStart(pageIndex, _surface, host) {
       if (!(this.reservationHeight > 0)) return;
-      session.reservePageSpace({
+      host.reservePageSpace({
         id: `layout:page-start-reservation:${this.selector}:${pageIndex}`,
         height: this.reservationHeight,
         source: "layout",
@@ -48444,8 +48441,11 @@
     };
   }
   var FragmentTransitionArtifactCollaborator = class {
-    onSimulationComplete(session) {
-      const summaries = session.getFragmentTransitionSourceIds().map((sourceActorId) => {
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
+      const summaries = host.getFragmentTransitionSourceIds().map((sourceActorId) => {
         const summary = {
           sourceActorId,
           splitCount: 0,
@@ -48453,7 +48453,7 @@
           pageIndices: [],
           pageAnchors: []
         };
-        for (const transition of session.getFragmentTransitionsBySource(sourceActorId)) {
+        for (const transition of host.getFragmentTransitionsBySource(sourceActorId)) {
           summary.splitCount += 1;
           if (transition.continuationActorId) {
             summary.continuationCount += 1;
@@ -48483,7 +48483,7 @@
         });
         return summary;
       });
-      session.publishArtifact(simulationArtifactKeys.fragmentationSummary, summaries);
+      host.publishArtifact(simulationArtifactKeys.fragmentationSummary, summaries);
     }
   };
   function normalizeHeadingSignal(value) {
@@ -48531,12 +48531,13 @@
   }
   var HeadingTelemetryCollaborator = class {
     constructor() {
+      this.mutationMode = "observer";
       this.headings = /* @__PURE__ */ new Map();
     }
     onSimulationStart() {
       this.headings.clear();
     }
-    onActorCommitted(actor, committed, surface, _session) {
+    onActorCommitted(actor, committed, surface, _host) {
       if (actor.fragmentIndex > 0 || actor.continuationOf) return;
       if (!committed.length) return;
       const firstBox = committed.find((box) => box.meta?.generated !== true) ?? committed[0];
@@ -48564,8 +48565,8 @@
         this.headings.set(actor.sourceId, summary);
       }
     }
-    onSimulationComplete(session) {
-      session.publishArtifact(
+    onSimulationComplete(host) {
+      host.publishArtifact(
         simulationArtifactKeys.headingTelemetry,
         Array.from(this.headings.values()).sort(
           (a2, b2) => a2.pageIndex - b2.pageIndex || a2.y - b2.y || a2.sourceId.localeCompare(b2.sourceId)
@@ -48607,7 +48608,7 @@
     return "";
   }
   var HeadingSignalCollaborator = class {
-    onActorCommitted(actor, committed, surface, session) {
+    onActorCommitted(actor, committed, surface, host) {
       if (actor.fragmentIndex > 0 || actor.continuationOf) return;
       if (!committed.length) return;
       const firstBox = committed.find((box) => box.meta?.generated !== true) ?? committed[0];
@@ -48620,7 +48621,7 @@
         const v2 = Number.isFinite(box.y) ? Number(box.y) : Number.POSITIVE_INFINITY;
         return Math.min(best, v2);
       }, Number.POSITIVE_INFINITY);
-      session.publishActorSignal({
+      host.publishActorSignal({
         topic: HEADING_SIGNAL_TOPIC,
         publisherActorId: actor.actorId,
         publisherSourceId: actor.sourceId,
@@ -48645,13 +48646,13 @@
       this.callbacks = callbacks;
       this.reactiveRegionSequence = 0;
     }
-    onPageFinalized(surface, session) {
+    onPageFinalized(surface, host) {
       const page = surface.finalize();
       const baseline = resolveBaselineRegions(this.config, page.index);
       const override = findWinningPageOverride(page);
       const resolved = applyPageOverride(baseline, override);
       const usesLogical = regionContainsLogicalPageNumber(resolved.header) || regionContainsLogicalPageNumber(resolved.footer);
-      const logicalNumber = session.allocateLogicalPageNumber(usesLogical);
+      const logicalNumber = host.allocateLogicalPageNumber(usesLogical);
       const physicalPageNumber = page.index + 1;
       const headerRect = getHeaderRect(this.config, page);
       const footerRect = getFooterRect(this.config, page);
@@ -48679,7 +48680,7 @@
       const footerMaterialized = resolved.footer ? materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber) : null;
       const headerContent = headerActor ? headerActor.emitCurrentBoxes() : headerMaterialized ? this.callbacks.layoutRegion(headerMaterialized, headerRect, page.index, "header") : [];
       const footerContent = footerActor ? footerActor.emitCurrentBoxes() : footerMaterialized ? this.callbacks.layoutRegion(footerMaterialized, footerRect, page.index, "footer") : [];
-      const capture = session.sessionWorldRuntime.createPageCaptureState({
+      const capture = host.createPageCaptureState({
         pageIndex: page.index,
         worldTopY: page.index * page.height,
         pageWidth: page.width,
@@ -48695,19 +48696,19 @@
         surface.boxes.push(...footerContent);
       }
       if (headerActor) {
-        session.notifyActorSpawn(headerActor);
+        host.notifyActorSpawn(headerActor);
       }
       if (footerActor) {
-        session.notifyActorSpawn(footerActor);
+        host.notifyActorSpawn(footerActor);
       }
-      session.recordPageCapture({
+      host.recordPageCapture({
         pageIndex: page.index,
         physicalPageNumber,
         logicalPageNumber: logicalNumber,
         usesLogicalNumbering: usesLogical,
         capture
       });
-      session.recordPageFinalization({
+      host.recordPageFinalization({
         pageIndex: page.index,
         physicalPageNumber,
         logicalPageNumber: logicalNumber,
@@ -48723,9 +48724,9 @@
         viewport: capture.viewport
       });
     }
-    onSimulationStart(session) {
+    onSimulationStart(host) {
       this.reactiveRegionSequence = 0;
-      session.resetLogicalPageNumbering(Number(this.config.layout.pageNumberStart ?? 1));
+      host.resetLogicalPageNumbering(Number(this.config.layout.pageNumberStart ?? 1));
     }
   };
   function resolveOverrideState(value) {
@@ -48957,7 +48958,7 @@
     getCommittedSignalSubscriptions() {
       return ["pagination:finalized"];
     }
-    split(_availableHeight, _context) {
+    reshape(_availableHeight, _context) {
       return {
         currentFragment: this,
         continuationFragment: null
@@ -48969,10 +48970,10 @@
     isUnbreakable(_availableHeight) {
       return true;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return 0;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return 0;
     }
     emitCurrentBoxes() {
@@ -49012,8 +49013,11 @@
     return Math.max(0, Math.floor(Number(total)));
   }
   var PageNumberArtifactCollaborator = class {
-    onSimulationComplete(session) {
-      const summaries = session.getPageFinalizationStates().map((state) => ({
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
+      const summaries = host.getPageFinalizationStates().map((state) => ({
         pageIndex: state.pageIndex,
         physicalPageNumber: state.physicalPageNumber,
         logicalPageNumber: state.logicalPageNumber,
@@ -49021,24 +49025,30 @@
         renderedHeader: state.renderedHeader,
         renderedFooter: state.renderedFooter
       }));
-      session.publishArtifact(simulationArtifactKeys.pageNumberSummary, summaries);
+      host.publishArtifact(simulationArtifactKeys.pageNumberSummary, summaries);
     }
   };
   var PageOverrideArtifactCollaborator = class {
-    onSimulationComplete(session) {
-      const summaries = session.getPageFinalizationStates().map((state) => ({
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
+      const summaries = host.getPageFinalizationStates().map((state) => ({
         pageIndex: state.pageIndex,
         overrideSourceId: state.overrideSourceId,
         headerOverride: state.headerOverride,
         footerOverride: state.footerOverride
       }));
-      session.publishArtifact(simulationArtifactKeys.pageOverrideSummary, summaries);
+      host.publishArtifact(simulationArtifactKeys.pageOverrideSummary, summaries);
     }
   };
   var PageExclusionArtifactCollaborator = class {
-    onSimulationComplete(session) {
-      const summary = session.getExclusionPageIndices().map((pageIndex) => {
-        const exclusions = session.getPageExclusions(pageIndex);
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
+      const summary = host.getExclusionPageIndices().map((pageIndex) => {
+        const exclusions = host.getPageExclusions(pageIndex);
         return {
           pageIndex,
           exclusionCount: exclusions.length,
@@ -49046,14 +49056,17 @@
           totalExcludedHeight: exclusions.reduce((sum, exclusion) => sum + exclusion.h, 0)
         };
       });
-      session.publishArtifact(simulationArtifactKeys.pageExclusionSummary, summary);
+      host.publishArtifact(simulationArtifactKeys.pageExclusionSummary, summary);
     }
   };
   var PageReservationArtifactCollaborator = class {
-    onSimulationComplete(session) {
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
       const startedAt = performance.now();
-      const summaries = session.getReservationPageIndices().map((pageIndex) => {
-        const reservations = session.getPageReservations(pageIndex);
+      const summaries = host.getReservationPageIndices().map((pageIndex) => {
+        const reservations = host.getPageReservations(pageIndex);
         const reservationSources = Array.from(new Set(
           reservations.map((reservation) => reservation.source || "").filter((value) => value.length > 0)
         ));
@@ -49065,16 +49078,19 @@
           reservationSources
         };
       });
-      session.publishArtifact(simulationArtifactKeys.pageReservationSummary, summaries);
-      session.recordProfile("reservationArtifactMs", performance.now() - startedAt);
+      host.publishArtifact(simulationArtifactKeys.pageReservationSummary, summaries);
+      host.recordProfile("reservationArtifactMs", performance.now() - startedAt);
     }
   };
   var PageSpatialConstraintArtifactCollaborator = class {
-    onSimulationComplete(session) {
-      const summary = session.getSpatialConstraintPageIndices().map((pageIndex) => {
-        const reservations = session.getPageReservations(pageIndex);
-        const exclusions = session.getPageExclusions(pageIndex);
-        const finalization = session.getPageFinalizationState(pageIndex);
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
+      const summary = host.getSpatialConstraintPageIndices().map((pageIndex) => {
+        const reservations = host.getPageReservations(pageIndex);
+        const exclusions = host.getPageExclusions(pageIndex);
+        const finalization = host.getPageFinalizationState(pageIndex);
         return {
           pageIndex,
           worldX: finalization?.viewport.worldX,
@@ -49089,14 +49105,17 @@
           exclusionIds: exclusions.map((exclusion) => exclusion.id)
         };
       });
-      session.publishArtifact(simulationArtifactKeys.pageSpatialConstraintSummary, summary);
+      host.publishArtifact(simulationArtifactKeys.pageSpatialConstraintSummary, summary);
     }
   };
   var PageRegionArtifactCollaborator = class {
-    onSimulationComplete(session) {
-      session.publishArtifact(
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
+      host.publishArtifact(
         simulationArtifactKeys.pageRegionSummary,
-        session.getPageRegionSummaries().map((summary) => ({
+        host.getPageRegionSummaries().map((summary) => ({
           ...summary,
           debugRegions: summary.debugRegions.map((region) => ({
             ...region,
@@ -49184,8 +49203,8 @@
     ].join("|");
   }
   function computeUnitHeight(unit, prevSpacingAfter) {
-    const unitMarginTop = unit.getMarginTop();
-    const unitMarginBottom = unit.getMarginBottom();
+    const unitMarginTop = unit.getLeadingSpacing();
+    const unitMarginBottom = unit.getTrailingSpacing();
     const unitLayoutBefore = resolveLayoutBefore(prevSpacingAfter, unitMarginTop);
     const unitContentHeight = Math.max(0, unit.getRequiredHeight() - unitMarginTop - unitMarginBottom);
     const unitRequiredHeight = unitContentHeight + unitLayoutBefore + unitMarginBottom;
@@ -49571,7 +49590,7 @@
       if (typeof actor.stepSimulationTick === "function") {
         this.steppedActorRegistry.set(actor.actorId, actor);
       }
-      const hasCommittedUpdater = typeof actor.updateCommittedState === "function" || typeof actor.observeCommittedSignals === "function";
+      const hasCommittedUpdater = typeof actor.updateCommittedState === "function" || typeof actor.observeCommittedState === "function" || typeof actor.observeCommittedSignals === "function";
       if (!hasCommittedUpdater) return;
       this.observerRegistry.set(actor.actorId, actor);
       const subscriptions = actor.getCommittedSignalSubscriptions?.()?.map((topic) => String(topic || "").trim()).filter((topic) => topic.length > 0) ?? [];
@@ -49756,7 +49775,7 @@
           const startedAt = performance2.now();
           this.callbacks.recordProfile("actorUpdateCalls", 1);
           const result = normalizeObservationResult(
-            observer.updateCommittedState?.(context) ?? observer.observeCommittedSignals?.(context)
+            observer.updateCommittedState?.(context) ?? observer.observeCommittedState?.(context) ?? observer.observeCommittedSignals?.(context)
           );
           this.callbacks.recordProfile("actorUpdateMs", performance2.now() - startedAt);
           if (!result || !result.changed) {
@@ -49961,67 +49980,79 @@
   }
   var EventDispatcher = class {
     constructor(collaborators) {
-      this.collaborators = collaborators;
+      this.coordinators = collaborators.filter((c2) => (c2.mutationMode ?? "coordinator") !== "observer");
+      this.observers = collaborators.filter((c2) => c2.mutationMode === "observer");
     }
-    onSimulationStart(session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onSimulationStart?.(session);
+    get all() {
+      return [...this.coordinators, ...this.observers];
+    }
+    onSimulationStart(host) {
+      for (const collaborator of this.all) {
+        collaborator.onSimulationStart?.(host);
       }
     }
-    onActorSpawn(actor, session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onActorSpawn?.(actor, session);
+    onActorSpawn(actor, host) {
+      for (const collaborator of this.all) {
+        collaborator.onActorSpawn?.(actor, host);
       }
     }
-    onPageStart(pageIndex, surface, session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onPageStart?.(pageIndex, surface, session);
+    onPageStart(pageIndex, surface, host) {
+      for (const collaborator of this.all) {
+        collaborator.onPageStart?.(pageIndex, surface, host);
       }
     }
-    onConstraintNegotiation(actor, constraints, session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onConstraintNegotiation?.(actor, constraints, session);
+    onConstraintNegotiation(actor, constraints, host) {
+      for (const collaborator of this.all) {
+        collaborator.onConstraintNegotiation?.(actor, constraints, host);
       }
     }
-    onActorPrepared(actor, session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onActorPrepared?.(actor, session);
+    onActorPrepared(actor, host) {
+      for (const collaborator of this.all) {
+        collaborator.onActorPrepared?.(actor, host);
       }
     }
-    onSplitAttempt(attempt, session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onSplitAttempt?.(attempt, session);
+    onSplitAttempt(attempt, host) {
+      for (const collaborator of this.all) {
+        collaborator.onSplitAttempt?.(attempt, host);
       }
     }
-    onSplitAccepted(attempt, result, session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onSplitAccepted?.(attempt, result, session);
+    onSplitAccepted(attempt, result, host) {
+      for (const collaborator of this.all) {
+        collaborator.onSplitAccepted?.(attempt, result, host);
       }
     }
-    onActorCommitted(actor, committed, surface, session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onActorCommitted?.(actor, committed, surface, session);
+    onActorCommitted(actor, committed, surface, host) {
+      for (const collaborator of this.all) {
+        collaborator.onActorCommitted?.(actor, committed, surface, host);
       }
     }
-    onContinuationProduced(predecessor, successor, session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onContinuationProduced?.(predecessor, successor, session);
+    onContinuationProduced(predecessor, successor, host) {
+      for (const collaborator of this.all) {
+        collaborator.onContinuationProduced?.(predecessor, successor, host);
       }
     }
-    onContinuationEnqueued(predecessor, successor, session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onContinuationEnqueued?.(predecessor, successor, session);
-        collaborator.onContinuationProduced?.(predecessor, successor, session);
+    onContinuationEnqueued(predecessor, successor, host) {
+      for (const collaborator of this.all) {
+        collaborator.onContinuationEnqueued?.(predecessor, successor, host);
+        collaborator.onContinuationProduced?.(predecessor, successor, host);
       }
     }
-    onPageFinalized(surface, session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onPageFinalized?.(surface, session);
+    // Coordinators run before observers — a coordinator may mutate state that observers then read.
+    onPageFinalized(surface, host) {
+      for (const collaborator of this.coordinators) {
+        collaborator.onPageFinalized?.(surface, host);
+      }
+      for (const collaborator of this.observers) {
+        collaborator.onPageFinalized?.(surface, host);
       }
     }
-    onSimulationComplete(session) {
-      for (const collaborator of this.collaborators) {
-        collaborator.onSimulationComplete?.(session);
+    // Coordinators run before observers — same reason as onPageFinalized.
+    onSimulationComplete(host) {
+      for (const collaborator of this.coordinators) {
+        collaborator.onSimulationComplete?.(host);
+      }
+      for (const collaborator of this.observers) {
+        collaborator.onSimulationComplete?.(host);
       }
     }
   };
@@ -50090,8 +50121,8 @@
       let currentY = state.currentY;
       let lastSpacingAfter = state.lastSpacingAfter;
       for (const actor of actors) {
-        const marginTop = actor.getMarginTop();
-        const marginBottom = actor.getMarginBottom();
+        const marginTop = actor.getLeadingSpacing();
+        const marginBottom = actor.getTrailingSpacing();
         const layoutBefore = lastSpacingAfter + marginTop;
         const layoutDelta = layoutBefore - marginTop;
         const availableHeight = state.pageLimit - currentY - layoutDelta;
@@ -50233,8 +50264,8 @@
       );
     }
     createSplitFragmentAftermathState(actor, input) {
-      const marginTop = actor.getMarginTop();
-      const marginBottom = actor.getMarginBottom();
+      const marginTop = actor.getLeadingSpacing();
+      const marginBottom = actor.getTrailingSpacing();
       const layoutBefore = input.lastSpacingAfter + marginTop;
       const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
       const requiredHeight = contentHeight + layoutBefore + marginBottom;
@@ -50288,6 +50319,8 @@
       this.continuationArtifacts = /* @__PURE__ */ new Map();
       this.stagedContinuationActors = /* @__PURE__ */ new Map();
       this.stagedAfterSplitMarkers = /* @__PURE__ */ new Map();
+      this.stagedContinuationActorsShared = false;
+      this.stagedAfterSplitMarkersShared = false;
       this.fragmentTransitions = [];
       this.fragmentTransitionsByActor = /* @__PURE__ */ new Map();
       this.fragmentTransitionsBySource = /* @__PURE__ */ new Map();
@@ -50307,6 +50340,8 @@
       this.fragmentTransitionsBySource.clear();
       this.stagedContinuationActors.clear();
       this.stagedAfterSplitMarkers.clear();
+      this.stagedContinuationActorsShared = false;
+      this.stagedAfterSplitMarkersShared = false;
       this.artifacts.clear();
     }
     beginPage() {
@@ -50370,42 +50405,40 @@
     }
     stageActorsBeforeContinuation(continuationActorId, actors) {
       if (!actors.length) return;
+      this.ensureMutableStagedContinuationActors();
       this.stagedContinuationActors.set(continuationActorId, actors);
     }
     consumeActorsBeforeContinuation(continuationActorId) {
       const actors = this.stagedContinuationActors.get(continuationActorId) ?? [];
+      this.ensureMutableStagedContinuationActors();
       this.stagedContinuationActors.delete(continuationActorId);
       return actors;
     }
     stageMarkersAfterSplit(fragmentActorId, markers) {
       if (!markers.length) return;
+      this.ensureMutableStagedAfterSplitMarkers();
       this.stagedAfterSplitMarkers.set(fragmentActorId, markers);
     }
     consumeMarkersAfterSplit(fragmentActorId) {
       const markers = this.stagedAfterSplitMarkers.get(fragmentActorId) ?? [];
+      this.ensureMutableStagedAfterSplitMarkers();
       this.stagedAfterSplitMarkers.delete(fragmentActorId);
       return markers;
     }
     captureLocalQueueSnapshot(actorQueue) {
+      this.stagedContinuationActorsShared = true;
+      this.stagedAfterSplitMarkersShared = true;
       return {
         actorQueue: [...actorQueue],
-        stagedContinuationActors: new Map(
-          Array.from(this.stagedContinuationActors.entries(), ([actorId, actors]) => [actorId, [...actors]])
-        ),
-        stagedAfterSplitMarkers: new Map(
-          Array.from(this.stagedAfterSplitMarkers.entries(), ([actorId, markers]) => [actorId, [...markers]])
-        )
+        stagedContinuationActors: this.stagedContinuationActors,
+        stagedAfterSplitMarkers: this.stagedAfterSplitMarkers
       };
     }
     restoreLocalQueueSnapshot(snapshot) {
-      this.stagedContinuationActors.clear();
-      for (const [actorId, actors] of snapshot.stagedContinuationActors.entries()) {
-        this.stagedContinuationActors.set(actorId, [...actors]);
-      }
-      this.stagedAfterSplitMarkers.clear();
-      for (const [actorId, markers] of snapshot.stagedAfterSplitMarkers.entries()) {
-        this.stagedAfterSplitMarkers.set(actorId, [...markers]);
-      }
+      this.stagedContinuationActors = snapshot.stagedContinuationActors;
+      this.stagedAfterSplitMarkers = snapshot.stagedAfterSplitMarkers;
+      this.stagedContinuationActorsShared = true;
+      this.stagedAfterSplitMarkersShared = true;
     }
     installContinuationIntoQueue(actorQueue, startIndex, replaceCount, continuation) {
       if (!continuation) {
@@ -50482,6 +50515,16 @@
     restoreLocalBranchStateSnapshot(actorQueue, snapshot) {
       this.rollbackContinuationQueue(actorQueue, snapshot);
       this.restoreLocalSplitStateSnapshot(snapshot);
+    }
+    ensureMutableStagedContinuationActors() {
+      if (!this.stagedContinuationActorsShared) return;
+      this.stagedContinuationActors = new Map(this.stagedContinuationActors);
+      this.stagedContinuationActorsShared = false;
+    }
+    ensureMutableStagedAfterSplitMarkers() {
+      if (!this.stagedAfterSplitMarkersShared) return;
+      this.stagedAfterSplitMarkers = new Map(this.stagedAfterSplitMarkers);
+      this.stagedAfterSplitMarkersShared = false;
     }
     storePageReservation(pageIndex, currentPageIndex2, reservation) {
       if (pageIndex === currentPageIndex2) {
@@ -51456,24 +51499,6 @@
       return intervals.filter((interval) => interval.end - interval.start > LAYOUT_DEFAULTS.wrapTolerance);
     }
   };
-  var PageSurface = class {
-    constructor(pageIndex, width, height, boxes, debugRegions = []) {
-      this.pageIndex = pageIndex;
-      this.width = width;
-      this.height = height;
-      this.boxes = boxes;
-      this.debugRegions = debugRegions;
-    }
-    finalize() {
-      return {
-        index: this.pageIndex,
-        width: this.width,
-        height: this.height,
-        boxes: this.boxes,
-        ...this.debugRegions.length > 0 ? { debugRegions: this.debugRegions.map((region) => ({ ...region })) } : {}
-      };
-    }
-  };
   var PhysicsRuntime = class {
     constructor(host) {
       this.host = host;
@@ -51511,7 +51536,7 @@
           )
         };
       }
-      const marginTop = input.actor.getMarginTop();
+      const marginTop = input.actor.getLeadingSpacing();
       const layoutBefore = input.lastSpacingAfter + marginTop;
       const layoutDelta = layoutBefore - marginTop;
       const constraintField = new ConstraintField(availableWidth, availableHeight - layoutDelta);
@@ -51798,8 +51823,8 @@
       const startedAt = performance2.now();
       preparePackagerForPhase(actor, "commit", availableWidth, availableHeight, context);
       this.host.notifyActorPrepared(actor);
-      const marginTop = actor.getMarginTop();
-      const marginBottom = actor.getMarginBottom();
+      const marginTop = actor.getLeadingSpacing();
+      const marginBottom = actor.getTrailingSpacing();
       const contentHeight = Math.max(0, actor.getRequiredHeight() - marginTop - marginBottom);
       const requiredHeight = contentHeight + layoutBefore + marginBottom;
       const occupiesFlowSpace = packagerOccupiesFlowSpace(actor);
@@ -51839,7 +51864,7 @@
           };
         }
       };
-      this.eventDispatcher.onPageFinalized(surface, this.host.getSession());
+      this.eventDispatcher.onPageFinalized(surface, this.host.getCollaboratorHost());
       const page = surface.finalize();
       this.lifecycleRuntime.recordFinalizedPage(page);
       return page;
@@ -51858,7 +51883,7 @@
       return this.simulationReportBridge.finalizePages(pages);
     }
     onSimulationComplete() {
-      this.eventDispatcher.onSimulationComplete(this.host.getSession());
+      this.eventDispatcher.onSimulationComplete(this.host.getCollaboratorHost());
     }
     publishArtifact(key, value) {
       this.sessionWorldRuntime.publishArtifact(key, value);
@@ -51880,6 +51905,9 @@
     }
     recordPageCapture(record) {
       this.sessionWorldRuntime.recordPageCapture(record);
+    }
+    createPageCaptureState(params) {
+      return this.sessionWorldRuntime.createPageCaptureState(params);
     }
     getPageCapture(pageIndex) {
       return this.sessionWorldRuntime.getPageCapture(pageIndex);
@@ -51952,6 +51980,144 @@
     }
     getProfileSnapshot() {
       return this.host.getProfileSnapshot();
+    }
+  };
+  var SessionCollaboratorHost = class {
+    constructor(deps) {
+      this.deps = deps;
+    }
+    recordProfile(metric, delta) {
+      this.deps.recordProfile(metric, delta);
+    }
+    recordKeepWithNextPrepare(actorKind, durationMs) {
+      this.deps.recordKeepWithNextPrepare(actorKind, durationMs);
+    }
+    publishActorSignal(signal) {
+      return this.deps.publishActorSignal(signal);
+    }
+    getActorSignalSequence() {
+      return this.deps.getActorSignalSequence();
+    }
+    publishArtifact(key, value) {
+      this.deps.collaborationRuntime.publishArtifact(key, value);
+    }
+    getPaginationLoopState() {
+      return this.deps.getPaginationLoopState();
+    }
+    getKeepWithNextPlan(actorId, signature) {
+      return this.deps.getKeepWithNextPlan(actorId, signature);
+    }
+    setKeepWithNextPlan(actorId, plan, signature) {
+      this.deps.setKeepWithNextPlan(actorId, plan, signature);
+    }
+    getSplitMarkerReserve(actor) {
+      return this.deps.getSplitMarkerReserve(actor);
+    }
+    reserveCurrentPageSpace(reservation) {
+      this.deps.collaborationRuntime.reserveCurrentPageSpace(reservation);
+    }
+    reservePageSpace(reservation, pageIndex) {
+      this.deps.collaborationRuntime.reservePageSpace(reservation, pageIndex);
+    }
+    excludePageSpace(exclusion, pageIndex) {
+      this.deps.collaborationRuntime.excludePageSpace(exclusion, pageIndex);
+    }
+    ensureContinuationArtifacts(actor) {
+      return this.deps.ensureContinuationArtifacts(actor);
+    }
+    stageMarkersAfterSplit(fragmentActorId, markers) {
+      this.deps.stageMarkersAfterSplit(fragmentActorId, markers);
+    }
+    stageActorsBeforeContinuation(continuationActorId, actors) {
+      this.deps.stageActorsBeforeContinuation(continuationActorId, actors);
+    }
+    getFinalizedPages() {
+      return this.deps.collaborationRuntime.getFinalizedPages();
+    }
+    getPageFinalizationStates() {
+      return this.deps.collaborationRuntime.getPageFinalizationStates();
+    }
+    getPageFinalizationState(pageIndex) {
+      return this.deps.collaborationRuntime.getPageFinalizationState(pageIndex);
+    }
+    getPageCaptures() {
+      return this.deps.collaborationRuntime.getPageCaptures();
+    }
+    getSimulationTick() {
+      return this.deps.getSimulationTick();
+    }
+    getRegisteredActors() {
+      return this.deps.getRegisteredActors();
+    }
+    getPageReservations(pageIndex) {
+      return this.deps.collaborationRuntime.getPageReservations(pageIndex);
+    }
+    getReservationPageIndices() {
+      return this.deps.collaborationRuntime.getReservationPageIndices();
+    }
+    getPageExclusions(pageIndex) {
+      return this.deps.collaborationRuntime.getPageExclusions(pageIndex);
+    }
+    getExclusionPageIndices() {
+      return this.deps.collaborationRuntime.getExclusionPageIndices();
+    }
+    getSpatialConstraintPageIndices() {
+      return this.deps.collaborationRuntime.getSpatialConstraintPageIndices();
+    }
+    getPageRegionSummaries() {
+      return this.deps.collaborationRuntime.getPageRegionSummaries();
+    }
+    getFragmentTransitionSourceIds() {
+      return this.deps.getFragmentTransitionSourceIds();
+    }
+    getFragmentTransitionsBySource(sourceActorId) {
+      return this.deps.getFragmentTransitionsBySource(sourceActorId);
+    }
+    getScriptRegions() {
+      return this.deps.collaborationRuntime.getScriptRegions();
+    }
+    findScriptRegionByName(name) {
+      return this.deps.collaborationRuntime.findScriptRegionByName(name);
+    }
+    allocateLogicalPageNumber(usesLogicalNumbering) {
+      return this.deps.collaborationRuntime.allocateLogicalPageNumber(usesLogicalNumbering);
+    }
+    resetLogicalPageNumbering(startAt) {
+      this.deps.collaborationRuntime.resetLogicalPageNumbering(startAt);
+    }
+    notifyActorSpawn(actor) {
+      this.deps.notifyActorSpawn(actor);
+    }
+    recordPageCapture(record) {
+      this.deps.collaborationRuntime.recordPageCapture(record);
+    }
+    recordPageFinalization(state) {
+      this.deps.collaborationRuntime.recordPageFinalization(state);
+    }
+    createPageCaptureState(params) {
+      return this.deps.collaborationRuntime.createPageCaptureState(params);
+    }
+  };
+  var SessionLiveRuntimeHost = class {
+    constructor(deps) {
+      this.deps = deps;
+    }
+    publishActorSignal(signal) {
+      const resolvedPageIndex = Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : this.deps.getCurrentPageIndex();
+      const currentPageIndex2 = this.deps.getCurrentPageIndex();
+      const resolvedCursorY = Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : !Number.isFinite(signal.pageIndex) || resolvedPageIndex === currentPageIndex2 ? this.deps.getCurrentCursorY() : void 0;
+      const currentSurfaceHeight = this.deps.getCurrentSurfaceHeight();
+      const resolvedWorldY = Number.isFinite(signal.worldY) ? Number(signal.worldY) : Number.isFinite(resolvedCursorY) && Number.isFinite(currentSurfaceHeight) && resolvedPageIndex === currentPageIndex2 ? Math.max(0, resolvedPageIndex * Number(currentSurfaceHeight) + Number(resolvedCursorY)) : void 0;
+      return this.deps.publishResolvedSignal({
+        ...signal,
+        pageIndex: resolvedPageIndex,
+        ...Number.isFinite(resolvedCursorY) ? { cursorY: Number(resolvedCursorY) } : {},
+        ...Number.isFinite(resolvedWorldY) ? { worldY: Number(resolvedWorldY) } : {},
+        tick: this.deps.getSimulationTick()
+      });
+    }
+    getPaginationLoopState() {
+      return this.deps.getPaginationLoopState();
     }
   };
   var SessionWorldRuntime = class {
@@ -52880,8 +53046,8 @@
         state.currentY,
         pageHeight
       );
-      const fitsMarginBottom = fitsCurrent.getMarginBottom();
-      const fitsMarginTop = fitsCurrent.getMarginTop();
+      const fitsMarginBottom = fitsCurrent.getTrailingSpacing();
+      const fitsMarginTop = fitsCurrent.getLeadingSpacing();
       const fitsLayoutBefore = state.lastSpacingAfter + fitsMarginTop;
       const fitsLayoutDelta = fitsLayoutBefore - fitsMarginTop;
       const deferredSplitCursorY = resolveDeferredCursorY(fitsCurrent);
@@ -53030,6 +53196,24 @@
     }
     getSimulationReportReader() {
       return this.simulationReportReader;
+    }
+  };
+  var PageSurface = class {
+    constructor(pageIndex, width, height, boxes, debugRegions = []) {
+      this.pageIndex = pageIndex;
+      this.width = width;
+      this.height = height;
+      this.boxes = boxes;
+      this.debugRegions = debugRegions;
+    }
+    finalize() {
+      return {
+        index: this.pageIndex,
+        width: this.width,
+        height: this.height,
+        boxes: this.boxes,
+        ...this.debugRegions.length > 0 ? { debugRegions: this.debugRegions.map((region) => ({ ...region })) } : {}
+      };
     }
   };
   var LayoutSession = class {
@@ -53250,11 +53434,38 @@
         this.sessionWorldRuntime,
         this.simulationReportBridge,
         {
-          getSession: () => this,
+          getCollaboratorHost: () => this.collaboratorHost,
           getCurrentPageIndex: () => this.currentPageIndex,
           getProfileSnapshot: () => this.profile
         }
       );
+      this.liveRuntimeHost = new SessionLiveRuntimeHost({
+        publishResolvedSignal: (signal) => this.actorCommunicationRuntime.publishActorSignal(signal),
+        getCurrentPageIndex: () => this.currentPageIndex,
+        getCurrentCursorY: () => this.currentY,
+        getCurrentSurfaceHeight: () => Number.isFinite(this.currentSurface?.height) ? Number(this.currentSurface?.height) : null,
+        getSimulationTick: () => this.simulationClock.tick,
+        getPaginationLoopState: () => this.paginationLoopState
+      });
+      this.collaboratorHost = new SessionCollaboratorHost({
+        collaborationRuntime: this.sessionCollaborationRuntime,
+        recordProfile: (metric, delta) => this.recordProfile(metric, delta),
+        recordKeepWithNextPrepare: (actorKind, durationMs) => this.recordKeepWithNextPrepare(actorKind, durationMs),
+        publishActorSignal: (signal) => this.liveRuntimeHost.publishActorSignal(signal),
+        getPaginationLoopState: () => this.liveRuntimeHost.getPaginationLoopState(),
+        getActorSignalSequence: () => this.actorCommunicationRuntime.getActorSignalSequence(),
+        getKeepWithNextPlan: (actorId, signature) => this.aiRuntime.getKeepWithNextPlan(actorId, signature),
+        setKeepWithNextPlan: (actorId, plan, signature) => this.aiRuntime.setKeepWithNextPlan(actorId, plan, signature),
+        getSplitMarkerReserve: (actor) => this.transitionsRuntime.getSplitMarkerReserve(actor),
+        ensureContinuationArtifacts: (actor) => this.transitionsRuntime.ensureContinuationArtifacts(actor),
+        stageMarkersAfterSplit: (fragmentActorId, markers) => this.fragmentSessionRuntime.stageMarkersAfterSplit(fragmentActorId, markers),
+        stageActorsBeforeContinuation: (continuationActorId, actors) => this.fragmentSessionRuntime.stageActorsBeforeContinuation(continuationActorId, actors),
+        getSimulationTick: () => this.simulationClock.tick,
+        getRegisteredActors: () => this.kernel.actorRegistry,
+        getFragmentTransitionSourceIds: () => this.kernel.getFragmentTransitionSourceIds(),
+        getFragmentTransitionsBySource: (sourceActorId) => this.kernel.getFragmentTransitionsBySource(sourceActorId),
+        notifyActorSpawn: (actor) => this.notifyActorSpawn(actor)
+      });
       this.placementSessionRuntime = new PlacementSessionRuntime(
         this.physicsRuntime,
         this.collisionRuntime,
@@ -53302,19 +53513,10 @@
       this.actorCommunicationRuntime.resetForSimulation();
       this.lifecycleRuntime.resetForSimulation();
       this.sessionWorldRuntime.resetForSimulation();
-      this.eventDispatcher.onSimulationStart(this);
+      this.eventDispatcher.onSimulationStart(this.collaboratorHost);
     }
     publishActorSignal(signal) {
-      const resolvedPageIndex = Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : this.currentPageIndex;
-      const resolvedCursorY = Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : !Number.isFinite(signal.pageIndex) || resolvedPageIndex === this.currentPageIndex ? this.currentY : void 0;
-      const resolvedWorldY = Number.isFinite(signal.worldY) ? Number(signal.worldY) : Number.isFinite(resolvedCursorY) && this.currentSurface && resolvedPageIndex === this.currentPageIndex ? Math.max(0, resolvedPageIndex * this.currentSurface.height + Number(resolvedCursorY)) : void 0;
-      return this.actorCommunicationRuntime.publishActorSignal({
-        ...signal,
-        pageIndex: resolvedPageIndex,
-        ...Number.isFinite(resolvedCursorY) ? { cursorY: Number(resolvedCursorY) } : {},
-        ...Number.isFinite(resolvedWorldY) ? { worldY: Number(resolvedWorldY) } : {},
-        tick: this.getSimulationTick()
-      });
+      return this.liveRuntimeHost.publishActorSignal(signal);
     }
     getActorSignals(topic) {
       return this.actorCommunicationRuntime.getActorSignals(topic);
@@ -53325,7 +53527,7 @@
     notifyActorSpawn(actor) {
       this.kernel.registerActor(actor);
       this.actorCommunicationRuntime.notifyActorSpawn(actor);
-      this.eventDispatcher.onActorSpawn(actor, this);
+      this.eventDispatcher.onActorSpawn(actor, this.collaboratorHost);
       const hostedActors = getHostedRuntimeActors(actor);
       for (const hostedActor of hostedActors) {
         this.notifyActorSpawn(hostedActor);
@@ -53574,7 +53776,7 @@
       this.currentPageIndex = pageIndex;
       this.currentSurface = new PageSurface(pageIndex, width, height, boxes);
       this.kernel.beginPage();
-      this.eventDispatcher.onPageStart(pageIndex, this.currentSurface, this);
+      this.eventDispatcher.onPageStart(pageIndex, this.currentSurface, this.collaboratorHost);
     }
     notifyConstraintNegotiation(actor, constraints) {
       this.currentConstraintField = constraints;
@@ -53592,16 +53794,16 @@
         constraints.exclusions.push({ ...exclusion });
       }
       this.recordProfile("reservationConstraintNegotiationMs", performance2.now() - startedAt);
-      this.eventDispatcher.onConstraintNegotiation(actor, constraints, this);
+      this.eventDispatcher.onConstraintNegotiation(actor, constraints, this.collaboratorHost);
     }
     notifyActorPrepared(actor) {
       const startedAt = performance2.now();
       this.recordProfile("actorPreparedDispatchCalls", 1);
-      this.eventDispatcher.onActorPrepared(actor, this);
+      this.eventDispatcher.onActorPrepared(actor, this.collaboratorHost);
       this.recordProfile("actorPreparedDispatchMs", performance2.now() - startedAt);
     }
     notifySplitAttempt(attempt) {
-      this.eventDispatcher.onSplitAttempt(attempt, this);
+      this.eventDispatcher.onSplitAttempt(attempt, this.collaboratorHost);
     }
     executeSplitAttempt(actor, availableWidth, availableHeight, context) {
       const attempt = {
@@ -53613,11 +53815,11 @@
       this.notifySplitAttempt(attempt);
       return {
         attempt,
-        result: actor.split(availableHeight, context)
+        result: actor.reshape(availableHeight, context)
       };
     }
     executePositionedSplitAttempt(actor, availableWidth, currentY, lastSpacingAfter, pageLimit, pageIndex, markerReserve, contextBase) {
-      const marginTop = actor.getMarginTop();
+      const marginTop = actor.getLeadingSpacing();
       const layoutBefore = lastSpacingAfter + marginTop;
       const layoutDelta = layoutBefore - marginTop;
       const emitAvailableHeight = pageLimit - currentY - layoutDelta;
@@ -53639,19 +53841,19 @@
     }
     notifySplitAccepted(attempt, result) {
       this.kernel.registerSplitAccepted(attempt, result);
-      this.eventDispatcher.onSplitAccepted(attempt, result, this);
+      this.eventDispatcher.onSplitAccepted(attempt, result, this.collaboratorHost);
     }
     notifyActorCommitted(actor, committed) {
       if (!this.currentSurface) return;
-      this.eventDispatcher.onActorCommitted(actor, committed, this.currentSurface, this);
+      this.eventDispatcher.onActorCommitted(actor, committed, this.currentSurface, this.collaboratorHost);
     }
     notifyContinuationProduced(predecessor, successor) {
       this.kernel.markContinuationProduced(successor);
-      this.eventDispatcher.onContinuationProduced(predecessor, successor, this);
+      this.eventDispatcher.onContinuationProduced(predecessor, successor, this.collaboratorHost);
     }
     notifyContinuationEnqueued(predecessor, successor) {
       this.kernel.markContinuationEnqueued(predecessor, successor);
-      this.eventDispatcher.onContinuationEnqueued(predecessor, successor, this);
+      this.eventDispatcher.onContinuationEnqueued(predecessor, successor, this.collaboratorHost);
     }
     finalizeCommittedPage(pageIndex, width, height, boxes) {
       return this.sessionCollaborationRuntime.finalizeCommittedPage(pageIndex, width, height, boxes);
@@ -53826,6 +54028,9 @@
     }
     recordPageCapture(record) {
       this.sessionCollaborationRuntime.recordPageCapture(record);
+    }
+    createPageCaptureState(params) {
+      return this.sessionWorldRuntime.createPageCaptureState(params);
     }
     getPageCapture(pageIndex) {
       return this.sessionCollaborationRuntime.getPageCapture(pageIndex);
@@ -54201,8 +54406,11 @@
     return null;
   }
   var SourcePositionArtifactCollaborator = class {
-    onSimulationComplete(session) {
-      const pages = session.getFinalizedPages();
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
+      const pages = host.getFinalizedPages();
       const summaries = /* @__PURE__ */ new Map();
       for (const page of pages) {
         for (const box of page.boxes || []) {
@@ -54237,7 +54445,7 @@
           }
         }
       }
-      session.publishArtifact(simulationArtifactKeys.sourcePositionMap, Array.from(summaries.values()));
+      host.publishArtifact(simulationArtifactKeys.sourcePositionMap, Array.from(summaries.values()));
     }
   };
   function cloneElementTree(value) {
@@ -54405,9 +54613,9 @@
       this.lifecycleState = lifecycleState;
       this.replayRequested = false;
     }
-    recordReplayRequest(session) {
+    recordReplayRequest(host) {
       this.replayRequested = true;
-      session.recordProfile("replayRequests", 1);
+      host.recordProfile("replayRequests", 1);
     }
     resolveSourceId(target) {
       if (target && typeof target === "object" && target.type === "document") {
@@ -54427,7 +54635,7 @@
       }
       return null;
     }
-    createElementRef(session, element2) {
+    createElementRef(host, element2) {
       const sourceId = typeof element2.properties?.sourceId === "string" ? element2.properties.sourceId : null;
       return {
         name: sourceId,
@@ -54438,7 +54646,7 @@
         },
         setContent: (content3) => {
           element2.content = String(content3);
-          session.recordProfile("setContentCalls", 1);
+          host.recordProfile("setContentCalls", 1);
           return true;
         },
         replace: (value) => {
@@ -54447,7 +54655,7 @@
           const result = replaceBySourceId(this.elements, sourceId, elements);
           if (!result.replaced) return false;
           this.elements.splice(0, this.elements.length, ...result.nextNodes);
-          session.recordProfile("replaceCalls", 1);
+          host.recordProfile("replaceCalls", 1);
           return true;
         },
         append: (value) => {
@@ -54457,7 +54665,7 @@
           const result = insertBySourceId(this.elements, sourceId, elements, "after");
           if (!result.replaced) return false;
           this.elements.splice(0, this.elements.length, ...result.nextNodes);
-          session.recordProfile("insertCalls", 1);
+          host.recordProfile("insertCalls", 1);
           return true;
         },
         prepend: (value) => {
@@ -54467,7 +54675,7 @@
           const result = insertBySourceId(this.elements, sourceId, elements, "before");
           if (!result.replaced) return false;
           this.elements.splice(0, this.elements.length, ...result.nextNodes);
-          session.recordProfile("insertCalls", 1);
+          host.recordProfile("insertCalls", 1);
           return true;
         },
         replaceWith: (elements) => {
@@ -54475,71 +54683,71 @@
           const result = replaceBySourceId(this.elements, sourceId, elements);
           if (!result.replaced) return false;
           this.elements.splice(0, this.elements.length, ...result.nextNodes);
-          session.recordProfile("replaceCalls", 1);
+          host.recordProfile("replaceCalls", 1);
           return true;
         },
-        sendMessage: (recipient, msg) => this.deliverMessage(recipient, msg, element2, session)
+        sendMessage: (recipient, msg) => this.deliverMessage(recipient, msg, element2, host)
       };
     }
-    createDocRef(session) {
+    createDocRef(host) {
       const getRegions = () => {
-        session.recordProfile("docQueryCalls", 1);
-        return session.getScriptRegions();
+        host.recordProfile("docQueryCalls", 1);
+        return host.getScriptRegions();
       };
       return {
         name: "doc",
         type: "document",
         vars: this.host.getScriptVars(),
         getPageCount: () => {
-          session.recordProfile("docQueryCalls", 1);
-          return session.getFinalizedPages().length;
+          host.recordProfile("docQueryCalls", 1);
+          return host.getFinalizedPages().length;
         },
         getRegions,
         findRegionByName: (name) => {
-          session.recordProfile("docQueryCalls", 1);
-          return session.findScriptRegionByName(name);
+          host.recordProfile("docQueryCalls", 1);
+          return host.findScriptRegionByName(name);
         },
         findElementByName: (name) => {
-          session.recordProfile("docQueryCalls", 1);
+          host.recordProfile("docQueryCalls", 1);
           const node2 = findBySourceId(this.elements, name);
-          return node2 ? this.createElementRef(session, node2) : null;
+          return node2 ? this.createElementRef(host, node2) : null;
         },
         findElementsByType: (type) => {
-          session.recordProfile("docQueryCalls", 1);
-          return findByType(this.elements, type).map((node2) => this.createElementRef(session, node2));
+          host.recordProfile("docQueryCalls", 1);
+          return findByType(this.elements, type).map((node2) => this.createElementRef(host, node2));
         },
         append: (value) => {
           const elements = normalizeScriptElements(value);
           if (elements.length === 0) return false;
           this.elements.push(...elements);
-          session.recordProfile("insertCalls", 1);
+          host.recordProfile("insertCalls", 1);
           return true;
         },
         prepend: (value) => {
           const elements = normalizeScriptElements(value);
           if (elements.length === 0) return false;
           this.elements.splice(0, 0, ...elements);
-          session.recordProfile("insertCalls", 1);
+          host.recordProfile("insertCalls", 1);
           return true;
         },
         replace: (value) => {
           const elements = normalizeScriptElements(value);
           this.elements.splice(0, this.elements.length, ...elements);
-          session.recordProfile("replaceCalls", 1);
+          host.recordProfile("replaceCalls", 1);
           return true;
         }
       };
     }
-    createGlobals(session, options) {
+    createGlobals(host, options) {
       const self2 = options?.self;
-      const docRef = this.createDocRef(session);
+      const docRef = this.createDocRef(host);
       const setContent = (target, content3) => {
         const sourceId = this.resolveSourceId(target);
         if (!sourceId) return false;
         const node2 = findBySourceId(this.elements, sourceId);
         if (!node2) return false;
         node2.content = String(content3);
-        session.recordProfile("setContentCalls", 1);
+        host.recordProfile("setContentCalls", 1);
         return true;
       };
       const replaceElement = (target, elements) => {
@@ -54549,7 +54757,7 @@
         const result = replaceBySourceId(this.elements, sourceId, normalizedElements);
         if (!result.replaced) return false;
         this.elements.splice(0, this.elements.length, ...result.nextNodes);
-        session.recordProfile("replaceCalls", 1);
+        host.recordProfile("replaceCalls", 1);
         return true;
       };
       const insertElementsBefore = (target, elements) => {
@@ -54559,7 +54767,7 @@
         const result = insertBySourceId(this.elements, sourceId, normalizedElements, "before");
         if (!result.replaced) return false;
         this.elements.splice(0, this.elements.length, ...result.nextNodes);
-        session.recordProfile("insertCalls", 1);
+        host.recordProfile("insertCalls", 1);
         return true;
       };
       const insertElementsAfter = (target, elements) => {
@@ -54569,7 +54777,7 @@
         const result = insertBySourceId(this.elements, sourceId, normalizedElements, "after");
         if (!result.replaced) return false;
         this.elements.splice(0, this.elements.length, ...result.nextNodes);
-        session.recordProfile("insertCalls", 1);
+        host.recordProfile("insertCalls", 1);
         return true;
       };
       const deleteElement = (target) => {
@@ -54578,21 +54786,21 @@
         const result = deleteBySourceId(this.elements, sourceId);
         if (!result.replaced) return false;
         this.elements.splice(0, this.elements.length, ...result.nextNodes);
-        session.recordProfile("removeCalls", 1);
+        host.recordProfile("removeCalls", 1);
         return true;
       };
       return {
         doc: docRef,
-        self: self2 ? this.createElementRef(session, self2) : docRef,
-        sendMessage: (recipient, msg) => this.deliverMessage(recipient, msg, self2, session),
+        self: self2 ? this.createElementRef(host, self2) : docRef,
+        sendMessage: (recipient, msg) => this.deliverMessage(recipient, msg, self2, host),
         element: (name) => {
-          session.recordProfile("docQueryCalls", 1);
+          host.recordProfile("docQueryCalls", 1);
           const node2 = findBySourceId(this.elements, name);
-          return node2 ? this.createElementRef(session, node2) : null;
+          return node2 ? this.createElementRef(host, node2) : null;
         },
         elementsByType: (type) => {
-          session.recordProfile("docQueryCalls", 1);
-          return findByType(this.elements, type).map((node2) => this.createElementRef(session, node2));
+          host.recordProfile("docQueryCalls", 1);
+          return findByType(this.elements, type).map((node2) => this.createElementRef(host, node2));
         },
         replace: (value) => {
           const elements = normalizeScriptElements(value);
@@ -54605,7 +54813,7 @@
           } else {
             this.elements.splice(0, this.elements.length, ...elements);
           }
-          session.recordProfile("replaceCalls", 1);
+          host.recordProfile("replaceCalls", 1);
           return true;
         },
         append: (value) => {
@@ -54620,7 +54828,7 @@
           } else {
             this.elements.push(...elements);
           }
-          session.recordProfile("insertCalls", 1);
+          host.recordProfile("insertCalls", 1);
           return true;
         },
         prepend: (value) => {
@@ -54635,7 +54843,7 @@
           } else {
             this.elements.splice(0, 0, ...elements);
           }
-          session.recordProfile("insertCalls", 1);
+          host.recordProfile("insertCalls", 1);
           return true;
         },
         setContent,
@@ -54644,19 +54852,19 @@
         insertAfter: insertElementsAfter,
         deleteElement,
         findElementByName: (name) => {
-          session.recordProfile("docQueryCalls", 1);
+          host.recordProfile("docQueryCalls", 1);
           const node2 = findBySourceId(this.elements, name);
-          return node2 ? this.createElementRef(session, node2) : null;
+          return node2 ? this.createElementRef(host, node2) : null;
         },
         findElementsByType: (type) => {
-          session.recordProfile("docQueryCalls", 1);
-          return findByType(this.elements, type).map((node2) => this.createElementRef(session, node2));
+          host.recordProfile("docQueryCalls", 1);
+          return findByType(this.elements, type).map((node2) => this.createElementRef(host, node2));
         },
         insertElementsBefore,
         insertElementsAfter
       };
     }
-    deliverMessage(recipient, msg, sender, session) {
+    deliverMessage(recipient, msg, sender, host) {
       const targetSourceId = this.resolveSourceId(recipient);
       if (!targetSourceId) return false;
       if (targetSourceId === "doc") {
@@ -54668,10 +54876,10 @@
           message2.subject = typeof legacyName === "string" && legacyName ? legacyName : "message";
         }
         delete message2.name;
-        const globals2 = this.createGlobals(session);
-        const fromRef2 = sender ? this.createElementRef(session, sender) : { name: "doc", type: "document" };
-        session.recordProfile("messageSendCalls", 1);
-        this.host.runHandler(handlerName2, "onMessage", globals2, { from: fromRef2, msg: message2 }, session);
+        const globals2 = this.createGlobals(host);
+        const fromRef2 = sender ? this.createElementRef(host, sender) : { name: "doc", type: "document" };
+        host.recordProfile("messageSendCalls", 1);
+        this.host.runHandler(handlerName2, "onMessage", globals2, { from: fromRef2, msg: message2 }, host);
         return true;
       }
       const target = findBySourceId(this.elements, targetSourceId);
@@ -54686,11 +54894,11 @@
         message.subject = typeof legacyName === "string" && legacyName ? legacyName : "message";
       }
       delete message.name;
-      const globals = this.createGlobals(session, {
+      const globals = this.createGlobals(host, {
         self: target
       });
-      const fromRef = sender ? this.createElementRef(session, sender) : { name: "doc", type: "document" };
-      session.recordProfile("messageSendCalls", 1);
+      const fromRef = sender ? this.createElementRef(host, sender) : { name: "doc", type: "document" };
+      host.recordProfile("messageSendCalls", 1);
       this.host.runHandler(
         handlerName,
         "onMessage",
@@ -54699,15 +54907,15 @@
           from: fromRef,
           msg: message
         },
-        session
+        host
       );
       return true;
     }
-    onSimulationStart(session) {
+    onSimulationStart(host) {
       this.replayRequested = false;
       const documentHandlerName = !this.lifecycleState.didLoad ? this.host.getDocumentHandlerName("onLoad") : null;
       if (documentHandlerName) {
-        this.host.runHandler(documentHandlerName, "onLoad", this.createGlobals(session), {}, session);
+        this.host.runHandler(documentHandlerName, "onLoad", this.createGlobals(host), {}, host);
         this.lifecycleState.didLoad = true;
       }
       for (const element2 of collectElements(this.elements)) {
@@ -54716,7 +54924,7 @@
         const explicitHandlerName = typeof element2.properties?.onResolve === "string" ? element2.properties.onResolve : null;
         const handlerName = this.host.getElementHandlerName(sourceId, "onCreate", explicitHandlerName);
         if (handlerName) {
-          this.host.runHandler(handlerName, "onCreate", this.createGlobals(session, { self: element2 }), {}, session);
+          this.host.runHandler(handlerName, "onCreate", this.createGlobals(host, { self: element2 }), {}, host);
         }
         this.lifecycleState.createdElements.add(sourceId);
       }
@@ -54867,31 +55075,31 @@ ${source}`)
     createDocumentDigest(elements) {
       return JSON.stringify(elements);
     }
-    runHandler(handlerName, phase, globals, eventParams, session) {
+    runHandler(handlerName, phase, globals, eventParams, host) {
       const handler = this.handlers.get(handlerName);
       if (!handler) {
         throw new Error(`[ScriptRuntimeHost] Missing method "${handlerName}" for ${phase}.`);
       }
       const startedAt = performance2.now();
-      session.recordProfile("handlerCalls", 1);
+      host.recordProfile("handlerCalls", 1);
       switch (phase) {
         case "onLoad":
-          session.recordProfile("loadCalls", 1);
+          host.recordProfile("loadCalls", 1);
           break;
         case "onCreate":
-          session.recordProfile("createCalls", 1);
+          host.recordProfile("createCalls", 1);
           break;
         case "onReady":
-          session.recordProfile("readyCalls", 1);
+          host.recordProfile("readyCalls", 1);
           break;
         case "onRefresh":
-          session.recordProfile("refreshCalls", 1);
+          host.recordProfile("refreshCalls", 1);
           break;
         case "onChanged":
-          session.recordProfile("documentChangedCalls", 1);
+          host.recordProfile("documentChangedCalls", 1);
           break;
         case "onMessage":
-          session.recordProfile("messageHandlerCalls", 1);
+          host.recordProfile("messageHandlerCalls", 1);
           break;
       }
       const orderedArgs = dedupeNames([
@@ -54909,22 +55117,22 @@ ${source}`)
       });
       handler.invoke(...orderedArgs);
       const elapsed = performance2.now() - startedAt;
-      session.recordProfile("handlerMs", elapsed);
+      host.recordProfile("handlerMs", elapsed);
       switch (phase) {
         case "onLoad":
-          session.recordProfile("loadMs", elapsed);
+          host.recordProfile("loadMs", elapsed);
           break;
         case "onCreate":
-          session.recordProfile("createMs", elapsed);
+          host.recordProfile("createMs", elapsed);
           break;
         case "onReady":
-          session.recordProfile("readyMs", elapsed);
+          host.recordProfile("readyMs", elapsed);
           break;
         case "onRefresh":
-          session.recordProfile("refreshMs", elapsed);
+          host.recordProfile("refreshMs", elapsed);
           break;
         case "onChanged":
-          session.recordProfile("documentChangedMs", elapsed);
+          host.recordProfile("documentChangedMs", elapsed);
           break;
         case "onMessage":
           break;
@@ -54932,10 +55140,13 @@ ${source}`)
     }
   };
   var TransformCapabilityArtifactCollaborator = class {
-    onSimulationComplete(session) {
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
       const summaries = /* @__PURE__ */ new Map();
-      for (const actor of session.getRegisteredActors()) {
-        const profile = resolvePackagerTransformProfile(actor);
+      for (const actor of host.getRegisteredActors()) {
+        const profile = resolvePackagerReshapeProfile(actor);
         if (!profile) continue;
         const key = `${actor.sourceId}::${actor.actorKind}`;
         const existing = summaries.get(key);
@@ -54943,13 +55154,13 @@ ${source}`)
           summaries.set(key, {
             sourceId: actor.sourceId,
             actorKind: actor.actorKind,
-            supportedTransforms: [...profile.supportedTransforms || []].sort(),
+            supportedReshapes: [...profile.supportedReshapes || []].sort(),
             capabilities: [...profile.capabilities || []].sort((a2, b2) => a2.kind.localeCompare(b2.kind))
           });
           continue;
         }
-        existing.supportedTransforms = Array.from(
-          /* @__PURE__ */ new Set([...existing.supportedTransforms, ...profile.supportedTransforms || []])
+        existing.supportedReshapes = Array.from(
+          /* @__PURE__ */ new Set([...existing.supportedReshapes, ...profile.supportedReshapes || []])
         ).sort();
         const capabilityMap = new Map(existing.capabilities.map((capability) => [capability.kind, capability]));
         for (const capability of profile.capabilities || []) {
@@ -54964,7 +55175,7 @@ ${source}`)
         }
         existing.capabilities = Array.from(capabilityMap.values()).sort((a2, b2) => a2.kind.localeCompare(b2.kind));
       }
-      session.publishArtifact(
+      host.publishArtifact(
         simulationArtifactKeys.transformCapabilitySummary,
         Array.from(summaries.values()).sort(
           (a2, b2) => a2.sourceId.localeCompare(b2.sourceId) || a2.actorKind.localeCompare(b2.actorKind)
@@ -54973,9 +55184,12 @@ ${source}`)
     }
   };
   var TransformArtifactCollaborator = class {
-    onSimulationComplete(session) {
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
       const summaries = /* @__PURE__ */ new Map();
-      for (const page of session.getFinalizedPages()) {
+      for (const page of host.getFinalizedPages()) {
         for (const box of page.boxes || []) {
           const sourceId = String(box.meta?.sourceId || "");
           const transformKind = box.meta?.transformKind || null;
@@ -55013,7 +55227,7 @@ ${source}`)
           summary.clonedFromSourceIds.sort((a2, b2) => a2.localeCompare(b2));
         }
       }
-      session.publishArtifact(
+      host.publishArtifact(
         simulationArtifactKeys.transformSummary,
         Array.from(summaries.values()).sort((a2, b2) => a2.sourceId.localeCompare(b2.sourceId))
       );
@@ -55031,7 +55245,10 @@ ${source}`)
     ].join(":");
   }
   var RegionDebugOverlayCollaborator = class {
-    onActorCommitted(actor, _committed, surface, _session) {
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onActorCommitted(actor, _committed, surface, _host) {
       const debugActor = actor;
       const regions = debugActor.getDebugRegions?.();
       if (!regions || regions.length === 0) return;
@@ -55043,7 +55260,7 @@ ${source}`)
         existing.add(key);
       }
     }
-    onPageFinalized(surface, _session) {
+    onPageFinalized(surface, _host) {
       const existing = new Set(surface.debugRegions.map(regionKey));
       const aggregated = /* @__PURE__ */ new Map();
       for (const box of surface.boxes) {
@@ -55144,6 +55361,7 @@ ${source}`)
   }
   var TemporalPresentationCollaborator = class {
     constructor() {
+      this.mutationMode = "observer";
       this.latestPages = /* @__PURE__ */ new Map();
       this.frames = [];
     }
@@ -55151,19 +55369,19 @@ ${source}`)
       this.latestPages.clear();
       this.frames = [];
     }
-    onPageFinalized(surface, session) {
+    onPageFinalized(surface, host) {
       const page = surface.finalize();
       this.latestPages.set(page.index, snapshotPage(page));
       const pages = Array.from(this.latestPages.values()).sort((a2, b2) => a2.index - b2.index).map((entry) => clonePageSnapshot(entry));
       this.frames.push({
         captureIndex: this.frames.length,
-        tick: session.getSimulationTick(),
+        tick: host.getSimulationTick(),
         pageCount: pages.length,
         pages
       });
     }
-    onSimulationComplete(session) {
-      session.publishArtifact(
+    onSimulationComplete(host) {
+      host.publishArtifact(
         simulationArtifactKeys.temporalPresentationTimeline,
         cloneTimeline(this.frames)
       );
@@ -55172,9 +55390,10 @@ ${source}`)
   var AsyncThoughtRuntimeCollaborator = class {
     constructor(host) {
       this.host = host;
+      this.mutationMode = "observer";
     }
-    onSimulationComplete(session) {
-      session.publishArtifact(
+    onSimulationComplete(host) {
+      host.publishArtifact(
         simulationArtifactKeys.asyncThoughtSummary,
         this.host.getSummary()
       );
@@ -56196,17 +56415,21 @@ ${text5}
   var InteractionArtifactCollaborator = class {
     constructor(layout) {
       this.layout = layout;
+      this.mutationMode = "observer";
     }
-    onSimulationComplete(session) {
-      session.publishArtifact(
+    onSimulationComplete(host) {
+      host.publishArtifact(
         simulationArtifactKeys.interactionMap,
-        buildInteractionPages(session.getFinalizedPages(), this.layout)
+        buildInteractionPages(host.getFinalizedPages(), this.layout)
       );
     }
   };
   var ViewportCaptureArtifactCollaborator = class {
-    onSimulationComplete(session) {
-      const summaries = session.getPageCaptures().map((record) => ({
+    constructor() {
+      this.mutationMode = "observer";
+    }
+    onSimulationComplete(host) {
+      const summaries = host.getPageCaptures().map((record) => ({
         pageIndex: record.pageIndex,
         physicalPageNumber: record.physicalPageNumber,
         logicalPageNumber: record.logicalPageNumber,
@@ -56238,7 +56461,7 @@ ${text5}
           blockedRectCount: record.capture.viewport.terrain.blockedRects.length
         }
       }));
-      session.publishArtifact(simulationArtifactKeys.viewportCaptureSummary, summaries);
+      host.publishArtifact(simulationArtifactKeys.viewportCaptureSummary, summaries);
     }
   };
   var AsyncThoughtHost = class {
@@ -57436,7 +57659,7 @@ ${text5}
         acceptsFrame: true
       };
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       return {
         capabilities: [
           {
@@ -57489,7 +57712,7 @@ ${text5}
       }
       return boxes;
     }
-    split(_availableHeight, _context) {
+    reshape(_availableHeight, _context) {
       return { currentFragment: null, continuationFragment: this };
     }
     getRequiredHeight() {
@@ -57498,10 +57721,10 @@ ${text5}
     isUnbreakable(_availableHeight) {
       return true;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return this.wrap.marginTop;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return this.body ? Math.max(0, this.body.marginBottom) : Math.max(0, this.wrap.marginBottom);
     }
   };
@@ -57837,7 +58060,7 @@ ${text5}
         acceptsFrame: true
       };
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       return {
         capabilities: [
           {
@@ -57881,7 +58104,7 @@ ${text5}
       );
       return fragment.emitBoxes(availableWidth, availableHeight, context);
     }
-    split(availableHeight, context) {
+    reshape(availableHeight, context) {
       if (this.isUnbreakable(availableHeight)) {
         return { currentFragment: null, continuationFragment: this };
       }
@@ -57932,12 +58155,12 @@ ${text5}
       if (flowBox.overflowPolicy === "move-whole") return true;
       return false;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       if (this.cachedParts) return this.cachedParts.wrap.marginTop;
       const flowBox = this.processor.shapeElement(this.element, { path: [this.index] });
       return flowBox.marginTop || 0;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       if (this.cachedParts) {
         return this.cachedParts.body ? Math.max(0, this.cachedParts.body.marginBottom) : Math.max(0, this.cachedParts.wrap.marginBottom || 0);
       }
@@ -58004,7 +58227,7 @@ ${text5}
     getPlacementPreference(_fullAvailableWidth, _context) {
       return { minimumWidth: this.width };
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       return {
         capabilities: []
       };
@@ -58038,13 +58261,13 @@ ${text5}
     isUnbreakable(_availableHeight) {
       return true;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return this.marginTop;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return this.marginBottom;
     }
-    split(_availableHeight, _context) {
+    reshape(_availableHeight, _context) {
       return { currentFragment: null, continuationFragment: this };
     }
   };
@@ -58118,7 +58341,7 @@ ${text5}
         acceptsFrame: true
       };
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       return {
         capabilities: [
           {
@@ -58183,13 +58406,13 @@ ${text5}
       if (this.flowBox.overflowPolicy === "move-whole") return true;
       return false;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return this.flowBox.marginTop;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return this.flowBox.marginBottom;
     }
-    split(availableHeight, context) {
+    reshape(availableHeight, context) {
       this.materialize(this.lastAvailableWidth);
       if (this.isUnbreakable(availableHeight)) {
         return { currentFragment: null, continuationFragment: this };
@@ -58326,7 +58549,7 @@ ${text5}
         acceptsFrame: true
       };
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       return {
         capabilities: [
           {
@@ -58340,7 +58563,7 @@ ${text5}
     emitBoxes(_aw, _ah, _ctx) {
       return this.frozenBoxes.map((b2) => ({ ...b2, properties: { ...b2.properties || {} } }));
     }
-    split(_ah, _ctx) {
+    reshape(_ah, _ctx) {
       return { currentFragment: null, continuationFragment: this };
     }
     getRequiredHeight() {
@@ -58349,10 +58572,10 @@ ${text5}
     isUnbreakable(_ah) {
       return true;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return 0;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return 0;
     }
   };
@@ -58362,6 +58585,8 @@ ${text5}
       this.lastAvailableWidth = -1;
       this.lastAvailableHeight = -1;
       this.lastViewportSnapshot = null;
+      this.imageMetricsCache = /* @__PURE__ */ new Map();
+      this.imageMetricsCacheDirty = true;
       this.pageBreakBefore = false;
       this.keepWithNext = false;
       this.storyElement = storyElement;
@@ -58420,7 +58645,7 @@ ${text5}
       }
       return null;
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       return {
         capabilities: [
           {
@@ -58446,10 +58671,10 @@ ${text5}
     isUnbreakable(_availableHeight) {
       return false;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return 0;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return 0;
     }
     getHostedRuntimeActors() {
@@ -58515,7 +58740,7 @@ ${text5}
       this.invalidateCachedStoryLayout();
       return true;
     }
-    split(availableHeight, context) {
+    reshape(availableHeight, context) {
       const availableWidth = this.lastAvailableWidth > 0 ? this.lastAvailableWidth : context.pageWidth - context.margins.left - context.margins.right;
       const columnConfig = this.getStoryColumnConfig();
       const result = this.lastResult ?? (columnConfig.columns > 1 ? this.pourColumns(availableWidth, availableHeight, context, columnConfig.columns, columnConfig.gutter, columnConfig.balance) : this.pourAll(availableWidth, context));
@@ -58530,19 +58755,8 @@ ${text5}
       const children = this.storyActorEntries;
       const storyMap = new SpatialMap();
       const registeredObstacles = [];
-      const imageMetricsCache = /* @__PURE__ */ new Map();
       const resolveImageMetrics = (child, index2) => {
-        if (!child.image) return null;
-        if (imageMetricsCache.has(index2)) return imageMetricsCache.get(index2);
-        const imgData = this.resolveImage(child);
-        if (!imgData) {
-          imageMetricsCache.set(index2, null);
-          return null;
-        }
-        const { w: w2, h: h2 } = this.measureImageBox(child, imgData, availableWidth);
-        const cached = { img: imgData, w: w2, h: h2 };
-        imageMetricsCache.set(index2, cached);
-        return cached;
+        return this.resolveCachedImageMetrics(child, index2, availableWidth);
       };
       for (const co of this.initialObstacles) {
         const rect = {
@@ -58958,20 +59172,9 @@ ${text5}
       const registeredObstacles = [];
       const allObstacles = [];
       const allBoxes = [];
-      const imageMetricsCache = /* @__PURE__ */ new Map();
       const maxRegionWidth = Math.max(...regions.map((r) => r.w));
       const resolveImageMetrics = (child) => {
-        if (!child.element.image) return null;
-        if (imageMetricsCache.has(child.childIndex)) return imageMetricsCache.get(child.childIndex);
-        const imgData = this.resolveImage(child.element);
-        if (!imgData) {
-          imageMetricsCache.set(child.childIndex, null);
-          return null;
-        }
-        const { w: w2, h: h2 } = this.measureImageBox(child.element, imgData, maxRegionWidth);
-        const cached = { img: imgData, w: w2, h: h2 };
-        imageMetricsCache.set(child.childIndex, cached);
-        return cached;
+        return this.resolveCachedImageMetrics(child.element, child.childIndex, maxRegionWidth);
       };
       for (const co of this.initialObstacles) {
         const rect = {
@@ -59063,7 +59266,7 @@ ${text5}
             cursorY = cursorAfter;
             return true;
           }
-          const split = pkg.split(remainingHeight, colContext);
+          const split = pkg.reshape(remainingHeight, colContext);
           if (split.currentFragment && split.continuationFragment) {
             const partABoxes = split.currentFragment.emitBoxes(region.w, remainingHeight, colContext) || [];
             for (const b2 of partABoxes) {
@@ -59684,6 +59887,25 @@ ${text5}
       this.lastAvailableWidth = -1;
       this.lastAvailableHeight = -1;
       this.lastViewportSnapshot = null;
+      this.imageMetricsCacheDirty = true;
+    }
+    resolveCachedImageMetrics(child, childIndex, availableWidth) {
+      if (!child.image) return null;
+      if (this.imageMetricsCacheDirty) {
+        this.imageMetricsCache.clear();
+        this.imageMetricsCacheDirty = false;
+      }
+      const key = `${childIndex}:${availableWidth}`;
+      if (this.imageMetricsCache.has(key)) return this.imageMetricsCache.get(key);
+      const imgData = this.resolveImage(child);
+      if (!imgData) {
+        this.imageMetricsCache.set(key, null);
+        return null;
+      }
+      const { w: w2, h: h2 } = this.measureImageBox(child, imgData, availableWidth);
+      const cached = { img: imgData, w: w2, h: h2 };
+      this.imageMetricsCache.set(key, cached);
+      return cached;
     }
     /**
      * Creates a source element containing only the text that comes after
@@ -60084,7 +60306,7 @@ ${text5}
     getPlacementPreference(fullAvailableWidth, _context) {
       return { minimumWidth: fullAvailableWidth };
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       return { capabilities: [] };
     }
     emitBoxes(_availableWidth, _availableHeight, context) {
@@ -60100,13 +60322,13 @@ ${text5}
     isUnbreakable(_availableHeight) {
       return true;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return 0;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return 0;
     }
-    split(_availableHeight, _context) {
+    reshape(_availableHeight, _context) {
       return { currentFragment: null, continuationFragment: this };
     }
   };
@@ -60584,7 +60806,7 @@ ${text5}
         processor,
         availableWidth,
         0,
-        candidate.continuationEntry.actor.getMarginTop(),
+        candidate.continuationEntry.actor.getLeadingSpacing(),
         continuationFields.length > 0 ? continuationFields : activeFields
       );
       if (!isPoorHostedRegionContinuationStart(continuationPlacement, availableWidth) && !isPoorHostedRegionSplitTail(placement, consumedLineCount, availableWidth)) {
@@ -60612,8 +60834,8 @@ ${text5}
       const actor = entry.actor;
       const fieldDirective = readHostedRegionElementFieldDirective(entry.element);
       const actorZIndex = resolveHostedRegionActorZIndex(entry.element);
-      const marginTop = actor.getMarginTop();
-      const marginBottom = actor.getMarginBottom();
+      const marginTop = actor.getLeadingSpacing();
+      const marginBottom = actor.getTrailingSpacing();
       const layoutBefore = lastSpacingAfter + marginTop;
       const layoutDelta = lastSpacingAfter;
       const blockTop = currentY + layoutDelta;
@@ -60751,8 +60973,8 @@ ${text5}
       const actor = entry.actor;
       const fieldDirective = readHostedRegionElementFieldDirective(entry.element);
       const actorZIndex = resolveHostedRegionActorZIndex(entry.element);
-      const marginTop = actor.getMarginTop();
-      const marginBottom = actor.getMarginBottom();
+      const marginTop = actor.getLeadingSpacing();
+      const marginBottom = actor.getTrailingSpacing();
       const layoutBefore = lastSpacingAfter + marginTop;
       const layoutDelta = lastSpacingAfter;
       const remainingHeight = Math.max(0, availableHeight - currentY - layoutDelta);
@@ -60951,7 +61173,7 @@ ${text5}
           }
         };
       }
-      const split = actor.split(remainingHeight, context);
+      const split = actor.reshape(remainingHeight, context);
       if (split.currentFragment) {
         const emitted = split.currentFragment.emitBoxes(lane.width || zoneWidth, remainingHeight, laneContext) || [];
         for (const box of annotateHostedActorBoxes(split.currentFragment, emitted)) {
@@ -60961,8 +61183,8 @@ ${text5}
             y: (box.y || 0) + currentY + layoutDelta
           });
         }
-        const splitMarginTop = split.currentFragment.getMarginTop();
-        const splitMarginBottom = split.currentFragment.getMarginBottom();
+        const splitMarginTop = split.currentFragment.getLeadingSpacing();
+        const splitMarginBottom = split.currentFragment.getTrailingSpacing();
         const splitContentHeight = Math.max(
           0,
           split.currentFragment.getRequiredHeight() - splitMarginTop - splitMarginBottom
@@ -61033,7 +61255,7 @@ ${text5}
     getPlacementPreference(fullAvailableWidth, _context) {
       return { minimumWidth: fullAvailableWidth, acceptsFrame: true };
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       return {
         capabilities: [
           { kind: "split", preservesIdentity: true, producesContinuation: true }
@@ -61071,7 +61293,7 @@ ${text5}
         };
       });
     }
-    split(_availableHeight, _context) {
+    reshape(_availableHeight, _context) {
       return { currentFragment: null, continuationFragment: this };
     }
     getRequiredHeight() {
@@ -61080,10 +61302,10 @@ ${text5}
     isUnbreakable(_availableHeight) {
       return true;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return this.marginTopVal;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return this.marginBottomVal;
     }
   };
@@ -61282,10 +61504,7 @@ ${text5}
         runHostedRegionSession,
         contextBase
       );
-      this.materializedBoxes = boxes.map((box) => {
-        const tag = readHostedRegionDebugTag(box);
-        return tag ? attachHostedRegionDebugTag(box, { ...tag, fieldActorId: this.actorId, fieldSourceId: this.sourceId }) : box;
-      });
+      this.materializedBoxes = boxes.map((box) => this.attachHostDebugIdentity(box));
       this.marginTopVal = this.fragmentMarginTop;
       this.marginBottomVal = this.fragmentMarginBottom;
       this.totalRegionHeight = totalHeight;
@@ -61337,7 +61556,7 @@ ${text5}
     }
     createFrozenCurrentFragment() {
       return new FrozenHostedRegionPackager(
-        this.usesSpanningContinuation() ? this.boundedBoxes || [] : this.materializedBoxes || [],
+        this.getEmittableBoxes(),
         this.marginTopVal + (this.usesSpanningContinuation() ? this.boundedHeight : this.totalRegionHeight) + this.marginBottomVal,
         this.marginTopVal,
         this.marginBottomVal,
@@ -61378,7 +61597,7 @@ ${text5}
     getPlacementPreference(fullAvailableWidth, _context) {
       return { minimumWidth: fullAvailableWidth, acceptsFrame: true };
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       return { capabilities: [{ kind: "morph", preservesIdentity: true, reflowsContent: true }] };
     }
     emitBoxes(availableWidth, availableHeight, context) {
@@ -61386,7 +61605,7 @@ ${text5}
       const mt2 = this.marginTopVal;
       const leftMargin = context.margins.left;
       this.lastEmittedLeftMargin = leftMargin;
-      const boxes = this.usesSpanningContinuation() ? this.boundedBoxes || [] : this.materializedBoxes || [];
+      const boxes = this.getEmittableBoxes();
       return boxes.map((b2) => {
         const tag = readHostedRegionDebugTag(b2);
         return {
@@ -61417,7 +61636,7 @@ ${text5}
     getDebugRegions() {
       const availableWidth = this.lastAvailableWidth > 0 ? this.lastAvailableWidth : 0;
       const regions = this.describeRegions(availableWidth);
-      const boxes = this.usesSpanningContinuation() ? this.boundedBoxes || [] : this.materializedBoxes || [];
+      const boxes = this.getEmittableBoxes();
       const bottomsByZone = /* @__PURE__ */ new Map();
       for (const box of boxes) {
         const tag = readHostedRegionDebugTag(box);
@@ -61458,13 +61677,13 @@ ${text5}
     isUnbreakable(_availableHeight) {
       return !this.usesSpanningContinuation();
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return this.marginTopVal;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return this.marginBottomVal;
     }
-    split(availableHeight, context) {
+    reshape(availableHeight, context) {
       if (!this.usesSpanningContinuation()) {
         return { currentFragment: null, continuationFragment: this };
       }
@@ -61481,6 +61700,13 @@ ${text5}
         currentFragment,
         continuationFragment: this.createContinuationPackager()
       };
+    }
+    getEmittableBoxes() {
+      return this.usesSpanningContinuation() ? this.boundedBoxes || [] : this.materializedBoxes || [];
+    }
+    attachHostDebugIdentity(box) {
+      const tag = readHostedRegionDebugTag(box);
+      return tag ? attachHostedRegionDebugTag(box, { ...tag, fieldActorId: this.actorId, fieldSourceId: this.sourceId }) : box;
     }
   };
   function isWorldPlainElement(element2) {
@@ -61592,8 +61818,8 @@ ${text5}
     getPlacementPreference(fullAvailableWidth, context) {
       return this.inner.getPlacementPreference(fullAvailableWidth, context);
     }
-    getTransformProfile() {
-      return this.inner.getTransformProfile();
+    getReshapeProfile() {
+      return this.inner.getReshapeProfile();
     }
     emitBoxes(availableWidth, availableHeight, context) {
       const boxes = this.inner.emitBoxes(availableWidth, availableHeight, context);
@@ -61611,17 +61837,17 @@ ${text5}
     isUnbreakable(availableHeight) {
       return this.inner.isUnbreakable(availableHeight);
     }
-    getMarginTop() {
-      return this.rootFlowMode === "traverse" ? 0 : this.inner.getMarginTop();
+    getLeadingSpacing() {
+      return this.rootFlowMode === "traverse" ? 0 : this.inner.getLeadingSpacing();
     }
-    getMarginBottom() {
-      return this.rootFlowMode === "traverse" ? 0 : this.inner.getMarginBottom();
+    getTrailingSpacing() {
+      return this.rootFlowMode === "traverse" ? 0 : this.inner.getTrailingSpacing();
     }
     occupiesFlowSpace() {
       return this.rootFlowMode !== "traverse";
     }
-    split(availableHeight, context) {
-      return this.inner.split(availableHeight, context);
+    reshape(availableHeight, context) {
+      return this.inner.reshape(availableHeight, context);
     }
     publishTraversingFlowExclusions(boxes, context) {
       const session = context.processor.getCurrentLayoutSession?.() ?? null;
@@ -61862,7 +62088,7 @@ ${text5}
     getPlacementPreference(fullAvailableWidth, context) {
       return (this.base ?? this.buildPackager(context)).getPlacementPreference?.(fullAvailableWidth, context) ?? null;
     }
-    getTransformProfile() {
+    getReshapeProfile() {
       return {
         capabilities: [{ kind: "split", preservesIdentity: true, producesContinuation: true }]
       };
@@ -61884,9 +62110,9 @@ ${text5}
       const packager = this.base ?? this.buildPackager(context);
       return packager.emitBoxes(availableWidth, availableHeight, context);
     }
-    split(availableHeight, context) {
+    reshape(availableHeight, context) {
       const packager = this.base ?? this.buildPackager(context);
-      const result = packager.split(availableHeight, context);
+      const result = packager.reshape(availableHeight, context);
       if (!result.continuationFragment) return result;
       const continuationIdentity = createContinuationIdentity(this.identity);
       const continuationFragment = new _TocPackager(this.processor, this.flowBox, continuationIdentity);
@@ -61898,19 +62124,19 @@ ${text5}
     isUnbreakable(availableHeight) {
       return this.base?.isUnbreakable(availableHeight) ?? false;
     }
-    getMarginTop() {
-      return this.base?.getMarginTop() ?? (this.flowBox.marginTop ?? 0);
+    getLeadingSpacing() {
+      return this.base?.getLeadingSpacing() ?? (this.flowBox.marginTop ?? 0);
     }
-    getMarginBottom() {
-      return this.base?.getMarginBottom() ?? (this.flowBox.marginBottom ?? 0);
+    getTrailingSpacing() {
+      return this.base?.getTrailingSpacing() ?? (this.flowBox.marginBottom ?? 0);
     }
     getCommittedSignalSubscriptions() {
       return [HEADING_SIGNAL_TOPIC];
     }
     updateCommittedState(context) {
-      return this.observeCommittedSignals(context);
+      return this.observeCommittedState(context);
     }
-    observeCommittedSignals(context) {
+    observeCommittedState(context) {
       if (this.firstCommittedPageIndex === null) {
         return { changed: false, geometryChanged: false, updateKind: "none" };
       }
@@ -62744,8 +62970,8 @@ ${text5}
     getPlacementPreference(fullAvailableWidth, context) {
       return this.inner.getPlacementPreference?.(fullAvailableWidth, context) ?? null;
     }
-    getTransformProfile() {
-      return this.inner.getTransformProfile?.();
+    getReshapeProfile() {
+      return this.inner.getReshapeProfile?.();
     }
     emitBoxes(availableWidth, availableHeight, context) {
       return this.inner.emitBoxes(availableWidth, availableHeight, context);
@@ -62826,8 +63052,8 @@ ${text5}
         }
       };
     }
-    split(availableHeight, context) {
-      return this.inner.split(availableHeight, context);
+    reshape(availableHeight, context) {
+      return this.inner.reshape(availableHeight, context);
     }
     getRequiredHeight() {
       return this.inner.getRequiredHeight();
@@ -62841,11 +63067,11 @@ ${text5}
     isUnbreakable(availableHeight) {
       return this.inner.isUnbreakable(availableHeight);
     }
-    getMarginTop() {
-      return this.inner.getMarginTop();
+    getLeadingSpacing() {
+      return this.inner.getLeadingSpacing();
     }
-    getMarginBottom() {
-      return this.inner.getMarginBottom();
+    getTrailingSpacing() {
+      return this.inner.getTrailingSpacing();
     }
   };
   function buildPackagerForElement(item, index2, processor, elements, externalFactory) {
@@ -63684,7 +63910,7 @@ ${text5}
       }
       return { changed: false, geometryChanged: false, updateKind: "none" };
     }
-    split() {
+    reshape() {
       return { currentFragment: this, continuationFragment: null };
     }
     getRequiredHeight() {
@@ -63693,10 +63919,10 @@ ${text5}
     isUnbreakable() {
       return true;
     }
-    getMarginTop() {
+    getLeadingSpacing() {
       return 0;
     }
-    getMarginBottom() {
+    getTrailingSpacing() {
       return 0;
     }
   };
@@ -63923,8 +64149,8 @@ ${text5}
         const availableHeightAdjusted = placementPreparation.availableHeightAdjusted;
         const effectiveAvailableHeight = placementPreparation.effectiveAvailableHeight;
         const resolveDeferredCursorY = placementPreparation.resolveDeferredCursorY;
-        const marginTop = packager.getMarginTop();
-        const marginBottom = packager.getMarginBottom();
+        const marginTop = packager.getLeadingSpacing();
+        const marginBottom = packager.getTrailingSpacing();
         session.setPaginationLoopState({
           actorQueue: packagers,
           actorIndex: i2,
@@ -64131,7 +64357,7 @@ ${text5}
             availableHeightAdjusted,
             pageLimit,
             pageTop: margins.top,
-            layoutBefore: resolveLayoutBefore2(lastSpacingAfter, packager.getMarginTop())
+            layoutBefore: resolveLayoutBefore2(lastSpacingAfter, packager.getLeadingSpacing())
           },
           contextBase,
           resolveDeferredCursorY,
@@ -65151,35 +65377,53 @@ ${text5}
     createLayoutCollaborators(elements, scriptLifecycleState, existingScriptRuntimeHost, asyncThoughtHost) {
       const scriptRuntimeHost = existingScriptRuntimeHost ?? (this.config.scripting ? new ScriptRuntimeHost(this.config.scripting) : null);
       const scriptRuntimeCollaborator = scriptRuntimeHost ? new ScriptRuntimeCollaborator(scriptRuntimeHost, elements, scriptLifecycleState ?? scriptRuntimeHost.createLifecycleState()) : null;
+      const spatialCorePasses = [
+        new ContinuationMarkerCollaborator(),
+        new PageStartExclusionCollaborator(this.config),
+        new PageStartReservationCollaborator(this.config),
+        new PageReservationCollaborator()
+      ];
+      const spatialCoreSignals = [
+        new HeadingSignalCollaborator()
+      ];
+      const spatialCoreExperiments = [
+        ...asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []
+      ];
+      const vmPrintPolicyCollaborators = [
+        new PageRegionCollaborator(this.config, {
+          layoutRegion: (content3, rect, pageIndex, sourceType, actorId) => this.layoutRegion(content3, rect, pageIndex, sourceType, actorId)
+        })
+      ];
+      const documentScriptingCollaborators = [
+        ...scriptRuntimeCollaborator ? [scriptRuntimeCollaborator] : []
+      ];
+      const observerCollaborators = [
+        new FragmentTransitionArtifactCollaborator(),
+        new TransformCapabilityArtifactCollaborator(),
+        new TransformArtifactCollaborator(),
+        new PageExclusionArtifactCollaborator(),
+        new PageNumberArtifactCollaborator(),
+        new PageOverrideArtifactCollaborator(),
+        new PageReservationArtifactCollaborator(),
+        new PageSpatialConstraintArtifactCollaborator(),
+        new PageRegionArtifactCollaborator(),
+        new SourcePositionArtifactCollaborator(),
+        new HeadingTelemetryCollaborator(),
+        new TemporalPresentationCollaborator(),
+        new InteractionArtifactCollaborator(this.config.layout),
+        new ViewportCaptureArtifactCollaborator(),
+        new RegionDebugOverlayCollaborator()
+      ];
       return {
         scriptRuntimeHost,
         scriptRuntimeCollaborator,
         collaborators: [
-          new ContinuationMarkerCollaborator(),
-          new PageStartExclusionCollaborator(this.config),
-          new PageStartReservationCollaborator(this.config),
-          new PageReservationCollaborator(),
-          new FragmentTransitionArtifactCollaborator(),
-          new TransformCapabilityArtifactCollaborator(),
-          new TransformArtifactCollaborator(),
-          new PageExclusionArtifactCollaborator(),
-          new PageNumberArtifactCollaborator(),
-          new PageOverrideArtifactCollaborator(),
-          new PageReservationArtifactCollaborator(),
-          new PageSpatialConstraintArtifactCollaborator(),
-          new PageRegionArtifactCollaborator(),
-          new SourcePositionArtifactCollaborator(),
-          new HeadingTelemetryCollaborator(),
-          new HeadingSignalCollaborator(),
-          ...asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : [],
-          new TemporalPresentationCollaborator(),
-          new InteractionArtifactCollaborator(this.config.layout),
-          new ViewportCaptureArtifactCollaborator(),
-          new RegionDebugOverlayCollaborator(),
-          new PageRegionCollaborator(this.config, {
-            layoutRegion: (content3, rect, pageIndex, sourceType, actorId) => this.layoutRegion(content3, rect, pageIndex, sourceType, actorId)
-          }),
-          ...scriptRuntimeCollaborator ? [scriptRuntimeCollaborator] : []
+          ...spatialCorePasses,
+          ...spatialCoreSignals,
+          ...spatialCoreExperiments,
+          ...vmPrintPolicyCollaborators,
+          ...documentScriptingCollaborators,
+          ...observerCollaborators
         ]
       };
     }

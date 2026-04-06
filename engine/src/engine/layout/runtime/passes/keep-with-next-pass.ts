@@ -1,7 +1,8 @@
 import { performance } from 'node:perf_hooks';
 import type { ActorFormationMember, KeepWithNextFormationPlan } from '../../actor-formation';
 import { LAYOUT_DEFAULTS } from '../../defaults';
-import type { Collaborator, CollaboratorHost, PaginationLoopState } from '../../layout-session-types';
+import type { PaginationLoopState } from '../session/session-lifecycle-types';
+import type { Collaborator, CollaboratorHost } from '../session/session-runtime-types';
 
 import { PackagerUnit, preparePackagerForPhase } from '../../packagers/packager-types';
 

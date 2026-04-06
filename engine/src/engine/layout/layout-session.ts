@@ -15,6 +15,7 @@ import {
     type ObserverSweepResult
 } from './actor-communication-runtime';
 import { LAYOUT_DEFAULTS } from './defaults';
+import { ConstraintField, type ResolvedPlacementFrame } from './constraint-field';
 import { EventDispatcher } from './event-dispatcher';
 import { FragmentSessionRuntime } from './fragment-session-runtime';
 import { Kernel } from './kernel';
@@ -23,7 +24,10 @@ import { LifecycleRuntime } from './lifecycle-runtime';
 import { PaginationLoopRuntime } from './pagination-loop-runtime';
 import { PlacementSessionRuntime } from './placement-session-runtime';
 import { PhysicsRuntime } from './physics-runtime';
-import { SessionCollaborationRuntime } from './session-collaboration-runtime';
+import { SessionCollaborationRuntime } from './runtime/session/session-collaboration-runtime';
+import { SessionCollaboratorHost } from './runtime/session/session-collaborator-host';
+import { SessionLiveRuntimeHost } from './runtime/session/session-live-runtime-host';
+import type { Collaborator } from './runtime/session/session-runtime-types';
 import { SessionWorldRuntime } from './session-world-runtime';
 import { SimulationClock } from './simulation-clock';
 import { AsyncThoughtHost, type AsyncThoughtHandle, type AsyncThoughtRequest } from './async-thought-host';
@@ -42,88 +46,85 @@ import type { PageRegionSummary } from './page-region-summary';
 import type { ScriptRegionRef } from './script-region-query';
 
 import {
-    ConstraintField,
-    PageSurface,
-    type ActorMeasurement,
-    type ActorOverflowEntryHandlingOutcome,
-    type ActorOverflowEntrySettlementOutcome,
-    type ActorOverflowPreSplitHandlingOutcome,
-    type ActorOverflowResolution,
-    type ActorOverflowSplitEntryHandlingOutcome,
-    type ActorPlacementActionInput,
-    type ActorPlacementAttemptOutcome,
-    type ActorPlacementExecutionOutcome,
-    type ActorPlacementHandlingOutcome,
-    type ActorPlacementSettlementOutcome,
-    type ActorSplitFailureHandlingOutcome,
-    type ActorSplitFailureResolution,
-    type ActorSplitFailureSettlementOutcome,
-    type AcceptedSplitQueueHandling,
-    type ContinuationQueueOutcome,
-    type DeferredSplitPlacementOutcome,
-    type DeferredSplitPlacementSettlementOutcome,
-    type ExecuteSpeculativeBranchInput,
-    type ExecuteSpeculativeBranchResult,
-    type ForcedOverflowCommitOutcome,
-    type FragmentCommitState,
     type FragmentTransition,
-    type GenericSplitActionInput,
-    type GenericSplitOutcome,
-    type GenericSplitSuccessHandlingOutcome,
-    type GenericSplitSuccessSettlementOutcome,
-    type KernelBranchStateSnapshot,
-    type KeepWithNextOverflowActionInput,
-    type KeepWithNextPlanningResolution,
-    type Collaborator,
-    type LayoutProfileMetrics,
-    type LocalBranchSnapshot,
-    type LocalBranchStateSnapshot,
-    type LocalQueueSnapshot,
-    type LocalSplitStateSnapshot,
-    type LocalTransitionSnapshot,
     type PageCaptureRecord,
     type PageCaptureState,
-    type PageExclusionIntent,
-    type PageAdvanceOutcome,
     type PageFinalizationState,
-    type PageReservationIntent,
-    type PaginationLoopAction,
-    type PaginationLoopState,
-    type PaginationPlacementPreparation,
-    type PaginationState,
-    type PositionedSplitExecution,
-    type RegionReservation,
-    type ResolvedPlacementFrame,
-    type SequencePlacementCheckpoint,
-    type SessionBranchStateSnapshot,
-    type SequencePlacementState,
-    type SessionSafeCheckpoint,
-    type SimulationClockSnapshot,
-    type SplitAttempt,
-    type SplitExecution,
-    type SplitMarkerPlacementState,
-    type SpeculativeBranchContext,
-    type SpeculativeBranchReason,
-    type SplitFragmentAftermathInput,
-    type SplitFragmentAftermathState,
-    type TailSplitFailureSettlementOutcome,
-    type TailSplitFormationOutcome,
-    type TailSplitFormationSettlementOutcome,
-    type WholeFormationOverflowEntryOutcome,
-    type WholeFormationOverflowEntrySettlementOutcome,
-    type WholeFormationOverflowResolution,
-    type SpatialExclusion,
     type ViewportDescriptor,
     type ViewportRect,
     type ViewportTerrain,
     type WorldSpace
-} from './layout-session-types';
+} from './runtime/session/session-state-types';
+import type { LayoutProfileMetrics } from './runtime/session/session-profile-types';
+import type {
+    ContinuationQueueOutcome,
+    ExecuteSpeculativeBranchInput,
+    ExecuteSpeculativeBranchResult,
+    KernelBranchStateSnapshot,
+    LocalBranchSnapshot,
+    LocalBranchStateSnapshot,
+    LocalQueueSnapshot,
+    LocalSplitStateSnapshot,
+    LocalTransitionSnapshot,
+    PositionedSplitExecution,
+    SequencePlacementCheckpoint,
+    SessionBranchStateSnapshot,
+    SessionSafeCheckpoint,
+    SimulationClockSnapshot,
+    SpeculativeBranchContext,
+    SpeculativeBranchReason,
+    SplitExecution
+} from './runtime/session/session-progression-types';
+import type {
+    AcceptedSplitQueueHandling,
+    ActorMeasurement,
+    ActorOverflowEntryHandlingOutcome,
+    ActorOverflowEntrySettlementOutcome,
+    ActorOverflowPreSplitHandlingOutcome,
+    ActorOverflowResolution,
+    ActorOverflowSplitEntryHandlingOutcome,
+    ActorPlacementActionInput,
+    ActorPlacementAttemptOutcome,
+    ActorPlacementExecutionOutcome,
+    ActorPlacementHandlingOutcome,
+    ActorPlacementSettlementOutcome,
+    ActorSplitFailureHandlingOutcome,
+    ActorSplitFailureResolution,
+    ActorSplitFailureSettlementOutcome,
+    DeferredSplitPlacementOutcome,
+    DeferredSplitPlacementSettlementOutcome,
+    ForcedOverflowCommitOutcome,
+    FragmentCommitState,
+    GenericSplitActionInput,
+    GenericSplitOutcome,
+    GenericSplitSuccessHandlingOutcome,
+    GenericSplitSuccessSettlementOutcome,
+    KeepWithNextOverflowActionInput,
+    KeepWithNextPlanningResolution,
+    PageAdvanceOutcome,
+    PaginationLoopAction,
+    PaginationPlacementPreparation,
+    SequencePlacementState,
+    SplitFragmentAftermathInput,
+    SplitFragmentAftermathState,
+    SplitMarkerPlacementState,
+    TailSplitFailureSettlementOutcome,
+    TailSplitFormationOutcome,
+    TailSplitFormationSettlementOutcome,
+    WholeFormationOverflowEntryOutcome,
+    WholeFormationOverflowEntrySettlementOutcome,
+    WholeFormationOverflowResolution
+} from './runtime/session/session-pagination-types';
+import type {
+    PageExclusionIntent,
+    PageReservationIntent,
+    RegionReservation,
+    SpatialExclusion
+} from './runtime/session/session-spatial-types';
 import type { SimulationProgressionConfig, SimulationProgressionPolicy, SimulationStopReason } from '../types';
 
-export {
-    ConstraintField,
-    PageSurface
-} from './layout-session-types';
+export { ConstraintField } from './constraint-field';
+export { PageSurface } from './runtime/session/session-lifecycle-types';
 export type {
     AcceptedSplitQueueHandling,
     ActiveExclusionBand,
@@ -158,7 +159,6 @@ export type {
     KeepWithNextOverflowActionInput,
     KeepWithNextPlanningResolution,
     KernelBranchStateSnapshot,
-    Collaborator,
     LayoutProfileMetrics,
     LocalBranchSnapshot,
     LocalBranchStateSnapshot,
@@ -205,6 +205,12 @@ export type {
     WholeFormationOverflowEntrySettlementOutcome,
     WholeFormationOverflowResolution
 } from './layout-session-types';
+import {
+    PageSurface,
+    type PaginationLoopState,
+    type PaginationState,
+    type SplitAttempt
+} from './runtime/session/session-lifecycle-types';
 
 type LayoutSessionOptions = {
     runtime: EngineRuntime;
@@ -227,6 +233,8 @@ export class LayoutSession {
     readonly collisionRuntime: CollisionRuntime;
     readonly physicsRuntime: PhysicsRuntime;
     readonly sessionCollaborationRuntime: SessionCollaborationRuntime;
+    readonly collaboratorHost: SessionCollaboratorHost;
+    readonly liveRuntimeHost: SessionLiveRuntimeHost;
     readonly simulationReportBridge: SimulationReportBridge;
     readonly transitionsRuntime: TransitionsRuntime;
     readonly simulationClock = new SimulationClock();
@@ -477,11 +485,38 @@ export class LayoutSession {
             this.sessionWorldRuntime,
             this.simulationReportBridge,
             {
-                getCollaboratorHost: () => this,
+                getCollaboratorHost: () => this.collaboratorHost,
                 getCurrentPageIndex: () => this.currentPageIndex,
                 getProfileSnapshot: () => this.profile
             }
         );
+        this.liveRuntimeHost = new SessionLiveRuntimeHost({
+            publishResolvedSignal: (signal) => this.actorCommunicationRuntime.publishActorSignal(signal),
+            getCurrentPageIndex: () => this.currentPageIndex,
+            getCurrentCursorY: () => this.currentY,
+            getCurrentSurfaceHeight: () => Number.isFinite(this.currentSurface?.height) ? Number(this.currentSurface?.height) : null,
+            getSimulationTick: () => this.simulationClock.tick,
+            getPaginationLoopState: () => this.paginationLoopState
+        });
+        this.collaboratorHost = new SessionCollaboratorHost({
+            collaborationRuntime: this.sessionCollaborationRuntime,
+            recordProfile: (metric, delta) => this.recordProfile(metric, delta),
+            recordKeepWithNextPrepare: (actorKind, durationMs) => this.recordKeepWithNextPrepare(actorKind, durationMs),
+            publishActorSignal: (signal) => this.liveRuntimeHost.publishActorSignal(signal),
+            getPaginationLoopState: () => this.liveRuntimeHost.getPaginationLoopState(),
+            getActorSignalSequence: () => this.actorCommunicationRuntime.getActorSignalSequence(),
+            getKeepWithNextPlan: (actorId, signature) => this.aiRuntime.getKeepWithNextPlan(actorId, signature),
+            setKeepWithNextPlan: (actorId, plan, signature) => this.aiRuntime.setKeepWithNextPlan(actorId, plan, signature),
+            getSplitMarkerReserve: (actor) => this.transitionsRuntime.getSplitMarkerReserve(actor),
+            ensureContinuationArtifacts: (actor) => this.transitionsRuntime.ensureContinuationArtifacts(actor),
+            stageMarkersAfterSplit: (fragmentActorId, markers) => this.fragmentSessionRuntime.stageMarkersAfterSplit(fragmentActorId, markers),
+            stageActorsBeforeContinuation: (continuationActorId, actors) => this.fragmentSessionRuntime.stageActorsBeforeContinuation(continuationActorId, actors),
+            getSimulationTick: () => this.simulationClock.tick,
+            getRegisteredActors: () => this.kernel.actorRegistry,
+            getFragmentTransitionSourceIds: () => this.kernel.getFragmentTransitionSourceIds(),
+            getFragmentTransitionsBySource: (sourceActorId) => this.kernel.getFragmentTransitionsBySource(sourceActorId),
+            notifyActorSpawn: (actor) => this.notifyActorSpawn(actor)
+        });
         this.placementSessionRuntime = new PlacementSessionRuntime(
             this.physicsRuntime,
             this.collisionRuntime,
@@ -538,30 +573,11 @@ export class LayoutSession {
         this.actorCommunicationRuntime.resetForSimulation();
         this.lifecycleRuntime.resetForSimulation();
         this.sessionWorldRuntime.resetForSimulation();
-        this.eventDispatcher.onSimulationStart(this);
+        this.eventDispatcher.onSimulationStart(this.collaboratorHost);
     }
 
     publishActorSignal(signal: ActorSignalDraft): ActorSignal {
-        const resolvedPageIndex = Number.isFinite(signal.pageIndex)
-            ? Number(signal.pageIndex)
-            : this.currentPageIndex;
-        const resolvedCursorY = Number.isFinite(signal.cursorY)
-            ? Number(signal.cursorY)
-            : (!Number.isFinite(signal.pageIndex) || resolvedPageIndex === this.currentPageIndex)
-                ? this.currentY
-                : undefined;
-        const resolvedWorldY = Number.isFinite(signal.worldY)
-            ? Number(signal.worldY)
-            : (Number.isFinite(resolvedCursorY) && this.currentSurface && resolvedPageIndex === this.currentPageIndex)
-                ? Math.max(0, resolvedPageIndex * this.currentSurface.height + Number(resolvedCursorY))
-                : undefined;
-        return this.actorCommunicationRuntime.publishActorSignal({
-            ...signal,
-            pageIndex: resolvedPageIndex,
-            ...(Number.isFinite(resolvedCursorY) ? { cursorY: Number(resolvedCursorY) } : {}),
-            ...(Number.isFinite(resolvedWorldY) ? { worldY: Number(resolvedWorldY) } : {}),
-            tick: this.getSimulationTick()
-        });
+        return this.liveRuntimeHost.publishActorSignal(signal);
     }
 
     getActorSignals(topic?: string): readonly ActorSignal[] {
@@ -575,7 +591,7 @@ export class LayoutSession {
     notifyActorSpawn(actor: PackagerUnit): void {
         this.kernel.registerActor(actor);
         this.actorCommunicationRuntime.notifyActorSpawn(actor);
-        this.eventDispatcher.onActorSpawn(actor, this);
+        this.eventDispatcher.onActorSpawn(actor, this.collaboratorHost);
         const hostedActors = getHostedRuntimeActors(actor);
         for (const hostedActor of hostedActors) {
             this.notifyActorSpawn(hostedActor);
@@ -909,7 +925,7 @@ export class LayoutSession {
         this.currentPageIndex = pageIndex;
         this.currentSurface = new PageSurface(pageIndex, width, height, boxes);
         this.kernel.beginPage();
-        this.eventDispatcher.onPageStart(pageIndex, this.currentSurface, this);
+        this.eventDispatcher.onPageStart(pageIndex, this.currentSurface, this.collaboratorHost);
     }
 
     notifyConstraintNegotiation(actor: PackagerUnit, constraints: ConstraintField): void {
@@ -928,18 +944,18 @@ export class LayoutSession {
             constraints.exclusions.push({ ...exclusion });
         }
         this.recordProfile('reservationConstraintNegotiationMs', performance.now() - startedAt);
-        this.eventDispatcher.onConstraintNegotiation(actor, constraints, this);
+        this.eventDispatcher.onConstraintNegotiation(actor, constraints, this.collaboratorHost);
     }
 
     notifyActorPrepared(actor: PackagerUnit): void {
         const startedAt = performance.now();
         this.recordProfile('actorPreparedDispatchCalls', 1);
-        this.eventDispatcher.onActorPrepared(actor, this);
+        this.eventDispatcher.onActorPrepared(actor, this.collaboratorHost);
         this.recordProfile('actorPreparedDispatchMs', performance.now() - startedAt);
     }
 
     notifySplitAttempt(attempt: SplitAttempt): void {
-        this.eventDispatcher.onSplitAttempt(attempt, this);
+        this.eventDispatcher.onSplitAttempt(attempt, this.collaboratorHost);
     }
 
     executeSplitAttempt(
@@ -995,22 +1011,22 @@ export class LayoutSession {
 
     notifySplitAccepted(attempt: SplitAttempt, result: PackagerReshapeResult): void {
         this.kernel.registerSplitAccepted(attempt, result);
-        this.eventDispatcher.onSplitAccepted(attempt, result, this);
+        this.eventDispatcher.onSplitAccepted(attempt, result, this.collaboratorHost);
     }
 
     notifyActorCommitted(actor: PackagerUnit, committed: Box[]): void {
         if (!this.currentSurface) return;
-        this.eventDispatcher.onActorCommitted(actor, committed, this.currentSurface, this);
+        this.eventDispatcher.onActorCommitted(actor, committed, this.currentSurface, this.collaboratorHost);
     }
 
     notifyContinuationProduced(predecessor: PackagerUnit, successor: PackagerUnit): void {
         this.kernel.markContinuationProduced(successor);
-        this.eventDispatcher.onContinuationProduced(predecessor, successor, this);
+        this.eventDispatcher.onContinuationProduced(predecessor, successor, this.collaboratorHost);
     }
 
     notifyContinuationEnqueued(predecessor: PackagerUnit, successor: PackagerUnit): void {
         this.kernel.markContinuationEnqueued(predecessor, successor);
-        this.eventDispatcher.onContinuationEnqueued(predecessor, successor, this);
+        this.eventDispatcher.onContinuationEnqueued(predecessor, successor, this.collaboratorHost);
     }
 
     finalizeCommittedPage(pageIndex: number, width: number, height: number, boxes: readonly Box[]): Page {

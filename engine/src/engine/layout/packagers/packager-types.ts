@@ -3,7 +3,7 @@ import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import type { ActorSignal, ActorSignalDraft } from '../actor-event-bus';
 import type { AsyncThoughtHandle, AsyncThoughtRequest } from '../async-thought-host';
-import type { SpatialExclusion } from '../layout-session-types';
+import type { SpatialExclusion } from '../runtime/session/session-spatial-types';
 
 export interface LayoutBox extends Box { }
 

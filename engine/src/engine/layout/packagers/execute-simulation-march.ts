@@ -3,7 +3,8 @@ import { Box, Element, Page } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import type { FlowBox } from '../layout-core-types';
 import { LayoutSession } from '../layout-session';
-import type { PaginationLoopAction, PaginationState } from '../layout-session-types';
+import type { PaginationState } from '../runtime/session/session-lifecycle-types';
+import type { PaginationLoopAction } from '../runtime/session/session-pagination-types';
 import { PackagerContext, PackagerUnit, LayoutBox } from './packager-types';
 
 type FlowBoxPositioner = LayoutProcessor & {

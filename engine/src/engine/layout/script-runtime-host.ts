@@ -1,6 +1,6 @@
 import { performance } from 'node:perf_hooks';
 import type { Element, LayoutScriptingConfig } from '../types';
-import type { CollaboratorHost } from './layout-session-types';
+import type { CollaboratorHost } from './runtime/session/session-runtime-types';
 
 export type ScriptPhase = 'onLoad' | 'onCreate' | 'onReady' | 'onRefresh' | 'onChanged' | 'onMessage';
 

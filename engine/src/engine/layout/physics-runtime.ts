@@ -1,22 +1,21 @@
 import { performance } from 'node:perf_hooks';
 import type { Box, Page } from '../types';
+import { ConstraintField, type ResolvedPlacementFrame } from './constraint-field';
 import { LAYOUT_DEFAULTS } from './defaults';
-import {
-    type ActorMeasurement,
-    type ActorPlacementActionInput,
-    type ActorPlacementAttemptOutcome,
-    type ActorPlacementCommitOutcome,
-    type ActorPlacementExecutionOutcome,
-    type ActorPlacementHandlingOutcome,
-    type ActorPlacementSettlementOutcome,
-    ConstraintField,
-    type DeferredSplitPlacementOutcome,
-    type FragmentCommitState,
-    type LayoutProfileMetrics,
-    type PaginationLoopAction,
-    type PaginationPlacementPreparation,
-    type ResolvedPlacementFrame
-} from './layout-session-types';
+import type { LayoutProfileMetrics } from './runtime/session/session-profile-types';
+import type {
+    ActorMeasurement,
+    ActorPlacementActionInput,
+    ActorPlacementAttemptOutcome,
+    ActorPlacementCommitOutcome,
+    ActorPlacementExecutionOutcome,
+    ActorPlacementHandlingOutcome,
+    ActorPlacementSettlementOutcome,
+    DeferredSplitPlacementOutcome,
+    FragmentCommitState,
+    PaginationLoopAction,
+    PaginationPlacementPreparation
+} from './runtime/session/session-pagination-types';
 import {
     bindPackagerSignalPublisher,
     packagerOccupiesFlowSpace,

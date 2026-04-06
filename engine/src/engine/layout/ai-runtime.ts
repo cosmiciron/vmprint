@@ -8,18 +8,18 @@ import {
     type WholeFormationOverflowHandling
 } from './actor-formation';
 import { buildKeepWithNextPlanSignature, computeKeepWithNextPlan } from './runtime/passes/keep-with-next-pass';
-import {
-    type KeepWithNextOverflowActionInput,
-    type LayoutProfileMetrics,
-    type KeepWithNextPlanningResolution,
-    type PaginationLoopAction,
-    type PaginationState,
-    type SpeculativeBranchReason,
-    type TailSplitFormationSettlementOutcome,
-    type WholeFormationOverflowEntryOutcome,
-    type WholeFormationOverflowEntrySettlementOutcome,
-    type WholeFormationOverflowResolution
-} from './layout-session-types';
+import type { PaginationState } from './runtime/session/session-lifecycle-types';
+import type { LayoutProfileMetrics } from './runtime/session/session-profile-types';
+import type { SpeculativeBranchReason } from './runtime/session/session-progression-types';
+import type {
+    KeepWithNextOverflowActionInput,
+    KeepWithNextPlanningResolution,
+    PaginationLoopAction,
+    TailSplitFormationSettlementOutcome,
+    WholeFormationOverflowEntryOutcome,
+    WholeFormationOverflowEntrySettlementOutcome,
+    WholeFormationOverflowResolution
+} from './runtime/session/session-pagination-types';
 import type { PackagerContext, PackagerUnit } from './packagers/packager-types';
 
 export type AIRuntimeHost = {

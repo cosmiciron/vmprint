@@ -1,6 +1,5 @@
-import type { CollaboratorHost } from '../../layout-session-types';
 import { LayoutConfig, PageReservationSelector } from '../../../types';
-import type { Collaborator } from '../../layout-session-types';
+import type { Collaborator, CollaboratorHost } from '../session/session-runtime-types';
 
 
 function resolvePageStartExclusionTop(config: LayoutConfig): number {

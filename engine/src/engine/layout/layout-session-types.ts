@@ -1,1181 +1,190 @@
-import type { Box, DebugRegion, Page, PageRegionContent, PageReservationSelector, StoryFloatAlign, StoryFloatShape, StoryWrapMode } from '../types';
-import type { TraversalInteractionPolicy } from '../types';
-import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
-import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
-import { getTailSplitPostAttemptOutcome } from './actor-formation';
-import type { LocalActorSignalSnapshot, SafeCheckpoint } from './actor-communication-runtime';
-import { LAYOUT_DEFAULTS } from './defaults';
-import type { ActorSignal, ActorSignalDraft } from './actor-event-bus';
-import type { LayoutSession } from './layout-session';
-import type { PageRegionSummary } from './page-region-summary';
-import type { ScriptRegionRef } from './script-region-query';
-import type { SimulationArtifactKey, SimulationArtifactMap } from './simulation-report';
-import type { ObservationResult, PackagerContext, PackagerReshapeResult, SpatialFrontier } from './packagers/packager-types';
-import type { PackagerUnit } from './packagers/packager-types';
-
-export type LayoutProfileMetrics = {
-    handlerCalls: number;
-    handlerMs: number;
-    loadCalls: number;
-    loadMs: number;
-    createCalls: number;
-    createMs: number;
-    readyCalls: number;
-    readyMs: number;
-    refreshCalls: number;
-    refreshMs: number;
-    documentChangedCalls: number;
-    documentChangedMs: number;
-    replayRequests: number;
-    replayPasses: number;
-    docQueryCalls: number;
-    setContentCalls: number;
-    replaceCalls: number;
-    insertCalls: number;
-    removeCalls: number;
-    messageSendCalls: number;
-    messageHandlerCalls: number;
-    speculativeBranchCalls: number;
-    speculativeBranchMs: number;
-    speculativeBranchAcceptedCalls: number;
-    speculativeBranchRollbackCalls: number;
-    speculativeBranchByReason: Record<string, {
-        calls: number;
-        ms: number;
-        acceptedCalls: number;
-        rollbackCalls: number;
-    }>;
-    paginationPlacementPrepCalls: number;
-    paginationPlacementPrepMs: number;
-    actorMeasurementCalls: number;
-    actorMeasurementMs: number;
-    keepWithNextResolutionCalls: number;
-    keepWithNextResolutionMs: number;
-    wholeFormationOverflowCalls: number;
-    wholeFormationOverflowMs: number;
-    keepWithNextActionCalls: number;
-    keepWithNextActionMs: number;
-    actorPlacementCalls: number;
-    actorPlacementMs: number;
-    actorOverflowCalls: number;
-    actorOverflowMs: number;
-    genericSplitCalls: number;
-    genericSplitMs: number;
-    boundaryCheckpointCalls: number;
-    boundaryCheckpointMs: number;
-    checkpointRecordCalls: number;
-    checkpointRecordMs: number;
-    observerBoundaryCheckCalls: number;
-    observerBoundaryCheckMs: number;
-    actorMeasurementByKind: Record<string, { calls: number; ms: number }>;
-    actorPreparedDispatchCalls: number;
-    actorPreparedDispatchMs: number;
-    flowMaterializeCalls: number;
-    flowMaterializeMs: number;
-    flowResolveLinesCalls: number;
-    flowResolveLinesMs: number;
-    flowBuildTokensCalls: number;
-    flowBuildTokensMs: number;
-    flowWrapStreamCalls: number;
-    flowWrapStreamMs: number;
-    flowBidiSplitCalls: number;
-    flowBidiSplitMs: number;
-    flowScriptSplitCalls: number;
-    flowScriptSplitMs: number;
-    flowWordSegmentCalls: number;
-    flowWordSegmentMs: number;
-    wrapOverflowTokenCalls: number;
-    wrapOverflowTokenMs: number;
-    wrapHyphenationAttemptCalls: number;
-    wrapHyphenationAttemptMs: number;
-    wrapHyphenationSuccessCalls: number;
-    wrapGraphemeFallbackCalls: number;
-    wrapGraphemeFallbackMs: number;
-    wrapGraphemeFallbackSegments: number;
-    textMeasurementCacheHits: number;
-    textMeasurementCacheMisses: number;
-    flowResolveSignatureCalls: number;
-    flowResolveSignatureUniqueCalls: number;
-    flowResolveSignatureRepeatedCalls: number;
-    flowResolveSignatureContinuationCalls: number;
-    flowResolveSignatureRepeatedContinuationCalls: number;
-    simpleProseEligibleCalls: number;
-    simpleProseIneligibleInlineObjectCalls: number;
-    simpleProseIneligibleMixedStyleCalls: number;
-    simpleProseIneligibleComplexScriptCalls: number;
-    simpleProseIneligibleRichStructureCalls: number;
-    keepWithNextPlanCalls: number;
-    keepWithNextPlanMs: number;
-    keepWithNextBranchCalls: number;
-    keepWithNextBranchMs: number;
-    keepWithNextPreparedActors: number;
-    keepWithNextEarlyExitCalls: number;
-    keepWithNextPrepareByKind: Record<string, { calls: number; ms: number }>;
-    reservationCommitProbeCalls: number;
-    reservationCommitProbeMs: number;
-    reservationConstraintNegotiationCalls: number;
-    reservationConstraintNegotiationMs: number;
-    reservationConstraintApplications: number;
-    reservationWrites: number;
-    reservationArtifactMs: number;
-    exclusionBlockedCursorCalls: number;
-    exclusionBlockedCursorMs: number;
-    exclusionBandResolutionCalls: number;
-    exclusionBandResolutionMs: number;
-    exclusionLaneApplications: number;
-    observerCheckpointSweepCalls: number;
-    observerSettleCalls: number;
-    observerActorBoundarySettles: number;
-    observerPageBoundarySettles: number;
-    actorActivationAwakenCalls: number;
-    actorActivationSignalWakeCalls: number;
-    actorActivationLifecycleWakeCalls: number;
-    actorActivationScheduledWakeCalls: number;
-    actorActivationDormantSkips: number;
-    actorUpdateCalls: number;
-    actorUpdateMs: number;
-    actorUpdateContentOnlyCalls: number;
-    actorUpdateGeometryCalls: number;
-    actorUpdateNoopCalls: number;
-    actorUpdateRedrawCalls: number;
-    actorUpdateResettlementCycles: number;
-    actorUpdateRepeatedStateDetections: number;
-    actorUpdateResettlementCapHits: number;
-    simulationTickCount: number;
-    progressionStopCalls: number;
-    progressionResumeCalls: number;
-    progressionSnapshotCalls: number;
-};
-
-export type SimulationTick = number;
-
-export type SimulationClockSnapshot = {
-    tick: SimulationTick;
-};
-
-export type RegionReservation = {
-    id: string;
-    height: number;
-    source?: string;
-};
-
-export type ExclusionSurface = 'page' | 'world-traversal';
-
-export type PageReservationIntent = RegionReservation & {
-    selector?: 'current' | PageReservationSelector;
-};
-
-export type SpatialExclusion = {
-    id: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    source?: string;
-    zIndex?: number;
-    wrap?: StoryWrapMode;
-    gap?: number;
-    gapTop?: number;
-    gapBottom?: number;
-    shape?: StoryFloatShape;
-    align?: StoryFloatAlign;
-    traversalInteraction?: TraversalInteractionPolicy;
-    surface?: ExclusionSurface;
-};
-
-export type PageExclusionIntent = SpatialExclusion & {
-    selector?: 'current' | PageReservationSelector;
-};
-
-export type ContentBand = {
-    xOffset: number;
-    width: number;
-};
-
-type HorizontalInterval = {
-    start: number;
-    end: number;
-};
-
-export type ActiveExclusionBand = {
-    exclusions: SpatialExclusion[];
-    top: number;
-    bottom: number;
-};
-
-export type SpatialPlacementSurface = {
-    cursorY: number;
-    activeBand: ActiveExclusionBand | null;
-    contentBand: ContentBand | null;
-};
-
-export type PlacementFrameMargins = {
-    left: number;
-    right: number;
-};
-
-export type PaginationState = {
-    currentPageIndex: number;
-    currentPageBoxes: Box[];
-    currentY: number;
-    lastSpacingAfter: number;
-};
-
-export type PaginationLoopAction =
-    | {
-        action: 'continue-loop';
-        paginationState: PaginationState;
-        nextActorIndex: number;
-    }
-    | {
-        action: 'continue-tail-split';
-        tailSplitExecution: {
-            prefix: PackagerUnit[];
-            splitCandidate: PackagerUnit;
-            replaceCount: number;
-            splitMarkerReserve: number;
-        };
-    }
-    | {
-        action: 'continue-to-split';
-        splitExecution: SplitExecution;
-    }
-    | {
-        action: 'fallthrough-local-overflow';
-    };
-
-export type ResolvedPlacementFrame = SpatialPlacementSurface & {
-    availableWidth: number;
-    margins: PlacementFrameMargins;
-};
-
-export type SpatialPlacementDecision =
-    | { action: 'commit' }
-    | { action: 'defer'; nextCursorY: number };
-
-export type SplitMarkerPlacementState = {
-    currentY: number;
-    lastSpacingAfter: number;
-    pageLimit: number;
-    pageIndex: number;
-    availableWidth: number;
-};
-
-export type FragmentCommitState = {
-    currentY: number;
-    layoutDelta: number;
-    effectiveHeight: number;
-    marginBottom: number;
-    pageIndex: number;
-};
-
-export type SequencePlacementState = {
-    currentY: number;
-    lastSpacingAfter: number;
-    pageIndex: number;
-    pageLimit: number;
-    availableWidth: number;
-};
-
-export type SplitFragmentAftermathState = FragmentCommitState & {
-    actorId: string;
-    lastSpacingAfter: number;
-    pageLimit: number;
-    availableWidth: number;
-};
-
-export type SplitFragmentAftermathInput = {
-    currentY: number;
-    layoutDelta: number;
-    lastSpacingAfter: number;
-    pageLimit: number;
-    availableWidth: number;
-    pageIndex: number;
-};
-
-export type PageRegionResolution = {
-    header: PageRegionContent | null;
-    footer: PageRegionContent | null;
-};
-
-export type PageOverrideState = 'inherit' | 'replace' | 'suppress';
-
-export type WorldSpace = {
-    originX: number;
-    originY: number;
-    width: number;
-    exploredBottom: number;
-};
-
-export type ViewportRect = {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-};
-
-export type ViewportTerrain = {
-    margins: PlacementFrameMargins & {
-        top: number;
-        bottom: number;
-    };
-    marginBlocks: SpatialExclusion[];
-    headerBlock: SpatialExclusion | null;
-    footerBlock: SpatialExclusion | null;
-    reservationBlocks: SpatialExclusion[];
-    exclusionBlocks: SpatialExclusion[];
-    blockedRects: SpatialExclusion[];
-};
-
-export type ViewportDescriptor = {
-    pageIndex: number;
-    worldX: number;
-    worldY: number;
-    width: number;
-    height: number;
-    contentRect: ViewportRect;
-    terrain: ViewportTerrain;
-};
-
-export type PageCaptureState = {
-    worldSpace: WorldSpace;
-    viewport: ViewportDescriptor;
-};
-
-export type PageCaptureRecord = {
-    pageIndex: number;
-    physicalPageNumber: number;
-    logicalPageNumber: number | null;
-    usesLogicalNumbering: boolean;
-    capture: PageCaptureState;
-};
-
-export type PageFinalizationState = {
-    pageIndex: number;
-    physicalPageNumber: number;
-    logicalPageNumber: number | null;
-    usesLogicalNumbering: boolean;
-    resolvedRegions: PageRegionResolution;
-    overrideSourceId: string | null;
-    headerOverride: PageOverrideState;
-    footerOverride: PageOverrideState;
-    renderedHeader: boolean;
-    renderedFooter: boolean;
-    capture: PageCaptureState;
-    worldSpace: WorldSpace;
-    viewport: ViewportDescriptor;
-};
-
-export class ConstraintField {
-    readonly reservations: RegionReservation[] = [];
-    readonly exclusions: SpatialExclusion[] = [];
-
-    constructor(
-        public availableWidth: number,
-        public availableHeight: number
-    ) { }
-
-    get effectiveAvailableHeight(): number {
-        const reserved = this.reservations.reduce((sum, reservation) => {
-            const height = Number.isFinite(reservation.height) ? Math.max(0, Number(reservation.height)) : 0;
-            return sum + height;
-        }, 0);
-        return Math.max(0, this.availableHeight - reserved);
-    }
-
-    resolveBlockedCursorY(cursorY: number): number {
-        let resolvedY = Number.isFinite(cursorY) ? Number(cursorY) : 0;
-        let advanced = true;
-
-        while (advanced) {
-            advanced = false;
-            for (const exclusion of this.exclusions) {
-                const top = Number.isFinite(exclusion.y) ? Math.max(0, Number(exclusion.y)) : 0;
-                const bottom = top + (Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0);
-                const spansWidth =
-                    Number(exclusion.x) <= LAYOUT_DEFAULTS.wrapTolerance &&
-                    (Number(exclusion.x) + Number(exclusion.w)) >= (this.availableWidth - LAYOUT_DEFAULTS.wrapTolerance);
-                if (!spansWidth) continue;
-                if (resolvedY + LAYOUT_DEFAULTS.wrapTolerance < top) continue;
-                if (resolvedY >= bottom - LAYOUT_DEFAULTS.wrapTolerance) continue;
-                resolvedY = bottom;
-                advanced = true;
-            }
-        }
-
-        return resolvedY;
-    }
-
-    resolveActiveContentBand(cursorY: number): ContentBand | null {
-        const activeBand = this.resolveActiveExclusionBand(cursorY);
-        if (!activeBand) return null;
-        const mergedIntervals = this.resolveMergedHorizontalExclusionIntervals(activeBand.exclusions);
-        const contentIntervals = this.resolveAvailableHorizontalIntervals(mergedIntervals);
-        if (!contentIntervals.length) return null;
-
-        const widestInterval = contentIntervals.reduce((best, candidate) => {
-            const bestWidth = best.end - best.start;
-            const candidateWidth = candidate.end - candidate.start;
-            if (candidateWidth > bestWidth + LAYOUT_DEFAULTS.wrapTolerance) return candidate;
-            if (Math.abs(candidateWidth - bestWidth) <= LAYOUT_DEFAULTS.wrapTolerance && candidate.start < best.start) {
-                return candidate;
-            }
-            return best;
-        });
-
-        const width = Math.max(0, widestInterval.end - widestInterval.start);
-        if (width >= this.availableWidth - LAYOUT_DEFAULTS.wrapTolerance) return null;
-        return {
-            xOffset: widestInterval.start,
-            width
-        };
-    }
-
-    resolveActiveExclusionBand(cursorY: number): ActiveExclusionBand | null {
-        const resolvedY = Number.isFinite(cursorY) ? Number(cursorY) : 0;
-        const activeExclusions: SpatialExclusion[] = [];
-        let top = Number.POSITIVE_INFINITY;
-        let bottom = 0;
-
-        for (const exclusion of this.exclusions) {
-            const exclusionTop = Number.isFinite(exclusion.y) ? Math.max(0, Number(exclusion.y)) : 0;
-            const exclusionBottom = exclusionTop + (Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0);
-            if (resolvedY + LAYOUT_DEFAULTS.wrapTolerance < exclusionTop) continue;
-            if (resolvedY >= exclusionBottom - LAYOUT_DEFAULTS.wrapTolerance) continue;
-
-            activeExclusions.push(exclusion);
-            top = Math.min(top, exclusionTop);
-            bottom = Math.max(bottom, exclusionBottom);
-        }
-
-        if (!activeExclusions.length) return null;
-        return { exclusions: activeExclusions, top, bottom };
-    }
-
-    resolvePlacementSurface(cursorY: number): SpatialPlacementSurface {
-        const resolvedCursorY = this.resolveBlockedCursorY(cursorY);
-        const activeBand = this.resolveActiveExclusionBand(resolvedCursorY);
-        return {
-            cursorY: resolvedCursorY,
-            activeBand,
-            contentBand: activeBand ? this.resolveActiveContentBand(resolvedCursorY) : null
-        };
-    }
-
-    resolvePlacementFrame(cursorY: number, margins: PlacementFrameMargins): ResolvedPlacementFrame {
-        const surface = this.resolvePlacementSurface(cursorY);
-        const laneLeftOffset = surface.contentBand?.xOffset ?? 0;
-        const laneRightOffset = Math.max(
-            0,
-            (this.availableWidth - laneLeftOffset) - (surface.contentBand?.width ?? this.availableWidth)
-        );
-
-        return {
-            ...surface,
-            availableWidth: surface.contentBand?.width ?? this.availableWidth,
-            margins: surface.contentBand
-                ? {
-                    left: margins.left + laneLeftOffset,
-                    right: margins.right + laneRightOffset
-                }
-                : margins
-        };
-    }
-
-    evaluatePlacement(boxes: readonly Box[], cursorY: number): SpatialPlacementDecision {
-        const activeBand = this.resolveActiveExclusionBand(cursorY);
-        if (!activeBand) {
-            return { action: 'commit' };
-        }
-
-        for (const box of boxes) {
-            const boxLeft = Number.isFinite(box.x) ? Number(box.x) : 0;
-            const boxTop = Number.isFinite(box.y) ? Math.max(0, Number(box.y)) : 0;
-            const boxRight = boxLeft + (Number.isFinite(box.w) ? Math.max(0, Number(box.w)) : 0);
-            const boxBottom = boxTop + (Number.isFinite(box.h) ? Math.max(0, Number(box.h)) : 0);
-
-            for (const exclusion of activeBand.exclusions) {
-                const exclusionLeft = Number.isFinite(exclusion.x) ? Number(exclusion.x) : 0;
-                const exclusionTop = Number.isFinite(exclusion.y) ? Math.max(0, Number(exclusion.y)) : 0;
-                const exclusionRight = exclusionLeft + (Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0);
-                const exclusionBottom = exclusionTop + (Number.isFinite(exclusion.h) ? Math.max(0, Number(exclusion.h)) : 0);
-
-                const overlapsHorizontally =
-                    boxLeft < exclusionRight - LAYOUT_DEFAULTS.wrapTolerance &&
-                    boxRight > exclusionLeft + LAYOUT_DEFAULTS.wrapTolerance;
-                const overlapsVertically =
-                    boxTop < exclusionBottom - LAYOUT_DEFAULTS.wrapTolerance &&
-                    boxBottom > exclusionTop + LAYOUT_DEFAULTS.wrapTolerance;
-                if (overlapsHorizontally && overlapsVertically) {
-                    return {
-                        action: 'defer',
-                        nextCursorY: activeBand.bottom
-                    };
-                }
-            }
-        }
-
-        return { action: 'commit' };
-    }
-
-    private resolveMergedHorizontalExclusionIntervals(exclusions: readonly SpatialExclusion[]): HorizontalInterval[] {
-        const intervals = exclusions
-            .map((exclusion): HorizontalInterval | null => {
-                const start = Number.isFinite(exclusion.x) ? Math.max(0, Math.min(this.availableWidth, Number(exclusion.x))) : 0;
-                const width = Number.isFinite(exclusion.w) ? Math.max(0, Number(exclusion.w)) : 0;
-                const end = Math.max(start, Math.min(this.availableWidth, start + width));
-                if (end - start <= LAYOUT_DEFAULTS.wrapTolerance) return null;
-                return { start, end };
-            })
-            .filter((interval): interval is HorizontalInterval => interval !== null)
-            .sort((a, b) => a.start - b.start);
-
-        if (!intervals.length) return [];
-
-        const merged: HorizontalInterval[] = [intervals[0]];
-        for (let index = 1; index < intervals.length; index += 1) {
-            const current = intervals[index];
-            const previous = merged[merged.length - 1];
-            if (current.start <= previous.end + LAYOUT_DEFAULTS.wrapTolerance) {
-                previous.end = Math.max(previous.end, current.end);
-                continue;
-            }
-            merged.push({ ...current });
-        }
-        return merged;
-    }
-
-    private resolveAvailableHorizontalIntervals(occupied: readonly HorizontalInterval[]): HorizontalInterval[] {
-        const intervals: HorizontalInterval[] = [];
-        let cursor = 0;
-
-        for (const interval of occupied) {
-            if (interval.start > cursor + LAYOUT_DEFAULTS.wrapTolerance) {
-                intervals.push({ start: cursor, end: interval.start });
-            }
-            cursor = Math.max(cursor, interval.end);
-        }
-
-        if (cursor < this.availableWidth - LAYOUT_DEFAULTS.wrapTolerance) {
-            intervals.push({ start: cursor, end: this.availableWidth });
-        }
-
-        return intervals.filter((interval) => (interval.end - interval.start) > LAYOUT_DEFAULTS.wrapTolerance);
-    }
-}
-
-export class PageSurface {
-    constructor(
-        public readonly pageIndex: number,
-        public readonly width: number,
-        public readonly height: number,
-        public readonly boxes: Box[],
-        public readonly debugRegions: DebugRegion[] = []
-    ) { }
-
-    finalize(): Page {
-        return {
-            index: this.pageIndex,
-            width: this.width,
-            height: this.height,
-            boxes: this.boxes,
-            ...(this.debugRegions.length > 0 ? { debugRegions: this.debugRegions.map((region) => ({ ...region })) } : {})
-        };
-    }
-}
-
-export type SplitAttempt = {
-    actor: PackagerUnit;
-    availableWidth: number;
-    availableHeight: number;
-    context: PackagerContext;
-};
-
-export type SplitExecution = {
-    attempt: SplitAttempt;
-    result: PackagerReshapeResult;
-};
-
-export type PositionedSplitExecution = {
-    execution: SplitExecution;
-    layoutDelta: number;
-    emitAvailableHeight: number;
-};
-
-export type ContinuationQueueOutcome = {
-    continuationInstalled: boolean;
-    snapshot: LocalQueueSnapshot;
-};
-
-export type SpeculativeBranchReason =
-    | 'accepted-split'
-    | 'continuation-queue-preview'
-    | 'keep-with-next'
-    | 'observer-resettle'
-    | 'tail-split-formation'
-    | 'other';
-
-export type SpeculativeBranchContext = {
-    readonly reason: SpeculativeBranchReason;
-    readonly branchId: string;
-    readonly frontier?: SpatialFrontier;
-    getCurrentY(): number;
-    getLastSpacingAfter(): number;
-    getCurrentPageIndex(): number;
-    captureNote(label: string, payload?: Record<string, unknown>): void;
-};
-
-export type SpeculativeBranchResolution<T> =
-    | { accept: true; value: T }
-    | { accept: false; value?: T };
-
-export type ExecuteSpeculativeBranchInput<T> = {
-    reason: SpeculativeBranchReason;
-    frontier?: SpatialFrontier;
-    pageBoxes: Box[];
-    actorQueue: PackagerUnit[];
-    currentY: number;
-    lastSpacingAfter: number;
-    currentPageIndex: number;
-    run: (branch: SpeculativeBranchContext) => SpeculativeBranchResolution<T>;
-};
-
-export type ExecuteSpeculativeBranchResult<T> = {
-    accepted: boolean;
-    value?: T;
-    currentY: number;
-    lastSpacingAfter: number;
-};
-
-export type TailSplitFormationOutcome = {
-    committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
-    queuePreview: ContinuationQueueOutcome;
-    queueHandling: AcceptedSplitQueueHandling;
-};
-
-export type TailSplitFormationSettlementOutcome = {
-    nextPageIndex: number;
-    nextPageBoxes: Box[];
-    nextCurrentY: number;
-    nextLastSpacingAfter: number;
-    nextActorIndex: number;
-};
-
-export type TailSplitFailureSettlementOutcome = {
-    nextPageIndex: number;
-    nextPageBoxes: Box[];
-    nextCurrentY: number;
-    nextLastSpacingAfter: number;
-    nextActorIndex: number;
-};
-
-export type WholeFormationOverflowEntryOutcome =
-    | {
-        action: 'advance-page';
-        nextPageIndex: number;
-        nextPageBoxes: Box[];
-        nextCurrentY: number;
-        nextLastSpacingAfter: number;
-    }
-    | {
-        action: 'continue-tail-split';
-        tailSplitExecution: {
-            prefix: PackagerUnit[];
-            splitCandidate: PackagerUnit;
-            replaceCount: number;
-            splitMarkerReserve: number;
-        };
-    }
-    | {
-        action: 'fallthrough-local-overflow';
-    };
-
-export type WholeFormationOverflowEntrySettlementOutcome =
-    | {
-        action: 'advance-page';
-        nextPageIndex: number;
-        nextPageBoxes: Box[];
-        nextCurrentY: number;
-        nextLastSpacingAfter: number;
-        nextActorIndex: number;
-    }
-    | {
-        action: 'continue-tail-split';
-        tailSplitExecution: {
-            prefix: PackagerUnit[];
-            splitCandidate: PackagerUnit;
-            replaceCount: number;
-            splitMarkerReserve: number;
-        };
-    }
-    | {
-        action: 'fallthrough-local-overflow';
-    };
-
-export type WholeFormationOverflowResolution = {
-    handling: WholeFormationOverflowHandling | null;
-    fallbackOutcome: WholeFormationOverflowHandling['fallbackHandling'];
-    action: PaginationLoopAction | null;
-    tailSplitExecution: WholeFormationOverflowHandling['tailSplitExecution'];
-};
-
-export type KeepWithNextPlanningResolution = {
-    plan: KeepWithNextFormationPlan | null;
-    handling: WholeFormationOverflowHandling | null;
-    tailSplitSuccessOutcome: ReturnType<typeof getTailSplitPostAttemptOutcome> | null;
-    tailSplitFailureOutcome: ReturnType<typeof getTailSplitPostAttemptOutcome> | null;
-};
-
-export type GenericSplitOutcome = {
-    committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
-    queuePreview: ContinuationQueueOutcome;
-    queueHandling: AcceptedSplitQueueHandling;
-};
-
-export type AcceptedSplitQueueHandling = {
-    shouldAdvanceIndex: boolean;
-};
-
-export type ForcedOverflowCommitOutcome = {
-    committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
-    shouldAdvancePage: boolean;
-};
-
-export type ActorOverflowPreSplitHandlingOutcome = {
-    committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number } | null;
-    shouldAdvancePage: boolean;
-    shouldAdvanceIndex: boolean;
-};
-
-export type ActorOverflowSplitEntryHandlingOutcome = {
-    splitExecution: SplitExecution | null;
-    shouldAdvancePage: boolean;
-};
-
-export type ActorOverflowEntryHandlingOutcome =
-    | {
-        action: 'handled';
-        nextCurrentY: number;
-        nextLastSpacingAfter: number;
-        shouldAdvancePage: boolean;
-        shouldAdvanceIndex: boolean;
-        committedBoxes: Box[];
-    }
-    | {
-        action: 'continue-to-split';
-        splitExecution: SplitExecution;
-    };
-
-export type ActorOverflowEntrySettlementOutcome =
-    | {
-        action: 'handled';
-        nextPageIndex: number;
-        nextPageBoxes: Box[];
-        nextCurrentY: number;
-        nextLastSpacingAfter: number;
-        nextActorIndex: number;
-    }
-    | {
-        action: 'continue-to-split';
-        splitExecution: SplitExecution;
-    };
-
-export type ActorOverflowResolution =
-    | {
-        action: 'handled';
-        loopAction: PaginationLoopAction;
-    }
-    | {
-        action: 'continue-to-split';
-        splitExecution: SplitExecution;
-    };
-
-export type KeepWithNextOverflowActionInput = {
-    planning: KeepWithNextPlanningResolution | null;
-    wholeFormationOverflow: WholeFormationOverflowResolution;
-    effectiveHeight: number;
-    marginBottom: number;
-    effectiveAvailableHeight: number;
-    isAtPageTop: boolean;
-    pages: Page[];
-    currentPageBoxes: Box[];
-    currentPageIndex: number;
-    pageWidth: number;
-    pageHeight: number;
-    nextPageTopY: number;
-    currentActorIndex: number;
-    actorQueue: PackagerUnit[];
-    state: {
-        currentY: number;
-        lastSpacingAfter: number;
-        pageLimit: number;
-        availableWidth: number;
-    };
-    contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>;
-    positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[];
-};
-
-export type ActorPlacementActionInput = {
-    actor: PackagerUnit;
-    placementFrame: ResolvedPlacementFrame;
-    availableWidth: number;
-    availableHeight: number;
-    context: PackagerContext;
-    state: FragmentCommitState;
-    constraintField: ConstraintField;
-    layoutBefore: number;
-    pageLimit: number;
-    pageTop: number;
-    pages: Page[];
-    currentPageBoxes: Box[];
-    currentPageIndex: number;
-    pageWidth: number;
-    pageHeight: number;
-    nextPageTopY: number;
-    currentActorIndex: number;
-    currentY: number;
-    lastSpacingAfter: number;
-};
-
-export type GenericSplitActionInput = {
-    pages: Page[];
-    currentPageBoxes: Box[];
-    currentPageIndex: number;
-    pageWidth: number;
-    pageHeight: number;
-    nextPageTopY: number;
-    currentActorIndex: number;
-    actorQueue: PackagerUnit[];
-    packager: PackagerUnit;
-    splitExecution: SplitExecution;
-    state: {
-        currentY: number;
-        lastSpacingAfter: number;
-        effectiveHeight: number;
-        marginBottom: number;
-        availableWidth: number;
-        availableHeightAdjusted: number;
-        pageLimit: number;
-        pageTop: number;
-        layoutBefore: number;
-    };
-    contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>;
-    resolveDeferredCursorY: (candidate: PackagerUnit) => number | null;
-    positionMarker: (marker: FlowBox, currentY: number, layoutBefore: number, availableWidth: number, pageIndex: number) => Box | Box[];
-};
-
-export type ActorMeasurement = {
-    marginTop: number;
-    marginBottom: number;
-    contentHeight: number;
-    requiredHeight: number;
-    effectiveHeight: number;
-};
-
-export type ActorSplitFailureHandlingOutcome = {
-    committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number } | null;
-    shouldAdvancePage: boolean;
-    shouldAdvanceIndex: boolean;
-};
-
-export type ActorSplitFailureResolution = {
-    nextCurrentY: number;
-    nextLastSpacingAfter: number;
-    shouldAdvancePage: boolean;
-    shouldAdvanceIndex: boolean;
-    committedBoxes: Box[];
-};
-
-export type ActorSplitFailureSettlementOutcome = {
-    nextPageIndex: number;
-    nextPageBoxes: Box[];
-    nextCurrentY: number;
-    nextLastSpacingAfter: number;
-    nextActorIndex: number;
-};
-
-export type DeferredSplitPlacementOutcome = {
-    shouldAdvancePage: boolean;
-    nextCurrentY: number;
-};
-
-export type DeferredSplitPlacementSettlementOutcome = {
-    nextPageIndex: number;
-    nextPageBoxes: Box[];
-    nextCurrentY: number;
-    nextLastSpacingAfter: number;
-    nextActorIndex: number;
-};
-
-export type GenericSplitSuccessHandlingOutcome = {
-    nextCurrentY: number;
-    nextLastSpacingAfter: number;
-    shouldAdvancePage: boolean;
-    shouldAdvanceIndex: boolean;
-    committedBoxes: Box[];
-};
-
-export type GenericSplitSuccessSettlementOutcome = {
-    nextPageIndex: number;
-    nextPageBoxes: Box[];
-    nextCurrentY: number;
-    nextLastSpacingAfter: number;
-    nextActorIndex: number;
-};
-
-export type PageAdvanceOutcome = {
-    nextPageIndex: number;
-    nextPageBoxes: Box[];
-    nextCurrentY: number;
-    nextLastSpacingAfter: number;
-};
-
-export type ActorPlacementCommitOutcome =
-    | {
-        action: 'defer';
-        nextCurrentY: number;
-        shouldAdvancePage: boolean;
-    }
-    | {
-        action: 'commit';
-        committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
-    };
-
-export type ActorPlacementExecutionOutcome =
-    | {
-        action: 'retry-next-page';
-    }
-    | ActorPlacementCommitOutcome;
-
-export type ActorPlacementAttemptOutcome =
-    | {
-        action: 'retry-next-page';
-    }
-    | {
-        action: 'defer';
-        nextCurrentY: number;
-        shouldAdvancePage: boolean;
-    }
-    | {
-        action: 'commit';
-        committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
-    };
-
-export type ActorPlacementHandlingOutcome = {
-    nextCurrentY: number;
-    nextLastSpacingAfter: number;
-    shouldAdvancePage: boolean;
-    shouldAdvanceIndex: boolean;
-};
-
-export type ActorPlacementSettlementOutcome = {
-    nextPageIndex: number;
-    nextPageBoxes: Box[];
-    nextCurrentY: number;
-    nextLastSpacingAfter: number;
-    nextActorIndex: number;
-};
-
-export type SequencePlacementCheckpoint = {
-    boxStartIndex: number;
-    currentY: number;
-    lastSpacingAfter: number;
-};
-
-export type LocalTransitionSnapshot = {
-    boxStartIndex: number;
-    currentY: number;
-    lastSpacingAfter: number;
-};
-
-export type LocalQueueSnapshot = {
-    actorQueue: PackagerUnit[];
-    stagedContinuationActors: Map<string, PackagerUnit[]>;
-    stagedAfterSplitMarkers: Map<string, FlowBox[]>;
-};
-
-export type LocalSplitStateSnapshot = {
-    currentPageReservations: RegionReservation[];
-    currentPageExclusions: SpatialExclusion[];
-    fragmentTransitions: FragmentTransition[];
-    fragmentTransitionsByActor: Map<string, FragmentTransition>;
-    fragmentTransitionsBySource: Map<string, FragmentTransition[]>;
-};
-
-export type ProgressionStateSnapshot = {
-    simulationClockSnapshot: SimulationClockSnapshot;
-};
-
-export type KernelBranchStateSnapshot = LocalQueueSnapshot & LocalSplitStateSnapshot;
-
-export type SessionBranchStateSnapshot = KernelBranchStateSnapshot & ProgressionStateSnapshot;
-
-export type LocalBranchStateSnapshot = SessionBranchStateSnapshot & LocalActorSignalSnapshot;
-
-export type LocalBranchSnapshot = LocalTransitionSnapshot & SessionBranchStateSnapshot & LocalActorSignalSnapshot;
-
-export type SafeCheckpointSnapshot = LocalTransitionSnapshot & SessionBranchStateSnapshot;
-export type SessionSafeCheckpoint = SafeCheckpoint<LocalTransitionSnapshot, SessionBranchStateSnapshot>;
-
-export type FragmentTransition = {
-    predecessorActorId: string;
-    currentFragmentActorId: string | null;
-    continuationActorId: string | null;
-    sourceActorId: string;
-    pageIndex: number;
-    cursorY?: number;
-    availableWidth: number;
-    availableHeight: number;
-    continuationEnqueued: boolean;
-};
-
-/**
- * The bounded host surface exposed to collaborators.
- * Collaborators receive this instead of the concrete LayoutSession,
- * keeping them decoupled from session internals and reusable across
- * VMPrint, VMCanvas, and ourobor-os without modification.
- */
-export interface CollaboratorHost {
-    // Profiling
-    recordProfile(metric: keyof LayoutProfileMetrics, delta: number): void;
-    recordKeepWithNextPrepare(actorKind: string, durationMs: number): void;
-
-    // Signal bus
-    publishActorSignal(signal: ActorSignalDraft): ActorSignal;
-    getActorSignalSequence(): number;
-
-    // Artifact store
-    publishArtifact<K extends SimulationArtifactKey>(key: K, value: SimulationArtifactMap[K]): void;
-
-    // Keep-with-next planning
-    getPaginationLoopState(): PaginationLoopState | null;
-    getKeepWithNextPlan(actorId: string, signature?: string | null): KeepWithNextFormationPlan | undefined;
-    setKeepWithNextPlan(actorId: string, plan: KeepWithNextFormationPlan, signature?: string | null): void;
-    getSplitMarkerReserve(actor: PackagerUnit): number;
-
-    // Spatial mutations
-    reserveCurrentPageSpace(reservation: RegionReservation): void;
-    reservePageSpace(reservation: PageReservationIntent, pageIndex?: number): void;
-    excludePageSpace(exclusion: PageExclusionIntent, pageIndex?: number): void;
-
-    // Continuation staging
-    ensureContinuationArtifacts(actor: PackagerUnit): ContinuationArtifacts | undefined;
-    stageMarkersAfterSplit(fragmentActorId: string, markers: FlowBox[]): void;
-    stageActorsBeforeContinuation(continuationActorId: string, actors: PackagerUnit[]): void;
-
-    // World state reads
-    getFinalizedPages(): readonly Page[];
-    getPageFinalizationStates(): readonly PageFinalizationState[];
-    getPageFinalizationState(pageIndex: number): PageFinalizationState | undefined;
-    getPageCaptures(): readonly PageCaptureRecord[];
-    getSimulationTick(): number;
-    getRegisteredActors(): readonly PackagerUnit[];
-
-    // Spatial reads
-    getPageReservations(pageIndex: number): readonly RegionReservation[];
-    getReservationPageIndices(): readonly number[];
-    getPageExclusions(pageIndex: number): readonly SpatialExclusion[];
-    getExclusionPageIndices(): readonly number[];
-    getSpatialConstraintPageIndices(): readonly number[];
-    getPageRegionSummaries(): readonly PageRegionSummary[];
-
-    // Transition reads
-    getFragmentTransitionSourceIds(): readonly string[];
-    getFragmentTransitionsBySource(sourceActorId: string): readonly FragmentTransition[];
-
-    // Script reads
-    getScriptRegions(): readonly ScriptRegionRef[];
-    findScriptRegionByName(name: string): ScriptRegionRef | null;
-
-    // Page finalization (PageRegionCollaborator)
-    allocateLogicalPageNumber(usesLogicalNumbering: boolean): number | null;
-    resetLogicalPageNumbering(startAt: number): void;
-    notifyActorSpawn(actor: PackagerUnit): void;
-    recordPageCapture(record: PageCaptureRecord): void;
-    recordPageFinalization(state: PageFinalizationState): void;
-    createPageCaptureState(params: {
-        pageIndex: number;
-        worldTopY: number;
-        pageWidth: number;
-        pageHeight: number;
-        margins: { top: number; right: number; bottom: number; left: number };
-        headerRect?: ViewportRect | null;
-        footerRect?: ViewportRect | null;
-    }): PageCaptureState;
-}
-
-export interface Collaborator {
-    /**
-     * Declares whether this collaborator shapes simulation behavior (coordinator)
-     * or only reads committed state (observer). Coordinators run before observers
-     * at lifecycle boundaries where ordering matters (onPageFinalized, onSimulationComplete).
-     * Defaults to 'coordinator' when absent for safety.
-     */
-    readonly mutationMode?: 'coordinator' | 'observer';
-
-    onSimulationStart?(host: CollaboratorHost): void;
-    onActorSpawn?(actor: PackagerUnit, host: CollaboratorHost): void;
-    onPageStart?(pageIndex: number, surface: PageSurface, host: CollaboratorHost): void;
-    onConstraintNegotiation?(actor: PackagerUnit, constraints: ConstraintField, host: CollaboratorHost): void;
-    onActorPrepared?(actor: PackagerUnit, host: CollaboratorHost): void;
-    onSplitAttempt?(attempt: SplitAttempt, host: CollaboratorHost): void;
-    onSplitAccepted?(attempt: SplitAttempt, result: PackagerReshapeResult, host: CollaboratorHost): void;
-    onContinuationEnqueued?(predecessor: PackagerUnit, successor: PackagerUnit, host: CollaboratorHost): void;
-    onActorCommitted?(actor: PackagerUnit, committed: Box[], surface: PageSurface, host: CollaboratorHost): void;
-    onContinuationProduced?(predecessor: PackagerUnit, successor: PackagerUnit, host: CollaboratorHost): void;
-    onPageFinalized?(surface: PageSurface, host: CollaboratorHost): void;
-    onSimulationComplete?(host: CollaboratorHost): boolean | void;
-}
-
-export type PaginationLoopState = {
-    actorQueue: PackagerUnit[];
-    actorIndex: number;
-    paginationState: PaginationState;
-    availableWidth: number;
-    availableHeight: number;
-    lastSpacingAfter: number;
-    isAtPageTop: boolean;
-    context: PackagerContext;
-};
-
-export type PaginationPlacementPreparation =
-    | {
-        action: 'continue-loop';
-        loopAction: PaginationLoopAction;
-    }
-    | {
-        action: 'ready';
-        currentY: number;
-        availableWidth: number;
-        availableHeight: number;
-        isAtPageTop: boolean;
-        layoutBefore: number;
-        layoutDelta: number;
-        constraintField: ConstraintField;
-        placementFrame: ResolvedPlacementFrame;
-        context: PackagerContext;
-        availableHeightAdjusted: number;
-        effectiveAvailableHeight: number;
-        resolveDeferredCursorY: (candidate: PackagerUnit) => number | null;
-    };
-
-export type ObservedActorBoundaryResult = {
-    currentY: number;
-    currentPageIndex: number;
-    actorQueue: PackagerUnit[];
-    settled: boolean;
-};
-
-export type ObserverCheckBoundaryInput = {
-    currentY: number;
-    currentPageIndex: number;
-    actorQueue: PackagerUnit[];
-    state: {
-        availableWidth: number;
-        availableHeight: number;
-        isAtPageTop: boolean;
-        context: PackagerContext;
-    };
-    frontier: SpatialFrontier | null;
-    observe: () => ObservationResult;
-};
+import { ConstraintField, type ResolvedPlacementFrame, type SpatialPlacementDecision } from './constraint-field';
+import {
+    PageSurface,
+    type PaginationLoopState,
+    type PaginationState,
+    type SplitAttempt
+} from './runtime/session/session-lifecycle-types';
+import type {
+    AcceptedSplitQueueHandling,
+    ActorMeasurement,
+    ActorOverflowEntryHandlingOutcome,
+    ActorOverflowEntrySettlementOutcome,
+    ActorOverflowPreSplitHandlingOutcome,
+    ActorOverflowResolution,
+    ActorOverflowSplitEntryHandlingOutcome,
+    ActorPlacementActionInput,
+    ActorPlacementAttemptOutcome,
+    ActorPlacementCommitOutcome,
+    ActorPlacementExecutionOutcome,
+    ActorPlacementHandlingOutcome,
+    ActorPlacementSettlementOutcome,
+    ActorSplitFailureHandlingOutcome,
+    ActorSplitFailureResolution,
+    ActorSplitFailureSettlementOutcome,
+    DeferredSplitPlacementOutcome,
+    DeferredSplitPlacementSettlementOutcome,
+    ForcedOverflowCommitOutcome,
+    FragmentCommitState,
+    GenericSplitActionInput,
+    GenericSplitOutcome,
+    GenericSplitSuccessHandlingOutcome,
+    GenericSplitSuccessSettlementOutcome,
+    KeepWithNextOverflowActionInput,
+    KeepWithNextPlanningResolution,
+    ObservedActorBoundaryResult,
+    ObserverCheckBoundaryInput,
+    PageAdvanceOutcome,
+    PaginationLoopAction,
+    PaginationPlacementPreparation,
+    SequencePlacementState,
+    SplitFragmentAftermathInput,
+    SplitFragmentAftermathState,
+    SplitMarkerPlacementState,
+    TailSplitFailureSettlementOutcome,
+    TailSplitFormationOutcome,
+    TailSplitFormationSettlementOutcome,
+    WholeFormationOverflowEntryOutcome,
+    WholeFormationOverflowEntrySettlementOutcome,
+    WholeFormationOverflowResolution
+} from './runtime/session/session-pagination-types';
+import type { LayoutProfileMetrics } from './runtime/session/session-profile-types';
+import type {
+    ContinuationQueueOutcome,
+    ExecuteSpeculativeBranchInput,
+    ExecuteSpeculativeBranchResult,
+    KernelBranchStateSnapshot,
+    LocalBranchSnapshot,
+    LocalBranchStateSnapshot,
+    LocalQueueSnapshot,
+    LocalSplitStateSnapshot,
+    LocalTransitionSnapshot,
+    PositionedSplitExecution,
+    ProgressionStateSnapshot,
+    SafeCheckpointSnapshot,
+    SequencePlacementCheckpoint,
+    SessionBranchStateSnapshot,
+    SessionSafeCheckpoint,
+    SimulationClockSnapshot,
+    SimulationTick,
+    SpeculativeBranchContext,
+    SpeculativeBranchReason,
+    SplitExecution
+} from './runtime/session/session-progression-types';
+import type { FragmentTransition } from './runtime/session/session-state-types';
+import type {
+    ActiveExclusionBand,
+    ContentBand,
+    PageExclusionIntent,
+    PageReservationIntent,
+    PlacementFrameMargins,
+    RegionReservation,
+    SpatialExclusion,
+    SpatialPlacementSurface
+} from './runtime/session/session-spatial-types';
+export type {
+    PaginationLoopState,
+    PaginationState,
+    SplitAttempt
+} from './runtime/session/session-lifecycle-types';
+export {
+    PageSurface
+} from './runtime/session/session-lifecycle-types';
+export {
+    ConstraintField
+} from './constraint-field';
+export type {
+    LayoutProfileMetrics
+} from './runtime/session/session-profile-types';
+export type {
+    AcceptedSplitQueueHandling,
+    ActorMeasurement,
+    ActorOverflowEntryHandlingOutcome,
+    ActorOverflowEntrySettlementOutcome,
+    ActorOverflowPreSplitHandlingOutcome,
+    ActorOverflowResolution,
+    ActorOverflowSplitEntryHandlingOutcome,
+    ActorPlacementActionInput,
+    ActorPlacementAttemptOutcome,
+    ActorPlacementCommitOutcome,
+    ActorPlacementExecutionOutcome,
+    ActorPlacementHandlingOutcome,
+    ActorPlacementSettlementOutcome,
+    ActorSplitFailureHandlingOutcome,
+    ActorSplitFailureResolution,
+    ActorSplitFailureSettlementOutcome,
+    DeferredSplitPlacementOutcome,
+    DeferredSplitPlacementSettlementOutcome,
+    ForcedOverflowCommitOutcome,
+    FragmentCommitState,
+    GenericSplitActionInput,
+    GenericSplitOutcome,
+    GenericSplitSuccessHandlingOutcome,
+    GenericSplitSuccessSettlementOutcome,
+    KeepWithNextOverflowActionInput,
+    KeepWithNextPlanningResolution,
+    ObservedActorBoundaryResult,
+    ObserverCheckBoundaryInput,
+    PageAdvanceOutcome,
+    PaginationLoopAction,
+    PaginationPlacementPreparation,
+    SequencePlacementState,
+    SplitFragmentAftermathInput,
+    SplitFragmentAftermathState,
+    SplitMarkerPlacementState,
+    TailSplitFailureSettlementOutcome,
+    TailSplitFormationOutcome,
+    TailSplitFormationSettlementOutcome,
+    WholeFormationOverflowEntryOutcome,
+    WholeFormationOverflowEntrySettlementOutcome,
+    WholeFormationOverflowResolution
+} from './runtime/session/session-pagination-types';
+export type {
+    ContinuationQueueOutcome,
+    ExecuteSpeculativeBranchInput,
+    ExecuteSpeculativeBranchResult,
+    KernelBranchStateSnapshot,
+    LocalBranchSnapshot,
+    LocalBranchStateSnapshot,
+    LocalQueueSnapshot,
+    LocalSplitStateSnapshot,
+    LocalTransitionSnapshot,
+    PositionedSplitExecution,
+    ProgressionStateSnapshot,
+    SafeCheckpointSnapshot,
+    SequencePlacementCheckpoint,
+    SessionBranchStateSnapshot,
+    SessionSafeCheckpoint,
+    SimulationClockSnapshot,
+    SimulationTick,
+    SpeculativeBranchContext,
+    SpeculativeBranchReason,
+    SplitExecution
+} from './runtime/session/session-progression-types';
+export type {
+    FragmentTransition,
+    PageCaptureRecord,
+    PageCaptureState,
+    PageFinalizationState,
+    PageOverrideState,
+    PageRegionResolution,
+    ViewportDescriptor,
+    ViewportRect,
+    ViewportTerrain,
+    WorldSpace
+} from './runtime/session/session-state-types';
+export type {
+    ActiveExclusionBand,
+    ContentBand,
+    ExclusionSurface,
+    PageExclusionIntent,
+    PageReservationIntent,
+    PlacementFrameMargins,
+    RegionReservation,
+    SpatialExclusion,
+    SpatialPlacementSurface
+} from './runtime/session/session-spatial-types';
+export type {
+    ResolvedPlacementFrame,
+    SpatialPlacementDecision
+} from './constraint-field';

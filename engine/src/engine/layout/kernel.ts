@@ -2,15 +2,14 @@ import type { PackagerUnit } from './packagers/packager-types';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { PackagerReshapeResult } from './packagers/packager-types';
 import type {
-    KernelBranchStateSnapshot,
     ContinuationQueueOutcome,
-    FragmentTransition,
+    KernelBranchStateSnapshot,
     LocalQueueSnapshot,
-    LocalSplitStateSnapshot,
-    RegionReservation,
-    SpatialExclusion,
-    SplitAttempt
-} from './layout-session-types';
+    LocalSplitStateSnapshot
+} from './runtime/session/session-progression-types';
+import type { SplitAttempt } from './runtime/session/session-lifecycle-types';
+import type { FragmentTransition } from './runtime/session/session-state-types';
+import type { RegionReservation, SpatialExclusion } from './runtime/session/session-spatial-types';
 
 export class Kernel {
     readonly actorRegistry: PackagerUnit[] = [];

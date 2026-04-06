@@ -1,6 +1,8 @@
 import type { Box } from '../types';
 import type { PackagerReshapeResult, PackagerUnit } from './packagers/packager-types';
-import type { Collaborator, CollaboratorHost, ConstraintField, PageSurface, SplitAttempt } from './layout-session-types';
+import type { CollaboratorConstraintField } from './runtime/session/session-constraint-types';
+import type { PageSurface, SplitAttempt } from './runtime/session/session-lifecycle-types';
+import type { Collaborator, CollaboratorHost } from './runtime/session/session-runtime-types';
 
 export class EventDispatcher {
     private readonly coordinators: readonly Collaborator[];
@@ -33,7 +35,7 @@ export class EventDispatcher {
         }
     }
 
-    onConstraintNegotiation(actor: PackagerUnit, constraints: ConstraintField, host: CollaboratorHost): void {
+    onConstraintNegotiation(actor: PackagerUnit, constraints: CollaboratorConstraintField, host: CollaboratorHost): void {
         for (const collaborator of this.all) {
             collaborator.onConstraintNegotiation?.(actor, constraints, host);
         }

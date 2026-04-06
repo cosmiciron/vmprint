@@ -1,6 +1,6 @@
-import type { CollaboratorHost } from '../layout-session-types';
 import type { Box, Page } from '../../types';
-import type { Collaborator, PageSurface } from '../layout-session-types';
+import type { PageSurface } from '../runtime/session/session-lifecycle-types';
+import type { Collaborator, CollaboratorHost } from '../runtime/session/session-runtime-types';
 
 import { simulationArtifactKeys } from '../simulation-report';
 

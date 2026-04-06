@@ -1,8 +1,12 @@
 import type { Box, Page } from '../types';
 import { CollisionRuntime } from './collision-runtime';
+import { ConstraintField, type ResolvedPlacementFrame } from './constraint-field';
 import type { FlowBox } from './layout-core-types';
 import { PhysicsRuntime } from './physics-runtime';
 import { TransitionsRuntime } from './transitions-runtime';
+import type {
+    SplitExecution,
+} from './runtime/session/session-progression-types';
 import type {
     ActorOverflowEntryHandlingOutcome,
     ActorOverflowEntrySettlementOutcome,
@@ -15,17 +19,14 @@ import type {
     ActorSplitFailureHandlingOutcome,
     ActorSplitFailureResolution,
     ActorSplitFailureSettlementOutcome,
-    ConstraintField,
     DeferredSplitPlacementOutcome,
     DeferredSplitPlacementSettlementOutcome,
     FragmentCommitState,
     GenericSplitActionInput,
     GenericSplitSuccessHandlingOutcome,
     GenericSplitSuccessSettlementOutcome,
-    PaginationLoopAction,
-    ResolvedPlacementFrame,
-    SplitExecution,
-} from './layout-session-types';
+    PaginationLoopAction
+} from './runtime/session/session-pagination-types';
 import type { ActorOverflowHandling } from './actor-overflow';
 import type { PackagerContext, PackagerUnit } from './packagers/packager-types';
 

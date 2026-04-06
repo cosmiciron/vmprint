@@ -4,11 +4,11 @@ import type {
     ActorSplitFailureSettlementOutcome,
     DeferredSplitPlacementSettlementOutcome,
     GenericSplitSuccessSettlementOutcome,
-    PaginationLoopAction,
-    PaginationState,
     TailSplitFormationSettlementOutcome,
     WholeFormationOverflowEntrySettlementOutcome
-} from './layout-session-types';
+} from './runtime/session/session-pagination-types';
+import type { PaginationState } from './runtime/session/session-lifecycle-types';
+import type { PaginationLoopAction } from './runtime/session/session-pagination-types';
 
 export class PaginationLoopRuntime {
     resolveNextActorIndex(currentIndex: number, shouldAdvanceIndex: boolean): number {

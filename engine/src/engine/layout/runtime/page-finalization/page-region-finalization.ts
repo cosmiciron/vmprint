@@ -1,6 +1,8 @@
 import { Box, LayoutConfig, Page, PageRegionContent, PageRegionDefinition } from '../../../types';
 import { LayoutUtils } from '../../layout-utils';
-import type { Collaborator, CollaboratorHost, PageOverrideState, PageSurface } from '../../layout-session-types';
+import type { PageSurface } from '../session/session-lifecycle-types';
+import type { Collaborator, CollaboratorHost } from '../session/session-runtime-types';
+import type { PageOverrideState } from '../session/session-state-types';
 import type { ActorSignal } from '../../actor-event-bus';
 import type { LayoutBox, ObservationResult, PackagerContext, PackagerReshapeResult, PackagerUnit } from '../../packagers/packager-types';
 

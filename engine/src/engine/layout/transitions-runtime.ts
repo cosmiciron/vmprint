@@ -6,28 +6,29 @@ import {
     type PackagerContext
 } from './packagers/packager-types';
 import type { PackagerReshapeResult, PackagerUnit } from './packagers/packager-types';
+import type { SplitAttempt } from './runtime/session/session-lifecycle-types';
+import type {
+    ContinuationQueueOutcome,
+    ExecuteSpeculativeBranchInput,
+    LocalBranchSnapshot,
+    SpeculativeBranchReason,
+    SplitExecution
+} from './runtime/session/session-progression-types';
 import type {
     AcceptedSplitQueueHandling,
     ActorSplitFailureResolution,
     ActorSplitFailureSettlementOutcome,
-    ContinuationQueueOutcome,
     DeferredSplitPlacementOutcome,
     DeferredSplitPlacementSettlementOutcome,
-    ExecuteSpeculativeBranchInput,
     GenericSplitOutcome,
     GenericSplitSuccessHandlingOutcome,
     GenericSplitSuccessSettlementOutcome,
-    LocalBranchSnapshot,
     PageAdvanceOutcome,
-    SpeculativeBranchReason,
-    SplitExecution,
-    SplitAttempt,
     SplitFragmentAftermathState,
     TailSplitFailureSettlementOutcome,
-    TailSplitFormationOutcome
-    ,
+    TailSplitFormationOutcome,
     TailSplitFormationSettlementOutcome
-} from './layout-session-types';
+} from './runtime/session/session-pagination-types';
 
 type SplitMarkerPositioner = (
     marker: FlowBox,
