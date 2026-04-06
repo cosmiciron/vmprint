@@ -82,6 +82,7 @@ import {
     type LocalSplitStateSnapshot,
     type LocalTransitionSnapshot,
     type PageCaptureRecord,
+    type PageCaptureState,
     type PageExclusionIntent,
     type PageAdvanceOutcome,
     type PageFinalizationState,
@@ -476,7 +477,7 @@ export class LayoutSession {
             this.sessionWorldRuntime,
             this.simulationReportBridge,
             {
-                getSession: () => this,
+                getCollaboratorHost: () => this,
                 getCurrentPageIndex: () => this.currentPageIndex,
                 getProfileSnapshot: () => this.profile
             }
@@ -1268,6 +1269,18 @@ export class LayoutSession {
 
     recordPageCapture(record: PageCaptureRecord): void {
         this.sessionCollaborationRuntime.recordPageCapture(record);
+    }
+
+    createPageCaptureState(params: {
+        pageIndex: number;
+        worldTopY: number;
+        pageWidth: number;
+        pageHeight: number;
+        margins: { top: number; right: number; bottom: number; left: number };
+        headerRect?: ViewportRect | null;
+        footerRect?: ViewportRect | null;
+    }): PageCaptureState {
+        return this.sessionWorldRuntime.createPageCaptureState(params);
     }
 
     getPageCapture(pageIndex: number): PageCaptureRecord | undefined {

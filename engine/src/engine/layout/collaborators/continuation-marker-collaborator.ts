@@ -1,24 +1,24 @@
 import { FlowBox } from '../layout-core-types';
-import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+import type { Collaborator, CollaboratorHost } from '../layout-session-types';
+
 import { PackagerReshapeResult, PackagerUnit } from '../packagers/packager-types';
 import { FlowBoxPackager } from '../packagers/flow-box-packager';
 
 export class ContinuationMarkerCollaborator implements Collaborator {
-    onActorPrepared(actor: PackagerUnit, session: LayoutSession): void {
-        const artifacts = session.ensureContinuationArtifacts(actor);
+    onActorPrepared(actor: PackagerUnit, host: CollaboratorHost): void {
+        const artifacts = host.ensureContinuationArtifacts(actor);
         if (!artifacts) return;
     }
 
     onSplitAccepted(
         attempt: { actor: PackagerUnit },
         result: PackagerReshapeResult,
-        session: LayoutSession
+        host: CollaboratorHost
     ): void {
-        const artifacts = session.ensureContinuationArtifacts(attempt.actor);
+        const artifacts = host.ensureContinuationArtifacts(attempt.actor);
         if (!artifacts) return;
         if (result.currentFragment && artifacts.markerAfterSplit) {
-            session.stageMarkersAfterSplit(result.currentFragment.actorId, [artifacts.markerAfterSplit]);
+            host.stageMarkersAfterSplit(result.currentFragment.actorId, [artifacts.markerAfterSplit]);
         }
         const continuation = result.continuationFragment;
         if (!continuation) return;
@@ -30,6 +30,6 @@ export class ContinuationMarkerCollaborator implements Collaborator {
         const markerPackagers = artifacts.markersBeforeContinuation.map((marker) =>
             new FlowBoxPackager(processor, marker)
         );
-        session.stageActorsBeforeContinuation(continuation.actorId, markerPackagers);
+        host.stageActorsBeforeContinuation(continuation.actorId, markerPackagers);
     }
 }

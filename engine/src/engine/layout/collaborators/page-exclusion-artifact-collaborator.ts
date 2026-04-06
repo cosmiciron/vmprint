@@ -1,5 +1,6 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 
 export type PageExclusionSummary = {
@@ -10,9 +11,9 @@ export type PageExclusionSummary = {
 };
 
 export class PageExclusionArtifactCollaborator implements Collaborator {
-    onSimulationComplete(session: LayoutSession): void {
-        const summary = session.getExclusionPageIndices().map((pageIndex) => {
-            const exclusions = session.getPageExclusions(pageIndex);
+    onSimulationComplete(host: CollaboratorHost): void {
+        const summary = host.getExclusionPageIndices().map((pageIndex) => {
+            const exclusions = host.getPageExclusions(pageIndex);
             return {
                 pageIndex,
                 exclusionCount: exclusions.length,
@@ -21,6 +22,6 @@ export class PageExclusionArtifactCollaborator implements Collaborator {
             };
         });
 
-        session.publishArtifact(simulationArtifactKeys.pageExclusionSummary, summary);
+        host.publishArtifact(simulationArtifactKeys.pageExclusionSummary, summary);
     }
 }

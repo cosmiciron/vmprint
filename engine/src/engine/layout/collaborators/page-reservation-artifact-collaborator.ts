@@ -1,5 +1,6 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 
 export type PageReservationSummary = {
@@ -11,10 +12,10 @@ export type PageReservationSummary = {
 };
 
 export class PageReservationArtifactCollaborator implements Collaborator {
-    onSimulationComplete(session: LayoutSession): void {
+    onSimulationComplete(host: CollaboratorHost): void {
         const startedAt = performance.now();
-        const summaries = session.getReservationPageIndices().map((pageIndex) => {
-            const reservations = session.getPageReservations(pageIndex);
+        const summaries = host.getReservationPageIndices().map((pageIndex) => {
+            const reservations = host.getPageReservations(pageIndex);
             const reservationSources = Array.from(new Set(
                 reservations
                     .map((reservation) => reservation.source || '')
@@ -30,7 +31,7 @@ export class PageReservationArtifactCollaborator implements Collaborator {
             };
         });
 
-        session.publishArtifact(simulationArtifactKeys.pageReservationSummary, summaries);
-        session.recordProfile('reservationArtifactMs', performance.now() - startedAt);
+        host.publishArtifact(simulationArtifactKeys.pageReservationSummary, summaries);
+        host.recordProfile('reservationArtifactMs', performance.now() - startedAt);
     }
 }

@@ -1,5 +1,6 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 
 export type FragmentationSummary = {
@@ -14,8 +15,8 @@ export type FragmentationSummary = {
 };
 
 export class FragmentTransitionArtifactCollaborator implements Collaborator {
-    onSimulationComplete(session: LayoutSession): void {
-        const summaries: FragmentationSummary[] = session.getFragmentTransitionSourceIds().map((sourceActorId) => {
+    onSimulationComplete(host: CollaboratorHost): void {
+        const summaries: FragmentationSummary[] = host.getFragmentTransitionSourceIds().map((sourceActorId) => {
             const summary: FragmentationSummary = {
                 sourceActorId,
                 splitCount: 0,
@@ -24,7 +25,7 @@ export class FragmentTransitionArtifactCollaborator implements Collaborator {
                 pageAnchors: []
             };
 
-            for (const transition of session.getFragmentTransitionsBySource(sourceActorId)) {
+            for (const transition of host.getFragmentTransitionsBySource(sourceActorId)) {
                 summary.splitCount += 1;
                 if (transition.continuationActorId) {
                     summary.continuationCount += 1;
@@ -59,6 +60,6 @@ export class FragmentTransitionArtifactCollaborator implements Collaborator {
             return summary;
         });
 
-        session.publishArtifact(simulationArtifactKeys.fragmentationSummary, summaries);
+        host.publishArtifact(simulationArtifactKeys.fragmentationSummary, summaries);
     }
 }

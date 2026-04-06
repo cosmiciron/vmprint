@@ -1,6 +1,7 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Box, DebugRegion } from '../../types';
 import type { Collaborator, PageSurface } from '../layout-session-types';
-import type { LayoutSession } from '../layout-session';
+
 import type { PackagerUnit } from '../packagers/packager-types';
 
 type DebugRegionActor = PackagerUnit & {
@@ -20,7 +21,7 @@ function regionKey(region: DebugRegion): string {
 }
 
 export class RegionDebugOverlayCollaborator implements Collaborator {
-    onActorCommitted(actor: PackagerUnit, _committed: Box[], surface: PageSurface, _session: LayoutSession): void {
+    onActorCommitted(actor: PackagerUnit, _committed: Box[], surface: PageSurface, _host: CollaboratorHost): void {
         const debugActor = actor as DebugRegionActor;
         const regions = debugActor.getDebugRegions?.();
         if (!regions || regions.length === 0) return;
@@ -34,7 +35,7 @@ export class RegionDebugOverlayCollaborator implements Collaborator {
         }
     }
 
-    onPageFinalized(surface: PageSurface, _session: LayoutSession): void {
+    onPageFinalized(surface: PageSurface, _host: CollaboratorHost): void {
         const existing = new Set(surface.debugRegions.map(regionKey));
         const aggregated = new Map<string, DebugRegion>();
 

@@ -1,6 +1,7 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Box } from '../../types';
 import type { Collaborator, PageSurface } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import type { PackagerUnit } from '../packagers/packager-types';
 
 export const HEADING_SIGNAL_TOPIC = 'heading:committed';
@@ -54,7 +55,7 @@ export class HeadingSignalCollaborator implements Collaborator {
         actor: PackagerUnit,
         committed: Box[],
         surface: PageSurface,
-        session: LayoutSession
+        host: CollaboratorHost
     ): void {
         // Only emit for the first fragment — continuations don't change the heading's page position
         if (actor.fragmentIndex > 0 || actor.continuationOf) return;
@@ -73,7 +74,7 @@ export class HeadingSignalCollaborator implements Collaborator {
             return Math.min(best, v);
         }, Number.POSITIVE_INFINITY);
 
-        session.publishActorSignal({
+        host.publishActorSignal({
             topic: HEADING_SIGNAL_TOPIC,
             publisherActorId: actor.actorId,
             publisherSourceId: actor.sourceId,

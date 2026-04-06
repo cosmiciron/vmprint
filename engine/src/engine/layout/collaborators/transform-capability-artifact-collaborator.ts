@@ -1,6 +1,7 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { PackagerReshapeCapability } from '../packagers/packager-types';
 import type { Collaborator } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 import { resolvePackagerReshapeProfile } from '../packagers/packager-types';
 
@@ -12,10 +13,10 @@ export type TransformCapabilitySummary = {
 };
 
 export class TransformCapabilityArtifactCollaborator implements Collaborator {
-    onSimulationComplete(session: LayoutSession): void {
+    onSimulationComplete(host: CollaboratorHost): void {
         const summaries = new Map<string, TransformCapabilitySummary>();
 
-        for (const actor of session.getRegisteredActors()) {
+        for (const actor of host.getRegisteredActors()) {
             const profile = resolvePackagerReshapeProfile(actor);
             if (!profile) continue;
 
@@ -48,7 +49,7 @@ export class TransformCapabilityArtifactCollaborator implements Collaborator {
             existing.capabilities = Array.from(capabilityMap.values()).sort((a, b) => a.kind.localeCompare(b.kind));
         }
 
-        session.publishArtifact(
+        host.publishArtifact(
             simulationArtifactKeys.transformCapabilitySummary,
             Array.from(summaries.values()).sort((a, b) =>
                 a.sourceId.localeCompare(b.sourceId) || a.actorKind.localeCompare(b.actorKind)

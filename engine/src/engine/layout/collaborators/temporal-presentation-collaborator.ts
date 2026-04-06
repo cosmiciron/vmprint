@@ -1,6 +1,7 @@
+import type { CollaboratorHost } from '../layout-session-types';
 import type { Box, Page } from '../../types';
 import type { Collaborator, PageSurface } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+
 import { simulationArtifactKeys } from '../simulation-report';
 
 export type TemporalPresentationTextSegmentSnapshot = {
@@ -102,7 +103,7 @@ export class TemporalPresentationCollaborator implements Collaborator {
         this.frames = [];
     }
 
-    onPageFinalized(surface: PageSurface, session: LayoutSession): void {
+    onPageFinalized(surface: PageSurface, host: CollaboratorHost): void {
         const page = surface.finalize();
         this.latestPages.set(page.index, snapshotPage(page));
         const pages = Array.from(this.latestPages.values())
@@ -111,14 +112,14 @@ export class TemporalPresentationCollaborator implements Collaborator {
 
         this.frames.push({
             captureIndex: this.frames.length,
-            tick: session.getSimulationTick(),
+            tick: host.getSimulationTick(),
             pageCount: pages.length,
             pages
         });
     }
 
-    onSimulationComplete(session: LayoutSession): void {
-        session.publishArtifact(
+    onSimulationComplete(host: CollaboratorHost): void {
+        host.publishArtifact(
             simulationArtifactKeys.temporalPresentationTimeline,
             cloneTimeline(this.frames)
         );

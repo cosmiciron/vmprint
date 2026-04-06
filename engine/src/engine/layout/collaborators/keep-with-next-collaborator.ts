@@ -1,8 +1,8 @@
 import { performance } from 'node:perf_hooks';
 import type { ActorFormationMember, KeepWithNextFormationPlan } from '../actor-formation';
 import { LAYOUT_DEFAULTS } from '../defaults';
-import type { Collaborator, PaginationLoopState } from '../layout-session-types';
-import { LayoutSession } from '../layout-session';
+import type { Collaborator, CollaboratorHost, PaginationLoopState } from '../layout-session-types';
+
 import { PackagerUnit, preparePackagerForPhase } from '../packagers/packager-types';
 
 export type KeepWithNextPlan = KeepWithNextFormationPlan;
@@ -167,18 +167,18 @@ export function computeKeepWithNextPlan(state: PaginationLoopState, observer?: K
 }
 
 export class KeepWithNextCollaborator implements Collaborator {
-    onActorPrepared(actor: PackagerUnit, session: LayoutSession): void {
+    onActorPrepared(actor: PackagerUnit, host: CollaboratorHost): void {
         if (!actor.keepWithNext) return;
-        const state = session.getPaginationLoopState();
+        const state = host.getPaginationLoopState();
         if (!state) return;
         if (state.actorQueue[state.actorIndex] !== actor) return;
         const signature = buildKeepWithNextPlanSignature(state, session);
-        if (session.getKeepWithNextPlan(actor.actorId, signature)) return;
+        if (host.getKeepWithNextPlan(actor.actorId, signature)) return;
         const t0 = performance.now();
         const plan = computeKeepWithNextPlan(state, session);
         const t1 = performance.now();
-        session.recordProfile('keepWithNextPlanCalls', 1);
-        session.recordProfile('keepWithNextPlanMs', t1 - t0);
-        session.setKeepWithNextPlan(actor.actorId, plan, signature);
+        host.recordProfile('keepWithNextPlanCalls', 1);
+        host.recordProfile('keepWithNextPlanMs', t1 - t0);
+        host.setKeepWithNextPlan(actor.actorId, plan, signature);
     }
 }

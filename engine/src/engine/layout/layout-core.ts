@@ -1294,32 +1294,35 @@ export class LayoutProcessor extends TextProcessor {
             scriptRuntimeHost,
             scriptRuntimeCollaborator,
             collaborators: [
-            new ContinuationMarkerCollaborator(),
-            new PageStartExclusionCollaborator(this.config),
-            new PageStartReservationCollaborator(this.config),
-            new PageReservationCollaborator(),
-            new FragmentTransitionArtifactCollaborator(),
-            new TransformCapabilityArtifactCollaborator(),
-            new TransformArtifactCollaborator(),
-            new PageExclusionArtifactCollaborator(),
-            new PageNumberArtifactCollaborator(),
-            new PageOverrideArtifactCollaborator(),
-            new PageReservationArtifactCollaborator(),
-            new PageSpatialConstraintArtifactCollaborator(),
-            new PageRegionArtifactCollaborator(),
-            new SourcePositionArtifactCollaborator(),
-            new HeadingTelemetryCollaborator(),
-            new HeadingSignalCollaborator(),
-            ...(asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []),
-            new TemporalPresentationCollaborator(),
-            new InteractionArtifactCollaborator(this.config.layout),
-            new ViewportCaptureArtifactCollaborator(),
-            new RegionDebugOverlayCollaborator(),
-            new PageRegionCollaborator(this.config, {
-                layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
-                    this.layoutRegion(content, rect, pageIndex, sourceType, actorId)
-            }),
-                ...(scriptRuntimeCollaborator ? [scriptRuntimeCollaborator] : [])
+                // --- Coordinators: shape simulation behavior, run before observers ---
+                new ContinuationMarkerCollaborator(),
+                new PageStartExclusionCollaborator(this.config),
+                new PageStartReservationCollaborator(this.config),
+                new PageReservationCollaborator(),
+                new HeadingSignalCollaborator(),
+                ...(asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []),
+                new PageRegionCollaborator(this.config, {
+                    layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
+                        this.layoutRegion(content, rect, pageIndex, sourceType, actorId)
+                }),
+                ...(scriptRuntimeCollaborator ? [scriptRuntimeCollaborator] : []),
+
+                // --- Observers: read committed state, produce output artifacts ---
+                new FragmentTransitionArtifactCollaborator(),
+                new TransformCapabilityArtifactCollaborator(),
+                new TransformArtifactCollaborator(),
+                new PageExclusionArtifactCollaborator(),
+                new PageNumberArtifactCollaborator(),
+                new PageOverrideArtifactCollaborator(),
+                new PageReservationArtifactCollaborator(),
+                new PageSpatialConstraintArtifactCollaborator(),
+                new PageRegionArtifactCollaborator(),
+                new SourcePositionArtifactCollaborator(),
+                new HeadingTelemetryCollaborator(),
+                new TemporalPresentationCollaborator(),
+                new InteractionArtifactCollaborator(this.config.layout),
+                new ViewportCaptureArtifactCollaborator(),
+                new RegionDebugOverlayCollaborator(),
             ]
         };
     }
