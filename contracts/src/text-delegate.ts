@@ -23,8 +23,11 @@ export type MeasuredTextResult = {
     descent: number;
 };
 
-export interface TextMeasurer {
+export interface TextDelegate {
     measure(text: string, font: any, fontSize: number, options?: MeasureTextOptions): MeasuredTextResult;
     getVerticalMetrics(font: any): VerticalTextMetrics;
     supportsCluster(font: any, cluster: string): boolean;
+    estimateTextBoundsMetrics(font: any, text: string): VerticalTextMetrics | null;
 }
+
+export type TextMeasurer = TextDelegate;

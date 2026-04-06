@@ -19,6 +19,7 @@ import {
     PackagerReshapeProfile,
     PackagerUnit
 } from './packager-types';
+import type { TextDelegate } from '@vmprint/contracts';
 
 type DropCapParts = {
     dropCap: FlowBox;
@@ -173,17 +174,13 @@ class DropCapFragmentPackager implements PackagerUnit {
  * Resolves ascent and descent scales (value / unitsPerEm) from a loaded font object.
  * Falls back to typical Latin values when the font object lacks the expected fields.
  */
-function resolveFontMetricScales(font: any): { ascentScale: number; descentScale: number } {
-    const upm = Number(font?.unitsPerEm);
-    if (upm > 0) {
-        const rawAscent = Number(font?.ascent);
-        const rawDescent = Number(font?.descent);
-        if (Number.isFinite(rawAscent) && rawAscent > 0 && Number.isFinite(rawDescent)) {
-            return {
-                ascentScale: rawAscent / upm,
-                descentScale: Math.abs(rawDescent) / upm
-            };
-        }
+function resolveFontMetricScales(textDelegate: TextDelegate, font: any): { ascentScale: number; descentScale: number } {
+    const metrics = textDelegate.getVerticalMetrics(font);
+    if (Number.isFinite(metrics.ascent) && metrics.ascent > 0 && Number.isFinite(metrics.descent)) {
+        return {
+            ascentScale: metrics.ascent / 1000,
+            descentScale: metrics.descent / 1000
+        };
     }
     return { ascentScale: 0.8, descentScale: 0.2 };
 }
@@ -192,46 +189,14 @@ function resolveFontMetricScales(font: any): { ascentScale: number; descentScale
  * Attempts to estimate the ascent scale using actual glyph bounds for a string.
  * Falls back to null when glyph bounds are unavailable.
  */
-function resolveGlyphMetricScales(font: any, text: string): { ascentScale: number; descentScale: number } | null {
-    if (!font || !text) return null;
-    const upm = Number(font?.unitsPerEm);
-    if (!Number.isFinite(upm) || upm <= 0) return null;
-    if (typeof font.layout !== 'function') return null;
-
-    try {
-        const run = font.layout(text);
-        if (!run?.glyphs || run.glyphs.length === 0) return null;
-        let maxY = -Infinity;
-        let minY = Infinity;
-        for (const glyph of run.glyphs) {
-            const bbox = glyph?.bbox || (typeof glyph?.getBBox === 'function' ? glyph.getBBox() : null);
-            const yMax = Number(bbox?.maxY ?? bbox?.yMax);
-            const yMin = Number(bbox?.minY ?? bbox?.yMin);
-            if (Number.isFinite(yMax)) {
-                if (yMax > maxY) maxY = yMax;
-            }
-            if (Number.isFinite(yMin)) {
-                if (yMin < minY) minY = yMin;
-            }
-
-            const rawYMax = Number(glyph?.yMax);
-            const rawYMin = Number(glyph?.yMin);
-            if (Number.isFinite(rawYMax) && rawYMax > maxY) maxY = rawYMax;
-            if (Number.isFinite(rawYMin) && rawYMin < minY) minY = rawYMin;
-        }
-
-        if (!Number.isFinite(maxY) || maxY <= 0) return null;
-        if (!Number.isFinite(minY)) {
-            minY = 0;
-        }
-        if (maxY <= 0) return null;
-        const ascentScale = maxY / upm;
-        const descentScale = Math.max(0, Math.abs(minY) / upm);
-        if (!Number.isFinite(ascentScale) || ascentScale <= 0) return null;
-        return { ascentScale, descentScale };
-    } catch {
-        return null;
-    }
+function resolveGlyphMetricScales(textDelegate: TextDelegate, font: any, text: string): { ascentScale: number; descentScale: number } | null {
+    const metrics = textDelegate.estimateTextBoundsMetrics(font, text);
+    if (!metrics) return null;
+    if (!Number.isFinite(metrics.ascent) || metrics.ascent <= 0 || !Number.isFinite(metrics.descent)) return null;
+    return {
+        ascentScale: metrics.ascent / 1000,
+        descentScale: metrics.descent / 1000
+    };
 }
 
 /**
@@ -360,7 +325,8 @@ export class DropCapPackager implements PackagerUnit {
         } catch {
             bodyFont = (this.processor as any).font;
         }
-        const { ascentScale: bodyAscentScale, descentScale: bodyDescentScale } = resolveFontMetricScales(bodyFont);
+        const textDelegate = this.processor.getTextDelegate();
+        const { ascentScale: bodyAscentScale, descentScale: bodyDescentScale } = resolveFontMetricScales(textDelegate, bodyFont);
 
         // Resolve cap font metrics (may differ when characterStyle.fontFamily is set).
         const capFontFamily = String(characterStyle.fontFamily || bodyFontFamily);
@@ -372,8 +338,8 @@ export class DropCapPackager implements PackagerUnit {
         } catch {
             capFont = bodyFont;
         }
-        const { ascentScale: capAscentScale, descentScale: capDescentScale } = resolveFontMetricScales(capFont);
-        const glyphMetrics = resolveGlyphMetricScales(capFont, capChars);
+        const { ascentScale: capAscentScale, descentScale: capDescentScale } = resolveFontMetricScales(textDelegate, capFont);
+        const glyphMetrics = resolveGlyphMetricScales(textDelegate, capFont, capChars);
         const capAscentScaleEffective = glyphMetrics?.ascentScale ?? capAscentScale;
         const capDescentScaleEffective = glyphMetrics?.descentScale ?? capDescentScale;
 

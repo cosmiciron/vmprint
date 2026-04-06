@@ -22,8 +22,8 @@ import {
 import { tryHyphenateSegmentToFit as hyphenateSegmentToFit } from './text-hyphenation';
 import { applyAdvancedJustification as applyJustification } from './text-justification';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
-import type { TextMeasurer } from '@vmprint/contracts';
-import { FontkitTextMeasurer } from './text-measurer';
+import type { TextDelegate, TextMeasurer } from '@vmprint/contracts';
+import { FontkitTextDelegate } from './text-measurer';
 
 export class TextProcessor extends FontProcessor {
 
@@ -31,11 +31,11 @@ export class TextProcessor extends FontProcessor {
     private wordSegmenterCache = new Map<string, any>();
 
     private styleSignatureCache = new StyleSignatureCache();
-    private readonly textMeasurer: TextMeasurer;
+    private readonly textDelegate: TextDelegate;
 
     constructor(config: any, runtime?: any) {
         super(config, runtime);
-        this.textMeasurer = new FontkitTextMeasurer(
+        this.textDelegate = runtime?.textDelegate || new FontkitTextDelegate(
             (cluster) => this.getClusterCodePoints(cluster),
             (codePoint) => this.isIgnorableCodePoint(codePoint),
             (glyphs) => glyphs.map((glyph) => ({ ...glyph, codePoints: [...glyph.codePoints] }))
@@ -52,8 +52,12 @@ export class TextProcessor extends FontProcessor {
         return out;
     }
 
+    getTextDelegate(): TextDelegate {
+        return this.textDelegate;
+    }
+
     getTextMeasurer(): TextMeasurer {
-        return this.textMeasurer;
+        return this.textDelegate;
     }
 
     resolveMeasurementFontForStyle(style: ElementStyle): any {
@@ -71,7 +75,8 @@ export class TextProcessor extends FontProcessor {
 
     getTextMeasurementBindings() {
         return {
-            textMeasurer: this.textMeasurer,
+            textDelegate: this.textDelegate,
+            textMeasurer: this.textDelegate,
             resolveMeasurementFontForStyle: (style: ElementStyle) =>
                 this.resolveMeasurementFontForStyle(style),
             measureText: (text: string, font: any, fontSize: number, letterSpacing: number = 0) =>
@@ -147,11 +152,11 @@ export class TextProcessor extends FontProcessor {
     }
 
     protected fontSupportsCluster(font: any, cluster: string): boolean {
-        return this.textMeasurer.supportsCluster(font, cluster);
+        return this.textDelegate.supportsCluster(font, cluster);
     }
 
     private getFontVerticalMetrics(font: any): { ascent: number; descent: number } {
-        return this.textMeasurer.getVerticalMetrics(font);
+        return this.textDelegate.getVerticalMetrics(font);
     }
 
     private createEmptyMeasuredSegment(font: any, fontFamily?: string, style?: Record<string, any>): TextSegment {
@@ -337,7 +342,7 @@ export class TextProcessor extends FontProcessor {
         session?.recordProfile?.('textMeasurementCacheMisses', 1);
 
         try {
-            const measured = this.textMeasurer.measure(text, measurementFont, measurementFontSize, {
+            const measured = this.textDelegate.measure(text, measurementFont, measurementFontSize, {
                 letterSpacing,
                 direction: populateSegment?.direction === 'rtl' ? 'rtl' : 'ltr',
                 scriptClass: populateSegment?.scriptClass || 'none'

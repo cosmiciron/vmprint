@@ -1,8 +1,9 @@
-import type { FontConfig, FontManager } from '@vmprint/contracts';
+import type { FontConfig, FontManager, TextDelegate } from '@vmprint/contracts';
 
 export interface EngineRuntime {
     fontManager: FontManager;
     fontRegistry: FontConfig[];
+    textDelegate?: TextDelegate;
     measurementCache: Map<string, {
         width: number;
         glyphs: { char: string; x: number; y: number }[];
@@ -18,4 +19,5 @@ export interface EngineRuntime {
 export type EngineRuntimeOptions = {
     fontManager: FontManager;
     fontRegistry?: FontConfig[];
+    textDelegate?: TextDelegate;
 };

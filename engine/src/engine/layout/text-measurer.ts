@@ -1,8 +1,8 @@
-import type { MeasureTextOptions, MeasuredTextResult, TextMeasurer, VerticalTextMetrics } from '@vmprint/contracts';
+import type { MeasureTextOptions, MeasuredTextResult, TextDelegate, VerticalTextMetrics } from '@vmprint/contracts';
 
 const fontVerticalMetricsCache = new WeakMap<object, VerticalTextMetrics>();
 
-export class FontkitTextMeasurer implements TextMeasurer {
+export class FontkitTextDelegate implements TextDelegate {
     constructor(
         private readonly getClusterCodePoints: (cluster: string) => number[],
         private readonly isIgnorableCodePoint: (codePoint: number) => boolean,
@@ -11,7 +11,7 @@ export class FontkitTextMeasurer implements TextMeasurer {
 
     getVerticalMetrics(font: any): VerticalTextMetrics {
         if (!font) {
-            throw new Error('[FontkitTextMeasurer] Missing font object for vertical metric extraction.');
+            throw new Error('[FontkitTextDelegate] Missing font object for vertical metric extraction.');
         }
         const cached = fontVerticalMetricsCache.get(font);
         if (cached) return cached;
@@ -21,7 +21,7 @@ export class FontkitTextMeasurer implements TextMeasurer {
         const rawDescent = Number(font.descent);
         if (!Number.isFinite(upm) || upm <= 0 || !Number.isFinite(rawAscent) || !Number.isFinite(rawDescent)) {
             const fontKey = font.postscriptName || font.familyName || 'unknown';
-            throw new Error(`[FontkitTextMeasurer] Invalid vertical metrics for font "${fontKey}".`);
+            throw new Error(`[FontkitTextDelegate] Invalid vertical metrics for font "${fontKey}".`);
         }
 
         const metrics = {
@@ -54,13 +54,13 @@ export class FontkitTextMeasurer implements TextMeasurer {
         }
 
         if (!font) {
-            throw new Error(`[FontkitTextMeasurer] Missing measurement font for text "${text.slice(0, 24)}".`);
+            throw new Error(`[FontkitTextDelegate] Missing measurement font for text "${text.slice(0, 24)}".`);
         }
 
         const upm = Number(font.unitsPerEm);
         if (!Number.isFinite(upm) || upm <= 0) {
             const fontKey = font.postscriptName || font.familyName || 'unknown';
-            throw new Error(`[FontkitTextMeasurer] Invalid unitsPerEm for font "${fontKey}".`);
+            throw new Error(`[FontkitTextDelegate] Invalid unitsPerEm for font "${fontKey}".`);
         }
 
         const scale = fontSize / upm;
@@ -112,7 +112,7 @@ export class FontkitTextMeasurer implements TextMeasurer {
             const xAdvance = pos.xAdvance !== undefined ? pos.xAdvance : glyph.advanceWidth;
             if (xAdvance === undefined || !Number.isFinite(xAdvance)) {
                 const fontKey = font.postscriptName || font.familyName || 'unknown';
-                throw new Error(`[FontkitTextMeasurer] Missing xAdvance for glyph in "${fontKey}".`);
+                throw new Error(`[FontkitTextDelegate] Missing xAdvance for glyph in "${fontKey}".`);
             }
 
             if (isRtl) {
@@ -137,4 +137,42 @@ export class FontkitTextMeasurer implements TextMeasurer {
             descent: metrics.descent
         };
     }
+
+    estimateTextBoundsMetrics(font: any, text: string): VerticalTextMetrics | null {
+        if (!font || !text) return null;
+        const upm = Number(font?.unitsPerEm);
+        if (!Number.isFinite(upm) || upm <= 0) return null;
+        if (typeof font.layout !== 'function') return null;
+
+        try {
+            const run = font.layout(text);
+            if (!run?.glyphs || run.glyphs.length === 0) return null;
+            let maxY = -Infinity;
+            let minY = Infinity;
+            for (const glyph of run.glyphs) {
+                const bbox = glyph?.bbox || (typeof glyph?.getBBox === 'function' ? glyph.getBBox() : null);
+                const yMax = Number(bbox?.maxY ?? bbox?.yMax);
+                const yMin = Number(bbox?.minY ?? bbox?.yMin);
+                if (Number.isFinite(yMax) && yMax > maxY) maxY = yMax;
+                if (Number.isFinite(yMin) && yMin < minY) minY = yMin;
+
+                const rawYMax = Number(glyph?.yMax);
+                const rawYMin = Number(glyph?.yMin);
+                if (Number.isFinite(rawYMax) && rawYMax > maxY) maxY = rawYMax;
+                if (Number.isFinite(rawYMin) && rawYMin < minY) minY = rawYMin;
+            }
+
+            if (!Number.isFinite(maxY) || maxY <= 0) return null;
+            if (!Number.isFinite(minY)) minY = 0;
+
+            const ascent = (maxY / upm) * 1000;
+            const descent = Math.max(0, Math.abs(minY) / upm) * 1000;
+            if (!Number.isFinite(ascent) || ascent <= 0) return null;
+            return { ascent, descent };
+        } catch {
+            return null;
+        }
+    }
 }
+
+export { FontkitTextDelegate as FontkitTextMeasurer };

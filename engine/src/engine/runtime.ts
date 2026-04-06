@@ -8,6 +8,7 @@ export const createEngineRuntime = (options: EngineRuntimeOptions): EngineRuntim
     return {
         fontManager,
         fontRegistry: options.fontRegistry ? cloneFontRegistry(options.fontRegistry) : fontManager.getFontRegistrySnapshot(),
+        textDelegate: options.textDelegate,
         measurementCache: new Map(),
         fontCache: {},
         bufferCache: {},
