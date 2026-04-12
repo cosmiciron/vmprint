@@ -5,8 +5,6 @@ import { pathToFileURL } from 'url';
 import { OverlayProvider, VmprintOutputStream } from '@vmprint/contracts';
 import { LayoutEngine, LayoutUtils, AnnotatedLayoutStream, LayoutConfig, Page, Renderer, createPrintEngineRuntime, resolveDocumentSourceText, toLayoutConfig, type DocumentIR } from '@vmprint/engine';
 import { performance } from 'perf_hooks';
-import PdfContext from '@vmprint/context-pdf';
-import LocalFontManager from '@vmprint/local-fonts';
 
 type CliOptions = {
     input?: string;
@@ -136,7 +134,8 @@ async function run() {
 
     const FontManagerClass = options.fontManager
         ? await loadImplementation<new (...args: any[]) => any>(options.fontManager, '')
-        : LocalFontManager;
+        : await loadImplementation<new (...args: any[]) => any>('@vmprint/local-fonts', '');
+    const PdfContextClass = await loadImplementation<new (...args: any[]) => any>('@vmprint/context-pdf', '');
 
     const runtime = createPrintEngineRuntime({ fontManager: new FontManagerClass() });
 
@@ -233,7 +232,7 @@ async function run() {
     const { width, height } = LayoutUtils.getPageDimensions(config);
     const renderer = new Renderer(config, !!options.debug, runtime, overlay);
 
-    const context = new PdfContext({
+    const context = new PdfContextClass({
         size: [width, height],
         margins: { top: 0, left: 0, right: 0, bottom: 0 },
         autoFirstPage: false,

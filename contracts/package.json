@@ -28,7 +28,6 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "tsx": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"

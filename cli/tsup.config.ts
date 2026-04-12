@@ -6,7 +6,8 @@ export default defineConfig({
     target: 'node18',
     clean: true,
     dts: true,
-    noExternal: [/(.*)/],
+    external: ['@vmprint/local-fonts', '@vmprint/context-pdf'],
+    noExternal: ['@vmprint/engine', '@vmprint/contracts'],
     outExtension() {
         return { js: '.js' };
     }

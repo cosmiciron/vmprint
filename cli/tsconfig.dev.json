@@ -1,0 +1,13 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "paths": {
+            "@vmprint/contracts": [
+                "../contracts/src/index.ts"
+            ],
+            "@vmprint/engine": [
+                "../engine/src/index.ts"
+            ]
+        }
+    }
+}

@@ -23,7 +23,7 @@ npm run build
 
 ## Run From Source
 
-The repo uses `tsx` for source-mode development, so you can run the CLI without building first.
+The repo uses `tsx` plus a local dev TypeScript config for source-mode development, so you can run the CLI without building first.
 
 ### `vmprint` CLI
 

@@ -12,7 +12,7 @@ When working on the layout engine — adding a feature, fixing a rendering bug, 
 npm run dev --prefix cli -- --input document.json --output out.pdf
 ```
 
-Change engine code. Re-run. Inspect the PDF. The `--conditions tsx` dev mode loads everything — engine, context, font manager — from TypeScript source directly. `--profile-layout` measures and prints the layout pipeline duration, which is useful when evaluating the performance impact of engine changes.
+Change engine code. Re-run. Inspect the PDF. The CLI's source-mode dev command uses a dedicated local TypeScript config to resolve the engine and contracts directly from workspace source. `--profile-layout` measures and prints the layout pipeline duration, which is useful when evaluating the performance impact of engine changes.
 
 ## Experiment bench
 

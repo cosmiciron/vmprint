@@ -34,7 +34,7 @@
   "scripts": {
     "build": "npm run clean && tsup && node fix-shebang.mjs && node copy-local-font-assets.mjs",
     "clean": "rimraf dist",
-    "dev": "tsx --conditions tsx src/index.ts"
+    "dev": "tsx --tsconfig tsconfig.dev.json src/index.ts"
   },
   "dependencies": {
     "@vmprint/context-pdf": "^1.0.2",

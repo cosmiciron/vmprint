@@ -31,7 +31,7 @@
 <p>When working on the layout engine — adding a feature, fixing a rendering bug, tuning typography — you need to run real documents through the pipeline and see the result immediately. The CLI gives you that loop without any build step:</p>
 <pre><code class="language-bash">npm run dev --prefix cli -- --input document.json --output out.pdf
 </code></pre>
-<p>Change engine code. Re-run. Inspect the PDF. The <code>--conditions tsx</code> dev mode loads everything — engine, context, font manager — from TypeScript source directly. <code>--profile-layout</code> measures and prints the layout pipeline duration, which is useful when evaluating the performance impact of engine changes.</p>
+<p>Change engine code. Re-run. Inspect the PDF. The CLI's source-mode dev command uses a dedicated local TypeScript config to resolve the engine and contracts directly from workspace source. <code>--profile-layout</code> measures and prints the layout pipeline duration, which is useful when evaluating the performance impact of engine changes.</p>
 <h2>Experiment bench</h2>
 <p>The <code>--font-manager</code> flag accepts any JS module that exports a default class implementing the <code>FontManager</code> interface. Testing a new font manager against real documents requires exactly one flag — no integration scaffolding, no test harness:</p>
 <pre><code class="language-bash">vmprint --input document.json --output out.pdf --font-manager ./my-font-manager.js
