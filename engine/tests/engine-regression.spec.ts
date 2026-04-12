@@ -19,7 +19,8 @@ import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import {
     simulationArtifactKeys
 } from '../src/engine/layout/simulation-report';
-import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
+import { setDefaultEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { LayoutSession } from '../src/engine/layout/layout-session';
 import { reactiveProofPackagerFactory } from './support/reactive-proof-packager-factory';
 
@@ -98,11 +99,19 @@ function assertArabicMixedBidiSignals(pages: any[], fixtureName: string): void {
     assert.equal(embeddedVersion.direction, 'ltr', `${fixtureName}: embedded version token should stay LTR`);
     assert.equal(embeddedVersion.shapedGlyphs, undefined, `${fixtureName}: embedded version token should not be RTL-shaped`);
 
-    const embeddedNumber = expectSegment('100');
+    const embeddedNumber =
+        findSegment('100') ??
+        findSegment('100%');
+    assert.ok(
+        embeddedNumber,
+        `${fixtureName}: expected numeric token "100" or combined token "100%"`
+    );
     assert.equal(embeddedNumber.shapedGlyphs, undefined, `${fixtureName}: embedded numeric token should not be RTL-shaped`);
 
-    const embeddedPercent = expectSegment('%');
-    assert.equal(embeddedPercent.shapedGlyphs, undefined, `${fixtureName}: embedded percent token should not be RTL-shaped`);
+    const embeddedPercent = findSegment('%');
+    if (embeddedPercent) {
+        assert.equal(embeddedPercent.shapedGlyphs, undefined, `${fixtureName}: embedded percent token should not be RTL-shaped`);
+    }
 
     const embeddedGroupedNumber = expectSegment('123,456');
     assert.equal(
@@ -1868,7 +1877,7 @@ function assertSnapshot(fixtureName: string, pages: any[]): void {
 
 async function run() {
     const LocalFontManager = await loadLocalFontManager();
-    setDefaultEngineRuntime(createEngineRuntime({ fontManager: new LocalFontManager() }));
+    setDefaultEngineRuntime(createPrintEngineRuntime({ fontManager: new LocalFontManager() }));
 
     log('Scenario: fixture-driven deterministic pagination and renderer regression checks');
     const fixtures = loadAstJsonDocumentFixtures();

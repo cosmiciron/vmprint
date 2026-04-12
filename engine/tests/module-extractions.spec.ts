@@ -18,7 +18,7 @@ import { TextSegment } from '../src/engine/types';
 import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, parseDocumentSourceText, resolveDocumentPaths, toLayoutConfig } from '../src';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { solveTrackSizing } from '../src/engine/layout/track-sizing';
-import { createEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { FontkitTextMeasurer } from '../src/engine/layout/text-measurer';
 import { loadFont } from '../src/font-management/font-cache-loader';
 import { loadLocalFontManager } from './harness/engine-harness';
@@ -638,25 +638,25 @@ function testTrackSizingFoundation(): void {
 }
 
 function testFontWeightMatching(): void {
-    const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
+    const runtime = createPrintEngineRuntime({ fontManager: new LocalFontManager() });
     _check(
         'numeric font weight nearest matching',
         'weights resolve to nearest static Arimo instances with style preservation',
         () => {
-            const normal500 = LayoutUtils.resolveFontMatch('Arimo', 500, 'normal', runtime.fontRegistry, runtime.fontManager);
+            const normal500 = LayoutUtils.resolveFontMatch('Arimo', 500, 'normal', runtime.textDelegate);
             assert.equal(normal500.config.style, 'normal');
             assert.equal(normal500.resolvedWeight, 400);
-            assert.equal(LayoutUtils.getFontId('Arimo', 500, 'normal', runtime.fontRegistry, runtime.fontManager), 'Arimo-Regular');
+            assert.equal(LayoutUtils.getFontId('Arimo', 500, 'normal', runtime.textDelegate), 'Arimo-Regular');
 
-            const normal600 = LayoutUtils.resolveFontMatch('Arimo', 600, 'normal', runtime.fontRegistry, runtime.fontManager);
+            const normal600 = LayoutUtils.resolveFontMatch('Arimo', 600, 'normal', runtime.textDelegate);
             assert.equal(normal600.config.style, 'normal');
             assert.equal(normal600.resolvedWeight, 700);
-            assert.equal(LayoutUtils.getFontId('Arimo', 600, 'normal', runtime.fontRegistry, runtime.fontManager), 'Arimo-Bold');
+            assert.equal(LayoutUtils.getFontId('Arimo', 600, 'normal', runtime.textDelegate), 'Arimo-Bold');
 
-            const italic500 = LayoutUtils.resolveFontMatch('Arimo', 500, 'italic', runtime.fontRegistry, runtime.fontManager);
+            const italic500 = LayoutUtils.resolveFontMatch('Arimo', 500, 'italic', runtime.textDelegate);
             assert.equal(italic500.config.style, 'italic');
             assert.equal(italic500.resolvedWeight, 400);
-            assert.equal(LayoutUtils.getFontId('Arimo', 500, 'italic', runtime.fontRegistry, runtime.fontManager), 'Arimo-Italic');
+            assert.equal(LayoutUtils.getFontId('Arimo', 500, 'italic', runtime.textDelegate), 'Arimo-Italic');
         }
     );
 }
@@ -1076,8 +1076,8 @@ function testRuntimeIsolation(): void {
         'runtime state isolation',
         'font registry writes in one runtime do not leak into another runtime',
         () => {
-            const runtimeA = createEngineRuntime({ fontManager: new LocalFontManager() });
-            const runtimeB = createEngineRuntime({ fontManager: new LocalFontManager() });
+            const runtimeA = createPrintEngineRuntime({ fontManager: new LocalFontManager() });
+            const runtimeB = createPrintEngineRuntime({ fontManager: new LocalFontManager() });
 
             registerFont({
                 name: 'RuntimeOnly Regular',
@@ -1153,7 +1153,7 @@ function testLocalFontManagerOverride(): void {
                 }
             });
 
-            const runtime = createEngineRuntime({ fontManager: customStore });
+            const runtime = createPrintEngineRuntime({ fontManager: customStore });
             assert.equal(resolveFontFamilyAlias('sans-serif', runtime.fontManager), 'Demo Sans');
             assert.equal(getFontsByFamily('sans-serif', runtime.fontRegistry, runtime.fontManager).length, 1);
             assert.equal(getFontsByFamily('Demo Sans', runtime.fontRegistry, runtime.fontManager).length, 1);
@@ -1235,7 +1235,7 @@ async function testStandardFontSentinelProxy(): Promise<void> {
         loadFontBuffer: async () => createStandardFontSentinelBuffer(0x00)
     };
 
-    const runtime = createEngineRuntime({ fontManager: sentinelFontManager as any });
+    const runtime = createPrintEngineRuntime({ fontManager: sentinelFontManager as any });
     const loaded: any = await loadFont('standard://helvetica', runtime);
     const metadata = getStandardFontMetadata(loaded);
     assert.equal(metadata?.postscriptName, 'Helvetica');
@@ -1262,7 +1262,7 @@ async function testFontkitTextMeasurerExtraction(): Promise<void> {
         loadFontBuffer: async () => createStandardFontSentinelBuffer(0x00)
     };
 
-    const runtime = createEngineRuntime({ fontManager: sentinelFontManager as any });
+    const runtime = createPrintEngineRuntime({ fontManager: sentinelFontManager as any });
     const loaded: any = await loadFont('standard://helvetica', runtime);
     const measurer = new FontkitTextMeasurer(
         (cluster) => Array.from(cluster).map((char) => char.codePointAt(0) || 0),

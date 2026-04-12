@@ -1,5 +1,42 @@
 import { LayoutConfig } from './types';
 import { LayoutProcessor } from './layout/layout-core';
+import { LayoutUtils } from './layout/layout-utils';
+import {
+    buildPageViewportHandle,
+    buildWorldViewportHandle,
+    type ViewportHandle,
+    type WorldViewportRequest
+} from './viewport';
+export type {
+    ExternalMessage,
+    SimulationDiagnosticProfileSnapshot,
+    SimulationDiagnosticSnapshot,
+    SimulationDiagnosticSourceSnapshot,
+    SimulationRunner,
+    SimulationUpdateSource,
+    SimulationUpdateSummary
+} from './runtime/simulation/types';
+export type {
+    PageCaptureRecord,
+    PageCaptureState,
+    ViewportDescriptor,
+    ViewportRect,
+    ViewportTerrain,
+    WorldSpace
+} from './layout/runtime/session/session-state-types';
+export { SimulationLoop } from './layout/simulation-loop';
+export type {
+    ViewportHandle,
+    ViewportSnapshotSource,
+    WorldViewportRequest,
+    WorldViewportSegment
+} from './viewport';
+export type {
+    SimulationLoopOptions,
+    SimulationLoopSample,
+    SimulationLoopScheduler,
+    SimulationLoopState
+} from './layout/simulation-loop';
 import {
     applySpatialDocumentPageTemplate,
     applySpatialDocumentPageTemplateStrict,
@@ -45,6 +82,36 @@ export class LayoutEngine extends LayoutProcessor {
 
     getLastResolvedConfig(): LayoutConfig {
         return this.lastResolvedConfig;
+    }
+
+    getPageCount(): number {
+        return this.getLastPrintPipelineSnapshot().pages.length;
+    }
+
+    getPageViewport(pageIndex: number): ViewportHandle {
+        const snapshot = this.getLastPrintPipelineSnapshot();
+        return buildPageViewportHandle({
+            pageCount: snapshot.pages.length,
+            pageSize: LayoutUtils.getPageDimensions(this.lastResolvedConfig),
+            config: this.lastResolvedConfig,
+            pages: snapshot.pages,
+            pageCaptures: snapshot.reader.world?.pageCaptures ?? []
+        }, pageIndex);
+    }
+
+    getDefaultViewport(): ViewportHandle {
+        return this.getPageViewport(0);
+    }
+
+    getWorldViewport(request: WorldViewportRequest): ViewportHandle {
+        const snapshot = this.getLastPrintPipelineSnapshot();
+        return buildWorldViewportHandle({
+            pageCount: snapshot.pages.length,
+            pageSize: LayoutUtils.getPageDimensions(this.lastResolvedConfig),
+            config: this.lastResolvedConfig,
+            pages: snapshot.pages,
+            pageCaptures: snapshot.reader.world?.pageCaptures ?? []
+        }, request);
     }
 
     simulateSpatialDocument(document: SpatialDocument): ReturnType<LayoutProcessor['simulate']> {

@@ -1,4 +1,4 @@
-import { performance } from 'node:perf_hooks';
+import { runtimePerformance as performance } from '../../../performance';
 import type { ActorFormationMember, KeepWithNextFormationPlan } from '../../actor-formation';
 import { LAYOUT_DEFAULTS } from '../../defaults';
 import type { PaginationLoopState } from '../session/session-lifecycle-types';

@@ -3,14 +3,14 @@ import {
     LayoutConfig,
     Page
 } from './types';
-import { Context, OverlayBox, OverlayContext, OverlayPage, OverlayProvider, TextDelegateState } from '@vmprint/contracts';
+import { Context, OverlayBox, OverlayContext, OverlayPage, OverlayProvider } from '@vmprint/contracts';
 import { LayoutUtils } from './layout/layout-utils';
 import { EngineRuntime, getDefaultEngineRuntime } from './runtime';
 import {
     RendererBoxProperties,
     RendererLine
 } from './render/types';
-import { drawDebugBoxOverlay, drawDebugPageMargins, drawDebugRegionOverlay } from './render/debug-draw';
+import { drawDebugBoxOverlay, drawDebugPageMargins, drawDebugZoneOverlay } from './render/debug-draw';
 import {
     drawBoxBackground,
     drawBoxBorders,
@@ -18,6 +18,7 @@ import {
 } from './render/box-paint';
 import { registerRendererFonts } from './render/font-registration';
 import { RendererImageBytesCache } from './render/image-bytes-cache';
+import { getCachedFont } from '../font-management/font-cache-loader';
 import { drawRichLines } from './render/rich-lines';
 import { buildParagraphMetrics, createLineFrameAccessors } from './render/rich-line-layout';
 
@@ -111,9 +112,9 @@ export class Renderer {
                     debugLabelFontId,
                     debugLabelFontAscent
                 );
-                (page.debugRegions || []).forEach((region) => drawDebugRegionOverlay(
+                (page.debugRegions || []).forEach((zone) => drawDebugZoneOverlay(
                     context,
-                    region,
+                    zone,
                     debugLabelFontId,
                     debugLabelFontAscent
                 ));
@@ -152,7 +153,7 @@ export class Renderer {
         const cacheKey = this.getFontCacheKey(family, weight, style);
         const cached = this.fontIdCache.get(cacheKey);
         if (cached) return cached;
-        const resolved = LayoutUtils.getFontId(family, weight, style, this.runtime.fontRegistry, this.runtime.fontManager);
+        const resolved = LayoutUtils.getFontId(family, weight, style, this.runtime.textDelegate);
         this.fontIdCache.set(cacheKey, resolved);
         return resolved;
     }
@@ -164,18 +165,16 @@ export class Renderer {
 
         let resolvedAscent = 750;
         try {
-            const match = LayoutUtils.resolveFontMatch(family, weight, style, this.runtime.fontRegistry, this.runtime.fontManager);
-            const textDelegate = this.runtime.textDelegate as (typeof this.runtime.textDelegate & {
-                getCachedFace?: (src: string, state: TextDelegateState) => any;
-            }) | undefined;
-            const font = textDelegate?.getCachedFace?.(match.config.src, this.runtime.textDelegateState) as any;
+            const match = LayoutUtils.resolveFontMatch(family, weight, style, this.runtime.textDelegate);
+            const font = getCachedFont(match.config.src, this.runtime) as any;
             if (!font) {
                 this.fontAscentCache.set(cacheKey, resolvedAscent);
                 return resolvedAscent;
             }
-            const metrics = textDelegate?.getVerticalMetrics(font);
-            if (metrics && Number.isFinite(metrics.ascent) && metrics.ascent > 0) {
-                resolvedAscent = metrics.ascent;
+            const upm = Number(font.unitsPerEm);
+            const rawAscent = Number(font.ascent);
+            if (Number.isFinite(upm) && upm > 0 && Number.isFinite(rawAscent)) {
+                resolvedAscent = (rawAscent / upm) * 1000;
             }
         } catch {
             resolvedAscent = 750;

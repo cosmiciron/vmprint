@@ -146,8 +146,16 @@ export class SessionWorldRuntime {
     }
 
     recordPageCapture(record: PageCaptureRecord): void {
+        const previous = this.pageCaptures.get(record.pageIndex);
+        const renderRevision = Math.max(
+            1,
+            Number.isFinite(record.renderRevision)
+                ? Math.floor(Number(record.renderRevision))
+                : ((previous?.renderRevision ?? 0) + 1)
+        );
         this.pageCaptures.set(record.pageIndex, {
             ...record,
+            renderRevision,
             capture: {
                 worldSpace: { ...record.capture.worldSpace },
                 viewport: {
@@ -169,6 +177,15 @@ export class SessionWorldRuntime {
                     }
                 }
             }
+        });
+    }
+
+    bumpPageRenderRevision(pageIndex: number): void {
+        const current = this.pageCaptures.get(pageIndex);
+        if (!current) return;
+        this.pageCaptures.set(pageIndex, {
+            ...current,
+            renderRevision: Math.max(1, current.renderRevision + 1)
         });
     }
 
@@ -207,6 +224,7 @@ export class SessionWorldRuntime {
             if (currentTick < maxTicks) {
                 return true;
             }
+            return false;
         }
 
         return input.hasActiveSteppedActors;

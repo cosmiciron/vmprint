@@ -1,7 +1,7 @@
 import type { Element } from '../../types';
 import type { LayoutProcessor } from '../layout-core';
 import type { LayoutSession } from '../layout-session';
-import { LayoutUtils } from '../layout-utils';
+import { LayoutUtils, createScriptMessageAckTopic, createScriptMessageTopic } from '../layout-utils';
 import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../script-runtime-host';
 import { createPackagers, type ExternalPackagerFactory } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
@@ -244,10 +244,6 @@ function getCurrentLayoutSession(context: PackagerContext): LayoutSession {
     return session;
 }
 
-function createScriptMessageTopic(sourceId: string): string {
-    const normalizedSourceId = LayoutUtils.normalizeAuthorSourceId(sourceId) || String(sourceId || '').trim();
-    return `script:message:${normalizedSourceId}`;
-}
 
 function toPublicScriptName(sourceId: string | null | undefined): string {
     const trimmed = String(sourceId || '').trim();
@@ -302,6 +298,10 @@ export class ScriptDocumentPackager implements PackagerUnit {
         if (frontier) {
             this.pendingLiveFrontier = chooseEarlierFrontier(this.pendingLiveFrontier, frontier);
         }
+    }
+
+    private recordRuntimeContentMutation(): void {
+        this.lifecycleState.runtimeMutationVersion += 1;
     }
 
     private resolveLiveMutationFrontier(
@@ -431,8 +431,8 @@ export class ScriptDocumentPackager implements PackagerUnit {
                 : this.resolveLiveMutationFrontier(session, actor);
         if (mutationFrontier) {
             session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
-            this.recordRuntimeMutation(mutationFrontier);
         }
+        this.recordRuntimeContentMutation();
         return true;
     }
 
@@ -785,6 +785,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return {
             doc: docRef,
             self: docRef,
+            tick: context.simulationTick,
             sendMessage: (recipient: unknown, msg: unknown) => {
                 const targetSourceId = this.resolveSourceId(recipient);
                 if (!targetSourceId) return false;
@@ -841,6 +842,50 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return ['pagination:finalized', createScriptMessageTopic(this.sourceId)];
     }
 
+    wantsSimulationTicks(_context: PackagerContext): boolean {
+        return this.host.getDocumentHandlerName('onTick') !== null;
+    }
+
+    stepSimulationTick(context: PackagerContext): ObservationResult {
+        const handlerName = this.host.getDocumentHandlerName('onTick');
+        if (!handlerName) {
+            return { changed: false, geometryChanged: false, updateKind: 'none' };
+        }
+        const session = getCurrentLayoutSession(context);
+        const globals = this.createGlobals(session, context);
+        const beforeDigest = this.host.createDocumentDigest(this.elements);
+        const beforeMutationVersion = this.lifecycleState.runtimeMutationVersion;
+
+        this.host.runHandler(
+            handlerName,
+            'onTick',
+            globals,
+            { tick: context.simulationTick },
+            session
+        );
+
+        const afterDigest = this.host.createDocumentDigest(this.elements);
+        const changed = beforeDigest !== afterDigest;
+
+        if (this.pendingLiveStructuralChange) {
+            this.pendingLiveStructuralChange = false;
+            const frontier = this.pendingLiveFrontier || this.createDocumentFrontier();
+            this.pendingLiveFrontier = null;
+            return {
+                changed: true,
+                geometryChanged: true,
+                updateKind: 'geometry',
+                earliestAffectedFrontier: frontier
+            };
+        }
+
+        this.lifecycleState.lastSettledRuntimeMutationVersion = beforeMutationVersion;
+        if (changed) {
+            this.requestReplay(session);
+        }
+        return { changed: false, geometryChanged: false, updateKind: 'none' };
+    }
+
     consumeReplayRequested(): boolean {
         const value = this.replayRequested;
         this.replayRequested = false;
@@ -885,6 +930,26 @@ export class ScriptDocumentPackager implements PackagerUnit {
                 },
                 session
             );
+            const messageId = typeof payload.__vmcanvasMessageId === 'string'
+                ? payload.__vmcanvasMessageId
+                : '';
+            if (messageId) {
+                context.publishActorSignal({
+                    topic: createScriptMessageAckTopic(messageId),
+                    publisherActorId: this.actorId,
+                    publisherSourceId: this.sourceId,
+                    publisherActorKind: this.actorKind,
+                    fragmentIndex: this.fragmentIndex,
+                    pageIndex: context.pageIndex,
+                    cursorY: context.cursorY,
+                    payload: {
+                        messageId,
+                        from: this.sourceId,
+                        to: typeof payload.from === 'string' ? payload.from : 'host',
+                        status: 'ok'
+                    }
+                });
+            }
         }
 
         const onReadyHandlerName = !this.lifecycleState.didReady

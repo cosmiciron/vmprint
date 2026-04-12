@@ -56,7 +56,7 @@ const LAYOUT_KEYS = new Set([
     'progression',
     'opticalScaling'
 ]);
-const PROGRESSION_KEYS = new Set(['policy', 'maxTicks']);
+const PROGRESSION_KEYS = new Set(['policy', 'maxTicks', 'tickRateHz']);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
 const WORLD_PLAIN_KEYS = new Set(['style', 'frameOverflow', 'worldBehavior', 'rootFlowMode', 'traversalInteractionDefault']);
@@ -84,8 +84,9 @@ const ELEMENT_PROPERTIES_KEYS = new Set([
     'language',
     'pageReservationAfter',
     'toc',
+    'space',
     'spatialField',
-    'zoneField'
+    'motion'
 ]);
 const PAGINATION_CONTINUATION_KEYS = new Set(['enabled', 'markerAfterSplit', 'markerBeforeContinuation', 'markersBeforeContinuation']);
 const CONTINUATION_MARKER_KEYS = new Set(['type', 'content', 'style', 'properties']);
@@ -98,6 +99,8 @@ const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis',
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
 const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'zIndex']);
 const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'hidden', 'zIndex', 'traversalInteraction']);
+const SIMULATION_DIRECTIVE_KEYS = new Set(['enabled', 'maxTicks', 'updateKind', 'x', 'y', 'label']);
+const SIMULATION_MOTION_AXIS_KEYS = new Set(['start', 'velocity', 'amplitude', 'frequency', 'phase']);
 const STORY_EXCLUSION_ASSEMBLY_KEYS = new Set(['members']);
 const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape', 'zIndex', 'traversalInteraction']);
 const VALID_TRAVERSAL_INTERACTIONS = new Set(['auto', 'wrap', 'overpass', 'ignore']);
@@ -257,6 +260,12 @@ function validateLayout(layout: unknown, documentPath: string): void {
             assertFiniteNumberAt(progression.maxTicks, 'layout.progression.maxTicks', documentPath);
             if (Number(progression.maxTicks) < 1 || !Number.isInteger(progression.maxTicks)) {
                 contractError(documentPath, 'layout.progression.maxTicks', 'expected an integer greater than or equal to 1.');
+            }
+        }
+        if (progression.tickRateHz !== undefined) {
+            assertFiniteNumberAt(progression.tickRateHz, 'layout.progression.tickRateHz', documentPath);
+            if (Number(progression.tickRateHz) <= 0) {
+                contractError(documentPath, 'layout.progression.tickRateHz', 'expected a number greater than 0.');
             }
         }
         if (progression.policy === 'fixed-tick-count' && progression.maxTicks === undefined) {
@@ -650,6 +659,32 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
     }
 }
 
+function validateSimulationMotionAxis(value: unknown, path: string, documentPath: string): void {
+    const axis = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(axis, SIMULATION_MOTION_AXIS_KEYS, path, documentPath);
+    for (const key of SIMULATION_MOTION_AXIS_KEYS) {
+        if (axis[key] !== undefined) {
+            assertFiniteNumberAt(axis[key], `${path}.${key}`, documentPath);
+        }
+    }
+}
+
+function validateElementSimulationDirective(value: unknown, path: string, documentPath: string): void {
+    const directive = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(directive, SIMULATION_DIRECTIVE_KEYS, path, documentPath);
+    if (directive.enabled !== undefined) assertBooleanAt(directive.enabled, `${path}.enabled`, documentPath);
+    if (directive.maxTicks !== undefined) {
+        assertFiniteNumberAt(directive.maxTicks, `${path}.maxTicks`, documentPath);
+        if (Number(directive.maxTicks) < 0 || !Number.isInteger(directive.maxTicks)) {
+            contractError(documentPath, `${path}.maxTicks`, 'expected an integer greater than or equal to 0.');
+        }
+    }
+    assertEnumAt(directive.updateKind, ['content-only', 'geometry'], `${path}.updateKind`, documentPath);
+    if (directive.x !== undefined) validateSimulationMotionAxis(directive.x, `${path}.x`, documentPath);
+    if (directive.y !== undefined) validateSimulationMotionAxis(directive.y, `${path}.y`, documentPath);
+    if (directive.label !== undefined) assertStringAt(directive.label, `${path}.label`, documentPath);
+}
+
 function validatePaginationContinuation(value: unknown, path: string, documentPath: string): void {
     const continuation = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(continuation, PAGINATION_CONTINUATION_KEYS, path, documentPath);
@@ -823,8 +858,8 @@ function validateElementProperties(
     if (props.sourceSyntax !== undefined) assertStringAt(props.sourceSyntax, `${path}.sourceSyntax`, documentPath);
     if (props.language !== undefined) assertStringAt(props.language, `${path}.language`, documentPath);
     if (props.sourceRange !== undefined) validateSourceRange(props.sourceRange, `${path}.sourceRange`, documentPath);
-    if (props.spatialField !== undefined) validateSpatialFieldDirective(props.spatialField, `${path}.spatialField`, documentPath);
-    if (props.zoneField !== undefined) validateSpatialFieldDirective(props.zoneField, `${path}.zoneField`, documentPath);
+    if (props.space !== undefined) validateSpatialFieldDirective(props.space, `${path}.space`, documentPath);
+    if (props.motion !== undefined) validateElementSimulationDirective(props.motion, `${path}.motion`, documentPath);
 }
 
 function validateEmbeddedImagePayload(value: unknown, path: string, documentPath: string): void {
@@ -1237,7 +1272,7 @@ function synthesizeWorldPlainElement(elements: Element[], worldPlain: unknown): 
 function shouldAssignElementToTraversingWorldHost(element: Element): boolean {
     const type = String(element.type || '').trim().toLowerCase();
     if (type === 'field-actor') return true;
-    return !!(element.properties?.spatialField || element.properties?.zoneField);
+    return !!(element.properties?.space || element.properties?.spatialField);
 }
 
 function synthesizeWorldPlainRootElements(elements: Element[], worldPlain: unknown): Element[] {

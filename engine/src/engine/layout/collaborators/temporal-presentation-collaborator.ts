@@ -18,6 +18,8 @@ export type TemporalPresentationBoxSnapshot = {
     y: number;
     w: number;
     h: number;
+    style?: Record<string, unknown>;
+    properties?: Record<string, unknown>;
     sourceId: string;
     engineKey: string;
     sourceType: string;
@@ -49,6 +51,8 @@ function snapshotBox(box: Box): TemporalPresentationBoxSnapshot {
         y: Number((box.y || 0).toFixed(6)),
         w: Number((box.w || 0).toFixed(6)),
         h: Number((box.h || 0).toFixed(6)),
+        ...(box.style ? { style: clonePlainRecord(box.style as Record<string, unknown>) } : {}),
+        ...(box.properties ? { properties: clonePlainRecord(box.properties as Record<string, unknown>) } : {}),
         sourceId: String(box.meta?.sourceId || ''),
         engineKey: String(box.meta?.engineKey || ''),
         sourceType: String(box.meta?.sourceType || ''),
@@ -80,9 +84,15 @@ function clonePageSnapshot(page: TemporalPresentationPageSnapshot): TemporalPres
         height: page.height,
         boxes: page.boxes.map((box) => ({
             ...box,
+            ...(box.style ? { style: clonePlainRecord(box.style) } : {}),
+            ...(box.properties ? { properties: clonePlainRecord(box.properties) } : {}),
             lines: box.lines.map((line) => line.map((segment) => ({ ...segment })))
         }))
     };
+}
+
+function clonePlainRecord<T extends Record<string, unknown>>(value: T): T {
+    return JSON.parse(JSON.stringify(value)) as T;
 }
 
 function cloneTimeline(frames: TemporalPresentationTimeline): TemporalPresentationTimeline {

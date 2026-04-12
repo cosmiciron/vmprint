@@ -50,12 +50,12 @@ The three interfaces — `Transmuter`, `FontManager`, and `Context` — are defi
 ## Quick Start
 
 ```typescript
-import { LayoutEngine, Renderer, createEngineRuntime, toLayoutConfig } from '@vmprint/engine';
+import { LayoutEngine, Renderer, createPrintEngineRuntime, toLayoutConfig } from '@vmprint/engine';
 import { StandardFontManager } from '@vmprint/standard-fonts';
 import { PdfLiteContext } from '@vmprint/context-pdf-lite';
 
 // 1. Build the runtime (font manager only — no I/O wired in)
-const runtime = createEngineRuntime({
+const runtime = createPrintEngineRuntime({
   fontManager: new StandardFontManager()
 });
 

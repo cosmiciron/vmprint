@@ -6,7 +6,7 @@ import {
     toLayoutConfig,
     type DocumentInput
 } from '../src';
-import { createEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { buildPackagerForElement } from '../src/engine/layout/packagers/create-packagers';
 import { StoryPackager } from '../src/engine/layout/packagers/story-packager';
 import type { PackagerContext, PackagerSplitResult, PackagerUnit } from '../src/engine/layout/packagers/packager-types';
@@ -178,7 +178,7 @@ function registeredActorsIncludeSource(actors: readonly PackagerUnit[], sourceId
 
 async function main() {
     const LocalFontManager = await loadLocalFontManager();
-    const runtime = createEngineRuntime({
+    const runtime = createPrintEngineRuntime({
         fontManager: new LocalFontManager()
     });
     const onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO9Wl9kAAAAASUVORK5CYII=';

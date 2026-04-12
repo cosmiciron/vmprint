@@ -129,15 +129,29 @@ function assertBase64Data(base64Data: string): void {
 }
 
 function decodeBase64(base64Data: string): Uint8Array {
-    const binaryString = atob(base64Data);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
+    const atobFn = (globalThis as { atob?: ((data: string) => string) }).atob;
+    if (typeof atobFn === 'function') {
+        const binaryString = atobFn(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        if (bytes.length === 0) {
+            throw new Error('[image] Embedded image base64 could not be decoded.');
+        }
+        return bytes;
     }
-    if (bytes.length === 0) {
-        throw new Error('[image] Embedded image base64 could not be decoded.');
+
+    const bufferCtor = (globalThis as { Buffer?: { from(data: string, encoding: string): Uint8Array } }).Buffer;
+    if (bufferCtor?.from) {
+        const bytes = new Uint8Array(bufferCtor.from(base64Data, 'base64'));
+        if (bytes.length === 0) {
+            throw new Error('[image] Embedded image base64 could not be decoded.');
+        }
+        return bytes;
     }
-    return bytes;
+
+    throw new Error('[image] No base64 decoder is available in this runtime.');
 }
 
 export function parseEmbeddedImageData(
@@ -256,4 +270,3 @@ export function parseEmbeddedImagePayloadCached(payload: EmbeddedImagePayload): 
 export function buildDataUri(base64Data: string, mimeType: string): string {
     return `data:${mimeType};base64,${base64Data}`;
 }
-

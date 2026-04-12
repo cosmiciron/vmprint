@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { LayoutEngine } from '../../src/engine/layout-engine';
 import { Renderer } from '../../src/engine/renderer';
-import { createEngineRuntime } from '../../src/engine/runtime';
+import { createPrintEngineRuntime } from '../../src/font-management/runtime';
 import { simulationArtifactKeys } from '../../src/engine/layout/simulation-report';
 import type { Element, LayoutConfig, Page } from '../../src/engine/types';
 import { loadLocalFontManager, snapshotPages } from '../harness/engine-harness';
@@ -204,7 +204,7 @@ async function main(): Promise<void> {
     fs.mkdirSync(path.dirname(pdfPath), { recursive: true });
 
     const LocalFontManager = await loadLocalFontManager();
-    const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
+    const runtime = createPrintEngineRuntime({ fontManager: new LocalFontManager() });
     const config = buildConfig();
     const engine = new LayoutEngine(config, runtime);
     engine.setPackagerFactory(reactiveProofPackagerFactory);

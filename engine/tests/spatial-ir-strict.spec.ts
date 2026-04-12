@@ -5,7 +5,8 @@ import path from 'node:path';
 import { LayoutEngine } from '../src/engine/layout-engine';
 import { parseDocumentSourceText, resolveDocumentPaths, toLayoutConfig, type DocumentIR } from '../src';
 import { HARNESS_REGRESSION_CASES_DIR, loadLocalFontManager, snapshotPages } from './harness/engine-harness';
-import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
+import { setDefaultEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { getAstFixturePath, listAstFixtureNames } from './harness/ast-fixture-harness';
 import { transformAstSource } from './harness/ast-transform';
 import { logStep } from './harness/test-utils';
@@ -42,7 +43,7 @@ async function run(): Promise<void> {
         const spatialDocument = transformAstSource(rawDocument, fixturePath).spatialDocument;
         const expected = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
 
-        const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
+        const runtime = createPrintEngineRuntime({ fontManager: new LocalFontManager() });
         setDefaultEngineRuntime(runtime);
         const engine = new LayoutEngine(toLayoutConfig(sourceDocument, false), runtime);
         await engine.waitForFonts();

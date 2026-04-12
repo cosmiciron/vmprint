@@ -121,7 +121,16 @@ export function resolveHostedRegionFootprintHeight(
 
 export function createHostedRegionSessionContextBase(
     availableWidth: number,
-    processor: LayoutProcessor
+    processor: LayoutProcessor,
+    parentContext?: Pick<
+        PackagerContext,
+        | 'simulationTick'
+        | 'simulationTickRateHz'
+        | 'simulationProgression'
+        | 'simulationTimeOffsetSeconds'
+        | 'chunkOriginWorldY'
+        | 'viewportHeight'
+    >
 ): Omit<PackagerContext, 'pageIndex' | 'cursorY'> {
     const session = processor.getCurrentLayoutSession();
     return {
@@ -129,6 +138,18 @@ export function createHostedRegionSessionContextBase(
         margins: { top: 0, right: 0, bottom: 0, left: 0 },
         pageWidth: availableWidth,
         pageHeight: Infinity,
+        ...(Number.isFinite(parentContext?.simulationTick) ? { simulationTick: Number(parentContext?.simulationTick) } : {}),
+        ...(Number.isFinite(parentContext?.simulationTickRateHz)
+            ? { simulationTickRateHz: Number(parentContext?.simulationTickRateHz) }
+            : {}),
+        ...(parentContext?.simulationProgression
+            ? { simulationProgression: { ...parentContext.simulationProgression } }
+            : {}),
+        ...(Number.isFinite(parentContext?.simulationTimeOffsetSeconds)
+            ? { simulationTimeOffsetSeconds: Number(parentContext?.simulationTimeOffsetSeconds) }
+            : {}),
+        ...(Number.isFinite(parentContext?.chunkOriginWorldY) ? { chunkOriginWorldY: Number(parentContext?.chunkOriginWorldY) } : {}),
+        ...(Number.isFinite(parentContext?.viewportHeight) ? { viewportHeight: Number(parentContext?.viewportHeight) } : {}),
         publishActorSignal: (signal: ActorSignalDraft) => {
             if (!session) {
                 return {

@@ -55,6 +55,7 @@ export type PageCaptureRecord = {
     physicalPageNumber: number;
     logicalPageNumber: number | null;
     usesLogicalNumbering: boolean;
+    renderRevision: number;
     capture: PageCaptureState;
 };
 

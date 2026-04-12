@@ -3,7 +3,7 @@ import type { ActorSignal } from '../actor-event-bus';
 import type { FlowBox } from '../layout-core-types';
 import type { LayoutProcessor } from '../layout-core';
 import type { LayoutSession } from '../layout-session';
-import { LayoutUtils } from '../layout-utils';
+import { LayoutUtils, createScriptMessageAckTopic, createScriptMessageTopic } from '../layout-utils';
 import { ScriptRuntimeHost, type ScriptGlobals } from '../script-runtime-host';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createPackagers, type ExternalPackagerFactory } from './create-packagers';
@@ -26,6 +26,7 @@ type ScriptMessage = {
     payload?: unknown;
     from: string | null;
     to: string | null;
+    messageId: string | null;
 };
 
 type FlowBoxShaper = {
@@ -272,10 +273,6 @@ function deriveAvailableHeight(context: PackagerContext): number {
     return Math.max(0, context.pageHeight - context.cursorY - context.margins.bottom);
 }
 
-function createScriptMessageTopic(sourceId: string): string {
-    const normalizedSourceId = LayoutUtils.normalizeAuthorSourceId(sourceId) || String(sourceId || '').trim();
-    return `script:message:${normalizedSourceId}`;
-}
 
 function toPublicScriptName(sourceId: string | null | undefined): string {
     const trimmed = String(sourceId || '').trim();
@@ -298,7 +295,8 @@ function parseScriptMessage(signal: ActorSignal, targetSourceId: string): Script
         subject,
         payload: payload.payload,
         from: typeof payload.from === 'string' ? payload.from : null,
-        to: targetSourceId
+        to: targetSourceId,
+        messageId: typeof payload.__vmcanvasMessageId === 'string' ? payload.__vmcanvasMessageId : null
     };
 }
 
@@ -312,6 +310,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
     private lastObservedWorldY: number | undefined;
     private pendingLiveStructuralChange = false;
     private pendingLiveFrontier: SpatialFrontier | null = null;
+    private pendingLiveContentFrontier: SpatialFrontier | null = null;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -486,18 +485,13 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 : this.resolveLiveMutationFrontier(session, actor);
         if (mutationFrontier) {
             session.invalidateSafeCheckpointsAfterFrontier(mutationFrontier);
-        }
-        this.pendingLiveStructuralChange = true;
-        this.pendingLiveFrontier = chooseEarlierFrontier(
-            this.pendingLiveFrontier,
-            mutationFrontier ?? {
-                pageIndex: this.lastObservedPageIndex,
-                cursorY: this.lastObservedCursorY,
-                ...(Number.isFinite(this.lastObservedWorldY) ? { worldY: Number(this.lastObservedWorldY) } : {}),
-                actorIndex: hostActorIndex ?? this.lastObservedActorIndex,
-                ...(hostActorIndex !== null ? {} : { actorId: actor.actorId, sourceId: actor.sourceId })
+            if (actor.actorId !== this.actorId) {
+                this.pendingLiveContentFrontier = chooseEarlierFrontier(
+                    this.pendingLiveContentFrontier,
+                    mutationFrontier
+                );
             }
-        );
+        }
         return true;
     }
 
@@ -778,6 +772,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         return {
             doc: docRef,
             self: selfRef,
+            tick: context.simulationTick,
             sendMessage: (recipient: unknown, msg: unknown) => this.publishScriptMessage(context, recipient, msg),
             element,
             elementsByType,
@@ -937,6 +932,8 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         if (signals.length === 0) {
             return { changed: false, geometryChanged: false, updateKind: 'none' };
         }
+        // [DIAG] signals found for this actor
+        console.log('[DIAG:ucs] sourceId=%s signals=%d lastSeq=%d', this.sourceId, signals.length, this.lastHandledMessageSequence, signals.map((s) => s.sequence));
 
         const session = getCurrentLayoutSession(context);
         const availableWidth = deriveAvailableWidth(context);
@@ -964,6 +961,23 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 },
                 session
             );
+            if (message.messageId) {
+                context.publishActorSignal({
+                    topic: createScriptMessageAckTopic(message.messageId),
+                    publisherActorId: this.actorId,
+                    publisherSourceId: this.sourceId,
+                    publisherActorKind: this.actorKind,
+                    fragmentIndex: this.fragmentIndex,
+                    pageIndex: context.pageIndex,
+                    cursorY: context.cursorY,
+                    payload: {
+                        messageId: message.messageId,
+                        from: this.sourceId,
+                        to: message.from ?? 'host',
+                        status: 'ok'
+                    }
+                });
+            }
             changed = changed || JSON.stringify(this.elements) !== beforeSnapshot;
             highestSequence = Math.max(highestSequence, signal.sequence);
         }
@@ -987,6 +1001,16 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 earliestAffectedFrontier: frontier
             };
         }
+        if (this.pendingLiveContentFrontier) {
+            const frontier = this.pendingLiveContentFrontier;
+            this.pendingLiveContentFrontier = null;
+            return {
+                changed: true,
+                geometryChanged: true,
+                updateKind: 'geometry',
+                earliestAffectedFrontier: frontier
+            };
+        }
         if (!changed) {
             return { changed: false, geometryChanged: false, updateKind: 'none' };
         }
@@ -996,6 +1020,8 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const updateKind = Math.abs(nextRequiredHeight - previousRequiredHeight) > 0.01
             ? 'geometry'
             : 'content-only';
+        // [DIAG] height comparison result
+        console.log('[DIAG:ucs] sourceId=%s prev=%s next=%s → %s', this.sourceId, previousRequiredHeight.toFixed(2), nextRequiredHeight.toFixed(2), updateKind);
 
         return {
             changed: true,

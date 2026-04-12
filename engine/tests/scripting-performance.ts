@@ -5,7 +5,8 @@ import { performance } from 'node:perf_hooks';
 import { toLayoutConfig } from '../src';
 import { LayoutEngine } from '../src/engine/layout-engine';
 import { Renderer } from '../src/engine/renderer';
-import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
+import { setDefaultEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { loadLocalFontManager, MockContext } from './harness/engine-harness';
 import {
     loadScriptingFixtures,
@@ -53,7 +54,7 @@ async function run(): Promise<void> {
     const fixtureFilter = (fixtureArg?.split('=')[1] || '').trim();
 
     const LocalFontManager = await loadLocalFontManager();
-    setDefaultEngineRuntime(createEngineRuntime({ fontManager: new LocalFontManager() }));
+    setDefaultEngineRuntime(createPrintEngineRuntime({ fontManager: new LocalFontManager() }));
 
     const fixtures = loadScriptingFixtures()
         .filter((fixture) => !fixtureFilter || fixture.name.includes(fixtureFilter));
@@ -69,7 +70,7 @@ async function run(): Promise<void> {
     for (const fixture of fixtures) {
         const samples: ScriptingPerfRow[] = [];
         for (let runIndex = 0; runIndex < repeatCount; runIndex += 1) {
-            const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
+            const runtime = createPrintEngineRuntime({ fontManager: new LocalFontManager() });
             const engine = new LayoutEngine(toLayoutConfig(fixture.document, false), runtime);
             await engine.waitForFonts();
 

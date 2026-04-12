@@ -301,7 +301,7 @@
           [
             {
               "text": "narrative flow. We ",
-              "width": 82.62207,
+              "width": 82.070313,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -418,8 +418,8 @@
           ],
           [
             {
-              "text": "format! Yes, the obstacle forces the text to wrap tightly,",
-              "width": 242.529297,
+              "text": "format! Yes, the obstacle forces the text to wrap ",
+              "width": 213.62793,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -427,8 +427,8 @@
           ],
           [
             {
-              "text": " reducing the line width and satisfying the variance ",
-              "width": 226.245117,
+              "text": "tightly, reducing the line width and satisfying the ",
+              "width": 213.828125,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -436,8 +436,8 @@
           ],
           [
             {
-              "text": "check.",
-              "width": 28.901367,
+              "text": "variance check.",
+              "width": 69.477539,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"

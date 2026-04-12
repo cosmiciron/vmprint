@@ -367,11 +367,11 @@ npm run dev --prefix cli -- --input engine/tests/fixtures/regression/08-dropcap-
 
 ```ts
 import fs from 'fs';
-import { LayoutEngine, Renderer, toLayoutConfig, createEngineRuntime } from '@vmprint/engine';
+import { LayoutEngine, Renderer, createPrintEngineRuntime, toLayoutConfig } from '@vmprint/engine';
 import { PdfContext } from '@vmprint/context-pdf';
 import { LocalFontManager } from '@vmprint/local-fonts';
 
-const runtime = createEngineRuntime({ fontManager: new LocalFontManager() });
+const runtime = createPrintEngineRuntime({ fontManager: new LocalFontManager() });
 const config = toLayoutConfig(documentInput);
 const engine = new LayoutEngine(config, runtime);
 
@@ -405,7 +405,7 @@ To use only the 14 standard PDF fonts — no embedded font binaries, zero extra 
 
 ```ts
 import { StandardFontManager } from '@vmprint/standard-fonts';
-const runtime = createEngineRuntime({ fontManager: new StandardFontManager() });
+const runtime = createPrintEngineRuntime({ fontManager: new StandardFontManager() });
 ```
 
 ---

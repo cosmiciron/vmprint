@@ -153,15 +153,8 @@
         "lines": [
           [
             {
-              "text": "ADVANCED",
-              "width": 65.789063,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            },
-            {
-              "text": ":",
-              "width": 3.333984,
+              "text": "ADVANCED:",
+              "width": 69.123047,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -537,15 +530,8 @@
               "fontFamily": "Arimo"
             },
             {
-              "text": "layout",
-              "width": 32.021484,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            },
-            {
-              "text": ".",
-              "width": 3.333984,
+              "text": "layout.",
+              "width": 35.355469,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -580,15 +566,8 @@
         "lines": [
           [
             {
-              "text": "OFF",
-              "width": 23.994141,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            },
-            {
-              "text": ":",
-              "width": 3.333984,
+              "text": "OFF:",
+              "width": 27.328125,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1184,15 +1163,8 @@
         "lines": [
           [
             {
-              "text": "AUTO",
-              "width": 33.117188,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            },
-            {
-              "text": ":",
-              "width": 3.333984,
+              "text": "AUTO:",
+              "width": 36.451172,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1463,7 +1435,7 @@
         "x": 72,
         "y": 117.709375,
         "w": 340,
-        "h": 83.232,
+        "h": 81.9036,
         "lines": [
           [
             {
@@ -1523,15 +1495,8 @@
               "fontFamily": "Arimo"
             },
             {
-              "text": "English",
-              "width": 39.357422,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            },
-            {
-              "text": ",",
-              "width": 3.333984,
+              "text": "English,",
+              "width": 42.691406,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1694,10 +1659,10 @@
             },
             {
               "text": " ",
-              "width": 3.12,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             },
             {
               "text": "with",
@@ -1849,15 +1814,8 @@
               "fontFamily": "Arimo"
             },
             {
-              "text": "mode",
-              "width": 30.017578,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            },
-            {
-              "text": ".",
-              "width": 3.333984,
+              "text": "mode.",
+              "width": 33.351563,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1868,7 +1826,7 @@
       {
         "type": "h2",
         "x": 72,
-        "y": 224.941375,
+        "y": 223.612975,
         "w": 468,
         "h": 23.709375,
         "lines": [
@@ -1886,7 +1844,7 @@
       {
         "type": "p",
         "x": 72,
-        "y": 258.65075,
+        "y": 257.32235,
         "w": 140,
         "h": 47.41875,
         "lines": [
@@ -1922,7 +1880,7 @@
       {
         "type": "h2",
         "x": 72,
-        "y": 330.0695,
+        "y": 328.7411,
         "w": 468,
         "h": 23.709375,
         "lines": [
@@ -1940,7 +1898,7 @@
       {
         "type": "p",
         "x": 72,
-        "y": 363.778875,
+        "y": 362.450475,
         "w": 120,
         "h": 47.41875,
         "lines": [
@@ -1983,7 +1941,7 @@
       {
         "type": "h2",
         "x": 72,
-        "y": 435.197625,
+        "y": 433.869225,
         "w": 468,
         "h": 23.709375,
         "lines": [
@@ -2001,7 +1959,7 @@
       {
         "type": "p",
         "x": 72,
-        "y": 468.907,
+        "y": 467.5786,
         "w": 260,
         "h": 55.488,
         "lines": [
@@ -2164,10 +2122,10 @@
             },
             {
               "text": " ",
-              "width": 3.12,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             },
             {
               "text": "English",
@@ -2245,7 +2203,7 @@
       {
         "type": "h2",
         "x": 72,
-        "y": 548.395,
+        "y": 547.0666,
         "w": 468,
         "h": 23.709375,
         "lines": [
@@ -2263,7 +2221,7 @@
       {
         "type": "p",
         "x": 72,
-        "y": 582.104375,
+        "y": 580.775975,
         "w": 320,
         "h": 55.488,
         "lines": [
@@ -2361,10 +2319,10 @@
             },
             {
               "text": " ",
-              "width": 3.12,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             },
             {
               "text": "then",
@@ -2488,15 +2446,8 @@
               "fontFamily": "Arimo"
             },
             {
-              "text": "verification",
-              "width": 57.357422,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": "Arimo"
-            },
-            {
-              "text": ".",
-              "width": 3.333984,
+              "text": "verification.",
+              "width": 60.691406,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"

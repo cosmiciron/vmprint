@@ -6,7 +6,7 @@ import { LayoutEngine } from '../src/engine/layout-engine';
 import { Renderer } from '../src/engine/renderer';
 import { toLayoutConfig, resolveDocumentSourceText } from '../src';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
-import { createEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { encodeStandardFontText } from '../src/font-management/standard-font-encoding';
 import { getStandardFontMetadata, parseStandardFontSentinelBuffer } from '../src/font-management/sentinel';
 import { getAstFixturePath } from './harness/ast-fixture-harness';
@@ -70,7 +70,7 @@ async function run() {
     );
     const config = toLayoutConfig(fixture, false);
     const StandardFontManager = await loadStandardFontManager();
-    const runtime = createEngineRuntime({ fontManager: new StandardFontManager() });
+    const runtime = createPrintEngineRuntime({ fontManager: new StandardFontManager() });
     const engine = new LayoutEngine(config, runtime);
 
     await engine.waitForFonts();

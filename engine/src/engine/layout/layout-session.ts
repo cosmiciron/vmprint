@@ -1,4 +1,4 @@
-import { performance } from 'node:perf_hooks';
+import { runtimePerformance as performance } from '../performance';
 import type { Box, Page, PageReservationSelector, BoxMeta, Element } from '../types';
 import type { EngineRuntime } from '../runtime';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
@@ -633,7 +633,10 @@ export class LayoutSession {
         const resolvedActorIndex = Number.isFinite(resolvedActorIndexCandidate) && Number(resolvedActorIndexCandidate) >= 0
             ? Number(resolvedActorIndexCandidate)
             : undefined;
-        const checkpointFrontier = this.actorCommunicationRuntime.resolveActorCheckpointFrontier(owner, resolvedActorIndex);
+        const checkpointFrontier = this.actorCommunicationRuntime.resolveActorCheckpointFrontier(owner, resolvedActorIndex)
+            ?? (Number.isFinite(resolvedActorIndex)
+                ? this.actorCommunicationRuntime.resolveQueueCheckpointFrontier(Number(resolvedActorIndex))
+                : undefined);
 
         if (checkpointFrontier) {
             return {
@@ -1207,8 +1210,9 @@ export class LayoutSession {
         currentPageBoxes: Box[],
         actors: readonly PackagerUnit[],
         contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>
-    ): number {
+    ): { patchedActors: number; pageIndexes: number[] } {
         let patchedActors = 0;
+        const touchedPageIndexes = new Set<number>();
         for (const actor of actors) {
             const refs = collectActorBoxRefs(pages, currentPageBoxes, this.currentPageIndex, actor.actorId);
             if (refs.length === 0) continue;
@@ -1249,8 +1253,13 @@ export class LayoutSession {
 
             this.recordProfile('actorUpdateRedrawCalls', 1);
             patchedActors += 1;
+            touchedPageIndexes.add(pageIndex);
         }
-        return patchedActors;
+        this.sessionCollaborationRuntime.bumpPageRenderRevisions(touchedPageIndexes);
+        return {
+            patchedActors,
+            pageIndexes: Array.from(touchedPageIndexes).sort((a, b) => a - b)
+        };
     }
 
     // Collaborator-facing artifact publication. Downstream consumers should prefer

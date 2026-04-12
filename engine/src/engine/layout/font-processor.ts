@@ -1,8 +1,7 @@
 import { BaseLayout } from './base-layout';
-import { getEnabledFallbackFonts, getFontsByFamily } from '../../font-management/ops';
 import { LayoutConfig } from '../types';
 import { EngineRuntime } from '../runtime';
-import { FontkitTextDelegate, TextDelegateLoadError } from './text-delegate';
+import { TextDelegateLoadError } from '../text-delegate-load-error';
 
 export class FontProcessor extends BaseLayout {
     protected font: any = null;
@@ -24,13 +23,12 @@ export class FontProcessor extends BaseLayout {
 
     protected async initializeFont() {
         if (this.fontPromise) return this.fontPromise;
-        this.runtime.textDelegate = this.runtime.textDelegate || new FontkitTextDelegate();
         const textDelegate = this.runtime.textDelegate;
         const delegateState = this.runtime.textDelegateState;
 
-        const enabledFallbacks = getEnabledFallbackFonts(this.runtime.fontRegistry, this.runtime.fontManager);
+        const enabledFallbacks = textDelegate.getEnabledFallbackFonts();
         const primaryFamily = this.config.fonts?.regular || this.config.layout.fontFamily;
-        const primaryFamilyFonts = getFontsByFamily(primaryFamily, this.runtime.fontRegistry, this.runtime.fontManager);
+        const primaryFamilyFonts = textDelegate.getFontsByFamily(primaryFamily);
         const primaryUrl = primaryFamilyFonts.find(f => f.style === 'normal' && f.weight === 400)?.src || primaryFamilyFonts[0]?.src;
 
         if (primaryUrl) {
@@ -60,12 +58,12 @@ export class FontProcessor extends BaseLayout {
 
             const loadPromises: Promise<any>[] = [];
             for (const family of familiesToLoad) {
-                const familyFonts = getFontsByFamily(family, this.runtime.fontRegistry, this.runtime.fontManager);
+                const familyFonts = textDelegate.getFontsByFamily(family);
                 if (familyFonts.length === 0) {
                     console.warn(`[FontProcessor] Requested font family not registered: ${family}`);
                     continue;
                 }
-                familyFonts.forEach(f => loadPromises.push(textDelegate.loadFace(f.src, this.runtime.fontManager, delegateState)));
+                familyFonts.forEach(f => loadPromises.push(textDelegate.loadFace(f.src, delegateState)));
             }
 
             await Promise.allSettled(loadPromises);
@@ -74,7 +72,7 @@ export class FontProcessor extends BaseLayout {
 
             if (!this.font) {
                 try {
-                    this.font = await textDelegate.loadFace(primaryUrl, this.runtime.fontManager, delegateState);
+                    this.font = await textDelegate.loadFace(primaryUrl, delegateState);
                 } catch (e) {
                     const details = e instanceof TextDelegateLoadError
                         ? `${e.message}${(e as Error & { cause?: unknown }).cause ? ` | cause: ${String((e as Error & { cause?: unknown }).cause)}` : ''}`
@@ -86,7 +84,7 @@ export class FontProcessor extends BaseLayout {
             // Load fallbacks that weren't in cache
             const missingFallbacks = enabledFallbacks.filter(f => !textDelegate.getCachedFace(f.src, delegateState));
             if (missingFallbacks.length > 0) {
-                const results = await Promise.allSettled(missingFallbacks.map(f => textDelegate.loadFace(f.src, this.runtime.fontManager, delegateState)));
+                const results = await Promise.allSettled(missingFallbacks.map(f => textDelegate.loadFace(f.src, delegateState)));
                 const failures = results
                     .map((result, index) => ({ result, font: missingFallbacks[index] }))
                     .filter(({ result }) => result.status === 'rejected');

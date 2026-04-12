@@ -2,8 +2,8 @@ import { CanvasContext } from '@vmprint/context-canvas';
 import { PdfLiteContext } from '@vmprint/context-pdf-lite';
 import {
     buildInteractionOverlayModel,
+    createPrintEngineRuntime,
     createInteractionSelectionPoint,
-    createEngineRuntime,
     getSimulationArtifact,
     hitTestInteraction,
     LayoutEngine,
@@ -1129,7 +1129,7 @@ class PreviewSessionImpl implements PreviewSession {
         const documentIr = resolveDocumentPaths(documentInput as any, DEFAULT_DOCUMENT_PATH);
         const config = toLayoutConfig(documentIr, false);
         const fontManager = await createPreviewFontManager(documentInput, config, this.options);
-        const runtime = createEngineRuntime({ fontManager });
+        const runtime = createPrintEngineRuntime({ fontManager });
         const engine = new LayoutEngine(config, runtime);
         await engine.waitForFonts();
         const pages = engine.simulate(documentIr.elements);

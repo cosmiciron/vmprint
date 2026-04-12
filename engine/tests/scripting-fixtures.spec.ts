@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 
 import { toLayoutConfig } from '../src';
 import { LayoutEngine } from '../src/engine/layout-engine';
-import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
+import { setDefaultEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { loadLocalFontManager } from './harness/engine-harness';
 import { loadScriptingFixtures } from './harness/scripting-fixture-harness';
 import { logStep, check, checkAsync } from './harness/test-utils';
@@ -46,7 +47,7 @@ function findSourceNode(nodes: any[], sourceId: string): any | null {
 
 async function run(): Promise<void> {
     const LocalFontManager = await loadLocalFontManager();
-    setDefaultEngineRuntime(createEngineRuntime({ fontManager: new LocalFontManager() }));
+    setDefaultEngineRuntime(createPrintEngineRuntime({ fontManager: new LocalFontManager() }));
 
     const fixtures = loadScriptingFixtures();
     for (const fixture of fixtures) {

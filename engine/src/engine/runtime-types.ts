@@ -1,10 +1,11 @@
 import type { FontConfig, FontManager, TextDelegate, TextDelegateState } from '@vmprint/contracts';
 
 export interface EngineRuntime {
-    fontManager: FontManager;
-    fontRegistry: FontConfig[];
-    textDelegate?: TextDelegate;
+    textDelegate: TextDelegate;
     textDelegateState: TextDelegateState;
+    fontCache: Record<string, unknown>;
+    bufferCache: Record<string, ArrayBuffer>;
+    loadingPromises: Record<string, Promise<unknown>>;
     measurementCache: Map<string, {
         width: number;
         glyphs: { char: string; x: number; y: number }[];
@@ -12,10 +13,22 @@ export interface EngineRuntime {
         ascent: number;
         descent: number;
     }>;
+    /**
+     * VMPrint compatibility fields kept on the bootstrap side so existing
+     * preview/CLI/tests can continue to speak font-manager language while the
+     * copied core uses text delegates internally.
+     */
+    fontManager?: FontManager;
+    fontRegistry?: FontConfig[];
 }
 
-export type EngineRuntimeOptions = {
-    fontManager: FontManager;
-    fontRegistry?: FontConfig[];
-    textDelegate?: TextDelegate;
-};
+export type EngineRuntimeOptions =
+    {
+        textDelegate: TextDelegate;
+        /**
+         * Optional bootstrap metadata carried by product-specific runtimes.
+         * Shared engine code should continue to speak text delegates only.
+         */
+        fontManager?: FontManager;
+        fontRegistry?: FontConfig[];
+    };

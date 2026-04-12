@@ -86,7 +86,7 @@ async function main() {
         ]
     };
 
-    const runtime = engine.createEngineRuntime({
+    const runtime = engine.createPrintEngineRuntime({
         fontManager: new standardFonts.StandardFontManager()
     });
     const resolved = engine.resolveDocumentPaths(documentInput, 'packaged-integration-smoke.json');

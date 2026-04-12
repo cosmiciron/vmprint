@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { CURRENT_DOCUMENT_VERSION, LayoutEngine, resolveDocumentPaths, toLayoutConfig, type DocumentInput } from '../src';
-import { createEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { normalizeZoneMapElement } from '../src/engine/layout/packagers/zone-packager';
 import { loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 
@@ -11,7 +11,7 @@ const _check = (desc: string, exp: string, fn: () => void) => check(TEST_PREFIX,
 
 async function main() {
     const LocalFontManager = await loadLocalFontManager();
-    const runtime = createEngineRuntime({
+    const runtime = createPrintEngineRuntime({
         fontManager: new LocalFontManager()
     });
 

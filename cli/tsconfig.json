@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
         "target": "ES2020",
         "module": "preserve",
         "moduleResolution": "bundler",
@@ -9,7 +10,15 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "rootDir": "./src"
+        "rootDir": "./src",
+        "paths": {
+            "@vmprint/contracts": [
+                "../contracts/dist/index.d.ts"
+            ],
+            "@vmprint/engine": [
+                "../engine/dist/index.d.ts"
+            ]
+        }
     },
     "include": [
         "src/**/*"

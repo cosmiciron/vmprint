@@ -1,4 +1,4 @@
-import type { FontManager } from './font-manager';
+import type { FallbackFontSource, FontConfig } from './font-manager';
 
 export type VerticalTextMetrics = {
     ascent: number;
@@ -27,7 +27,6 @@ export type MeasuredTextResult = {
 
 export interface TextDelegateState {
     faceCache: Record<string, unknown>;
-    bufferCache: Record<string, ArrayBuffer>;
     loadingPromises: Record<string, Promise<unknown>>;
 }
 
@@ -36,10 +35,13 @@ export interface TextDelegate {
     getVerticalMetrics(font: any): VerticalTextMetrics;
     supportsCluster(font: any, cluster: string): boolean;
     estimateTextBoundsMetrics(font: any, text: string): VerticalTextMetrics | null;
-    loadFace(src: string, fontManager: FontManager, state: TextDelegateState): Promise<any>;
+    resolveFamilyAlias(family: string): string;
+    getFontRegistrySnapshot(): FontConfig[];
+    getEnabledFallbackFonts(): FallbackFontSource[];
+    getFontsByFamily(family: string): FontConfig[];
+    getFallbackFamilies(): string[];
+    loadFace(src: string, state: TextDelegateState): Promise<any>;
     getCachedFace(src: string, state: TextDelegateState): any;
-    getCachedBuffer(src: string, state: TextDelegateState): ArrayBuffer | undefined;
-    registerFaceBuffer(src: string, buffer: ArrayBuffer, state: TextDelegateState): void;
     getFaceCacheKey(face: any): string;
 }
 

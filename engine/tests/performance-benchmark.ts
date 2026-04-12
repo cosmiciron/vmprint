@@ -105,7 +105,7 @@ const harness = (harnessModule as any).default ?? (harnessModule as any)['module
 const {
     LayoutEngine,
     Renderer,
-    createEngineRuntime,
+    createPrintEngineRuntime,
     LayoutUtils
 } = engine as any;
 const { MockContext, loadLocalFontManager } = harness as any;
@@ -355,12 +355,12 @@ async function run(): Promise<void> {
     for (let runIndex = 0; runIndex < warmupCount + repeatCount; runIndex += 1) {
         const shouldRecord = runIndex >= warmupCount;
         const sharedRuntime = runtimeMode === 'warm'
-            ? createEngineRuntime({ fontManager: new LocalFontManager() })
+            ? createPrintEngineRuntime({ fontManager: new LocalFontManager() })
             : null;
         for (const file of files) {
             const fixturePath = getAstFixturePath(file);
             for (const mode of modes) {
-                const runtime = sharedRuntime ?? createEngineRuntime({ fontManager: new LocalFontManager() });
+                const runtime = sharedRuntime ?? createPrintEngineRuntime({ fontManager: new LocalFontManager() });
                 const metric = await measureFixture(mode, runtime, file, fixturePath, profileMode);
                 if (!shouldRecord) continue;
                 rawMetrics.push(metric);

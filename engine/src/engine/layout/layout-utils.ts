@@ -1,5 +1,5 @@
 import { LayoutConfig } from '../types';
-import { getFontsByFamily, getFontRegistrySnapshot, FontConfig, FontManager } from '../../font-management/ops';
+import type { FontConfig, TextDelegate } from '@vmprint/contracts';
 import { PAGE_SIZE_FALLBACK, PAGE_SIZE_POINTS } from './defaults';
 
 type NormalizedFontStyle = 'normal' | 'italic';
@@ -12,6 +12,8 @@ export interface ResolvedFontMatch {
     resolvedStyle: NormalizedFontStyle;
     usedStyleFallback: boolean;
 }
+
+const fontMatchCache = new WeakMap<TextDelegate, Map<string, ResolvedFontMatch>>();
 
 export class LayoutUtils {
     private static applyOrientation(
@@ -132,32 +134,38 @@ export class LayoutUtils {
         family: string,
         weight: number | string = 400,
         style: string = 'normal',
-        registry?: FontConfig[],
-        manager?: FontManager
+        textDelegate?: TextDelegate
     ): ResolvedFontMatch {
-        if (!manager) {
-            throw new Error('FontManager is required to resolve font matches.');
+        if (!textDelegate) {
+            throw new Error('TextDelegate is required to resolve font matches.');
         }
         const requestedWeight = this.normalizeFontWeight(weight);
         const requestedStyle = this.normalizeFontStyle(style);
 
         // 1. Clean the family name
         const baseFamily = this.normalizeRequestedFamilyName(family);
+        const cacheKey = `${baseFamily}|${requestedWeight}|${requestedStyle}`;
+        const delegateCache = fontMatchCache.get(textDelegate) ?? (() => {
+            const created = new Map<string, ResolvedFontMatch>();
+            fontMatchCache.set(textDelegate, created);
+            return created;
+        })();
+        const cached = delegateCache.get(cacheKey);
+        if (cached) return cached;
 
         // 2. Check the registry
-        const activeRegistry = registry || getFontRegistrySnapshot(manager);
-        const available = getFontsByFamily(baseFamily, activeRegistry, manager);
+        const available = textDelegate.getFontsByFamily(baseFamily);
 
         if (available.length === 0) {
             throw new Error(`[LayoutUtils] Font family "${family}" is not registered.`);
         }
 
-        const exactStyleCandidates = available.filter((font) => this.normalizeFontStyle(font.style) === requestedStyle);
+        const exactStyleCandidates = available.filter((font: FontConfig) => this.normalizeFontStyle(font.style) === requestedStyle);
         const searchPool = exactStyleCandidates.length > 0 ? exactStyleCandidates : available;
         const usedStyleFallback = exactStyleCandidates.length === 0;
         const best = this.pickBestWeightCandidate(searchPool, requestedWeight);
 
-        return {
+        const resolved = {
             config: best.font,
             requestedWeight,
             requestedStyle,
@@ -165,16 +173,17 @@ export class LayoutUtils {
             resolvedStyle: this.normalizeFontStyle(best.font.style),
             usedStyleFallback
         };
+        delegateCache.set(cacheKey, resolved);
+        return resolved;
     }
 
     static resolveFontConfig(
         family: string,
         weight: number | string = 400,
         style: string = 'normal',
-        registry?: FontConfig[],
-        manager?: FontManager
+        textDelegate?: TextDelegate
     ): FontConfig {
-        return this.resolveFontMatch(family, weight, style, registry, manager).config;
+        return this.resolveFontMatch(family, weight, style, textDelegate).config;
     }
 
     /**
@@ -184,10 +193,9 @@ export class LayoutUtils {
         family: string,
         weight: number | string = 400,
         style: string = 'normal',
-        registry?: FontConfig[],
-        manager?: FontManager
+        textDelegate?: TextDelegate
     ): string {
-        const match = this.resolveFontMatch(family, weight, style, registry, manager);
+        const match = this.resolveFontMatch(family, weight, style, textDelegate);
         const variant = this.toFontVariantLabel(match.resolvedWeight, match.resolvedStyle);
         return `${match.config.family}-${variant}`;
     }
@@ -278,4 +286,11 @@ export class LayoutUtils {
     }
 }
 
+export function createScriptMessageTopic(sourceId: string): string {
+    const normalizedSourceId = LayoutUtils.normalizeAuthorSourceId(sourceId) || String(sourceId || '').trim();
+    return `script:message:${normalizedSourceId}`;
+}
 
+export function createScriptMessageAckTopic(messageId: string): string {
+    return `script:message-ack:${String(messageId || '').trim()}`;
+}

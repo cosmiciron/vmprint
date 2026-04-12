@@ -105,6 +105,7 @@ export class PageRegionCollaborator implements Collaborator {
             physicalPageNumber,
             logicalPageNumber: logicalNumber,
             usesLogicalNumbering: usesLogical,
+            renderRevision: 0,
             capture
         });
 

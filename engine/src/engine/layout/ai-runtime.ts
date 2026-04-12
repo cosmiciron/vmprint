@@ -1,4 +1,4 @@
-import { performance } from 'node:perf_hooks';
+import { runtimePerformance as performance } from '../performance';
 import type { Box, Page } from '../types';
 import type { FlowBox } from './layout-core-types';
 import {

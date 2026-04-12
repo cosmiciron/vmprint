@@ -14,6 +14,7 @@ export type SimulationStopReason = 'settled' | 'fixed-tick-count';
 export interface SimulationProgressionConfig {
     policy?: SimulationProgressionPolicy;
     maxTicks?: number;
+    tickRateHz?: number;
 }
 
 export interface LayoutScriptingConfig {
@@ -38,12 +39,11 @@ export type TextSegment = {
     style?: Record<string, any>,
     inlineObject?: InlineObjectSegment,
     inlineMetrics?: InlineObjectMetrics,
-    /** Per-glyph positions from fontkit layout, used for LTR kerned text. */
+    /** Per-glyph positions from the active text delegate, used for LTR kerned text. */
     glyphs?: { char: string, x: number, y: number }[],
     /**
-     * Raw shaped glyph data from fontkit layout for RTL / CTL text.
-     * Carries the correct contextual glyph IDs (e.g. uni0627.fina vs uni0627)
-     * that must be emitted directly to PDF without re-running shaping.
+     * Delegate-provided shaped glyph data for RTL / CTL text when available.
+     * Some legacy renderers can consume this directly without re-running shaping.
      */
     shapedGlyphs?: ShapedGlyph[],
     width?: number,
@@ -292,16 +292,19 @@ export interface ElementProperties extends Record<string, any> {
         style?: Record<string, unknown>;
     };
     /**
-     * Generic actor-published spatial field. Hosts may interpret this as
-     * exclusion, occupancy, hazard, or other spatial influence without the
-     * actor losing its own identity.
+     * Preferred public name for spatial influence / exclusion behavior.
+     */
+    space?: SpatialFieldDirective;
+    /**
+     * VMPrint-authored alias accepted as an input seam when consuming existing
+     * VMPrint documents and fixtures.
      */
     spatialField?: SpatialFieldDirective;
     /**
-     * Compatibility alias for early zone-map-native experiments. Prefer
-     * `spatialField`.
+     * Preferred public name for simple built-in declarative movement.
+     * Kept intentionally narrow so small motion does not require scripting.
      */
-    zoneField?: SpatialFieldDirective;
+    motion?: ElementSimulationDirective;
     pageOverrides?: {
         header?: PageRegionContent | null;
         footer?: PageRegionContent | null;
@@ -376,6 +379,36 @@ export interface SpatialFieldDirective {
     hidden?: boolean;
     zIndex?: number;
     traversalInteraction?: TraversalInteractionPolicy;
+}
+
+export interface SimulationMotionAxis {
+    /** Position at time 0 in local actor coordinates. */
+    start?: number;
+    /** Deterministic units advanced per simulated second. */
+    velocity?: number;
+    /** Optional sine-wave offset amplitude. */
+    amplitude?: number;
+    /** Optional sine-wave angular frequency in radians per simulated second. */
+    frequency?: number;
+    /** Optional sine-wave phase offset in radians. */
+    phase?: number;
+}
+
+export interface ElementSimulationDirective {
+    enabled?: boolean;
+    /**
+     * Optional liveness bound for until-settled runs. Fixed-tick-count runs are
+     * bounded by layout.progression.maxTicks, so this may be omitted there.
+     */
+    maxTicks?: number;
+    /**
+     * Defaults to geometry because moving actors usually alter the spatial
+     * world. Use content-only only when geometry is intentionally stable.
+     */
+    updateKind?: 'content-only' | 'geometry';
+    x?: SimulationMotionAxis;
+    y?: SimulationMotionAxis;
+    label?: string;
 }
 
 export interface StoryLayoutDirective {

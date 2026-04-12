@@ -4,7 +4,8 @@ import path from 'node:path';
 
 import { LayoutEngine } from '../src/engine/layout-engine';
 import { resolveDocumentPaths, toLayoutConfig } from '../src';
-import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
+import { setDefaultEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 import { getAstFixturePath } from './harness/ast-fixture-harness';
 
@@ -49,7 +50,7 @@ async function run(): Promise<void> {
     const documents = fixtureSequence.map((fixtureName) => loadFixtureDocument(fixtureName));
     const targetDocument = documents[documents.length - 1];
 
-    const isolatedRuntime = createEngineRuntime({ fontManager: new LocalFontManager() });
+    const isolatedRuntime = createPrintEngineRuntime({ fontManager: new LocalFontManager() });
     const isolatedPages = await renderFixtureWithRuntime(targetDocument, isolatedRuntime);
     const isolatedFamily = getFirstDropCapFamily(isolatedPages);
     assert.equal(
@@ -58,7 +59,7 @@ async function run(): Promise<void> {
         'Isolated render should preserve the expected drop cap font family for 15-story-multi-column'
     );
 
-    const sharedRuntime = createEngineRuntime({ fontManager: new LocalFontManager() });
+    const sharedRuntime = createPrintEngineRuntime({ fontManager: new LocalFontManager() });
     let sharedPages: any[] = [];
     for (const document of documents) {
         sharedPages = await renderFixtureWithRuntime(document, sharedRuntime);

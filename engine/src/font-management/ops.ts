@@ -12,7 +12,7 @@ export const cloneFontRegistry = (fonts: FontConfig[]): FontConfig[] => fonts.ma
 
 const requireManager = (manager: FontManager): FontManager => {
     if (!manager) {
-        throw new Error('FontManager is required. Inject one via EngineRuntime (createEngineRuntime({ fontManager })).');
+        throw new Error('FontManager is required. Inject one via a print runtime (createPrintEngineRuntime({ fontManager })).');
     }
     return manager;
 };

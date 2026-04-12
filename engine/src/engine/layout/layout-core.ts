@@ -62,8 +62,9 @@ import { buildTableModelFromNormalizedTable, normalizeTableElement } from './nor
 import { DropCapPackager } from './packagers/dropcap-packager';
 import { createPackagers, ExternalPackagerFactory } from './packagers/create-packagers';
 import { ScriptDocumentPackager } from './packagers/script-document-packager';
-import { executeSimulationMarch } from './packagers/execute-simulation-march';
+import { createSimulationMarchRunner, executeSimulationMarch, type SimulationRunner } from './packagers/execute-simulation-march';
 import type { PackagerContext } from './packagers/packager-types';
+import { SimulationLoop, type SimulationLoopOptions, type SimulationLoopScheduler } from './simulation-loop';
 
 
 export class LayoutProcessor extends TextProcessor {
@@ -112,7 +113,29 @@ export class LayoutProcessor extends TextProcessor {
         const maxTicks = policy === 'fixed-tick-count'
             ? Math.max(1, Math.floor(Number(configured?.maxTicks || 1)))
             : 0;
-        return { policy, maxTicks };
+        const tickRateHz = Math.max(1, Number(configured?.tickRateHz || 24));
+        return { policy, maxTicks, tickRateHz };
+    }
+
+    private resolveSimulationProgressionOverride(
+        options: { tickRateHz?: number } = {}
+    ): Required<SimulationProgressionConfig> {
+        const base = this.getSimulationProgressionConfig();
+        const tickRateHz = Number.isFinite(options.tickRateHz)
+            ? Math.max(1, Number(options.tickRateHz))
+            : base.tickRateHz;
+        if (base.policy !== 'fixed-tick-count' || !Number.isFinite(base.maxTicks) || base.maxTicks <= 0) {
+            return {
+                ...base,
+                tickRateHz
+            };
+        }
+        const baseDurationSeconds = base.maxTicks / base.tickRateHz;
+        return {
+            ...base,
+            tickRateHz,
+            maxTicks: Math.max(1, Math.round(baseDurationSeconds * tickRateHz))
+        };
     }
 
     private cloneElementsForSimulation(elements: Element[]): Element[] {
@@ -683,6 +706,54 @@ export class LayoutProcessor extends TextProcessor {
         return result.pages;
     }
 
+    createSimulationRunner(
+        elements: Element[],
+        options: { tickRateHz?: number; timeOffsetSeconds?: number } = {}
+    ): SimulationRunner {
+        const scriptRuntimeHost = this.config.scripting
+            ? new ScriptRuntimeHost(this.config.scripting)
+            : null;
+        const simulationElements = this.requiresSimulationClone(elements, scriptRuntimeHost)
+            ? this.cloneElementsForSimulation(elements)
+            : elements;
+        const scriptLifecycleState = scriptRuntimeHost?.createLifecycleState() ?? null;
+        this.resolvedLinesCache = new WeakMap<Element, Map<string, ResolvedLinesResult>>();
+        const { collaborators, scriptRuntimeHost: activeScriptRuntimeHost } = this.createLayoutCollaborators(
+            simulationElements,
+            scriptLifecycleState,
+            scriptRuntimeHost ?? undefined,
+            null
+        );
+        const progression = this.resolveSimulationProgressionOverride(options);
+        return this.createSimulationRunnerPass(
+            simulationElements,
+            activeScriptRuntimeHost,
+            scriptLifecycleState,
+            null,
+            collaborators,
+            progression,
+            Number.isFinite(options.timeOffsetSeconds) ? Number(options.timeOffsetSeconds) : 0
+        ).runner;
+    }
+
+    createSimulationLoop(
+        elements: Element[],
+        scheduler: SimulationLoopScheduler,
+        options: Partial<SimulationLoopOptions> = {}
+    ): SimulationLoop {
+        const progression = this.getSimulationProgressionConfig();
+        return new SimulationLoop(
+            (runnerOptions) => this.createSimulationRunner(elements, runnerOptions),
+            scheduler,
+            {
+                tickRateHz: Number.isFinite(options.tickRateHz)
+                    ? Math.max(1, Number(options.tickRateHz))
+                    : progression.tickRateHz,
+                loop: options.loop !== false
+            }
+        );
+    }
+
     async simulateAsync(
         elements: Element[],
         options: { timeoutMs?: number; maxAsyncReplayPasses?: number } = {}
@@ -746,36 +817,14 @@ export class LayoutProcessor extends TextProcessor {
                 scriptRuntimeHost ?? undefined,
                 asyncThoughtHost
             );
-            this.activeScriptRuntimeHost = activeScriptRuntimeHost;
-            const session = new LayoutSession({
-                runtime: this.getRuntime(),
-                collaborators,
-                asyncThoughtHost
-            });
-            this.lastLayoutSession = session;
-            session.notifySimulationStart();
-            const packagers = createPackagers(simulationElements, this, this.packagerFactory);
-            let scriptDocumentPackager: ScriptDocumentPackager | null = null;
-            if (activeScriptRuntimeHost?.hasDocumentAfterSettleHandler()) {
-                scriptDocumentPackager = new ScriptDocumentPackager(activeScriptRuntimeHost, simulationElements, scriptLifecycleState!);
-                packagers.push(scriptDocumentPackager);
-            }
-            for (const packager of packagers) {
-                session.notifyActorSpawn(packager);
-            }
-            const contextBase = {
-                processor: this,
-                pageWidth,
-                pageHeight,
-                margins: this.config.layout.margins,
-                getPageExclusions: (pageIndex: number) => session.getPageExclusions(pageIndex),
-                getWorldTraversalExclusions: (pageIndex: number) => session.getWorldTraversalExclusions(pageIndex),
-                publishActorSignal: (signal: any) => session.publishActorSignal(signal),
-                readActorSignals: (topic?: string) => session.getActorSignals(topic),
-                requestAsyncThought: (request: any) => session.requestAsyncThought(request),
-                readAsyncThoughtResult: (key: string) => session.readAsyncThoughtResult(key)
-            };
-            const pages = executeSimulationMarch(this, packagers, contextBase, session);
+            const { session, scriptDocumentPackager, runner } = this.createSimulationRunnerPass(
+                simulationElements,
+                activeScriptRuntimeHost,
+                scriptLifecycleState,
+                asyncThoughtHost,
+                collaborators
+            );
+            const pages = runner.runToCompletion();
             const finalized = session.finalizePages(pages);
             for (const key of LayoutProcessor.SCRIPT_PROFILE_KEYS) {
                 aggregateScriptProfile[key] += Number(session.profile[key] || 0);
@@ -807,6 +856,59 @@ export class LayoutProcessor extends TextProcessor {
         }
 
         throw new Error('[LayoutProcessor] Script replay loop exited unexpectedly.');
+    }
+
+    private createSimulationRunnerPass(
+        elements: Element[],
+        scriptRuntimeHost: ScriptRuntimeHost | null,
+        scriptLifecycleState: ScriptLifecycleState | null,
+        asyncThoughtHost: AsyncThoughtHost | null,
+        collaborators: readonly Collaborator[],
+        progressionOverride?: Required<SimulationProgressionConfig>,
+        timeOffsetSeconds: number = 0
+    ): {
+        runner: SimulationRunner;
+        session: LayoutSession;
+        scriptDocumentPackager: ScriptDocumentPackager | null;
+    } {
+        const { height: pageHeight, width: pageWidth } = this.getPageDimensions();
+        this.activeScriptRuntimeHost = scriptRuntimeHost;
+        const session = new LayoutSession({
+            runtime: this.getRuntime(),
+            collaborators,
+            asyncThoughtHost
+        });
+        this.lastLayoutSession = session;
+        session.notifySimulationStart();
+        const packagers = createPackagers(elements, this, this.packagerFactory);
+        let scriptDocumentPackager: ScriptDocumentPackager | null = null;
+        if (scriptRuntimeHost?.hasDocumentAfterSettleHandler()) {
+            scriptDocumentPackager = new ScriptDocumentPackager(scriptRuntimeHost, elements, scriptLifecycleState!);
+            packagers.push(scriptDocumentPackager);
+        }
+        for (const packager of packagers) {
+            session.notifyActorSpawn(packager);
+        }
+        const contextBase = {
+            processor: this,
+            pageWidth,
+            pageHeight,
+            margins: this.config.layout.margins,
+            simulationTickRateHz: progressionOverride?.tickRateHz ?? this.getSimulationProgressionConfig().tickRateHz,
+            simulationProgression: progressionOverride ?? this.getSimulationProgressionConfig(),
+            simulationTimeOffsetSeconds: Number.isFinite(timeOffsetSeconds) ? Number(timeOffsetSeconds) : 0,
+            getPageExclusions: (pageIndex: number) => session.getPageExclusions(pageIndex),
+            getWorldTraversalExclusions: (pageIndex: number) => session.getWorldTraversalExclusions(pageIndex),
+            publishActorSignal: (signal: any) => session.publishActorSignal(signal),
+            readActorSignals: (topic?: string) => session.getActorSignals(topic),
+            requestAsyncThought: (request: any) => session.requestAsyncThought(request),
+            readAsyncThoughtResult: (key: string) => session.readAsyncThoughtResult(key)
+        };
+        return {
+            runner: createSimulationMarchRunner(this, packagers, contextBase, session, progressionOverride),
+            session,
+            scriptDocumentPackager
+        };
     }
 
     getLastSimulationReport(): SimulationReport | undefined {
@@ -1141,8 +1243,7 @@ export class LayoutProcessor extends TextProcessor {
                     style.fontFamily,
                     style.fontWeight,
                     style.fontStyle,
-                    this.runtime.fontRegistry,
-                    this.runtime.fontManager
+                    this.getTextDelegate()
                 );
                 const cached = this.getTextDelegate().getCachedFace(fontConfig.src, this.runtime.textDelegateState);
                 if (cached) measurementFont = cached;

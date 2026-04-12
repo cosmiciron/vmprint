@@ -4,6 +4,25 @@
   "description": "Deterministic typesetting engine core. Pure-JS, environment-agnostic document composition.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cosmiciron/vmprint.git",
+    "directory": "engine"
+  },
+  "bugs": {
+    "url": "https://github.com/cosmiciron/vmprint/issues"
+  },
+  "homepage": "https://github.com/cosmiciron/vmprint/tree/main/engine#readme",
+  "keywords": [
+    "vmprint",
+    "engine",
+    "layout",
+    "typesetting",
+    "pdf",
+    "document",
+    "pagination",
+    "renderer"
+  ],
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -18,6 +37,7 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "!dist/**/*.spec.js",
     "!dist/**/*.spec.d.ts"
   ],
@@ -51,7 +71,7 @@
     "test": "npm run test:modules && npm run test:flat && npm run test:scripting && npm run test:strip && npm run test:standard-fonts && npm run test:spatial-ir && npm run test:engine"
   },
   "dependencies": {
-    "@vmprint/contracts": "file:../contracts",
+    "@vmprint/contracts": "^1.0.2",
     "bidi-js": "^1.0.3",
     "dfa": "^1.2.0",
     "fontkit": "^2.0.4",

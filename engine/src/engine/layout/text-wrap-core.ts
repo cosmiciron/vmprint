@@ -1,5 +1,6 @@
 import { ElementStyle, RichLine, TextSegment } from '../types';
 import { LAYOUT_DEFAULTS } from './defaults';
+import { isNumericRunSegment, segmentTextRun } from './text-segmentation';
 
 export type WrapSegmentToken = {
     kind: 'segment';
@@ -120,10 +121,10 @@ export function buildRichWrapTokens(params: {
                 for (const run of scriptRuns) {
                     const segmenter = params.makeWordSegmenter(locale, run.isCJK);
                     const wordT0 = params.onWordSegment ? performance.now() : 0;
-                    const subSegments = segmenter.segment(run.text);
+                    const subSegments = segmentTextRun(run.text, segmenter);
                     if (params.onWordSegment) params.onWordSegment(performance.now() - wordT0);
 
-                    for (const { segment } of subSegments) {
+                    for (const segment of subSegments) {
                         const rawSubSeg = {
                             ...seg,
                             text: segment,
@@ -135,7 +136,7 @@ export function buildRichWrapTokens(params: {
                         if (textValue.trim().length > 0) {
                             const scriptClass = params.getScriptClass(textValue);
                             richSubSeg.scriptClass = scriptClass;
-                            richSubSeg.direction = bidiRun.direction;
+                            richSubSeg.direction = isNumericRunSegment(textValue) ? 'ltr' : bidiRun.direction;
 
                             const optScale = params.getOpticalScale(scriptClass);
                             if (optScale !== 1.0) {
@@ -344,6 +345,3 @@ export function wrapTokenStream(params: {
     if (currentLine.length > 0) pushCurrentLine();
     return finalLines.length > 0 ? finalLines : [[params.createEmptyMeasuredSegment(params.fallbackFont)]];
 }
-
-
-

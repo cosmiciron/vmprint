@@ -5,6 +5,7 @@ import {
     type WebFontProgressEvent
 } from '@vmprint/preview';
 import {
+    type DocumentInput,
     type VmprintInteractionSelectionPoint,
     type VmprintInteractionSelectionState
 } from '@vmprint/engine';
@@ -185,8 +186,6 @@ This is the capability that has no equivalent elsewhere.
 Because the engine's input is a plain data structure—just a JSON object—you can write a transmuter for absolutely any source format. The only requirement is that your function returns a valid **DocumentInput**.
 
 \`\`\`typescript
-import type { DocumentInput } from '@vmprint/engine';
-
 export function transmute(source: string, options?: MyOptions): DocumentInput {
   // Parse your format however you like
   const parsed = parseMyFormat(source);

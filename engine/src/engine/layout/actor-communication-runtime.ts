@@ -1,4 +1,4 @@
-import { performance } from 'node:perf_hooks';
+import { runtimePerformance as performance } from '../performance';
 import type { Box, Page } from '../types';
 import { ActorEventBus, type ActorEventBusSnapshot, type ActorSignal, type ActorSignalDraft } from './actor-event-bus';
 import type { FlowBox } from './layout-core-types';
@@ -114,6 +114,10 @@ export class ActorCommunicationRuntime<
     }
 
     notifyActorSpawn(actor: PackagerUnit): void {
+        this.registerActorForRuntime(actor);
+    }
+
+    private registerActorForRuntime(actor: PackagerUnit): void {
         if (typeof actor.stepSimulationTick === 'function') {
             this.steppedActorRegistry.set(actor.actorId, actor);
         }
@@ -136,6 +140,42 @@ export class ActorCommunicationRuntime<
             const entry = this.observerTopicSubscriptions.get(topic) ?? new Set<string>();
             entry.add(actor.actorId);
             this.observerTopicSubscriptions.set(topic, entry);
+        }
+    }
+
+    private collectRuntimeActors(actor: PackagerUnit): readonly PackagerUnit[] {
+        const maybeHosted = actor as PackagerUnit & {
+            getHostedRuntimeActors?(): readonly PackagerUnit[];
+        };
+        const hostedActors = maybeHosted.getHostedRuntimeActors?.() ?? [];
+        return [
+            actor,
+            ...hostedActors.flatMap((hostedActor) => this.collectRuntimeActors(hostedActor))
+        ];
+    }
+
+    private syncRuntimeRegistriesToQueue(actorQueue: readonly PackagerUnit[]): void {
+        this.observerRegistry.clear();
+        this.steppedActorRegistry.clear();
+        this.observerTopicSubscriptions.clear();
+        this.broadlyPolledObserverIds.clear();
+        this.actorIndexByActorId.clear();
+        this.actorIndexBySourceId.clear();
+
+        const activeActorIds = new Set<string>();
+        for (let actorIndex = 0; actorIndex < actorQueue.length; actorIndex += 1) {
+            const actor = actorQueue[actorIndex];
+            for (const runtimeActor of this.collectRuntimeActors(actor)) {
+                activeActorIds.add(runtimeActor.actorId);
+                this.registerActorForRuntime(runtimeActor);
+                this.noteActorIndex(runtimeActor, actorIndex);
+            }
+        }
+
+        for (const actorId of [...this.awakenedObserverIds]) {
+            if (!activeActorIds.has(actorId)) {
+                this.awakenedObserverIds.delete(actorId);
+            }
         }
     }
 
@@ -517,6 +557,7 @@ export class ActorCommunicationRuntime<
     ): { currentPageBoxes: Box[]; currentY: number; lastSpacingAfter: number } {
         pages.splice(0, pages.length, ...checkpoint.pagesPrefix.map(clonePage));
         restoreBranchStateSnapshot(actorQueue, checkpoint.snapshot);
+        this.syncRuntimeRegistriesToQueue(actorQueue);
 
         return {
             currentPageBoxes: checkpoint.snapshot.pageBoxes.map(cloneBox),
@@ -536,12 +577,20 @@ export class ActorCommunicationRuntime<
 
         const specific = this.observerTopicSubscriptions.get(normalizedTopic);
         if (!specific || specific.size === 0) {
+            // [DIAG] no subscriptions for this topic
+            if (normalizedTopic.startsWith('script:message:')) {
+                console.log('[DIAG:awaken] topic=%s has NO subscribers. subscriptions=%d', normalizedTopic, this.observerTopicSubscriptions.size);
+            }
             return;
         }
 
         for (const actorId of specific) {
             if (this.awakenedObserverIds.has(actorId)) continue;
             this.awakenedObserverIds.add(actorId);
+            // [DIAG]
+            if (normalizedTopic.startsWith('script:message:')) {
+                console.log('[DIAG:awaken] topic=%s → awakened actorId=%s', normalizedTopic, actorId);
+            }
             this.callbacks.recordProfile('actorActivationAwakenCalls', 1);
             this.callbacks.recordProfile('actorActivationSignalWakeCalls', 1);
         }

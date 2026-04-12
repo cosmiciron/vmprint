@@ -193,6 +193,8 @@ export function splitByBidiDirection(text: string, baseDirection: string): { tex
 
         if (prevStrong && nextStrong && prevStrong === nextStrong) {
             resolved[i].direction = prevStrong;
+        } else if (prevStrong && nextStrong) {
+            resolved[i].direction = bidiBase === 'rtl' ? 'rtl' : 'ltr';
         } else if (prevStrong) {
             resolved[i].direction = prevStrong;
         } else if (nextStrong) {
@@ -337,6 +339,38 @@ export function segmentTextByFont(params: {
         return familyFontCache.get(family) || null;
     };
 
+    let lastClusterPrefKey = '';
+    let lastPreferredFamilyOrder: string[] = familyOrder;
+
+    const resolveClusterAssignment = (cluster: string): { family: string; font: any } => {
+        const clusterPreferredFamilies = deriveClusterPreferredFamilies(cluster, locale);
+        const clusterPrefKey = clusterPreferredFamilies.join('|');
+        let preferredFamilyOrder: string[];
+        if (clusterPrefKey === lastClusterPrefKey) {
+            preferredFamilyOrder = lastPreferredFamilyOrder;
+        } else {
+            preferredFamilyOrder = reorderFallbacksPreservingBase(baseFamily, fallbackOrder, clusterPreferredFamilies);
+            lastClusterPrefKey = clusterPrefKey;
+            lastPreferredFamilyOrder = preferredFamilyOrder;
+        }
+
+        for (const family of preferredFamilyOrder) {
+            const familyFont = getFamilyFont(family);
+            if (!familyFont) continue;
+            if (params.fontSupportsCluster(familyFont, cluster)) {
+                return {
+                    family,
+                    font: family === params.baseFontFamily ? null : familyFont
+                };
+            }
+        }
+
+        return {
+            family: baseFamily,
+            font: baseFamily === params.baseFontFamily ? null : getFamilyFont(baseFamily)
+        };
+    };
+
     const segments: ScriptFontSegment[] = [];
     let currentFamily: string | undefined = undefined;
     let currentFont: any = null;
@@ -348,48 +382,39 @@ export function segmentTextByFont(params: {
         currentText = '';
     };
 
-    // Cache the last cluster's preferred-families key → reordered family list.
-    // Consecutive clusters of the same script type share the same ordering, avoiding
-    // per-cluster Set construction and two filter passes for every character.
-    let lastClusterPrefKey = '';
-    let lastPreferredFamilyOrder: string[] = familyOrder;
-
-    for (const cluster of clusters) {
+    for (let clusterIndex = 0; clusterIndex < clusters.length; clusterIndex += 1) {
+        const cluster = clusters[clusterIndex];
         let assignedFamily: string | undefined;
         let assignedFont: any = null;
 
         // Keep neutral whitespace with the current run to avoid fragmenting
-        // mixed-script phrases (notably RTL words separated by spaces).
+        // same-script phrases, but split boundary whitespace so bidi can resolve
+        // it against the paragraph base direction instead of the previous script.
         if (/^\s+$/u.test(cluster) && currentFamily !== undefined) {
-            assignedFamily = currentFamily;
-            assignedFont = currentFont;
-        }
-        if (!assignedFamily) {
-            const clusterPreferredFamilies = deriveClusterPreferredFamilies(cluster, locale);
-            const clusterPrefKey = clusterPreferredFamilies.join('|');
-            let preferredFamilyOrder: string[];
-            if (clusterPrefKey === lastClusterPrefKey) {
-                preferredFamilyOrder = lastPreferredFamilyOrder;
-            } else {
-                preferredFamilyOrder = reorderFallbacksPreservingBase(baseFamily, fallbackOrder, clusterPreferredFamilies);
-                lastClusterPrefKey = clusterPrefKey;
-                lastPreferredFamilyOrder = preferredFamilyOrder;
-            }
-
-            for (const family of preferredFamilyOrder) {
-                const familyFont = getFamilyFont(family);
-                if (!familyFont) continue;
-                if (params.fontSupportsCluster(familyFont, cluster)) {
-                    assignedFamily = family;
-                    assignedFont = family === params.baseFontFamily ? null : familyFont;
+            let nextNonWhitespaceCluster = '';
+            for (let nextIndex = clusterIndex + 1; nextIndex < clusters.length; nextIndex += 1) {
+                const nextCluster = clusters[nextIndex] || '';
+                if (!/^\s+$/u.test(nextCluster)) {
+                    nextNonWhitespaceCluster = nextCluster;
                     break;
                 }
             }
-
-            if (!assignedFamily) {
+            const nextAssignment = nextNonWhitespaceCluster
+                ? resolveClusterAssignment(nextNonWhitespaceCluster)
+                : null;
+            if (!nextAssignment || nextAssignment.family === currentFamily) {
+                assignedFamily = currentFamily;
+                assignedFont = currentFont;
+            } else {
+                pushCurrent();
                 assignedFamily = baseFamily;
                 assignedFont = baseFamily === params.baseFontFamily ? null : getFamilyFont(baseFamily);
             }
+        }
+        if (!assignedFamily) {
+            const assignment = resolveClusterAssignment(cluster);
+            assignedFamily = assignment.family;
+            assignedFont = assignment.font;
         }
 
         if (assignedFamily !== currentFamily || assignedFont !== currentFont) {
@@ -404,4 +429,3 @@ export function segmentTextByFont(params: {
     pushCurrent();
     return segments;
 }
-

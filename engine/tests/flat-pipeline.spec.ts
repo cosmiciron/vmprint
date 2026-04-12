@@ -3,7 +3,8 @@ import { Context, ContextImageOptions, ContextTextOptions } from '@vmprint/contr
 import { LayoutEngine } from '../src/engine/layout-engine';
 import { Renderer } from '../src/engine/renderer';
 import { Element, LayoutConfig, Page, DocumentInput } from '../src/engine/types';
-import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
+import { setDefaultEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { CURRENT_DOCUMENT_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src';
 import { loadLocalFontManager, snapshotPages, MockContext } from './harness/engine-harness';
 import { logStep, check, checkAsync } from './harness/test-utils';
@@ -2059,7 +2060,7 @@ async function testAfterSettleScriptWithReplay() {
 
 async function run() {
     const LocalFontManager = await loadLocalFontManager();
-    setDefaultEngineRuntime(createEngineRuntime({ fontManager: new LocalFontManager() }));
+    setDefaultEngineRuntime(createPrintEngineRuntime({ fontManager: new LocalFontManager() }));
 
     await testFlatPipeline();
     await testEmbeddedImageFlowAndRender();

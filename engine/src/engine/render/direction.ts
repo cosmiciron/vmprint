@@ -1,5 +1,8 @@
 import { ElementStyle } from '../types';
 import { RendererLine, RendererLineSegment } from './types';
+import bidiFactory from 'bidi-js';
+
+const bidi = bidiFactory();
 
 export const getStrongDirection = (text: string): 'ltr' | 'rtl' | 'neutral' => {
     for (const ch of text || '') {
@@ -55,6 +58,37 @@ export const reorderItemsForVisualBidi = <T extends { seg: RendererLineSegment; 
 ): T[] => {
     if (items.length <= 1) return items;
 
+    const textParts: string[] = [];
+    const charToItem: number[] = [];
+    for (let itemIndex = 0; itemIndex < items.length; itemIndex += 1) {
+        const text = items[itemIndex]?.seg?.text || '\uFFFC';
+        textParts.push(text);
+        for (let charIndex = 0; charIndex < text.length; charIndex += 1) {
+            charToItem.push(itemIndex);
+        }
+    }
+
+    const lineText = textParts.join('');
+    if (lineText.length > 0) {
+        const embedding = bidi.getEmbeddingLevels(lineText, baseDirection as any);
+        const visualCharIndices = bidi.getReorderedIndices(lineText, embedding);
+        const seenItems = new Set<number>();
+        const visualItems: T[] = [];
+        for (const charIndex of visualCharIndices) {
+            const itemIndex = charToItem[charIndex];
+            if (itemIndex === undefined || seenItems.has(itemIndex)) continue;
+            seenItems.add(itemIndex);
+            visualItems.push(items[itemIndex]);
+        }
+        for (let itemIndex = 0; itemIndex < items.length; itemIndex += 1) {
+            if (seenItems.has(itemIndex)) continue;
+            visualItems.push(items[itemIndex]);
+        }
+        if (visualItems.length === items.length) {
+            return baseDirection === 'rtl' ? visualItems.reverse() : visualItems;
+        }
+    }
+
     const resolveStrongDirAt = (index: number): 'ltr' | 'rtl' | 'neutral' => {
         const text = items[index]?.seg?.text || '';
         return getStrongDirection(text);
@@ -97,6 +131,8 @@ export const reorderItemsForVisualBidi = <T extends { seg: RendererLineSegment; 
 
         if (prevStrong && nextStrong && prevStrong === nextStrong) {
             resolvedDirs[i] = prevStrong;
+        } else if (prevStrong && nextStrong) {
+            resolvedDirs[i] = baseDirection;
         } else if (prevStrong) {
             resolvedDirs[i] = prevStrong;
         } else if (nextStrong) {

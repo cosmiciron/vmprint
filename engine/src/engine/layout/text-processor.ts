@@ -1,6 +1,5 @@
 import { FontProcessor } from './font-processor';
 import { Element, ElementStyle, RichLine, TextSegment } from '../types';
-import { getFallbackFamilies } from '../../font-management/ops';
 import { LayoutUtils } from './layout-utils';
 import { LAYOUT_DEFAULTS } from './defaults';
 import { StyleSignatureCache, appendSegmentToLine, flattenSegmentsByHardBreak, getLineWidthLimit, splitToGraphemes } from './text-wrap-utils';
@@ -22,7 +21,6 @@ import { tryHyphenateSegmentToFit as hyphenateSegmentToFit } from './text-hyphen
 import { applyAdvancedJustification as applyJustification } from './text-justification';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
 import type { TextDelegate, TextMeasurer } from '@vmprint/contracts';
-import { FontkitTextDelegate } from './text-delegate';
 
 export class TextProcessor extends FontProcessor {
 
@@ -34,8 +32,7 @@ export class TextProcessor extends FontProcessor {
 
     constructor(config: any, runtime?: any) {
         super(config, runtime);
-        this.textDelegate = this.runtime.textDelegate || new FontkitTextDelegate();
-        this.runtime.textDelegate = this.textDelegate;
+        this.textDelegate = this.runtime.textDelegate;
     }
 
 
@@ -293,7 +290,7 @@ export class TextProcessor extends FontProcessor {
     }
 
     /**
-     * Returns the width in points of a given string using fontkit's layout.
+     * Returns the width in points of a given string using the active text delegate.
      * Optionally populates the glyph positions if a segment object is provided.
      */
     protected measureText(text: string, font?: any, fontSize?: number, letterSpacing: number = 0, populateSegment?: TextSegment): number {
@@ -312,6 +309,7 @@ export class TextProcessor extends FontProcessor {
         }
 
         // Cache Key: Unique string representing the font, size, letterSpacing and text with context.
+        // Intern fontKey on the font object to avoid repeated property traversal.
         const fontKey: string = this.textDelegate.getFaceCacheKey(measurementFont);
         const ctxDirection = populateSegment?.direction || 'ltr';
         const ctxScriptClass = populateSegment?.scriptClass || 'none';
@@ -375,7 +373,7 @@ export class TextProcessor extends FontProcessor {
     }
 
     protected resolveLoadedFamilyFont(familyName: string, weight: number | string, style: string = 'normal'): any {
-        const match = LayoutUtils.resolveFontMatch(familyName, weight, style, this.runtime.fontRegistry, this.runtime.fontManager);
+        const match = LayoutUtils.resolveFontMatch(familyName, weight, style, this.textDelegate);
         const cached = this.textDelegate.getCachedFace(match.config.src, this.runtime.textDelegateState);
         if (!cached) {
             throw new Error(`[TextProcessor] Font "${match.config.name}" is not loaded. Call waitForFonts() before layout.`);
@@ -600,7 +598,7 @@ export class TextProcessor extends FontProcessor {
             preferredFamily,
             preferredLocale,
             baseFontFamily: this.config.layout.fontFamily,
-            fallbackFamilies: fallbackFamiliesOverride ?? getFallbackFamilies(this.runtime.fontRegistry, this.runtime.fontManager),
+            fallbackFamilies: fallbackFamiliesOverride ?? this.textDelegate.getFallbackFamilies(),
             getGraphemeClusters: (value) => this.getGraphemeClusters(value),
             resolveLoadedFamilyFont: (familyName, weight) => this.resolveLoadedFamilyFont(familyName, weight),
             fontSupportsCluster: (font, cluster) => this.fontSupportsCluster(font, cluster),
@@ -674,7 +672,7 @@ export class TextProcessor extends FontProcessor {
         const session = (this as any).getCurrentLayoutSession?.() || null;
         // Compute fallback families once per paragraph (fix #2) and share a font
         // resolution cache across all segmentTextByFont calls (fix #3).
-        const wrapFallbackFamilies = getFallbackFamilies(this.runtime.fontRegistry, this.runtime.fontManager);
+        const wrapFallbackFamilies = this.textDelegate.getFallbackFamilies();
         const wrapFontCache = new Map<string, any | null>();
         const richFontInfoCache = new Map<string, { font: any; fontSize: number }>();
         const resolveCachedRichFontInfo = (seg: TextSegment, defaultSize: number): { font: any; fontSize: number } => {

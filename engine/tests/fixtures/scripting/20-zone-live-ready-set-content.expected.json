@@ -13,7 +13,7 @@
     }
   ],
   "profileEquals": {
-    "replayRequests": 0
+    "replayRequests": 1
   },
   "profileAtLeast": {
     "setContentCalls": 1

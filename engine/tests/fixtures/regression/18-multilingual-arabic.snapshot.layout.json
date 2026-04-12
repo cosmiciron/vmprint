@@ -166,15 +166,8 @@
           ],
           [
             {
-              "text": "المبرمجة",
-              "width": 117.0666,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": ".",
-              "width": 9.648,
+              "text": "المبرمجة.",
+              "width": 126.2322,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -257,7 +250,7 @@
         "x": 72,
         "y": 180.825,
         "w": 468,
-        "h": 282.096,
+        "h": 278.1108,
         "lines": [
           [
             {
@@ -275,15 +268,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " ",
-              "width": 9.36,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": "means 'for ",
-              "width": 176.941406,
+              "text": " means 'for ",
+              "width": 186.943359,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -305,15 +291,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " ",
-              "width": 9.36,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": "means '",
-              "width": 124.927734,
+              "text": " means '",
+              "width": 134.929688,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -333,7 +312,7 @@
       {
         "type": "p",
         "x": 72,
-        "y": 486.921,
+        "y": 482.9358,
         "w": 468,
         "h": 91.03125,
         "lines": [
@@ -431,10 +410,10 @@
             },
             {
               "text": " ",
-              "width": 9.36,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             },
             {
               "text": "VMPrint",
@@ -489,10 +468,10 @@
             },
             {
               "text": " ",
-              "width": 9.36,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
+              "width": 10.001953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             },
             {
               "text": "PDF",
@@ -637,15 +616,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "100",
-              "width": 61.776,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": "%",
-              "width": 29.916,
+              "text": "100%",
+              "width": 91.692,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -788,15 +760,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "الترقيم",
-              "width": 89.5698,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": "؟",
-              "width": 14.8428,
+              "text": "الترقيم؟",
+              "width": 104.4126,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -809,15 +774,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "نعم",
-              "width": 46.2384,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": "،",
-              "width": 11.2176,
+              "text": "نعم،",
+              "width": 57.456,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -830,15 +788,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "بالتأكيد",
-              "width": 95.7258,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": "!",
-              "width": 9.684,
+              "text": "بالتأكيد!",
+              "width": 104.9256,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"

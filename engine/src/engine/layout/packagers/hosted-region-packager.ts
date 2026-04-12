@@ -42,6 +42,17 @@ function annotateHostedActorBoxes(actor: PackagerUnit, boxes: Box[]): Box[] {
     }));
 }
 
+function resolveMaterializationTick(context: PackagerContext): number {
+    return Number.isFinite(context.simulationTick)
+        ? Math.max(0, Math.floor(Number(context.simulationTick)))
+        : Number.NaN;
+}
+
+function areMaterializationTicksEqual(left: number, right: number): boolean {
+    if (!Number.isFinite(left) && !Number.isFinite(right)) return true;
+    return left === right;
+}
+
 
 class FrozenHostedRegionPackager implements PackagerUnit {
     private readonly frozenBoxes: Box[];
@@ -154,6 +165,7 @@ export class HostedRegionPackager implements PackagerUnit {
     private hostedRuntimeActorIds = new Set<string>();
     private lastAvailableWidth: number = -1;
     private lastAvailableHeight: number = -1;
+    private lastSimulationTick: number = Number.NaN;
     private materializedBoxes: Box[] | null = null;
     private marginTopVal: number = 0;
     private marginBottomVal: number = 0;
@@ -309,6 +321,7 @@ export class HostedRegionPackager implements PackagerUnit {
         this.boundedOverflow = false;
         this.totalRegionHeight = 0;
         this.lastAvailableHeight = -1;
+        this.lastSimulationTick = Number.NaN;
     }
 
     private createActorEntries(
@@ -380,9 +393,14 @@ export class HostedRegionPackager implements PackagerUnit {
         return true;
     }
 
-    private materializeMoveWhole(availableWidth: number): void {
-        if (this.materializedBoxes !== null && this.lastAvailableWidth === availableWidth) return;
-        const contextBase = createHostedRegionSessionContextBase(availableWidth, this.processor);
+    private materializeMoveWhole(availableWidth: number, context: PackagerContext): void {
+        const simulationTick = resolveMaterializationTick(context);
+        if (
+            this.materializedBoxes !== null
+            && this.lastAvailableWidth === availableWidth
+            && areMaterializationTicksEqual(this.lastSimulationTick, simulationTick)
+        ) return;
+        const contextBase = createHostedRegionSessionContextBase(availableWidth, this.processor, context);
         const queues = this.ensureRegionQueues(availableWidth);
         const { boxes, totalHeight } = materializeHostedRegionsMoveWhole(
             queues,
@@ -398,14 +416,21 @@ export class HostedRegionPackager implements PackagerUnit {
         this.totalRegionHeight = totalHeight;
         this.lastAvailableWidth = availableWidth;
         this.lastAvailableHeight = Infinity;
+        this.lastSimulationTick = simulationTick;
     }
 
-    private materializeBounded(availableWidth: number, availableHeight: number): void {
-        if (this.boundedBoxes !== null && this.lastAvailableWidth === availableWidth && this.lastAvailableHeight === availableHeight) {
+    private materializeBounded(availableWidth: number, availableHeight: number, context: PackagerContext): void {
+        const simulationTick = resolveMaterializationTick(context);
+        if (
+            this.boundedBoxes !== null
+            && this.lastAvailableWidth === availableWidth
+            && this.lastAvailableHeight === availableHeight
+            && areMaterializationTicksEqual(this.lastSimulationTick, simulationTick)
+        ) {
             return;
         }
         if (!Number.isFinite(availableHeight)) {
-            this.materializeMoveWhole(availableWidth);
+            this.materializeMoveWhole(availableWidth, context);
             this.boundedBoxes = this.materializedBoxes ? cloneHostedRegionBoxes(this.materializedBoxes) : [];
             this.boundedHeight = this.totalRegionHeight;
             this.boundedOverflow = false;
@@ -413,7 +438,7 @@ export class HostedRegionPackager implements PackagerUnit {
             return;
         }
         const queues = this.ensureRegionQueues(availableWidth);
-        const contextBase = createHostedRegionSessionContextBase(availableWidth, this.processor);
+        const contextBase = createHostedRegionSessionContextBase(availableWidth, this.processor, context);
         const { boxes, occupiedHeight, hasOverflow, continuationQueues, totalHeight } =
             materializeHostedRegionsBounded(
                 queues,
@@ -436,14 +461,15 @@ export class HostedRegionPackager implements PackagerUnit {
         this.totalRegionHeight = totalHeight;
         this.lastAvailableWidth = availableWidth;
         this.lastAvailableHeight = availableHeight;
+        this.lastSimulationTick = simulationTick;
     }
 
-    private materialize(availableWidth: number, availableHeight: number): void {
+    private materialize(availableWidth: number, availableHeight: number, context: PackagerContext): void {
         if (this.usesSpanningContinuation()) {
-            this.materializeBounded(availableWidth, availableHeight);
+            this.materializeBounded(availableWidth, availableHeight, context);
             return;
         }
-        this.materializeMoveWhole(availableWidth);
+        this.materializeMoveWhole(availableWidth, context);
     }
 
     private createFrozenCurrentFragment(): FrozenHostedRegionPackager {
@@ -486,7 +512,7 @@ export class HostedRegionPackager implements PackagerUnit {
     prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
         this.ensureRegionQueues(availableWidth);
         this.syncHostedActors(context.actorIndex);
-        this.materialize(availableWidth, availableHeight);
+        this.materialize(availableWidth, availableHeight, context);
     }
 
     getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference {
@@ -498,7 +524,7 @@ export class HostedRegionPackager implements PackagerUnit {
     }
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): Box[] {
-        this.materialize(availableWidth, availableHeight);
+        this.materialize(availableWidth, availableHeight, context);
         const mt = this.marginTopVal;
         const leftMargin = context.margins.left;
         this.lastEmittedLeftMargin = leftMargin;
@@ -594,7 +620,7 @@ export class HostedRegionPackager implements PackagerUnit {
         const availableWidth = this.lastAvailableWidth > 0
             ? this.lastAvailableWidth
             : (context.pageWidth - context.margins.left - context.margins.right);
-        this.materializeBounded(availableWidth, availableHeight);
+        this.materializeBounded(availableWidth, availableHeight, context);
         if ((this.boundedBoxes || []).length === 0) {
             return { currentFragment: null, continuationFragment: this };
         }

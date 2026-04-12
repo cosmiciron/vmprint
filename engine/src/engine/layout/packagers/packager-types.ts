@@ -1,4 +1,5 @@
 import { Box } from '../../types';
+import type { SimulationProgressionConfig } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox } from '../layout-core-types';
 import type { ActorSignal, ActorSignalDraft } from '../actor-event-bus';
@@ -32,6 +33,9 @@ export interface PackagerContext {
     pageIndex: number;
     cursorY: number;
     simulationTick?: number;
+    simulationTickRateHz?: number;
+    simulationProgression?: Required<SimulationProgressionConfig>;
+    simulationTimeOffsetSeconds?: number;
     actorIndex?: number;
     layoutBefore?: number;
     chunkOriginWorldY?: number;
@@ -200,7 +204,7 @@ export interface PackagerUnit {
 
     /**
      * @deprecated Use observeCommittedState() or updateCommittedState().
-     * Retained as a compatibility fallback for older reactive actors.
+     * Retained as a fallback for older reactive actors.
      */
     observeCommittedSignals?(context: PackagerContext): ObservationResult | null | undefined;
 

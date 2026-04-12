@@ -4,6 +4,25 @@
   "description": "Core interfaces for VMPrint engines, contexts, and font managers.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cosmiciron/vmprint.git",
+    "directory": "contracts"
+  },
+  "bugs": {
+    "url": "https://github.com/cosmiciron/vmprint/issues"
+  },
+  "homepage": "https://github.com/cosmiciron/vmprint/tree/main/contracts#readme",
+  "keywords": [
+    "vmprint",
+    "contracts",
+    "types",
+    "interfaces",
+    "font-manager",
+    "context",
+    "typesetting"
+  ],
+  "sideEffects": false,
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -16,7 +35,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.map"
   ],
   "scripts": {
     "build": "tsup",

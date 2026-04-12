@@ -236,9 +236,7 @@ export class WorldPlainPackager implements PackagerUnit {
         if (!session || !Array.isArray(boxes)) return;
 
         for (const box of boxes) {
-            const directive =
-                (box.properties?.spatialField as SpatialFieldDirective | undefined)
-                ?? (box.properties?.zoneField as SpatialFieldDirective | undefined);
+            const directive = (box.properties?.space ?? box.properties?.spatialField) as SpatialFieldDirective | undefined;
             if (!directive || (directive.kind !== undefined && directive.kind !== 'exclude')) continue;
             const sourceId = String(box.meta?.sourceId || this.sourceId || 'world-plain');
             const obstacles = buildExclusionFieldObstacles({

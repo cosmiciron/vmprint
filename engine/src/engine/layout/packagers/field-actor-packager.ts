@@ -2,13 +2,16 @@ import { Box, Element, ElementStyle } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { LayoutUtils } from '../layout-utils';
 import {
+    ObservationResult,
     PackagerContext,
     PackagerPlacementPreference,
     PackagerReshapeResult,
     PackagerReshapeProfile,
-    PackagerUnit
+    PackagerUnit,
+    resolvePackagerWorldYAtCursor
 } from './packager-types';
 import { createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
+import { SpatialFieldGeometryCapability, SpatialFieldMovementCapability } from './spatial-field-capability';
 
 type LayoutProcessorWithConfig = LayoutProcessor & {
     config?: {
@@ -25,27 +28,6 @@ function resolveFieldActorStyle(processor: LayoutProcessor, element: Element): E
     };
 }
 
-function buildClipProperties(element: Element): Record<string, unknown> {
-    const field = element.properties?.spatialField ?? element.properties?.zoneField;
-    const placement = element.placement;
-    const assembly = field?.exclusionAssembly ?? placement?.exclusionAssembly;
-    const shape = field?.shape ?? placement?.shape;
-    return {
-        ...(assembly?.members
-            ? {
-                _clipAssembly: assembly.members.map((member) => ({
-                    x: Number(member.x ?? 0),
-                    y: Number(member.y ?? 0),
-                    w: Math.max(0, Number(member.w ?? 0)),
-                    h: Math.max(0, Number(member.h ?? 0)),
-                    shape: (member.shape ?? 'rect') as 'rect' | 'circle'
-                }))
-            }
-            : {}),
-        ...(shape ? { _clipShape: shape } : {})
-    };
-}
-
 export function isFieldActorElement(element: Element | undefined): boolean {
     return String(element?.type || '').trim().toLowerCase() === 'field-actor';
 }
@@ -57,6 +39,8 @@ export class FieldActorPackager implements PackagerUnit {
     private readonly marginTop: number;
     private readonly marginBottom: number;
     private readonly properties: Record<string, unknown>;
+    private readonly movement: SpatialFieldMovementCapability;
+    private readonly hasSpatialField: boolean;
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -75,10 +59,15 @@ export class FieldActorPackager implements PackagerUnit {
         this.height = Math.max(0, LayoutUtils.validateUnit(this.style.height ?? 0));
         this.marginTop = Math.max(0, LayoutUtils.validateUnit(this.style.marginTop ?? 0));
         this.marginBottom = LayoutUtils.validateUnit(this.style.marginBottom ?? 0);
+        const geometry = new SpatialFieldGeometryCapability(element);
         this.properties = {
             ...(element.properties || {}),
-            ...buildClipProperties(element)
+            ...geometry.buildClipProperties()
         };
+        this.hasSpatialField = !!(element.properties?.space || element.properties?.spatialField);
+        this.movement = new SpatialFieldMovementCapability(
+            element.properties?.motion
+        );
         this.actorId = resolvedIdentity.actorId;
         this.sourceId = resolvedIdentity.sourceId;
         this.actorKind = 'field-actor';
@@ -94,12 +83,13 @@ export class FieldActorPackager implements PackagerUnit {
         return Boolean(this.element.properties?.keepWithNext ?? this.style.keepWithNext);
     }
 
-    prepare(_availableWidth: number, _availableHeight: number, _context: PackagerContext): void {
+    prepare(_availableWidth: number, _availableHeight: number, context: PackagerContext): void {
+        this.movement.prepare(context);
         // No deferred materialization required for a simple field body actor.
     }
 
     getPlacementPreference(_fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference | null {
-        return { minimumWidth: this.width };
+        return { minimumWidth: Math.max(this.width, this.movement.state.x + this.width) };
     }
 
     getReshapeProfile(): PackagerReshapeProfile {
@@ -109,14 +99,27 @@ export class FieldActorPackager implements PackagerUnit {
     }
 
     emitBoxes(_availableWidth: number, _availableHeight: number, _context: PackagerContext): Box[] {
+        const movementState = this.movement.state;
         return [{
             type: 'field-actor',
-            x: 0,
-            y: 0,
+            x: movementState.x,
+            y: movementState.y,
             w: this.width,
             h: this.height,
             style: this.style,
-            properties: this.properties,
+            properties: {
+                ...this.properties,
+                ...(this.movement.enabled
+                    ? {
+                        _motionState: {
+                            tick: movementState.tick,
+                            x: movementState.x,
+                            y: movementState.y,
+                            label: movementState.label
+                        }
+                    }
+                    : {})
+            },
             lines: [],
             meta: {
                 actorId: this.actorId,
@@ -129,8 +132,33 @@ export class FieldActorPackager implements PackagerUnit {
         }];
     }
 
+    wantsSimulationTicks(context: PackagerContext): boolean {
+        return this.movement.wantsSimulationTicks(context);
+    }
+
+    stepSimulationTick(context: PackagerContext): ObservationResult | null {
+        return this.movement.stepSimulationTick(
+            context,
+            {
+                actorId: this.actorId,
+                sourceId: this.sourceId,
+                actorKind: this.actorKind,
+                fragmentIndex: this.fragmentIndex
+            },
+            () => context.processor?.getCurrentLayoutSession?.()
+                ?.resolveActorRuntimeFrontier?.(this, { actorId: this.actorId, sourceId: this.sourceId })
+                ?? {
+                    pageIndex: context.pageIndex,
+                    cursorY: context.cursorY,
+                    worldY: resolvePackagerWorldYAtCursor(context),
+                    actorId: this.actorId,
+                    sourceId: this.sourceId
+                }
+        );
+    }
+
     getRequiredHeight(): number {
-        return this.marginTop + this.height + this.marginBottom;
+        return this.marginTop + Math.max(0, this.movement.state.y) + this.height + this.marginBottom;
     }
 
     getZIndex(): number {
@@ -147,6 +175,13 @@ export class FieldActorPackager implements PackagerUnit {
 
     getTrailingSpacing(): number {
         return this.marginBottom;
+    }
+
+    occupiesFlowSpace(): boolean {
+        // Spatial-field actors already behave as out-of-flow obstacle publishers
+        // inside hosted-region settlement. Mirror that at the root/world level so
+        // the same authored field does not silently change semantics based on host.
+        return !this.hasSpatialField;
     }
 
     reshape(_availableHeight: number, _context: PackagerContext): PackagerReshapeResult {

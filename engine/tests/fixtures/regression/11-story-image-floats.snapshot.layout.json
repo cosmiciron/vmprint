@@ -877,7 +877,7 @@
           [
             {
               "text": "available page height is exhausted mid-story, the packager emits a ",
-              "width": 328.351074,
+              "width": 327.534668,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -913,7 +913,7 @@
           [
             {
               "text": "wrap around their remaining height correctly. Story-absolute images past the ",
-              "width": 375.412598,
+              "width": 374.596191,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -994,7 +994,7 @@
           [
             {
               "text": "stateful resolver handle it transparently, treating the carry-over as just another",
-              "width": 377.856445,
+              "width": 377.040039,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"

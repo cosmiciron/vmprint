@@ -1,12 +1,13 @@
-import { performance } from 'node:perf_hooks';
+import { runtimePerformance as performance } from '../performance';
 import type { Element, LayoutScriptingConfig } from '../types';
 import type { CollaboratorHost } from './runtime/session/session-runtime-types';
 
-export type ScriptPhase = 'onLoad' | 'onCreate' | 'onReady' | 'onRefresh' | 'onChanged' | 'onMessage';
+export type ScriptPhase = 'onLoad' | 'onCreate' | 'onReady' | 'onRefresh' | 'onChanged' | 'onTick' | 'onMessage';
 
 export type ScriptGlobals = {
     doc?: unknown;
     self?: unknown;
+    tick?: unknown;
     element?: unknown;
     elementsByType?: unknown;
     sendMessage?: unknown;
@@ -43,6 +44,7 @@ export type ScriptLifecycleState = {
 const RESERVED_GLOBAL_NAMES = [
     'doc',
     'self',
+    'tick',
     'element',
     'elementsByType',
     'sendMessage',
@@ -173,7 +175,7 @@ export class ScriptRuntimeHost {
         return null;
     }
 
-    getDocumentHandlerName(phase: Extract<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh' | 'onChanged' | 'onMessage'>): string | null {
+    getDocumentHandlerName(phase: Extract<ScriptPhase, 'onLoad' | 'onReady' | 'onRefresh' | 'onChanged' | 'onTick' | 'onMessage'>): string | null {
         if (phase === 'onLoad' && typeof this.scripting?.onBeforeLayout === 'string' && this.scripting.onBeforeLayout.trim()) {
             return this.scripting.onBeforeLayout.trim();
         }
@@ -194,6 +196,7 @@ export class ScriptRuntimeHost {
         return this.getDocumentHandlerName('onReady') !== null
             || this.getDocumentHandlerName('onRefresh') !== null
             || this.getDocumentHandlerName('onChanged') !== null
+            || this.getDocumentHandlerName('onTick') !== null
             || this.getDocumentHandlerName('onMessage') !== null;
     }
 
@@ -242,6 +245,8 @@ export class ScriptRuntimeHost {
             case 'onChanged':
                 host.recordProfile('documentChangedCalls', 1);
                 break;
+            case 'onTick':
+                break;
             case 'onMessage':
                 host.recordProfile('messageHandlerCalls', 1);
                 break;
@@ -280,6 +285,8 @@ export class ScriptRuntimeHost {
                 break;
             case 'onChanged':
                 host.recordProfile('documentChangedMs', elapsed);
+                break;
+            case 'onTick':
                 break;
             case 'onMessage':
                 break;

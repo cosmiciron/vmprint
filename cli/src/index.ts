@@ -3,11 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { pathToFileURL } from 'url';
 import { OverlayProvider, VmprintOutputStream } from '@vmprint/contracts';
-import { LayoutEngine } from '@vmprint/engine';
-import { Renderer } from '@vmprint/engine';
-import { LayoutUtils } from '@vmprint/engine';
-import { createEngineRuntime } from '@vmprint/engine';
-import { AnnotatedLayoutStream, LayoutConfig, Page, resolveDocumentSourceText, toLayoutConfig, type DocumentIR } from '@vmprint/engine';
+import { LayoutEngine, LayoutUtils, AnnotatedLayoutStream, LayoutConfig, Page, Renderer, createPrintEngineRuntime, resolveDocumentSourceText, toLayoutConfig, type DocumentIR } from '@vmprint/engine';
 import { performance } from 'perf_hooks';
 import PdfContext from '@vmprint/context-pdf';
 import LocalFontManager from '@vmprint/local-fonts';
@@ -142,7 +138,7 @@ async function run() {
         ? await loadImplementation<new (...args: any[]) => any>(options.fontManager, '')
         : LocalFontManager;
 
-    const runtime = createEngineRuntime({ fontManager: new FontManagerClass() });
+    const runtime = createPrintEngineRuntime({ fontManager: new FontManagerClass() });
 
     let config: LayoutConfig;
     let pages: Page[];
@@ -253,4 +249,3 @@ run().catch((error) => {
     console.error('[vmprint] Failed:', error);
     process.exit(1);
 });
-

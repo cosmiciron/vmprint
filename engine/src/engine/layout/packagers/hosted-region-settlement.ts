@@ -126,9 +126,7 @@ class HostedRegionCarryoverFieldPackager implements PackagerUnit {
 
 function readHostedRegionFieldDirective(boxes: Box[]): SpatialFieldDirective | null {
     for (const box of boxes) {
-        const directive =
-            (box.properties?.spatialField as SpatialFieldDirective | undefined)
-            ?? (box.properties?.zoneField as SpatialFieldDirective | undefined);
+        const directive = box.properties?.space as SpatialFieldDirective | undefined;
         if (directive && typeof directive === 'object') {
             return directive;
         }
@@ -137,9 +135,7 @@ function readHostedRegionFieldDirective(boxes: Box[]): SpatialFieldDirective | n
 }
 
 function readHostedRegionElementFieldDirective(element: Element): SpatialFieldDirective | null {
-    const directive =
-        (element.properties?.spatialField as SpatialFieldDirective | undefined)
-        ?? (element.properties?.zoneField as SpatialFieldDirective | undefined);
+    const directive = (element.properties?.space ?? element.properties?.spatialField) as SpatialFieldDirective | undefined;
     return directive && typeof directive === 'object' ? directive : null;
 }
 
@@ -266,30 +262,20 @@ function buildHostedRegionFieldCarryoverEntry(
     deltaY: number
 ): HostedRegionActorEntry {
     const shiftedDirective = cloneShiftedFieldDirective(directive, deltaY);
-    const explicitFieldX = Number.isFinite(directive.x) ? Math.max(0, Number(directive.x)) : null;
-    const explicitFieldY = Number.isFinite(directive.y) ? Math.max(0, Number(directive.y)) : null;
     const anchorBox = emitted[0];
-    const emittedAlreadyIncludesFieldX =
-        explicitFieldX !== null && Math.abs(Number(anchorBox?.x || 0) - explicitFieldX) <= 0.01;
-    const emittedAlreadyIncludesFieldY =
-        explicitFieldY !== null && Math.abs(Number(anchorBox?.y || 0) - explicitFieldY) <= 0.01;
+    const anchorX = Number(anchorBox?.x || 0);
+    const anchorY = Number(anchorBox?.y || 0);
     const shiftedBoxes = emitted.map((box) => ({
         ...box,
-        x:
-            explicitFieldX !== null && emittedAlreadyIncludesFieldX
-                ? Number(box.x || 0) - explicitFieldX
-                : Number(box.x || 0),
-        y:
-            explicitFieldY !== null && emittedAlreadyIncludesFieldY
-                ? Number(box.y || 0) - explicitFieldY
-                : Number(box.y || 0),
+        // Carryover actors are replayed on the next page via a fresh field directive.
+        // Normalize emitted geometry back to anchor-local coordinates so host-resolved
+        // float placement and explicit x/y placement both replay from the same origin.
+        x: Number(box.x || 0) - anchorX,
+        y: Number(box.y || 0) - anchorY,
         properties: {
             ...(box.properties || {}),
-            ...(box.properties?.spatialField
-                ? { spatialField: shiftedDirective }
-                : {}),
-            ...(box.properties?.zoneField
-                ? { zoneField: shiftedDirective }
+            ...(box.properties?.space
+                ? { space: shiftedDirective }
                 : {})
         },
         meta: box.meta ? { ...box.meta } : box.meta
@@ -301,11 +287,8 @@ function buildHostedRegionFieldCarryoverEntry(
             ...entry.element,
             properties: {
                 ...(entry.element.properties || {}),
-                ...(entry.element.properties?.spatialField
-                    ? { spatialField: shiftedDirective }
-                    : {}),
-                ...(entry.element.properties?.zoneField
-                    ? { zoneField: shiftedDirective }
+                ...((entry.element.properties?.space || entry.element.properties?.spatialField)
+                    ? { space: shiftedDirective }
                     : {})
             }
         }

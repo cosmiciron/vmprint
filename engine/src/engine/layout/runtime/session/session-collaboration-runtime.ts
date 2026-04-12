@@ -113,6 +113,16 @@ export class SessionCollaborationRuntime {
         this.sessionWorldRuntime.recordPageCapture(record);
     }
 
+    bumpPageRenderRevision(pageIndex: number): void {
+        this.sessionWorldRuntime.bumpPageRenderRevision(pageIndex);
+    }
+
+    bumpPageRenderRevisions(pageIndexes: Iterable<number>): void {
+        for (const pageIndex of pageIndexes) {
+            this.bumpPageRenderRevision(pageIndex);
+        }
+    }
+
     createPageCaptureState(params: PageCaptureStateParams): PageCaptureState {
         return this.sessionWorldRuntime.createPageCaptureState(params);
     }

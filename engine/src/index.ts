@@ -1,15 +1,4 @@
-export * from './engine/types';
-export * from './engine/document';
-export * from './engine/layout-engine';
-export * from './engine/renderer';
-export * from './engine/interaction-model';
-export * from './font-management';
-export * from './font-management/ops';
-export * from './engine/spatial-document';
-export * from './engine/runtime';
-export * from './engine/layout/track-sizing';
-export * from './engine/layout/exclusion-field';
-export * from './engine/layout/simulation-report';
-export { buildDataUri, parseEmbeddedImagePayloadCached } from './engine/image-data';
-export { LayoutUtils } from './engine/layout/layout-utils';
+// Public engine surface. Consumers should import from `@vmprint/engine`.
+export * from './core/index';
+export * from './print/index';
 export * from './engine/layout/text-delegate';

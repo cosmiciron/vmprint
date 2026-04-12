@@ -4,6 +4,7 @@ import { PackagerUnit } from './packager-types';
 import { FlowBoxPackager } from './flow-box-packager';
 import { DropCapPackager } from './dropcap-packager';
 import { FieldActorPackager, isFieldActorElement } from './field-actor-packager';
+import { hasSpatialCapabilityProperties, SpatialCapabilityPackager } from './spatial-capability-packager';
 import { SpatialGridPackager } from './spatial-grid-packager';
 import { StoryPackager } from './story-packager';
 import { WorldPlainPackager, isWorldPlainElement } from './world-plain-packager';
@@ -83,7 +84,11 @@ export function buildPackagerForElement(
     if (scriptHost && hasMessageHandler) {
         return new ScriptedFlowBoxPackager(processor, flowBox, scriptHost, item, identity, [index], elements || [item]);
     }
-    return new FlowBoxPackager(processor, flowBox, identity);
+    const flowPackager = new FlowBoxPackager(processor, flowBox, identity);
+    if (hasSpatialCapabilityProperties(item)) {
+        return new SpatialCapabilityPackager(item, processor, flowPackager, identity);
+    }
+    return flowPackager;
 }
 
 export function createPackagers(

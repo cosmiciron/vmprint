@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { ContextTextOptions } from '@vmprint/contracts';
 import { Renderer } from '../src/engine/renderer';
 import { LayoutConfig, Page } from '../src/engine/types';
-import { createEngineRuntime, setDefaultEngineRuntime } from '../src/engine/runtime';
+import { setDefaultEngineRuntime } from '../src/engine/runtime';
+import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { loadLocalFontManager, MockContext } from './harness/engine-harness';
 import { logStep } from './harness/test-utils';
 
@@ -94,7 +95,7 @@ async function testMixedRtlRunReordersInsideLtrParagraph() {
 
 async function run() {
     const LocalFontManager = await loadLocalFontManager();
-    setDefaultEngineRuntime(createEngineRuntime({ fontManager: new LocalFontManager() }));
+    setDefaultEngineRuntime(createPrintEngineRuntime({ fontManager: new LocalFontManager() }));
     await testAutoDirectionUsesParagraphBaseForNeutralLeadingLines();
     await testMixedRtlRunReordersInsideLtrParagraph();
     log('OK');

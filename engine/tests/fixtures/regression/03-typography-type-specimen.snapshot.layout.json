@@ -570,15 +570,15 @@
               "fontFamily": "Noto Sans Symbols 2"
             },
             {
-              "text": "→ ← ↑ ↓ ",
-              "width": 53.856,
+              "text": "→ ← ↑ ↓",
+              "width": 51.392,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": "✓ ✗ ★ ☆ ☑ ⚠ ",
-              "width": 74.734,
+              "text": " ✓ ✗ ★ ☆ ☑ ⚠ ",
+              "width": 77.594,
               "ascent": 1069,
               "descent": 630,
               "fontFamily": "Noto Sans Symbols 2"
@@ -1267,15 +1267,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "عربي",
-              "width": 23.1439,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": ":",
-              "width": 3.484,
+              "text": "عربي:",
+              "width": 26.4537,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -1456,15 +1449,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "المستند",
-              "width": 39.1989,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": ".",
-              "width": 3.484,
+              "text": "المستند.",
+              "width": 42.5087,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -1609,15 +1595,15 @@
               "fontFamily": "Noto Sans"
             },
             {
-              "text": "→ ",
-              "width": 14.688,
+              "text": "→",
+              "width": 12,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": "nearest static match boundary",
-              "width": 171.96,
+              "text": " nearest static match boundary",
+              "width": 175.08,
               "ascent": 1069,
               "descent": 293,
               "fontFamily": "Noto Sans"

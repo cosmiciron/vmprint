@@ -131,7 +131,7 @@
           [
             {
               "text": "on a combining mark boundary is a rendering error.",
-              "width": 272.806641,
+              "width": 272.144531,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -198,7 +198,7 @@
         "x": 72,
         "y": 438.70625,
         "w": 468,
-        "h": 39.552,
+        "h": 38.99904,
         "lines": [
           [
             {
@@ -209,15 +209,8 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": "(Hànzì) — Chinese characters used for Mandarin, Cantonese, and classical texts: ",
-              "width": 436.869141,
+              "text": " (Hànzì) — Chinese characters used for Mandarin, Cantonese, and classical texts: ",
+              "width": 440.203125,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -237,9 +230,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 490.25825,
+        "y": 489.70529,
         "w": 468,
-        "h": 39.552,
+        "h": 38.99904,
         "lines": [
           [
             {
@@ -250,15 +243,8 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": "(Nihongo) — Japanese mixes kanji with hiragana and katakana syllabaries: ",
-              "width": 402.884766,
+              "text": " (Nihongo) — Japanese mixes kanji with hiragana and katakana syllabaries: ",
+              "width": 406.21875,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -411,7 +397,7 @@
       {
         "type": "p",
         "x": 72,
-        "y": 541.81025,
+        "y": 540.70433,
         "w": 468,
         "h": 59.328,
         "lines": [
@@ -424,15 +410,8 @@
               "fontFamily": "Noto Sans KR"
             },
             {
-              "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans KR"
-            },
-            {
-              "text": "(Hangugeo) — Korean Hangul syllable blocks, each composed from jamo ",
-              "width": 394.201172,
+              "text": " (Hangugeo) — Korean Hangul syllable blocks, each composed from jamo ",
+              "width": 397.535156,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -678,9 +657,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 613.13825,
+        "y": 612.03233,
         "w": 468,
-        "h": 39.552,
+        "h": 38.99904,
         "lines": [
           [
             {
@@ -698,15 +677,8 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": "uses a ",
-              "width": 38.689453,
+              "text": " uses a ",
+              "width": 42.023438,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -869,15 +841,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "left",
-              "width": 18.324,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": ".",
-              "width": 3.216,
+              "text": "left.",
+              "width": 21.54,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -1032,15 +997,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "initial",
-              "width": 30.864,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": ",",
-              "width": 3.216,
+              "text": "initial,",
+              "width": 34.08,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -1053,15 +1011,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "medial",
-              "width": 38.292,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": ",",
-              "width": 3.216,
+              "text": "medial,",
+              "width": 41.508,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -1074,15 +1025,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "final",
-              "width": 24.468,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": ",",
-              "width": 3.216,
+              "text": "final,",
+              "width": 27.684,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -1109,15 +1053,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "isolated",
-              "width": 44.412,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": ")",
-              "width": 3.6,
+              "text": "isolated)",
+              "width": 48.012,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -1179,15 +1116,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "الرَّحِيمِ",
-              "width": 27.1092,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": ".",
-              "width": 3.216,
+              "text": "الرَّحِيمِ.",
+              "width": 30.1644,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -1200,7 +1130,7 @@
         "x": 72,
         "y": 185.197375,
         "w": 468,
-        "h": 83.232,
+        "h": 81.9036,
         "lines": [
           [
             {
@@ -1227,15 +1157,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " ",
-              "width": 3.12,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": "means \"for publishing\" and ",
-              "width": 145.939453,
+              "text": " means \"for publishing\" and ",
+              "width": 149.273438,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1248,15 +1171,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " ",
-              "width": 3.12,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": "means \"welcome\". Bidirectional text ",
-              "width": 193.265625,
+              "text": " means \"welcome\". Bidirectional text ",
+              "width": 196.599609,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1276,7 +1192,7 @@
       {
         "type": "h2",
         "x": 72,
-        "y": 292.429375,
+        "y": 291.100975,
         "w": 468,
         "h": 23.709375,
         "lines": [
@@ -1294,7 +1210,7 @@
       {
         "type": "p",
         "x": 72,
-        "y": 326.13875,
+        "y": 324.81035,
         "w": 468,
         "h": 82.128,
         "lines": [
@@ -1307,15 +1223,8 @@
               "fontFamily": "Noto Sans Thai"
             },
             {
-              "text": " ",
-              "width": 3.12,
-              "ascent": 1061,
-              "descent": 450,
-              "fontFamily": "Noto Sans Thai"
-            },
-            {
-              "text": "— Thai is written left to right without spaces between words. Vowel signs ",
-              "width": 388.845703,
+              "text": " — Thai is written left to right without spaces between words. Vowel signs ",
+              "width": 392.179688,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1324,7 +1233,7 @@
           [
             {
               "text": "appear above, below, before, and after their consonant base: ",
-              "width": 327.556641,
+              "width": 326.894531,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1479,9 +1388,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 420.26675,
+        "y": 418.93835,
         "w": 468,
-        "h": 61.596,
+        "h": 60.948,
         "lines": [
           [
             {
@@ -1492,15 +1401,8 @@
               "fontFamily": "Noto Sans Thai"
             },
             {
-              "text": " ",
-              "width": 3.12,
-              "ascent": 1061,
-              "descent": 450,
-              "fontFamily": "Noto Sans Thai"
-            },
-            {
-              "text": "— A standard Thai greeting, usefully representative of the typical glyph-stack ",
-              "width": 411.544922,
+              "text": " — A standard Thai greeting, usefully representative of the typical glyph-stack ",
+              "width": 414.878906,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1509,7 +1411,7 @@
           [
             {
               "text": "density. The phrase ",
-              "width": 108.726563,
+              "width": 107.835938,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1522,15 +1424,8 @@
               "fontFamily": "Noto Sans Thai"
             },
             {
-              "text": " ",
-              "width": 3.12,
-              "ascent": 1061,
-              "descent": 450,
-              "fontFamily": "Noto Sans Thai"
-            },
-            {
-              "text": "(\"thank you very much\") follows: every syllable carries at",
-              "width": 299.291016,
+              "text": " (\"thank you very much\") follows: every syllable carries at",
+              "width": 302.625,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1550,7 +1445,7 @@
       {
         "type": "h2",
         "x": 72,
-        "y": 505.86275,
+        "y": 503.88635,
         "w": 468,
         "h": 23.709375,
         "lines": [
@@ -1568,9 +1463,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 539.572125,
+        "y": 537.595725,
         "w": 468,
-        "h": 55.488,
+        "h": 54.6024,
         "lines": [
           [
             {
@@ -1589,10 +1484,10 @@
             },
             {
               "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             },
             {
               "text": "こんにちは",
@@ -1603,10 +1498,10 @@
             },
             {
               "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans JP"
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             },
             {
               "text": "한국어",
@@ -1617,10 +1512,10 @@
             },
             {
               "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans KR"
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             },
             {
               "text": "สวัสดี",
@@ -1631,10 +1526,10 @@
             },
             {
               "text": " ",
-              "width": 3.12,
-              "ascent": 1061,
-              "descent": 450,
-              "fontFamily": "Noto Sans Thai"
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             },
             {
               "text": "مرحبا",
@@ -1644,15 +1539,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " ",
-              "width": 3.12,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": "— punctuation !? ",
-              "width": 94.060547,
+              "text": " — punctuation !? ",
+              "width": 97.394531,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1665,25 +1553,25 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": "symbols ",
-              "width": 47.34375,
+              "text": " symbols ",
+              "width": 50.677734,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
             },
             {
-              "text": "★☆✓ ",
-              "width": 34.884,
+              "text": "★☆✓",
+              "width": 32.196,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": " ",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             }
           ],
           [
@@ -1714,9 +1602,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 607.060125,
+        "y": 604.198125,
         "w": 468,
-        "h": 83.232,
+        "h": 81.9036,
         "lines": [
           [
             {
@@ -1734,15 +1622,8 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": "+ ",
-              "width": 10.341797,
+              "text": " + ",
+              "width": 13.675781,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1771,15 +1652,8 @@
               "fontFamily": "Noto Sans KR"
             },
             {
-              "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans KR"
-            },
-            {
-              "text": "+ ",
-              "width": 10.341797,
+              "text": " + ",
+              "width": 13.675781,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1792,15 +1666,8 @@
               "fontFamily": "Noto Sans Thai"
             },
             {
-              "text": " ",
-              "width": 3.12,
-              "ascent": 1061,
-              "descent": 450,
-              "fontFamily": "Noto Sans Thai"
-            },
-            {
-              "text": "+ ",
-              "width": 10.341797,
+              "text": " + ",
+              "width": 13.675781,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1813,15 +1680,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " ",
-              "width": 3.12,
-              "ascent": 1374,
-              "descent": 738,
-              "fontFamily": "Noto Sans Arabic"
-            },
-            {
-              "text": "with punctuation clusters (—, …, ",
-              "width": 176.068359,
+              "text": " with punctuation clusters (—, …, ",
+              "width": 179.402344,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1862,8 +1722,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": ") and symbols (∑, ≤, ",
-              "width": 110.501953,
+              "text": ") and symbols (∑, ≤,",
+              "width": 107.167969,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1885,15 +1745,8 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": "+ ",
-              "width": 10.341797,
+              "text": " + ",
+              "width": 13.675781,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1906,15 +1759,8 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
-            },
-            {
-              "text": "+ ",
-              "width": 10.341797,
+              "text": " + ",
+              "width": 13.675781,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1927,15 +1773,8 @@
               "fontFamily": "Noto Sans KR"
             },
             {
-              "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans KR"
-            },
-            {
-              "text": "+ ",
-              "width": 10.341797,
+              "text": " + ",
+              "width": 13.675781,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1948,15 +1787,8 @@
               "fontFamily": "Noto Sans Thai"
             },
             {
-              "text": " ",
-              "width": 3.12,
-              "ascent": 1061,
-              "descent": 450,
-              "fontFamily": "Noto Sans Thai"
-            },
-            {
-              "text": "+ ",
-              "width": 10.341797,
+              "text": " + ",
+              "width": 13.675781,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -2008,7 +1840,7 @@
         "x": 72,
         "y": 117.709375,
         "w": 468,
-        "h": 59.328,
+        "h": 58.49856,
         "lines": [
           [
             {
@@ -2027,10 +1859,10 @@
             },
             {
               "text": " ",
-              "width": 2.688,
-              "ascent": 1160,
-              "descent": 288,
-              "fontFamily": "Noto Sans SC"
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
             }
           ],
           [
@@ -2056,7 +1888,7 @@
       {
         "type": "p",
         "x": 72,
-        "y": 189.037375,
+        "y": 188.207935,
         "w": 468,
         "h": 47.41875,
         "lines": [
@@ -2092,7 +1924,7 @@
       {
         "type": "blockquote",
         "x": 72,
-        "y": 258.456125,
+        "y": 257.626685,
         "w": 468,
         "h": 47.41875,
         "lines": [
