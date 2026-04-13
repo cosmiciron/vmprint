@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/engine",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Deterministic typesetting engine core. Pure-JS, environment-agnostic document composition.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
@@ -70,7 +70,6 @@
     "test": "npm run test:modules && npm run test:flat && npm run test:scripting && npm run test:strip && npm run test:standard-fonts && npm run test:spatial-ir && npm run test:engine"
   },
   "dependencies": {
-    "@vmprint/contracts": "^1.0.2",
     "bidi-js": "^1.0.3",
     "dfa": "^1.2.0",
     "fontkit": "^2.0.4",
@@ -80,10 +79,10 @@
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
-    "tsup": "^8.5.1",
     "@vmprint/local-fonts": "*",
     "@vmprint/standard-fonts": "*",
     "rimraf": "^6.1.3",
+    "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.7.3"
   },

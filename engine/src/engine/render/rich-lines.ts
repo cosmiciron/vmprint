@@ -1,4 +1,4 @@
-import { Context } from '@vmprint/contracts';
+import type { Context } from '../../contracts';
 import { ElementStyle, LayoutConfig } from '../types';
 import { LAYOUT_DEFAULTS } from '../layout/defaults';
 import { LayoutUtils } from '../layout/layout-utils';

@@ -1,4 +1,4 @@
-import { Context } from '@vmprint/contracts';
+import type { Context } from '../../contracts';
 import { Box, DebugZoneRegion } from '../types';
 
 type DebugStyle = {

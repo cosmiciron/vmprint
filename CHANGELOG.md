@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [Unreleased]
+
+---
+
+## [1.2.0] - 2026-04-13
+
+### Added
+- **`pressrun` Bootstrap Example**: Added a minimal, non-packaged bootstrap program under `pressrun/` to serve as the simplest practical engine integration example.
+
+### Changed
+- **Repository Contraction and Repositioning**: Removed the in-repo preview package, static docs site, generated API docs, and related build scripts so the repository now centers on the engine, the CLI, focused guides/references, and the small `pressrun` bootstrap.
+- **Engine-First Public Surface**: Introduced the simplified `VMPrintEngine` / `loadDocument` surface and rewired the CLI to use that higher-level API for its normal render path, while keeping the older `LayoutEngine` bootstrap path available as a supported advanced surface.
+- **Developer-Facing Documentation Refresh**: Reworked the quickstart and package-facing docs to match the narrower audience and current structure, with `pressrun` positioned as the hello-world example and the CLI positioned as the operational tool rather than the canonical bootstrap.
+- **Contracts Positioning Update**: Reframed `contracts/` as a workspace-local and source-copy contract layer instead of a repo surface actively positioned as a public package for extension authors.
+
+### Fixed
+- **CLI Warm Profiling Semantics**: Restored `vmprint --profile-layout` warm timing to the historical warmed-runtime behavior by reusing and priming a shared profiling runtime, avoiding misleading regressions caused by rebuilding a fresh engine and font manager for each warm sample.
+- **Root Test Workflow**: Updated the packaged integration smoke test path so root `npm test` builds the required workspace artifacts before checking packaged output.
+- **Workspace Lockfile Hygiene**: Removed stale preview workspace metadata from `package-lock.json` after the repo split.
+
+---
+
 ## [1.1.0] - 2026-03-25
 
 ### Added

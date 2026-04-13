@@ -8,7 +8,7 @@ import type {
     TextDelegate,
     TextDelegateState,
     VerticalTextMetrics
-} from '@vmprint/contracts';
+} from '../contracts';
 import { cloneFontRegistry } from './ops';
 import { createAfmFontProxy } from './afm-proxy';
 import {

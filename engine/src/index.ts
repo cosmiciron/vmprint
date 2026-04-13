@@ -39,11 +39,11 @@ export type {
 } from './engine/types';
 
 // ---------------------------------------------------------------------------
-// Contract types — re-exported so consumers don't need @vmprint/contracts
-// directly just to satisfy TypeScript when wiring in a FontManager or Context
+// Contract types — exposed directly from this package so consumers don't need
+// a separate contracts package just to wire a FontManager or Context
 // ---------------------------------------------------------------------------
 
-export type { FontManager, Context, OverlayProvider } from '@vmprint/contracts';
+export type { FontManager, Context, OverlayProvider } from './contracts';
 
 // ---------------------------------------------------------------------------
 // Advanced / escape-hatch exports

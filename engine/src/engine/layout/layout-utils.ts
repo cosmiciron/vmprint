@@ -1,5 +1,5 @@
 import { LayoutConfig } from '../types';
-import type { FontConfig, TextDelegate } from '@vmprint/contracts';
+import type { FontConfig, TextDelegate } from '../../contracts';
 import { PAGE_SIZE_FALLBACK, PAGE_SIZE_POINTS } from './defaults';
 
 type NormalizedFontStyle = 'normal' | 'italic';

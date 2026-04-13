@@ -1,4 +1,4 @@
-import { Context } from '@vmprint/contracts';
+import type { Context } from '../../contracts';
 import { Box, ElementStyle } from '../types';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
 import { LayoutUtils } from '../layout/layout-utils';

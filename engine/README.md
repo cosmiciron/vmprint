@@ -13,7 +13,7 @@ import { VMPrintEngine, loadDocument } from '@vmprint/engine';
 import { StandardFontManager } from '@vmprint/standard-fonts';
 import { PdfLiteContext } from '@vmprint/context-pdf-lite';
 
-const document = loadDocument(sourceTextOrObject);
+const document = loadDocument(sourceTextOrObject, 'document.json');
 const engine = new VMPrintEngine(document, new StandardFontManager());
 
 const { width, height } = engine.info.pageSize;
@@ -30,6 +30,8 @@ const pdf: Uint8Array = context.getOutput();
 
 If you want the positioned pages before rendering, call `await engine.layout()` first. The resulting `Page[]` is cached and reused by `render()`.
 
+`VMPrintEngine` is the preferred API going forward, but it is not a hard break with the past. The older low-level bootstrap path built around `LayoutEngine`, `Renderer`, `createPrintEngineRuntime`, and `toLayoutConfig` is still supported for advanced integrations that want finer control over layout and rendering stages.
+
 ## What the engine owns
 
 - Document validation and normalization via `loadDocument`
@@ -44,11 +46,11 @@ If you want the positioned pages before rendering, call `await engine.layout()` 
 - Source-format conversion
 - Overlay logic and tooling concerns
 
-Those seams are described by the contracts in `@vmprint/contracts`.
+Those seams are described by the engine's exported contract types.
 
 ## Lower-level surface
 
-The package still exports lower-level pieces such as `LayoutEngine`, `Renderer`, `SimulationLoop`, spatial helpers, and document serialization utilities. They remain available for tooling, tests, and engine-adjacent integrations, but they are no longer the primary entry point.
+The package still exports lower-level pieces such as `LayoutEngine`, `Renderer`, `SimulationLoop`, spatial helpers, and document serialization utilities. They remain supported for tooling, tests, and engine-adjacent integrations, but they are no longer the primary entry point.
 
 ## Recommended stacks
 
@@ -58,7 +60,7 @@ The package still exports lower-level pieces such as `LayoutEngine`, `Renderer`,
 
 ## Related material
 
-- [Quickstart](../QUICKSTART.md)
-- [Architecture](../documents/ARCHITECTURE.md)
-- [Engine Internals](../documents/ENGINE-INTERNALS.md)
-- [Pressrun](../pressrun/README.md)
+- [Quickstart](https://github.com/cosmiciron/vmprint/blob/main/QUICKSTART.md)
+- [Architecture](https://github.com/cosmiciron/vmprint/blob/main/documents/ARCHITECTURE.md)
+- [Engine Internals](https://github.com/cosmiciron/vmprint/blob/main/documents/ENGINE-INTERNALS.md)
+- [Pressrun](https://github.com/cosmiciron/vmprint/tree/main/pressrun)

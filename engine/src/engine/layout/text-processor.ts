@@ -20,7 +20,7 @@ import {
 import { tryHyphenateSegmentToFit as hyphenateSegmentToFit } from './text-hyphenation';
 import { applyAdvancedJustification as applyJustification } from './text-justification';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
-import type { TextDelegate, TextMeasurer } from '@vmprint/contracts';
+import type { TextDelegate, TextMeasurer } from '../../contracts';
 
 export class TextProcessor extends FontProcessor {
 

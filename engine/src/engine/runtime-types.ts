@@ -1,4 +1,4 @@
-import type { FontConfig, FontManager, TextDelegate, TextDelegateState } from '@vmprint/contracts';
+import type { FontConfig, FontManager, TextDelegate, TextDelegateState } from '../contracts';
 
 export interface EngineRuntime {
     textDelegate: TextDelegate;

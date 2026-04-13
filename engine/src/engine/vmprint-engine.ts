@@ -1,4 +1,4 @@
-import type { Context, FontManager, OverlayProvider } from '@vmprint/contracts';
+import type { Context, FontManager, OverlayProvider } from '../contracts';
 import { LayoutEngine } from './layout-engine';
 import { Renderer } from './renderer';
 import { toLayoutConfig } from './document';

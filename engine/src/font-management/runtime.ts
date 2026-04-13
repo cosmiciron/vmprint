@@ -1,4 +1,4 @@
-import type { FontConfig, FontManager, TextDelegate } from '@vmprint/contracts';
+import type { FontConfig, FontManager, TextDelegate } from '../contracts';
 import { createEngineRuntime, type EngineRuntime } from '../engine/runtime';
 import { createFontManagerTextDelegate } from './text-delegate';
 import { cloneFontRegistry } from './ops';

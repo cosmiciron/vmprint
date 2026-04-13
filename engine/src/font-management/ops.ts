@@ -1,8 +1,8 @@
-import {
+import type {
     FontConfig,
     FallbackFontSource,
     FontManager
-} from '@vmprint/contracts';
+} from '../contracts';
 
 export type { FontConfig, FontManager };
 

@@ -19,7 +19,7 @@ import {
     PackagerReshapeProfile,
     PackagerUnit
 } from './packager-types';
-import type { TextDelegate } from '@vmprint/contracts';
+import type { TextDelegate } from '../../../contracts';
 
 type DropCapParts = {
     dropCap: FlowBox;

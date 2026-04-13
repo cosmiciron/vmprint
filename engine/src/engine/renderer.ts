@@ -3,7 +3,7 @@ import {
     LayoutConfig,
     Page
 } from './types';
-import { Context, OverlayBox, OverlayContext, OverlayPage, OverlayProvider } from '@vmprint/contracts';
+import type { Context, OverlayBox, OverlayContext, OverlayPage, OverlayProvider } from '../contracts';
 import { LayoutUtils } from './layout/layout-utils';
 import { EngineRuntime, getDefaultEngineRuntime } from './runtime';
 import {
