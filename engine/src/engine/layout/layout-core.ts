@@ -1403,6 +1403,8 @@ export class LayoutProcessor extends TextProcessor {
         const spatialCoreExperiments: Collaborator[] = [
             ...(asyncThoughtHost ? [new AsyncThoughtRuntimeCollaborator(asyncThoughtHost)] : []),
         ];
+        const shouldCaptureTemporalPresentation = !!asyncThoughtHost
+            || this.getSimulationProgressionConfig().policy === 'fixed-tick-count';
         const vmPrintPolicyCollaborators: Collaborator[] = [
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
@@ -1424,7 +1426,7 @@ export class LayoutProcessor extends TextProcessor {
             new PageRegionArtifactCollaborator(),
             new SourcePositionArtifactCollaborator(),
             new HeadingTelemetryCollaborator(),
-            new TemporalPresentationCollaborator(),
+            ...(shouldCaptureTemporalPresentation ? [new TemporalPresentationCollaborator()] : []),
             new InteractionArtifactCollaborator(this.config.layout),
             new ViewportCaptureArtifactCollaborator(),
             new RegionDebugOverlayCollaborator(),
