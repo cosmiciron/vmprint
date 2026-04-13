@@ -79,4 +79,3 @@ export { serializeDocumentIR } from './engine/document';
 
 export * from './core/index';
 export * from './print/index';
-export * from './engine/layout/text-delegate';
