@@ -4,7 +4,6 @@ import { buildExclusionFieldObstacles } from '../exclusion-field';
 import { createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { buildHostedRegionActorQueuesFromZones } from './region-actor-queues';
 import {
-    DebugRegion,
     PackagerContext,
     PackagerPlacementPreference,
     PackagerReshapeResult,
@@ -12,12 +11,21 @@ import {
     PackagerUnit
 } from './packager-types';
 import { HostedRegionPackager } from './hosted-region-packager';
+import type { DebugRegion } from '../../types';
 
 export function isWorldPlainElement(element: Element | undefined): boolean {
     return String(element?.type || '').trim().toLowerCase() === 'world-plain';
 }
 
-function resolveWorldPlainHostLayout(element: Element) {
+function resolveWorldPlainHostLayout(element: Element): {
+    sourceKind: 'world-plain';
+    frameOverflow: ZoneFrameOverflow;
+    worldBehavior: ZoneWorldBehavior;
+    rootFlowMode: 'wrapped' | 'traverse';
+    traversalInteractionDefault: TraversalInteractionPolicy;
+    marginTop: number;
+    marginBottom: number;
+} {
     const style = (element.properties?.style ?? {}) as Record<string, unknown>;
     const options = (element.properties?._worldPlainOptions ?? {}) as {
         frameOverflow?: ZoneFrameOverflow;

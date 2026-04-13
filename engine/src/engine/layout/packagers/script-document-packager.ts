@@ -487,11 +487,12 @@ export class ScriptDocumentPackager implements PackagerUnit {
         context: PackagerContext,
         actor: PackagerUnit
     ): Record<string, unknown> {
+        const self = this;
         return {
             name: toPublicScriptName(actor.sourceId),
             type: String(actor.actorKind || ''),
             get content() {
-                if (this.isLiveContentActor(actor)) {
+                if (self.isLiveContentActor(actor)) {
                     return actor.getLiveContent();
                 }
                 return '';

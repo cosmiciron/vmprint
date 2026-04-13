@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
         "target": "ES2020",
         "module": "preserve",
         "moduleResolution": "bundler",
@@ -21,7 +20,8 @@
         }
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "../engine/src/fontkit.d.ts"
     ],
     "exclude": [
         "node_modules",

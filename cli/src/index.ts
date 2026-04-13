@@ -15,6 +15,29 @@ import {
     type DocumentIR
 } from '@vmprint/engine';
 
+class NodeWriteStreamAdapter {
+    constructor(private readonly stream: fs.WriteStream) {}
+
+    write(chunk: Uint8Array | string): void {
+        this.stream.write(chunk);
+    }
+
+    end(): void {
+        this.stream.end();
+    }
+
+    waitForFinish(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (this.stream.writableFinished) {
+                resolve();
+                return;
+            }
+            this.stream.once('finish', resolve);
+            this.stream.once('error', reject);
+        });
+    }
+}
+
 type CliOptions = {
     input?: string;
     output?: string;
@@ -130,7 +153,7 @@ async function run() {
             autoFirstPage: false,
             bufferPages: false
         });
-        context.pipe(fs.createWriteStream(outputPath));
+        context.pipe(new NodeWriteStreamAdapter(fs.createWriteStream(outputPath)));
         await renderLayout(stream, new FontManagerClass(), context, { debug: !!options.debug });
         return;
     }
@@ -214,7 +237,7 @@ async function run() {
         autoFirstPage: false,
         bufferPages: false
     });
-    context.pipe(fs.createWriteStream(outputPath));
+    context.pipe(new NodeWriteStreamAdapter(fs.createWriteStream(outputPath)));
     await engine.render(context, { debug: !!options.debug, overlay });
 }
 

@@ -38,6 +38,29 @@ import LocalFontManager from '@vmprint/local-fonts';
 // @vmprint/context-pdf-lite. Both implement the same interface.
 import PdfContext from '@vmprint/context-pdf';
 
+class NodeWriteStreamAdapter {
+    constructor(private readonly stream: fs.WriteStream) {}
+
+    write(chunk: Uint8Array | string): void {
+        this.stream.write(chunk);
+    }
+
+    end(): void {
+        this.stream.end();
+    }
+
+    waitForFinish(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (this.stream.writableFinished) {
+                resolve();
+                return;
+            }
+            this.stream.once('finish', resolve);
+            this.stream.once('error', reject);
+        });
+    }
+}
+
 const [inputArg, outputArg] = process.argv.slice(2);
 
 if (!inputArg) {
@@ -67,7 +90,7 @@ async function main() {
     // Open a write stream for the output PDF. The context streams the PDF to it
     // as pages are rendered.
     const { width, height } = engine.info.pageSize;
-    const outputStream = fs.createWriteStream(outputPath);
+    const outputStream = new NodeWriteStreamAdapter(fs.createWriteStream(outputPath));
     const context = new PdfContext({
         size: [width, height],
         // Margins are already baked into the positioned boxes by the engine.

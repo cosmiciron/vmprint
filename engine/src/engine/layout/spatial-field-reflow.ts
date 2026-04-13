@@ -179,7 +179,16 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
                 _isLastLine: true,
                 ...(Number.isFinite(options.worldY) ? { _worldY: Number(options.worldY) } : {})
             },
-            meta: flowBox.meta ? { ...flowBox.meta, pageIndex: Number(options.pageIndex || 0) } : { pageIndex: Number(options.pageIndex || 0) }
+            meta: flowBox.meta
+                ? { ...flowBox.meta, pageIndex: Number(options.pageIndex || 0) }
+                : {
+                    sourceId: String(options.element.properties?.sourceId || options.element.name || options.element.type || 'element'),
+                    engineKey: `reflow:${options.path.join('.')}`,
+                    sourceType: String(options.element.type || 'text'),
+                    fragmentIndex: 0,
+                    isContinuation: false,
+                    pageIndex: Number(options.pageIndex || 0)
+                }
         }
     };
 }

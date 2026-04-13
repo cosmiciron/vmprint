@@ -1,4 +1,4 @@
-import { Box, Element, SpatialFieldDirective, StoryFloatAlign } from '../../types';
+import { Box, Element, RichLine, SpatialFieldDirective, StoryFloatAlign } from '../../types';
 import { buildExclusionFieldObstacles } from '../exclusion-field';
 import {
     createContinuationFragmentMeta,
@@ -7,7 +7,8 @@ import {
     createLeadingFragmentStyle
 } from '../flow-fragment-state';
 import type { LayoutProcessor } from '../layout-core';
-import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
+import type { FlowBox } from '../layout-core-types';
+import { reflowTextElementAgainstSpatialField, type SpatialFieldTextPlacement } from '../spatial-field-reflow';
 import { LAYOUT_DEFAULTS } from '../defaults';
 import { OccupiedRect, SpatialMap } from './spatial-map';
 import type { HostedRegionActorEntry, HostedRegionActorQueue } from './region-actor-queues';
@@ -32,7 +33,7 @@ type HostedRegionTextPlacement = {
     boxes: Box[];
     requiredHeight: number;
     marginBottom: number;
-    reflowedPlacement: ReturnType<typeof reflowTextElementAgainstSpatialField>;
+    reflowedPlacement: SpatialFieldTextPlacement;
 };
 
 type HostedRegionTextSplitPlacement = {
@@ -76,10 +77,11 @@ function isPoorHostedRegionContinuationStart(
 }
 
 function isPoorHostedRegionSplitTail(
-    placement: ReturnType<typeof reflowTextElementAgainstSpatialField>,
+    placement: SpatialFieldTextPlacement | null,
     consumedLineCount: number,
     availableWidth: number
 ): boolean {
+    if (!placement) return false;
     const lineWidths = Array.isArray(placement?.lineWidths) ? placement.lineWidths : [];
     if (consumedLineCount <= 0 || consumedLineCount > lineWidths.length) return false;
     const lastLeadingLineWidth = Number(lineWidths[consumedLineCount - 1] || 0);
@@ -300,7 +302,14 @@ function annotateHostedActorBoxes(actor: PackagerUnit, boxes: Box[]): Box[] {
         ...box,
         meta: box.meta
             ? { ...box.meta, actorId: actor.actorId, sourceId: box.meta.sourceId ?? actor.sourceId }
-            : { actorId: actor.actorId, sourceId: actor.sourceId }
+            : {
+                actorId: actor.actorId,
+                sourceId: actor.sourceId,
+                engineKey: actor.actorId,
+                sourceType: actor.actorKind,
+                fragmentIndex: actor.fragmentIndex,
+                isContinuation: actor.fragmentIndex > 0 || !!actor.continuationOf
+            }
     }));
 }
 
@@ -724,7 +733,7 @@ function trySplitHostedRegionTextPlacement(
             continuationFields.length > 0 ? continuationFields : activeFields
         );
         if (
-            !isPoorHostedRegionContinuationStart(continuationPlacement, availableWidth)
+            !isPoorHostedRegionContinuationStart(continuationPlacement?.reflowedPlacement ?? null, availableWidth)
             && !isPoorHostedRegionSplitTail(placement, consumedLineCount, availableWidth)
         ) {
             break;

@@ -2,6 +2,7 @@ import type { Box, Element } from '../../types';
 import type { LayoutProcessor } from '../layout-core';
 import {
     type ObservationResult,
+    packagerOccupiesFlowSpace,
     type PackagerContext,
     type PackagerPlacementPreference,
     type PackagerReshapeResult,
@@ -137,7 +138,7 @@ export class SpatialCapabilityPackager implements PackagerUnit {
     }
 
     occupiesFlowSpace(): boolean {
-        return this.inner.occupiesFlowSpace?.() ?? true;
+        return packagerOccupiesFlowSpace(this.inner);
     }
 
     isUnbreakable(availableHeight: number): boolean {

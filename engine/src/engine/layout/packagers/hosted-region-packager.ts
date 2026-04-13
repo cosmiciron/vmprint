@@ -38,7 +38,14 @@ function annotateHostedActorBoxes(actor: PackagerUnit, boxes: Box[]): Box[] {
         ...box,
         meta: box.meta
             ? { ...box.meta, actorId: actor.actorId, sourceId: box.meta.sourceId ?? actor.sourceId }
-            : { actorId: actor.actorId, sourceId: actor.sourceId }
+            : {
+                actorId: actor.actorId,
+                sourceId: actor.sourceId,
+                engineKey: actor.actorId,
+                sourceType: actor.actorKind,
+                fragmentIndex: actor.fragmentIndex,
+                isContinuation: actor.fragmentIndex > 0 || !!actor.continuationOf
+            }
     }));
 }
 
@@ -577,7 +584,7 @@ export class HostedRegionPackager implements PackagerUnit {
             const explicitHeight = zone.rect.height !== undefined ? Math.max(0, Number(zone.rect.height)) : 0;
             const contentHeight = Math.max(0, (bottomsByZone.get(zoneIndex) ?? zone.rect.y) - zone.rect.y);
             const visibleHeight = this.usesSpanningContinuation()
-                ? resolveHostedRegionVisibleHeight({ id: zone.id, rect: { ...zone.rect }, style: zone.style, actors: [] }, Math.max(0, this.lastAvailableHeight))
+                ? resolveHostedRegionVisibleHeight({ id: zone.id, rect: { ...zone.rect }, style: zone.style }, Math.max(0, this.lastAvailableHeight))
                 : contentHeight;
             const height = Math.max(explicitHeight, contentHeight, visibleHeight);
             return {

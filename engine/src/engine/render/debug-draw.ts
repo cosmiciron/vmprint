@@ -1,5 +1,5 @@
 import type { Context } from '../../contracts';
-import { Box, DebugZoneRegion } from '../types';
+import { Box, DebugRegion } from '../types';
 
 type DebugStyle = {
     color: string;
@@ -38,7 +38,7 @@ const getDebugStyle = (type: string): DebugStyle => {
     };
 };
 
-const getZoneDebugStyle = (zone: DebugZoneRegion): ZoneDebugStyle => {
+const getZoneDebugStyle = (zone: DebugRegion): ZoneDebugStyle => {
     const signature = `${zone.fieldSourceId}:${zone.zoneId || zone.zoneIndex}`;
     const seed = Array.from(signature).reduce((acc, ch) => ((acc * 33) + ch.charCodeAt(0)) >>> 0, 17);
     const baseHues = [164, 206, 28, 332, 48, 262];
@@ -141,7 +141,7 @@ export const drawDebugPageMargins = (
 
 export const drawDebugZoneOverlay = (
     context: Context,
-    zone: DebugZoneRegion,
+    zone: DebugRegion,
     labelFontId: string,
     labelFontAscent: number
 ): void => {

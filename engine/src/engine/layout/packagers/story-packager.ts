@@ -240,7 +240,7 @@ class FrozenStoryPackager implements PackagerUnit {
 
 export class StoryPackager implements PackagerUnit {
     private readonly storyElement: Element;
-    private readonly normalizedStory;
+    private normalizedStory;
     private readonly processor: LayoutProcessor;
     private readonly storyIndex: number;
     private storyActorEntries: StoryActorEntry[];
@@ -414,7 +414,7 @@ export class StoryPackager implements PackagerUnit {
             ...insertions.map((actor, index) => ({
                 childIndex: -1,
                 element: sourceElements[index] as Element,
-                kind: 'flow',
+                kind: 'flow' as const,
                 actor
             }))
         );
@@ -451,7 +451,7 @@ export class StoryPackager implements PackagerUnit {
             ...replacements.map((actor, index) => ({
                 childIndex: -1,
                 element: sourceElements[index] as Element,
-                kind: 'flow',
+                kind: 'flow' as const,
                 actor
             }))
         );
@@ -797,7 +797,14 @@ export class StoryPackager implements PackagerUnit {
                 ...placed.box,
                 meta: placed.box.meta
                     ? { ...placed.box.meta, actorId: actor.actorId, sourceId: placed.box.meta.sourceId ?? actor.sourceId }
-                    : { actorId: actor.actorId, sourceId: actor.sourceId }
+                    : {
+                        actorId: actor.actorId,
+                        sourceId: actor.sourceId,
+                        engineKey: actor.actorId,
+                        sourceType: actor.actorKind,
+                        fragmentIndex: actor.fragmentIndex,
+                        isContinuation: actor.fragmentIndex > 0 || !!actor.continuationOf
+                    }
             }
             : placed.box;
 
@@ -1211,7 +1218,7 @@ export class StoryPackager implements PackagerUnit {
                     ?? (child.element.properties?.style as ElementStyle | undefined)?.keepWithNext
                 );
                 if (spanKeepWithNext && spanTopY > 0.1) {
-                    let nextFlowChild: NormalizedStoryChild | null = null;
+                    let nextFlowChild: StoryActorEntry | null = null;
                     for (let j = i + 1; j < children.length; j++) {
                         const c = children[j];
                         if (c.kind === 'story-absolute') continue;

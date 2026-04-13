@@ -9,7 +9,7 @@ import { FlowBoxPackager } from './flow-box-packager';
 import { createPackagers, type ExternalPackagerFactory } from './create-packagers';
 import type { PackagerIdentity } from './packager-identity';
 import { createFlowBoxPackagerIdentity } from './packager-identity';
-import { resolvePackagerWorldYAtCursor } from './packager-types';
+import { packagerOccupiesFlowSpace, resolvePackagerWorldYAtCursor } from './packager-types';
 import type {
     LayoutBox,
     ObservationResult,
@@ -1051,7 +1051,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
     }
 
     occupiesFlowSpace(): boolean {
-        return this.inner.occupiesFlowSpace?.() ?? true;
+        return packagerOccupiesFlowSpace(this.inner);
     }
 
     isUnbreakable(availableHeight: number): boolean {

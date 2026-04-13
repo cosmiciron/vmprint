@@ -310,7 +310,7 @@
         "x": 24,
         "y": 144,
         "w": 198.666667,
-        "h": 121.40625,
+        "h": 16.40625,
         "lines": [
           [
             {
@@ -325,69 +325,6 @@
             {
               "text": "cont",
               "width": 22.681641,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "inue past the persistent hearth while ",
-              "width": 195.451172,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "later chunks keep revisiting the same",
-              "width": 197.431641,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "inhabited zone. Main hall traffic ",
-              "width": 168.544922,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "should continue past the persistent ",
-              "width": 188.789063,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "hearth while later chunks keep ",
-              "width": 165.427734,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "revisiting the same inhabited zone. ",
-              "width": 188.109375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "Main hall traffic should continue past ",
-              "width": 197.226563,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -527,8 +464,8 @@
         "lines": [
           [
             {
-              "text": "the persistent hearth while later ",
-              "width": 170.091797,
+              "text": "inue past the persistent hearth while ",
+              "width": 195.451172,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -536,8 +473,8 @@
           ],
           [
             {
-              "text": "chunks keep revisiting the same ",
-              "width": 174.087891,
+              "text": "later chunks keep revisiting the same",
+              "width": 197.431641,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -845,8 +782,71 @@
         "x": 24,
         "y": 24,
         "w": 198.666667,
-        "h": 61.40625,
+        "h": 166.40625,
         "lines": [
+          [
+            {
+              "text": "inhabited zone. Main hall traffic ",
+              "width": 168.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should continue past the persistent ",
+              "width": 188.789063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hearth while later chunks keep ",
+              "width": 165.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "revisiting the same inhabited zone. ",
+              "width": 188.109375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Main hall traffic should continue past ",
+              "width": 197.226563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the persistent hearth while later ",
+              "width": 170.091797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "chunks keep revisiting the same ",
+              "width": 174.087891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
           [
             {
               "text": "inhabited zone. Main hall traffic ",
@@ -915,7 +915,7 @@
       {
         "type": "p",
         "x": 24,
-        "y": 105.40625,
+        "y": 210.40625,
         "w": 312,
         "h": 32.8125,
         "lines": [
@@ -938,13 +938,20 @@
             }
           ]
         ]
-      },
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 360,
+    "height": 300,
+    "boxes": [
       {
         "type": "report",
         "x": 24,
-        "y": 156.21875,
+        "y": 32,
         "w": 312,
-        "h": 86.03125,
+        "h": 72.859375,
         "lines": [
           [
             {
@@ -957,8 +964,8 @@
           ],
           [
             {
-              "text": "members=author:post-zone-script-flow/author:region-query-report/aut",
-              "width": 307.084961,
+              "text": "members=author:post-zone-script-flow/author:zone-script-hearth/auth",
+              "width": 307.641602,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -966,8 +973,8 @@
           ],
           [
             {
-              "text": "hor:zone-script-hearth/author:zone-script-main-body/author:zone-scrip",
-              "width": 310.698242,
+              "text": "or:zone-script-main-body/author:zone-script-main-open side:1/2/3/4:4 ",
+              "width": 309.594727,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -975,8 +982,8 @@
           ],
           [
             {
-              "text": "t-main-open side:1/2/3/4:4 ",
-              "width": 118.959961,
+              "text": "members=author:post-zone-script-flow/author:zone-script-side-body/a",
+              "width": 308.745117,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -984,17 +991,8 @@
           ],
           [
             {
-              "text": "members=author:post-zone-script-flow/author:region-query-report/aut",
-              "width": 307.084961,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "hor:zone-script-side-body/author:zone-script-side-marker",
-              "width": 251.762695,
+              "text": "uthor:zone-script-side-marker",
+              "width": 130.595703,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

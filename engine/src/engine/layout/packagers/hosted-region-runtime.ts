@@ -2,7 +2,7 @@ import { Box } from '../../types';
 import type { ActorSignalDraft } from '../actor-event-bus';
 import type { LayoutProcessor } from '../layout-core';
 import type { NormalizedIndependentZone } from '../normalized-zone-strip';
-import type { HostedRegionActorQueue, HostedRegionDescriptor } from './region-actor-queues';
+import type { HostedRegionActorEntry, HostedRegionActorQueue, HostedRegionDescriptor } from './region-actor-queues';
 import type { PackagerContext, PackagerUnit } from './packager-types';
 
 export type HostedRegionSessionResult = {
