@@ -1405,6 +1405,7 @@ export class LayoutProcessor extends TextProcessor {
         ];
         const shouldCaptureTemporalPresentation = !!asyncThoughtHost
             || this.getSimulationProgressionConfig().policy === 'fixed-tick-count';
+        const shouldBuildInteractionMap = this.config.layout.emitInteractionMap === true;
         const vmPrintPolicyCollaborators: Collaborator[] = [
             new PageRegionCollaborator(this.config, {
                 layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
@@ -1427,7 +1428,7 @@ export class LayoutProcessor extends TextProcessor {
             new SourcePositionArtifactCollaborator(),
             new HeadingTelemetryCollaborator(),
             ...(shouldCaptureTemporalPresentation ? [new TemporalPresentationCollaborator()] : []),
-            new InteractionArtifactCollaborator(this.config.layout),
+            ...(shouldBuildInteractionMap ? [new InteractionArtifactCollaborator(this.config.layout)] : []),
             new ViewportCaptureArtifactCollaborator(),
             new RegionDebugOverlayCollaborator(),
         ];

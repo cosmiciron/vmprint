@@ -541,6 +541,11 @@ export interface LayoutConfig {
         justifyEngine?: JustifyEngineMode;
         justifyStrategy?: JustifyStrategy;
         progression?: SimulationProgressionConfig;
+        /**
+         * Internal opt-in for building the post-layout interaction map.
+         * Disabled by default so non-interactive callers do not pay the cost.
+         */
+        emitInteractionMap?: boolean;
         opticalScaling?: {
             enabled?: boolean;
             cjk?: number;

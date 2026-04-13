@@ -1128,6 +1128,7 @@ class PreviewSessionImpl implements PreviewSession {
     private async rebuild(documentInput: VmprintDocument): Promise<void> {
         const documentIr = resolveDocumentPaths(documentInput as any, DEFAULT_DOCUMENT_PATH);
         const config = toLayoutConfig(documentIr, false);
+        config.layout.emitInteractionMap = true;
         const fontManager = await createPreviewFontManager(documentInput, config, this.options);
         const runtime = createPrintEngineRuntime({ fontManager });
         const engine = new LayoutEngine(config, runtime);
