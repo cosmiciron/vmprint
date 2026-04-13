@@ -1,0 +1,1109 @@
+{
+  "documentVersion": "1.1",
+
+  "layout": {
+    "pageSize": "LETTER",
+    "orientation": "portrait",
+    "margins": { "top": 52, "right": 56, "bottom": 52, "left": 56 },
+    "fontFamily": "Tinos",
+    "fontSize": 9.5,
+    "lineHeight": 1.5,
+    "pageBackground": "#ffffff",
+    "justifyEngine": "advanced",
+    "justifyStrategy": "auto"
+  },
+
+  "styles": {
+
+    "cover-eyebrow": {
+      "fontFamily": "Cousine",
+      "fontSize": 7,
+      "letterSpacing": 2.8,
+      "color": "#c8b87a",
+      "marginBottom": 28,
+      "hyphenation": "off"
+    },
+
+    "cover-title": {
+      "fontFamily": "Tinos",
+      "fontSize": 46,
+      "fontWeight": 700,
+      "color": "#ffffff",
+      "lineHeight": 1.05,
+      "letterSpacing": -0.5,
+      "marginBottom": 6,
+      "hyphenation": "off"
+    },
+
+    "cover-title-italic": {
+      "fontFamily": "Tinos",
+      "fontSize": 46,
+      "fontWeight": 400,
+      "fontStyle": "italic",
+      "color": "#c8b87a",
+      "lineHeight": 1.05,
+      "letterSpacing": -0.5,
+      "marginBottom": 6,
+      "hyphenation": "off"
+    },
+
+    "cover-sub": {
+      "fontFamily": "Arimo",
+      "fontSize": 9.5,
+      "color": "#8898bb",
+      "fontWeight": 400,
+      "marginBottom": 0,
+      "hyphenation": "off"
+    },
+
+    "cover-meta-label": {
+      "fontFamily": "Cousine",
+      "fontSize": 6,
+      "letterSpacing": 1.8,
+      "color": "#4a5a80",
+      "marginBottom": 3,
+      "hyphenation": "off"
+    },
+
+    "cover-meta-value": {
+      "fontFamily": "Arimo",
+      "fontSize": 9,
+      "color": "#a8b8d8",
+      "hyphenation": "off",
+      "marginBottom": 0
+    },
+
+    "page-rule-label": {
+      "fontFamily": "Cousine",
+      "fontSize": 6,
+      "letterSpacing": 2,
+      "color": "#b07c2e",
+      "hyphenation": "off",
+      "marginBottom": 0
+    },
+
+    "section-flag": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "letterSpacing": 2.2,
+      "color": "#ffffff",
+      "backgroundColor": "#0e1f48",
+      "paddingTop": 6,
+      "paddingBottom": 6,
+      "paddingLeft": 10,
+      "marginTop": 22,
+      "marginBottom": 0,
+      "keepWithNext": true,
+      "hyphenation": "off"
+    },
+
+    "section-flag-gold": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "letterSpacing": 2.2,
+      "color": "#0e1f48",
+      "backgroundColor": "#c8b87a",
+      "paddingTop": 6,
+      "paddingBottom": 6,
+      "paddingLeft": 10,
+      "marginTop": 22,
+      "marginBottom": 0,
+      "keepWithNext": true,
+      "hyphenation": "off"
+    },
+
+    "kpi-label": {
+      "fontFamily": "Cousine",
+      "fontSize": 6,
+      "letterSpacing": 2,
+      "color": "#8898b8",
+      "marginBottom": 5,
+      "hyphenation": "off"
+    },
+
+    "kpi-value": {
+      "fontFamily": "Tinos",
+      "fontSize": 26,
+      "fontWeight": 400,
+      "color": "#0e1f48",
+      "lineHeight": 1,
+      "marginBottom": 5,
+      "hyphenation": "off"
+    },
+
+    "kpi-delta-up": {
+      "fontFamily": "Cousine",
+      "fontSize": 7,
+      "color": "#1a5c3a",
+      "marginBottom": 0,
+      "hyphenation": "off"
+    },
+
+    "kpi-delta-down": {
+      "fontFamily": "Cousine",
+      "fontSize": 7,
+      "color": "#7c1f1f",
+      "marginBottom": 0,
+      "hyphenation": "off"
+    },
+
+    "body": {
+      "fontFamily": "Tinos",
+      "fontSize": 9.5,
+      "lineHeight": 1.65,
+      "marginBottom": 10,
+      "textAlign": "justify",
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2,
+      "hyphenation": "auto",
+      "hyphenMinWordLength": 6,
+      "hyphenMinPrefix": 3,
+      "hyphenMinSuffix": 3
+    },
+
+    "sidebar-label": {
+      "fontFamily": "Cousine",
+      "fontSize": 6,
+      "letterSpacing": 2,
+      "color": "#8898b8",
+      "marginBottom": 4,
+      "hyphenation": "off"
+    },
+
+    "sidebar-value": {
+      "fontFamily": "Tinos",
+      "fontSize": 19,
+      "fontWeight": 400,
+      "color": "#0e1f48",
+      "lineHeight": 1.1,
+      "marginBottom": 3,
+      "hyphenation": "off"
+    },
+
+    "sidebar-delta": {
+      "fontFamily": "Cousine",
+      "fontSize": 7,
+      "color": "#1a5c3a",
+      "marginBottom": 14,
+      "hyphenation": "off"
+    },
+
+    "guidance-title": {
+      "fontFamily": "Cousine",
+      "fontSize": 6,
+      "letterSpacing": 2,
+      "color": "#b07c2e",
+      "backgroundColor": "#f7f1e3",
+      "paddingTop": 10,
+      "paddingLeft": 10,
+      "marginBottom": 0,
+      "hyphenation": "off"
+    },
+
+    "guidance-line": {
+      "fontFamily": "Cousine",
+      "fontSize": 8,
+      "color": "#374060",
+      "backgroundColor": "#f7f1e3",
+      "paddingLeft": 10,
+      "paddingRight": 10,
+      "lineHeight": 2.1,
+      "marginBottom": 0,
+      "hyphenation": "off"
+    },
+
+    "guidance-last": {
+      "fontFamily": "Cousine",
+      "fontSize": 8,
+      "color": "#374060",
+      "backgroundColor": "#f7f1e3",
+      "paddingLeft": 10,
+      "paddingRight": 10,
+      "paddingBottom": 10,
+      "lineHeight": 2.1,
+      "marginBottom": 0,
+      "hyphenation": "off"
+    },
+
+    "trend-label": {
+      "fontFamily": "Cousine",
+      "fontSize": 6,
+      "letterSpacing": 1.8,
+      "color": "#8898b8",
+      "marginBottom": 8,
+      "hyphenation": "off"
+    },
+
+    "trend-value": {
+      "fontFamily": "Cousine",
+      "fontSize": 8,
+      "color": "#0e1f48",
+      "hyphenation": "off",
+      "marginBottom": 0
+    },
+
+    "trend-delta": {
+      "fontFamily": "Cousine",
+      "fontSize": 7,
+      "color": "#6b7494",
+      "marginBottom": 0,
+      "hyphenation": "off"
+    },
+
+    "table-cell": {
+      "fontFamily": "Cousine",
+      "fontSize": 7.5,
+      "paddingTop": 5,
+      "paddingBottom": 5,
+      "paddingLeft": 8,
+      "paddingRight": 8,
+      "color": "#374060"
+    },
+
+    "note": {
+      "fontFamily": "Arimo",
+      "fontSize": 7.5,
+      "fontStyle": "italic",
+      "color": "#8898b8",
+      "marginTop": 10,
+      "marginBottom": 0,
+      "lineHeight": 1.55
+    },
+
+    "rh": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "letterSpacing": 1.5,
+      "color": "#8898b8"
+    },
+
+    "folio-left": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "color": "#8898b8",
+      "letterSpacing": 0.5
+    },
+
+    "folio-page": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "color": "#8898b8",
+      "textAlign": "center"
+    },
+
+    "folio-right": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "color": "#8898b8",
+      "textAlign": "right",
+      "letterSpacing": 0.5
+    },
+
+    "gold-rule": {
+      "fontFamily": "Cousine",
+      "fontSize": 0.1,
+      "color": "#ffffff",
+      "backgroundColor": "#b07c2e",
+      "marginBottom": 0
+    }
+
+  },
+
+  "header": {
+    "firstPage": null,
+    "default": {
+      "elements": [
+        {
+          "type": "strip",
+          "stripLayout": {
+            "tracks": [
+              { "mode": "flex", "fr": 1 },
+              { "mode": "flex", "fr": 1 }
+            ],
+            "gap": 8
+          },
+          "slots": [
+            {
+              "id": "left",
+              "elements": [
+                { "type": "rh", "content": "MERIDIAN CAPITAL GROUP", "properties": { "style": { "fontWeight": 700, "color": "#0e1f48", "fontSize": 7 } } }
+              ]
+            },
+            {
+              "id": "right",
+              "elements": [
+                { "type": "rh", "content": "Q4 2025 Financial Report", "properties": { "style": { "textAlign": "right" } } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+  "footer": {
+    "firstPage": null,
+    "default": {
+      "elements": [
+        {
+          "type": "strip",
+          "stripLayout": {
+            "tracks": [
+              { "mode": "flex", "fr": 2 },
+              { "mode": "fixed", "value": 90 },
+              { "mode": "flex", "fr": 2 }
+            ],
+            "gap": 8
+          },
+          "slots": [
+            {
+              "id": "left",
+              "elements": [ { "type": "folio-left", "content": "Confidential — Internal Use Only" } ]
+            },
+            {
+              "id": "center",
+              "elements": [ { "type": "folio-page", "content": "— {pageNumber} of {totalPages} —" } ]
+            },
+            {
+              "id": "right",
+              "elements": [ { "type": "folio-right", "content": "MCG-FIN-Q42025 · Unaudited" } ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+  "elements": [
+
+    {
+      "type": "zone-map",
+      "content": "",
+      "zoneLayout": {
+        "columns": [
+          { "mode": "flex", "fr": 1 }
+        ],
+        "gap": 0
+      },
+      "zones": [
+        {
+          "id": "cover",
+          "elements": [
+
+            { "type": "gold-rule", "content": " ", "properties": { "style": { "marginBottom": 0 } } },
+
+            {
+              "type": "zone-map",
+              "content": "",
+              "zoneLayout": { "columns": [ { "mode": "flex", "fr": 1 } ], "gap": 0 },
+              "properties": { "style": { "backgroundColor": "#0e1f48", "paddingTop": 60, "paddingBottom": 52, "paddingLeft": 0, "paddingRight": 0 } },
+              "zones": [
+                {
+                  "id": "cover-inner",
+                  "elements": [
+                    { "type": "cover-eyebrow", "content": "MERIDIAN CAPITAL GROUP" },
+                    { "type": "cover-title", "content": "Quarterly" },
+                    { "type": "cover-title-italic", "content": "Financial" },
+                    { "type": "cover-title", "content": "Report", "properties": { "style": { "marginBottom": 18 } } },
+                    { "type": "cover-sub", "content": "Fourth Quarter & Full Year 2025  ·  Unaudited Preliminary", "properties": { "style": { "marginBottom": 44 } } },
+
+                    {
+                      "type": "zone-map",
+                      "content": "",
+                      "zoneLayout": {
+                        "columns": [
+                          { "mode": "flex", "fr": 1 },
+                          { "mode": "flex", "fr": 1 },
+                          { "mode": "flex", "fr": 1 },
+                          { "mode": "flex", "fr": 1 }
+                        ],
+                        "gap": 0
+                      },
+                      "properties": { "style": { "borderTopWidth": 0.5, "borderTopColor": "#2a3f6e", "paddingTop": 22 } },
+                      "zones": [
+                        {
+                          "id": "m1",
+                          "elements": [
+                            { "type": "cover-meta-label", "content": "PERIOD END" },
+                            { "type": "cover-meta-value", "content": "December 31, 2025" }
+                          ]
+                        },
+                        {
+                          "id": "m2",
+                          "elements": [
+                            { "type": "cover-meta-label", "content": "PUBLISHED" },
+                            { "type": "cover-meta-value", "content": "February 3, 2026" }
+                          ]
+                        },
+                        {
+                          "id": "m3",
+                          "elements": [
+                            { "type": "cover-meta-label", "content": "CLASSIFICATION" },
+                            { "type": "cover-meta-value", "content": "Confidential · Internal" }
+                          ]
+                        },
+                        {
+                          "id": "m4",
+                          "elements": [
+                            { "type": "cover-meta-label", "content": "DOCUMENT REF" },
+                            { "type": "cover-meta-value", "content": "MCG-FIN-Q42025" }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+
+            { "type": "gold-rule", "content": " ", "properties": { "style": { "marginTop": 0, "marginBottom": 0 } } }
+
+          ]
+        }
+      ],
+      "properties": {
+        "style": { "marginBottom": 36 },
+        "pageOverrides": {
+          "header": null,
+          "footer": null
+        }
+      }
+    },
+
+
+    {
+      "type": "section-flag-gold",
+      "content": "KEY PERFORMANCE INDICATORS  ·  Q4 2025",
+      "properties": { "style": { "marginTop": 0 } }
+    },
+
+    {
+      "type": "zone-map",
+      "content": "",
+      "zoneLayout": {
+        "columns": [
+          { "mode": "flex", "fr": 1 },
+          { "mode": "flex", "fr": 1 },
+          { "mode": "flex", "fr": 1 },
+          { "mode": "flex", "fr": 1 }
+        ],
+        "gap": 0
+      },
+      "properties": { "style": { "borderWidth": 0.5, "borderColor": "#d8dce8", "marginBottom": 28 } },
+      "zones": [
+        {
+          "id": "k1",
+          "elements": [
+            { "type": "kpi-label", "content": "TOTAL REVENUE", "properties": { "style": { "paddingTop": 16, "paddingLeft": 12 } } },
+            { "type": "kpi-value", "content": "$48.3M", "properties": { "style": { "paddingLeft": 12 } } },
+            { "type": "kpi-delta-up", "content": "▲  +12.4% year-over-year", "properties": { "style": { "paddingLeft": 12, "paddingBottom": 14 } } }
+          ]
+        },
+        {
+          "id": "k2",
+          "elements": [
+            { "type": "kpi-label", "content": "NET INCOME", "properties": { "style": { "paddingTop": 16, "paddingLeft": 12, "borderLeftWidth": 0.5, "borderLeftColor": "#d8dce8" } } },
+            { "type": "kpi-value", "content": "$9.1M", "properties": { "style": { "paddingLeft": 12, "borderLeftWidth": 0.5, "borderLeftColor": "#d8dce8" } } },
+            { "type": "kpi-delta-up", "content": "▲  +8.7% year-over-year", "properties": { "style": { "paddingLeft": 12, "paddingBottom": 14, "borderLeftWidth": 0.5, "borderLeftColor": "#d8dce8" } } }
+          ]
+        },
+        {
+          "id": "k3",
+          "elements": [
+            { "type": "kpi-label", "content": "EBITDA MARGIN", "properties": { "style": { "paddingTop": 16, "paddingLeft": 12, "borderLeftWidth": 0.5, "borderLeftColor": "#d8dce8" } } },
+            { "type": "kpi-value", "content": "24.6%", "properties": { "style": { "paddingLeft": 12, "borderLeftWidth": 0.5, "borderLeftColor": "#d8dce8" } } },
+            { "type": "kpi-delta-down", "content": "▼  −1.2pp year-over-year", "properties": { "style": { "paddingLeft": 12, "paddingBottom": 14, "borderLeftWidth": 0.5, "borderLeftColor": "#d8dce8" } } }
+          ]
+        },
+        {
+          "id": "k4",
+          "elements": [
+            { "type": "kpi-label", "content": "FREE CASH FLOW", "properties": { "style": { "paddingTop": 16, "paddingLeft": 12, "borderLeftWidth": 0.5, "borderLeftColor": "#d8dce8" } } },
+            { "type": "kpi-value", "content": "$6.8M", "properties": { "style": { "paddingLeft": 12, "borderLeftWidth": 0.5, "borderLeftColor": "#d8dce8" } } },
+            { "type": "kpi-delta-up", "content": "▲  +21.3% year-over-year", "properties": { "style": { "paddingLeft": 12, "paddingBottom": 14, "borderLeftWidth": 0.5, "borderLeftColor": "#d8dce8" } } }
+          ]
+        }
+      ]
+    },
+
+
+    {
+      "type": "section-flag",
+      "content": "QUARTERLY REVENUE TREND  ·  FY 2025"
+    },
+
+    {
+      "type": "zone-map",
+      "content": "",
+      "zoneLayout": {
+        "columns": [
+          { "mode": "flex", "fr": 1 },
+          { "mode": "flex", "fr": 1 },
+          { "mode": "flex", "fr": 1 },
+          { "mode": "flex", "fr": 1 }
+        ],
+        "gap": 20
+      },
+      "properties": { "style": { "paddingTop": 14, "marginBottom": 28 } },
+      "zones": [
+        {
+          "id": "q1",
+          "elements": [
+            { "type": "trend-label", "content": "Q1 2025" },
+            { "type": "gold-rule", "content": " ", "properties": { "style": { "marginBottom": 5, "backgroundColor": "#0e1f48" } } },
+            { "type": "gold-rule", "content": " ", "properties": { "style": { "marginBottom": 5, "backgroundColor": "#eef0f6" } } },
+            { "type": "trend-value", "content": "$41.0M" },
+            { "type": "trend-delta", "content": "+9.1% YoY" }
+          ]
+        },
+        {
+          "id": "q2",
+          "elements": [
+            { "type": "trend-label", "content": "Q2 2025" },
+            { "type": "gold-rule", "content": " ", "properties": { "style": { "marginBottom": 5, "backgroundColor": "#0e1f48" } } },
+            { "type": "gold-rule", "content": " ", "properties": { "style": { "marginBottom": 5, "backgroundColor": "#eef0f6" } } },
+            { "type": "trend-value", "content": "$43.2M" },
+            { "type": "trend-delta", "content": "+10.2% YoY" }
+          ]
+        },
+        {
+          "id": "q3",
+          "elements": [
+            { "type": "trend-label", "content": "Q3 2025" },
+            { "type": "gold-rule", "content": " ", "properties": { "style": { "marginBottom": 5, "backgroundColor": "#0e1f48" } } },
+            { "type": "gold-rule", "content": " ", "properties": { "style": { "marginBottom": 5, "backgroundColor": "#eef0f6" } } },
+            { "type": "trend-value", "content": "$49.9M" },
+            { "type": "trend-delta", "content": "+11.8% YoY" }
+          ]
+        },
+        {
+          "id": "q4",
+          "elements": [
+            { "type": "trend-label", "content": "Q4 2025", "properties": { "style": { "color": "#0e1f48", "fontWeight": 700 } } },
+            { "type": "gold-rule", "content": " ", "properties": { "style": { "marginBottom": 5, "backgroundColor": "#b07c2e" } } },
+            { "type": "gold-rule", "content": " ", "properties": { "style": { "marginBottom": 5, "backgroundColor": "#e8d5a3" } } },
+            { "type": "trend-value", "content": "$48.3M", "properties": { "style": { "color": "#b07c2e", "fontWeight": 700 } } },
+            { "type": "trend-delta", "content": "+12.4% YoY", "properties": { "style": { "color": "#b07c2e" } } }
+          ]
+        }
+      ]
+    },
+
+
+    {
+      "type": "section-flag",
+      "content": "EXECUTIVE SUMMARY"
+    },
+
+    {
+      "type": "zone-map",
+      "content": "",
+      "zoneLayout": {
+        "columns": [
+          { "mode": "flex", "fr": 3 },
+          { "mode": "flex", "fr": 2 }
+        ],
+        "gap": 28
+      },
+      "properties": { "style": { "marginTop": 16, "marginBottom": 10 } },
+      "zones": [
+        {
+          "id": "narrative",
+          "elements": [
+            {
+              "type": "body",
+              "content": "Meridian Capital Group delivered a strong fourth quarter, with total revenue of $48.3 million representing 12.4% year-over-year growth and exceeding consensus estimates by $2.1 million. Performance was driven by continued expansion in the Asset Management segment, which contributed $31.2 million — 64.6% of total revenue — and benefited from net inflows of $1.4 billion in the period.",
+              "dropCap": {
+                "enabled": true,
+                "lines": 3,
+                "gap": 5,
+                "characterStyle": {
+                  "fontFamily": "Tinos",
+                  "fontWeight": 700,
+                  "color": "#0e1f48"
+                }
+              }
+            },
+            {
+              "type": "body",
+              "content": "Net income of $9.1 million reflects disciplined cost management, partially offset by a $1.6 million charge related to accelerated depreciation on legacy technology infrastructure. EBITDA margin contracted 120 basis points year-over-year to 24.6%, in line with management's guidance range of 24-26%. The Board has approved a quarterly dividend of $0.18 per share, payable February 14, 2026."
+            },
+            {
+              "type": "body",
+              "content": "Advisory Services posted $10.8 million in revenue, a 6.1% increase, as M&A advisory activity rebounded in the second half. The pipeline entering Q1 2026 includes seven mandates with aggregate deal value exceeding $3.4 billion. Principal Investments contributed $6.3 million, with realized gains of $4.1 million on two portfolio exits. The remaining portfolio is carried at $41.7 million at an estimated 1.6x gross MOIC.",
+              "properties": { "style": { "marginBottom": 0 } }
+            }
+          ]
+        },
+        {
+          "id": "stats-sidebar",
+          "elements": [
+            {
+              "type": "gold-rule",
+              "content": " ",
+              "properties": { "style": { "marginBottom": 14, "backgroundColor": "#b07c2e" } }
+            },
+            { "type": "sidebar-label", "content": "FULL YEAR 2025" },
+            { "type": "sidebar-value", "content": "$181.4M", "properties": { "style": { "marginBottom": 2 } } },
+            { "type": "sidebar-delta", "content": "▲  +10.8% vs. FY2024" },
+
+            { "type": "sidebar-label", "content": "AUM AT YEAR-END" },
+            { "type": "sidebar-value", "content": "$14.2B", "properties": { "style": { "marginBottom": 2 } } },
+            { "type": "sidebar-delta", "content": "▲  +$1.4B net inflows Q4" },
+
+            { "type": "sidebar-label", "content": "QUARTERLY DIVIDEND" },
+            { "type": "sidebar-value", "content": "$0.18", "properties": { "style": { "marginBottom": 2 } } },
+            { "type": "sidebar-delta", "content": "Payable Feb 14, 2026" },
+
+            { "type": "guidance-title", "content": "FY 2026 GUIDANCE" },
+            { "type": "guidance-line", "content": "Revenue          $195-205M" },
+            { "type": "guidance-line", "content": "EBITDA Margin    25-27%" },
+            { "type": "guidance-last", "content": "Capital Expenditure  $4-6M" }
+          ]
+        }
+      ]
+    },
+
+
+    {
+      "type": "section-flag",
+      "content": "CONSOLIDATED INCOME STATEMENT  ·  USD THOUSANDS  ·  UNAUDITED"
+    },
+
+    {
+      "type": "table",
+      "content": "",
+      "table": {
+        "headerRows": 1,
+        "repeatHeader": true,
+        "columnGap": 0,
+        "rowGap": 0,
+        "columns": [
+          { "mode": "flex", "fr": 3 },
+          { "mode": "fixed", "value": 72 },
+          { "mode": "fixed", "value": 72 },
+          { "mode": "fixed", "value": 72 },
+          { "mode": "fixed", "value": 58 }
+        ],
+        "headerCellStyle": {
+          "fontFamily": "Cousine",
+          "fontWeight": 700,
+          "fontSize": 6.5,
+          "letterSpacing": 0.8,
+          "color": "#ffffff",
+          "backgroundColor": "#1a3268",
+          "paddingTop": 7,
+          "paddingBottom": 7,
+          "paddingLeft": 8
+        },
+        "cellStyle": {
+          "fontFamily": "Cousine",
+          "fontSize": 7.5,
+          "paddingTop": 5,
+          "paddingBottom": 5,
+          "paddingLeft": 8,
+          "paddingRight": 8
+        }
+      },
+      "properties": { "style": { "marginTop": 0, "borderWidth": 0.5, "borderColor": "#d8dce8" } },
+      "children": [
+        {
+          "type": "table-row",
+          "content": "",
+          "properties": { "semanticRole": "header" },
+          "children": [
+            { "type": "table-cell", "content": "Line Item" },
+            { "type": "table-cell", "content": "Q4 2025", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "Q4 2024", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "FY 2025", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "Chg.", "properties": { "style": { "textAlign": "right" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "children": [
+            { "type": "table-cell", "content": "REVENUE", "properties": { "colSpan": 5, "style": { "fontWeight": 700, "fontSize": 6, "letterSpacing": 1.5, "color": "#ffffff", "backgroundColor": "#2a3f6e", "paddingTop": 4, "paddingBottom": 4 } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "children": [
+            { "type": "table-cell", "content": "Asset Management fees", "properties": { "style": { "color": "#6b7494", "paddingLeft": 16 } } },
+            { "type": "table-cell", "content": "31,204", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "27,110", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "116,820", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "+15.1%", "properties": { "style": { "textAlign": "right", "color": "#1a5c3a" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "properties": { "style": { "backgroundColor": "#f5f7fb" } },
+          "children": [
+            { "type": "table-cell", "content": "Advisory & transaction fees", "properties": { "style": { "color": "#6b7494", "paddingLeft": 16 } } },
+            { "type": "table-cell", "content": "10,841", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "10,220", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "43,240", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "+6.1%", "properties": { "style": { "textAlign": "right", "color": "#1a5c3a" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "children": [
+            { "type": "table-cell", "content": "Principal Investments", "properties": { "style": { "color": "#6b7494", "paddingLeft": 16 } } },
+            { "type": "table-cell", "content": "6,267", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "5,650", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "21,340", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "+10.9%", "properties": { "style": { "textAlign": "right", "color": "#1a5c3a" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "properties": { "style": { "backgroundColor": "#eef1f8" } },
+          "children": [
+            { "type": "table-cell", "content": "Total Revenue", "properties": { "style": { "fontWeight": 700, "color": "#0e1f48" } } },
+            { "type": "table-cell", "content": "48,312", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#0e1f48" } } },
+            { "type": "table-cell", "content": "42,980", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#0e1f48" } } },
+            { "type": "table-cell", "content": "181,400", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#0e1f48" } } },
+            { "type": "table-cell", "content": "+12.4%", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#1a5c3a" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "children": [
+            { "type": "table-cell", "content": "OPERATING EXPENSES", "properties": { "colSpan": 5, "style": { "fontWeight": 700, "fontSize": 6, "letterSpacing": 1.5, "color": "#ffffff", "backgroundColor": "#2a3f6e", "paddingTop": 4, "paddingBottom": 4 } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "children": [
+            { "type": "table-cell", "content": "Compensation & benefits", "properties": { "style": { "color": "#6b7494", "paddingLeft": 16 } } },
+            { "type": "table-cell", "content": "(21,850)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(19,100)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(83,420)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "+14.4%", "properties": { "style": { "textAlign": "right", "color": "#7c1f1f" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "properties": { "style": { "backgroundColor": "#f5f7fb" } },
+          "children": [
+            { "type": "table-cell", "content": "General & administrative", "properties": { "style": { "color": "#6b7494", "paddingLeft": 16 } } },
+            { "type": "table-cell", "content": "(8,290)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(7,610)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(31,640)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "+8.9%", "properties": { "style": { "textAlign": "right", "color": "#7c1f1f" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "children": [
+            { "type": "table-cell", "content": "Technology & infrastructure", "properties": { "style": { "color": "#6b7494", "paddingLeft": 16 } } },
+            { "type": "table-cell", "content": "(6,301)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(5,370)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(23,510)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "+17.3%", "properties": { "style": { "textAlign": "right", "color": "#7c1f1f" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "properties": { "style": { "backgroundColor": "#eef1f8" } },
+          "children": [
+            { "type": "table-cell", "content": "Total Operating Expenses", "properties": { "style": { "fontWeight": 700, "color": "#0e1f48" } } },
+            { "type": "table-cell", "content": "(36,441)", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#0e1f48" } } },
+            { "type": "table-cell", "content": "(32,080)", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#0e1f48" } } },
+            { "type": "table-cell", "content": "(138,570)", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#0e1f48" } } },
+            { "type": "table-cell", "content": "+13.6%", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#7c1f1f" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "properties": { "style": { "backgroundColor": "#f7f1e3" } },
+          "children": [
+            { "type": "table-cell", "content": "EBITDA", "properties": { "style": { "fontWeight": 700, "color": "#6b3e00" } } },
+            { "type": "table-cell", "content": "11,871", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#6b3e00" } } },
+            { "type": "table-cell", "content": "10,900", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#6b3e00" } } },
+            { "type": "table-cell", "content": "42,830", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#6b3e00" } } },
+            { "type": "table-cell", "content": "+8.9%", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#1a5c3a" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "children": [
+            { "type": "table-cell", "content": "Depreciation & amortisation", "properties": { "style": { "color": "#6b7494", "paddingLeft": 16 } } },
+            { "type": "table-cell", "content": "(1,511)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(1,340)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(5,680)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "", "properties": { "style": { "textAlign": "right" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "properties": { "style": { "backgroundColor": "#f5f7fb" } },
+          "children": [
+            { "type": "table-cell", "content": "Interest expense, net", "properties": { "style": { "color": "#6b7494", "paddingLeft": 16 } } },
+            { "type": "table-cell", "content": "(660)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(780)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(2,910)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "", "properties": { "style": { "textAlign": "right" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "children": [
+            { "type": "table-cell", "content": "Income tax expense", "properties": { "style": { "color": "#6b7494", "paddingLeft": 16 } } },
+            { "type": "table-cell", "content": "(600)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(430)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "(2,260)", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+            { "type": "table-cell", "content": "", "properties": { "style": { "textAlign": "right" } } }
+          ]
+        },
+        {
+          "type": "table-row", "content": "",
+          "properties": { "style": { "backgroundColor": "#0e1f48" } },
+          "children": [
+            { "type": "table-cell", "content": "NET INCOME", "properties": { "style": { "fontWeight": 700, "color": "#ffffff", "paddingTop": 8, "paddingBottom": 8 } } },
+            { "type": "table-cell", "content": "9,100", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#ffffff" } } },
+            { "type": "table-cell", "content": "8,350", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#ffffff" } } },
+            { "type": "table-cell", "content": "31,980", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#ffffff" } } },
+            { "type": "table-cell", "content": "+9.0%", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#c8b87a" } } }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "note",
+      "content": "EBITDA is a non-GAAP financial measure. See Appendix A for reconciliation to GAAP net income. All figures in USD thousands unless otherwise noted."
+    },
+
+
+    {
+      "type": "section-flag",
+      "content": "BALANCE SHEET HIGHLIGHTS  ·  DEC 31, 2025  ·  USD THOUSANDS"
+    },
+
+    {
+      "type": "zone-map",
+      "content": "",
+      "zoneLayout": {
+        "columns": [
+          { "mode": "flex", "fr": 1 },
+          { "mode": "flex", "fr": 1 }
+        ],
+        "gap": 28
+      },
+      "properties": { "style": { "paddingTop": 14, "marginBottom": 0 } },
+      "zones": [
+        {
+          "id": "assets",
+          "elements": [
+            {
+              "type": "table",
+              "content": "",
+              "table": {
+                "headerRows": 1,
+                "columnGap": 0,
+                "rowGap": 0,
+                "columns": [
+                  { "mode": "flex", "fr": 2 },
+                  { "mode": "fixed", "value": 62 },
+                  { "mode": "fixed", "value": 62 }
+                ],
+                "headerCellStyle": {
+                  "fontFamily": "Cousine",
+                  "fontWeight": 700,
+                  "fontSize": 6,
+                  "letterSpacing": 1,
+                  "color": "#ffffff",
+                  "backgroundColor": "#1a3268",
+                  "paddingTop": 6,
+                  "paddingBottom": 6,
+                  "paddingLeft": 8
+                },
+                "cellStyle": {
+                  "fontFamily": "Cousine",
+                  "fontSize": 7.5,
+                  "paddingTop": 4,
+                  "paddingBottom": 4,
+                  "paddingLeft": 8,
+                  "paddingRight": 8
+                }
+              },
+              "properties": { "style": { "borderWidth": 0.5, "borderColor": "#d8dce8" } },
+              "children": [
+                {
+                  "type": "table-row", "content": "",
+                  "properties": { "semanticRole": "header" },
+                  "children": [
+                    { "type": "table-cell", "content": "ASSETS" },
+                    { "type": "table-cell", "content": "2025", "properties": { "style": { "textAlign": "right" } } },
+                    { "type": "table-cell", "content": "2024", "properties": { "style": { "textAlign": "right" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "children": [
+                    { "type": "table-cell", "content": "Cash & equivalents", "properties": { "style": { "color": "#6b7494", "paddingLeft": 14 } } },
+                    { "type": "table-cell", "content": "22,480", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+                    { "type": "table-cell", "content": "18,920", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "properties": { "style": { "backgroundColor": "#f5f7fb" } },
+                  "children": [
+                    { "type": "table-cell", "content": "Receivables & accrued", "properties": { "style": { "color": "#6b7494", "paddingLeft": 14 } } },
+                    { "type": "table-cell", "content": "14,820", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+                    { "type": "table-cell", "content": "12,340", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "children": [
+                    { "type": "table-cell", "content": "Principal investments", "properties": { "style": { "color": "#6b7494", "paddingLeft": 14 } } },
+                    { "type": "table-cell", "content": "41,700", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+                    { "type": "table-cell", "content": "38,200", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "properties": { "style": { "backgroundColor": "#f5f7fb" } },
+                  "children": [
+                    { "type": "table-cell", "content": "Goodwill & intangibles", "properties": { "style": { "color": "#6b7494", "paddingLeft": 14 } } },
+                    { "type": "table-cell", "content": "62,300", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+                    { "type": "table-cell", "content": "60,100", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "children": [
+                    { "type": "table-cell", "content": "PP&E & other assets", "properties": { "style": { "color": "#6b7494", "paddingLeft": 14 } } },
+                    { "type": "table-cell", "content": "43,000", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+                    { "type": "table-cell", "content": "36,180", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "properties": { "style": { "backgroundColor": "#0e1f48" } },
+                  "children": [
+                    { "type": "table-cell", "content": "TOTAL ASSETS", "properties": { "style": { "fontWeight": 700, "color": "#ffffff", "paddingTop": 7, "paddingBottom": 7 } } },
+                    { "type": "table-cell", "content": "184,300", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#ffffff" } } },
+                    { "type": "table-cell", "content": "165,740", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#c8b87a" } } }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "liabilities",
+          "elements": [
+            {
+              "type": "table",
+              "content": "",
+              "table": {
+                "headerRows": 1,
+                "columnGap": 0,
+                "rowGap": 0,
+                "columns": [
+                  { "mode": "flex", "fr": 2 },
+                  { "mode": "fixed", "value": 62 },
+                  { "mode": "fixed", "value": 62 }
+                ],
+                "headerCellStyle": {
+                  "fontFamily": "Cousine",
+                  "fontWeight": 700,
+                  "fontSize": 6,
+                  "letterSpacing": 1,
+                  "color": "#ffffff",
+                  "backgroundColor": "#1a3268",
+                  "paddingTop": 6,
+                  "paddingBottom": 6,
+                  "paddingLeft": 8
+                },
+                "cellStyle": {
+                  "fontFamily": "Cousine",
+                  "fontSize": 7.5,
+                  "paddingTop": 4,
+                  "paddingBottom": 4,
+                  "paddingLeft": 8,
+                  "paddingRight": 8
+                }
+              },
+              "properties": { "style": { "borderWidth": 0.5, "borderColor": "#d8dce8" } },
+              "children": [
+                {
+                  "type": "table-row", "content": "",
+                  "properties": { "semanticRole": "header" },
+                  "children": [
+                    { "type": "table-cell", "content": "LIABILITIES & EQUITY" },
+                    { "type": "table-cell", "content": "2025", "properties": { "style": { "textAlign": "right" } } },
+                    { "type": "table-cell", "content": "2024", "properties": { "style": { "textAlign": "right" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "children": [
+                    { "type": "table-cell", "content": "Accounts payable", "properties": { "style": { "color": "#6b7494", "paddingLeft": 14 } } },
+                    { "type": "table-cell", "content": "18,640", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+                    { "type": "table-cell", "content": "16,220", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "properties": { "style": { "backgroundColor": "#f5f7fb" } },
+                  "children": [
+                    { "type": "table-cell", "content": "Long-term debt", "properties": { "style": { "color": "#6b7494", "paddingLeft": 14 } } },
+                    { "type": "table-cell", "content": "38,500", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+                    { "type": "table-cell", "content": "42,000", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "children": [
+                    { "type": "table-cell", "content": "Deferred & other", "properties": { "style": { "color": "#6b7494", "paddingLeft": 14 } } },
+                    { "type": "table-cell", "content": "29,510", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+                    { "type": "table-cell", "content": "23,200", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "properties": { "style": { "backgroundColor": "#f5f7fb" } },
+                  "children": [
+                    { "type": "table-cell", "content": "Common stock & APIC", "properties": { "style": { "color": "#6b7494", "paddingLeft": 14 } } },
+                    { "type": "table-cell", "content": "52,300", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+                    { "type": "table-cell", "content": "48,100", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "children": [
+                    { "type": "table-cell", "content": "Retained earnings", "properties": { "style": { "color": "#6b7494", "paddingLeft": 14 } } },
+                    { "type": "table-cell", "content": "45,350", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } },
+                    { "type": "table-cell", "content": "36,220", "properties": { "style": { "textAlign": "right", "color": "#6b7494" } } }
+                  ]
+                },
+                {
+                  "type": "table-row", "content": "",
+                  "properties": { "style": { "backgroundColor": "#0e1f48" } },
+                  "children": [
+                    { "type": "table-cell", "content": "TOTAL L + EQUITY", "properties": { "style": { "fontWeight": 700, "color": "#ffffff", "paddingTop": 7, "paddingBottom": 7 } } },
+                    { "type": "table-cell", "content": "184,300", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#ffffff" } } },
+                    { "type": "table-cell", "content": "165,740", "properties": { "style": { "textAlign": "right", "fontWeight": 700, "color": "#c8b87a" } } }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "note",
+      "content": "Figures are unaudited and subject to change pending completion of year-end audit procedures expected in March 2026. Prior year figures have been reclassified where necessary for comparability."
+    }
+
+  ]
+}

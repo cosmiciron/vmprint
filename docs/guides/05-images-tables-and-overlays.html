@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>05. Images, Tables, And Overlays | VMPrint Docs</title>
+  <meta name="description" content="VMPrint documentation">
+  <link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="../index.html">VMPrint Docs</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="../index.html">Home</a>
+        <a class="nav-link is-active" href="../guides/">Guides</a>
+        <a class="nav-link" href="../reference/ast.html">Reference</a>
+        <a class="nav-link" href="../api/">API</a>
+        <a class="nav-link" href="../examples/">Examples</a>
+        <a class="nav-link" href="https://github.com/cosmiciron/vmprint">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page-shell">
+    <article class="markdown-body">
+<h1>05. Images, Tables, And Overlays</h1>
+<p>This chapter covers the remaining common authoring tools.</p>
+<h2>Images</h2>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;image&quot;,
+  &quot;image&quot;: {
+    &quot;mimeType&quot;: &quot;image/png&quot;,
+    &quot;data&quot;: &quot;data:image/png;base64,...&quot;,
+    &quot;fit&quot;: &quot;contain&quot;
+  },
+  &quot;properties&quot;: {
+    &quot;style&quot;: {
+      &quot;width&quot;: 180,
+      &quot;height&quot;: 120,
+      &quot;marginBottom&quot;: 8
+    }
+  }
+}
+</code></pre>
+<h2>Tables</h2>
+<p>Tables remain intentionally familiar.</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;table&quot;,
+  &quot;table&quot;: {
+    &quot;columns&quot;: [
+      { &quot;mode&quot;: &quot;fixed&quot;, &quot;value&quot;: 120 },
+      { &quot;mode&quot;: &quot;flex&quot;, &quot;fr&quot;: 1 }
+    ],
+    &quot;repeatHeader&quot;: true,
+    &quot;headerRows&quot;: 1
+  },
+  &quot;children&quot;: [
+    {
+      &quot;type&quot;: &quot;table-row&quot;,
+      &quot;children&quot;: [
+        { &quot;type&quot;: &quot;table-cell&quot;, &quot;content&quot;: &quot;Feature&quot; },
+        { &quot;type&quot;: &quot;table-cell&quot;, &quot;content&quot;: &quot;Meaning&quot; }
+      ]
+    },
+    {
+      &quot;type&quot;: &quot;table-row&quot;,
+      &quot;children&quot;: [
+        { &quot;type&quot;: &quot;table-cell&quot;, &quot;content&quot;: &quot;strip&quot; },
+        { &quot;type&quot;: &quot;table-cell&quot;, &quot;content&quot;: &quot;One-row aligned composition band&quot; }
+      ]
+    }
+  ]
+}
+</code></pre>
+<p>Use tables for tables. Use <code>strip</code> for aligned bands. Use <code>zone-map</code> for independent regions.</p>
+<p>A practical comparison:</p>
+<ul>
+<li>use <code>table</code> when the rows and columns express data</li>
+<li>use <code>strip</code> when the layout is one aligned band</li>
+<li>use <code>zone-map</code> when a main body, note field, sidebar, or inset should behave as separate regions</li>
+</ul>
+<p>If you find yourself trying to use a table just to hold a sidebar next to article text, that is usually a sign that <code>zone-map</code> is the better fit.</p>
+<h2>Overlays</h2>
+<p>Overlays are debug and inspection tools, not authored content.</p>
+<p>If <code>document.json</code> sits next to <code>document.overlay.mjs</code>, the CLI will auto-load it:</p>
+<pre><code class="language-bash">vmprint --input document.json --output out.pdf
+</code></pre>
+<p>Good overlay uses:</p>
+<ul>
+<li>draw content frames</li>
+<li>highlight zone footprints</li>
+<li>annotate gutters and reserved areas</li>
+<li>inspect page-local terrain and actor occupancy</li>
+</ul>
+<p>The built-in debug overlay is especially useful now for <code>zone-map</code> work because it can show authored zone regions directly. That makes it much easier to see whether your field geometry matches your intent before you tune typography inside it.</p>
+<p>See also:</p>
+<ul>
+<li><a href="../reference/overlay.html">Overlay System</a></li>
+</ul>
+<p>Next:</p>
+<ul>
+<li><a href="06-scripting.html">06-scripting</a></li>
+</ul>
+<p>After this point, use the references as needed:</p>
+<ul>
+<li><a href="../reference/ast.html">AST Reference</a></li>
+<li><a href="../reference/scripting.html">Scripting API</a></li>
+</ul>
+
+    </article>
+  </main>
+</body>
+</html>

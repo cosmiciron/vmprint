@@ -1,83 +1,74 @@
 # Quickstart
 
-This repo is intentionally narrow. It is for developers building with the VMPrint engine directly, not for browser demos, preview tooling, or broad introductory docs.
-
-The active pieces in this monorepo are:
-
-| Path | Purpose |
-| --- | --- |
-| `engine/` | Core layout engine and regression suite |
-| `cli/` | `vmprint` CLI for JSON-to-PDF batch workflows |
-| `pressrun/` | Minimal bootstrap example for wiring the engine |
-| `contracts/` | Shared TypeScript interfaces used internally and available for source-copy reuse |
-| `guides/` | Focused authoring guides |
-| `references/` | Compact reference material |
-
-## Prerequisites
-
-- Node.js 18+
-- npm 9+
-
-## Install
+## Render a document
 
 ```bash
-git clone https://github.com/cosmiciron/vmprint.git
-cd vmprint
-npm install
+npm install @vmprint/engine @vmprint/local-fonts @vmprint/context-pdf
 ```
 
-## Build
+```ts
+import { VMPrintEngine, loadDocument } from '@vmprint/engine';
+import LocalFontManager from '@vmprint/local-fonts';
+import { PdfContext } from '@vmprint/context-pdf';
+import { createWriteStream } from 'fs';
+
+const doc = loadDocument(JSON.parse(await fs.readFile('document.json', 'utf8')));
+const engine = new VMPrintEngine(doc, new LocalFontManager());
+
+const stream = createWriteStream('output.pdf');
+const context = new PdfContext(stream);
+await engine.render(context);
+await context.waitForFinish();
+```
+
+`render()` runs layout and renders in one call. To inspect pages before rendering:
+
+```ts
+const pages = await engine.layout();
+console.log(`${pages.length} pages, ${engine.info.pageSize.width}×${engine.info.pageSize.height}pt`);
+await engine.render(context);
+```
+
+## Document shape
+
+Documents are JSON objects conforming to AST version `1.1`:
+
+```json
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "A4",
+    "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "fontFamily": "Tinos",
+    "fontSize": 12,
+    "lineHeight": 1.4
+  },
+  "elements": [
+    { "type": "story", "content": "Hello, world." }
+  ]
+}
+```
+
+Built-in font families (`Arimo`, `Tinos`, `Cousine`, `Caladea`, `Carlito`, and Noto variants for CJK/Arabic/Thai/Devanagari) require no `fonts` block. For custom font files, add a role map:
+
+```json
+"fonts": {
+  "regular":    "fonts/MyFont-Regular.ttf",
+  "bold":       "fonts/MyFont-Bold.ttf",
+  "italic":     "fonts/MyFont-Italic.ttf",
+  "bolditalic": "fonts/MyFont-BoldItalic.ttf"
+}
+```
+
+See [guides/](guides/) for the full element reference and layout options.
+
+## CLI
+
+For batch JSON-to-PDF workflows, use the `vmprint` CLI:
 
 ```bash
-npm run build
+npm install -g @vmprint/cli
+vmprint --input document.json --output output.pdf
 ```
 
-This builds the internal workspace artifacts needed for the bundled CLI and packaged smoke test.
-
-## Run from source
-
-### `pressrun`
-
-The smallest useful end-to-end example:
-
-```bash
-npm run pressrun -- document.json output.pdf
-```
-
-### `vmprint` CLI
-
-Render a document JSON file to PDF:
-
-```bash
-npm run dev --prefix cli -- --input document.json --output output.pdf
-```
-
-Render from a previously emitted layout stream:
-
-```bash
-npm run dev --prefix cli -- --render-from-layout output.layout.json --output output.pdf
-```
-
-Emit the annotated layout stream while rendering:
-
-```bash
-npm run dev --prefix cli -- --input document.json --output output.pdf --emit-layout
-```
-
-Enable layout debug boxes:
-
-```bash
-npm run dev --prefix cli -- --input document.json --output output.pdf --debug
-```
-
-## Verify
-
-```bash
-npm test
-```
-
-If you only want engine coverage without the packaged smoke test:
-
-```bash
-npm run test --prefix engine
-```
+See [cli/QUICKSTART.md](cli/QUICKSTART.md) for all flags.

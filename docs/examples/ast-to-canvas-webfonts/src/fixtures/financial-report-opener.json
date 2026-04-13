@@ -1,0 +1,433 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "orientation": "portrait",
+    "margins": { "top": 54, "right": 60, "bottom": 54, "left": 60 },
+    "fontFamily": "Tinos",
+    "fontSize": 10,
+    "lineHeight": 1.45
+  },
+  "styles": {
+    "eyebrow": {
+      "fontFamily": "Cousine",
+      "fontSize": 6.5,
+      "fontWeight": "bold",
+      "letterSpacing": 1.8,
+      "color": "#8a6a2a",
+      "textAlign": "center",
+      "marginBottom": 6,
+      "keepWithNext": true,
+      "hyphenation": "off"
+    },
+    "report-title": {
+      "fontFamily": "Tinos",
+      "fontSize": 30,
+      "fontWeight": "bold",
+      "lineHeight": 1.15,
+      "textAlign": "center",
+      "color": "#1a2a3a",
+      "marginBottom": 6,
+      "keepWithNext": true,
+      "hyphenation": "off"
+    },
+    "subtitle": {
+      "fontFamily": "Tinos",
+      "fontSize": 13,
+      "fontStyle": "italic",
+      "textAlign": "center",
+      "color": "#4a5a6a",
+      "marginBottom": 20,
+      "keepWithNext": true
+    },
+    "rule": {
+      "fontFamily": "Cousine",
+      "fontSize": 4,
+      "textAlign": "center",
+      "color": "#c8a84a",
+      "marginBottom": 20
+    },
+    "section-label": {
+      "fontFamily": "Cousine",
+      "fontSize": 6,
+      "fontWeight": "bold",
+      "letterSpacing": 1.4,
+      "color": "#8a6a2a",
+      "marginBottom": 5,
+      "keepWithNext": true,
+      "hyphenation": "off"
+    },
+    "body": {
+      "fontFamily": "Tinos",
+      "fontSize": 9.5,
+      "lineHeight": 1.5,
+      "textAlign": "justify",
+      "color": "#2a2a2a",
+      "marginBottom": 10,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2,
+      "hyphenation": "auto"
+    },
+    "metric-label": {
+      "fontFamily": "Cousine",
+      "fontSize": 7,
+      "letterSpacing": 0.8,
+      "color": "#6a7a8a",
+      "marginBottom": 2,
+      "keepWithNext": true
+    },
+    "metric-value": {
+      "fontFamily": "Tinos",
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "lineHeight": 1.1,
+      "color": "#1a2a3a",
+      "marginBottom": 2,
+      "keepWithNext": true
+    },
+    "metric-delta": {
+      "fontFamily": "Cousine",
+      "fontSize": 7.5,
+      "marginBottom": 0
+    },
+    "table-cell": {
+      "fontFamily": "Cousine",
+      "fontSize": 8,
+      "paddingTop": 5,
+      "paddingBottom": 5,
+      "paddingLeft": 6,
+      "paddingRight": 6,
+      "color": "#2a2a2a"
+    },
+    "table-header-cell": {
+      "fontFamily": "Cousine",
+      "fontSize": 7,
+      "fontWeight": "bold",
+      "letterSpacing": 0.8,
+      "paddingTop": 5,
+      "paddingBottom": 5,
+      "paddingLeft": 6,
+      "paddingRight": 6,
+      "color": "#ffffff",
+      "backgroundColor": "#1a2a3a"
+    }
+  },
+  "header": {
+    "default": {
+      "elements": [
+        {
+          "type": "strip",
+          "content": "",
+          "stripLayout": { "tracks": [{ "mode": "flex", "fr": 1 }, { "mode": "auto" }], "gap": 0 },
+          "slots": [
+            {
+              "elements": [
+                {
+                  "type": "eyebrow",
+                  "content": "MERIDIAN CAPITAL GROUP",
+                  "properties": { "style": { "textAlign": "left", "marginBottom": 0 } }
+                }
+              ]
+            },
+            {
+              "elements": [
+                {
+                  "type": "eyebrow",
+                  "content": "CONFIDENTIAL",
+                  "properties": { "style": { "textAlign": "right", "marginBottom": 0, "color": "#b04030" } }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "firstPage": null
+  },
+  "footer": {
+    "default": {
+      "elements": [
+        {
+          "type": "strip",
+          "content": "",
+          "stripLayout": { "tracks": [{ "mode": "flex", "fr": 1 }, { "mode": "auto" }], "gap": 0 },
+          "slots": [
+            {
+              "elements": [
+                {
+                  "type": "eyebrow",
+                  "content": "FISCAL YEAR 2024 ANNUAL REPORT",
+                  "properties": { "style": { "textAlign": "left", "marginBottom": 0 } }
+                }
+              ]
+            },
+            {
+              "elements": [
+                {
+                  "type": "eyebrow",
+                  "content": "{pageNumber}",
+                  "properties": { "style": { "textAlign": "right", "marginBottom": 0 } }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "firstPage": null
+  },
+  "elements": [
+    {
+      "type": "eyebrow",
+      "content": "MERIDIAN CAPITAL GROUP  |  ANNUAL REPORT  |  FISCAL YEAR 2024"
+    },
+    {
+      "type": "report-title",
+      "content": "Building Enduring Value\nAcross Every Market Cycle"
+    },
+    {
+      "type": "subtitle",
+      "content": "A message to shareholders and stakeholders"
+    },
+    {
+      "type": "rule",
+      "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+    },
+    {
+      "type": "zone-map",
+      "content": "",
+      "zoneLayout": { "columns": [{ "mode": "flex", "fr": 1 }, { "mode": "flex", "fr": 1 }, { "mode": "flex", "fr": 1 }], "gap": 18 },
+      "zones": [
+        {
+          "elements": [
+            { "type": "metric-label", "content": "TOTAL REVENUE" },
+            { "type": "metric-value", "content": "$4.82B" },
+            {
+              "type": "metric-delta",
+              "content": "",
+              "children": [
+                {
+                  "type": "text",
+                  "content": "+12.4% ",
+                  "properties": { "style": { "color": "#2a7a3a", "fontWeight": "bold" } }
+                },
+                {
+                  "type": "text",
+                  "content": "YoY",
+                  "properties": { "style": { "color": "#6a7a8a" } }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "elements": [
+            { "type": "metric-label", "content": "NET INCOME" },
+            { "type": "metric-value", "content": "$1.17B" },
+            {
+              "type": "metric-delta",
+              "content": "",
+              "children": [
+                {
+                  "type": "text",
+                  "content": "+8.9% ",
+                  "properties": { "style": { "color": "#2a7a3a", "fontWeight": "bold" } }
+                },
+                {
+                  "type": "text",
+                  "content": "YoY",
+                  "properties": { "style": { "color": "#6a7a8a" } }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "elements": [
+            { "type": "metric-label", "content": "ASSETS UNDER MANAGEMENT" },
+            { "type": "metric-value", "content": "$38.4B" },
+            {
+              "type": "metric-delta",
+              "content": "",
+              "children": [
+                {
+                  "type": "text",
+                  "content": "+21.2% ",
+                  "properties": { "style": { "color": "#2a7a3a", "fontWeight": "bold" } }
+                },
+                {
+                  "type": "text",
+                  "content": "YoY",
+                  "properties": { "style": { "color": "#6a7a8a" } }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "rule",
+      "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+      "properties": { "style": { "marginTop": 14 } }
+    },
+    {
+      "type": "section-label",
+      "content": "LETTER FROM THE CHIEF EXECUTIVE"
+    },
+    {
+      "type": "story",
+      "content": "",
+      "columns": 2,
+      "gutter": 24,
+      "balance": false,
+      "children": [
+        {
+          "type": "body",
+          "content": "To our shareholders and stakeholders: Fiscal year 2024 tested the resolve of every institution in our industry. Elevated interest rates, geopolitical uncertainty, and a prolonged recalibration of private markets created headwinds that demanded both discipline and imagination. Against that backdrop, Meridian delivered record revenue, sustained double-digit growth in assets under management, and returned $640 million to shareholders through dividends and buybacks.",
+          "dropCap": {
+            "enabled": true,
+            "lines": 3,
+            "gap": 6,
+            "characterStyle": {
+              "fontFamily": "Tinos",
+              "fontWeight": "bold",
+              "color": "#8a6a2a"
+            }
+          }
+        },
+        {
+          "type": "body",
+          "content": "These results did not happen by accident. They reflect a strategy we have refined over three decades: invest with conviction in durable businesses, maintain balance-sheet strength through every phase of the cycle, and operate with the kind of integrity that earns trust across generations of clients and partners."
+        },
+        {
+          "type": "body",
+          "content": "Our Infrastructure & Real Assets division was the standout performer of the year, deploying $6.1 billion into renewable energy transition assets and logistics infrastructure across North America and Western Europe. Private Credit expanded its origination platform, closing 214 senior-secured transactions with a weighted average net yield of 11.3%. Meanwhile, our Public Markets team navigated volatile fixed-income conditions with tactical duration management, outperforming the Bloomberg Aggregate by 180 basis points."
+        },
+        {
+          "type": "body",
+          "content": "We are under no illusion that 2025 will be easy. The macro environment will continue to reward patience and penalize complacency. But we enter the new fiscal year with our strongest balance sheet in our history, a talent base that has never been deeper, and a client roster whose confidence in Meridian has never been higher."
+        },
+        {
+          "type": "body",
+          "content": "Thank you for the trust you have placed in us. We do not take it lightly."
+        },
+        {
+          "type": "body",
+          "content": "Warmly,",
+          "properties": { "style": { "marginBottom": 2 } }
+        },
+        {
+          "type": "body",
+          "content": "Eleanor Voss",
+          "properties": { "style": { "fontWeight": "bold", "marginBottom": 1 } }
+        },
+        {
+          "type": "body",
+          "content": "Chief Executive Officer, Meridian Capital Group",
+          "properties": { "style": { "fontStyle": "italic", "color": "#6a7a8a" } }
+        }
+      ]
+    },
+    {
+      "type": "rule",
+      "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+      "properties": { "style": { "marginTop": 20 } }
+    },
+    {
+      "type": "section-label",
+      "content": "SEGMENT PERFORMANCE SUMMARY  -  FY2024"
+    },
+    {
+      "type": "table",
+      "content": "",
+      "properties": { "style": { "borderWidth": 0.5, "borderColor": "#dce0e8" } },
+      "table": {
+        "headerRows": 1,
+        "repeatHeader": false,
+        "columnGap": 0,
+        "rowGap": 0,
+        "columns": [
+          { "mode": "fixed", "value": 210 },
+          { "mode": "fixed", "value": 90 },
+          { "mode": "fixed", "value": 90 },
+          { "mode": "fixed", "value": 80 },
+          { "mode": "fixed", "value": 22 }
+        ]
+      },
+      "children": [
+        {
+          "type": "table-row",
+          "content": "",
+          "properties": { "semanticRole": "header" },
+          "children": [
+            { "type": "table-cell", "content": "BUSINESS SEGMENT", "properties": { "style": { "fontFamily": "Cousine", "fontSize": 7, "fontWeight": "bold", "letterSpacing": 0.8, "paddingTop": 5, "paddingBottom": 5, "paddingLeft": 6, "paddingRight": 6, "color": "#ffffff", "backgroundColor": "#1a2a3a" } } },
+            { "type": "table-cell", "content": "REVENUE", "properties": { "style": { "fontFamily": "Cousine", "fontSize": 7, "fontWeight": "bold", "letterSpacing": 0.8, "textAlign": "right", "paddingTop": 5, "paddingBottom": 5, "paddingLeft": 6, "paddingRight": 6, "color": "#ffffff", "backgroundColor": "#1a2a3a" } } },
+            { "type": "table-cell", "content": "NET INCOME", "properties": { "style": { "fontFamily": "Cousine", "fontSize": 7, "fontWeight": "bold", "letterSpacing": 0.8, "textAlign": "right", "paddingTop": 5, "paddingBottom": 5, "paddingLeft": 6, "paddingRight": 6, "color": "#ffffff", "backgroundColor": "#1a2a3a" } } },
+            { "type": "table-cell", "content": "YoY CHANGE", "properties": { "style": { "fontFamily": "Cousine", "fontSize": 7, "fontWeight": "bold", "letterSpacing": 0.8, "textAlign": "right", "paddingTop": 5, "paddingBottom": 5, "paddingLeft": 6, "paddingRight": 6, "color": "#ffffff", "backgroundColor": "#1a2a3a" } } },
+            { "type": "table-cell", "content": "", "properties": { "style": { "backgroundColor": "#1a2a3a" } } }
+          ]
+        },
+        {
+          "type": "table-row",
+          "content": "",
+          "children": [
+            { "type": "table-cell", "content": "Infrastructure & Real Assets" },
+            { "type": "table-cell", "content": "$1,840M", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "$490M", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "+18.3%", "properties": { "style": { "textAlign": "right", "color": "#2a7a3a" } } },
+            { "type": "table-cell", "content": "", "properties": { "style": { "backgroundColor": "#2a7a3a" } } }
+          ]
+        },
+        {
+          "type": "table-row",
+          "content": "",
+          "properties": { "style": { "backgroundColor": "#f5f7fa" } },
+          "children": [
+            { "type": "table-cell", "content": "Private Credit" },
+            { "type": "table-cell", "content": "$1,310M", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "$374M", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "+14.7%", "properties": { "style": { "textAlign": "right", "color": "#2a7a3a" } } },
+            { "type": "table-cell", "content": "", "properties": { "style": { "backgroundColor": "#2a7a3a" } } }
+          ]
+        },
+        {
+          "type": "table-row",
+          "content": "",
+          "children": [
+            { "type": "table-cell", "content": "Public Markets" },
+            { "type": "table-cell", "content": "$920M", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "$198M", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "+5.2%", "properties": { "style": { "textAlign": "right", "color": "#2a7a3a" } } },
+            { "type": "table-cell", "content": "", "properties": { "style": { "backgroundColor": "#5a8a5a" } } }
+          ]
+        },
+        {
+          "type": "table-row",
+          "content": "",
+          "properties": { "style": { "backgroundColor": "#f5f7fa" } },
+          "children": [
+            { "type": "table-cell", "content": "Advisory & Wealth Management" },
+            { "type": "table-cell", "content": "$750M", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "$108M", "properties": { "style": { "textAlign": "right" } } },
+            { "type": "table-cell", "content": "+3.1%", "properties": { "style": { "textAlign": "right", "color": "#5a8a5a" } } },
+            { "type": "table-cell", "content": "", "properties": { "style": { "backgroundColor": "#8aaa8a" } } }
+          ]
+        },
+        {
+          "type": "table-row",
+          "content": "",
+          "properties": { "style": { "borderTopWidth": 1.5, "borderTopColor": "#1a2a3a" } },
+          "children": [
+            { "type": "table-cell", "content": "Total", "properties": { "style": { "fontWeight": "bold" } } },
+            { "type": "table-cell", "content": "$4,820M", "properties": { "style": { "textAlign": "right", "fontWeight": "bold" } } },
+            { "type": "table-cell", "content": "$1,170M", "properties": { "style": { "textAlign": "right", "fontWeight": "bold" } } },
+            { "type": "table-cell", "content": "+12.4%", "properties": { "style": { "textAlign": "right", "fontWeight": "bold", "color": "#2a7a3a" } } },
+            { "type": "table-cell", "content": "" }
+          ]
+        }
+      ]
+    }
+  ]
+}

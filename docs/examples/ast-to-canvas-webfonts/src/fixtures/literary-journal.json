@@ -1,0 +1,352 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 612, "height": 792 },
+    "margins": { "top": 54, "right": 60, "bottom": 60, "left": 60 },
+    "fontFamily": "Tinos",
+    "fontSize": 10.5,
+    "lineHeight": 1.45,
+    "pageBackground": "#faf8f4",
+    "hyphenation": "auto",
+    "justifyEngine": "advanced",
+    "justifyStrategy": "auto"
+  },
+  "styles": {
+    "journal-name": {
+      "fontFamily": "Arimo",
+      "fontSize": 7,
+      "fontWeight": "bold",
+      "letterSpacing": 3.5,
+      "color": "#8a7060",
+      "textAlign": "center",
+      "marginBottom": 28
+    },
+    "issue-rule": {
+      "fontFamily": "Arimo",
+      "fontSize": 6,
+      "letterSpacing": 1.8,
+      "color": "#b0a090",
+      "textAlign": "center",
+      "marginBottom": 48
+    },
+    "poem-title": {
+      "fontFamily": "Tinos",
+      "fontSize": 32,
+      "fontWeight": "bold",
+      "lineHeight": 1.15,
+      "textAlign": "center",
+      "color": "#2a1f14",
+      "marginBottom": 8
+    },
+    "poem-subtitle": {
+      "fontFamily": "Tinos",
+      "fontSize": 13,
+      "fontStyle": "italic",
+      "textAlign": "center",
+      "color": "#6a5a4a",
+      "marginBottom": 22
+    },
+    "byline": {
+      "fontFamily": "Arimo",
+      "fontSize": 7.5,
+      "letterSpacing": 1.6,
+      "textAlign": "center",
+      "color": "#8a7060",
+      "marginBottom": 6
+    },
+    "author-name": {
+      "fontFamily": "Tinos",
+      "fontSize": 11,
+      "fontWeight": "bold",
+      "textAlign": "center",
+      "color": "#2a1f14",
+      "marginBottom": 36
+    },
+    "ornament": {
+      "fontFamily": "Tinos",
+      "fontSize": 18,
+      "textAlign": "center",
+      "color": "#b0a090",
+      "marginBottom": 36
+    },
+    "intro-blurb": {
+      "fontFamily": "Tinos",
+      "fontSize": 10,
+      "fontStyle": "italic",
+      "lineHeight": 1.6,
+      "textAlign": "center",
+      "color": "#4a3a2a",
+      "marginBottom": 0
+    },
+    "body": {
+      "fontFamily": "Tinos",
+      "fontSize": 10.5,
+      "lineHeight": 1.45,
+      "textAlign": "justify",
+      "marginBottom": 10,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2,
+      "hyphenation": "auto",
+      "hyphenMinWordLength": 6,
+      "hyphenMinPrefix": 3,
+      "hyphenMinSuffix": 3
+    },
+    "section-head": {
+      "fontFamily": "Arimo",
+      "fontSize": 6.5,
+      "fontWeight": "bold",
+      "letterSpacing": 2.5,
+      "color": "#8a7060",
+      "textAlign": "center",
+      "marginBottom": 14,
+      "keepWithNext": true
+    },
+    "pull-quote": {
+      "fontFamily": "Tinos",
+      "fontSize": 12.5,
+      "fontStyle": "italic",
+      "lineHeight": 1.5,
+      "color": "#4a3a2a",
+      "textAlign": "center",
+      "borderTopWidth": 0.75,
+      "borderTopColor": "#b0a090",
+      "borderBottomWidth": 0.75,
+      "borderBottomColor": "#b0a090",
+      "paddingTop": 10,
+      "paddingBottom": 10,
+      "paddingLeft": 8,
+      "paddingRight": 8
+    },
+    "footer-text": {
+      "fontFamily": "Arimo",
+      "fontSize": 7,
+      "color": "#a09080",
+      "letterSpacing": 0.8
+    },
+    "header-text": {
+      "fontFamily": "Arimo",
+      "fontSize": 7,
+      "color": "#a09080",
+      "letterSpacing": 0.8,
+      "fontStyle": "italic"
+    }
+  },
+  "header": {
+    "firstPage": { "elements": [] },
+    "default": {
+      "elements": [
+        {
+          "type": "strip",
+          "content": "",
+          "stripLayout": { "tracks": [{ "mode": "flex", "fr": 1 }, { "mode": "auto" }, { "mode": "flex", "fr": 1 }], "gap": 0 },
+          "slots": [
+            {
+              "elements": [
+                {
+                  "type": "header-text",
+                  "content": "THE MERIDIAN REVIEW",
+                  "properties": { "style": { "textAlign": "left" } }
+                }
+              ]
+            },
+            {
+              "elements": [
+                {
+                  "type": "header-text",
+                  "content": "\u00b7",
+                  "properties": { "style": { "textAlign": "center", "color": "#c8b8a0" } }
+                }
+              ]
+            },
+            {
+              "elements": [
+                {
+                  "type": "header-text",
+                  "content": "Issue 14, Autumn",
+                  "properties": { "style": { "textAlign": "right" } }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "body",
+          "content": "",
+          "properties": {
+            "style": {
+              "borderBottomWidth": 0.5,
+              "borderBottomColor": "#d0c4b4",
+              "marginBottom": 0,
+              "marginTop": 4
+            }
+          }
+        }
+      ]
+    }
+  },
+  "footer": {
+    "firstPage": { "elements": [] },
+    "default": {
+      "elements": [
+        {
+          "type": "body",
+          "content": "",
+          "properties": {
+            "style": {
+              "borderTopWidth": 0.5,
+              "borderTopColor": "#d0c4b4",
+              "marginBottom": 6,
+              "marginTop": 0
+            }
+          }
+        },
+        {
+          "type": "strip",
+          "content": "",
+          "stripLayout": { "tracks": [{ "mode": "flex", "fr": 1 }, { "mode": "auto" }, { "mode": "flex", "fr": 1 }], "gap": 0 },
+          "slots": [
+            {
+              "elements": [
+                {
+                  "type": "footer-text",
+                  "content": "Fiction & Poetry",
+                  "properties": { "style": { "textAlign": "left" } }
+                }
+              ]
+            },
+            {
+              "elements": [
+                {
+                  "type": "footer-text",
+                  "content": "{pageNumber}",
+                  "properties": { "style": { "textAlign": "center" } }
+                }
+              ]
+            },
+            {
+              "elements": [
+                {
+                  "type": "footer-text",
+                  "content": "meridianreview.org",
+                  "properties": { "style": { "textAlign": "right" } }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "elements": [
+    {
+      "type": "journal-name",
+      "content": "THE MERIDIAN REVIEW"
+    },
+    {
+      "type": "issue-rule",
+      "content": "ISSUE FOURTEEN  \u00b7  AUTUMN"
+    },
+    {
+      "type": "body",
+      "content": "",
+      "properties": {
+        "style": {
+          "borderTopWidth": 1.5,
+          "borderTopColor": "#8a7060",
+          "marginBottom": 42
+        }
+      }
+    },
+    {
+      "type": "poem-title",
+      "content": "What the River\nRemembers"
+    },
+    {
+      "type": "poem-subtitle",
+      "content": "A Novella in Three Tides"
+    },
+    {
+      "type": "byline",
+      "content": "FICTION BY"
+    },
+    {
+      "type": "author-name",
+      "content": "Elena Voss"
+    },
+    {
+      "type": "ornament",
+      "content": "\u2042"
+    },
+    {
+      "type": "intro-blurb",
+      "content": "In the flooded lowlands of the Drava, a cartographer\u2019s daughter inherits her father\u2019s unfinished maps\u2014and the secrets drawn between the lines."
+    },
+    {
+      "type": "body",
+      "content": "",
+      "properties": { "style": { "marginBottom": 0 } }
+    },
+    {
+      "type": "section-head",
+      "content": "I. THE FIRST TIDE",
+      "columnSpan": "all"
+    },
+    {
+      "type": "story",
+      "content": "",
+      "columns": 3,
+      "gutter": 16,
+      "balance": false,
+      "children": [
+        {
+          "type": "body",
+          "content": "The morning Marta found the chest, the river had already climbed three steps up the embankment wall. Her father\u2019s study smelled of iron-gall ink and mildew, the two scents she would forever associate with his absence. She did not weep. She had wept in November, alone in the kitchen while the neighbors carried casseroles through the snow. By April she was done with weeping and had begun the harder work of looking.",
+          "dropCap": {
+            "enabled": true,
+            "lines": 3,
+            "gap": 5,
+            "characterStyle": {
+              "fontFamily": "Tinos",
+              "fontWeight": 700,
+              "color": "#8a7060"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "pull-quote",
+      "content": "\u201cShe had wept in November. By April she was done with weeping and had begun the harder work of looking.\u201d"
+    },
+    {
+      "type": "story",
+      "content": "",
+      "columns": 3,
+      "gutter": 16,
+      "balance": false,
+      "children": [
+        {
+          "type": "body",
+          "content": "The chest was cedar, bound in brass that had gone green at the hinges. Inside: forty-seven rolled surveys, a bone-handled penknife, three receipts from a cartographer\u2019s supply house in Vienna, and a letter addressed to someone named Bela\u2014a name Marta had never heard her father speak. She set the letter aside and unrolled the surveys one by one across the study floor."
+        },
+        {
+          "type": "body",
+          "content": "They were river charts, mostly. The Drava in all its seasons: spring flood and summer shallows, the autumn braiding where the current split around gravel islands and rejoined itself downstream. Her father had mapped the same two-kilometer stretch more than thirty times over as many years, measuring how the river shifted its bed, how sandbars rose and vanished, how the old mill channel silted in after the 1965 flood and was never dredged again."
+        },
+        {
+          "type": "body",
+          "content": "What troubled her was the final chart. It was dated six weeks before his death and showed a feature she could not locate in any of the earlier surveys: a tributary entering from the east, narrow as a footpath, curving through the lowland birches. She had walked that ground every summer of her childhood. There was no such channel. There had never been one. And yet her father had marked it in his precise hand, complete with depth soundings."
+        },
+        {
+          "type": "body",
+          "content": "She folded the chart, placed it with the letter from Bela, and walked to the window. The river was still rising. A plastic crate from somewhere upriver turned slowly in the current, caught a moment on a snag of branch, then pulled free and slid south. Her father used to say the river remembered everything it had ever touched. He said this the way other people said God is good\u2014not as a claim that required proof but as an orientation, a way of facing the world."
+        },
+        {
+          "type": "body",
+          "content": "Marta had long suspected he was speaking about himself."
+        }
+      ]
+    }
+  ]
+}

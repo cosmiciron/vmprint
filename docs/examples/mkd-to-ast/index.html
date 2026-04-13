@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VMPrint: Markdown → AST</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script>window.process = { env: {} };</script>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="kicker">VMPrint Transmuters</p>
+      <h1>Markdown → AST</h1>
+      <p class="lede">
+        Converts Markdown to <code>DocumentInput</code> JSON — the native input format for the VMPrint
+        layout engine and CLI.
+      </p>
+    </header>
+
+    <aside class="notice">
+      <strong>Browser demo limitations</strong>
+      <ul>
+        <li><strong>Images are not fetched.</strong> Image URLs in your Markdown will be skipped silently. To include images, convert them to base64 data URIs (<code>data:image/png;base64,…</code>) and use those directly as the image source in your Markdown.</li>
+        <li><strong>For best output, use the CLI.</strong> Download the generated JSON and run it through the VMPrint CLI (<code>vmprint --input doc.json --output doc.pdf</code>), which supports all fonts and full multilingual shaping. Pasting the JSON into the <a href="../ast-to-pdf/">AST → PDF demo</a> also works, but that example is limited to the 14 standard PDF fonts and does not include multilingual text support.</li>
+      </ul>
+    </aside>
+
+    <div class="toolbar">
+      <label for="theme-select" style="display:flex;align-items:center;gap:.45rem;font-size:.9rem;color:var(--ink-soft)">
+        Theme
+        <select id="theme-select" aria-label="Select theme"></select>
+      </label>
+      <button id="transmute-btn" type="button" class="primary">Transmute</button>
+    </div>
+
+    <div class="split">
+      <div class="panel">
+        <div class="panel-header">
+          <p class="panel-label">Markdown Input</p>
+        </div>
+        <textarea id="md-input" spellcheck="false" aria-label="Markdown input"></textarea>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <p class="panel-label">DocumentInput AST (JSON)</p>
+          <button id="copy-btn" type="button">Copy</button>
+          <a id="download-link" aria-disabled="true">Download JSON</a>
+        </div>
+        <textarea id="json-output" readonly spellcheck="false" aria-label="AST JSON output"></textarea>
+      </div>
+    </div>
+
+    <div class="bottom-row">
+      <div class="metrics">
+        <p><strong>Elements:</strong> <span id="elem-count">—</span></p>
+        <p><strong>Transmute:</strong> <span id="render-ms">—</span></p>
+        <p><strong>Boot:</strong> <span id="boot-ms">—</span></p>
+      </div>
+      <p id="status" data-state="idle"></p>
+    </div>
+  </main>
+
+  <script src="./assets/vmprint-transmuter.js"></script>
+  <script src="./assets/pipeline.js"></script>
+  <script src="./assets/ui.js"></script>
+</body>
+</html>

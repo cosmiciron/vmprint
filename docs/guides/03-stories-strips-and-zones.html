@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>03. Stories, Strips, And Zones | VMPrint Docs</title>
+  <meta name="description" content="VMPrint documentation">
+  <link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="../index.html">VMPrint Docs</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="../index.html">Home</a>
+        <a class="nav-link is-active" href="../guides/">Guides</a>
+        <a class="nav-link" href="../reference/ast.html">Reference</a>
+        <a class="nav-link" href="../api/">API</a>
+        <a class="nav-link" href="../examples/">Examples</a>
+        <a class="nav-link" href="https://github.com/cosmiciron/vmprint">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page-shell">
+    <article class="markdown-body">
+<h1>03. Stories, Strips, And Zones</h1>
+<p>This is where VMPrint becomes spatial.</p>
+<p>The core distinction is:</p>
+<ul>
+<li><code>story</code>: linked flow across columns</li>
+<li><code>strip</code>: one-row aligned composition band</li>
+<li><code>zone-map</code>: independent parallel regions</li>
+</ul>
+<p>Quick rule of thumb:</p>
+<ul>
+<li>if the content should stay one reading stream, use <code>story</code></li>
+<li>if the content should line up in one band, use <code>strip</code></li>
+<li>if the content lives in separate rooms, use <code>zone-map</code></li>
+<li>if the document needs a stage that actors inhabit directly, use <code>layout.worldPlain</code></li>
+</ul>
+<h2><code>story</code></h2>
+<p>Use <code>story</code> when content should remain one logical flow while moving through multiple columns.</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;story&quot;,
+  &quot;columns&quot;: 2,
+  &quot;gutter&quot;: 14,
+  &quot;children&quot;: [
+    { &quot;type&quot;: &quot;body&quot;, &quot;content&quot;: &quot;Main story copy...&quot; },
+    { &quot;type&quot;: &quot;body&quot;, &quot;content&quot;: &quot;More story copy...&quot; }
+  ]
+}
+</code></pre>
+<p>Use <code>columnSpan</code> when a full-width interruption should cut across the story:</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;section-label&quot;,
+  &quot;content&quot;: &quot;WHAT THIS PAGE IS TESTING&quot;,
+  &quot;columnSpan&quot;: &quot;all&quot;
+}
+</code></pre>
+<h2>Story Placement</h2>
+<p>Direct children of a <code>story</code> can declare how they participate in the story’s
+spatial layout through a first-class <code>placement</code> field.</p>
+<p>Without <code>placement</code>, a child is a flow element — it sits in the reading stream
+and the text flows around it normally. With <code>placement</code>, it becomes a spatial
+actor: a float anchored to the text cursor, or an element pinned at a fixed
+position within the story area.</p>
+<h3>Float</h3>
+<p>A float is anchored to the position where it appears in the child list. The
+text stream flows around it.</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;image&quot;,
+  &quot;image&quot;: { &quot;mimeType&quot;: &quot;image/png&quot;, &quot;data&quot;: &quot;...&quot;, &quot;fit&quot;: &quot;contain&quot; },
+  &quot;placement&quot;: {
+    &quot;mode&quot;: &quot;float&quot;,
+    &quot;align&quot;: &quot;right&quot;,
+    &quot;wrap&quot;: &quot;around&quot;,
+    &quot;gap&quot;: 8
+  },
+  &quot;properties&quot;: {
+    &quot;style&quot;: { &quot;width&quot;: 120, &quot;height&quot;: 90 }
+  }
+}
+</code></pre>
+<p><code>align</code> controls which margin the float anchors to: <code>&quot;left&quot;</code>, <code>&quot;right&quot;</code>, or
+<code>&quot;center&quot;</code>.</p>
+<p><code>wrap</code> controls how the text behaves:</p>
+<table>
+<thead>
+<tr>
+<th><code>wrap</code></th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&quot;around&quot;</code></td>
+<td>Text snakes around the obstacle on the available side(s)</td>
+</tr>
+<tr>
+<td><code>&quot;top-bottom&quot;</code></td>
+<td>Text clears the obstacle entirely — no side-by-side text</td>
+</tr>
+<tr>
+<td><code>&quot;none&quot;</code></td>
+<td>Element overlays the text with no reflow</td>
+</tr>
+</tbody>
+</table>
+<p><code>gap</code> adds clearance around the obstacle bounding box (in points).</p>
+<p>Floats are not limited to images. Any story child — a pull quote, a sidebar
+note, a box — can be declared as a float. The engine treats it as a spatial
+obstacle regardless of content type.</p>
+<p>For non-image floats, give the element an explicit <code>width</code> and <code>height</code> in
+<code>properties.style</code> so the obstacle geometry is known up front.</p>
+<h3>Story-Absolute</h3>
+<p>A <code>story-absolute</code> element is pinned at a fixed offset from the story’s own
+origin, independent of the text cursor position.</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;image&quot;,
+  &quot;image&quot;: { &quot;mimeType&quot;: &quot;image/png&quot;, &quot;data&quot;: &quot;...&quot;, &quot;fit&quot;: &quot;contain&quot; },
+  &quot;placement&quot;: {
+    &quot;mode&quot;: &quot;story-absolute&quot;,
+    &quot;x&quot;: 240,
+    &quot;y&quot;: 0,
+    &quot;wrap&quot;: &quot;around&quot;,
+    &quot;gap&quot;: 12
+  },
+  &quot;properties&quot;: {
+    &quot;style&quot;: { &quot;width&quot;: 100, &quot;height&quot;: 140 }
+  }
+}
+</code></pre>
+<p><code>x</code> and <code>y</code> are offsets from the story’s content-area origin (top-left of the
+story’s first column). The text still respects <code>wrap</code> around the element’s
+bounding box.</p>
+<p>Use <code>story-absolute</code> when you want an element at a specific visual position
+regardless of where the surrounding text happens to be — a decorative image
+pinned to the top-right of the story area, for example.</p>
+<p>For non-image <code>story-absolute</code> elements, provide explicit <code>width</code> and <code>height</code>
+in <code>properties.style</code>.</p>
+<h2><code>strip</code></h2>
+<p>Use <code>strip</code> for masthead rows, bylines, folios, and other one-row bands.</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;strip&quot;,
+  &quot;stripLayout&quot;: {
+    &quot;tracks&quot;: [
+      { &quot;mode&quot;: &quot;flex&quot;, &quot;fr&quot;: 1 },
+      { &quot;mode&quot;: &quot;flex&quot;, &quot;fr&quot;: 1 }
+    ],
+    &quot;gap&quot;: 12
+  },
+  &quot;slots&quot;: [
+    {
+      &quot;elements&quot;: [
+        { &quot;type&quot;: &quot;byline-left&quot;, &quot;content&quot;: &quot;By Uzo Z.T.&quot; }
+      ]
+    },
+    {
+      &quot;elements&quot;: [
+        { &quot;type&quot;: &quot;byline-right&quot;, &quot;content&quot;: &quot;MARCH 2026 · ISSUE 12&quot; }
+      ]
+    }
+  ]
+}
+</code></pre>
+<p>Use <code>strip</code> when the intent is “one aligned row,” not “tabular data.”</p>
+<h2><code>zone-map</code></h2>
+<p>Use <code>zone-map</code> when the document has genuinely independent regions.</p>
+<p>Publicly, <code>zone-map</code> is the region tool authors work with.
+Internally, the engine lowers it onto a larger continuous world space.
+You do not need to author a raw <code>world-map</code> directly.</p>
+<p>The practical mental model is:</p>
+<ul>
+<li>the engine has a continuous world underneath</li>
+<li>a page is the current viewport onto that world</li>
+<li><code>zone-map</code> places authored regions into that space</li>
+</ul>
+<p>So <code>zone-map</code> is not just “some columns on a page.”
+It is an authored region topology that happens to be revealed through pages.</p>
+<p>If what you want is not a region topology but a true stage where actors exist in
+space, <code>zone-map</code> is no longer the best fit. That is where <code>layout.worldPlain</code>
+comes in.</p>
+<h2><code>layout.worldPlain</code></h2>
+<p><code>worldPlain</code> is authored through the document <code>layout</code>, not as an element. It
+declares that the page/viewport is revealing a broader world stage.</p>
+<pre><code class="language-json">{
+  &quot;layout&quot;: {
+    &quot;pageSize&quot;: &quot;LETTER&quot;,
+    &quot;margins&quot;: { &quot;top&quot;: 72, &quot;right&quot;: 72, &quot;bottom&quot;: 72, &quot;left&quot;: 72 },
+    &quot;fontFamily&quot;: &quot;Times New Roman&quot;,
+    &quot;fontSize&quot;: 12,
+    &quot;lineHeight&quot;: 1.4,
+    &quot;worldPlain&quot;: {
+      &quot;style&quot;: { &quot;backgroundColor&quot;: &quot;#f8fbff&quot; }
+    }
+  },
+  &quot;elements&quot;: [
+    {
+      &quot;type&quot;: &quot;field-actor&quot;,
+      &quot;content&quot;: &quot;&quot;,
+      &quot;properties&quot;: {
+        &quot;style&quot;: {
+          &quot;width&quot;: 96,
+          &quot;height&quot;: 72,
+          &quot;backgroundColor&quot;: &quot;#0f8b8d&quot;
+        },
+        &quot;spatialField&quot;: {
+          &quot;kind&quot;: &quot;exclude&quot;,
+          &quot;x&quot;: 180,
+          &quot;y&quot;: 120,
+          &quot;exclusionAssembly&quot;: {
+            &quot;members&quot;: [
+              { &quot;x&quot;: 0, &quot;y&quot;: 10, &quot;w&quot;: 42, &quot;h&quot;: 42, &quot;shape&quot;: &quot;circle&quot; },
+              { &quot;x&quot;: 28, &quot;y&quot;: 18, &quot;w&quot;: 46, &quot;h&quot;: 18, &quot;shape&quot;: &quot;rect&quot; },
+              { &quot;x&quot;: 54, &quot;y&quot;: 0, &quot;w&quot;: 42, &quot;h&quot;: 42, &quot;shape&quot;: &quot;circle&quot; }
+            ]
+          }
+        }
+      }
+    },
+    { &quot;type&quot;: &quot;label&quot;, &quot;content&quot;: &quot;Ordinary actors can settle around the rock.&quot; }
+  ]
+}
+</code></pre>
+<p>Use <code>worldPlain</code> when:</p>
+<ul>
+<li>actors should exist in world coordinates</li>
+<li>spatial fields should belong to ordinary actors, not only story floats</li>
+<li>the river of document flow should be one inhabitant of the world, not the whole world</li>
+</ul>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;zone-map&quot;,
+  &quot;zoneLayout&quot;: {
+    &quot;columns&quot;: [
+      { &quot;mode&quot;: &quot;flex&quot;, &quot;fr&quot;: 2 },
+      { &quot;mode&quot;: &quot;flex&quot;, &quot;fr&quot;: 1 }
+    ],
+    &quot;gap&quot;: 18,
+    &quot;frameOverflow&quot;: &quot;move-whole&quot;,
+    &quot;worldBehavior&quot;: &quot;fixed&quot;
+  },
+  &quot;zones&quot;: [
+    {
+      &quot;id&quot;: &quot;main&quot;,
+      &quot;elements&quot;: [
+        {
+          &quot;type&quot;: &quot;story&quot;,
+          &quot;columns&quot;: 2,
+          &quot;gutter&quot;: 12,
+          &quot;children&quot;: [
+            { &quot;type&quot;: &quot;body&quot;, &quot;content&quot;: &quot;Main editorial flow...&quot; }
+          ]
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;sidebar&quot;,
+      &quot;elements&quot;: [
+        { &quot;type&quot;: &quot;sidebar-label&quot;, &quot;content&quot;: &quot;ALSO IN THIS ISSUE&quot; },
+        { &quot;type&quot;: &quot;sidebar-body&quot;, &quot;content&quot;: &quot;Secondary content...&quot; }
+      ]
+    }
+  ]
+}
+</code></pre>
+<p>You can also define explicit zone rectangles when the regions should not line up
+as one strip:</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;zone-map&quot;,
+  &quot;zoneLayout&quot;: {
+    &quot;gap&quot;: 18,
+    &quot;frameOverflow&quot;: &quot;move-whole&quot;,
+    &quot;worldBehavior&quot;: &quot;expandable&quot;
+  },
+  &quot;zones&quot;: [
+    {
+      &quot;id&quot;: &quot;main&quot;,
+      &quot;region&quot;: { &quot;x&quot;: 0, &quot;y&quot;: 0, &quot;width&quot;: 230 },
+      &quot;elements&quot;: [
+        {
+          &quot;type&quot;: &quot;story&quot;,
+          &quot;columns&quot;: 2,
+          &quot;gutter&quot;: 12,
+          &quot;children&quot;: [
+            { &quot;type&quot;: &quot;body&quot;, &quot;content&quot;: &quot;Main editorial flow...&quot; }
+          ]
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;sidebar&quot;,
+      &quot;region&quot;: { &quot;x&quot;: 248, &quot;y&quot;: 56, &quot;width&quot;: 124, &quot;height&quot;: 180 },
+      &quot;elements&quot;: [
+        { &quot;type&quot;: &quot;sidebar-label&quot;, &quot;content&quot;: &quot;FIELD NOTES&quot; },
+        { &quot;type&quot;: &quot;sidebar-body&quot;, &quot;content&quot;: &quot;Lifted or offset side matter...&quot; }
+      ]
+    }
+  ]
+}
+</code></pre>
+<p>This is the current advanced <code>zone-map</code> surface we want authors to use:</p>
+<ul>
+<li>strip-style columns when the regions are aligned</li>
+<li>explicit rectangular <code>region</code> bounds when they are not</li>
+</ul>
+<p>Here is the practical difference:</p>
+<ul>
+<li>strip-authored <code>zone-map</code>: “these regions are aligned as one band”</li>
+<li>explicit <code>region</code> rectangles: “these regions are separate rooms in the same field”</li>
+</ul>
+<h3>A Good First Explicit-Region Pattern</h3>
+<p>This is a strong default when you want a main body plus a lifted note field:</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;zone-map&quot;,
+  &quot;zoneLayout&quot;: {
+    &quot;frameOverflow&quot;: &quot;move-whole&quot;,
+    &quot;worldBehavior&quot;: &quot;fixed&quot;
+  },
+  &quot;zones&quot;: [
+    {
+      &quot;id&quot;: &quot;main&quot;,
+      &quot;region&quot;: { &quot;x&quot;: 0, &quot;y&quot;: 0, &quot;width&quot;: 250 },
+      &quot;elements&quot;: [
+        {
+          &quot;type&quot;: &quot;story&quot;,
+          &quot;columns&quot;: 2,
+          &quot;gutter&quot;: 12,
+          &quot;children&quot;: [
+            { &quot;type&quot;: &quot;body&quot;, &quot;content&quot;: &quot;Main article flow...&quot; }
+          ]
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;note&quot;,
+      &quot;region&quot;: { &quot;x&quot;: 268, &quot;y&quot;: 36, &quot;width&quot;: 112, &quot;height&quot;: 150 },
+      &quot;elements&quot;: [
+        { &quot;type&quot;: &quot;sidebar-label&quot;, &quot;content&quot;: &quot;NOTE&quot; },
+        { &quot;type&quot;: &quot;sidebar-body&quot;, &quot;content&quot;: &quot;Short independent side matter...&quot; }
+      ]
+    }
+  ]
+}
+</code></pre>
+<p>That pattern works well because:</p>
+<ul>
+<li>the main region can remain open-ended</li>
+<li>the note region is clearly bounded</li>
+<li>the visual offset is authored directly instead of being faked with tables or spacing hacks</li>
+</ul>
+<h3><code>worldBehavior</code></h3>
+<p><code>zone-map</code> now distinguishes three world rules:</p>
+<ul>
+<li><code>fixed</code>
+One local map only. No automatic growth.</li>
+<li><code>expandable</code>
+The region may automatically continue into later local maps.</li>
+<li><code>spanning</code>
+Reserved for future explicit authored multi-map plans.</li>
+</ul>
+<h3>Region Notes</h3>
+<ul>
+<li>zones do not need to be adjacent</li>
+<li>zones may be vertically offset from one another</li>
+<li>a zone with no <code>region</code> still uses the older strip-style solving</li>
+<li>a <code>region.height</code> is optional; omit it when the region should remain open-ended</li>
+<li>pages do not own zones; pages only reveal part of the authored region field</li>
+</ul>
+<h3>Picking the right construct</h3>
+<ul>
+<li>use <code>story</code> when the content is one flow</li>
+<li>use <code>zone-map</code> when the regions are independent</li>
+<li>use <code>strip</code> when the composition is a single aligned row</li>
+</ul>
+<p>Common mistake:</p>
+<ul>
+<li>do not use <code>table</code> just to place a sidebar next to an article</li>
+<li>do not use <code>strip</code> if the regions need independent vertical behavior</li>
+<li>do not use separate unrelated blocks plus spacing hacks when the intent is clearly regional</li>
+</ul>
+<p>Next:</p>
+<ul>
+<li><a href="04-headers-footers-and-page-control.html">04-headers-footers-and-page-control</a></li>
+</ul>
+
+    </article>
+  </main>
+</body>
+</html>

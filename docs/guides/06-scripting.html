@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>06. Scripting | VMPrint Docs</title>
+  <meta name="description" content="VMPrint documentation">
+  <link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="../index.html">VMPrint Docs</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="../index.html">Home</a>
+        <a class="nav-link is-active" href="../guides/">Guides</a>
+        <a class="nav-link" href="../reference/ast.html">Reference</a>
+        <a class="nav-link" href="../api/">API</a>
+        <a class="nav-link" href="../examples/">Examples</a>
+        <a class="nav-link" href="https://github.com/cosmiciron/vmprint">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page-shell">
+    <article class="markdown-body">
+<h1>06. Scripting</h1>
+<p>VMPrint documents can participate in their own layout lifecycle. Elements can
+react to events, query the settled document, and change each other’s content
+through messages — all without a second rendering pass.</p>
+<p>This guide covers the practical authoring model. For the full API contract, see
+<a href="../reference/scripting.html">Scripting API</a>.</p>
+<hr>
+<h2>The authoring format</h2>
+<p>Script methods live in a YAML front matter block. The document body stays
+ordinary JSON.</p>
+<pre><code class="language-yaml">---
+methods:
+  onLoad(): |
+    setContent(&quot;greeting&quot;, &quot;Hello, VMPrint.&quot;)
+---
+{
+  &quot;documentVersion&quot;: &quot;1.1&quot;,
+  &quot;layout&quot;: {
+    &quot;pageSize&quot;: &quot;LETTER&quot;,
+    &quot;margins&quot;: { &quot;top&quot;: 72, &quot;right&quot;: 72, &quot;bottom&quot;: 72, &quot;left&quot;: 72 },
+    &quot;fontFamily&quot;: &quot;Times New Roman&quot;,
+    &quot;fontSize&quot;: 12,
+    &quot;lineHeight&quot;: 1.45
+  },
+  &quot;styles&quot;: {},
+  &quot;elements&quot;: [
+    {
+      &quot;type&quot;: &quot;p&quot;,
+      &quot;name&quot;: &quot;greeting&quot;,
+      &quot;content&quot;: &quot;Waiting...&quot;
+    }
+  ]
+}
+</code></pre>
+<p>Three things to notice:</p>
+<ul>
+<li>the front matter opens with <code>---</code> and closes with <code>---</code></li>
+<li>each method is declared as <code>methodName(): |</code> followed by an indented body</li>
+<li>the document body is unchanged — it is still ordinary JSON</li>
+</ul>
+<p>The engine parses the front matter itself. No CLI flags or extra files needed.</p>
+<hr>
+<h2>Naming elements</h2>
+<p>Scripts address elements by <code>name</code>. Give any element you want to script a
+top-level <code>name</code> field.</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;p&quot;,
+  &quot;name&quot;: &quot;summary&quot;,
+  &quot;content&quot;: &quot;Calculating...&quot;
+}
+</code></pre>
+<p>Use <code>name</code> consistently — it is the only identity the scripting layer needs.</p>
+<hr>
+<h2>Document event handlers</h2>
+<p>Top-level methods are document handlers by default. No prefix needed.</p>
+<p>The four document lifecycle events:</p>
+<table>
+<thead>
+<tr>
+<th>Handler</th>
+<th>When it fires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>onLoad()</code></td>
+<td>Once, before layout begins</td>
+</tr>
+<tr>
+<td><code>onReady()</code></td>
+<td>Once, when the document first becomes fully settled</td>
+</tr>
+<tr>
+<td><code>onChanged()</code></td>
+<td>When document content or structure changed after ready</td>
+</tr>
+<tr>
+<td><code>onRefresh()</code></td>
+<td>When the realized document refreshed after a change</td>
+</tr>
+</tbody>
+</table>
+<p>Use <code>onLoad()</code> to set initial content from variables. Use <code>onReady()</code> to read
+facts that only exist after layout has settled — page count, discovered elements,
+and so on.</p>
+<h3>Setting initial content on load</h3>
+<pre><code class="language-yaml">---
+AUTHOR: &quot;Ada Lovelace&quot;
+SUBTITLE: &quot;Notes on the Analytical Engine&quot;
+
+methods:
+  onLoad(): |
+    setContent(&quot;byline&quot;, AUTHOR)
+    setContent(&quot;subtitle&quot;, SUBTITLE)
+---
+</code></pre>
+<p>Variables declared in the front matter outside any method are document-scoped.
+They are available by name inside any handler.</p>
+<h3>Reading settled facts on ready</h3>
+<p><code>onReady</code> fires after layout has fully settled. By then you can ask the document
+things you couldn’t know before layout ran.</p>
+<pre><code class="language-yaml">---
+methods:
+  onReady(): |
+    const pages = doc.getPageCount()
+    const chapters = elementsByType(&quot;h1&quot;)
+    setContent(&quot;colophon&quot;,
+      `${chapters.length} chapters · ${pages} pages`)
+---
+</code></pre>
+<p><code>doc.getPageCount()</code> returns the real settled page count — not an estimate.
+<code>elementsByType(type)</code> returns all elements of that type as they exist in the
+settled document.</p>
+<hr>
+<h2>Element event handlers</h2>
+<p>An element can handle its own lifecycle events. Name the method using the
+element’s <code>name</code> as a prefix.</p>
+<pre><code class="language-yaml">---
+methods:
+  banner_onCreate(): |
+    setContent(&quot;banner&quot;, &quot;Document is loading.&quot;)
+
+  banner_onChanged(): |
+    setContent(&quot;banner&quot;, &quot;Document content has changed.&quot;)
+---
+</code></pre>
+<p>Inside an element handler, <code>self</code> refers to that element. You can read
+<code>self.name</code>, <code>self.type</code>, and <code>self.content</code>, and call helpers like
+<code>self.setContent(...)</code> or <code>self.append(...)</code> directly on it.</p>
+<hr>
+<h2>Messaging between elements</h2>
+<p>The scripting model is built around two things: events (raised by the engine)
+and messages (sent between elements). Messages are how elements coordinate
+without needing a central script to orchestrate everything.</p>
+<p>Send a message from one element, handle it in another:</p>
+<pre><code class="language-yaml">---
+methods:
+  sender_onCreate(): |
+    sendMessage(&quot;display&quot;, {
+      subject: &quot;update&quot;,
+      payload: { text: &quot;Sent from the sender element.&quot; }
+    })
+
+  display_onMessage(from, msg): |
+    if (from.name !== &quot;sender&quot;) return
+    if (msg.subject !== &quot;update&quot;) return
+    setContent(self, msg.payload.text)
+---
+</code></pre>
+<p><code>sendMessage(recipient, msg)</code> takes a target name and a message object.
+The message object has a <code>subject</code> and an optional <code>payload</code>.</p>
+<p>The receiving handler gets <code>from</code> (the sender) and <code>msg</code> (the full message).
+Check both before acting — an element can receive messages from multiple senders.</p>
+<hr>
+<h2>Querying elements</h2>
+<p>Two generic queries are available inside any handler:</p>
+<pre><code class="language-js">element(&quot;summary&quot;)          // returns the element named &quot;summary&quot;, or null
+elementsByType(&quot;h1&quot;)        // returns all elements of type &quot;h1&quot;
+</code></pre>
+<p>These are useful in <code>onReady()</code> when you want to inspect what the settled
+document actually contains.</p>
+<pre><code class="language-yaml">---
+methods:
+  onReady(): |
+    const headings = elementsByType(&quot;h1&quot;)
+    if (headings.length === 0) return
+    sendMessage(&quot;toc&quot;, {
+      subject: &quot;populate&quot;,
+      payload: { titles: headings.map(h =&gt; h.content) }
+    })
+
+  toc_onMessage(from, msg): |
+    if (msg.subject !== &quot;populate&quot;) return
+    msg.payload.titles.forEach(title =&gt; {
+      append({ type: &quot;toc-entry&quot;, content: title })
+    })
+---
+</code></pre>
+<p>The <code>toc</code> element starts empty. After the document settles, it receives the
+real heading list and appends an entry for each one.</p>
+<hr>
+<h2>Structural mutation</h2>
+<p>Beyond <code>setContent</code>, scripts can change the structure of the document.</p>
+<p><strong><code>append(element)</code> / <code>prepend(element)</code></strong> — add content to the current
+receiver (or to any named element using <code>element(&quot;name&quot;).append(...)</code>):</p>
+<pre><code class="language-yaml">---
+methods:
+  notes_onMessage(from, msg): |
+    if (msg.subject !== &quot;add-note&quot;) return
+    append({
+      type: &quot;note-item&quot;,
+      content: msg.payload.text
+    })
+---
+</code></pre>
+<p><strong><code>replace(elements)</code></strong> — replace the current receiver with entirely new
+content. The old element is removed from the live document; the replacement
+takes its place and the document resettles from that point:</p>
+<pre><code class="language-yaml">---
+methods:
+  onReady(): |
+    sendMessage(&quot;placeholder&quot;, { subject: &quot;build&quot; })
+
+  placeholder_onMessage(from, msg): |
+    if (msg.subject !== &quot;build&quot;) return
+    replace([
+      { type: &quot;h2&quot;, content: &quot;Generated Section&quot; },
+      { type: &quot;p&quot;, content: &quot;This replaced the placeholder after layout settled.&quot; }
+    ])
+---
+</code></pre>
+<p><strong><code>deleteElement(target)</code></strong> — remove a named element entirely:</p>
+<pre><code class="language-yaml">---
+methods:
+  onReady(): |
+    if (doc.getPageCount() === 1) {
+      deleteElement(&quot;overflow-note&quot;)
+    }
+---
+</code></pre>
+<p>All structural helpers operate on live layout participants. The document does
+not restart from scratch — settlement resumes from the earliest affected point.</p>
+<hr>
+<h2>Receiver orientation</h2>
+<p>Most helpers are receiver-oriented: they act on whoever <code>self</code> is at the time.</p>
+<p>Inside a document handler (<code>onLoad</code>, <code>onReady</code>, etc.), <code>self</code> is the document.
+Inside an element handler (<code>summary_onMessage</code>, etc.), <code>self</code> is that element.</p>
+<pre><code class="language-yaml">---
+methods:
+  onLoad(): |
+    append({ type: &quot;p&quot;, content: &quot;Added to the document.&quot; })
+
+  footer_onMessage(from, msg): |
+    append({ type: &quot;p&quot;, content: &quot;Added to the footer element.&quot; })
+---
+</code></pre>
+<p>The same <code>append()</code> call does different things depending on context. When in
+doubt, use the explicit form to be unambiguous:</p>
+<pre><code class="language-js">element(&quot;footer&quot;).append({ type: &quot;p&quot;, content: &quot;Explicit target.&quot; })
+</code></pre>
+<hr>
+<h2>A complete example</h2>
+<p>A document that sets a byline on load, then updates a summary block after
+settling with real page and chapter counts:</p>
+<pre><code class="language-yaml">---
+AUTHOR: &quot;Ada Lovelace&quot;
+
+methods:
+  onLoad(): |
+    setContent(&quot;byline&quot;, AUTHOR)
+
+  onReady(): |
+    const chapters = elementsByType(&quot;h1&quot;)
+    sendMessage(&quot;summary&quot;, {
+      subject: &quot;settle&quot;,
+      payload: {
+        chapters: chapters.length,
+        pages: doc.getPageCount()
+      }
+    })
+
+  summary_onMessage(from, msg): |
+    if (msg.subject !== &quot;settle&quot;) return
+    const p = msg.payload
+    setContent(self, `${p.chapters} chapters · ${p.pages} pages`)
+---
+{
+  &quot;documentVersion&quot;: &quot;1.1&quot;,
+  &quot;layout&quot;: {
+    &quot;pageSize&quot;: &quot;LETTER&quot;,
+    &quot;margins&quot;: { &quot;top&quot;: 72, &quot;right&quot;: 72, &quot;bottom&quot;: 72, &quot;left&quot;: 72 },
+    &quot;fontFamily&quot;: &quot;Times New Roman&quot;,
+    &quot;fontSize&quot;: 12,
+    &quot;lineHeight&quot;: 1.45
+  },
+  &quot;styles&quot;: {
+    &quot;h1&quot;: { &quot;fontSize&quot;: 18, &quot;fontWeight&quot;: &quot;bold&quot;, &quot;marginBottom&quot;: 10 },
+    &quot;p&quot;: { &quot;marginBottom&quot;: 8 }
+  },
+  &quot;elements&quot;: [
+    { &quot;type&quot;: &quot;p&quot;, &quot;name&quot;: &quot;byline&quot;, &quot;content&quot;: &quot;&quot; },
+    { &quot;type&quot;: &quot;p&quot;, &quot;name&quot;: &quot;summary&quot;, &quot;content&quot;: &quot;Calculating...&quot; },
+    { &quot;type&quot;: &quot;h1&quot;, &quot;content&quot;: &quot;Chapter One&quot; },
+    { &quot;type&quot;: &quot;p&quot;, &quot;content&quot;: &quot;Opening paragraph...&quot; },
+    { &quot;type&quot;: &quot;h1&quot;, &quot;content&quot;: &quot;Chapter Two&quot; },
+    { &quot;type&quot;: &quot;p&quot;, &quot;content&quot;: &quot;Second chapter...&quot; }
+  ]
+}
+</code></pre>
+<hr>
+<p>For the full API — all handlers, all helpers, all objects, variable scope rules,
+and what this version does not include:</p>
+<ul>
+<li><a href="../reference/scripting.html">Scripting API</a></li>
+</ul>
+
+    </article>
+  </main>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VMPrint — A layout engine. Pure JavaScript. Runs everywhere.</title>
+  <meta
+    name="description"
+    content="VMPrint is a patent-pending deterministic spatial simulation engine for document layout. Pure TypeScript, no HarfBuzz, no headless browser. Single-pass TOC. 326 pages in 718ms."
+  >
+  <meta property="og:title" content="VMPrint — A layout engine. Pure JavaScript. Runs everywhere.">
+  <meta
+    property="og:description"
+    content="VMPrint is a patent-pending deterministic spatial simulation engine for document layout. Pure TypeScript, no HarfBuzz, no headless browser. Single-pass TOC. 326 pages in 718ms."
+  >
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cosmiciron.github.io/vmprint/">
+  <meta property="og:image" content="https://cosmiciron.github.io/vmprint/assets/og-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="VMPrint — layout engine homepage">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VMPrint — A layout engine. Pure JavaScript. Runs everywhere.">
+  <meta
+    name="twitter:description"
+    content="VMPrint is a patent-pending deterministic spatial simulation engine for document layout. Pure TypeScript, no HarfBuzz, no headless browser. Single-pass TOC. 326 pages in 718ms."
+  >
+  <meta name="twitter:image" content="https://cosmiciron.github.io/vmprint/assets/og-preview.png">
+  <link rel="stylesheet" href="assets/docs.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "VMPrint",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web, Node.js, Browser",
+    "url": "https://cosmiciron.github.io/vmprint/",
+    "softwareVersion": "1.x",
+    "description": "VMPrint is a patent-pending deterministic spatial simulation engine for document layout. Pure TypeScript, no HarfBuzz, no headless browser. Single-pass TOC, index, and bibliography generation. 326 pages in 718ms warm.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "sameAs": [
+      "https://github.com/cosmiciron/vmprint",
+      "https://www.npmjs.com/search?q=%40vmprint"
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="index.html">VMPrint</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link is-active" href="index.html">Home</a>
+        <a class="nav-link" href="guides/">Guides</a>
+        <a class="nav-link" href="reference/ast.html">Reference</a>
+        <a class="nav-link" href="examples/">Examples</a>
+        <a class="nav-link" href="https://github.com/cosmiciron/vmprint">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell landing-shell">
+    <section class="hero-panel">
+      <div class="hero-copy">
+        <p class="eyebrow">Patent-pending spatial simulation engine</p>
+        <h1>I built the layout engine so you don't have to.</h1>
+        <p class="hero-lede">
+          VMPrint is a layout engine — not a PDF library, not a renderer. It decides where every glyph goes,
+          negotiates page breaks, resolves spatial dependencies between dynamic regions, and hands you back a flat
+          array of exact coordinates for every box and text run. What you do with that is up to you.
+        </p>
+        <p class="hero-body">
+          Pure TypeScript. No HarfBuzz. No headless browser. Runs in Node.js, the browser, Cloudflare Workers,
+          and V8 isolates. The live demo below runs entirely client-side — layout engine, fonts, and PDF export
+          included.
+        </p>
+        <div class="hero-actions">
+          <a class="button-link button-link--primary" href="#live-preview">Try the live demo</a>
+          <a class="button-link button-link--secondary" href="examples/ast-to-canvas-webfonts/index.html">Explore layout samples</a>
+        </div>
+      </div>
+
+      <div class="hero-aside">
+        <div class="proof-card">
+          <h2>What makes it different</h2>
+          <ul class="proof-list">
+            <li>Single-pass TOC, index, and bibliography — no second pass, no auxiliary files.</li>
+            <li>Arabic, Hebrew, Thai, CJK, and Latin on the same line — no HarfBuzz, no ICU.</li>
+            <li>326 pages, warm layout: 718ms. No browser process. No subprocess.</li>
+            <li>Every glyph's position is known data — build cursors, selection, and hit-testing from it.</li>
+            <li>Documents can script themselves — handlers run inside the simulation, not after it.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="metrics-strip" aria-label="VMPrint highlights">
+      <article class="metric-card">
+        <h2>No second pass</h2>
+        <p>TOC, indexes, and bibliographies with accurate page numbers resolved in a single deterministic simulation pass.</p>
+      </article>
+      <article class="metric-card">
+        <h2>Runs everywhere</h2>
+        <p>Node.js, browser, Cloudflare Workers, Lambda@Edge. Pure TypeScript, no native binary dependencies.</p>
+      </article>
+      <article class="metric-card">
+        <h2>Full layout data</h2>
+        <p>Every glyph's X/Y position, every box boundary, every line break — inspectable, serializable, diffable JSON.</p>
+      </article>
+    </section>
+
+    <section id="live-preview" class="demo-section">
+      <div class="section-heading">
+        <p class="eyebrow">Live Demo</p>
+        <h2>Write Markdown on the left. Watch a paginated document settle on the right.</h2>
+        <p>
+          Theme presets, AST inspection, PDF export, SVG export, and live paginated layout — running entirely
+          in the browser. Select text across the canvas and paste it. Every glyph knows where it is.
+        </p>
+      </div>
+
+      <div class="demo-frame">
+        <iframe
+          class="demo-embed"
+          src="./examples/preview/"
+          title="VMPrint Preview Demo"
+          loading="lazy"
+        ></iframe>
+      </div>
+
+      <div class="demo-links">
+        <a href="./examples/preview/">Open the preview demo directly</a>
+        <a href="./examples/ast-to-canvas-webfonts/index.html">Browse advanced layout samples</a>
+      </div>
+    </section>
+
+    <section class="resource-grid" aria-label="Further resources">
+      <article class="resource-card">
+        <h2>Guides</h2>
+        <p>Six chapters from first document to scripting — layout config, typography, multi-column, tables, images, and document lifecycle hooks.</p>
+        <a href="./guides/">Read the guides</a>
+      </article>
+      <article class="resource-card">
+        <h2>Reference</h2>
+        <p>The full DocumentInput schema, scripting API, overlay system, standard fonts, and CLI reference.</p>
+        <a href="./reference/ast.html">Open the reference</a>
+      </article>
+      <article class="resource-card">
+        <h2>Examples</h2>
+        <p>Complete pipelines running client-side: AST to PDF, AST to canvas, Markdown transmutation, and the preview package. All work from <code>file://</code>.</p>
+        <a href="./examples/">Explore examples</a>
+      </article>
+      <article class="resource-card">
+        <h2>Source</h2>
+        <p>Engine, contexts, font managers, and transmuters on GitHub. Apache 2.0.</p>
+        <a href="https://github.com/cosmiciron/vmprint">View the repository</a>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

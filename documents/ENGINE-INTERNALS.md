@@ -76,6 +76,11 @@ The final output of a simulation is `Page[]` of `Box[]`. Completely flat. Absolu
 
 This flatness is architecturally significant for two reasons. First, it makes the output serializable, diffable, and regression-testable as JSON — layout changes are visible as coordinate changes in a flat list, not as mysterious differences in rendered pixels. Second, it is the ideal input for GPU-accelerated rendering: a flat list of geometry primitives with pre-resolved styles is exactly what a GPU draw pipeline wants. The layout work is done once, deterministically. Rendering is just playback.
 
+<p align="center">
+  <img src="../documents/assets/blueprint-1.png" width="85%" alt="Specimen blueprint — actor boundaries, float exclusion field, and labeled box geometry overlaid on a rendered page">
+</p>
+<p align="center"><em>Actor boundaries, float exclusion fields, and resolved box geometry — the same data the renderer receives, made visible.</em></p>
+
 ### Inside a Box: Segments and the Multilingual Baseline
 
 Text boxes carry a `RichLine[]` — each `RichLine` is a `TextSegment[]`. A segment is the atomic unit of text: a run of characters that shares a font, a style, a script class, a direction, and a set of measured metrics (`width`, `ascent`, `descent`, pre-shaped glyphs for complex scripts).
@@ -85,6 +90,11 @@ A single line of text may contain many segments. A line that mixes English, Arab
 The baseline calculation operates over all segments on the line simultaneously. It finds the dominant metrics — the largest ascent, the reference scale — and positions every segment against the same baseline. A Devanagari segment with a different optical size sits at the same baseline as the surrounding Latin text, scaled and aligned correctly, without an external shaping engine and without approximation.
 
 This is how VMPrint renders five writing systems on one line without HarfBuzz. The segments carry everything the renderer needs. The baseline math is local and deterministic. Each glyph knows its own position. The output is exact.
+
+<p align="center">
+  <img src="../documents/assets/blueprint-2.png" width="85%" alt="Simulation report showing actor origins and sizes, and the multi-script baseline stability demonstration with Latin, Arabic, Thai, CJK, and Devanagari on one line">
+</p>
+<p align="center"><em>Top: simulation report — actors with resolved world-space origins and sizes. Bottom: Latin, Arabic, Thai, CJK, and Devanagari sharing one computed baseline.</em></p>
 
 ---
 
