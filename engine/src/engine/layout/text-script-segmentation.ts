@@ -338,11 +338,15 @@ export function segmentTextByFont(params: {
         }
         return familyFontCache.get(family) || null;
     };
+    const clusterAssignmentCache = new Map<string, { family: string; font: any }>();
 
     let lastClusterPrefKey = '';
     let lastPreferredFamilyOrder: string[] = familyOrder;
 
     const resolveClusterAssignment = (cluster: string): { family: string; font: any } => {
+        const cachedAssignment = clusterAssignmentCache.get(cluster);
+        if (cachedAssignment) return cachedAssignment;
+
         const clusterPreferredFamilies = deriveClusterPreferredFamilies(cluster, locale);
         const clusterPrefKey = clusterPreferredFamilies.join('|');
         let preferredFamilyOrder: string[];
@@ -358,17 +362,21 @@ export function segmentTextByFont(params: {
             const familyFont = getFamilyFont(family);
             if (!familyFont) continue;
             if (params.fontSupportsCluster(familyFont, cluster)) {
-                return {
+                const assignment = {
                     family,
                     font: family === params.baseFontFamily ? null : familyFont
                 };
+                clusterAssignmentCache.set(cluster, assignment);
+                return assignment;
             }
         }
 
-        return {
+        const assignment = {
             family: baseFamily,
             font: baseFamily === params.baseFontFamily ? null : getFamilyFont(baseFamily)
         };
+        clusterAssignmentCache.set(cluster, assignment);
+        return assignment;
     };
 
     const segments: ScriptFontSegment[] = [];
