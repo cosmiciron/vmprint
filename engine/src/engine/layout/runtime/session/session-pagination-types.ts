@@ -73,7 +73,6 @@ export type SplitFragmentAftermathInput = {
 
 export type TailSplitFormationOutcome = {
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
-    queuePreview: ContinuationQueueOutcome;
     queueHandling: AcceptedSplitQueueHandling;
 };
 
@@ -152,7 +151,6 @@ export type KeepWithNextPlanningResolution = {
 
 export type GenericSplitOutcome = {
     committed: { boxes: Box[]; currentY: number; lastSpacingAfter: number };
-    queuePreview: ContinuationQueueOutcome;
     queueHandling: AcceptedSplitQueueHandling;
 };
 

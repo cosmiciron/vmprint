@@ -207,57 +207,7 @@ export class TransitionsRuntime {
         );
     }
 
-    previewAcceptedSplitSettlement(
-        pageBoxes: readonly Box[],
-        actorQueue: PackagerUnit[],
-        startIndex: number,
-        replaceCount: number,
-        predecessor: PackagerUnit,
-        continuation: PackagerUnit | null | undefined,
-        attempt: SplitAttempt,
-        result: PackagerReshapeResult,
-        boxes: readonly Box[],
-        state: SplitFragmentAftermathState,
-        positionMarker: SplitMarkerPositioner
-    ): { queuePreview: ContinuationQueueOutcome; queueHandling: AcceptedSplitQueueHandling } {
-        const transaction = this.host.executeSpeculativeBranch({
-            reason: 'continuation-queue-preview',
-            pageBoxes: pageBoxes as Box[],
-            actorQueue,
-            currentY: state.currentY,
-            lastSpacingAfter: state.lastSpacingAfter,
-            currentPageIndex: state.pageIndex,
-            run: () => {
-                this.host.acceptAndCommitSplitFragment(
-                    attempt,
-                    result,
-                    boxes,
-                    state,
-                    positionMarker
-                );
-                const queuePreview = this.host.settleContinuationQueue(
-                    actorQueue,
-                    startIndex,
-                    replaceCount,
-                    predecessor,
-                    continuation,
-                    { notify: false }
-                );
-                return {
-                    accept: false,
-                    value: {
-                        queuePreview,
-                        queueHandling: this.getAcceptedSplitQueueHandling(queuePreview)
-                    }
-                };
-            }
-        });
-
-        return transaction.value!;
-    }
-
     finalizeTailSplitFormation(
-        pageBoxes: readonly Box[],
         actorQueue: PackagerUnit[],
         startIndex: number,
         replaceCount: number,
@@ -276,20 +226,7 @@ export class TransitionsRuntime {
             state,
             positionMarker
         );
-        const preview = this.previewAcceptedSplitSettlement(
-            pageBoxes,
-            actorQueue,
-            startIndex,
-            replaceCount,
-            predecessor,
-            continuation,
-            attempt,
-            result,
-            boxes,
-            state,
-            positionMarker
-        );
-        this.host.settleContinuationQueue(
+        const queueOutcome = this.host.settleContinuationQueue(
             actorQueue,
             startIndex,
             replaceCount,
@@ -299,13 +236,11 @@ export class TransitionsRuntime {
 
         return {
             committed,
-            queuePreview: preview.queuePreview,
-            queueHandling: preview.queueHandling
+            queueHandling: this.getAcceptedSplitQueueHandling(queueOutcome)
         };
     }
 
     finalizeGenericAcceptedSplit(
-        pageBoxes: readonly Box[],
         actorQueue: PackagerUnit[],
         startIndex: number,
         predecessor: PackagerUnit,
@@ -323,21 +258,7 @@ export class TransitionsRuntime {
             state,
             positionMarker
         );
-
-        const preview = this.previewAcceptedSplitSettlement(
-            pageBoxes,
-            actorQueue,
-            startIndex,
-            1,
-            predecessor,
-            continuation,
-            attempt,
-            result,
-            boxes,
-            state,
-            positionMarker
-        );
-        this.host.settleContinuationQueue(
+        const queueOutcome = this.host.settleContinuationQueue(
             actorQueue,
             startIndex,
             1,
@@ -347,8 +268,7 @@ export class TransitionsRuntime {
 
         return {
             committed,
-            queuePreview: preview.queuePreview,
-            queueHandling: preview.queueHandling
+            queueHandling: this.getAcceptedSplitQueueHandling(queueOutcome)
         };
     }
 
@@ -491,7 +411,6 @@ export class TransitionsRuntime {
                     partAContext
                 ) || [];
                 const outcome = this.finalizeTailSplitFormation(
-                    currentPageBoxes,
                     actorQueue,
                     currentActorIndex,
                     replaceCount,
@@ -683,7 +602,6 @@ export class TransitionsRuntime {
         }
 
         const outcome = this.finalizeGenericAcceptedSplit(
-            currentPageBoxes,
             actorQueue,
             startIndex,
             predecessor,
