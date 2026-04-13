@@ -1,6 +1,17 @@
 # Quickstart
 
-This monorepo contains the VMPrint engine, the `vmprint` CLI for JSON-to-PDF workflows, and the browser preview runtime.
+This repo is intentionally narrow. It is for developers building with the VMPrint engine directly, not for browser demos, preview tooling, or broad introductory docs.
+
+The active pieces in this monorepo are:
+
+| Path | Purpose |
+| --- | --- |
+| `engine/` | Core layout engine and regression suite |
+| `cli/` | `vmprint` CLI for JSON-to-PDF batch workflows |
+| `pressrun/` | Minimal bootstrap example for wiring the engine |
+| `contracts/` | Shared TypeScript interfaces used internally and available for source-copy reuse |
+| `guides/` | Focused authoring guides |
+| `references/` | Compact reference material |
 
 ## Prerequisites
 
@@ -15,15 +26,23 @@ cd vmprint
 npm install
 ```
 
-## Build Everything
+## Build
 
 ```bash
 npm run build
 ```
 
-## Run From Source
+This builds the internal workspace artifacts needed for the bundled CLI and packaged smoke test.
 
-The repo uses `tsx` plus a local dev TypeScript config for source-mode development, so you can run the CLI without building first.
+## Run from source
+
+### `pressrun`
+
+The smallest useful end-to-end example:
+
+```bash
+npm run pressrun -- document.json output.pdf
+```
 
 ### `vmprint` CLI
 
@@ -51,50 +70,14 @@ Enable layout debug boxes:
 npm run dev --prefix cli -- --input document.json --output output.pdf --debug
 ```
 
-
-
-### Repo Transmute Helper
-
-Use the standalone [Transmuters](https://github.com/cosmiciron/vmprint-transmuters) repository for raw AST generation from Markdown.
-
-## Run From Built Output
+## Verify
 
 ```bash
-node cli/dist/index.js --input document.json --output output.pdf
+npm test
 ```
 
-## Browser Examples
-
-Build the static browser examples:
+If you only want engine coverage without the packaged smoke test:
 
 ```bash
-npm run docs:build
-```
-
-Then open:
-
-- `docs/examples/ast-to-pdf/index.html`
-- `docs/examples/mkd-to-ast/index.html`
-
-## Verification
-
-```bash
-npm run build
 npm run test --prefix engine
-npm run docs:build
-npm run test:packaged-integration
 ```
-
-## Project Structure
-
-| Path | Package | Purpose |
-| --- | --- | --- |
-| `contracts/` | `@vmprint/contracts` | Shared TypeScript interfaces |
-| `engine/` | `@vmprint/engine` | Deterministic layout engine |
-| `cli/` | `@vmprint/cli` | `vmprint` CLI |
-| `preview/` | `@vmprint/preview` | Browser canvas preview runtime |
-| (External) | `@vmprint/context-*` | PDF, SVG, Canvas output contexts |
-| (External) | `@vmprint/local-fonts` | Filesystem font manager |
-| (External) | `@vmprint/standard-fonts` | Standard PDF font manager |
-| (External) | `@vmprint/web-fonts` | Browser font manager |
-| (External) | `draft2final` | Markdown-first authoring CLI |

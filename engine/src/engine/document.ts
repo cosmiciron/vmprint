@@ -1556,6 +1556,20 @@ export function resolveDocumentPaths(document: DocumentInput, documentPath: stri
     return normalizeDocumentToIR(document, documentPath);
 }
 
+/**
+ * Parse and validate a VMPrint document into the engine's internal representation.
+ *
+ * Accepts either a raw JSON string (e.g. read from disk) or an already-parsed
+ * object. The documentPath is used only for error messages — it does not need
+ * to be a real filesystem path.
+ */
+export function loadDocument(source: string | DocumentInput, documentPath: string): DocumentIR {
+    if (typeof source === 'string') {
+        return normalizeDocumentToIR(parseDocumentSourceText(source, documentPath), documentPath);
+    }
+    return normalizeDocumentToIR(source, documentPath);
+}
+
 export function serializeDocumentIR(ir: DocumentIR): string {
     return `${JSON.stringify(ir, null, 2)}\n`;
 }

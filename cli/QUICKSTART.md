@@ -21,9 +21,9 @@ npm run dev --prefix cli -- --help
 vmprint --input document.json --output out.pdf
 ```
 
-If you are authoring AST `1.1` documents from scratch, use the guide first:
+If you are authoring AST `1.1` documents from scratch, start with the repo guides:
 
-- [VMPrint Authoring Guide](c:\Users\cosmic\Projects\vmprint\documents\authoring\README.md)
+- [guides/README.md](../guides/README.md)
 
 ## Inspect the pipeline
 

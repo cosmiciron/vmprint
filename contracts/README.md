@@ -1,175 +1,57 @@
-# @vmprint/contracts
+# VMPrint contracts
 
-The shared interface layer for the vmprint ecosystem.
+The shared interface layer for the VMPrint engine and its collaborators.
 
 ## What This Is
 
-`@vmprint/contracts` defines the TypeScript interfaces that every piece of vmprint speaks across. The engine, rendering contexts, font managers, and overlay providers all talk to each other through these contracts — not through concrete implementations.
+These files define the TypeScript interfaces that the engine, rendering contexts, font managers, overlays, and transmuters speak across. They are intentionally small and dependency-free.
 
-The package has **zero dependencies**. It contains no runtime code. After compilation, the `dist/` is type declaration files and structurally empty JavaScript modules — interfaces are erased by TypeScript. The install footprint is negligible.
+The module has zero meaningful runtime behavior. After compilation, the value is in the declarations; TypeScript erases the interfaces themselves.
 
 ## Why It Exists Separately
 
-The conventional approach is to put shared types inside the main package and re-export them. The problem with that is anyone who wants to implement one of the interfaces — a custom font manager, a rendering context for a new target — has to take the whole engine as a dependency to get the types.
+The conventional approach is to put shared types inside the main package and re-export them. The problem is that anyone who wants to implement one of the interfaces, such as a custom font manager or a rendering context for a new target, then has to drag in the main engine package just to get types.
 
-The engine has real weight. Its dependency tree includes fontkit (~1.1 MiB packed) for glyph metric parsing. That's appropriate for the engine. It's not appropriate for a rendering context that just needs to know the shape of `Context`, or a font manager that just needs to know the shape of `FontManager`.
-
-`@vmprint/contracts` breaks that coupling. You depend on contracts. You implement the interface. You publish your package. The engine is not in your dependency tree unless you actually need the engine.
-
-```
-@vmprint/contracts    (no dependencies)
-       │
-       ├── @vmprint/engine          (depends on contracts)
-       ├── @vmprint/context-*       (depends on contracts)
-       └── @vmprint/font-managers   (depends on contracts)
-```
+Keeping the contracts isolated breaks that coupling. In this repository they still build as a workspace artifact because the engine and CLI need a concrete module target, but the intended consumption model for advanced integrators is now simple source reuse: copy the files you need into your own project, keep the interfaces local, and adapt them as your integration demands.
 
 ## Interfaces
 
 ### `FontManager`
 
-The contract for font loading and registry management. Implement this to provide fonts from any source — a CDN, object storage, a pre-loaded in-memory buffer, an OS font directory — without the engine caring where they came from.
-
-```ts
-interface FontManager {
-  getFontRegistrySnapshot(): FontConfig[];
-  resolveFamilyAlias(family: string): string;
-  getAllFonts(registry: FontConfig[]): FontConfig[];
-  getEnabledFallbackFonts(registry: FontConfig[]): FallbackFontSource[];
-  getFontsByFamily(family: string, registry: FontConfig[]): FontConfig[];
-  getFallbackFamilies(registry: FontConfig[]): string[];
-  registerFont(config: FontConfig, registry: FontConfig[]): void;
-  loadFontBuffer(src: string): Promise<ArrayBuffer>;
-}
-```
-
-See the [standalone font managers repository](https://github.com/cosmiciron/vmprint-font-managers) for the reference implementation and a guide to writing custom font managers.
+The contract for font loading and registry management. Implement this to provide fonts from any source, such as a CDN, object storage, a pre-loaded in-memory buffer, or an OS font directory.
 
 ### `VmprintOutputStream`
 
-A portable output stream interface. Callers (e.g. the CLI) implement this against their specific I/O mechanism — a file write stream, an in-memory buffer, a web response — and pass it to a context via `pipe()`. This keeps Node.js and platform I/O concerns out of both the context contract and any context implementation.
-
-```ts
-interface VmprintOutputStream {
-  write(chunk: Uint8Array | string): void;
-  end(): void;
-  waitForFinish(): Promise<void>;
-}
-```
+A portable output stream interface. Callers implement this against their own I/O mechanism and pass it to a context via `pipe()`.
 
 ### `Context`
 
-The rendering surface contract. Implement this to paint vmprint's layout output to any target: PDF, SVG, canvas, a DOM surface, a test spy.
-
-```ts
-interface Context {
-  addPage(): void;
-  end(): void;
-  pipe(stream: VmprintOutputStream): void;  // no-op if output streaming is not supported
-  registerFont(id: string, buffer: Uint8Array, options?: { standardFontPostScriptName?: string }): Promise<void>;
-  font(family: string, size?: number): this;
-  fontSize(size: number): this;
-  save(): void;
-  restore(): void;
-  translate(x: number, y: number): this;
-  rotate(angle: number, originX?: number, originY?: number): this;
-  opacity(opacity: number): this;
-  fillColor(color: string): this;
-  strokeColor(color: string): this;
-  lineWidth(width: number): this;
-  dash(length: number, options?: { space: number }): this;
-  undash(): this;
-  moveTo(x: number, y: number): this;
-  lineTo(x: number, y: number): this;
-  rect(x: number, y: number, w: number, h: number): this;
-  roundedRect(x: number, y: number, w: number, h: number, r: number): this;
-  fill(rule?: 'nonzero' | 'evenodd'): this;
-  stroke(): this;
-  fillAndStroke(fillColor?: string, strokeColor?: string): this;
-  text(str: string, x: number, y: number, options?: ContextTextOptions): this;
-  image(source: string | Uint8Array, x: number, y: number, options?: ContextImageOptions): this;
-  getSize(): { width: number; height: number };
-}
-```
-
-`pipe()` is required on the interface but may be a no-op. Contexts that manage their own output (e.g. accumulate bytes in memory and expose them through their own API) simply implement it as `pipe(_stream) {}`. Contexts that support streaming — like `PdfContext` — write rendered output into the stream as pages are produced. The caller owns the stream and calls `waitForFinish()` on it after rendering is complete.
-
-See the [standalone contexts repository](https://github.com/cosmiciron/vmprint-contexts) for the reference implementation and a guide to writing custom contexts.
+The rendering surface contract. Implement this to paint VMPrint layout output to any target: PDF, SVG, canvas, a DOM surface, or a test spy.
 
 ### `OverlayProvider`
 
-A hook for drawing before and after page content without modifying the layout. Used for watermarks, debug grids, crop marks, confidentiality banners, and print production marks.
-
-```ts
-interface OverlayProvider {
-  backdrop?(page: OverlayPage, context: OverlayContext): void;
-  overlay?(page: OverlayPage, context: OverlayContext): void;
-}
-```
-
-- `backdrop` — called before the page content is painted. Draws appear behind all page elements.
-- `overlay` — called after the page content is painted. Draws appear on top.
-
-Both methods receive `OverlayPage`, which carries the page dimensions and the full box tree from the layout pass. This means overlays can make layout-aware decisions — position a watermark relative to the text area, draw margin rules at the exact margin coordinates, highlight specific box types for debugging.
-
-`OverlayContext` is a drawing-only subset of `Context`: the full shape and styling API, without the document lifecycle methods (`addPage`, `end`) or font registration. The rendering context handles those; the overlay just draws.
-
-```ts
-interface OverlayPage {
-  readonly index: number;
-  readonly width: number;
-  readonly height: number;
-  readonly boxes: readonly OverlayBox[];
-}
-```
-
-A minimal watermark example:
-
-```ts
-import { OverlayProvider, OverlayPage, OverlayContext } from '@vmprint/contracts';
-
-class DraftWatermark implements OverlayProvider {
-  overlay(page: OverlayPage, ctx: OverlayContext): void {
-    ctx.save();
-    ctx.opacity(0.08);
-    ctx.fillColor('#000000');
-    ctx.font('Helvetica', 72);
-    ctx.translate(page.width / 2, page.height / 2);
-    ctx.rotate(-45);
-    ctx.text('DRAFT', -120, -36);
-    ctx.restore();
-  }
-}
-```
+A hook for drawing before and after page content without modifying layout.
 
 ### `Transmuter`
 
-The contract for author-facing source conversion. Implement this to convert specific source formats (like Markdown) into VMPrint's `DocumentInput` AST.
-
-```ts
-interface Transmuter<Input = string, Output = unknown, Options = TransmuterOptions> {
-  transmute(input: Input, options?: Options): Output;
-  getBoilerplate?(): string;
-}
-```
-
-- `transmute` — converts input source into typeset boxes or a document IR.
-- `getBoilerplate` — (Optional) returns a recommended configuration block (e.g., YAML) to assist users in setting up a new document for this transmuter's format.
-
-This decoupling allows tools like `draft2final` to orchestrate multiple input formats and default configurations without being coupled to the internal logic of any specific format.
+The contract for source conversion into VMPrint `DocumentInput`.
 
 ## Usage
 
-```bash
-npm install @vmprint/contracts
-```
+Inside this monorepo, consumers import the workspace package:
 
 ```ts
 import type { FontManager, Context, OverlayProvider, Transmuter } from '@vmprint/contracts';
 ```
 
-Because all exports are TypeScript interfaces, the import adds no runtime weight — types are fully erased at compile time. Importing `@vmprint/contracts` in a production build costs exactly zero bytes.
+Outside this monorepo, the preferred model is to copy the contract source files you need from [`src/`](src) into your own project and treat them as local interfaces. That keeps your integration explicit and avoids turning these contracts into a pseudo-public package surface.
 
----
+## Source Files
 
-Licensed under the [Apache License 2.0](LICENSE).
+| File | Role |
+| --- | --- |
+| `src/context.ts` | Drawing and output contracts |
+| `src/font-manager.ts` | Font registry and loading contracts |
+| `src/overlay.ts` | Overlay page and drawing contracts |
+| `src/text-delegate.ts` | Text shaping and measuring contracts |
+| `src/transmuter.ts` | Source conversion contracts |

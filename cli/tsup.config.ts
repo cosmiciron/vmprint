@@ -6,6 +6,7 @@ export default defineConfig({
     target: 'node18',
     clean: true,
     dts: true,
+    banner: { js: '#!/usr/bin/env node' },
     external: ['@vmprint/local-fonts', '@vmprint/context-pdf'],
     noExternal: ['@vmprint/engine', '@vmprint/contracts'],
     outExtension() {

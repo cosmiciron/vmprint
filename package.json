@@ -12,41 +12,28 @@
   "bugs": {
     "url": "https://github.com/cosmiciron/vmprint/issues"
   },
-  "homepage": "https://github.com/cosmiciron/vmprint#readme",
+  "homepage": "https://github.com/cosmiciron/vmprint",
   "workspaces": [
     "contracts",
     "engine",
     "cli",
-    "preview"
+    "pressrun"
   ],
   "scripts": {
     "clean": "npm run clean --workspaces --if-present",
-    "build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=preview && npm run build --workspace=cli",
-    "release:build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=preview && npm run build --workspace=cli",
-    "test": "npm run test --prefix engine && npm run docs:build && npm run test:packaged-integration",
-    "docs:build": "node scripts/build-docs-examples.mjs",
-    "docs:site": "node scripts/build-static-docs.mjs",
-    "docs:api": "typedoc",
-    "release:prepare": "npm run release:build && node scripts/prepare-npm-release.mjs",
-    "test:packaged-integration": "node scripts/test-packaged-vmprint-integration.mjs"
+    "build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=cli",
+    "release:build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=cli",
+    "test": "npm run test --prefix engine && npm run test:packaged-integration",
+    "test:packaged-integration": "npm run build --workspace=contracts && npm run build --workspace=engine && node scripts/test-packaged-vmprint-integration.mjs",
+    "pressrun": "tsx pressrun/src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^25.3.2",
-    "@vmprint/context-canvas": "^1.0.2",
     "@vmprint/context-pdf-lite": "^1.0.2",
-    "@vmprint/markdown-core": "^1.0.2",
-    "@vmprint/mkd-mkd": "^1.0.2",
     "@vmprint/standard-fonts": "latest",
-    "@vmprint/web-fonts": "latest",
-    "tsx": "^4.21.0",
-    "typedoc": "^0.28.18"
+    "tsx": "^4.21.0"
   },
   "overrides": {
     "typescript": "~5.7.3"
-  },
-  "dependencies": {
-    "@vmprint/context-pdf": "^1.0.2",
-    "@vmprint/contracts": "^1.0.2",
-    "bidi-js": "^1.0.3"
   }
 }

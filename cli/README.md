@@ -24,9 +24,9 @@ vmprint --input document.json --output out.pdf --font-manager ./my-font-manager.
 
 The module is loaded with `import()` at runtime. You can develop and iterate on a font manager entirely through the CLI before integrating it anywhere else.
 
-## Reference design
+## Not the bootstrap example
 
-The CLI is approximately 225 lines of TypeScript. It demonstrates the complete, correct pattern for integrating vmprint: load a source document, normalize the authored AST into the engine-ready form, configure the engine runtime, wait for fonts, paginate, render, handle the output stream. If you're embedding vmprint into a larger application, the CLI source is the clearest available example of how to do it.
+The CLI is no longer the canonical hello-world integration. That role belongs to `pressrun/`, which shows the smallest practical engine bootstrap in one file. The CLI is the operational tool: batch rendering, layout stream emission, layout profiling, overlays, and custom font-manager loading.
 
 ## Production batch processing
 
@@ -103,7 +103,7 @@ Custom font manager classes must be the default export of their module and imple
 
 ---
 
-See the [CLI Reference](https://cosmiciron.github.io/vmprint/reference/cli) for the full options reference, and [QUICKSTART.md](../QUICKSTART.md) for install and build instructions.
+See [QUICKSTART.md](../QUICKSTART.md) for current install and build instructions.
 
 ---
 

@@ -32,7 +32,9 @@ VMPrint was designed from the start around four clean contracts. The engine know
 contracts/              @vmprint/contracts            Shared TypeScript interfaces
 engine/                 @vmprint/engine               Deterministic layout engine
 cli/                    @vmprint/cli                  vmprint CLI (JSON → PDF)
-preview/                @vmprint/preview              Browser preview runtime
+pressrun/               pressrun                      Minimal engine bootstrap example
+guides/                 (docs)                        Focused authoring guides
+references/             (docs)                        Compact reference material
 (External)              @vmprint/context-*            PDF, SVG, Canvas contexts
 (External)              @vmprint/font-managers        Local, standard, and web font managers
 (External)              @vmprint/transmuters          Markdown → DocumentInput converters

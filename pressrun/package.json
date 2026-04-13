@@ -1,0 +1,14 @@
+{
+  "name": "pressrun",
+  "private": true,
+  "description": "Smallest practical VMPrint bootstrap: render a JSON document to PDF.",
+  "dependencies": {
+    "@vmprint/context-pdf": "^1.0.2",
+    "@vmprint/local-fonts": "^1.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "@vmprint/contracts": "file:../contracts",
+    "@vmprint/engine": "file:../engine"
+  }
+}
