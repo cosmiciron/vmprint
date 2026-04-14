@@ -1,5 +1,9 @@
-// Compatibility shim kept while VMPrint's print bootstrap still owns the
-// fontkit-backed text measurer implementation.
-export {
-    FontkitTextMeasurer
-} from '../../font-management/text-delegate';
+/**
+ * Compatibility shim.
+ *
+ * The engine depends on the text-measurer contract. Concrete measurer classes
+ * belong to bootstrap code outside the engine directory.
+ */
+export type {
+    TextMeasurer
+} from '../../contracts/text-delegate';

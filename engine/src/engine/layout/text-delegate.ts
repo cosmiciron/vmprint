@@ -1,8 +1,15 @@
 /**
  * Compatibility shim.
  *
- * VMPrint's concrete text delegate is a print/bootstrap concern that currently
- * lives under `font-management`. The neutral engine should depend on the
- * delegate contract provided by the runtime rather than on this deep import.
+ * Neutral engine code should depend only on the TextDelegate contract.
+ * Concrete implementations belong to bootstrap or product assembly code
+ * outside the engine directory.
  */
-export * from '../../font-management/text-delegate';
+export type {
+    MeasureTextOptions,
+    MeasuredTextResult,
+    TextDelegate,
+    TextDelegateState,
+    TextMeasurer,
+    VerticalTextMetrics
+} from '../../contracts/text-delegate';

@@ -19,7 +19,7 @@ import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, parseDocumentSourceText, 
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { solveTrackSizing } from '../src/engine/layout/track-sizing';
 import { createPrintEngineRuntime } from '../src/font-management/runtime';
-import { FontkitTextMeasurer } from '../src/engine/layout/text-measurer';
+import { FontkitTextMeasurer } from '../src/font-management/text-delegate';
 import { loadFont } from '../src/font-management/font-cache-loader';
 import { loadLocalFontManager } from './harness/engine-harness';
 import { getFontsByFamily, registerFont, resolveFontFamilyAlias } from '../src/font-management/ops';
