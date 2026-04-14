@@ -72,7 +72,6 @@ export type ContinuationQueueOutcome = {
 
 export type SpeculativeBranchReason =
     | 'accepted-split'
-    | 'continuation-queue-preview'
     | 'keep-with-next'
     | 'observer-resettle'
     | 'tail-split-formation'

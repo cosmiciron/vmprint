@@ -23,6 +23,8 @@
     "clean": "npm run clean --workspaces --if-present",
     "build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=cli",
     "release:build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=cli",
+    "sync:shared-engine": "node scripts/sync-shared-engine.mjs",
+    "sync:shared-engine:check": "node scripts/sync-shared-engine.mjs --check",
     "test": "npm run test --prefix engine && npm run test:packaged-integration",
     "test:packaged-integration": "npm run build --workspace=contracts && npm run build --workspace=engine && node scripts/test-packaged-vmprint-integration.mjs",
     "pressrun": "tsx pressrun/src/index.ts"
