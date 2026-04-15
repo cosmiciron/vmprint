@@ -10,14 +10,6 @@ import {
     RendererBoxProperties,
     RendererLine
 } from './render/types';
-import { drawDebugBoxOverlay, drawDebugPageMargins, drawDebugZoneOverlay } from './render/debug-draw';
-import {
-    drawBoxBackground,
-    drawBoxBorders,
-    drawImageBox
-} from './render/box-paint';
-import { RendererImageBytesCache } from './render/image-bytes-cache';
-import { drawRichLines } from './render/rich-lines';
 import { buildParagraphMetrics, createLineFrameAccessors } from './render/rich-line-layout';
 
 type OverlayComputedLineMetric = {
@@ -56,96 +48,39 @@ type OverlayInteractionRegion = {
 };
 
 export abstract class BaseRenderer {
-    protected readonly imageBytesCache = new RendererImageBytesCache();
+    protected config: LayoutConfig;
+    protected debug: boolean;
+    protected overlay: OverlayProvider | undefined;
+    private _runtime?: EngineRuntime;
 
     constructor(
-        protected config: LayoutConfig,
-        protected debug: boolean = false,
-        protected runtime: EngineRuntime = getDefaultEngineRuntime(),
-        protected overlay?: OverlayProvider
-    ) { }
+        config: LayoutConfig,
+        debug: boolean = false,
+        runtime?: EngineRuntime,
+        overlay?: OverlayProvider
+    ) {
+        this.config = config;
+        this.debug = debug;
+        this._runtime = runtime;
+        this.overlay = overlay;
+    }
+
+    /**
+     * Lazily resolved engine runtime. This keeps browser-oriented subclasses
+     * safe while preserving identical behavior for VMPrint renderers that
+     * provide a runtime explicitly.
+     */
+    protected get runtime(): EngineRuntime {
+        if (!this._runtime) {
+            this._runtime = getDefaultEngineRuntime();
+        }
+        return this._runtime;
+    }
 
     abstract render(pages: Page[], output: unknown): Promise<void>;
     protected abstract registerFonts(context: Context, pages: Page[]): Promise<void>;
     protected abstract getFontId(family: string, weight: number | string | undefined, style: string | undefined): string;
     protected abstract getFontAscent(family: string, weight: number | string | undefined, style: string | undefined): number;
-
-    protected drawContextBox(context: Context, box: Box) {
-        const boxStyle = box.style || {};
-
-        context.save();
-
-        if (boxStyle.opacity !== undefined) {
-            context.opacity(boxStyle.opacity);
-        }
-
-        drawBoxBackground(context, box, boxStyle);
-
-        if (box.image) {
-            drawImageBox(context, box, (base64Data) => this.imageBytesCache.get(base64Data));
-        } else if (box.lines && box.lines.length > 0) {
-            const paddingLeft = LayoutUtils.validateUnit(boxStyle.paddingLeft ?? boxStyle.padding ?? 0);
-            const paddingRight = LayoutUtils.validateUnit(boxStyle.paddingRight ?? boxStyle.padding ?? 0);
-            const paddingTop = LayoutUtils.validateUnit(boxStyle.paddingTop ?? boxStyle.padding ?? 0);
-
-            const borderLeft = LayoutUtils.validateUnit(boxStyle.borderLeftWidth ?? boxStyle.borderWidth ?? 0);
-            const borderRight = LayoutUtils.validateUnit(boxStyle.borderRightWidth ?? boxStyle.borderWidth ?? 0);
-            const borderTop = LayoutUtils.validateUnit(boxStyle.borderTopWidth ?? boxStyle.borderWidth ?? 0);
-
-            const contentX = box.x + paddingLeft + borderLeft;
-            const contentY = box.y + paddingTop + borderTop;
-            const contentWidth = box.w - paddingLeft - paddingRight - borderLeft - borderRight;
-            drawRichLines(
-                context,
-                box.lines as RendererLine[],
-                contentX,
-                contentY,
-                boxStyle,
-                contentWidth,
-                {
-                    layout: this.config.layout,
-                    debug: this.debug,
-                    getFontId: (family, weight, style) => this.getFontId(family, weight, style),
-                    getFontAscent: (family, weight, style) => this.getFontAscent(family, weight, style),
-                    getImageBytes: (base64Data) => this.imageBytesCache.get(base64Data)
-                },
-                (box.properties || {}) as RendererBoxProperties
-            );
-        } else if (box.content || box.glyphs) {
-            const defaultFamily = (boxStyle.fontFamily as string | undefined) || this.config.layout.fontFamily;
-            const defaultWeight = (boxStyle.fontWeight as number | string | undefined) ?? 400;
-            const defaultStyle = (boxStyle.fontStyle as string | undefined) || 'normal';
-            const lines = [[{
-                text: box.content || '',
-                glyphs: box.glyphs,
-                ascent: box.ascent,
-                style: { ...boxStyle, textIndent: 0 },
-                width: box.w,
-                resolvedFontId: this.getFontId(defaultFamily, defaultWeight, defaultStyle),
-                resolvedFontAscent: this.getFontAscent(defaultFamily, defaultWeight, defaultStyle)
-            }]] as RendererLine[];
-            drawRichLines(
-                context,
-                lines,
-                box.x,
-                box.y,
-                { ...boxStyle, textIndent: 0 },
-                box.w,
-                {
-                    layout: this.config.layout,
-                    debug: this.debug,
-                    getFontId: (family, weight, style) => this.getFontId(family, weight, style),
-                    getFontAscent: (family, weight, style) => this.getFontAscent(family, weight, style),
-                    getImageBytes: (base64Data) => this.imageBytesCache.get(base64Data)
-                },
-                (box.properties || {}) as RendererBoxProperties
-            );
-        }
-
-        drawBoxBorders(context, box, boxStyle);
-
-        context.restore();
-    }
 
     public toOverlayPage(page: Page): OverlayPage {
         const boxes: OverlayBox[] = page.boxes.map((box) => ({
@@ -385,31 +320,6 @@ export abstract class BaseRenderer {
         };
 
         return overlayContext;
-    }
-
-    protected drawContextDebugPage(context: Context, page: Page, drawOrder: Array<{ box: Box; order: number }>): void {
-        const debugLabelFontId = this.getFontId(this.config.layout.fontFamily, 400, 'normal');
-        const debugLabelFontAscent = this.getFontAscent(this.config.layout.fontFamily, 400, 'normal');
-        drawDebugPageMargins(
-            context,
-            page.width,
-            page.height,
-            this.config.layout.margins,
-            debugLabelFontId,
-            debugLabelFontAscent
-        );
-        (page.debugRegions || []).forEach((zone) => drawDebugZoneOverlay(
-            context,
-            zone,
-            debugLabelFontId,
-            debugLabelFontAscent
-        ));
-        drawOrder.forEach(({ box }) => drawDebugBoxOverlay(
-            context,
-            box,
-            debugLabelFontId,
-            debugLabelFontAscent
-        ));
     }
 
     protected getPageDrawOrder(page: Page): Array<{ box: Box; order: number }> {
