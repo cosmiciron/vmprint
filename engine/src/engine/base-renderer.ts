@@ -16,9 +16,7 @@ import {
     drawBoxBorders,
     drawImageBox
 } from './render/box-paint';
-import { registerRendererFonts } from './render/font-registration';
 import { RendererImageBytesCache } from './render/image-bytes-cache';
-import { getCachedFont } from '../font-management/font-cache-loader';
 import { drawRichLines } from './render/rich-lines';
 import { buildParagraphMetrics, createLineFrameAccessors } from './render/rich-line-layout';
 
@@ -59,8 +57,6 @@ type OverlayInteractionRegion = {
 
 export abstract class BaseRenderer {
     protected readonly imageBytesCache = new RendererImageBytesCache();
-    protected readonly fontIdCache = new Map<string, string>();
-    protected readonly fontAscentCache = new Map<string, number>();
 
     constructor(
         protected config: LayoutConfig,
@@ -70,55 +66,9 @@ export abstract class BaseRenderer {
     ) { }
 
     abstract render(pages: Page[], output: unknown): Promise<void>;
-
-    protected async registerFonts(context: Context, pages: Page[]) {
-        await registerRendererFonts({
-            context,
-            runtime: this.runtime,
-            config: this.config,
-            pages,
-            debug: this.debug,
-            getFontId: (family, weight, style) => this.getFontId(family, weight, style)
-        });
-    }
-
-    protected getFontCacheKey(family: string, weight: number | string | undefined, style: string | undefined): string {
-        return `${family || ''}|${String(weight ?? 400)}|${style || 'normal'}`;
-    }
-
-    protected getFontId(family: string, weight: number | string | undefined, style: string | undefined): string {
-        const cacheKey = this.getFontCacheKey(family, weight, style);
-        const cached = this.fontIdCache.get(cacheKey);
-        if (cached) return cached;
-        const resolved = LayoutUtils.getFontId(family, weight, style, this.runtime.textDelegate);
-        this.fontIdCache.set(cacheKey, resolved);
-        return resolved;
-    }
-
-    protected getFontAscent(family: string, weight: number | string | undefined, style: string | undefined): number {
-        const cacheKey = this.getFontCacheKey(family, weight, style);
-        const cached = this.fontAscentCache.get(cacheKey);
-        if (cached !== undefined) return cached;
-
-        let resolvedAscent = 750;
-        try {
-            const match = LayoutUtils.resolveFontMatch(family, weight, style, this.runtime.textDelegate);
-            const font = getCachedFont(match.config.src, this.runtime) as any;
-            if (!font) {
-                this.fontAscentCache.set(cacheKey, resolvedAscent);
-                return resolvedAscent;
-            }
-            const upm = Number(font.unitsPerEm);
-            const rawAscent = Number(font.ascent);
-            if (Number.isFinite(upm) && upm > 0 && Number.isFinite(rawAscent)) {
-                resolvedAscent = (rawAscent / upm) * 1000;
-            }
-        } catch {
-            resolvedAscent = 750;
-        }
-        this.fontAscentCache.set(cacheKey, resolvedAscent);
-        return resolvedAscent;
-    }
+    protected abstract registerFonts(context: Context, pages: Page[]): Promise<void>;
+    protected abstract getFontId(family: string, weight: number | string | undefined, style: string | undefined): string;
+    protected abstract getFontAscent(family: string, weight: number | string | undefined, style: string | undefined): number;
 
     protected drawContextBox(context: Context, box: Box) {
         const boxStyle = box.style || {};
