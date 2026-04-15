@@ -1,6 +1,6 @@
 import type { Context, FontManager, OverlayProvider } from '../contracts';
 import { LayoutEngine } from './layout-engine';
-import { Renderer } from './renderer';
+import { ContextRenderer } from './context-renderer';
 import { toLayoutConfig } from './document';
 import { createPrintEngineRuntime } from '../font-management/runtime';
 import { LayoutUtils } from './layout/layout-utils';
@@ -167,7 +167,7 @@ export class VMPrintEngine {
             ? { ...this._config, debug: true }
             : this._config;
 
-        const renderer = new Renderer(
+        const renderer = new ContextRenderer(
             config,
             options?.debug ?? false,
             this._runtime,
@@ -201,7 +201,7 @@ export async function renderLayout(
         debug: options?.debug ?? false
     };
     const runtime = createPrintEngineRuntime({ fontManager });
-    const renderer = new Renderer(
+    const renderer = new ContextRenderer(
         config,
         options?.debug ?? false,
         runtime,

@@ -104,7 +104,7 @@ const engine = (engineModule as any).default ?? (engineModule as any)['module.ex
 const harness = (harnessModule as any).default ?? (harnessModule as any)['module.exports'] ?? harnessModule;
 const {
     LayoutEngine,
-    Renderer,
+    ContextRenderer,
     createPrintEngineRuntime,
     LayoutUtils
 } = engine as any;
@@ -291,7 +291,7 @@ async function measureFixture(
 
     const pageSize = LayoutUtils.getPageDimensions(config);
     const context = new MockContext(pageSize.width, pageSize.height);
-    const renderer = new Renderer(config, false, runtime);
+    const renderer = new ContextRenderer(config, false, runtime);
     await renderer.render(pages, context);
     const t3 = performance.now();
 

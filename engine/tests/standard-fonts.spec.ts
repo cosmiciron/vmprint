@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { ContextFontRegistrationOptions } from '@vmprint/contracts';
 import { LayoutEngine } from '../src/engine/layout-engine';
-import { Renderer } from '../src/engine/renderer';
+import { ContextRenderer } from '../src/engine/context-renderer';
 import { toLayoutConfig, resolveDocumentSourceText } from '../src';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { createPrintEngineRuntime } from '../src/font-management/runtime';
@@ -137,7 +137,7 @@ async function run() {
 
     const { width, height } = LayoutUtils.getPageDimensions(config);
     const context = new StandardCaptureContext(width, height);
-    const renderer = new Renderer(config, false, runtime);
+    const renderer = new ContextRenderer(config, false, runtime);
     await renderer.render(pages, context);
 
     _check(

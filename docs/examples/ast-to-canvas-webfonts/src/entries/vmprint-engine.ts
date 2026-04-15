@@ -2,7 +2,7 @@ export {
     LayoutEngine
 } from '../../../../../engine/src/engine/layout-engine';
 export {
-    Renderer
+    ContextRenderer
 } from '../../../../../engine/src/engine/renderer';
 export {
     createEngineRuntime

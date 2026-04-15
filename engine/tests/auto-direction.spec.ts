@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { ContextTextOptions } from '@vmprint/contracts';
-import { Renderer } from '../src/engine/renderer';
+import { ContextRenderer } from '../src/engine/context-renderer';
 import { LayoutConfig, Page } from '../src/engine/types';
 import { setDefaultEngineRuntime } from '../src/engine/runtime';
 import { createPrintEngineRuntime } from '../src/font-management/runtime';
@@ -27,7 +27,7 @@ function buildConfig(): LayoutConfig {
 
 async function testAutoDirectionUsesParagraphBaseForNeutralLeadingLines() {
     const config = buildConfig();
-    const renderer = new Renderer(config, false);
+    const renderer = new ContextRenderer(config, false);
     const context = new MockContext();
     const paragraphX = 20;
     const paragraphW = 200;
@@ -60,7 +60,7 @@ async function testAutoDirectionUsesParagraphBaseForNeutralLeadingLines() {
 
 async function testMixedRtlRunReordersInsideLtrParagraph() {
     const config = buildConfig();
-    const renderer = new Renderer(config, false);
+    const renderer = new ContextRenderer(config, false);
     const context = new MockContext();
 
     const pages: Page[] = [{
@@ -105,4 +105,3 @@ run().catch((err) => {
     console.error(`[${TEST_PREFIX}] FAILED`, err);
     process.exit(1);
 });
-

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { LayoutEngine } from '../../src/engine/layout-engine';
-import { Renderer } from '../../src/engine/renderer';
+import { ContextRenderer } from '../../src/engine/context-renderer';
 import { createPrintEngineRuntime } from '../../src/font-management/runtime';
 import type { Element, LayoutConfig, Page } from '../../src/engine/types';
 import { simulationArtifactKeys } from '../../src/engine/layout/simulation-report';
@@ -212,7 +212,7 @@ async function maybeRenderPdf(pages: Page[], config: LayoutConfig, outputPath: s
         const outputStream = new NodeWriteStreamAdapter(outputPath);
         context.pipe(outputStream as any);
 
-        const renderer = new Renderer(config, false, runtime);
+        const renderer = new ContextRenderer(config, false, runtime);
         await renderer.render(pages, context);
         await outputStream.waitForFinish();
         return true;

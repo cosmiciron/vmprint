@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { Context, ContextImageOptions, ContextTextOptions } from '@vmprint/contracts';
 import { LayoutEngine } from '../src/engine/layout-engine';
-import { Renderer } from '../src/engine/renderer';
+import { ContextRenderer } from '../src/engine/context-renderer';
 import { Element, LayoutConfig, Page, DocumentInput } from '../src/engine/types';
 import { setDefaultEngineRuntime } from '../src/engine/runtime';
 import { createPrintEngineRuntime } from '../src/font-management/runtime';
@@ -174,7 +174,7 @@ async function testFlatPipeline() {
         }
     );
 
-    const renderer = new Renderer(config, false, engine.getRuntime());
+    const renderer = new ContextRenderer(config, false, engine.getRuntime());
     const context = new MockContext();
     await renderer.render(pages, context);
     _check(
@@ -247,7 +247,7 @@ async function testEmbeddedImageFlowAndRender() {
         }
     );
 
-    const renderer = new Renderer(config, false, engine.getRuntime());
+    const renderer = new ContextRenderer(config, false, engine.getRuntime());
     const context = new MockContext();
     await renderer.render(pages, context);
     _check(
@@ -347,7 +347,7 @@ async function testInlineObjectsInsideRichTextFlow() {
         }
     );
 
-    const renderer = new Renderer(config, false, engine.getRuntime());
+    const renderer = new ContextRenderer(config, false, engine.getRuntime());
     const context = new MockContext();
     await renderer.render(pages, context);
     _check(
@@ -895,7 +895,7 @@ async function testRendererRtlFlow() {
         }
     }
 
-    const renderer = new Renderer(config, false);
+    const renderer = new ContextRenderer(config, false);
     const context = new RecordingContext();
     const pages: Page[] = [{
         index: 0,
@@ -999,7 +999,7 @@ async function testRendererZIndexOrdering() {
     }
 
     const config = buildConfig();
-    const renderer = new Renderer(config, false);
+    const renderer = new ContextRenderer(config, false);
     const context = new ZOrderContext();
 
     const makeLine = (text: string) => [{
@@ -1071,7 +1071,7 @@ async function testRendererCircularImageClip() {
     }
 
     const config = buildConfig();
-    const renderer = new Renderer(config, false);
+    const renderer = new ContextRenderer(config, false);
     const context = new ClipContext();
 
     const pages: Page[] = [{
@@ -1833,7 +1833,7 @@ async function testBackgroundFillPaintersOrder() {
     }];
 
     const pages = engine.simulate(elements);
-    const renderer = new Renderer(config, false, engine.getRuntime());
+    const renderer = new ContextRenderer(config, false, engine.getRuntime());
     const context = new PaintOrderContext();
     await renderer.render(pages, context);
 
@@ -2098,5 +2098,4 @@ run().catch((err) => {
     console.error('[flat-pipeline.spec] FAILED', err);
     process.exit(1);
 });
-
 

@@ -8,6 +8,8 @@
 
 export { VMPrintEngine, renderLayout } from './engine/vmprint-engine';
 export type { EngineInfo, SimulateOptions, RenderOptions } from './engine/vmprint-engine';
+export { ContextRenderer } from './engine/context-renderer';
+export { createPrintEngineRuntime } from './font-management/runtime';
 
 export { loadDocument } from './engine/document';
 

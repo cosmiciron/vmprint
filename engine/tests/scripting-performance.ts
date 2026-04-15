@@ -4,7 +4,7 @@ import { performance } from 'node:perf_hooks';
 
 import { toLayoutConfig } from '../src';
 import { LayoutEngine } from '../src/engine/layout-engine';
-import { Renderer } from '../src/engine/renderer';
+import { ContextRenderer } from '../src/engine/context-renderer';
 import { setDefaultEngineRuntime } from '../src/engine/runtime';
 import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { loadLocalFontManager, MockContext } from './harness/engine-harness';
@@ -78,7 +78,7 @@ async function run(): Promise<void> {
             const pages = engine.simulate(fixture.document.elements);
             const t1 = performance.now();
 
-            const renderer = new Renderer(toLayoutConfig(fixture.document, false), false, runtime);
+            const renderer = new ContextRenderer(toLayoutConfig(fixture.document, false), false, runtime);
             const context = new MockContext();
             await renderer.render(pages, context);
             const t2 = performance.now();

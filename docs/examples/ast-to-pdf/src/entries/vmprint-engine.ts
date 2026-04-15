@@ -1,7 +1,7 @@
 export {
     LayoutEngine,
     LayoutUtils,
-    Renderer,
+    ContextRenderer,
     cloneFontRegistry,
     createStandardFontSentinelBuffer,
     createEngineRuntime,

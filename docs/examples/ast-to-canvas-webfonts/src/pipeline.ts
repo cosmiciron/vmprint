@@ -11,7 +11,7 @@ type EngineBundle = {
         waitForFonts(): Promise<void>;
         simulate(elements: any[]): any[];
     };
-    Renderer: new (config: any, debug: boolean, runtime: any) => {
+    ContextRenderer: new (config: any, debug: boolean, runtime: any) => {
         render(pages: any[], context: any): Promise<void>;
     };
     createEngineRuntime(options: { fontManager: unknown }): unknown;
@@ -254,7 +254,7 @@ async function createCanvasPreviewSession(
         textRenderMode: options.textRenderMode || 'text'
     });
 
-    const renderer = new engineApi.Renderer(config, false, runtime);
+    const renderer = new engineApi.ContextRenderer(config, false, runtime);
     const renderStartMs = performance.now();
     await renderer.render(pages, context as unknown as any);
     const renderMs = performance.now() - renderStartMs;

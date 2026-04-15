@@ -62,7 +62,7 @@ Each example is a complete VMPrint pipeline running entirely client-side - no ba
 
 | Package | Purpose |
 |---------|---------|
-| `@vmprint/engine` | Core layout engine: `LayoutEngine`, `Renderer`, element AST, layout config, simulation output types |
+| `@vmprint/engine` | Core layout engine: `LayoutEngine`, `ContextRenderer`, element AST, layout config, simulation output types |
 | `@vmprint/contracts` | Interface definitions: `Context`, `FontManager`, `Transmuter`, `OverlayProvider` |
 | `@vmprint/standard-fonts` | The 14 built-in PDF fonts with zero binary data - Win-ANSI metrics served from AFM tables |
 | `@vmprint/context-pdf-lite` | jsPDF-backed PDF output, browser-native, zero Node.js dependencies |

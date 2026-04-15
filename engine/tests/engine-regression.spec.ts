@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { LayoutEngine } from '../src/engine/layout-engine';
-import { Renderer } from '../src/engine/renderer';
+import { ContextRenderer } from '../src/engine/context-renderer';
 import {
     HARNESS_REGRESSION_CASES_DIR,
     MockContext,
@@ -2410,7 +2410,7 @@ async function run() {
 
         const { width: pageWidth, height: pageHeight } = LayoutUtils.getPageDimensions(config);
         const context = new MockContext(pageWidth, pageHeight);
-        const renderer = new Renderer(config, false, engine.getRuntime());
+        const renderer = new ContextRenderer(config, false, engine.getRuntime());
         await renderer.render(pagesA, context);
         _check(
             `${fixture.name} renderer integration`,

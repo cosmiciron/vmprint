@@ -11,7 +11,7 @@ type EngineBundle = {
         waitForFonts(): Promise<void>;
         simulate(elements: any[]): any[];
     };
-    Renderer: new (config: any, debug: boolean, runtime: any) => {
+    ContextRenderer: new (config: any, debug: boolean, runtime: any) => {
         render(pages: any[], context: any): Promise<void>;
     };
     createEngineRuntime(options: { fontManager: unknown }): unknown;
@@ -237,7 +237,7 @@ async function renderDocumentToPdfBytes(documentInput: VmprintDocument): Promise
     const outputStream = new BrowserMemoryOutputStream();
     context.pipe(outputStream);
 
-    const renderer = new engineApi.Renderer(config, false, runtime);
+    const renderer = new engineApi.ContextRenderer(config, false, runtime);
     await renderer.render(pages, context as unknown as any);
     await outputStream.waitForFinish();
 

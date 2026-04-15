@@ -128,12 +128,12 @@ This gives two explicit extension points:
 
 No middle tier is provided between individual boxes by design.
 
-## Renderer Integration
+## ContextRenderer Integration
 
-`Renderer` accepts an optional overlay in its constructor:
+`ContextRenderer` accepts an optional overlay in its constructor:
 
 ```typescript
-new Renderer(config, debug, runtime, overlay?)
+new ContextRenderer(config, debug, runtime, overlay?)
 ```
 
 Internally:
