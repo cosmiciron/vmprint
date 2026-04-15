@@ -152,6 +152,51 @@ export class TextProcessor extends FontProcessor {
         return this.textDelegate.getVerticalMetrics(font);
     }
 
+    private resolveRenderFontMetadata(
+        segment: TextSegment,
+        defaultFontSize: number,
+        resolveRichFontInfoForSegment: (seg: TextSegment, defaultSize: number) => { font: any; fontSize: number }
+    ): { resolvedFontId: string; resolvedFontAscent: number } {
+        const style = segment.style || {};
+        const resolvedWeight = LayoutUtils.normalizeFontWeight(style.fontWeight);
+        const resolvedStyle = LayoutUtils.normalizeFontStyle(style.fontStyle);
+        const familyName = segment.fontFamily || this.config.layout.fontFamily;
+        const resolvedFontId = LayoutUtils.getFontId(familyName, resolvedWeight, resolvedStyle, this.textDelegate);
+
+        let resolvedFontAscent = 750;
+        try {
+            const { font } = resolveRichFontInfoForSegment(segment, defaultFontSize);
+            const metrics = this.getFontVerticalMetrics(font);
+            const ascent = Number(metrics?.ascent);
+            if (Number.isFinite(ascent) && ascent > 0) {
+                resolvedFontAscent = ascent;
+            }
+        } catch {
+            resolvedFontAscent = 750;
+        }
+
+        return {
+            resolvedFontId,
+            resolvedFontAscent
+        };
+    }
+
+    private annotateResolvedRenderFonts(
+        lines: RichLine[],
+        defaultFontSize: number,
+        resolveRichFontInfoForSegment: (seg: TextSegment, defaultSize: number) => { font: any; fontSize: number }
+    ): RichLine[] {
+        for (const line of lines) {
+            for (const segment of line) {
+                if (segment.resolvedFontId && segment.resolvedFontAscent !== undefined) continue;
+                const resolved = this.resolveRenderFontMetadata(segment, defaultFontSize, resolveRichFontInfoForSegment);
+                segment.resolvedFontId = resolved.resolvedFontId;
+                segment.resolvedFontAscent = resolved.resolvedFontAscent;
+            }
+        }
+        return lines;
+    }
+
     private createEmptyMeasuredSegment(font: any, fontFamily?: string, style?: Record<string, any>): TextSegment {
         const metrics = this.getFontVerticalMetrics(font);
         return {
@@ -786,15 +831,22 @@ export class TextProcessor extends FontProcessor {
             }
         }
 
+        const annotateWrappedLines = (value: RichLine[]): RichLine[] =>
+            this.annotateResolvedRenderFonts(
+                value,
+                fontSize,
+                (seg, defaultSize) => resolveCachedRichFontInfo(seg, defaultSize)
+            );
+
         if (advancedJustify) {
-            return this.applyAdvancedJustification(
+            return annotateWrappedLines(this.applyAdvancedJustification(
                 wrapped,
                 maxWidth,
                 textIndent,
                 primaryStyle,
                 (lineIndex, fallbackWidth) => resolveLineLayout(lineIndex).width || fallbackWidth
-            );
+            ));
         }
-        return wrapped;
+        return annotateWrappedLines(wrapped);
     }
 }

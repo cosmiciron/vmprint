@@ -16,6 +16,16 @@ type RegisterRendererFontsOptions = {
 
 const getRegistrationWeight = (weight: number): number => LayoutUtils.normalizeFontWeight(weight);
 const rendererFontRegistrationCache = new WeakMap<Context, Set<string>>();
+const requiredFontConfigsCache = new WeakMap<EngineRuntime, WeakMap<Page[], {
+    config: LayoutConfig;
+    debug: boolean;
+    fonts: Array<{
+        family: string;
+        weight: number | string | undefined;
+        style: string | undefined;
+        config: ReturnType<typeof LayoutUtils.resolveFontMatch>['config'];
+    }>;
+}>>();
 
 function collectRequiredFontConfigs(runtime: EngineRuntime, config: LayoutConfig, pages: Page[], debug: boolean): Array<{
     family: string;
@@ -23,6 +33,12 @@ function collectRequiredFontConfigs(runtime: EngineRuntime, config: LayoutConfig
     style: string | undefined;
     config: ReturnType<typeof LayoutUtils.resolveFontMatch>['config'];
 }> {
+    const runtimeCache = requiredFontConfigsCache.get(runtime);
+    const cached = runtimeCache?.get(pages);
+    if (cached && cached.config === config && cached.debug === debug) {
+        return cached.fonts;
+    }
+
     const requested = new Map<string, { family: string; weight: number | string | undefined; style: string | undefined }>();
     const addRequested = (family: string | undefined, weight: number | string | undefined, style: string | undefined): void => {
         const resolvedFamily = String(family || '').trim();
@@ -100,7 +116,21 @@ function collectRequiredFontConfigs(runtime: EngineRuntime, config: LayoutConfig
         }
     }
 
-    return Array.from(resolved.values());
+    const fonts = Array.from(resolved.values());
+    const nextRuntimeCache = runtimeCache ?? new WeakMap<Page[], {
+        config: LayoutConfig;
+        debug: boolean;
+        fonts: typeof fonts;
+    }>();
+    nextRuntimeCache.set(pages, {
+        config,
+        debug,
+        fonts
+    });
+    if (!runtimeCache) {
+        requiredFontConfigsCache.set(runtime, nextRuntimeCache);
+    }
+    return fonts;
 }
 
 export const registerRendererFonts = async ({

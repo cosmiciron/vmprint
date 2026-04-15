@@ -58,6 +58,18 @@ export const reorderItemsForVisualBidi = <T extends { seg: RendererLineSegment; 
 ): T[] => {
     if (items.length <= 1) return items;
 
+    const hasOpposingStrongSegment = items.some((item) => {
+        const declaredDirection = item?.seg?.direction;
+        if (declaredDirection && declaredDirection !== baseDirection) {
+            return true;
+        }
+        const strong = getStrongDirection(item?.seg?.text || '');
+        return strong !== 'neutral' && strong !== baseDirection;
+    });
+    if (!hasOpposingStrongSegment) {
+        return items;
+    }
+
     const textParts: string[] = [];
     const charToItem: number[] = [];
     for (let itemIndex = 0; itemIndex < items.length; itemIndex += 1) {

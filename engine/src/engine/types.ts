@@ -49,6 +49,8 @@ export type TextSegment = {
     width?: number,
     ascent?: number,
     descent?: number,
+    resolvedFontId?: string,
+    resolvedFontAscent?: number,
     justifyAfter?: number,
     forcedBreakAfter?: boolean,
     scriptClass?: string,

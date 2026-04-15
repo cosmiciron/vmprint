@@ -60,7 +60,7 @@ export const drawRichLineSegments = (
         const size = seg.style?.fontSize || options.fontSize;
         const color = seg.style?.color || options.containerColor || 'black';
         const bg = seg.style?.backgroundColor;
-        const fontId = options.getFontId(fam, wt, st);
+        const fontId = seg.resolvedFontId || options.getFontId(fam, wt, st);
         if (fontId !== activeFontId) {
             context.font(fontId);
             activeFontId = fontId;
@@ -144,7 +144,7 @@ export const drawRichLineSegments = (
             if (seg.inlineObject.kind === 'image') {
                 options.drawInlineImageSegment(seg, drawX, finalY, Number(size) || options.fontSize);
             } else {
-                const fontAscent = options.getFontAscent(fam, wt, st);
+                const fontAscent = seg.resolvedFontAscent ?? options.getFontAscent(fam, wt, st);
                 options.drawInlineBoxSegment(seg, drawX, finalY, Number(size) || options.fontSize, fontAscent);
             }
         } else if (!seg.linkTarget && seg.shapedGlyphs && seg.shapedGlyphs.length > 0) {

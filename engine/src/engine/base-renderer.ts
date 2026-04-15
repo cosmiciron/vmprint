@@ -112,12 +112,17 @@ export abstract class BaseRenderer {
                 (box.properties || {}) as RendererBoxProperties
             );
         } else if (box.content || box.glyphs) {
+            const defaultFamily = (boxStyle.fontFamily as string | undefined) || this.config.layout.fontFamily;
+            const defaultWeight = (boxStyle.fontWeight as number | string | undefined) ?? 400;
+            const defaultStyle = (boxStyle.fontStyle as string | undefined) || 'normal';
             const lines = [[{
                 text: box.content || '',
                 glyphs: box.glyphs,
                 ascent: box.ascent,
                 style: { ...boxStyle, textIndent: 0 },
-                width: box.w
+                width: box.w,
+                resolvedFontId: this.getFontId(defaultFamily, defaultWeight, defaultStyle),
+                resolvedFontAscent: this.getFontAscent(defaultFamily, defaultWeight, defaultStyle)
             }]] as RendererLine[];
             drawRichLines(
                 context,
