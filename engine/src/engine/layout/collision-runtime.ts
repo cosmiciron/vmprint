@@ -17,6 +17,8 @@ import type { PackagerContext, PackagerUnit } from './packagers/packager-types';
 
 type PackagerWithFlowBox = PackagerUnit & {
     flowBox?: {
+        allowLineSplit?: boolean;
+        image?: unknown;
         properties?: {
             _tableModel?: unknown;
         };
@@ -319,7 +321,12 @@ export class CollisionRuntime {
         const isSpatialGridPackager = this.hasSpatialGridFlowBox(input.actor);
         const isStoryPackager = this.hasStoryElement(input.actor);
         const isContinuingRegionPackager = this.hasContinuingRegionField(input.actor);
-        const allowsMidPageSplit = isSpatialGridPackager || isStoryPackager || isContinuingRegionPackager;
+        const isBreakableFlowBoxPackager = this.hasBreakableFlowBox(input.actor);
+        const allowsMidPageSplit =
+            isSpatialGridPackager
+            || isStoryPackager
+            || isContinuingRegionPackager
+            || isBreakableFlowBoxPackager;
         const emptyLayoutBefore = input.marginTop;
         const emptyAvailable = input.pageLimit - input.pageTop;
         const requiredOnEmpty = input.contentHeight + emptyLayoutBefore + input.marginBottom;
@@ -335,6 +342,14 @@ export class CollisionRuntime {
 
     private hasSpatialGridFlowBox(actor: PackagerUnit): actor is PackagerWithFlowBox {
         return !!(actor as PackagerWithFlowBox).flowBox?.properties?._tableModel;
+    }
+
+    private hasBreakableFlowBox(actor: PackagerUnit): actor is PackagerWithFlowBox {
+        const flowBox = (actor as PackagerWithFlowBox).flowBox;
+        if (!flowBox) return false;
+        if (flowBox.properties?._tableModel) return false;
+        if (flowBox.image) return false;
+        return flowBox.allowLineSplit === true;
     }
 
     private hasStoryElement(actor: PackagerUnit): actor is PackagerWithStoryElement {

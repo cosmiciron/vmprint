@@ -1,0 +1,108 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 280,
+      "height": 200
+    },
+    "margins": {
+      "top": 0,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "fontFamily": "Times New Roman",
+    "fontSize": 18,
+    "lineHeight": 1.4,
+    "hyphenation": "off"
+  },
+  "fonts": {
+    "regular": "Times New Roman"
+  },
+  "styles": {
+    "p": {
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    }
+  },
+  "elements": [
+    {
+      "type": "p",
+      "content": "The Whispering Library of Oakhaven existed only between the hours of midnight and dawn, nestled within a tree that had no leaves. Elara, a thief with more curiosity than caution, had heard the rumors. She sought the \"Book of Forgotten Sunsets,\" a tome said to contain colors that no longer existed in their grey world.",
+      "properties": {
+        "sourceId": "fragment:0"
+      }
+    },
+    {
+      "type": "p",
+      "content": "She arrived at the ancient oak as the moon reached its zenith. As predicted, a small, obsidian door appeared in the trunk. Inside, thousands of books floated gently in the air, glowing with a soft, bioluminescent light.",
+      "properties": {
+        "sourceId": "fragment:1"
+      }
+    },
+    {
+      "type": "p",
+      "content": "\"Borrowing or purchasing?\" a voice hissed.",
+      "properties": {
+        "sourceId": "fragment:2"
+      }
+    },
+    {
+      "type": "p",
+      "content": "A gnome, dressed in robes made of moth wings, appeared on her shoulder.",
+      "properties": {
+        "sourceId": "fragment:3"
+      }
+    },
+    {
+      "type": "p",
+      "content": "\"Borrowing,\" Elara whispered, reaching for a shimmering green book.",
+      "properties": {
+        "sourceId": "fragment:4"
+      }
+    },
+    {
+      "type": "p",
+      "content": "\"Wrong choice,\" the gnome warned. \"That one sings. You’ll never get sleep.\"",
+      "properties": {
+        "sourceId": "fragment:5"
+      }
+    },
+    {
+      "type": "p",
+      "content": "Elara laughed, but obediently lowered her hand. \"The Book of Sunsets?\"",
+      "properties": {
+        "sourceId": "fragment:6"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The gnome pointed a spindly finger to the ceiling, where a massive, leather-bound book rested, pulsating with a warm, orange glow. \"High stakes for a low-level thief.\"",
+      "properties": {
+        "sourceId": "fragment:7"
+      }
+    },
+    {
+      "type": "p",
+      "content": "She scaled the floating bookshelves, her hands grasping the warm leather. As she touched it, the library vanished.",
+      "properties": {
+        "sourceId": "fragment:8"
+      }
+    },
+    {
+      "type": "p",
+      "content": "Elara stood in her own mundane, grey bedroom, clutching the book. She opened it, and a flood of amber, crimson, and violet light filled the room, painting the walls with colors she had never seen. The book didn't just contain stories; it contained the light itself.",
+      "properties": {
+        "sourceId": "fragment:9"
+      }
+    },
+    {
+      "type": "p",
+      "content": "She smiled, finally understanding. The world wasn’t truly grey; it just needed someone brave enough to steal the light back.",
+      "properties": {
+        "sourceId": "fragment:10"
+      }
+    }
+  ]
+}
