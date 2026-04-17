@@ -1,1 +1,609 @@
-{"streamVersion":"1.0","config":{"layout":{"fontFamily":"Times New Roman","fontSize":18,"hyphenation":"off","lineHeight":1.4,"margins":{"bottom":0,"left":0,"right":0,"top":0},"pageSize":{"height":200,"width":280}},"fonts":{"regular":"Times New Roman"},"styles":{"p":{"allowLineSplit":true,"orphans":2,"widows":2}},"preloadFontFamilies":[]},"pages":[{"index":0,"width":280,"height":200,"boxes":[{"type":"p","x":0,"y":0,"w":280,"h":189.93515625,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto","marginBottom":0},"lines":[[{"text":"The Whispering Library of Oakhaven ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"T","x":0,"y":0},{"char":"h","x":10.9951171875,"y":0},{"char":"e","x":19.9951171875,"y":0},{"char":" ","x":27.984375,"y":0},{"char":"W","x":32.484375,"y":0},{"char":"h","x":49.4736328125,"y":0},{"char":"i","x":58.4736328125,"y":0},{"char":"s","x":63.474609375,"y":0},{"char":"p","x":70.4794921875,"y":0},{"char":"e","x":79.4794921875,"y":0},{"char":"r","x":87.46875,"y":0},{"char":"i","x":93.462890625,"y":0},{"char":"n","x":98.4638671875,"y":0},{"char":"g","x":107.4638671875,"y":0},{"char":" ","x":116.4638671875,"y":0},{"char":"L","x":120.9638671875,"y":0},{"char":"i","x":131.958984375,"y":0},{"char":"b","x":136.9599609375,"y":0},{"char":"r","x":145.9599609375,"y":0},{"char":"a","x":151.9541015625,"y":0},{"char":"r","x":159.943359375,"y":0},{"char":"y","x":165.9375,"y":0},{"char":" ","x":174.9375,"y":0},{"char":"o","x":179.4375,"y":0},{"char":"f","x":188.4375,"y":0},{"char":" ","x":194.431640625,"y":0},{"char":"O","x":198.931640625,"y":0},{"char":"a","x":211.9306640625,"y":0},{"char":"k","x":219.919921875,"y":0},{"char":"h","x":228.919921875,"y":0},{"char":"a","x":237.919921875,"y":0},{"char":"v","x":245.9091796875,"y":0},{"char":"e","x":254.9091796875,"y":0},{"char":"n","x":262.8984375,"y":0},{"char":" ","x":271.8984375,"y":0}],"width":276.3984375,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"existed only between the hours of ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"e","x":0,"y":0},{"char":"x","x":7.9892578125,"y":0},{"char":"i","x":16.9892578125,"y":0},{"char":"s","x":21.990234375,"y":0},{"char":"t","x":28.9951171875,"y":0},{"char":"e","x":33.99609375,"y":0},{"char":"d","x":41.9853515625,"y":0},{"char":" ","x":50.9853515625,"y":0},{"char":"o","x":55.4853515625,"y":0},{"char":"n","x":64.4853515625,"y":0},{"char":"l","x":73.4853515625,"y":0},{"char":"y","x":78.486328125,"y":0},{"char":" ","x":87.486328125,"y":0},{"char":"b","x":91.986328125,"y":0},{"char":"e","x":100.986328125,"y":0},{"char":"t","x":108.9755859375,"y":0},{"char":"w","x":113.9765625,"y":0},{"char":"e","x":126.9755859375,"y":0},{"char":"e","x":134.96484375,"y":0},{"char":"n","x":142.9541015625,"y":0},{"char":" ","x":151.9541015625,"y":0},{"char":"t","x":156.4541015625,"y":0},{"char":"h","x":161.455078125,"y":0},{"char":"e","x":170.455078125,"y":0},{"char":" ","x":178.4443359375,"y":0},{"char":"h","x":182.9443359375,"y":0},{"char":"o","x":191.9443359375,"y":0},{"char":"u","x":200.9443359375,"y":0},{"char":"r","x":209.9443359375,"y":0},{"char":"s","x":215.9384765625,"y":0},{"char":" ","x":222.943359375,"y":0},{"char":"o","x":227.443359375,"y":0},{"char":"f","x":236.443359375,"y":0},{"char":" ","x":242.4375,"y":0}],"width":246.9375,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"midnight and dawn, nestled within a ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"m","x":0,"y":0},{"char":"i","x":14.0009765625,"y":0},{"char":"d","x":19.001953125,"y":0},{"char":"n","x":28.001953125,"y":0},{"char":"i","x":37.001953125,"y":0},{"char":"g","x":42.0029296875,"y":0},{"char":"h","x":51.0029296875,"y":0},{"char":"t","x":60.0029296875,"y":0},{"char":" ","x":65.00390625,"y":0},{"char":"a","x":69.50390625,"y":0},{"char":"n","x":77.4931640625,"y":0},{"char":"d","x":86.4931640625,"y":0},{"char":" ","x":95.4931640625,"y":0},{"char":"d","x":99.9931640625,"y":0},{"char":"a","x":108.9931640625,"y":0},{"char":"w","x":116.982421875,"y":0},{"char":"n","x":129.9814453125,"y":0},{"char":",","x":138.9814453125,"y":0},{"char":" ","x":143.4814453125,"y":0},{"char":"n","x":147.9814453125,"y":0},{"char":"e","x":156.9814453125,"y":0},{"char":"s","x":164.970703125,"y":0},{"char":"t","x":171.9755859375,"y":0},{"char":"l","x":176.9765625,"y":0},{"char":"e","x":181.9775390625,"y":0},{"char":"d","x":189.966796875,"y":0},{"char":" ","x":198.966796875,"y":0},{"char":"w","x":203.466796875,"y":0},{"char":"i","x":216.4658203125,"y":0},{"char":"t","x":221.466796875,"y":0},{"char":"h","x":226.4677734375,"y":0},{"char":"i","x":235.4677734375,"y":0},{"char":"n","x":240.46875,"y":0},{"char":" ","x":249.46875,"y":0},{"char":"a","x":253.96875,"y":0},{"char":" ","x":261.9580078125,"y":0}],"width":266.4580078125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"tree that had no leaves. Elara, a thief ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"t","x":0,"y":0},{"char":"r","x":5.0009765625,"y":0},{"char":"e","x":10.9951171875,"y":0},{"char":"e","x":18.984375,"y":0},{"char":" ","x":26.9736328125,"y":0},{"char":"t","x":31.4736328125,"y":0},{"char":"h","x":36.474609375,"y":0},{"char":"a","x":45.474609375,"y":0},{"char":"t","x":53.4638671875,"y":0},{"char":" ","x":58.46484375,"y":0},{"char":"h","x":62.96484375,"y":0},{"char":"a","x":71.96484375,"y":0},{"char":"d","x":79.9541015625,"y":0},{"char":" ","x":88.9541015625,"y":0},{"char":"n","x":93.4541015625,"y":0},{"char":"o","x":102.4541015625,"y":0},{"char":" ","x":111.4541015625,"y":0},{"char":"l","x":115.9541015625,"y":0},{"char":"e","x":120.955078125,"y":0},{"char":"a","x":128.9443359375,"y":0},{"char":"v","x":136.93359375,"y":0},{"char":"e","x":145.93359375,"y":0},{"char":"s","x":153.9228515625,"y":0},{"char":".","x":160.927734375,"y":0},{"char":" ","x":165.427734375,"y":0},{"char":"E","x":169.927734375,"y":0},{"char":"l","x":180.9228515625,"y":0},{"char":"a","x":185.923828125,"y":0},{"char":"r","x":193.9130859375,"y":0},{"char":"a","x":199.9072265625,"y":0},{"char":",","x":207.896484375,"y":0},{"char":" ","x":212.396484375,"y":0},{"char":"a","x":216.896484375,"y":0},{"char":" ","x":224.8857421875,"y":0},{"char":"t","x":229.3857421875,"y":0},{"char":"h","x":234.38671875,"y":0},{"char":"i","x":243.38671875,"y":0},{"char":"e","x":248.3876953125,"y":0},{"char":"f","x":256.376953125,"y":0},{"char":" ","x":262.37109375,"y":0}],"width":266.87109375,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"with more curiosity than caution, had ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"w","x":0,"y":0},{"char":"i","x":12.9990234375,"y":0},{"char":"t","x":18,"y":0},{"char":"h","x":23.0009765625,"y":0},{"char":" ","x":32.0009765625,"y":0},{"char":"m","x":36.5009765625,"y":0},{"char":"o","x":50.501953125,"y":0},{"char":"r","x":59.501953125,"y":0},{"char":"e","x":65.49609375,"y":0},{"char":" ","x":73.4853515625,"y":0},{"char":"c","x":77.9853515625,"y":0},{"char":"u","x":85.974609375,"y":0},{"char":"r","x":94.974609375,"y":0},{"char":"i","x":100.96875,"y":0},{"char":"o","x":105.9697265625,"y":0},{"char":"s","x":114.9697265625,"y":0},{"char":"i","x":121.974609375,"y":0},{"char":"t","x":126.9755859375,"y":0},{"char":"y","x":131.9765625,"y":0},{"char":" ","x":140.9765625,"y":0},{"char":"t","x":145.4765625,"y":0},{"char":"h","x":150.4775390625,"y":0},{"char":"a","x":159.4775390625,"y":0},{"char":"n","x":167.466796875,"y":0},{"char":" ","x":176.466796875,"y":0},{"char":"c","x":180.966796875,"y":0},{"char":"a","x":188.9560546875,"y":0},{"char":"u","x":196.9453125,"y":0},{"char":"t","x":205.9453125,"y":0},{"char":"i","x":210.9462890625,"y":0},{"char":"o","x":215.947265625,"y":0},{"char":"n","x":224.947265625,"y":0},{"char":",","x":233.947265625,"y":0},{"char":" ","x":238.447265625,"y":0},{"char":"h","x":242.947265625,"y":0},{"char":"a","x":251.947265625,"y":0},{"char":"d","x":259.9365234375,"y":0},{"char":" ","x":268.9365234375,"y":0}],"width":273.4365234375,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"heard the rumors. She sought the ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"h","x":0,"y":0},{"char":"e","x":9,"y":0},{"char":"a","x":16.9892578125,"y":0},{"char":"r","x":24.978515625,"y":0},{"char":"d","x":30.97265625,"y":0},{"char":" ","x":39.97265625,"y":0},{"char":"t","x":44.47265625,"y":0},{"char":"h","x":49.4736328125,"y":0},{"char":"e","x":58.4736328125,"y":0},{"char":" ","x":66.462890625,"y":0},{"char":"r","x":70.962890625,"y":0},{"char":"u","x":76.95703125,"y":0},{"char":"m","x":85.95703125,"y":0},{"char":"o","x":99.9580078125,"y":0},{"char":"r","x":108.9580078125,"y":0},{"char":"s","x":114.9521484375,"y":0},{"char":".","x":121.95703125,"y":0},{"char":" ","x":126.45703125,"y":0},{"char":"S","x":130.95703125,"y":0},{"char":"h","x":140.9677734375,"y":0},{"char":"e","x":149.9677734375,"y":0},{"char":" ","x":157.95703125,"y":0},{"char":"s","x":162.45703125,"y":0},{"char":"o","x":169.4619140625,"y":0},{"char":"u","x":178.4619140625,"y":0},{"char":"g","x":187.4619140625,"y":0},{"char":"h","x":196.4619140625,"y":0},{"char":"t","x":205.4619140625,"y":0},{"char":" ","x":210.462890625,"y":0},{"char":"t","x":214.962890625,"y":0},{"char":"h","x":219.9638671875,"y":0},{"char":"e","x":228.9638671875,"y":0},{"char":" ","x":236.953125,"y":0}],"width":241.453125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"\"Book of Forgotten Sunsets,\" a tome ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"\"","x":0,"y":0},{"char":"B","x":7.34765625,"y":0},{"char":"o","x":19.353515625,"y":0},{"char":"o","x":28.353515625,"y":0},{"char":"k","x":37.353515625,"y":0},{"char":" ","x":46.353515625,"y":0},{"char":"o","x":50.853515625,"y":0},{"char":"f","x":59.853515625,"y":0},{"char":" ","x":65.84765625,"y":0},{"char":"F","x":70.34765625,"y":0},{"char":"o","x":80.3583984375,"y":0},{"char":"r","x":89.3583984375,"y":0},{"char":"g","x":95.02734375,"y":0},{"char":"o","x":104.02734375,"y":0},{"char":"t","x":113.02734375,"y":0},{"char":"t","x":118.0283203125,"y":0},{"char":"e","x":123.029296875,"y":0},{"char":"n","x":131.0185546875,"y":0},{"char":" ","x":140.0185546875,"y":0},{"char":"S","x":144.5185546875,"y":0},{"char":"u","x":154.529296875,"y":0},{"char":"n","x":163.529296875,"y":0},{"char":"s","x":172.529296875,"y":0},{"char":"e","x":179.5341796875,"y":0},{"char":"t","x":187.5234375,"y":0},{"char":"s","x":192.5244140625,"y":0},{"char":",","x":199.529296875,"y":0},{"char":"\"","x":204.029296875,"y":0},{"char":" ","x":211.376953125,"y":0},{"char":"a","x":215.876953125,"y":0},{"char":" ","x":223.8662109375,"y":0},{"char":"t","x":228.3662109375,"y":0},{"char":"o","x":233.3671875,"y":0},{"char":"m","x":242.3671875,"y":0},{"char":"e","x":256.3681640625,"y":0},{"char":" ","x":264.357421875,"y":0}],"width":268.857421875,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:0"},"meta":{"sourceId":"author:fragment:0","engineKey":"ek:e/0:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"transformKind":"split","reflowKey":"rk:e/0:p","pageIndex":0,"actorId":"actor:author:fragment:0:p:0"}}]},{"index":1,"width":280,"height":200,"boxes":[{"type":"p","x":0,"y":0,"w":280,"h":54.2671875,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto","marginTop":0},"lines":[[{"text":"said to contain colors that no longer ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"s","x":0,"y":0},{"char":"a","x":7.0048828125,"y":0},{"char":"i","x":14.994140625,"y":0},{"char":"d","x":19.9951171875,"y":0},{"char":" ","x":28.9951171875,"y":0},{"char":"t","x":33.4951171875,"y":0},{"char":"o","x":38.49609375,"y":0},{"char":" ","x":47.49609375,"y":0},{"char":"c","x":51.99609375,"y":0},{"char":"o","x":59.9853515625,"y":0},{"char":"n","x":68.9853515625,"y":0},{"char":"t","x":77.9853515625,"y":0},{"char":"a","x":82.986328125,"y":0},{"char":"i","x":90.9755859375,"y":0},{"char":"n","x":95.9765625,"y":0},{"char":" ","x":104.9765625,"y":0},{"char":"c","x":109.4765625,"y":0},{"char":"o","x":117.4658203125,"y":0},{"char":"l","x":126.4658203125,"y":0},{"char":"o","x":131.466796875,"y":0},{"char":"r","x":140.466796875,"y":0},{"char":"s","x":146.4609375,"y":0},{"char":" ","x":153.4658203125,"y":0},{"char":"t","x":157.9658203125,"y":0},{"char":"h","x":162.966796875,"y":0},{"char":"a","x":171.966796875,"y":0},{"char":"t","x":179.9560546875,"y":0},{"char":" ","x":184.95703125,"y":0},{"char":"n","x":189.45703125,"y":0},{"char":"o","x":198.45703125,"y":0},{"char":" ","x":207.45703125,"y":0},{"char":"l","x":211.95703125,"y":0},{"char":"o","x":216.9580078125,"y":0},{"char":"n","x":225.9580078125,"y":0},{"char":"g","x":234.9580078125,"y":0},{"char":"e","x":243.9580078125,"y":0},{"char":"r","x":251.947265625,"y":0},{"char":" ","x":257.94140625,"y":0}],"width":262.44140625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"existed in their grey world.","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"e","x":0,"y":0},{"char":"x","x":7.9892578125,"y":0},{"char":"i","x":16.9892578125,"y":0},{"char":"s","x":21.990234375,"y":0},{"char":"t","x":28.9951171875,"y":0},{"char":"e","x":33.99609375,"y":0},{"char":"d","x":41.9853515625,"y":0},{"char":" ","x":50.9853515625,"y":0},{"char":"i","x":55.4853515625,"y":0},{"char":"n","x":60.486328125,"y":0},{"char":" ","x":69.486328125,"y":0},{"char":"t","x":73.986328125,"y":0},{"char":"h","x":78.9873046875,"y":0},{"char":"e","x":87.9873046875,"y":0},{"char":"i","x":95.9765625,"y":0},{"char":"r","x":100.9775390625,"y":0},{"char":" ","x":106.9716796875,"y":0},{"char":"g","x":111.4716796875,"y":0},{"char":"r","x":120.4716796875,"y":0},{"char":"e","x":126.4658203125,"y":0},{"char":"y","x":134.455078125,"y":0},{"char":" ","x":143.455078125,"y":0},{"char":"w","x":147.955078125,"y":0},{"char":"o","x":160.9541015625,"y":0},{"char":"r","x":169.9541015625,"y":0},{"char":"l","x":175.9482421875,"y":0},{"char":"d","x":180.94921875,"y":0},{"char":".","x":189.94921875,"y":0}],"width":194.44921875,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:0"},"meta":{"sourceId":"author:fragment:0","engineKey":"ek:e/0:p","sourceType":"p","fragmentIndex":1,"isContinuation":true,"generated":false,"transformKind":"split","reflowKey":"rk:e/0:p","pageIndex":1,"actorId":"actor:author:fragment:0:p:1"}},{"type":"p","x":0,"y":54.2671875,"w":280,"h":108.534375,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto","marginBottom":0},"lines":[[{"text":"She arrived at the ancient oak as the ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"S","x":0,"y":0},{"char":"h","x":10.0107421875,"y":0},{"char":"e","x":19.0107421875,"y":0},{"char":" ","x":27,"y":0},{"char":"a","x":31.5,"y":0},{"char":"r","x":39.4892578125,"y":0},{"char":"r","x":45.4833984375,"y":0},{"char":"i","x":51.4775390625,"y":0},{"char":"v","x":56.478515625,"y":0},{"char":"e","x":65.478515625,"y":0},{"char":"d","x":73.4677734375,"y":0},{"char":" ","x":82.4677734375,"y":0},{"char":"a","x":86.9677734375,"y":0},{"char":"t","x":94.95703125,"y":0},{"char":" ","x":99.9580078125,"y":0},{"char":"t","x":104.4580078125,"y":0},{"char":"h","x":109.458984375,"y":0},{"char":"e","x":118.458984375,"y":0},{"char":" ","x":126.4482421875,"y":0},{"char":"a","x":130.9482421875,"y":0},{"char":"n","x":138.9375,"y":0},{"char":"c","x":147.9375,"y":0},{"char":"i","x":155.9267578125,"y":0},{"char":"e","x":160.927734375,"y":0},{"char":"n","x":168.9169921875,"y":0},{"char":"t","x":177.9169921875,"y":0},{"char":" ","x":182.91796875,"y":0},{"char":"o","x":187.41796875,"y":0},{"char":"a","x":196.41796875,"y":0},{"char":"k","x":204.4072265625,"y":0},{"char":" ","x":213.4072265625,"y":0},{"char":"a","x":217.9072265625,"y":0},{"char":"s","x":225.896484375,"y":0},{"char":" ","x":232.9013671875,"y":0},{"char":"t","x":237.4013671875,"y":0},{"char":"h","x":242.40234375,"y":0},{"char":"e","x":251.40234375,"y":0},{"char":" ","x":259.3916015625,"y":0}],"width":263.8916015625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"moon reached its zenith. As predicted,","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"m","x":0,"y":0},{"char":"o","x":14.0009765625,"y":0},{"char":"o","x":23.0009765625,"y":0},{"char":"n","x":32.0009765625,"y":0},{"char":" ","x":41.0009765625,"y":0},{"char":"r","x":45.5009765625,"y":0},{"char":"e","x":51.4951171875,"y":0},{"char":"a","x":59.484375,"y":0},{"char":"c","x":67.4736328125,"y":0},{"char":"h","x":75.462890625,"y":0},{"char":"e","x":84.462890625,"y":0},{"char":"d","x":92.4521484375,"y":0},{"char":" ","x":101.4521484375,"y":0},{"char":"i","x":105.9521484375,"y":0},{"char":"t","x":110.953125,"y":0},{"char":"s","x":115.9541015625,"y":0},{"char":" ","x":122.958984375,"y":0},{"char":"z","x":127.458984375,"y":0},{"char":"e","x":135.4482421875,"y":0},{"char":"n","x":143.4375,"y":0},{"char":"i","x":152.4375,"y":0},{"char":"t","x":157.4384765625,"y":0},{"char":"h","x":162.439453125,"y":0},{"char":".","x":171.439453125,"y":0},{"char":" ","x":175.939453125,"y":0},{"char":"A","x":180.439453125,"y":0},{"char":"s","x":193.4384765625,"y":0},{"char":" ","x":200.443359375,"y":0},{"char":"p","x":204.943359375,"y":0},{"char":"r","x":213.943359375,"y":0},{"char":"e","x":219.9375,"y":0},{"char":"d","x":227.9267578125,"y":0},{"char":"i","x":236.9267578125,"y":0},{"char":"c","x":241.927734375,"y":0},{"char":"t","x":249.9169921875,"y":0},{"char":"e","x":254.91796875,"y":0},{"char":"d","x":262.9072265625,"y":0},{"char":",","x":271.9072265625,"y":0}],"width":276.4072265625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"a small, obsidian door appeared in the ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"a","x":0,"y":0},{"char":" ","x":7.9892578125,"y":0},{"char":"s","x":12.4892578125,"y":0},{"char":"m","x":19.494140625,"y":0},{"char":"a","x":33.4951171875,"y":0},{"char":"l","x":41.484375,"y":0},{"char":"l","x":46.4853515625,"y":0},{"char":",","x":51.486328125,"y":0},{"char":" ","x":55.986328125,"y":0},{"char":"o","x":60.486328125,"y":0},{"char":"b","x":69.486328125,"y":0},{"char":"s","x":78.486328125,"y":0},{"char":"i","x":85.4912109375,"y":0},{"char":"d","x":90.4921875,"y":0},{"char":"i","x":99.4921875,"y":0},{"char":"a","x":104.4931640625,"y":0},{"char":"n","x":112.482421875,"y":0},{"char":" ","x":121.482421875,"y":0},{"char":"d","x":125.982421875,"y":0},{"char":"o","x":134.982421875,"y":0},{"char":"o","x":143.982421875,"y":0},{"char":"r","x":152.982421875,"y":0},{"char":" ","x":158.9765625,"y":0},{"char":"a","x":163.4765625,"y":0},{"char":"p","x":171.4658203125,"y":0},{"char":"p","x":180.4658203125,"y":0},{"char":"e","x":189.4658203125,"y":0},{"char":"a","x":197.455078125,"y":0},{"char":"r","x":205.4443359375,"y":0},{"char":"e","x":211.4384765625,"y":0},{"char":"d","x":219.427734375,"y":0},{"char":" ","x":228.427734375,"y":0},{"char":"i","x":232.927734375,"y":0},{"char":"n","x":237.9287109375,"y":0},{"char":" ","x":246.9287109375,"y":0},{"char":"t","x":251.4287109375,"y":0},{"char":"h","x":256.4296875,"y":0},{"char":"e","x":265.4296875,"y":0},{"char":" ","x":273.4189453125,"y":0}],"width":277.9189453125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"trunk. Inside, thousands of books ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"t","x":0,"y":0},{"char":"r","x":5.0009765625,"y":0},{"char":"u","x":10.9951171875,"y":0},{"char":"n","x":19.9951171875,"y":0},{"char":"k","x":28.9951171875,"y":0},{"char":".","x":37.9951171875,"y":0},{"char":" ","x":42.4951171875,"y":0},{"char":"I","x":46.9951171875,"y":0},{"char":"n","x":52.9892578125,"y":0},{"char":"s","x":61.9892578125,"y":0},{"char":"i","x":68.994140625,"y":0},{"char":"d","x":73.9951171875,"y":0},{"char":"e","x":82.9951171875,"y":0},{"char":",","x":90.984375,"y":0},{"char":" ","x":95.484375,"y":0},{"char":"t","x":99.984375,"y":0},{"char":"h","x":104.9853515625,"y":0},{"char":"o","x":113.9853515625,"y":0},{"char":"u","x":122.9853515625,"y":0},{"char":"s","x":131.9853515625,"y":0},{"char":"a","x":138.990234375,"y":0},{"char":"n","x":146.9794921875,"y":0},{"char":"d","x":155.9794921875,"y":0},{"char":"s","x":164.9794921875,"y":0},{"char":" ","x":171.984375,"y":0},{"char":"o","x":176.484375,"y":0},{"char":"f","x":185.484375,"y":0},{"char":" ","x":191.478515625,"y":0},{"char":"b","x":195.978515625,"y":0},{"char":"o","x":204.978515625,"y":0},{"char":"o","x":213.978515625,"y":0},{"char":"k","x":222.978515625,"y":0},{"char":"s","x":231.978515625,"y":0},{"char":" ","x":238.9833984375,"y":0}],"width":243.4833984375,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:1"},"meta":{"sourceId":"author:fragment:1","engineKey":"ek:e/1:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"transformKind":"split","reflowKey":"rk:e/1:p","pageIndex":1,"actorId":"actor:author:fragment:1:p:0"}}]},{"index":2,"width":280,"height":200,"boxes":[{"type":"p","x":0,"y":0,"w":280,"h":54.2671875,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto","marginTop":0},"lines":[[{"text":"floated gently in the air, glowing with ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"f","x":0,"y":0},{"char":"l","x":5.994140625,"y":0},{"char":"o","x":10.9951171875,"y":0},{"char":"a","x":19.9951171875,"y":0},{"char":"t","x":27.984375,"y":0},{"char":"e","x":32.9853515625,"y":0},{"char":"d","x":40.974609375,"y":0},{"char":" ","x":49.974609375,"y":0},{"char":"g","x":54.474609375,"y":0},{"char":"e","x":63.474609375,"y":0},{"char":"n","x":71.4638671875,"y":0},{"char":"t","x":80.4638671875,"y":0},{"char":"l","x":85.46484375,"y":0},{"char":"y","x":90.4658203125,"y":0},{"char":" ","x":99.4658203125,"y":0},{"char":"i","x":103.9658203125,"y":0},{"char":"n","x":108.966796875,"y":0},{"char":" ","x":117.966796875,"y":0},{"char":"t","x":122.466796875,"y":0},{"char":"h","x":127.4677734375,"y":0},{"char":"e","x":136.4677734375,"y":0},{"char":" ","x":144.45703125,"y":0},{"char":"a","x":148.95703125,"y":0},{"char":"i","x":156.9462890625,"y":0},{"char":"r","x":161.947265625,"y":0},{"char":",","x":167.220703125,"y":0},{"char":" ","x":171.720703125,"y":0},{"char":"g","x":176.220703125,"y":0},{"char":"l","x":185.220703125,"y":0},{"char":"o","x":190.2216796875,"y":0},{"char":"w","x":199.2216796875,"y":0},{"char":"i","x":212.220703125,"y":0},{"char":"n","x":217.2216796875,"y":0},{"char":"g","x":226.2216796875,"y":0},{"char":" ","x":235.2216796875,"y":0},{"char":"w","x":239.7216796875,"y":0},{"char":"i","x":252.720703125,"y":0},{"char":"t","x":257.7216796875,"y":0},{"char":"h","x":262.72265625,"y":0},{"char":" ","x":271.72265625,"y":0}],"width":276.22265625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"a soft, bioluminescent light.","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"a","x":0,"y":0},{"char":" ","x":7.9892578125,"y":0},{"char":"s","x":12.4892578125,"y":0},{"char":"o","x":19.494140625,"y":0},{"char":"f","x":28.494140625,"y":0},{"char":"t","x":34.48828125,"y":0},{"char":",","x":39.4892578125,"y":0},{"char":" ","x":43.9892578125,"y":0},{"char":"b","x":48.4892578125,"y":0},{"char":"i","x":57.4892578125,"y":0},{"char":"o","x":62.490234375,"y":0},{"char":"l","x":71.490234375,"y":0},{"char":"u","x":76.4912109375,"y":0},{"char":"m","x":85.4912109375,"y":0},{"char":"i","x":99.4921875,"y":0},{"char":"n","x":104.4931640625,"y":0},{"char":"e","x":113.4931640625,"y":0},{"char":"s","x":121.482421875,"y":0},{"char":"c","x":128.4873046875,"y":0},{"char":"e","x":136.4765625,"y":0},{"char":"n","x":144.4658203125,"y":0},{"char":"t","x":153.4658203125,"y":0},{"char":" ","x":158.466796875,"y":0},{"char":"l","x":162.966796875,"y":0},{"char":"i","x":167.9677734375,"y":0},{"char":"g","x":172.96875,"y":0},{"char":"h","x":181.96875,"y":0},{"char":"t","x":190.96875,"y":0},{"char":".","x":195.9697265625,"y":0}],"width":200.4697265625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:1"},"meta":{"sourceId":"author:fragment:1","engineKey":"ek:e/1:p","sourceType":"p","fragmentIndex":1,"isContinuation":true,"generated":false,"transformKind":"split","reflowKey":"rk:e/1:p","pageIndex":2,"actorId":"actor:author:fragment:1:p:1"}},{"type":"p","x":0,"y":54.2671875,"w":280,"h":54.2671875,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"lines":[[{"text":"\"Borrowing or purchasing?\" a voice ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"\"","x":0,"y":0},{"char":"B","x":7.34765625,"y":0},{"char":"o","x":19.353515625,"y":0},{"char":"r","x":28.353515625,"y":0},{"char":"r","x":34.34765625,"y":0},{"char":"o","x":40.341796875,"y":0},{"char":"w","x":49.341796875,"y":0},{"char":"i","x":62.3408203125,"y":0},{"char":"n","x":67.341796875,"y":0},{"char":"g","x":76.341796875,"y":0},{"char":" ","x":85.341796875,"y":0},{"char":"o","x":89.841796875,"y":0},{"char":"r","x":98.841796875,"y":0},{"char":" ","x":104.8359375,"y":0},{"char":"p","x":109.3359375,"y":0},{"char":"u","x":118.3359375,"y":0},{"char":"r","x":127.3359375,"y":0},{"char":"c","x":133.330078125,"y":0},{"char":"h","x":141.3193359375,"y":0},{"char":"a","x":150.3193359375,"y":0},{"char":"s","x":158.30859375,"y":0},{"char":"i","x":165.3134765625,"y":0},{"char":"n","x":170.314453125,"y":0},{"char":"g","x":179.314453125,"y":0},{"char":"?","x":188.314453125,"y":0},{"char":"\"","x":196.3037109375,"y":0},{"char":" ","x":203.6513671875,"y":0},{"char":"a","x":208.1513671875,"y":0},{"char":" ","x":216.140625,"y":0},{"char":"v","x":220.640625,"y":0},{"char":"o","x":229.640625,"y":0},{"char":"i","x":238.640625,"y":0},{"char":"c","x":243.6416015625,"y":0},{"char":"e","x":251.630859375,"y":0},{"char":" ","x":259.6201171875,"y":0}],"width":264.1201171875,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"hissed.","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"h","x":0,"y":0},{"char":"i","x":9,"y":0},{"char":"s","x":14.0009765625,"y":0},{"char":"s","x":21.005859375,"y":0},{"char":"e","x":28.0107421875,"y":0},{"char":"d","x":36,"y":0},{"char":".","x":45,"y":0}],"width":49.5,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:2"},"meta":{"sourceId":"author:fragment:2","engineKey":"ek:e/2:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"reflowKey":"rk:e/2:p","pageIndex":2,"actorId":"actor:author:fragment:2:p:0"}},{"type":"p","x":0,"y":108.534375,"w":280,"h":54.2671875,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"lines":[[{"text":"A gnome, dressed in robes made of ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"A","x":0,"y":0},{"char":" ","x":12.9990234375,"y":0},{"char":"g","x":17.4990234375,"y":0},{"char":"n","x":26.4990234375,"y":0},{"char":"o","x":35.4990234375,"y":0},{"char":"m","x":44.4990234375,"y":0},{"char":"e","x":58.5,"y":0},{"char":",","x":66.4892578125,"y":0},{"char":" ","x":70.9892578125,"y":0},{"char":"d","x":75.4892578125,"y":0},{"char":"r","x":84.4892578125,"y":0},{"char":"e","x":90.4833984375,"y":0},{"char":"s","x":98.47265625,"y":0},{"char":"s","x":105.4775390625,"y":0},{"char":"e","x":112.482421875,"y":0},{"char":"d","x":120.4716796875,"y":0},{"char":" ","x":129.4716796875,"y":0},{"char":"i","x":133.9716796875,"y":0},{"char":"n","x":138.97265625,"y":0},{"char":" ","x":147.97265625,"y":0},{"char":"r","x":152.47265625,"y":0},{"char":"o","x":158.466796875,"y":0},{"char":"b","x":167.466796875,"y":0},{"char":"e","x":176.466796875,"y":0},{"char":"s","x":184.4560546875,"y":0},{"char":" ","x":191.4609375,"y":0},{"char":"m","x":195.9609375,"y":0},{"char":"a","x":209.9619140625,"y":0},{"char":"d","x":217.951171875,"y":0},{"char":"e","x":226.951171875,"y":0},{"char":" ","x":234.9404296875,"y":0},{"char":"o","x":239.4404296875,"y":0},{"char":"f","x":248.4404296875,"y":0},{"char":" ","x":254.4345703125,"y":0}],"width":258.9345703125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"moth wings, appeared on her shoulder.","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"m","x":0,"y":0},{"char":"o","x":14.0009765625,"y":0},{"char":"t","x":23.0009765625,"y":0},{"char":"h","x":28.001953125,"y":0},{"char":" ","x":37.001953125,"y":0},{"char":"w","x":41.501953125,"y":0},{"char":"i","x":54.5009765625,"y":0},{"char":"n","x":59.501953125,"y":0},{"char":"g","x":68.501953125,"y":0},{"char":"s","x":77.501953125,"y":0},{"char":",","x":84.5068359375,"y":0},{"char":" ","x":89.0068359375,"y":0},{"char":"a","x":93.5068359375,"y":0},{"char":"p","x":101.49609375,"y":0},{"char":"p","x":110.49609375,"y":0},{"char":"e","x":119.49609375,"y":0},{"char":"a","x":127.4853515625,"y":0},{"char":"r","x":135.474609375,"y":0},{"char":"e","x":141.46875,"y":0},{"char":"d","x":149.4580078125,"y":0},{"char":" ","x":158.4580078125,"y":0},{"char":"o","x":162.9580078125,"y":0},{"char":"n","x":171.9580078125,"y":0},{"char":" ","x":180.9580078125,"y":0},{"char":"h","x":185.4580078125,"y":0},{"char":"e","x":194.4580078125,"y":0},{"char":"r","x":202.447265625,"y":0},{"char":" ","x":208.44140625,"y":0},{"char":"s","x":212.94140625,"y":0},{"char":"h","x":219.9462890625,"y":0},{"char":"o","x":228.9462890625,"y":0},{"char":"u","x":237.9462890625,"y":0},{"char":"l","x":246.9462890625,"y":0},{"char":"d","x":251.947265625,"y":0},{"char":"e","x":260.947265625,"y":0},{"char":"r","x":268.9365234375,"y":0},{"char":".","x":273.9375,"y":0}],"width":278.4375,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:3"},"meta":{"sourceId":"author:fragment:3","engineKey":"ek:e/3:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"reflowKey":"rk:e/3:p","pageIndex":2,"actorId":"actor:author:fragment:3:p:0"}}]},{"index":3,"width":280,"height":200,"boxes":[{"type":"p","x":0,"y":0,"w":280,"h":54.2671875,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"lines":[[{"text":"\"Borrowing,\" Elara whispered, ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"\"","x":0,"y":0},{"char":"B","x":7.34765625,"y":0},{"char":"o","x":19.353515625,"y":0},{"char":"r","x":28.353515625,"y":0},{"char":"r","x":34.34765625,"y":0},{"char":"o","x":40.341796875,"y":0},{"char":"w","x":49.341796875,"y":0},{"char":"i","x":62.3408203125,"y":0},{"char":"n","x":67.341796875,"y":0},{"char":"g","x":76.341796875,"y":0},{"char":",","x":85.341796875,"y":0},{"char":"\"","x":89.841796875,"y":0},{"char":" ","x":97.189453125,"y":0},{"char":"E","x":101.689453125,"y":0},{"char":"l","x":112.6845703125,"y":0},{"char":"a","x":117.685546875,"y":0},{"char":"r","x":125.6748046875,"y":0},{"char":"a","x":131.6689453125,"y":0},{"char":" ","x":139.658203125,"y":0},{"char":"w","x":144.158203125,"y":0},{"char":"h","x":157.1572265625,"y":0},{"char":"i","x":166.1572265625,"y":0},{"char":"s","x":171.158203125,"y":0},{"char":"p","x":178.1630859375,"y":0},{"char":"e","x":187.1630859375,"y":0},{"char":"r","x":195.15234375,"y":0},{"char":"e","x":201.146484375,"y":0},{"char":"d","x":209.1357421875,"y":0},{"char":",","x":218.1357421875,"y":0},{"char":" ","x":222.6357421875,"y":0}],"width":227.1357421875,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"reaching for a shimmering green book.","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"r","x":0,"y":0},{"char":"e","x":5.994140625,"y":0},{"char":"a","x":13.9833984375,"y":0},{"char":"c","x":21.97265625,"y":0},{"char":"h","x":29.9619140625,"y":0},{"char":"i","x":38.9619140625,"y":0},{"char":"n","x":43.962890625,"y":0},{"char":"g","x":52.962890625,"y":0},{"char":" ","x":61.962890625,"y":0},{"char":"f","x":66.462890625,"y":0},{"char":"o","x":72.45703125,"y":0},{"char":"r","x":81.45703125,"y":0},{"char":" ","x":87.451171875,"y":0},{"char":"a","x":91.951171875,"y":0},{"char":" ","x":99.9404296875,"y":0},{"char":"s","x":104.4404296875,"y":0},{"char":"h","x":111.4453125,"y":0},{"char":"i","x":120.4453125,"y":0},{"char":"m","x":125.4462890625,"y":0},{"char":"m","x":139.447265625,"y":0},{"char":"e","x":153.4482421875,"y":0},{"char":"r","x":161.4375,"y":0},{"char":"i","x":167.431640625,"y":0},{"char":"n","x":172.4326171875,"y":0},{"char":"g","x":181.4326171875,"y":0},{"char":" ","x":190.4326171875,"y":0},{"char":"g","x":194.9326171875,"y":0},{"char":"r","x":203.9326171875,"y":0},{"char":"e","x":209.9267578125,"y":0},{"char":"e","x":217.916015625,"y":0},{"char":"n","x":225.9052734375,"y":0},{"char":" ","x":234.9052734375,"y":0},{"char":"b","x":239.4052734375,"y":0},{"char":"o","x":248.4052734375,"y":0},{"char":"o","x":257.4052734375,"y":0},{"char":"k","x":266.4052734375,"y":0},{"char":".","x":275.4052734375,"y":0}],"width":279.9052734375,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:4"},"meta":{"sourceId":"author:fragment:4","engineKey":"ek:e/4:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"reflowKey":"rk:e/4:p","pageIndex":3,"actorId":"actor:author:fragment:4:p:0"}},{"type":"p","x":0,"y":54.2671875,"w":280,"h":81.40078125,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"lines":[[{"text":"\"Wrong choice,\" the gnome warned. ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"\"","x":0,"y":0},{"char":"W","x":7.34765625,"y":0},{"char":"r","x":23.6162109375,"y":0},{"char":"o","x":29.6103515625,"y":0},{"char":"n","x":38.6103515625,"y":0},{"char":"g","x":47.6103515625,"y":0},{"char":" ","x":56.6103515625,"y":0},{"char":"c","x":61.1103515625,"y":0},{"char":"h","x":69.099609375,"y":0},{"char":"o","x":78.099609375,"y":0},{"char":"i","x":87.099609375,"y":0},{"char":"c","x":92.1005859375,"y":0},{"char":"e","x":100.08984375,"y":0},{"char":",","x":108.0791015625,"y":0},{"char":"\"","x":112.5791015625,"y":0},{"char":" ","x":119.9267578125,"y":0},{"char":"t","x":124.4267578125,"y":0},{"char":"h","x":129.427734375,"y":0},{"char":"e","x":138.427734375,"y":0},{"char":" ","x":146.4169921875,"y":0},{"char":"g","x":150.9169921875,"y":0},{"char":"n","x":159.9169921875,"y":0},{"char":"o","x":168.9169921875,"y":0},{"char":"m","x":177.9169921875,"y":0},{"char":"e","x":191.91796875,"y":0},{"char":" ","x":199.9072265625,"y":0},{"char":"w","x":204.4072265625,"y":0},{"char":"a","x":217.40625,"y":0},{"char":"r","x":225.3955078125,"y":0},{"char":"n","x":231.3896484375,"y":0},{"char":"e","x":240.3896484375,"y":0},{"char":"d","x":248.37890625,"y":0},{"char":".","x":257.37890625,"y":0},{"char":" ","x":261.87890625,"y":0}],"width":266.37890625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"\"That one sings. You’ll never get ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"\"","x":0,"y":0},{"char":"T","x":7.34765625,"y":0},{"char":"h","x":18.3427734375,"y":0},{"char":"a","x":27.3427734375,"y":0},{"char":"t","x":35.33203125,"y":0},{"char":" ","x":40.3330078125,"y":0},{"char":"o","x":44.8330078125,"y":0},{"char":"n","x":53.8330078125,"y":0},{"char":"e","x":62.8330078125,"y":0},{"char":" ","x":70.822265625,"y":0},{"char":"s","x":75.322265625,"y":0},{"char":"i","x":82.3271484375,"y":0},{"char":"n","x":87.328125,"y":0},{"char":"g","x":96.328125,"y":0},{"char":"s","x":105.328125,"y":0},{"char":".","x":112.3330078125,"y":0},{"char":" ","x":116.8330078125,"y":0},{"char":"Y","x":121.3330078125,"y":0},{"char":"o","x":132.5302734375,"y":0},{"char":"u","x":141.5302734375,"y":0},{"char":"’","x":150.5302734375,"y":0},{"char":"l","x":156.5244140625,"y":0},{"char":"l","x":161.525390625,"y":0},{"char":" ","x":166.5263671875,"y":0},{"char":"n","x":171.0263671875,"y":0},{"char":"e","x":180.0263671875,"y":0},{"char":"v","x":188.015625,"y":0},{"char":"e","x":197.015625,"y":0},{"char":"r","x":205.0048828125,"y":0},{"char":" ","x":210.9990234375,"y":0},{"char":"g","x":215.4990234375,"y":0},{"char":"e","x":224.4990234375,"y":0},{"char":"t","x":232.48828125,"y":0},{"char":" ","x":237.4892578125,"y":0}],"width":241.9892578125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"sleep.\"","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"s","x":0,"y":0},{"char":"l","x":7.0048828125,"y":0},{"char":"e","x":12.005859375,"y":0},{"char":"e","x":19.9951171875,"y":0},{"char":"p","x":27.984375,"y":0},{"char":".","x":36.984375,"y":0},{"char":"\"","x":41.484375,"y":0}],"width":48.83203125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:5"},"meta":{"sourceId":"author:fragment:5","engineKey":"ek:e/5:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"reflowKey":"rk:e/5:p","pageIndex":3,"actorId":"actor:author:fragment:5:p:0"}},{"type":"p","x":0,"y":135.66796875,"w":280,"h":54.2671875,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"lines":[[{"text":"Elara laughed, but obediently lowered ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"E","x":0,"y":0},{"char":"l","x":10.9951171875,"y":0},{"char":"a","x":15.99609375,"y":0},{"char":"r","x":23.9853515625,"y":0},{"char":"a","x":29.9794921875,"y":0},{"char":" ","x":37.96875,"y":0},{"char":"l","x":42.46875,"y":0},{"char":"a","x":47.4697265625,"y":0},{"char":"u","x":55.458984375,"y":0},{"char":"g","x":64.458984375,"y":0},{"char":"h","x":73.458984375,"y":0},{"char":"e","x":82.458984375,"y":0},{"char":"d","x":90.4482421875,"y":0},{"char":",","x":99.4482421875,"y":0},{"char":" ","x":103.9482421875,"y":0},{"char":"b","x":108.4482421875,"y":0},{"char":"u","x":117.4482421875,"y":0},{"char":"t","x":126.4482421875,"y":0},{"char":" ","x":131.44921875,"y":0},{"char":"o","x":135.94921875,"y":0},{"char":"b","x":144.94921875,"y":0},{"char":"e","x":153.94921875,"y":0},{"char":"d","x":161.9384765625,"y":0},{"char":"i","x":170.9384765625,"y":0},{"char":"e","x":175.939453125,"y":0},{"char":"n","x":183.9287109375,"y":0},{"char":"t","x":192.9287109375,"y":0},{"char":"l","x":197.9296875,"y":0},{"char":"y","x":202.9306640625,"y":0},{"char":" ","x":211.9306640625,"y":0},{"char":"l","x":216.4306640625,"y":0},{"char":"o","x":221.431640625,"y":0},{"char":"w","x":230.431640625,"y":0},{"char":"e","x":243.4306640625,"y":0},{"char":"r","x":251.419921875,"y":0},{"char":"e","x":257.4140625,"y":0},{"char":"d","x":265.4033203125,"y":0},{"char":" ","x":274.4033203125,"y":0}],"width":278.9033203125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"her hand. \"The Book of Sunsets?\"","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"h","x":0,"y":0},{"char":"e","x":9,"y":0},{"char":"r","x":16.9892578125,"y":0},{"char":" ","x":22.9833984375,"y":0},{"char":"h","x":27.4833984375,"y":0},{"char":"a","x":36.4833984375,"y":0},{"char":"n","x":44.47265625,"y":0},{"char":"d","x":53.47265625,"y":0},{"char":".","x":62.47265625,"y":0},{"char":" ","x":66.97265625,"y":0},{"char":"\"","x":71.47265625,"y":0},{"char":"T","x":78.8203125,"y":0},{"char":"h","x":89.8154296875,"y":0},{"char":"e","x":98.8154296875,"y":0},{"char":" ","x":106.8046875,"y":0},{"char":"B","x":111.3046875,"y":0},{"char":"o","x":123.310546875,"y":0},{"char":"o","x":132.310546875,"y":0},{"char":"k","x":141.310546875,"y":0},{"char":" ","x":150.310546875,"y":0},{"char":"o","x":154.810546875,"y":0},{"char":"f","x":163.810546875,"y":0},{"char":" ","x":169.8046875,"y":0},{"char":"S","x":174.3046875,"y":0},{"char":"u","x":184.3154296875,"y":0},{"char":"n","x":193.3154296875,"y":0},{"char":"s","x":202.3154296875,"y":0},{"char":"e","x":209.3203125,"y":0},{"char":"t","x":217.3095703125,"y":0},{"char":"s","x":222.310546875,"y":0},{"char":"?","x":229.3154296875,"y":0},{"char":"\"","x":237.3046875,"y":0}],"width":244.65234375,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:6"},"meta":{"sourceId":"author:fragment:6","engineKey":"ek:e/6:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"reflowKey":"rk:e/6:p","pageIndex":3,"actorId":"actor:author:fragment:6:p:0"}}]},{"index":4,"width":280,"height":200,"boxes":[{"type":"p","x":0,"y":0,"w":280,"h":135.66796875,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"lines":[[{"text":"The gnome pointed a spindly finger to","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"T","x":0,"y":0},{"char":"h","x":10.9951171875,"y":0},{"char":"e","x":19.9951171875,"y":0},{"char":" ","x":27.984375,"y":0},{"char":"g","x":32.484375,"y":0},{"char":"n","x":41.484375,"y":0},{"char":"o","x":50.484375,"y":0},{"char":"m","x":59.484375,"y":0},{"char":"e","x":73.4853515625,"y":0},{"char":" ","x":81.474609375,"y":0},{"char":"p","x":85.974609375,"y":0},{"char":"o","x":94.974609375,"y":0},{"char":"i","x":103.974609375,"y":0},{"char":"n","x":108.9755859375,"y":0},{"char":"t","x":117.9755859375,"y":0},{"char":"e","x":122.9765625,"y":0},{"char":"d","x":130.9658203125,"y":0},{"char":" ","x":139.9658203125,"y":0},{"char":"a","x":144.4658203125,"y":0},{"char":" ","x":152.455078125,"y":0},{"char":"s","x":156.955078125,"y":0},{"char":"p","x":163.9599609375,"y":0},{"char":"i","x":172.9599609375,"y":0},{"char":"n","x":177.9609375,"y":0},{"char":"d","x":186.9609375,"y":0},{"char":"l","x":195.9609375,"y":0},{"char":"y","x":200.9619140625,"y":0},{"char":" ","x":209.9619140625,"y":0},{"char":"f","x":214.4619140625,"y":0},{"char":"i","x":220.4560546875,"y":0},{"char":"n","x":225.45703125,"y":0},{"char":"g","x":234.45703125,"y":0},{"char":"e","x":243.45703125,"y":0},{"char":"r","x":251.4462890625,"y":0},{"char":" ","x":257.4404296875,"y":0},{"char":"t","x":261.9404296875,"y":0},{"char":"o","x":266.94140625,"y":0}],"width":275.94140625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"the ceiling, where a massive, ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"t","x":0,"y":0},{"char":"h","x":5.0009765625,"y":0},{"char":"e","x":14.0009765625,"y":0},{"char":" ","x":21.990234375,"y":0},{"char":"c","x":26.490234375,"y":0},{"char":"e","x":34.4794921875,"y":0},{"char":"i","x":42.46875,"y":0},{"char":"l","x":47.4697265625,"y":0},{"char":"i","x":52.470703125,"y":0},{"char":"n","x":57.4716796875,"y":0},{"char":"g","x":66.4716796875,"y":0},{"char":",","x":75.4716796875,"y":0},{"char":" ","x":79.9716796875,"y":0},{"char":"w","x":84.4716796875,"y":0},{"char":"h","x":97.470703125,"y":0},{"char":"e","x":106.470703125,"y":0},{"char":"r","x":114.4599609375,"y":0},{"char":"e","x":120.4541015625,"y":0},{"char":" ","x":128.443359375,"y":0},{"char":"a","x":132.943359375,"y":0},{"char":" ","x":140.9326171875,"y":0},{"char":"m","x":145.4326171875,"y":0},{"char":"a","x":159.43359375,"y":0},{"char":"s","x":167.4228515625,"y":0},{"char":"s","x":174.427734375,"y":0},{"char":"i","x":181.4326171875,"y":0},{"char":"v","x":186.43359375,"y":0},{"char":"e","x":195.43359375,"y":0},{"char":",","x":203.4228515625,"y":0},{"char":" ","x":207.9228515625,"y":0}],"width":212.4228515625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"leather-bound book rested, pulsating ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"l","x":0,"y":0},{"char":"e","x":5.0009765625,"y":0},{"char":"a","x":12.990234375,"y":0},{"char":"t","x":20.9794921875,"y":0},{"char":"h","x":25.98046875,"y":0},{"char":"e","x":34.98046875,"y":0},{"char":"r","x":42.9697265625,"y":0},{"char":"-","x":48.603515625,"y":0},{"char":"b","x":54.59765625,"y":0},{"char":"o","x":63.59765625,"y":0},{"char":"u","x":72.59765625,"y":0},{"char":"n","x":81.59765625,"y":0},{"char":"d","x":90.59765625,"y":0},{"char":" ","x":99.59765625,"y":0},{"char":"b","x":104.09765625,"y":0},{"char":"o","x":113.09765625,"y":0},{"char":"o","x":122.09765625,"y":0},{"char":"k","x":131.09765625,"y":0},{"char":" ","x":140.09765625,"y":0},{"char":"r","x":144.59765625,"y":0},{"char":"e","x":150.591796875,"y":0},{"char":"s","x":158.5810546875,"y":0},{"char":"t","x":165.5859375,"y":0},{"char":"e","x":170.5869140625,"y":0},{"char":"d","x":178.576171875,"y":0},{"char":",","x":187.576171875,"y":0},{"char":" ","x":192.076171875,"y":0},{"char":"p","x":196.576171875,"y":0},{"char":"u","x":205.576171875,"y":0},{"char":"l","x":214.576171875,"y":0},{"char":"s","x":219.5771484375,"y":0},{"char":"a","x":226.58203125,"y":0},{"char":"t","x":234.5712890625,"y":0},{"char":"i","x":239.572265625,"y":0},{"char":"n","x":244.5732421875,"y":0},{"char":"g","x":253.5732421875,"y":0},{"char":" ","x":262.5732421875,"y":0}],"width":267.0732421875,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"with a warm, orange glow. \"High ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"w","x":0,"y":0},{"char":"i","x":12.9990234375,"y":0},{"char":"t","x":18,"y":0},{"char":"h","x":23.0009765625,"y":0},{"char":" ","x":32.0009765625,"y":0},{"char":"a","x":36.5009765625,"y":0},{"char":" ","x":44.490234375,"y":0},{"char":"w","x":48.990234375,"y":0},{"char":"a","x":61.9892578125,"y":0},{"char":"r","x":69.978515625,"y":0},{"char":"m","x":75.97265625,"y":0},{"char":",","x":89.9736328125,"y":0},{"char":" ","x":94.4736328125,"y":0},{"char":"o","x":98.9736328125,"y":0},{"char":"r","x":107.9736328125,"y":0},{"char":"a","x":113.9677734375,"y":0},{"char":"n","x":121.95703125,"y":0},{"char":"g","x":130.95703125,"y":0},{"char":"e","x":139.95703125,"y":0},{"char":" ","x":147.9462890625,"y":0},{"char":"g","x":152.4462890625,"y":0},{"char":"l","x":161.4462890625,"y":0},{"char":"o","x":166.447265625,"y":0},{"char":"w","x":175.447265625,"y":0},{"char":".","x":187.27734375,"y":0},{"char":" ","x":191.77734375,"y":0},{"char":"\"","x":196.27734375,"y":0},{"char":"H","x":203.625,"y":0},{"char":"i","x":216.6240234375,"y":0},{"char":"g","x":221.625,"y":0},{"char":"h","x":230.625,"y":0},{"char":" ","x":239.625,"y":0}],"width":244.125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"stakes for a low-level thief.\"","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"s","x":0,"y":0},{"char":"t","x":7.0048828125,"y":0},{"char":"a","x":12.005859375,"y":0},{"char":"k","x":19.9951171875,"y":0},{"char":"e","x":28.9951171875,"y":0},{"char":"s","x":36.984375,"y":0},{"char":" ","x":43.9892578125,"y":0},{"char":"f","x":48.4892578125,"y":0},{"char":"o","x":54.4833984375,"y":0},{"char":"r","x":63.4833984375,"y":0},{"char":" ","x":69.4775390625,"y":0},{"char":"a","x":73.9775390625,"y":0},{"char":" ","x":81.966796875,"y":0},{"char":"l","x":86.466796875,"y":0},{"char":"o","x":91.4677734375,"y":0},{"char":"w","x":100.4677734375,"y":0},{"char":"-","x":113.466796875,"y":0},{"char":"l","x":119.4609375,"y":0},{"char":"e","x":124.4619140625,"y":0},{"char":"v","x":132.451171875,"y":0},{"char":"e","x":141.451171875,"y":0},{"char":"l","x":149.4404296875,"y":0},{"char":" ","x":154.44140625,"y":0},{"char":"t","x":158.94140625,"y":0},{"char":"h","x":163.9423828125,"y":0},{"char":"i","x":172.9423828125,"y":0},{"char":"e","x":177.943359375,"y":0},{"char":"f","x":185.9326171875,"y":0},{"char":".","x":191.9267578125,"y":0},{"char":"\"","x":196.4267578125,"y":0}],"width":203.7744140625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:7"},"meta":{"sourceId":"author:fragment:7","engineKey":"ek:e/7:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"reflowKey":"rk:e/7:p","pageIndex":4,"actorId":"actor:author:fragment:7:p:0"}},{"type":"p","x":0,"y":135.66796875,"w":280,"h":54.2671875,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto","marginBottom":0},"lines":[[{"text":"She scaled the floating bookshelves, ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"S","x":0,"y":0},{"char":"h","x":10.0107421875,"y":0},{"char":"e","x":19.0107421875,"y":0},{"char":" ","x":27,"y":0},{"char":"s","x":31.5,"y":0},{"char":"c","x":38.5048828125,"y":0},{"char":"a","x":46.494140625,"y":0},{"char":"l","x":54.4833984375,"y":0},{"char":"e","x":59.484375,"y":0},{"char":"d","x":67.4736328125,"y":0},{"char":" ","x":76.4736328125,"y":0},{"char":"t","x":80.9736328125,"y":0},{"char":"h","x":85.974609375,"y":0},{"char":"e","x":94.974609375,"y":0},{"char":" ","x":102.9638671875,"y":0},{"char":"f","x":107.4638671875,"y":0},{"char":"l","x":113.4580078125,"y":0},{"char":"o","x":118.458984375,"y":0},{"char":"a","x":127.458984375,"y":0},{"char":"t","x":135.4482421875,"y":0},{"char":"i","x":140.44921875,"y":0},{"char":"n","x":145.4501953125,"y":0},{"char":"g","x":154.4501953125,"y":0},{"char":" ","x":163.4501953125,"y":0},{"char":"b","x":167.9501953125,"y":0},{"char":"o","x":176.9501953125,"y":0},{"char":"o","x":185.9501953125,"y":0},{"char":"k","x":194.9501953125,"y":0},{"char":"s","x":203.9501953125,"y":0},{"char":"h","x":210.955078125,"y":0},{"char":"e","x":219.955078125,"y":0},{"char":"l","x":227.9443359375,"y":0},{"char":"v","x":232.9453125,"y":0},{"char":"e","x":241.9453125,"y":0},{"char":"s","x":249.9345703125,"y":0},{"char":",","x":256.939453125,"y":0},{"char":" ","x":261.439453125,"y":0}],"width":265.939453125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"her hands grasping the warm leather. ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"h","x":0,"y":0},{"char":"e","x":9,"y":0},{"char":"r","x":16.9892578125,"y":0},{"char":" ","x":22.9833984375,"y":0},{"char":"h","x":27.4833984375,"y":0},{"char":"a","x":36.4833984375,"y":0},{"char":"n","x":44.47265625,"y":0},{"char":"d","x":53.47265625,"y":0},{"char":"s","x":62.47265625,"y":0},{"char":" ","x":69.4775390625,"y":0},{"char":"g","x":73.9775390625,"y":0},{"char":"r","x":82.9775390625,"y":0},{"char":"a","x":88.9716796875,"y":0},{"char":"s","x":96.9609375,"y":0},{"char":"p","x":103.9658203125,"y":0},{"char":"i","x":112.9658203125,"y":0},{"char":"n","x":117.966796875,"y":0},{"char":"g","x":126.966796875,"y":0},{"char":" ","x":135.966796875,"y":0},{"char":"t","x":140.466796875,"y":0},{"char":"h","x":145.4677734375,"y":0},{"char":"e","x":154.4677734375,"y":0},{"char":" ","x":162.45703125,"y":0},{"char":"w","x":166.95703125,"y":0},{"char":"a","x":179.9560546875,"y":0},{"char":"r","x":187.9453125,"y":0},{"char":"m","x":193.939453125,"y":0},{"char":" ","x":207.9404296875,"y":0},{"char":"l","x":212.4404296875,"y":0},{"char":"e","x":217.44140625,"y":0},{"char":"a","x":225.4306640625,"y":0},{"char":"t","x":233.419921875,"y":0},{"char":"h","x":238.4208984375,"y":0},{"char":"e","x":247.4208984375,"y":0},{"char":"r","x":255.41015625,"y":0},{"char":".","x":260.4111328125,"y":0},{"char":" ","x":264.9111328125,"y":0}],"width":269.4111328125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:8"},"meta":{"sourceId":"author:fragment:8","engineKey":"ek:e/8:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"transformKind":"split","reflowKey":"rk:e/8:p","pageIndex":4,"actorId":"actor:author:fragment:8:p:0"}}]},{"index":5,"width":280,"height":200,"boxes":[{"type":"p","x":0,"y":0,"w":280,"h":54.2671875,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto","marginTop":0},"lines":[[{"text":"As she touched it, the library ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"A","x":0,"y":0},{"char":"s","x":12.9990234375,"y":0},{"char":" ","x":20.00390625,"y":0},{"char":"s","x":24.50390625,"y":0},{"char":"h","x":31.5087890625,"y":0},{"char":"e","x":40.5087890625,"y":0},{"char":" ","x":48.498046875,"y":0},{"char":"t","x":52.998046875,"y":0},{"char":"o","x":57.9990234375,"y":0},{"char":"u","x":66.9990234375,"y":0},{"char":"c","x":75.9990234375,"y":0},{"char":"h","x":83.98828125,"y":0},{"char":"e","x":92.98828125,"y":0},{"char":"d","x":100.9775390625,"y":0},{"char":" ","x":109.9775390625,"y":0},{"char":"i","x":114.4775390625,"y":0},{"char":"t","x":119.478515625,"y":0},{"char":",","x":124.4794921875,"y":0},{"char":" ","x":128.9794921875,"y":0},{"char":"t","x":133.4794921875,"y":0},{"char":"h","x":138.48046875,"y":0},{"char":"e","x":147.48046875,"y":0},{"char":" ","x":155.4697265625,"y":0},{"char":"l","x":159.9697265625,"y":0},{"char":"i","x":164.970703125,"y":0},{"char":"b","x":169.9716796875,"y":0},{"char":"r","x":178.9716796875,"y":0},{"char":"a","x":184.9658203125,"y":0},{"char":"r","x":192.955078125,"y":0},{"char":"y","x":198.94921875,"y":0},{"char":" ","x":207.94921875,"y":0}],"width":212.44921875,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"vanished.","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"v","x":0,"y":0},{"char":"a","x":9,"y":0},{"char":"n","x":16.9892578125,"y":0},{"char":"i","x":25.9892578125,"y":0},{"char":"s","x":30.990234375,"y":0},{"char":"h","x":37.9951171875,"y":0},{"char":"e","x":46.9951171875,"y":0},{"char":"d","x":54.984375,"y":0},{"char":".","x":63.984375,"y":0}],"width":68.484375,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:8"},"meta":{"sourceId":"author:fragment:8","engineKey":"ek:e/8:p","sourceType":"p","fragmentIndex":1,"isContinuation":true,"generated":false,"transformKind":"split","reflowKey":"rk:e/8:p","pageIndex":5,"actorId":"actor:author:fragment:8:p:1"}},{"type":"p","x":0,"y":54.2671875,"w":280,"h":135.66796875,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto","marginBottom":0},"lines":[[{"text":"Elara stood in her own mundane, grey ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"E","x":0,"y":0},{"char":"l","x":10.9951171875,"y":0},{"char":"a","x":15.99609375,"y":0},{"char":"r","x":23.9853515625,"y":0},{"char":"a","x":29.9794921875,"y":0},{"char":" ","x":37.96875,"y":0},{"char":"s","x":42.46875,"y":0},{"char":"t","x":49.4736328125,"y":0},{"char":"o","x":54.474609375,"y":0},{"char":"o","x":63.474609375,"y":0},{"char":"d","x":72.474609375,"y":0},{"char":" ","x":81.474609375,"y":0},{"char":"i","x":85.974609375,"y":0},{"char":"n","x":90.9755859375,"y":0},{"char":" ","x":99.9755859375,"y":0},{"char":"h","x":104.4755859375,"y":0},{"char":"e","x":113.4755859375,"y":0},{"char":"r","x":121.46484375,"y":0},{"char":" ","x":127.458984375,"y":0},{"char":"o","x":131.958984375,"y":0},{"char":"w","x":140.958984375,"y":0},{"char":"n","x":153.9580078125,"y":0},{"char":" ","x":162.9580078125,"y":0},{"char":"m","x":167.4580078125,"y":0},{"char":"u","x":181.458984375,"y":0},{"char":"n","x":190.458984375,"y":0},{"char":"d","x":199.458984375,"y":0},{"char":"a","x":208.458984375,"y":0},{"char":"n","x":216.4482421875,"y":0},{"char":"e","x":225.4482421875,"y":0},{"char":",","x":233.4375,"y":0},{"char":" ","x":237.9375,"y":0},{"char":"g","x":242.4375,"y":0},{"char":"r","x":251.4375,"y":0},{"char":"e","x":257.431640625,"y":0},{"char":"y","x":265.4208984375,"y":0},{"char":" ","x":274.4208984375,"y":0}],"width":278.9208984375,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"bedroom, clutching the book. She ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"b","x":0,"y":0},{"char":"e","x":9,"y":0},{"char":"d","x":16.9892578125,"y":0},{"char":"r","x":25.9892578125,"y":0},{"char":"o","x":31.9833984375,"y":0},{"char":"o","x":40.9833984375,"y":0},{"char":"m","x":49.9833984375,"y":0},{"char":",","x":63.984375,"y":0},{"char":" ","x":68.484375,"y":0},{"char":"c","x":72.984375,"y":0},{"char":"l","x":80.9736328125,"y":0},{"char":"u","x":85.974609375,"y":0},{"char":"t","x":94.974609375,"y":0},{"char":"c","x":99.9755859375,"y":0},{"char":"h","x":107.96484375,"y":0},{"char":"i","x":116.96484375,"y":0},{"char":"n","x":121.9658203125,"y":0},{"char":"g","x":130.9658203125,"y":0},{"char":" ","x":139.9658203125,"y":0},{"char":"t","x":144.4658203125,"y":0},{"char":"h","x":149.466796875,"y":0},{"char":"e","x":158.466796875,"y":0},{"char":" ","x":166.4560546875,"y":0},{"char":"b","x":170.9560546875,"y":0},{"char":"o","x":179.9560546875,"y":0},{"char":"o","x":188.9560546875,"y":0},{"char":"k","x":197.9560546875,"y":0},{"char":".","x":206.9560546875,"y":0},{"char":" ","x":211.4560546875,"y":0},{"char":"S","x":215.9560546875,"y":0},{"char":"h","x":225.966796875,"y":0},{"char":"e","x":234.966796875,"y":0},{"char":" ","x":242.9560546875,"y":0}],"width":247.4560546875,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"opened it, and a flood of amber, ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"o","x":0,"y":0},{"char":"p","x":9,"y":0},{"char":"e","x":18,"y":0},{"char":"n","x":25.9892578125,"y":0},{"char":"e","x":34.9892578125,"y":0},{"char":"d","x":42.978515625,"y":0},{"char":" ","x":51.978515625,"y":0},{"char":"i","x":56.478515625,"y":0},{"char":"t","x":61.4794921875,"y":0},{"char":",","x":66.48046875,"y":0},{"char":" ","x":70.98046875,"y":0},{"char":"a","x":75.48046875,"y":0},{"char":"n","x":83.4697265625,"y":0},{"char":"d","x":92.4697265625,"y":0},{"char":" ","x":101.4697265625,"y":0},{"char":"a","x":105.9697265625,"y":0},{"char":" ","x":113.958984375,"y":0},{"char":"f","x":118.458984375,"y":0},{"char":"l","x":124.453125,"y":0},{"char":"o","x":129.4541015625,"y":0},{"char":"o","x":138.4541015625,"y":0},{"char":"d","x":147.4541015625,"y":0},{"char":" ","x":156.4541015625,"y":0},{"char":"o","x":160.9541015625,"y":0},{"char":"f","x":169.9541015625,"y":0},{"char":" ","x":175.9482421875,"y":0},{"char":"a","x":180.4482421875,"y":0},{"char":"m","x":188.4375,"y":0},{"char":"b","x":202.4384765625,"y":0},{"char":"e","x":211.4384765625,"y":0},{"char":"r","x":219.427734375,"y":0},{"char":",","x":224.701171875,"y":0},{"char":" ","x":229.201171875,"y":0}],"width":233.701171875,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"crimson, and violet light filled the ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"c","x":0,"y":0},{"char":"r","x":7.9892578125,"y":0},{"char":"i","x":13.9833984375,"y":0},{"char":"m","x":18.984375,"y":0},{"char":"s","x":32.9853515625,"y":0},{"char":"o","x":39.990234375,"y":0},{"char":"n","x":48.990234375,"y":0},{"char":",","x":57.990234375,"y":0},{"char":" ","x":62.490234375,"y":0},{"char":"a","x":66.990234375,"y":0},{"char":"n","x":74.9794921875,"y":0},{"char":"d","x":83.9794921875,"y":0},{"char":" ","x":92.9794921875,"y":0},{"char":"v","x":97.4794921875,"y":0},{"char":"i","x":106.4794921875,"y":0},{"char":"o","x":111.48046875,"y":0},{"char":"l","x":120.48046875,"y":0},{"char":"e","x":125.4814453125,"y":0},{"char":"t","x":133.470703125,"y":0},{"char":" ","x":138.4716796875,"y":0},{"char":"l","x":142.9716796875,"y":0},{"char":"i","x":147.97265625,"y":0},{"char":"g","x":152.9736328125,"y":0},{"char":"h","x":161.9736328125,"y":0},{"char":"t","x":170.9736328125,"y":0},{"char":" ","x":175.974609375,"y":0},{"char":"f","x":180.474609375,"y":0},{"char":"i","x":186.46875,"y":0},{"char":"l","x":191.4697265625,"y":0},{"char":"l","x":196.470703125,"y":0},{"char":"e","x":201.4716796875,"y":0},{"char":"d","x":209.4609375,"y":0},{"char":" ","x":218.4609375,"y":0},{"char":"t","x":222.9609375,"y":0},{"char":"h","x":227.9619140625,"y":0},{"char":"e","x":236.9619140625,"y":0},{"char":" ","x":244.951171875,"y":0}],"width":249.451171875,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"room, painting the walls with colors ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"r","x":0,"y":0},{"char":"o","x":5.994140625,"y":0},{"char":"o","x":14.994140625,"y":0},{"char":"m","x":23.994140625,"y":0},{"char":",","x":37.9951171875,"y":0},{"char":" ","x":42.4951171875,"y":0},{"char":"p","x":46.9951171875,"y":0},{"char":"a","x":55.9951171875,"y":0},{"char":"i","x":63.984375,"y":0},{"char":"n","x":68.9853515625,"y":0},{"char":"t","x":77.9853515625,"y":0},{"char":"i","x":82.986328125,"y":0},{"char":"n","x":87.9873046875,"y":0},{"char":"g","x":96.9873046875,"y":0},{"char":" ","x":105.9873046875,"y":0},{"char":"t","x":110.4873046875,"y":0},{"char":"h","x":115.48828125,"y":0},{"char":"e","x":124.48828125,"y":0},{"char":" ","x":132.4775390625,"y":0},{"char":"w","x":136.9775390625,"y":0},{"char":"a","x":149.9765625,"y":0},{"char":"l","x":157.9658203125,"y":0},{"char":"l","x":162.966796875,"y":0},{"char":"s","x":167.9677734375,"y":0},{"char":" ","x":174.97265625,"y":0},{"char":"w","x":179.47265625,"y":0},{"char":"i","x":192.4716796875,"y":0},{"char":"t","x":197.47265625,"y":0},{"char":"h","x":202.4736328125,"y":0},{"char":" ","x":211.4736328125,"y":0},{"char":"c","x":215.9736328125,"y":0},{"char":"o","x":223.962890625,"y":0},{"char":"l","x":232.962890625,"y":0},{"char":"o","x":237.9638671875,"y":0},{"char":"r","x":246.9638671875,"y":0},{"char":"s","x":252.9580078125,"y":0},{"char":" ","x":259.962890625,"y":0}],"width":264.462890625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:9"},"meta":{"sourceId":"author:fragment:9","engineKey":"ek:e/9:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"transformKind":"split","reflowKey":"rk:e/9:p","pageIndex":5,"actorId":"actor:author:fragment:9:p:0"}}]},{"index":6,"width":280,"height":200,"boxes":[{"type":"p","x":0,"y":0,"w":280,"h":81.40078125,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto","marginTop":0},"lines":[[{"text":"she had never seen. The book didn't ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"s","x":0,"y":0},{"char":"h","x":7.0048828125,"y":0},{"char":"e","x":16.0048828125,"y":0},{"char":" ","x":23.994140625,"y":0},{"char":"h","x":28.494140625,"y":0},{"char":"a","x":37.494140625,"y":0},{"char":"d","x":45.4833984375,"y":0},{"char":" ","x":54.4833984375,"y":0},{"char":"n","x":58.9833984375,"y":0},{"char":"e","x":67.9833984375,"y":0},{"char":"v","x":75.97265625,"y":0},{"char":"e","x":84.97265625,"y":0},{"char":"r","x":92.9619140625,"y":0},{"char":" ","x":98.9560546875,"y":0},{"char":"s","x":103.4560546875,"y":0},{"char":"e","x":110.4609375,"y":0},{"char":"e","x":118.4501953125,"y":0},{"char":"n","x":126.439453125,"y":0},{"char":".","x":135.439453125,"y":0},{"char":" ","x":139.939453125,"y":0},{"char":"T","x":144.439453125,"y":0},{"char":"h","x":155.4345703125,"y":0},{"char":"e","x":164.4345703125,"y":0},{"char":" ","x":172.423828125,"y":0},{"char":"b","x":176.923828125,"y":0},{"char":"o","x":185.923828125,"y":0},{"char":"o","x":194.923828125,"y":0},{"char":"k","x":203.923828125,"y":0},{"char":" ","x":212.923828125,"y":0},{"char":"d","x":217.423828125,"y":0},{"char":"i","x":226.423828125,"y":0},{"char":"d","x":231.4248046875,"y":0},{"char":"n","x":240.4248046875,"y":0},{"char":"'","x":249.4248046875,"y":0},{"char":"t","x":252.66796875,"y":0},{"char":" ","x":257.6689453125,"y":0}],"width":262.1689453125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"just contain stories; it contained the ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"j","x":0,"y":0},{"char":"u","x":5.0009765625,"y":0},{"char":"s","x":14.0009765625,"y":0},{"char":"t","x":21.005859375,"y":0},{"char":" ","x":26.0068359375,"y":0},{"char":"c","x":30.5068359375,"y":0},{"char":"o","x":38.49609375,"y":0},{"char":"n","x":47.49609375,"y":0},{"char":"t","x":56.49609375,"y":0},{"char":"a","x":61.4970703125,"y":0},{"char":"i","x":69.486328125,"y":0},{"char":"n","x":74.4873046875,"y":0},{"char":" ","x":83.4873046875,"y":0},{"char":"s","x":87.9873046875,"y":0},{"char":"t","x":94.9921875,"y":0},{"char":"o","x":99.9931640625,"y":0},{"char":"r","x":108.9931640625,"y":0},{"char":"i","x":114.9873046875,"y":0},{"char":"e","x":119.98828125,"y":0},{"char":"s","x":127.9775390625,"y":0},{"char":";","x":134.982421875,"y":0},{"char":" ","x":139.9833984375,"y":0},{"char":"i","x":144.4833984375,"y":0},{"char":"t","x":149.484375,"y":0},{"char":" ","x":154.4853515625,"y":0},{"char":"c","x":158.9853515625,"y":0},{"char":"o","x":166.974609375,"y":0},{"char":"n","x":175.974609375,"y":0},{"char":"t","x":184.974609375,"y":0},{"char":"a","x":189.9755859375,"y":0},{"char":"i","x":197.96484375,"y":0},{"char":"n","x":202.9658203125,"y":0},{"char":"e","x":211.9658203125,"y":0},{"char":"d","x":219.955078125,"y":0},{"char":" ","x":228.955078125,"y":0},{"char":"t","x":233.455078125,"y":0},{"char":"h","x":238.4560546875,"y":0},{"char":"e","x":247.4560546875,"y":0},{"char":" ","x":255.4453125,"y":0}],"width":259.9453125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"light itself.","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"l","x":0,"y":0},{"char":"i","x":5.0009765625,"y":0},{"char":"g","x":10.001953125,"y":0},{"char":"h","x":19.001953125,"y":0},{"char":"t","x":28.001953125,"y":0},{"char":" ","x":33.0029296875,"y":0},{"char":"i","x":37.5029296875,"y":0},{"char":"t","x":42.50390625,"y":0},{"char":"s","x":47.5048828125,"y":0},{"char":"e","x":54.509765625,"y":0},{"char":"l","x":62.4990234375,"y":0},{"char":"f","x":67.5,"y":0},{"char":".","x":73.494140625,"y":0}],"width":77.994140625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:9"},"meta":{"sourceId":"author:fragment:9","engineKey":"ek:e/9:p","sourceType":"p","fragmentIndex":1,"isContinuation":true,"generated":false,"transformKind":"split","reflowKey":"rk:e/9:p","pageIndex":6,"actorId":"actor:author:fragment:9:p:1"}},{"type":"p","x":0,"y":81.40078125,"w":280,"h":108.534375,"style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"lines":[[{"text":"She smiled, finally understanding. The","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"S","x":0,"y":0},{"char":"h","x":10.0107421875,"y":0},{"char":"e","x":19.0107421875,"y":0},{"char":" ","x":27,"y":0},{"char":"s","x":31.5,"y":0},{"char":"m","x":38.5048828125,"y":0},{"char":"i","x":52.505859375,"y":0},{"char":"l","x":57.5068359375,"y":0},{"char":"e","x":62.5078125,"y":0},{"char":"d","x":70.4970703125,"y":0},{"char":",","x":79.4970703125,"y":0},{"char":" ","x":83.9970703125,"y":0},{"char":"f","x":88.4970703125,"y":0},{"char":"i","x":94.4912109375,"y":0},{"char":"n","x":99.4921875,"y":0},{"char":"a","x":108.4921875,"y":0},{"char":"l","x":116.4814453125,"y":0},{"char":"l","x":121.482421875,"y":0},{"char":"y","x":126.4833984375,"y":0},{"char":" ","x":135.4833984375,"y":0},{"char":"u","x":139.9833984375,"y":0},{"char":"n","x":148.9833984375,"y":0},{"char":"d","x":157.9833984375,"y":0},{"char":"e","x":166.9833984375,"y":0},{"char":"r","x":174.97265625,"y":0},{"char":"s","x":180.966796875,"y":0},{"char":"t","x":187.9716796875,"y":0},{"char":"a","x":192.97265625,"y":0},{"char":"n","x":200.9619140625,"y":0},{"char":"d","x":209.9619140625,"y":0},{"char":"i","x":218.9619140625,"y":0},{"char":"n","x":223.962890625,"y":0},{"char":"g","x":232.962890625,"y":0},{"char":".","x":241.962890625,"y":0},{"char":" ","x":246.462890625,"y":0},{"char":"T","x":250.962890625,"y":0},{"char":"h","x":261.9580078125,"y":0},{"char":"e","x":270.9580078125,"y":0}],"width":278.947265625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"world wasn’t truly grey; it just needed ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"w","x":0,"y":0},{"char":"o","x":12.9990234375,"y":0},{"char":"r","x":21.9990234375,"y":0},{"char":"l","x":27.9931640625,"y":0},{"char":"d","x":32.994140625,"y":0},{"char":" ","x":41.994140625,"y":0},{"char":"w","x":46.494140625,"y":0},{"char":"a","x":59.4931640625,"y":0},{"char":"s","x":67.482421875,"y":0},{"char":"n","x":74.4873046875,"y":0},{"char":"’","x":83.4873046875,"y":0},{"char":"t","x":89.15625,"y":0},{"char":" ","x":94.1572265625,"y":0},{"char":"t","x":98.6572265625,"y":0},{"char":"r","x":103.658203125,"y":0},{"char":"u","x":109.65234375,"y":0},{"char":"l","x":118.65234375,"y":0},{"char":"y","x":123.6533203125,"y":0},{"char":" ","x":132.6533203125,"y":0},{"char":"g","x":137.1533203125,"y":0},{"char":"r","x":146.1533203125,"y":0},{"char":"e","x":152.1474609375,"y":0},{"char":"y","x":160.13671875,"y":0},{"char":";","x":169.13671875,"y":0},{"char":" ","x":174.1376953125,"y":0},{"char":"i","x":178.6376953125,"y":0},{"char":"t","x":183.638671875,"y":0},{"char":" ","x":188.6396484375,"y":0},{"char":"j","x":193.1396484375,"y":0},{"char":"u","x":198.140625,"y":0},{"char":"s","x":207.140625,"y":0},{"char":"t","x":214.1455078125,"y":0},{"char":" ","x":219.146484375,"y":0},{"char":"n","x":223.646484375,"y":0},{"char":"e","x":232.646484375,"y":0},{"char":"e","x":240.6357421875,"y":0},{"char":"d","x":248.625,"y":0},{"char":"e","x":257.625,"y":0},{"char":"d","x":265.6142578125,"y":0},{"char":" ","x":274.6142578125,"y":0}],"width":279.1142578125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"someone brave enough to steal the ","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"s","x":0,"y":0},{"char":"o","x":7.0048828125,"y":0},{"char":"m","x":16.0048828125,"y":0},{"char":"e","x":30.005859375,"y":0},{"char":"o","x":37.9951171875,"y":0},{"char":"n","x":46.9951171875,"y":0},{"char":"e","x":55.9951171875,"y":0},{"char":" ","x":63.984375,"y":0},{"char":"b","x":68.484375,"y":0},{"char":"r","x":77.484375,"y":0},{"char":"a","x":83.478515625,"y":0},{"char":"v","x":91.4677734375,"y":0},{"char":"e","x":100.4677734375,"y":0},{"char":" ","x":108.45703125,"y":0},{"char":"e","x":112.95703125,"y":0},{"char":"n","x":120.9462890625,"y":0},{"char":"o","x":129.9462890625,"y":0},{"char":"u","x":138.9462890625,"y":0},{"char":"g","x":147.9462890625,"y":0},{"char":"h","x":156.9462890625,"y":0},{"char":" ","x":165.9462890625,"y":0},{"char":"t","x":170.4462890625,"y":0},{"char":"o","x":175.447265625,"y":0},{"char":" ","x":184.447265625,"y":0},{"char":"s","x":188.947265625,"y":0},{"char":"t","x":195.9521484375,"y":0},{"char":"e","x":200.953125,"y":0},{"char":"a","x":208.9423828125,"y":0},{"char":"l","x":216.931640625,"y":0},{"char":" ","x":221.9326171875,"y":0},{"char":"t","x":226.4326171875,"y":0},{"char":"h","x":231.43359375,"y":0},{"char":"e","x":240.43359375,"y":0},{"char":" ","x":248.4228515625,"y":0}],"width":252.9228515625,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}],[{"text":"light back.","style":{"allowLineSplit":true,"orphans":2,"widows":2,"fontSize":18,"lineHeight":1.4,"paddingTop":0,"paddingLeft":0,"paddingRight":0,"paddingBottom":0,"borderTopWidth":0,"borderLeftWidth":0,"borderRightWidth":0,"borderBottomWidth":0,"letterSpacing":0,"textIndent":0,"lang":"und","direction":"auto","hyphenation":"off","hyphenateCaps":false,"hyphenMinWordLength":6,"hyphenMinPrefix":3,"hyphenMinSuffix":2,"justifyEngine":"legacy","justifyStrategy":"auto"},"glyphs":[{"char":"l","x":0,"y":0},{"char":"i","x":5.0009765625,"y":0},{"char":"g","x":10.001953125,"y":0},{"char":"h","x":19.001953125,"y":0},{"char":"t","x":28.001953125,"y":0},{"char":" ","x":33.0029296875,"y":0},{"char":"b","x":37.5029296875,"y":0},{"char":"a","x":46.5029296875,"y":0},{"char":"c","x":54.4921875,"y":0},{"char":"k","x":62.4814453125,"y":0},{"char":".","x":71.4814453125,"y":0}],"width":75.9814453125,"ascent":891.11328125,"descent":216.30859375,"resolvedFontId":"Tinos-Regular","resolvedFontAscent":891.11328125}]],"properties":{"sourceId":"fragment:10"},"meta":{"sourceId":"author:fragment:10","engineKey":"ek:e/10:p","sourceType":"p","fragmentIndex":0,"isContinuation":false,"generated":false,"reflowKey":"rk:e/10:p","pageIndex":6,"actorId":"actor:author:fragment:10:p:0"}}]}]}
+[
+  {
+    "index": 0,
+    "width": 280,
+    "height": 200,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 0,
+        "y": 0,
+        "w": 280,
+        "h": 189.935156,
+        "lines": [
+          [
+            {
+              "text": "The Whispering Library of Oakhaven ",
+              "width": 276.398438,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "existed only between the hours of ",
+              "width": 246.9375,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "midnight and dawn, nestled within a ",
+              "width": 266.458008,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "tree that had no leaves. Elara, a thief ",
+              "width": 266.871094,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "with more curiosity than caution, had ",
+              "width": 273.436523,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "heard the rumors. She sought the ",
+              "width": 241.453125,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "\"Book of Forgotten Sunsets,\" a tome ",
+              "width": 268.857422,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 280,
+    "height": 200,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 0,
+        "y": 0,
+        "w": 280,
+        "h": 54.267187,
+        "lines": [
+          [
+            {
+              "text": "said to contain colors that no longer ",
+              "width": 262.441406,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "existed in their grey world.",
+              "width": 194.449219,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 0,
+        "y": 54.267187,
+        "w": 280,
+        "h": 108.534375,
+        "lines": [
+          [
+            {
+              "text": "She arrived at the ancient oak as the ",
+              "width": 263.891602,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "moon reached its zenith. As predicted,",
+              "width": 276.407227,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a small, obsidian door appeared in the ",
+              "width": 277.918945,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "trunk. Inside, thousands of books ",
+              "width": 243.483398,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 280,
+    "height": 200,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 0,
+        "y": 0,
+        "w": 280,
+        "h": 54.267187,
+        "lines": [
+          [
+            {
+              "text": "floated gently in the air, glowing with ",
+              "width": 276.222656,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a soft, bioluminescent light.",
+              "width": 200.469727,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 0,
+        "y": 54.267187,
+        "w": 280,
+        "h": 54.267187,
+        "lines": [
+          [
+            {
+              "text": "\"Borrowing or purchasing?\" a voice ",
+              "width": 264.120117,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hissed.",
+              "width": 49.5,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 0,
+        "y": 108.534375,
+        "w": 280,
+        "h": 54.267187,
+        "lines": [
+          [
+            {
+              "text": "A gnome, dressed in robes made of ",
+              "width": 258.93457,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "moth wings, appeared on her shoulder.",
+              "width": 278.4375,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 280,
+    "height": 200,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 0,
+        "y": 0,
+        "w": 280,
+        "h": 54.267187,
+        "lines": [
+          [
+            {
+              "text": "\"Borrowing,\" Elara whispered, ",
+              "width": 227.135742,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reaching for a shimmering green book.",
+              "width": 279.905273,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 0,
+        "y": 54.267187,
+        "w": 280,
+        "h": 81.400781,
+        "lines": [
+          [
+            {
+              "text": "\"Wrong choice,\" the gnome warned. ",
+              "width": 266.378906,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "\"That one sings. You’ll never get ",
+              "width": 241.989258,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sleep.\"",
+              "width": 48.832031,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 0,
+        "y": 135.667969,
+        "w": 280,
+        "h": 54.267187,
+        "lines": [
+          [
+            {
+              "text": "Elara laughed, but obediently lowered ",
+              "width": 278.90332,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "her hand. \"The Book of Sunsets?\"",
+              "width": 244.652344,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 280,
+    "height": 200,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 0,
+        "y": 0,
+        "w": 280,
+        "h": 135.667969,
+        "lines": [
+          [
+            {
+              "text": "The gnome pointed a spindly finger to",
+              "width": 275.941406,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the ceiling, where a massive, ",
+              "width": 212.422852,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "leather-bound book rested, pulsating ",
+              "width": 267.073242,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "with a warm, orange glow. \"High ",
+              "width": 244.125,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "stakes for a low-level thief.\"",
+              "width": 203.774414,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 0,
+        "y": 135.667969,
+        "w": 280,
+        "h": 54.267187,
+        "lines": [
+          [
+            {
+              "text": "She scaled the floating bookshelves, ",
+              "width": 265.939453,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "her hands grasping the warm leather. ",
+              "width": 269.411133,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "width": 280,
+    "height": 200,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 0,
+        "y": 0,
+        "w": 280,
+        "h": 54.267187,
+        "lines": [
+          [
+            {
+              "text": "As she touched it, the library ",
+              "width": 212.449219,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "vanished.",
+              "width": 68.484375,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 0,
+        "y": 54.267187,
+        "w": 280,
+        "h": 135.667969,
+        "lines": [
+          [
+            {
+              "text": "Elara stood in her own mundane, grey ",
+              "width": 278.920898,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "bedroom, clutching the book. She ",
+              "width": 247.456055,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "opened it, and a flood of amber, ",
+              "width": 233.701172,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "crimson, and violet light filled the ",
+              "width": 249.451172,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "room, painting the walls with colors ",
+              "width": 264.462891,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "width": 280,
+    "height": 200,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 0,
+        "y": 0,
+        "w": 280,
+        "h": 81.400781,
+        "lines": [
+          [
+            {
+              "text": "she had never seen. The book didn't ",
+              "width": 262.168945,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "just contain stories; it contained the ",
+              "width": 259.945313,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "light itself.",
+              "width": 77.994141,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 0,
+        "y": 81.400781,
+        "w": 280,
+        "h": 108.534375,
+        "lines": [
+          [
+            {
+              "text": "She smiled, finally understanding. The",
+              "width": 278.947266,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "world wasn’t truly grey; it just needed ",
+              "width": 279.114258,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "someone brave enough to steal the ",
+              "width": 252.922852,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "light back.",
+              "width": 75.981445,
+              "ascent": 891.113281,
+              "descent": 216.308594,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

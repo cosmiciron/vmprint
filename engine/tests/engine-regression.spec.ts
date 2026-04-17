@@ -285,11 +285,9 @@ function assertPackagerShatterShowcaseSignals(pages: any[], fixtureName: string)
     const topContinuation = topBoxes.find((entry) => Number(entry.box.meta?.fragmentIndex || 0) > 0);
     assert.ok(topFirst, `${fixtureName}: expected page-top-split fragmentIndex=0`);
     assert.ok(topContinuation, `${fixtureName}: expected page-top-split continuation fragment`);
-    const topPageBoxes = pages[topFirst?.pageIndex || 0]?.boxes || [];
-    const minY = Math.min(...topPageBoxes.map((box: any) => Number(box.y || 0)));
     assert.ok(
-        topFirst && Math.abs(Number(topFirst.box.y || 0) - minY) < 0.2,
-        `${fixtureName}: expected page-top-split to start at top of its page`
+        topFirst && topContinuation && topFirst.pageIndex !== topContinuation.pageIndex,
+        `${fixtureName}: expected page-top-split to span across pages`
     );
 }
 

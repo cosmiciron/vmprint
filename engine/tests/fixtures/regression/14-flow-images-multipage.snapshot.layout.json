@@ -356,20 +356,13 @@
             }
           ]
         ]
-      }
-    ]
-  },
-  {
-    "index": 3,
-    "width": 612,
-    "height": 792,
-    "boxes": [
+      },
       {
         "type": "p",
         "x": 72,
-        "y": 72,
+        "y": 435.429993,
         "w": 468,
-        "h": 639.84375,
+        "h": 278.90625,
         "lines": [
           [
             {
@@ -523,211 +516,13 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ],
-          [
-            {
-              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 461.595703,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 465.609375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
-              "width": 446.267578,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.234375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
-              "width": 416.25,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 461.595703,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 465.609375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
-              "width": 446.267578,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.234375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
-              "width": 416.25,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 461.595703,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 465.609375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
-              "width": 446.267578,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.234375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
-              "width": 416.25,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 461.595703,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 465.609375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
-              "width": 446.267578,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
-              "width": 426.234375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
-              "width": 416.25,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
-              "width": 461.595703,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
-              "width": 465.609375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
           ]
         ]
       }
     ]
   },
   {
-    "index": 4,
+    "index": 3,
     "width": 612,
     "height": 792,
     "boxes": [
@@ -736,8 +531,206 @@
         "x": 72,
         "y": 72,
         "w": 468,
-        "h": 82.03125,
+        "h": 442.96875,
         "lines": [
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 461.595703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 465.609375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.234375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 461.595703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 465.609375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.234375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 461.595703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 465.609375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.234375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 461.595703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 465.609375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",
+              "width": 446.267578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "enforce multi-page continuation behavior. Flow images remain in sequence with ",
+              "width": 426.234375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "surrounding text, and this sentence intentionally repeats to enforce multi-page ",
+              "width": 416.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation behavior. Flow images remain in sequence with surrounding text, and this ",
+              "width": 461.595703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sentence intentionally repeats to enforce multi-page continuation behavior. Flow images",
+              "width": 465.609375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
           [
             {
               "text": "remain in sequence with surrounding text, and this sentence intentionally repeats to ",

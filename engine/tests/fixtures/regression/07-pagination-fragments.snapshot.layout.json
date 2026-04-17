@@ -1085,20 +1085,13 @@
             }
           ]
         ]
-      }
-    ]
-  },
-  {
-    "index": 9,
-    "width": 420,
-    "height": 300,
-    "boxes": [
+      },
       {
         "type": "blockquote",
         "x": 28,
-        "y": 34,
+        "y": 141.828125,
         "w": 250,
-        "h": 202.507813,
+        "h": 97.234375,
         "lines": [
           [
             {
@@ -1153,7 +1146,59 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ],
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 245.0625,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 9,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "blockquote",
+        "x": 28,
+        "y": 57.304688,
+        "w": 250,
+        "h": 180.46875,
+        "lines": [
           [
             {
               "text": "mechanical means was the condition of ",
@@ -1216,13 +1261,58 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
+          ],
+          [
+            {
+              "text": "mechanical means was the condition of ",
+              "width": 195.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "modernity. The alphabet is not a natural object ",
+              "width": 228.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "but an agreement — a compressed treaty ",
+              "width": 206.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "between speakers, scribes, and readers that ",
+              "width": 219.51123,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "took millennia to negotiate and can be broken ",
+              "width": 225.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
           ]
         ]
       },
       {
         "type": "split-marker",
         "x": 28,
-        "y": 242.507813,
+        "y": 243.773438,
         "w": 364,
         "h": 17.304688,
         "lines": [
@@ -1261,199 +1351,95 @@
             }
           ]
         ]
-      }
-    ]
-  },
-  {
-    "index": 11,
-    "width": 420,
-    "height": 300,
-    "boxes": [
-      {
-        "type": "blockquote",
-        "x": 28,
-        "y": 28,
-        "w": 250,
-        "h": 210.546875,
-        "lines": [
-          [
-            {
-              "text": "mechanical means was the condition of ",
-              "width": 195.05127,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "modernity. The alphabet is not a natural object ",
-              "width": 228.486328,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "but an agreement — a compressed treaty ",
-              "width": 206.05127,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "between speakers, scribes, and readers that ",
-              "width": 219.51123,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "took millennia to negotiate and can be broken ",
-              "width": 225.043457,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "by a single generation of neglect. Its stability is ",
-              "width": 229.904297,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "social, not physical, and its reproducibility by ",
-              "width": 219.495117,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "mechanical means was the condition of ",
-              "width": 195.05127,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "modernity. The alphabet is not a natural object ",
-              "width": 228.486328,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "but an agreement — a compressed treaty ",
-              "width": 206.05127,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "between speakers, scribes, and readers that ",
-              "width": 219.51123,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "took millennia to negotiate and can be broken ",
-              "width": 225.043457,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "by a single generation of neglect. Its stability is ",
-              "width": 229.904297,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "social, not physical, and its reproducibility by ",
-              "width": 219.495117,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "split-marker",
-        "x": 28,
-        "y": 244.546875,
-        "w": 364,
-        "h": 17.304688,
-        "lines": [
-          [
-            {
-              "text": "Split boundary — continues on next page",
-              "width": 177.512695,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "index": 12,
-    "width": 420,
-    "height": 300,
-    "boxes": [
-      {
-        "type": "split-marker",
-        "x": 28,
-        "y": 34,
-        "w": 364,
-        "h": 17.304688,
-        "lines": [
-          [
-            {
-              "text": "Split boundary — continued from previous page",
-              "width": 206.015625,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
       },
       {
         "type": "blockquote",
         "x": 28,
         "y": 57.304688,
         "w": 250,
-        "h": 37.078125,
+        "h": 172.429688,
         "lines": [
+          [
+            {
+              "text": "by a single generation of neglect. Its stability is ",
+              "width": 229.904297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "social, not physical, and its reproducibility by ",
+              "width": 219.495117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "mechanical means was the condition of ",
+              "width": 195.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "modernity. The alphabet is not a natural object ",
+              "width": 228.486328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "but an agreement — a compressed treaty ",
+              "width": 206.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "between speakers, scribes, and readers that ",
+              "width": 219.51123,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "took millennia to negotiate and can be broken ",
+              "width": 225.043457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "by a single generation of neglect. Its stability is ",
+              "width": 229.904297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "social, not physical, and its reproducibility by ",
+              "width": 219.495117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
           [
             {
               "text": "mechanical means was the condition of ",
@@ -1477,7 +1463,7 @@
     ]
   },
   {
-    "index": 13,
+    "index": 11,
     "width": 420,
     "height": 300,
     "boxes": [
@@ -1552,20 +1538,13 @@
             }
           ]
         ]
-      }
-    ]
-  },
-  {
-    "index": 14,
-    "width": 420,
-    "height": 300,
-    "boxes": [
+      },
       {
         "type": "p",
         "x": 28,
-        "y": 28,
+        "y": 135.828125,
         "w": 230,
-        "h": 210.546875,
+        "h": 105.273438,
         "lines": [
           [
             {
@@ -1629,7 +1608,59 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ],
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 247.101563,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 12,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 230,
+        "h": 180.46875,
+        "lines": [
           [
             {
               "text": "describe an orphan as the opening line of a ",
@@ -1692,59 +1723,7 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ]
-        ]
-      },
-      {
-        "type": "split-marker",
-        "x": 28,
-        "y": 244.546875,
-        "w": 364,
-        "h": 17.304688,
-        "lines": [
-          [
-            {
-              "text": "Split boundary — continues on next page",
-              "width": 177.512695,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "index": 15,
-    "width": 420,
-    "height": 300,
-    "boxes": [
-      {
-        "type": "split-marker",
-        "x": 28,
-        "y": 34,
-        "w": 364,
-        "h": 17.304688,
-        "lines": [
-          [
-            {
-              "text": "Split boundary — continued from previous page",
-              "width": 206.015625,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 28,
-        "y": 57.304688,
-        "w": 230,
-        "h": 150.390625,
-        "lines": [
+          ],
           [
             {
               "text": "opening line of a paragraph stranded alone at ",
@@ -1789,7 +1768,59 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ],
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 243.773438,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 13,
+    "width": 420,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 230,
+        "h": 75.195313,
+        "lines": [
           [
             {
               "text": "stricter editorial standard. Typographers ",
@@ -1840,7 +1871,7 @@
     ]
   },
   {
-    "index": 16,
+    "index": 14,
     "width": 420,
     "height": 300,
     "boxes": [
@@ -2000,7 +2031,7 @@
     ]
   },
   {
-    "index": 17,
+    "index": 15,
     "width": 420,
     "height": 300,
     "boxes": [
@@ -2079,7 +2110,7 @@
     ]
   },
   {
-    "index": 18,
+    "index": 16,
     "width": 420,
     "height": 300,
     "boxes": [
@@ -2122,7 +2153,7 @@
     ]
   },
   {
-    "index": 19,
+    "index": 17,
     "width": 420,
     "height": 300,
     "boxes": [

@@ -1960,20 +1960,13 @@
             }
           ]
         ]
-      }
-    ]
-  },
-  {
-    "index": 8,
-    "width": 420,
-    "height": 360,
-    "boxes": [
+      },
       {
         "type": "p",
         "x": 28,
-        "y": 28,
+        "y": 106.15625,
         "w": 260,
-        "h": 270.703125,
+        "h": 195.507813,
         "lines": [
           [
             {
@@ -2091,7 +2084,59 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ],
+          ]
+        ]
+      },
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 307.664063,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continues on next page",
+              "width": 177.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 8,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "split-marker",
+        "x": 28,
+        "y": 34,
+        "w": 364,
+        "h": 17.304688,
+        "lines": [
+          [
+            {
+              "text": "Split boundary — continued from previous page",
+              "width": 206.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 57.304688,
+        "w": 260,
+        "h": 195.507813,
+        "lines": [
           [
             {
               "text": "dominant book form around the first century CE. ",
@@ -2136,59 +2181,7 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ]
-        ]
-      },
-      {
-        "type": "split-marker",
-        "x": 28,
-        "y": 304.703125,
-        "w": 364,
-        "h": 17.304688,
-        "lines": [
-          [
-            {
-              "text": "Split boundary — continues on next page",
-              "width": 177.512695,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "index": 9,
-    "width": 420,
-    "height": 360,
-    "boxes": [
-      {
-        "type": "split-marker",
-        "x": 28,
-        "y": 34,
-        "w": 364,
-        "h": 17.304688,
-        "lines": [
-          [
-            {
-              "text": "Split boundary — continued from previous page",
-              "width": 206.015625,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 28,
-        "y": 57.304688,
-        "w": 260,
-        "h": 120.3125,
-        "lines": [
+          ],
           [
             {
               "text": "today. The Roman codex replaced the scroll as the ",
