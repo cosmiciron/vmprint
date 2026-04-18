@@ -14,6 +14,7 @@ export const LAYOUT_DEFAULTS = {
     minEffectiveHeight: 1.0,
     wrapTolerance: 1e-8,
     storyWrapOpticalUnderhang: false,
+    microLanePolicy: 'balanced',
     pageNumber: {
         startPage: 1,
         format: '{n}.',
@@ -49,5 +50,4 @@ export const LAYOUT_DEFAULTS = {
         } as Record<string, number>
     }
 } as const;
-
 

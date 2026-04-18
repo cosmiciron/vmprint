@@ -1,6 +1,7 @@
 import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox, type FlowMaterializationContext } from '../layout-core-types';
+import { resolveDocumentMicroLanePolicy, resolveMinUsableLaneWidth } from '../micro-lane-policy';
 import type { SpatialExclusion } from '../runtime/session/session-spatial-types';
 import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
@@ -244,6 +245,15 @@ export class FlowBoxPackager implements PackagerUnit {
         }
 
         const path = this.flowBox._normalizedFlowBlock?.identitySeed?.path ?? [0];
+        const authoredWrapOverride = exclusions.some((exclusion) => exclusion.traversalInteraction === 'wrap');
+        const microLanePolicy = authoredWrapOverride
+            ? 'allow'
+            : resolveDocumentMicroLanePolicy((this.processor as any).config?.layout);
+        const minUsableSlotWidth = resolveMinUsableLaneWidth({
+            policy: microLanePolicy,
+            element: sourceElement,
+            availableWidth: Math.max(0, context.pageWidth - context.margins.left - context.margins.right)
+        });
         const placed = reflowTextElementAgainstSpatialField({
             processor: this.processor,
             element: sourceElement,
@@ -257,7 +267,9 @@ export class FlowBoxPackager implements PackagerUnit {
             ...(Number.isFinite(resolvePackagerChunkOriginWorldY(context))
                 ? { worldY: Number(resolvePackagerChunkOriginWorldY(context)) }
                 : {}),
-            clearTopBeforeStart: false
+            clearTopBeforeStart: false,
+            minUsableSlotWidth,
+            rejectSubMinimumSlots: microLanePolicy !== 'allow'
         });
         if (!placed) {
             this.clearSpatialCache();

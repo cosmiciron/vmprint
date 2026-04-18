@@ -1,0 +1,197 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 420
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "lead": {
+      "fontSize": 12,
+      "lineHeight": 1.35,
+      "marginBottom": 12,
+      "allowLineSplit": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Mixed Shape Lanes"
+    },
+    {
+      "type": "lead",
+      "content": "This proof mixes polygon, circle, and exclusion-assembly obstacles in one story so we can confirm the engine treats them as different authored lanes inside one shared collision field."
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,48 L48,0 L96,48 L48,96 Z"
+          },
+          "properties": {
+            "sourceId": "mixed-shapes-diamond",
+            "style": {
+              "width": 96,
+              "height": 96
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The opening obstacle is a teal polygon diamond. Its shoulder should create a soft entry, then the wrapped lines should reclaim width as the scan band moves past the tapering tail. This paragraph deliberately lingers near the shape so the constrained widths are easy to spot in the layout snapshot and in the rendered page."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "circle"
+          },
+          "properties": {
+            "sourceId": "mixed-shapes-circle",
+            "style": {
+              "width": 92,
+              "height": 92
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYzhiqv8fH2ZAF0DHw0MBAPbCicE8FeLNAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Next comes a red circle, which should feel different from the polygon lane even though it uses the same surrounding wrap system. The broadphase still answers the same line-band query, but the narrowphase now follows the cheap circular chord math, so the wrap profile should look rounder and more even than the diamond that came before it."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "exclusionAssembly": {
+              "members": [
+                {
+                  "shape": "circle",
+                  "x": 0,
+                  "y": 0,
+                  "w": 52,
+                  "h": 52
+                },
+                {
+                  "shape": "rect",
+                  "x": 24,
+                  "y": 20,
+                  "w": 74,
+                  "h": 34
+                },
+                {
+                  "shape": "circle",
+                  "x": 54,
+                  "y": 48,
+                  "w": 44,
+                  "h": 44
+                }
+              ]
+            }
+          },
+          "properties": {
+            "sourceId": "mixed-shapes-assembly",
+            "style": {
+              "width": 98,
+              "height": 98
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTY7g2SeA/PsyALoCOh4cCAF2nncHanaMeAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The gold assembly is a compound obstacle rather than a single path. It is built from primitive members, so the story should wrap around a composed silhouette that feels chunkier and more lobal than the explicit polygon or the simple circle. This is the lane we keep for Lego-style collider construction, where a single authored mesh is not always the best or cheapest representation."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,0 L108,0 L108,24 L72,24 L72,84 L108,84 L108,108 L0,108 Z"
+          },
+          "properties": {
+            "sourceId": "mixed-shapes-stepped-polygon",
+            "style": {
+              "width": 108,
+              "height": 108
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTY/AO3fcfH2ZAF0DHw0MBALHrl0EmDPYJAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The indigo stepped polygon closes the set with a more aggressive straight-edge silhouette. Its return pattern should be visibly different from the diamond because the notch removes space in discrete blocks instead of with a smooth taper. By the time this paragraph and the next two continue, the story should have spilled onto a second page and still preserved the identity of every obstacle lane that appeared before the seam."
+        },
+        {
+          "type": "p",
+          "content": "Page two matters here because the test is not only about whether we can parse several shapes. It is about whether the same document can host several authored obstacle styles, paginate naturally, and keep wrapping stable after enough prose pressure pushes the story beyond a single viewport. The continuation should still read like one coherent collision field rather than a fragile pile of one-off cases."
+        },
+        {
+          "type": "p",
+          "content": "Below the mixed obstacle gauntlet, the story should gradually settle back into ordinary width. That recovery matters because it proves the engine is not leaving phantom exclusions behind after each shape, and it also gives us a clear regression oracle for future work on polygon richness, compound proxies, and any later expansion of the path subset."
+        }
+      ]
+    }
+  ]
+}

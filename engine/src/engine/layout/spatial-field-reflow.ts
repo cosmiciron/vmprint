@@ -35,6 +35,7 @@ type SpatialFieldReflowOptions = {
     opticalUnderhang?: boolean;
     clearTopBeforeStart?: boolean;
     minUsableSlotWidth?: number;
+    rejectSubMinimumSlots?: boolean;
 };
 
 /**
@@ -69,6 +70,7 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const insetV = LayoutUtils.getVerticalInsets(style);
     const contentWidth = Math.max(0, options.availableWidth - insetH);
     const minUsableSlotWidth = Math.max(0, Number(options.minUsableSlotWidth || 0));
+    const rejectSubMinimumSlots = options.rejectSubMinimumSlots !== false && minUsableSlotWidth > 0;
 
     const marginTop = Math.max(0, flowBox.marginTop);
     const marginBottom = Math.max(0, flowBox.marginBottom);
@@ -102,17 +104,21 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         }
 
         const yOffset = (physicalLineCount * uniformLH) + accumulatedYBonus;
-        physicalLineCount++;
 
-        const rawIntervals = options.spatialMap.getAvailableIntervals(
-            lineY,
-            uniformLH,
-            options.availableWidth,
-            options.opticalUnderhang ? { opticalUnderhang: true, queryZIndex } : { queryZIndex }
-        );
+        const queryOptions = options.opticalUnderhang ? { opticalUnderhang: true, queryZIndex } : { queryZIndex };
+        const rawIntervals = options.spatialMap.getAvailableIntervals(lineY, uniformLH, options.availableWidth, queryOptions);
         const intervals = rawIntervals.filter((interval) => Math.max(0, interval.w - insetH) >= minUsableSlotWidth);
+        if (rawIntervals.length > 0 && intervals.length === 0 && rejectSubMinimumSlots) {
+            const clearY = options.spatialMap.bandClearY(lineY, uniformLH, queryZIndex, options.opticalUnderhang === true);
+            if (clearY > lineY) {
+                accumulatedYBonus += clearY - lineY;
+                return resolver();
+            }
+        }
+
         const usableIntervals = intervals.length > 0 ? intervals : rawIntervals;
         if (usableIntervals.length === 0) {
+            physicalLineCount++;
             lineSlotWidths.push(contentWidth);
             return { width: contentWidth, xOffset: 0, yOffset };
         }
@@ -132,6 +138,7 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
             xOffset: usableIntervals[0].x,
             yOffset
         };
+        physicalLineCount++;
         lineSlotWidths.push(slot.width);
         return slot;
     };

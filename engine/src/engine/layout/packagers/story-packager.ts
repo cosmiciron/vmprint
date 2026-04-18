@@ -48,6 +48,7 @@ import { translateSvgPath } from '../../geometry/svg-path';
 import { LayoutProcessor } from '../layout-core';
 import { buildExclusionFieldObstacles } from '../exclusion-field';
 import { LayoutUtils } from '../layout-utils';
+import { resolveDocumentMicroLanePolicy, resolveMinUsableLaneWidth } from '../micro-lane-policy';
 import { normalizeStoryElement, type NormalizedStoryChild } from '../normalized-story';
 import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { buildPackagerForElement } from './create-packagers';
@@ -846,11 +847,17 @@ export class StoryPackager implements PackagerUnit {
         actor?: PackagerUnit
     ): PlacedTextElement | null {
         const opticalUnderhang = !!((this.processor as any).config?.layout?.storyWrapOpticalUnderhang);
+        const microLanePolicy = resolveDocumentMicroLanePolicy((this.processor as any).config?.layout);
         const session = this.processor.getCurrentLayoutSession();
         const shaped = (this.processor as any).shapeElement(
             element, { path: [this.storyIndex, childIndex] }
         );
         const marginTop = Math.max(0, shaped.marginTop);
+        const minUsableSlotWidth = resolveMinUsableLaneWidth({
+            policy: microLanePolicy,
+            element,
+            availableWidth
+        });
         const placed = reflowTextElementAgainstSpatialField({
             processor: this.processor,
             element,
@@ -863,7 +870,9 @@ export class StoryPackager implements PackagerUnit {
             leftMargin: margins.left,
             pageIndex: session ? session.getCurrentPageIndex() : 0,
             opticalUnderhang,
-            clearTopBeforeStart: true
+            clearTopBeforeStart: true,
+            minUsableSlotWidth,
+            rejectSubMinimumSlots: microLanePolicy !== 'allow'
         });
         if (!placed) return null;
         const box = actor

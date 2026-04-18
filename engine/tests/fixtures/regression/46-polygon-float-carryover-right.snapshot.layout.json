@@ -228,17 +228,8 @@
           ],
           [
             {
-              "text": "c",
-              "width": 5.5,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "onstrained by the carried lower half, and ",
-              "width": 198.725098,
+              "text": "constrained by the carried lower half, and ",
+              "width": 204.225098,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -279,8 +270,8 @@
           ],
           [
             {
-              "text": "t",
-              "width": 3.056152,
+              "text": "the remainder. Once the right float appears, the ",
+              "width": 233.583496,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -288,8 +279,8 @@
           ],
           [
             {
-              "text": "he remainder. Once the right float appears, the body",
-              "width": 254.380371,
+              "text": "bod",
+              "width": 18.353027,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -297,8 +288,8 @@
           ],
           [
             {
-              "text": "sho",
-              "width": 17.735352,
+              "text": "y should stay full near the left margin and lose width ",
+              "width": 255.583496,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -306,8 +297,8 @@
           ],
           [
             {
-              "text": "uld stay full near the left margin and lose width only ",
-              "width": 252.527344,
+              "text": "only ",
+              "width": 23.235352,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -315,8 +306,8 @@
           ],
           [
             {
-              "text": "along ",
-              "width": 29.970703,
+              "text": "along the right shoulder of the diamond. After the page ",
+              "width": 269.070313,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -324,17 +315,8 @@
           ],
           [
             {
-              "text": "the right shoulder of the diamond. After the page break, ",
-              "width": 272.728027,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "the ",
-              "width": 18.347656,
+              "text": "break, the",
+              "width": 48.919922,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

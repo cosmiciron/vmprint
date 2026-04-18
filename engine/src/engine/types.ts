@@ -337,6 +337,7 @@ export type StoryLayoutMode = 'float' | 'story-absolute';
  */
 export type StoryWrapMode = 'around' | 'top-bottom' | 'none';
 export type TraversalInteractionPolicy = 'auto' | 'wrap' | 'overpass' | 'ignore';
+export type MicroLanePolicy = 'allow' | 'balanced' | 'typography';
 
 /** Which margin a float anchors to. */
 export type StoryFloatAlign = 'left' | 'right' | 'center';
@@ -520,6 +521,8 @@ export interface LayoutConfig {
         pageBackground?: string;
         /** Optical story wrap underhang: allow full-width lines once their top clears an obstacle bottom. */
         storyWrapOpticalUnderhang?: boolean;
+        /** Minimum-lane policy for spatial wrapping: preserve, balance, or reject tiny carved lanes. */
+        microLanePolicy?: MicroLanePolicy;
         /** Optional world substrate for this document. When present, root elements inhabit the world plain. */
         worldPlain?: WorldPlainOptions;
         headerInsetTop?: number;

@@ -320,6 +320,32 @@ export class ColliderField {
         return clearY;
     }
 
+    bandClearY(y: number, lineH: number, queryZIndex: number = 0, opticalUnderhang: boolean = false): number {
+        const normalizedZIndex = normalizeZIndex(queryZIndex);
+        let clearY = y;
+        let changed = true;
+        while (changed) {
+            changed = false;
+            const query: BandQuery = {
+                top: clearY,
+                bottom: clearY + lineH,
+                queryZIndex: normalizedZIndex,
+                opticalUnderhang
+            };
+            for (const collider of this.getCandidateColliders(query.top, query.bottom)) {
+                this.narrowphaseCalls += 1;
+                if (collider.wrap === 'none') continue;
+                if (!intersectsDepth(collider, normalizedZIndex)) continue;
+                if (!collider.overlapsBand(query)) continue;
+                const bottom = collider.getBottomExtent();
+                if (bottom <= clearY) continue;
+                clearY = bottom;
+                changed = true;
+            }
+        }
+        return clearY;
+    }
+
     maxObstacleBottom(): number {
         return this.colliders.reduce((max, collider) => Math.max(max, collider.getBottomExtent()), 0);
     }

@@ -147,8 +147,8 @@
           ],
           [
             {
-              "text": "T",
-              "width": 6.719238,
+              "text": "The first circular lobe suggests a ",
+              "width": 161.401367,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -156,8 +156,8 @@
           ],
           [
             {
-              "text": "he first circular lobe suggests a head,",
-              "width": 182.208984,
+              "text": "head, the rectangular beam ",
+              "width": 137.591309,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -165,8 +165,8 @@
           ],
           [
             {
-              "text": "the rectangular beam gives ",
-              "width": 135.743652,
+              "text": "gives the body a longer ",
+              "width": 116.799805,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -174,8 +174,8 @@
           ],
           [
             {
-              "text": "the body a longer mass, and ",
-              "width": 141.866699,
+              "text": "mass, and later circles extend",
+              "width": 145.508301,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -183,8 +183,8 @@
           ],
           [
             {
-              "text": "later circles extend the ",
-              "width": 113.109863,
+              "text": "the ",
+              "width": 18.347656,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -192,8 +192,8 @@
           ],
           [
             {
-              "text": "silhouett",
-              "width": 40.970703,
+              "text": "silhouette into a tail. The line start should ",
+              "width": 202.393555,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -201,8 +201,8 @@
           ],
           [
             {
-              "text": "e into a tail. The line start should not step to ",
-              "width": 215.848145,
+              "text": "not step to one fixed width. Instead it should breathe inward and outward as ",
+              "width": 371.180176,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -210,8 +210,8 @@
           ],
           [
             {
-              "text": "one fixed width. Instead it should breathe inward and outward as different ",
-              "width": 359.358398,
+              "text": "different members overlap the scanline, proving that the story is settling ",
+              "width": 350.141602,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -219,17 +219,8 @@
           ],
           [
             {
-              "text": "members overlap the scanline, proving that the story is settling against a ",
-              "width": 355.23877,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "composed field rather than a single bounding box.",
-              "width": 243.385742,
+              "text": "against a composed field rather than a single bounding box.",
+              "width": 291.086426,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

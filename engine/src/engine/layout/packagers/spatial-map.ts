@@ -110,6 +110,16 @@ export class SpatialMap {
         return this.colliderField.topBottomClearY(y, queryZIndex);
     }
 
+    /**
+     * Returns the first Y after any obstacle band intersecting [y, y+lineH].
+     * Unlike topBottomClearY, this also considers ordinary around-wrapped
+     * colliders so callers can skip mathematically valid but unusable sliver
+     * lanes and resume once the obstacle shoulder clears.
+     */
+    bandClearY(y: number, lineH: number, queryZIndex: number = 0, opticalUnderhang: boolean = false): number {
+        return this.colliderField.bandClearY(y, lineH, queryZIndex, opticalUnderhang);
+    }
+
     /** The Y of the lowest point among all registered obstacles. */
     maxObstacleBottom(): number {
         return this.colliderField.maxObstacleBottom();

@@ -85,6 +85,11 @@ text stream flows around it.
 
 `gap` adds clearance around the obstacle bounding box (in points).
 
+`shape` defaults to `"rect"`, but floats and `story-absolute` actors can also
+author `"circle"` and `"polygon"` carving. For polygons, supply an SVG `path`
+string. For compound bodies, use `exclusionAssembly` so one visible actor can
+publish a composed field built from multiple primitive members.
+
 Floats are not limited to images. Any story child — a pull quote, a sidebar
 note, a box — can be declared as a float. The engine treats it as a spatial
 obstacle regardless of content type.
@@ -124,6 +129,20 @@ pinned to the top-right of the story area, for example.
 
 For non-image `story-absolute` elements, provide explicit `width` and `height`
 in `properties.style`.
+
+### Micro Lanes
+
+Spatial wrapping can sometimes produce mathematically valid but very narrow
+horizontal gaps. VMPrint exposes that choice at the document level through
+`layout.microLanePolicy`:
+
+- `"allow"` preserves every valid lane, including tiny decorative notches
+- `"balanced"` is the default and filters out the most useless slivers
+- `"typography"` is stricter and prefers dropping below the obstacle
+
+Use `"allow"` for expressive demo work or intentionally playful layouts. Use
+`"balanced"` or `"typography"` when the reading experience matters more than
+showing off every possible carve.
 
 ## `strip`
 

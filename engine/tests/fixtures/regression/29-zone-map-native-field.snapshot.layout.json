@@ -164,8 +164,17 @@
           ],
           [
             {
-              "text": "away and the second rock ",
-              "width": 118.959961,
+              "text": "aw",
+              "width": 12.783203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ay and the second rock ",
+              "width": 106.176758,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -191,8 +200,17 @@
         "lines": [
           [
             {
-              "text": "The ",
-              "width": 20.009766,
+              "text": "Th",
+              "width": 11.669922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "e ",
+              "width": 8.339844,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -209,8 +227,17 @@
           ],
           [
             {
-              "text": "not whether the ",
-              "width": 71.713867,
+              "text": "not ",
+              "width": 16.679688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "whether the ",
+              "width": 55.03418,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

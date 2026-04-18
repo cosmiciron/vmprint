@@ -27,6 +27,7 @@ const LAYOUT_KEYS = new Set([
     'lineHeight',
     'pageBackground',
     'storyWrapOpticalUnderhang',
+    'microLanePolicy',
     'worldPlain',
     'headerInsetTop',
     'headerInsetBottom',
@@ -292,6 +293,7 @@ function validateLayout(layout: unknown, documentPath: string): void {
     if (obj.storyWrapOpticalUnderhang !== undefined) {
         assertBooleanAt(obj.storyWrapOpticalUnderhang, 'layout.storyWrapOpticalUnderhang', documentPath);
     }
+    assertEnumAt(obj.microLanePolicy, ['allow', 'balanced', 'typography'], 'layout.microLanePolicy', documentPath);
     if (obj.worldPlain !== undefined) {
         const plain = assertPlainObjectAt(obj.worldPlain, 'layout.worldPlain', documentPath);
         assertAllowedKeys(plain, WORLD_PLAIN_KEYS, 'layout.worldPlain', documentPath);

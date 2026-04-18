@@ -8,6 +8,7 @@ import {
 } from '../flow-fragment-state';
 import type { LayoutProcessor } from '../layout-core';
 import type { FlowBox } from '../layout-core-types';
+import { resolveDocumentMicroLanePolicy, resolveMinUsableLaneWidth } from '../micro-lane-policy';
 import { reflowTextElementAgainstSpatialField, type SpatialFieldTextPlacement } from '../spatial-field-reflow';
 import { LAYOUT_DEFAULTS } from '../defaults';
 import { OccupiedRect, SpatialMap } from './spatial-map';
@@ -473,10 +474,12 @@ function tryPlaceHostedRegionTextActor(
     if (String(element.type || '').toLowerCase() === 'image') return null;
     const session = processor.getCurrentLayoutSession();
     const spatialMap = buildHostedRegionSpatialMap(activeFields);
-    const minUsableSlotWidth = Math.max(
-        24,
-        Number((element.properties?.style as { fontSize?: unknown } | undefined)?.fontSize || 0) * 3
-    );
+    const microLanePolicy = resolveDocumentMicroLanePolicy((processor as any).config?.layout);
+    const minUsableSlotWidth = resolveMinUsableLaneWidth({
+        policy: microLanePolicy,
+        element,
+        availableWidth
+    });
     const placeAgainstCurrentY = (reflowCurrentY: number) => reflowTextElementAgainstSpatialField({
         processor,
         element,
@@ -487,7 +490,8 @@ function tryPlaceHostedRegionTextActor(
         spatialMap,
         pageIndex: session ? session.getCurrentPageIndex() : 0,
         clearTopBeforeStart: false,
-        minUsableSlotWidth
+        minUsableSlotWidth,
+        rejectSubMinimumSlots: microLanePolicy !== 'allow'
     });
     let placed = placeAgainstCurrentY(currentY);
     if (!placed) return null;

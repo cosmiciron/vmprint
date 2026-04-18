@@ -2,7 +2,7 @@
   {
     "index": 0,
     "width": 420,
-    "height": 360,
+    "height": 420,
     "boxes": [
       {
         "type": "h1",
@@ -13,8 +13,8 @@
         "lines": [
           [
             {
-              "text": "Polygon Multi-Column Carry-Over",
-              "width": 322.246094,
+              "text": "Mixed Shape Lanes",
+              "width": 185.615234,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -23,16 +23,16 @@
         ]
       },
       {
-        "type": "p",
+        "type": "lead",
         "x": 28,
         "y": 64.34375,
-        "w": 174,
-        "h": 115.689063,
+        "w": 364,
+        "h": 52.81875,
         "lines": [
           [
             {
-              "text": "This fixture forces the polygon ",
-              "width": 149.794434,
+              "text": "This proof mixes polygon, circle, and exclusion-assembly obstacles ",
+              "width": 360.158203,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -40,8 +40,8 @@
           ],
           [
             {
-              "text": "carry-over path to coexist with ",
-              "width": 149.166016,
+              "text": "in one story so we can confirm the engine treats them as different ",
+              "width": 350.630859,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -49,287 +49,8 @@
           ],
           [
             {
-              "text": "two-column story flow. We want the",
-              "width": 172.197266,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "current page to show the diamond ",
-              "width": 169.382813,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "late in the column stack so the ",
-              "width": 151.024414,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "lower half must continue into the ",
-              "width": 160.810547,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "next page rather than disappearing ",
-              "width": 173.679688,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "at the seam.",
-              "width": 60.532227,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 28,
-        "y": 188.032813,
-        "w": 174,
-        "h": 115.689063,
-        "lines": [
-          [
-            {
-              "text": "The useful question here is not ",
-              "width": 153.484375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "whether the wrap looks decorative. ",
-              "width": 173.035156,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "The useful question is whether the ",
-              "width": 170.602051,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "continuation page begins with an ",
-              "width": 163.286621,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "already-constrained first column ",
-              "width": 158.95752,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "and then eventually regains its ",
-              "width": 151.652832,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "measure below the carried ",
-              "width": 132.676758,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "remainder.",
-              "width": 51.970703,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 28,
-        "y": 311.721875,
-        "w": 174,
-        "h": 14.3,
-        "lines": [
-          [
-            {
-              "text": "A third setup paragraph burns ",
-              "width": 148.591309,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 218,
-        "y": 64.34375,
-        "w": 174,
-        "h": 72.789063,
-        "lines": [
-          [
-            {
-              "text": "enough vertical room that the float ",
-              "width": 169.377441,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "arrives close to the page boundary.",
-              "width": 171.010254,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "That puts pressure on the ",
-              "width": 128.406738,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "continuation math without needing ",
-              "width": 170.005859,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "a huge obstacle.",
-              "width": 80.727539,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 218,
-        "y": 145.132813,
-        "w": 174,
-        "h": 115.689063,
-        "lines": [
-          [
-            {
-              "text": "One extra staging paragraph ",
-              "width": 143.091309,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "makes the seam unavoidable ",
-              "width": 146.14209,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "inside the active column. The ",
-              "width": 145.519043,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "image should now land late enough",
-              "width": 173.072754,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "that the continuation page must ",
-              "width": 156.55127,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "inherit a real lower remainder ",
-              "width": 145.508301,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "instead of seeing the polygon ",
-              "width": 146.163574,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "disappear before the boundary.",
-              "width": 152.071777,
+              "text": "authored lanes inside one shared collision field.",
+              "width": 252.164063,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -339,23 +60,201 @@
       },
       {
         "type": "image",
-        "x": 218,
-        "y": 268.821875,
-        "w": 132,
-        "h": 63.178125,
+        "x": 28,
+        "y": 129.1625,
+        "w": 96,
+        "h": 96,
         "lines": []
       },
       {
         "type": "p",
-        "x": 218,
-        "y": 268.821875,
-        "w": 174,
+        "x": 28,
+        "y": 129.1625,
+        "w": 364,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "The ",
+              "width": 22.010742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "opening obstacle is a teal polygon diamond. Its shoulder ",
+              "width": 277.01416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should create a soft entry, then the wrapped lines should ",
+              "width": 278.023926,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reclaim width as the scan band moves past the ",
+              "width": 231.730469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "tapering tail. This paragraph deliberately lingers near ",
+              "width": 259.869629,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the shape so the constrained widths are easy to spot in",
+              "width": 268.441895,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the",
+              "width": 15.291504,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "layout snapshot and in the rendered page.",
+              "width": 206.099609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 300,
+        "y": 224.251563,
+        "w": 92,
+        "h": 92,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 224.251563,
+        "w": 364,
+        "h": 101.389063,
+        "lines": [
+          [
+            {
+              "text": "Next ",
+              "width": 25.673828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "comes a red circle, which should feel ",
+              "width": 182.805176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "different from the polygon lane even though it uses the",
+              "width": 265.197754,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "same surrounding wrap system. The broadphase still ",
+              "width": 261.067383,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "answers the same line-band query, but the ",
+              "width": 210.138672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "narrowphase now follows the cheap circular chord ",
+              "width": 247.016602,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "math, so the wrap profile should look rounder and more",
+              "width": 269.650391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "even than the diamond that came before it.",
+              "width": 209.134277,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 28,
+        "y": 333.640625,
+        "w": 98,
+        "h": 58.359375,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 333.640625,
+        "w": 364,
         "h": 57.2,
         "lines": [
           [
             {
-              "text": "When ",
-              "width": 31.791504,
+              "text": "The gold assembly is a compound obstacle rather ",
+              "width": 245.797363,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -363,8 +262,8 @@
           ],
           [
             {
-              "text": "the polygon ",
-              "width": 59.936035,
+              "text": "than a single path. It is built from primitive members, ",
+              "width": 257.377441,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -372,8 +271,8 @@
           ],
           [
             {
-              "text": "enter",
-              "width": 25.072266,
+              "text": "so the story should wrap around a composed ",
+              "width": 222.572754,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -381,35 +280,8 @@
           ],
           [
             {
-              "text": "s the ",
-              "width": 26.903809,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "m",
-              "width": 9.163086,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "ulti-column ",
-              "width": 56.240723,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "story, ",
-              "width": 29.132813,
+              "text": "silhouette that feels chunkier and more lobal than ",
+              "width": 242.762695,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -422,27 +294,27 @@
   {
     "index": 1,
     "width": 420,
-    "height": 360,
+    "height": 420,
     "boxes": [
       {
         "type": "image",
-        "x": 218,
+        "x": 28,
         "y": 28,
-        "w": 132,
-        "h": 68.821875,
+        "w": 98,
+        "h": 39.640625,
         "lines": []
       },
       {
         "type": "p",
         "x": 28,
         "y": 28,
-        "w": 174,
-        "h": 258.689063,
+        "w": 364,
+        "h": 58.489063,
         "lines": [
           [
             {
-              "text": "the body should slide around it ",
-              "width": 152.270508,
+              "text": "the ",
+              "width": 18.347656,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -450,8 +322,8 @@
           ],
           [
             {
-              "text": "within the active column, then keep",
-              "width": 171.208984,
+              "text": "explicit polygon or the simple circle. This is the lane ",
+              "width": 253.112793,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -459,8 +331,8 @@
           ],
           [
             {
-              "text": "respecting the carried lower half on",
-              "width": 171.203613,
+              "text": "we keep ",
+              "width": 44.026855,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -468,8 +340,8 @@
           ],
           [
             {
-              "text": "the next page before eventually ",
-              "width": 156.556641,
+              "text": "for Lego-style collider construction, where a single ",
+              "width": 247.01123,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -477,8 +349,8 @@
           ],
           [
             {
-              "text": "returning to the ordinary column ",
-              "width": 158.361328,
+              "text": "authored ",
+              "width": 46.481445,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -486,8 +358,8 @@
           ],
           [
             {
-              "text": "width. The next page should not ",
-              "width": 158.995117,
+              "text": "mesh is not always the best or cheapest ",
+              "width": 198.714355,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -495,8 +367,34 @@
           ],
           [
             {
-              "text": "pretend the obstacle ended simply ",
-              "width": 170.607422,
+              "text": "representation.",
+              "width": 73.379883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 284,
+        "y": 94.489063,
+        "w": 108,
+        "h": 108,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 94.489063,
+        "w": 364,
+        "h": 129.989063,
+        "lines": [
+          [
+            {
+              "text": "The indigo stepped polygon closes the set with a ",
+              "width": 240.318848,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -504,8 +402,8 @@
           ],
           [
             {
-              "text": "because the viewport changed. ",
-              "width": 155.32666,
+              "text": "more aggressive straight-edge silhouette. Its ",
+              "width": 219.500488,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -513,8 +411,8 @@
           ],
           [
             {
-              "text": "When the polygon enters the ",
-              "width": 143.703613,
+              "text": "return pattern should be visibly different from the ",
+              "width": 238.868652,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -522,8 +420,8 @@
           ],
           [
             {
-              "text": "multi-column story, the body should",
-              "width": 172.208008,
+              "text": "diam",
+              "width": 23.842285,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -531,8 +429,8 @@
           ],
           [
             {
-              "text": "slide around it within the active ",
-              "width": 152.861328,
+              "text": "ond because the notch removes space in discrete ",
+              "width": 245.201172,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -540,8 +438,8 @@
           ],
           [
             {
-              "text": "column, then keep respecting the ",
-              "width": 165.102051,
+              "text": "block",
+              "width": 25.679199,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -549,8 +447,8 @@
           ],
           [
             {
-              "text": "carried lower half on the next page ",
-              "width": 171.82666,
+              "text": "s instead of with a smooth taper. By the time this ",
+              "width": 239.062012,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -558,8 +456,8 @@
           ],
           [
             {
-              "text": "before eventually returning to the ",
-              "width": 163.882813,
+              "text": "para",
+              "width": 22.016113,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -567,8 +465,8 @@
           ],
           [
             {
-              "text": "ordinary column width. The next ",
-              "width": 158.962891,
+              "text": "graph and the next two continue, the story should ",
+              "width": 243.380371,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -576,8 +474,8 @@
           ],
           [
             {
-              "text": "page should not pretend the ",
-              "width": 140.056641,
+              "text": "have spilled onto a second page and still ",
+              "width": 201.195801,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -585,8 +483,8 @@
           ],
           [
             {
-              "text": "obstacle ended simply because the",
-              "width": 171.832031,
+              "text": "preserved the identity of every obstacle lane that ",
+              "width": 239.695801,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -594,8 +492,8 @@
           ],
           [
             {
-              "text": "viewport changed.",
-              "width": 89.27832,
+              "text": "appeared before the seam.",
+              "width": 132.091309,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -606,14 +504,14 @@
       {
         "type": "p",
         "x": 28,
-        "y": 294.689063,
-        "w": 174,
-        "h": 28.6,
+        "y": 232.478125,
+        "w": 364,
+        "h": 87.089062,
         "lines": [
           [
             {
-              "text": "A trailing paragraph below the ",
-              "width": 149.203613,
+              "text": "Page two matters here because the test is not only about whether we can ",
+              "width": 360.765625,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -621,8 +519,44 @@
           ],
           [
             {
-              "text": "carried remainder confirms that the ",
-              "width": 173.625977,
+              "text": "parse several shapes. It is about whether the same document can host ",
+              "width": 347.917969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "several authored obstacle styles, paginate naturally, and keep wrapping ",
+              "width": 351.403809,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "stable after enough prose pressure pushes the story beyond a single ",
+              "width": 337.546387,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "viewport. The continuation should still read like one coherent collision field ",
+              "width": 363.204102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rather than a fragile pile of one-off cases.",
+              "width": 199.750977,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -632,15 +566,15 @@
       },
       {
         "type": "p",
-        "x": 218,
-        "y": 28,
-        "w": 174,
-        "h": 87.089062,
+        "x": 28,
+        "y": 327.567188,
+        "w": 364,
+        "h": 57.2,
         "lines": [
           [
             {
-              "text": "colum",
-              "width": 29.342285,
+              "text": "Below the mixed obstacle gauntlet, the story should gradually settle back ",
+              "width": 357.091797,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -648,8 +582,8 @@
           ],
           [
             {
-              "text": "n width ",
-              "width": 37.90918,
+              "text": "into ordinary width. That recovery matters because it proves the engine is ",
+              "width": 360.121094,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -657,8 +591,8 @@
           ],
           [
             {
-              "text": "eve",
-              "width": 17.735352,
+              "text": "not leaving phantom exclusions behind after each shape, and it also gives ",
+              "width": 362.624023,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -666,53 +600,33 @@
           ],
           [
             {
-              "text": "ntually ",
-              "width": 34.853027,
+              "text": "us a clear regression oracle for future work on polygon richness, ",
+              "width": 315.487305,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ],
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 15.589063,
+        "lines": [
           [
             {
-              "text": "return",
-              "width": 28.735352,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "s and that the ",
-              "width": 69.716797,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "two-colu",
-              "width": 40.959961,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "mn story remains ",
-              "width": 87.40918,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "stable after the seam.",
-              "width": 105.77832,
+              "text": "compound proxies, and any later expansion of the path subset.",
+              "width": 306.367188,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

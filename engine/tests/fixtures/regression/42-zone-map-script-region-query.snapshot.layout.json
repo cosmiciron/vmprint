@@ -200,8 +200,8 @@
           ],
           [
             {
-              "text": "c",
-              "width": 5.5,
+              "text": "cont",
+              "width": 20.791504,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -209,8 +209,8 @@
           ],
           [
             {
-              "text": "onti",
-              "width": 17.735352,
+              "text": "inui",
+              "width": 17.123047,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -218,8 +218,8 @@
           ],
           [
             {
-              "text": "n",
-              "width": 6.117676,
+              "text": "ng ",
+              "width": 15.291504,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -227,62 +227,17 @@
           ],
           [
             {
-              "text": "uing",
-              "width": 20.796875,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "lo",
-              "width": 8.561523,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "cal ",
-              "width": 17.117676,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "lif",
-              "width": 7.943848,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "e ",
-              "width": 9.173828,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "w",
-              "width": 7.943848,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "hile ",
+              "text": "loca",
               "width": 20.179199,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "l life",
+              "width": 19.561523,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -349,8 +304,8 @@
         "lines": [
           [
             {
-              "text": "la",
-              "width": 8.561523,
+              "text": "whil",
+              "width": 18.949219,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -358,8 +313,8 @@
           ],
           [
             {
-              "text": "ter ",
-              "width": 15.893066,
+              "text": "e later chunks ",
+              "width": 71.537598,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -367,8 +322,8 @@
           ],
           [
             {
-              "text": "chunks revisit the ",
-              "width": 88.037598,
+              "text": "revisit the larger ",
+              "width": 81.307617,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -376,8 +331,8 @@
           ],
           [
             {
-              "text": "larger tavern. The ",
-              "width": 89.874512,
+              "text": "tavern. The side ",
+              "width": 81.930664,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -385,8 +340,8 @@
           ],
           [
             {
-              "text": "side room is a ",
-              "width": 71.526855,
+              "text": "room is a second ",
+              "width": 86.818359,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -394,8 +349,8 @@
           ],
           [
             {
-              "text": "second participant ",
-              "width": 92.334473,
+              "text": "participant in the ",
+              "width": 83.772949,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -403,8 +358,8 @@
           ],
           [
             {
-              "text": "in the same regional",
-              "width": 99.059082,
+              "text": "same regional map ",
+              "width": 96.604492,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -412,8 +367,8 @@
           ],
           [
             {
-              "text": "map and should ",
-              "width": 81.334473,
+              "text": "and should keep its ",
+              "width": 97.845215,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -421,8 +376,8 @@
           ],
           [
             {
-              "text": "keep its own ",
-              "width": 64.200684,
+              "text": "own continuing local",
+              "width": 99.064453,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -430,17 +385,8 @@
           ],
           [
             {
-              "text": "continuing local life ",
-              "width": 96.00293,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "while later chunks ",
-              "width": 90.486816,
+              "text": "life while later ",
+              "width": 69.695313,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -617,78 +563,6 @@
         "lines": [
           [
             {
-              "text": "revisit the larger ",
-              "width": 81.307617,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "tavern. The side ",
-              "width": 81.930664,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "room is a second ",
-              "width": 86.818359,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "participant in the ",
-              "width": 83.772949,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "same regional map ",
-              "width": 96.604492,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "and should keep its ",
-              "width": 97.845215,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "own continuing local",
-              "width": 99.064453,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "life while later ",
-              "width": 69.695313,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
               "text": "chunks revisit the ",
               "width": 88.037598,
               "ascent": 905.273438,
@@ -763,6 +637,78 @@
             {
               "text": "while later chunks ",
               "width": 90.486816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "revisit the larger ",
+              "width": 81.307617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "tavern. The side ",
+              "width": 81.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "room is a second ",
+              "width": 86.818359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "participant in the ",
+              "width": 83.772949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "same regional map ",
+              "width": 96.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and should keep its ",
+              "width": 97.845215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "own continuing local",
+              "width": 99.064453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "life while later ",
+              "width": 69.695313,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -894,8 +840,8 @@
         "lines": [
           [
             {
-              "text": "revisit the larger ",
-              "width": 81.307617,
+              "text": "chunks revisit the ",
+              "width": 88.037598,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -903,8 +849,8 @@
           ],
           [
             {
-              "text": "tavern.",
-              "width": 33.628418,
+              "text": "larger tavern.",
+              "width": 64.807617,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

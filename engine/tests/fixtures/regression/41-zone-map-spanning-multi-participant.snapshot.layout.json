@@ -218,8 +218,8 @@
           ],
           [
             {
-              "text": "c",
-              "width": 5.5,
+              "text": "cont",
+              "width": 20.791504,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -227,26 +227,8 @@
           ],
           [
             {
-              "text": "onti",
-              "width": 17.735352,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "n",
-              "width": 6.117676,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "uing",
-              "width": 20.796875,
+              "text": "inui",
+              "width": 17.123047,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -313,8 +295,8 @@
         "lines": [
           [
             {
-              "text": "lo",
-              "width": 8.561523,
+              "text": "ng ",
+              "width": 15.291504,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -322,17 +304,8 @@
           ],
           [
             {
-              "text": "cal ",
-              "width": 17.117676,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "life while later ",
-              "width": 69.695313,
+              "text": "local life while later ",
+              "width": 95.374512,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

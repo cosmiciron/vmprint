@@ -936,6 +936,62 @@ function assertPolygonMultiColumnCarryoverSignals(pages: any[], fixtureName: str
     assert.ok(bins.size >= 2, `${fixtureName}: expected multi-column carry-over to preserve varied constrained widths in the continuation column`);
 }
 
+function assertPolygonMixedShapesSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    assert.ok(pages.length >= 2, `${fixtureName}: expected the mixed-shape proof to span more than one page`);
+
+    const imageBoxes = allBoxes.filter((box: any) => !!box.image);
+    assert.ok(imageBoxes.length >= 4, `${fixtureName}: expected several visible obstacle images across the document`);
+
+    const polygonImages = imageBoxes.filter((box: any) =>
+        box.properties?._clipShape === 'polygon'
+    );
+    assert.ok(polygonImages.length >= 2, `${fixtureName}: expected at least two polygon-clipped image boxes`);
+
+    const circleImages = imageBoxes.filter((box: any) =>
+        box.properties?._clipShape === 'circle'
+    );
+    assert.ok(circleImages.length >= 1, `${fixtureName}: expected at least one circle-clipped image box`);
+
+    const assemblyImages = imageBoxes.filter((box: any) =>
+        Array.isArray(box.properties?._clipAssembly) && box.properties._clipAssembly.length >= 2
+    );
+    assert.ok(assemblyImages.length >= 1, `${fixtureName}: expected at least one exclusion-assembly image box`);
+
+    const clipPaths = polygonImages
+        .map((box: any) => String(box.properties?._clipPath || '').trim())
+        .filter((path: string) => path.length > 0);
+    assert.ok(clipPaths.length >= 2, `${fixtureName}: expected polygon images to preserve authored clip paths`);
+    assert.equal(new Set(clipPaths).size, clipPaths.length, `${fixtureName}: expected each polygon image to keep a distinct silhouette path`);
+
+    const wrappedBoxes = allBoxes
+        .filter((box: any) => {
+            const widths: number[] = Array.isArray(box.properties?._lineWidths)
+                ? box.properties._lineWidths.map((n: any) => Number(n))
+                : [];
+            const offsets: number[] = Array.isArray(box.properties?._lineOffsets)
+                ? box.properties._lineOffsets.map((n: any) => Number(n))
+                : [];
+            return widths.length >= 4 && offsets.some((offset) => Number.isFinite(offset) && offset > 0.5);
+        })
+        .sort((left: any, right: any) => Number(left.y || 0) - Number(right.y || 0));
+    assert.ok(wrappedBoxes.length >= 4, `${fixtureName}: expected several wrapped paragraph boxes across the mixed-shape document`);
+
+    const widthSignatures = wrappedBoxes.slice(0, 4).map((box: any) => {
+        const widths: number[] = Array.isArray(box.properties?._lineWidths)
+            ? box.properties._lineWidths.map((n: any) => Number(n))
+            : [];
+        const offsets: number[] = Array.isArray(box.properties?._lineOffsets)
+            ? box.properties._lineOffsets.map((n: any) => Number(n))
+            : [];
+        const constrainedWidths = widths
+            .filter((width, index) => Number(offsets[index] || 0) > 0.5)
+            .map((width) => Math.round(width * 2) / 2);
+        return constrainedWidths.join('|');
+    });
+    assert.ok(new Set(widthSignatures).size >= 3, `${fixtureName}: expected mixed obstacle lanes to produce several distinct constrained width signatures`);
+}
+
 function assertZoneMapExclusionAssemblySignals(pages: any[], fixtureName: string): void {
     const allBoxes = pages.flatMap((page: any) => page.boxes || []);
     const hiddenFieldActors = allBoxes.filter((box: any) =>
@@ -2485,6 +2541,15 @@ async function run() {
                 'multi-column stories should preserve wrapped polygon carry-over in the continuation column',
                 () => {
                     assertPolygonMultiColumnCarryoverSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '49-polygon-mixed-shapes.json') {
+            _check(
+                `${fixture.name} mixed polygon silhouette signals`,
+                'a document should support several distinct polygon silhouettes at once and preserve their independent wrap signatures',
+                () => {
+                    assertPolygonMixedShapesSignals(pagesA, fixture.name);
                 }
             );
         }

@@ -230,7 +230,7 @@
         "x": 24,
         "y": 144,
         "w": 198.666667,
-        "h": 31.40625,
+        "h": 16.40625,
         "lines": [
           [
             {
@@ -243,8 +243,8 @@
           ],
           [
             {
-              "text": "fresh unrelated page-local strip. ",
-              "width": 171.427734,
+              "text": "fres",
+              "width": 20.003906,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -266,6 +266,15 @@
         "w": 198.666667,
         "h": 241.40625,
         "lines": [
+          [
+            {
+              "text": "h unrelated page-local strip. ",
+              "width": 151.423828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
           [
             {
               "text": "Regional body flow should continue ",
@@ -400,15 +409,6 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ],
-          [
-            {
-              "text": "instead of resetting to a fresh ",
-              "width": 158.091797,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
           ]
         ]
       }
@@ -424,8 +424,17 @@
         "x": 24,
         "y": 24,
         "w": 198.666667,
-        "h": 211.40625,
+        "h": 226.40625,
         "lines": [
+          [
+            {
+              "text": "instead of resetting to a fresh ",
+              "width": 158.091797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
           [
             {
               "text": "unrelated page-local strip. Regional ",

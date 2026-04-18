@@ -91,9 +91,17 @@ interface LayoutConfig {
     };
 
     storyWrapOpticalUnderhang?: boolean;
+    microLanePolicy?: 'allow' | 'balanced' | 'typography';
     worldPlain?: WorldPlainOptions;
 }
 ```
+
+`layout.microLanePolicy` controls whether spatial wrapping may use very narrow
+horizontal lanes carved by obstacles:
+
+- `"allow"` keeps every mathematically valid lane, including tiny expressive notches
+- `"balanced"` is the default; it filters out obviously useless slivers while still allowing practical side lanes
+- `"typography"` is stricter and prefers dropping below an obstacle over fitting text into very narrow gaps
 
 ### `layout.worldPlain`
 
@@ -232,7 +240,7 @@ AST `1.1` keeps `properties` for overrides, metadata, and cross-cutting controls
 ### `SpatialFieldDirective`
 
 ```typescript
-type StoryFloatShape = 'rect' | 'circle';
+type StoryFloatShape = 'rect' | 'circle' | 'polygon';
 
 interface StoryExclusionAssemblyMember {
     x: number;
@@ -240,6 +248,7 @@ interface StoryExclusionAssemblyMember {
     w: number;
     h: number;
     shape?: StoryFloatShape;
+    path?: string;
 }
 
 interface StoryExclusionAssembly {
@@ -254,8 +263,11 @@ interface SpatialFieldDirective {
     wrap?: 'around' | 'top-bottom' | 'none';
     gap?: number;
     shape?: StoryFloatShape;
+    path?: string;
     exclusionAssembly?: StoryExclusionAssembly;
     hidden?: boolean;
+    zIndex?: number;
+    traversalInteraction?: 'auto' | 'wrap' | 'overpass' | 'ignore';
 }
 ```
 
@@ -503,10 +515,19 @@ interface StoryLayoutDirective {
     align?: 'left' | 'right' | 'center';
     wrap?: 'around' | 'top-bottom' | 'none';
     gap?: number;
+    shape?: 'rect' | 'circle' | 'polygon';
+    path?: string;
+    exclusionAssembly?: StoryExclusionAssembly;
+    zIndex?: number;
 }
 ```
 
 Any block element can float or use `story-absolute` if it carries explicit obstacle size through style `width` and `height`. Images may omit explicit size and derive it from intrinsic image dimensions.
+
+`shape` defaults to `"rect"`. Use `"circle"` for circular carving, or
+`"polygon"` together with `path` when you want an authored SVG silhouette.
+`exclusionAssembly` lets one actor publish a compound field made from multiple
+rect/circle/polygon members.
 
 ---
 
