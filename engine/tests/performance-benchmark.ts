@@ -93,7 +93,10 @@ const PERF_WATCHLIST = [
     '20-block-floats-and-column-span.json',
     '22-story-nested-table-continuation.json',
     '44-polygon-float.json',
-    '45-polygon-float-carryover.json'
+    '45-polygon-float-carryover.json',
+    '46-polygon-float-carryover-right.json',
+    '47-polygon-top-bottom-carryover.json',
+    '48-polygon-multicolumn-carryover.json'
 ] as const;
 
 const HOT_PROFILE_KEYS: HotProfileMetricKey[] = [

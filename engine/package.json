@@ -54,6 +54,7 @@
     "test:strip": "tsx --conditions tsx tests/strip-layout.spec.ts",
     "test:zone-continue": "tsx --conditions tsx tests/zone-map-continue.spec.ts",
     "test:standard-fonts": "tsx --conditions tsx tests/standard-fonts.spec.ts",
+    "test:collider-field": "tsx --conditions tsx tests/collider-field.spec.ts",
     "test:engine": "tsx --conditions tsx tests/engine-regression.spec.ts",
     "test:spatial-ir": "tsx --conditions tsx tests/spatial-ir-regression.spec.ts",
     "test:spatial-ir-engine": "tsx --conditions tsx tests/spatial-ir-engine.spec.ts",

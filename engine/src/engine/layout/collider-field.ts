@@ -149,14 +149,14 @@ class PolygonCollider implements CompiledCollider {
     private readonly subpaths: Array<{ points: SvgPathPoint[]; bounds: { minY: number; maxY: number } }>;
     private readonly sampleYBreaks: number[];
 
-    constructor(private readonly obstacle: OccupiedRect) {
+    constructor(
+        private readonly obstacle: OccupiedRect,
+        translatedSubpaths: SvgPathSubpath[]
+    ) {
         this.wrap = obstacle.wrap;
         this.zIndex = normalizeZIndex(obstacle.zIndex);
         this.traversalInteraction = obstacle.traversalInteraction ?? 'auto';
 
-        const translatedSubpaths = parseSvgPathSubpaths(String(obstacle.path || ''))
-            .map((subpath) => translateSubpath(subpath, obstacle.x, obstacle.y))
-            .filter((subpath) => subpath.points.length >= 3);
         if (translatedSubpaths.length === 0) {
             throw new Error('[ColliderField] Polygon collider requires a non-empty path with at least three points.');
         }
@@ -376,9 +376,24 @@ function compileCollider(obstacle: OccupiedRect): CompiledCollider {
         return new CircleCollider(obstacle);
     }
     if (obstacle.shape === 'polygon') {
-        return new PolygonCollider(obstacle);
+        const translatedSubpaths = tryResolvePolygonSubpaths(obstacle);
+        if (translatedSubpaths && translatedSubpaths.length > 0) {
+            return new PolygonCollider(obstacle, translatedSubpaths);
+        }
+        return new RectCollider(obstacle);
     }
     return new RectCollider(obstacle);
+}
+
+function tryResolvePolygonSubpaths(obstacle: OccupiedRect): SvgPathSubpath[] | null {
+    try {
+        const parsed = parseSvgPathSubpaths(String(obstacle.path || ''))
+            .map((subpath) => translateSubpath(subpath, obstacle.x, obstacle.y))
+            .filter((subpath) => subpath.points.length >= 3);
+        return parsed.length > 0 ? parsed : null;
+    } catch {
+        return null;
+    }
 }
 
 function carveInterval(
