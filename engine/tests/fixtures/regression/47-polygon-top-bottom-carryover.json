@@ -1,0 +1,89 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 360
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Polygon Top-Bottom Carry-Over"
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "p",
+          "content": "This version uses top-bottom wrapping so the continuation proof is not about side intervals at all. The carried polygon should push the next page's opening body downward rather than carve a left or right slot beside itself."
+        },
+        {
+          "type": "p",
+          "content": "A second setup paragraph walks the cursor downward until the diamond can no longer fit entirely before the page seam. The first page should show only the upper section, and page two should inherit the remainder at the top of the content area."
+        },
+        {
+          "type": "p",
+          "content": "If the carry-over logic is honest, the first paragraph on page two should not start beside the remainder. It should start below it, as though the same obstacle simply continued into the new viewport."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "top-bottom",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,66 L66,0 L132,66 L66,132 Z"
+          },
+          "properties": {
+            "sourceId": "polygon-top-bottom-carryover-float",
+            "style": {
+              "width": 132,
+              "height": 132
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAkElEQVR42u3QMQ0AAAwDoEqv9Fnot4cEBSQtKwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmR9OyMOEkoQG4WbAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "After the page turn, the continuation paragraph should resume only once the carried lower triangle has cleared. That makes this fixture useful as a regression guard for top-bottom carry-over: the same seam math still applies, but the body should recover by vertical clearance instead of horizontal widening. After the page turn, the continuation paragraph should resume only once the carried lower triangle has cleared. That makes this fixture useful as a regression guard for top-bottom carry-over: the same seam math still applies, but the body should recover by vertical clearance instead of horizontal widening."
+        },
+        {
+          "type": "p",
+          "content": "Below the remainder, the story should settle back into a normal full-width column with no phantom clearance left behind."
+        }
+      ]
+    }
+  ]
+}

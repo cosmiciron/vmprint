@@ -1,0 +1,419 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 28.34375,
+        "lines": [
+          [
+            {
+              "text": "Polygon Carry-Over Right",
+              "width": 245.595703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 64.34375,
+        "w": 364,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "This setup mirrors the left-float carry-over proof, but the polygon anchors ",
+              "width": 355.824219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "to the right edge instead. We want the seam logic to preserve the carried ",
+              "width": 356.882324,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "silhouette without accidentally falling back to a left-only assumption in the ",
+              "width": 358.92334,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation planner.",
+              "width": 101.524414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 130.832812,
+        "w": 364,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "More staging copy pushes the float later in the story so the first page only ",
+              "width": 359.530273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shows the upper shoulder of the diamond while page two inherits the lower",
+              "width": 363.827148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remainder. The wrapped lines on page two should be squeezed from the ",
+              "width": 355.888672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "right, leaving shifted line starts near the left margin.",
+              "width": 248.848145,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 197.321875,
+        "w": 364,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "One final staging paragraph pins the float close enough to the seam that ",
+              "width": 354.680176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the lower half cannot fully fit on page one. That makes the carry-over ",
+              "width": 337.508789,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "visual and obstacle both necessary on the continuation page.",
+              "width": 297.816406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 260,
+        "y": 249.510938,
+        "w": 132,
+        "h": 82.489062,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 249.510938,
+        "w": 364,
+        "h": 71.5,
+        "lines": [
+          [
+            {
+              "text": "Once the right float appears, the body should stay full ",
+              "width": 262.936523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "near the ",
+              "width": 43.419922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "left margin and lose width only along the right ",
+              "width": 223.797363,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shoul",
+              "width": 26.296875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "der of the diamond. After the page break, the ",
+              "width": 221.976563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "co",
+              "width": 11.617676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ntinuation should begin with lines that are still ",
+              "width": 223.802734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "c",
+              "width": 5.5,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "onstrained by the carried lower half, and ",
+              "width": 198.725098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 260,
+        "y": 28,
+        "w": 132,
+        "h": 49.510938,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 101.389063,
+        "lines": [
+          [
+            {
+              "text": "those lines should relax back to full width below ",
+              "width": 234.185059,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "t",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "he remainder. Once the right float appears, the body",
+              "width": 254.380371,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sho",
+              "width": 17.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "uld stay full near the left margin and lose width only ",
+              "width": 252.527344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "along ",
+              "width": 29.970703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the right shoulder of the diamond. After the page break, ",
+              "width": 272.728027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the ",
+              "width": 18.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation should begin with lines that are still constrained by the carried",
+              "width": 361.990234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lower half, and those lines should relax back to full width below the ",
+              "width": 327.131836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remainder.",
+              "width": 51.970703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 137.389063,
+        "w": 364,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "A trailing paragraph confirms that the continuation page eventually returns ",
+              "width": 363.214844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "to normal width once the diamond tail is gone. The important proof is not ",
+              "width": 355.249512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "decorative symmetry. The important proof is that carry-over translation ",
+              "width": 344.587891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "respects alignment and obstacle geometry together.",
+              "width": 252.538086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

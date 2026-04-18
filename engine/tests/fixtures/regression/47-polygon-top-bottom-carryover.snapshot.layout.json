@@ -1,0 +1,293 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 28.34375,
+        "lines": [
+          [
+            {
+              "text": "Polygon Top-Bottom Carry-Over",
+              "width": 306.308594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 64.34375,
+        "w": 364,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "This version uses top-bottom wrapping so the continuation proof is not ",
+              "width": 344.856445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "about side intervals at all. The carried polygon should push the next ",
+              "width": 332.035645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page's opening body downward rather than carve a left or right slot beside ",
+              "width": 363.48877,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "itself.",
+              "width": 25.673828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 130.832812,
+        "w": 364,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "A second setup paragraph walks the cursor downward until the diamond ",
+              "width": 354.647949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "can no longer fit entirely before the page seam. The first page should ",
+              "width": 338.760254,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "show only the upper section, and page two should inherit the remainder at ",
+              "width": 363.225586,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the top of the content area.",
+              "width": 131.484375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 197.321875,
+        "w": 364,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "If the carry-over logic is honest, the first paragraph on page two should not",
+              "width": 361.979492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "start beside the remainder. It should start below it, as though the same ",
+              "width": 345.46875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstacle simply continued into the new viewport.",
+              "width": 235.404297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 28,
+        "y": 249.510938,
+        "w": 132,
+        "h": 82.489062,
+        "lines": []
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 28,
+        "y": 28,
+        "w": 132,
+        "h": 49.510938,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 85.5109,
+        "w": 364,
+        "h": 129.989063,
+        "lines": [
+          [
+            {
+              "text": "After the page turn, the continuation paragraph should resume only once ",
+              "width": 356.511719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the carried lower triangle has cleared. That makes this fixture useful as a ",
+              "width": 356.447266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "regression guard for top-bottom carry-over: the same seam math still ",
+              "width": 337.46582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "applies, but the body should recover by vertical clearance instead of ",
+              "width": 333.861816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "horizontal widening. After the page turn, the continuation paragraph should",
+              "width": 363.859375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "resume only once the carried lower triangle has cleared. That makes this ",
+              "width": 357.05957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "fixture useful as a regression guard for top-bottom carry-over: the same ",
+              "width": 350.324219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "seam math still applies, but the body should recover by vertical clearance ",
+              "width": 359.51416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "instead of horizontal widening.",
+              "width": 147.984375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 223.499963,
+        "w": 364,
+        "h": 29.889063,
+        "lines": [
+          [
+            {
+              "text": "Below the remainder, the story should settle back into a normal full-width ",
+              "width": 355.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "column with no phantom clearance left behind.",
+              "width": 226.858887,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

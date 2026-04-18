@@ -1,0 +1,89 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 360
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Polygon Carry-Over Right"
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "p",
+          "content": "This setup mirrors the left-float carry-over proof, but the polygon anchors to the right edge instead. We want the seam logic to preserve the carried silhouette without accidentally falling back to a left-only assumption in the continuation planner."
+        },
+        {
+          "type": "p",
+          "content": "More staging copy pushes the float later in the story so the first page only shows the upper shoulder of the diamond while page two inherits the lower remainder. The wrapped lines on page two should be squeezed from the right, leaving shifted line starts near the left margin."
+        },
+        {
+          "type": "p",
+          "content": "One final staging paragraph pins the float close enough to the seam that the lower half cannot fully fit on page one. That makes the carry-over visual and obstacle both necessary on the continuation page."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,66 L66,0 L132,66 L66,132 Z"
+          },
+          "properties": {
+            "sourceId": "polygon-carryover-right-float",
+            "style": {
+              "width": 132,
+              "height": 132
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAkElEQVR42u3QMQ0AAAwDoEqv9Fnot4cEBSQtKwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmR9OyMOEkoQG4WbAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Once the right float appears, the body should stay full near the left margin and lose width only along the right shoulder of the diamond. After the page break, the continuation should begin with lines that are still constrained by the carried lower half, and those lines should relax back to full width below the remainder. Once the right float appears, the body should stay full near the left margin and lose width only along the right shoulder of the diamond. After the page break, the continuation should begin with lines that are still constrained by the carried lower half, and those lines should relax back to full width below the remainder."
+        },
+        {
+          "type": "p",
+          "content": "A trailing paragraph confirms that the continuation page eventually returns to normal width once the diamond tail is gone. The important proof is not decorative symmetry. The important proof is that carry-over translation respects alignment and obstacle geometry together."
+        }
+      ]
+    }
+  ]
+}

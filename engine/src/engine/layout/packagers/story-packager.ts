@@ -85,6 +85,7 @@ type CarryOverObstacle = {
     circleCy?: number;
     align?: StoryFloatAlign;
     zIndex?: number;
+    traversalInteraction?: 'auto' | 'pass-through' | 'block';
 };
 
 type CarryOverVisual = {
@@ -491,7 +492,7 @@ export class StoryPackager implements PackagerUnit {
                 : this.pourAll(availableWidth, context)
         );
         if (columnConfig.columns > 1) {
-            return this.splitColumns(result as MultiColumnPourResult, availableWidth);
+            return this.splitColumns(result as MultiColumnPourResult, availableWidth, availableHeight);
         }
         return this.splitResult(result as FullPourResult, availableHeight, availableWidth, context.margins);
     }
@@ -538,7 +539,8 @@ export class StoryPackager implements PackagerUnit {
             const rect: OccupiedRect = {
                 x: co.x, y: 0, w: co.w, h: co.remainingH, wrap: co.wrap, gap: co.gap,
                 gapTop: co.gapTop, gapBottom: co.gapBottom,
-                shape: co.shape, path: co.path, circleCy: co.circleCy, align: co.align, zIndex: co.zIndex
+                shape: co.shape, path: co.path, circleCy: co.circleCy, align: co.align, zIndex: co.zIndex,
+                traversalInteraction: co.traversalInteraction
             };
             storyMap.register(rect);
             registeredObstacles.push(rect);
@@ -1058,6 +1060,10 @@ export class StoryPackager implements PackagerUnit {
             return this.resolveCachedImageMetrics(child.element, child.childIndex, maxRegionWidth);
         };
 
+        for (const visual of this.initialCarryOverVisuals) {
+            allBoxes.push(visual.box);
+        }
+
         for (const co of this.initialObstacles) {
             const rect: OccupiedRect = {
                 x: co.x,
@@ -1069,8 +1075,11 @@ export class StoryPackager implements PackagerUnit {
                 gapTop: co.gapTop,
                 gapBottom: co.gapBottom,
                 shape: co.shape,
+                path: co.path,
                 circleCy: co.circleCy,
-                align: co.align
+                align: co.align,
+                zIndex: co.zIndex,
+                traversalInteraction: co.traversalInteraction
             };
             allObstacles.push(rect);
             registeredObstacles.push(rect);
@@ -1602,7 +1611,7 @@ export class StoryPackager implements PackagerUnit {
         };
     }
 
-    private splitColumns(result: MultiColumnPourResult, availableWidth: number): PackagerReshapeResult {
+    private splitColumns(result: MultiColumnPourResult, availableWidth: number, availableHeight: number): PackagerReshapeResult {
         if (!result.hasOverflow || !result.continuation) {
             return {
                 currentFragment: new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this, availableWidth),
@@ -1614,7 +1623,45 @@ export class StoryPackager implements PackagerUnit {
         }
 
         const children = this.storyElement.children ?? [];
-        const partA = new FrozenStoryPackager(result.allBoxes, result.occupiedHeight, this, availableWidth);
+        const splitH = Math.max(0, Number(availableHeight) || 0);
+        const partABoxes: Box[] = [];
+        const carryOverVisuals: CarryOverVisual[] = [];
+
+        for (const box of result.allBoxes) {
+            const boxTop = Number(box.y || 0);
+            const boxBottom = boxTop + Number(box.h || 0);
+            if (!box.image) {
+                if (boxTop < splitH - 0.1) {
+                    partABoxes.push(cloneBox(box));
+                }
+                continue;
+            }
+
+            if (boxTop >= splitH - 0.1) {
+                continue;
+            }
+
+            if (boxBottom > splitH + 0.1) {
+                const visibleHeight = Math.max(0, splitH - boxTop);
+                if (visibleHeight > 0.5) {
+                    const clippedBox = cloneBox(box);
+                    clippedBox.h = visibleHeight;
+                    clippedBox.properties = {
+                        ...(clippedBox.properties || {}),
+                        _carrySourceOffsetY: 0,
+                        _carryOriginalBoxHeight: Number(clippedBox.properties?._carryOriginalBoxHeight ?? box.h),
+                        _carryOriginalBoxWidth: Number(clippedBox.properties?._carryOriginalBoxWidth ?? box.w)
+                    };
+                    partABoxes.push(clippedBox);
+                    carryOverVisuals.push(buildCarryOverImageVisualFromBox(box, boxTop, boxBottom, false, splitH));
+                }
+                continue;
+            }
+
+            partABoxes.push(cloneBox(box));
+        }
+
+        const partA = new FrozenStoryPackager(partABoxes, result.occupiedHeight, this, availableWidth);
         const partBChildren = buildStoryContinuationChildren(
             children,
             result.continuation.nextChildIndex,
@@ -1624,6 +1671,7 @@ export class StoryPackager implements PackagerUnit {
             partBChildren.length === 0
             && result.continuation.carryOvers.length === 0
             && !result.continuation.continuationPackager
+            && carryOverVisuals.length === 0
         ) {
             return { currentFragment: partA, continuationFragment: null };
         }
@@ -1639,7 +1687,8 @@ export class StoryPackager implements PackagerUnit {
             result.continuation.carryOvers,
             this.storyYOffset + result.continuation.consumedStoryHeight,
             createContinuationIdentity(this),
-            result.continuation.continuationPackager
+            result.continuation.continuationPackager,
+            carryOverVisuals
         );
         return { currentFragment: partA, continuationFragment: partB };
     }
@@ -2219,7 +2268,8 @@ function buildCarryOverObstacles(obstacles: OccupiedRect[], splitY: number): Car
                 gapBottom: obstacle.gap,
                 shape: obstacle.shape,
                 path: obstacle.path,
-                zIndex: obstacle.zIndex
+                zIndex: obstacle.zIndex,
+                traversalInteraction: obstacle.traversalInteraction
             };
             if (obstacle.shape === 'circle') {
                 // Translate the circle centre into the new page's coordinate space
@@ -2238,15 +2288,24 @@ function buildCarryOverObstacles(obstacles: OccupiedRect[], splitY: number): Car
 }
 
 function buildCarryOverImageVisual(element: PlacedImageElement, splitY: number): CarryOverVisual {
-    const sourceBox = element.box;
-    const cropTop = Math.max(0, splitY - element.topY);
+    return buildCarryOverImageVisualFromBox(element.box, element.topY, element.bottomY, element.isAbsolute, splitY);
+}
+
+function buildCarryOverImageVisualFromBox(
+    sourceBox: Box,
+    topY: number,
+    bottomY: number,
+    isAbsolute: boolean,
+    splitY: number
+): CarryOverVisual {
+    const cropTop = Math.max(0, splitY - topY);
     const originalCarryOffset = Number(sourceBox.properties?._carrySourceOffsetY ?? 0);
     const originalBoxHeight = Number(sourceBox.properties?._carryOriginalBoxHeight ?? sourceBox.h);
     const originalBoxWidth = Number(sourceBox.properties?._carryOriginalBoxWidth ?? sourceBox.w);
     const box: Box = {
         ...sourceBox,
         y: 0,
-        h: Math.max(0, element.bottomY - splitY),
+        h: Math.max(0, bottomY - splitY),
         properties: {
             ...(sourceBox.properties || {}),
             _carrySourceOffsetY: originalCarryOffset + cropTop,
@@ -2258,8 +2317,8 @@ function buildCarryOverImageVisual(element: PlacedImageElement, splitY: number):
     return {
         box,
         topY: 0,
-        bottomY: Math.max(0, element.bottomY - splitY),
-        isAbsolute: element.isAbsolute
+        bottomY: Math.max(0, bottomY - splitY),
+        isAbsolute
     };
 }
 

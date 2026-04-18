@@ -844,6 +844,98 @@ function assertPolygonCarryoverSignals(pages: any[], fixtureName: string, engine
     );
 }
 
+function assertPolygonCarryoverRightSignals(pages: any[], fixtureName: string): void {
+    assert.ok(pages.length >= 2, `${fixtureName}: expected right-aligned polygon carry-over proof to span at least two pages`);
+    const page0 = pages[0];
+    const page1 = pages[1];
+    const firstPagePolygon = (page0?.boxes || []).find((box: any) =>
+        !!box.image && box.properties?._clipShape === 'polygon'
+    );
+    assert.ok(firstPagePolygon, `${fixtureName}: expected a polygon-clipped float image on the first page`);
+
+    const carriedPolygon = (page1?.boxes || []).find((box: any) =>
+        !!box.image && Number(box.y || 0) < 48
+    );
+    assert.ok(carriedPolygon, `${fixtureName}: expected the carried polygon remainder to be visible near the top of page two`);
+    assert.ok(Number(carriedPolygon?.x || 0) > 200, `${fixtureName}: expected the carried polygon remainder to stay right-aligned on page two`);
+
+    const continuationWrapped = (page1?.boxes || [])
+        .filter((box: any) => {
+            const offsets: number[] = Array.isArray(box.properties?._lineOffsets)
+                ? box.properties._lineOffsets.map((n: any) => Number(n))
+                : [];
+            const widths: number[] = Array.isArray(box.properties?._lineWidths)
+                ? box.properties._lineWidths.map((n: any) => Number(n))
+                : [];
+            return Number(box.y || 0) < 140 && widths.length >= 3;
+        })
+        .sort((left: any, right: any) => Number(left.y || 0) - Number(right.y || 0))[0];
+    assert.ok(continuationWrapped, `${fixtureName}: expected a top-of-page continuation paragraph on page two`);
+    if (!continuationWrapped) return;
+
+    const widths: number[] = Array.isArray(continuationWrapped.properties?._lineWidths)
+        ? continuationWrapped.properties._lineWidths.map((n: any) => Number(n))
+        : [];
+    assert.ok(widths.some((width) => Number.isFinite(width) && width < Math.max(...widths) - 12), `${fixtureName}: expected right carry-over to constrain continuation widths`);
+}
+
+function assertPolygonTopBottomCarryoverSignals(pages: any[], fixtureName: string): void {
+    assert.ok(pages.length >= 2, `${fixtureName}: expected top-bottom carry-over proof to span at least two pages`);
+    const page0 = pages[0];
+    const page1 = pages[1];
+    const firstPagePolygon = (page0?.boxes || []).find((box: any) =>
+        !!box.image && box.properties?._clipShape === 'polygon'
+    );
+    assert.ok(firstPagePolygon, `${fixtureName}: expected a top-bottom polygon float on the first page`);
+    const carriedPolygon = (page1?.boxes || []).find((box: any) =>
+        !!box.image && Number(box.y || 0) < 48
+    );
+    assert.ok(carriedPolygon, `${fixtureName}: expected the carried top-bottom polygon remainder to remain visible at the top of page two`);
+    if (!carriedPolygon) return;
+
+    const firstTextBox = (page1?.boxes || [])
+        .filter((box: any) => Array.isArray(box.lines) && box.lines.length > 0)
+        .sort((left: any, right: any) => Number(left.y || 0) - Number(right.y || 0))[0];
+    assert.ok(firstTextBox, `${fixtureName}: expected text content on page two`);
+    if (!firstTextBox) return;
+
+    const polygonBottom = Number(carriedPolygon.y || 0) + Number(carriedPolygon.h || 0);
+    assert.ok(Number(firstTextBox.y || 0) >= polygonBottom + 6, `${fixtureName}: expected top-bottom continuation text to start below the carried polygon remainder`);
+    const offsets: number[] = Array.isArray(firstTextBox.properties?._lineOffsets)
+        ? firstTextBox.properties._lineOffsets.map((n: any) => Number(n))
+        : [];
+    assert.ok(offsets.every((offset) => !Number.isFinite(offset) || offset <= 0.5), `${fixtureName}: expected top-bottom continuation text to clear vertically rather than side-wrap`);
+}
+
+function assertPolygonMultiColumnCarryoverSignals(pages: any[], fixtureName: string): void {
+    assert.ok(pages.length >= 2, `${fixtureName}: expected multi-column polygon carry-over proof to span at least two pages`);
+    const page1 = pages[1];
+    const carriedPolygon = (page1?.boxes || []).find((box: any) =>
+        !!box.image && Number(box.y || 0) < 48
+    );
+    assert.ok(carriedPolygon, `${fixtureName}: expected a carried polygon remainder at the top of the continuation page`);
+    if (!carriedPolygon) return;
+
+    const continuationWrapped = (page1?.boxes || [])
+        .filter((box: any) => {
+            const lines: any[] = Array.isArray(box.lines) ? box.lines : [];
+            return (
+                Number(box.y || 0) < 140
+                && Math.abs(Number(box.x || 0) - Number(carriedPolygon.x || 0)) <= 2
+                && lines.length >= 3
+            );
+        })
+        .sort((left: any, right: any) => Number(left.y || 0) - Number(right.y || 0))[0];
+    assert.ok(continuationWrapped, `${fixtureName}: expected the continuation column to begin with wrapped text beside the carried polygon remainder`);
+    if (!continuationWrapped) return;
+
+    const widths: number[] = (Array.isArray(continuationWrapped.lines) ? continuationWrapped.lines : []).map((line: any[]) =>
+        (Array.isArray(line) ? line : []).reduce((sum: number, fragment: any) => sum + Number(fragment?.width || 0), 0)
+    );
+    const bins = new Set(widths.map((width) => Math.round(width * 2) / 2));
+    assert.ok(bins.size >= 2, `${fixtureName}: expected multi-column carry-over to preserve varied constrained widths in the continuation column`);
+}
+
 function assertZoneMapExclusionAssemblySignals(pages: any[], fixtureName: string): void {
     const allBoxes = pages.flatMap((page: any) => page.boxes || []);
     const hiddenFieldActors = allBoxes.filter((box: any) =>
@@ -2366,6 +2458,33 @@ async function run() {
                 'polygon floats that straddle a page break should keep constraining continuation lines on the next page',
                 () => {
                     assertPolygonCarryoverSignals(pagesA, fixture.name, engine);
+                }
+            );
+        }
+        if (fixture.name === '46-polygon-float-carryover-right.json') {
+            _check(
+                `${fixture.name} polygon right carry-over signals`,
+                'right-aligned polygon floats should preserve carried continuation geometry without left-bias assumptions',
+                () => {
+                    assertPolygonCarryoverRightSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '47-polygon-top-bottom-carryover.json') {
+            _check(
+                `${fixture.name} polygon top-bottom carry-over signals`,
+                'top-bottom polygon carry-over should clear the continuation text vertically instead of carving side-wrap slots',
+                () => {
+                    assertPolygonTopBottomCarryoverSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '48-polygon-multicolumn-carryover.json') {
+            _check(
+                `${fixture.name} polygon multi-column carry-over signals`,
+                'multi-column stories should preserve wrapped polygon carry-over in the continuation column',
+                () => {
+                    assertPolygonMultiColumnCarryoverSignals(pagesA, fixture.name);
                 }
             );
         }

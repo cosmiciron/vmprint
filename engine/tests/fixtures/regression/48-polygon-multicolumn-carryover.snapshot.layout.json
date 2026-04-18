@@ -1,0 +1,743 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 28.34375,
+        "lines": [
+          [
+            {
+              "text": "Polygon Multi-Column Carry-Over",
+              "width": 322.246094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 64.34375,
+        "w": 174,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "This fixture forces the polygon ",
+              "width": 149.794434,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "carry-over path to coexist with ",
+              "width": 149.166016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "two-column story flow. We want the",
+              "width": 172.197266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "current page to show the diamond ",
+              "width": 169.382813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "late in the column stack so the ",
+              "width": 151.024414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lower half must continue into the ",
+              "width": 160.810547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "next page rather than disappearing ",
+              "width": 173.679688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "at the seam.",
+              "width": 60.532227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 188.032813,
+        "w": 174,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "The useful question here is not ",
+              "width": 153.484375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "whether the wrap looks decorative. ",
+              "width": 173.035156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "The useful question is whether the ",
+              "width": 170.602051,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation page begins with an ",
+              "width": 163.286621,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "already-constrained first column ",
+              "width": 158.95752,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and then eventually regains its ",
+              "width": 151.652832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measure below the carried ",
+              "width": 132.676758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remainder.",
+              "width": 51.970703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 311.721875,
+        "w": 174,
+        "h": 14.3,
+        "lines": [
+          [
+            {
+              "text": "A third setup paragraph burns ",
+              "width": 148.591309,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 218,
+        "y": 64.34375,
+        "w": 174,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "enough vertical room that the float ",
+              "width": 169.377441,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "arrives close to the page boundary.",
+              "width": 171.010254,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "That puts pressure on the ",
+              "width": 128.406738,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation math without needing ",
+              "width": 170.005859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a huge obstacle.",
+              "width": 80.727539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 218,
+        "y": 145.132813,
+        "w": 174,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "One extra staging paragraph ",
+              "width": 143.091309,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "makes the seam unavoidable ",
+              "width": 146.14209,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inside the active column. The ",
+              "width": 145.519043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "image should now land late enough",
+              "width": 173.072754,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "that the continuation page must ",
+              "width": 156.55127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inherit a real lower remainder ",
+              "width": 145.508301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "instead of seeing the polygon ",
+              "width": 146.163574,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "disappear before the boundary.",
+              "width": 152.071777,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 218,
+        "y": 268.821875,
+        "w": 132,
+        "h": 63.178125,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 218,
+        "y": 268.821875,
+        "w": 174,
+        "h": 57.2,
+        "lines": [
+          [
+            {
+              "text": "When ",
+              "width": 31.791504,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the polygon ",
+              "width": 59.936035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "enter",
+              "width": 25.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "s the ",
+              "width": 26.903809,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "m",
+              "width": 9.163086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ulti-column ",
+              "width": 56.240723,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "s",
+              "width": 5.5,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "tory, the ",
+              "width": 42.796875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 218,
+        "y": 28,
+        "w": 132,
+        "h": 68.821875,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 174,
+        "h": 258.689063,
+        "lines": [
+          [
+            {
+              "text": "body should slide around it within ",
+              "width": 165.102051,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the active column, then keep ",
+              "width": 143.085938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "respecting the carried lower half on",
+              "width": 171.203613,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the next page before eventually ",
+              "width": 156.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "returning to the ordinary column ",
+              "width": 158.361328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "width. The next page should not ",
+              "width": 158.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "pretend the obstacle ended simply ",
+              "width": 170.607422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "because the viewport changed. ",
+              "width": 155.32666,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "When the polygon enters the ",
+              "width": 143.703613,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "multi-column story, the body should",
+              "width": 172.208008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "slide around it within the active ",
+              "width": 152.861328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "column, then keep respecting the ",
+              "width": 165.102051,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "carried lower half on the next page ",
+              "width": 171.82666,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "before eventually returning to the ",
+              "width": 163.882813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ordinary column width. The next ",
+              "width": 158.962891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page should not pretend the ",
+              "width": 140.056641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstacle ended simply because the",
+              "width": 171.832031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "viewport changed.",
+              "width": 89.27832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 294.689063,
+        "w": 174,
+        "h": 28.6,
+        "lines": [
+          [
+            {
+              "text": "A trailing paragraph below the ",
+              "width": 149.203613,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "carried remainder confirms that the ",
+              "width": 173.625977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 218,
+        "y": 28,
+        "w": 174,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "colum",
+              "width": 29.342285,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "n",
+              "width": 6.117676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "width ",
+              "width": 28.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "eve",
+              "width": 17.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ntually ",
+              "width": 34.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "return",
+              "width": 28.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "s and that the ",
+              "width": 69.716797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "two-colu",
+              "width": 40.959961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "mn story remains ",
+              "width": 87.40918,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "stable after the seam.",
+              "width": 105.77832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

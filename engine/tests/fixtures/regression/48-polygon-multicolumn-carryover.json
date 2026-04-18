@@ -1,0 +1,95 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 360
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Polygon Multi-Column Carry-Over"
+    },
+    {
+      "type": "story",
+      "columns": 2,
+      "gutter": 16,
+      "children": [
+        {
+          "type": "p",
+          "content": "This fixture forces the polygon carry-over path to coexist with two-column story flow. We want the current page to show the diamond late in the column stack so the lower half must continue into the next page rather than disappearing at the seam."
+        },
+        {
+          "type": "p",
+          "content": "The useful question here is not whether the wrap looks decorative. The useful question is whether the continuation page begins with an already-constrained first column and then eventually regains its measure below the carried remainder."
+        },
+        {
+          "type": "p",
+          "content": "A third setup paragraph burns enough vertical room that the float arrives close to the page boundary. That puts pressure on the continuation math without needing a huge obstacle."
+        },
+        {
+          "type": "p",
+          "content": "One extra staging paragraph makes the seam unavoidable inside the active column. The image should now land late enough that the continuation page must inherit a real lower remainder instead of seeing the polygon disappear before the boundary."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,66 L66,0 L132,66 L66,132 Z"
+          },
+          "properties": {
+            "sourceId": "polygon-multicolumn-carryover-float",
+            "style": {
+              "width": 132,
+              "height": 132
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAkElEQVR42u3QMQ0AAAwDoEqv9Fnot4cEBSQtKwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmR9OyMOEkoQG4WbAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "When the polygon enters the multi-column story, the body should slide around it within the active column, then keep respecting the carried lower half on the next page before eventually returning to the ordinary column width. The next page should not pretend the obstacle ended simply because the viewport changed. When the polygon enters the multi-column story, the body should slide around it within the active column, then keep respecting the carried lower half on the next page before eventually returning to the ordinary column width. The next page should not pretend the obstacle ended simply because the viewport changed."
+        },
+        {
+          "type": "p",
+          "content": "A trailing paragraph below the carried remainder confirms that the column width eventually returns and that the two-column story remains stable after the seam."
+        }
+      ]
+    }
+  ]
+}
