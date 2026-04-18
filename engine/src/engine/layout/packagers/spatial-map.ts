@@ -30,18 +30,20 @@ export interface OccupiedRect {
     gapTop?: number;
     gapBottom?: number;
     /** Exclusion-zone shape (default 'rect'). */
-    shape?: 'rect' | 'circle' | 'polygon';
+    shape?: 'rect' | 'circle' | 'ellipse' | 'polygon';
     /** Local SVG path used when `shape` is `polygon`. */
     path?: string;
     /**
-     * For circle obstacles only: story-local Y of the circle centre.
+     * For circle / ellipse obstacles only: story-local Y of the shape centre.
      * Defaults to rect.y + rect.h / 2 when absent.
-     * Carry-over circles must supply this explicitly because their rect.y is
-     * reset to 0 while the original centre may be on the previous page.
+     * Carry-over round obstacles must supply this explicitly because their
+     * rect.y is reset to 0 while the original centre may be on the previous page.
      */
     circleCy?: number;
+    ellipseCy?: number;
+    ellipseRy?: number;
     /**
-     * Float alignment, used by circle obstacles to decide which side of the
+     * Float alignment, used by rounded obstacles to decide which side of the
      * arc text wraps around. 'left' and 'right' extend the carve to the
      * opposite column edge so text never leaks into the near-side corner
      * regions (which are empty on a true circular image but would overlap a

@@ -1,0 +1,383 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 28.34375,
+        "lines": [
+          [
+            {
+              "text": "Ellipse Carry-Over",
+              "width": 174.53125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 64.34375,
+        "w": 364,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "The setup copy pushes a wide ellipse float down toward the bottom of the ",
+              "width": 360.770996,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "first page so we can prove the continuation logic is carrying an actual oval ",
+              "width": 361.979492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "silhouette instead of collapsing back to a blunt rectangle.",
+              "width": 275.789551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 116.532813,
+        "w": 364,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "A second staging paragraph keeps the descent going. The goal is to let ",
+              "width": 349.787109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page one catch the upper shoulder of the ellipse while page two inherits ",
+              "width": 352.230957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the lower body and begins already under pressure from the carried ",
+              "width": 327.73877,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstacle.",
+              "width": 44.026855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 183.021875,
+        "w": 364,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "This last setup paragraph is the deliberate stress point. The non-square ",
+              "width": 350.974121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shape should cross the seam late enough that the first page shows only a ",
+              "width": 361.388672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "clipped top portion, while the continuation page still has to honor the ",
+              "width": 333.888672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "narrower lower arc before the measure opens back up.",
+              "width": 267.195801,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 28,
+        "y": 249.510938,
+        "w": 176,
+        "h": 82.489062,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 249.510938,
+        "w": 364,
+        "h": 71.5,
+        "lines": [
+          [
+            {
+              "text": "Once the float arrives, the body should ",
+              "width": 191.388184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "slide around the broad upper curve on ",
+              "width": 188.960449,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the first page, then continue around ",
+              "width": 176.123535,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the carried lower half after the turn. If",
+              "width": 179.754395,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the continuation is honest, the ",
+              "width": 149.214355,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 28,
+        "y": 28,
+        "w": 176,
+        "h": 29.510938,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "second page should open with ",
+              "width": 151.668945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "already-constrained lines rather than ",
+              "width": 181.602051,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "pretending the oval vanished at the boundary. ",
+              "width": 225.457031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Once the float arrives, the body should slide around the broad upper curve",
+              "width": 362.000977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "on the first page, then continue around the carried lower half after the turn.",
+              "width": 362.000977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "If the continuation is honest, the second page should open with ",
+              "width": 310.051758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "already-constrained lines rather than pretending the oval vanished at the ",
+              "width": 355.894043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boundary.",
+              "width": 48.108887,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 151.689063,
+        "w": 364,
+        "h": 101.389063,
+        "lines": [
+          [
+            {
+              "text": "Below the carried remainder, the full column width should return naturally. ",
+              "width": 359.922363,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "That recovery matters because it proves the engine moved the ellipse ",
+              "width": 342.401855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "geometry itself into the next page space instead of keeping only a stale ",
+              "width": 348.551758,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "bounding box. Below the carried remainder, the full column width should ",
+              "width": 353.428711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "return naturally. That recovery matters because it proves the engine ",
+              "width": 332.40625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "moved the ellipse geometry itself into the next page space instead of ",
+              "width": 336.92334,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keeping only a stale bounding box.",
+              "width": 169.404297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

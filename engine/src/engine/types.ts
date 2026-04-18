@@ -346,8 +346,9 @@ export type StoryFloatAlign = 'left' | 'right' | 'center';
  * The exclusion-zone shape used for text wrapping:
  *   'rect'   – rectangular bounding box (default)
  *   'circle' – circle inscribed in the bounding box; text conforms to the arc
+ *   'ellipse' – ellipse inscribed in the bounding box; text conforms to the oval
  */
-export type StoryFloatShape = 'rect' | 'circle' | 'polygon';
+export type StoryFloatShape = 'rect' | 'circle' | 'ellipse' | 'polygon';
 
 export interface StoryExclusionAssemblyMember {
     /** Local X offset from the float/story-absolute anchor box. */
@@ -590,6 +591,15 @@ export interface LayoutConfig {
     };
     scripting?: LayoutScriptingConfig;
     preloadFontFamilies?: string[];
+    runtimeHints?: {
+        /**
+         * Internal execution hint for lightweight solver-style callers that do not
+         * consume post-layout observer artifacts or viewport captures.
+         *
+         * Defaults to true so full engine consumers keep the current behavior.
+         */
+        collectObserverArtifacts?: boolean;
+    };
     debug?: boolean;
 }
 

@@ -12,7 +12,7 @@ type ImageClipAssemblyMember = {
     y: number;
     w: number;
     h: number;
-    shape?: 'rect' | 'circle' | 'polygon';
+    shape?: 'rect' | 'circle' | 'ellipse' | 'polygon';
     path?: string;
 };
 
@@ -31,6 +31,24 @@ const resolveClipDescriptor = (box: Box): ClipDescriptor => ({
             ? (box.properties?._imageClipAssembly as ImageClipAssemblyMember[])
             : [])
 });
+
+function drawEllipsePath(context: Context, x: number, y: number, w: number, h: number): void {
+    const rx = Math.max(0, w / 2);
+    const ry = Math.max(0, h / 2);
+    if (rx <= 0 || ry <= 0) return;
+
+    const cx = x + rx;
+    const cy = y + ry;
+    const kappa = 0.5522847498307936;
+    const ox = rx * kappa;
+    const oy = ry * kappa;
+
+    context.moveTo(cx + rx, cy);
+    context.bezierCurveTo(cx + rx, cy + oy, cx + ox, cy + ry, cx, cy + ry);
+    context.bezierCurveTo(cx - ox, cy + ry, cx - rx, cy + oy, cx - rx, cy);
+    context.bezierCurveTo(cx - rx, cy - oy, cx - ox, cy - ry, cx, cy - ry);
+    context.bezierCurveTo(cx + ox, cy - ry, cx + rx, cy - oy, cx + rx, cy);
+}
 
 const applyClipPath = (
     context: Context,
@@ -53,6 +71,8 @@ const applyClipPath = (
                     memberY + (memberH / 2),
                     Math.max(0, Math.min(memberW, memberH) / 2)
                 );
+            } else if (member.shape === 'ellipse') {
+                drawEllipsePath(context, memberX, memberY, memberW, memberH);
             } else if (member.shape === 'polygon' && typeof member.path === 'string' && member.path.trim()) {
                 drawPolygonPath(context, parseSvgPathSubpaths(member.path), memberX, memberY, 1, 1);
             } else {
@@ -68,6 +88,11 @@ const applyClipPath = (
             context.circle(x + (w / 2), y + (h / 2), radius).clip();
             return true;
         }
+    }
+    if (clip.shape === 'ellipse') {
+        drawEllipsePath(context, x, y, w, h);
+        context.clip();
+        return true;
     }
     if (clip.shape === 'polygon' && clip.path) {
         drawPolygonPath(context, parseSvgPathSubpaths(clip.path), x, y, 1, 1);
@@ -107,7 +132,7 @@ export const drawBoxBackground = (context: Context, box: Box, boxStyle: ElementS
     if (!boxStyle.backgroundColor) return;
     const clip = resolveClipDescriptor(box);
     const radius = boxStyle.borderRadius || 0;
-    if (clip.assembly.length > 0 || clip.shape === 'circle') {
+    if (clip.assembly.length > 0 || clip.shape === 'circle' || clip.shape === 'ellipse') {
         context.save();
         if (applyClipPath(context, box.x, box.y, box.w, box.h, clip)) {
             context.rect(box.x, box.y, box.w, box.h).fillColor(boxStyle.backgroundColor).fill();
@@ -209,6 +234,8 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
                     memberY + (memberH / 2),
                     Math.max(0, Math.min(memberW, memberH) / 2)
                 );
+            } else if (member.shape === 'ellipse') {
+                drawEllipsePath(context, memberX, memberY, memberW, memberH);
             } else if (member.shape === 'polygon' && typeof member.path === 'string' && member.path.trim()) {
                 drawPolygonPath(context, parseSvgPathSubpaths(member.path), memberX, memberY, clipScaleX, clipScaleY);
             } else {
@@ -240,6 +267,21 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
             context.restore();
             return;
         }
+    }
+    if (clipShape === 'ellipse') {
+        context.save();
+        if (hasCarryViewport) {
+            context.rect(contentX, contentY, contentWidth, contentHeight).clip();
+        }
+        drawEllipsePath(context, drawX, drawY, drawWidth, drawHeight);
+        context.clip();
+        context.image(bytes, drawX, drawY, {
+            width: drawWidth,
+            height: drawHeight,
+            mimeType: image.mimeType
+        });
+        context.restore();
+        return;
     }
     if (clipShape === 'polygon' && clip.path) {
         context.save();

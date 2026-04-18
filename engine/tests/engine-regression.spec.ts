@@ -844,6 +844,103 @@ function assertPolygonCarryoverSignals(pages: any[], fixtureName: string, engine
     );
 }
 
+function assertEllipseCarryoverSignals(pages: any[], fixtureName: string, engine?: any): void {
+    assert.ok(pages.length >= 2, `${fixtureName}: expected ellipse carry-over proof to span at least two pages`);
+
+    const page0 = pages[0];
+    const page1 = pages[1];
+    const firstPageEllipse = (page0?.boxes || []).find((box: any) =>
+        !!box.image && box.properties?._clipShape === 'ellipse'
+    );
+    assert.ok(firstPageEllipse, `${fixtureName}: expected an ellipse-clipped float image on the first page`);
+    assert.ok(
+        Number(firstPageEllipse?.y || 0) + Number(firstPageEllipse?.h || 0) <= 332.5,
+        `${fixtureName}: expected the first-page ellipse visual to be clipped at the page content boundary`
+    );
+    assert.ok(
+        Number(firstPageEllipse?.w || 0) > Number(firstPageEllipse?.h || 0),
+        `${fixtureName}: expected the authored obstacle to remain a visibly non-square ellipse`
+    );
+    const firstPageWrapped = (page0?.boxes || [])
+        .filter((box: any) => {
+            const offsets: number[] = Array.isArray(box.properties?._lineOffsets)
+                ? box.properties._lineOffsets.map((n: any) => Number(n))
+                : [];
+            const widths: number[] = Array.isArray(box.properties?._lineWidths)
+                ? box.properties._lineWidths.map((n: any) => Number(n))
+                : [];
+            return Number(box.y || 0) >= Number(firstPageEllipse?.y || 0) - 0.5
+                && offsets.some((offset) => Number.isFinite(offset) && offset > 0.5)
+                && widths.length >= 4;
+        })
+        .sort((left: any, right: any) => Number(left.y || 0) - Number(right.y || 0))[0];
+    assert.ok(firstPageWrapped, `${fixtureName}: expected the first-page paragraph to wrap around the ellipse before the page break`);
+    if (!firstPageWrapped) return;
+
+    const firstPageOffsets: number[] = Array.isArray(firstPageWrapped.properties?._lineOffsets)
+        ? firstPageWrapped.properties._lineOffsets.map((n: any) => Number(n))
+        : [];
+    const firstPageWidths: number[] = Array.isArray(firstPageWrapped.properties?._lineWidths)
+        ? firstPageWrapped.properties._lineWidths.map((n: any) => Number(n))
+        : [];
+    const firstPageConstrainedWidths = firstPageWidths.filter((width, index) => Number(firstPageOffsets[index] || 0) > 0.5);
+    const firstPageWidthBins = new Set(firstPageConstrainedWidths.map((width) => Math.round(width * 2) / 2));
+    assert.ok(firstPageWidthBins.size >= 3, `${fixtureName}: expected the first-page ellipse shoulder to produce several distinct constrained widths`);
+
+    const carriedEllipse = (page1?.boxes || []).find((box: any) =>
+        !!box.image
+        && box.properties?._clipShape === 'ellipse'
+        && Number(box.y || 0) < 48
+    );
+    assert.ok(carriedEllipse, `${fixtureName}: expected the carried ellipse image remainder to remain visible at the top of page two`);
+    assert.ok(
+        Number(carriedEllipse?.h || 0) > 0 && Number(carriedEllipse?.h || 0) < Number(firstPageEllipse?.h || 0),
+        `${fixtureName}: expected the carried ellipse remainder to be cropped smaller than the original float`
+    );
+    assert.ok(
+        Number(carriedEllipse?.w || 0) >= Number(firstPageEllipse?.w || 0) - 1,
+        `${fixtureName}: expected ellipse carry-over to preserve the authored width while cropping vertically`
+    );
+
+    const continuationWrapped = (page1?.boxes || [])
+        .filter((box: any) => {
+            const offsets: number[] = Array.isArray(box.properties?._lineOffsets)
+                ? box.properties._lineOffsets.map((n: any) => Number(n))
+                : [];
+            const widths: number[] = Array.isArray(box.properties?._lineWidths)
+                ? box.properties._lineWidths.map((n: any) => Number(n))
+                : [];
+            return Number(box.y || 0) < 160
+                && offsets.some((offset) => Number.isFinite(offset) && offset > 0.5)
+                && widths.length >= 4;
+        })
+        .sort((left: any, right: any) => Number(left.y || 0) - Number(right.y || 0))[0];
+    assert.ok(continuationWrapped, `${fixtureName}: expected a top-of-page continuation paragraph to wrap around the carried ellipse`);
+    if (!continuationWrapped) return;
+
+    const offsets: number[] = Array.isArray(continuationWrapped.properties?._lineOffsets)
+        ? continuationWrapped.properties._lineOffsets.map((n: any) => Number(n))
+        : [];
+    const widths: number[] = Array.isArray(continuationWrapped.properties?._lineWidths)
+        ? continuationWrapped.properties._lineWidths.map((n: any) => Number(n))
+        : [];
+    const constrainedWidths = widths.filter((width, index) => Number(offsets[index] || 0) > 0.5);
+    const widthBins = new Set(constrainedWidths.map((width) => Math.round(width * 2) / 2));
+    assert.ok(widthBins.size >= 2, `${fixtureName}: expected carried ellipse wrap to vary continuation widths near the top of page two`);
+
+    const report = engine?.getLastSimulationReport?.();
+    const profile = report?.profile;
+    assert.ok(profile, `${fixtureName}: expected simulation profile for carry-over performance assertions`);
+    assert.equal(profile?.speculativeBranchCalls ?? 0, 0, `${fixtureName}: carry-over pagination should not require speculative branch snapshots`);
+    assert.equal(profile?.progressionSnapshotCalls ?? 0, 0, `${fixtureName}: carry-over pagination should not restore progression snapshots`);
+    assert.equal(profile?.checkpointRecordCalls ?? 0, 0, `${fixtureName}: carry-over pagination should not record boundary checkpoints`);
+    assert.equal(profile?.boundaryCheckpointCalls ?? 0, 0, `${fixtureName}: carry-over pagination should not sweep page-boundary checkpoints`);
+    assert.ok(
+        Number(profile?.keepWithNextPlanMs ?? 0) < 40,
+        `${fixtureName}: keep-with-next lookahead should remain on the capped continuation probe path`
+    );
+}
+
 function assertPolygonCarryoverRightSignals(pages: any[], fixtureName: string): void {
     assert.ok(pages.length >= 2, `${fixtureName}: expected right-aligned polygon carry-over proof to span at least two pages`);
     const page0 = pages[0];
@@ -2590,6 +2687,15 @@ async function run() {
                 'polygon floats that straddle a page break should keep constraining continuation lines on the next page',
                 () => {
                     assertPolygonCarryoverSignals(pagesA, fixture.name, engine);
+                }
+            );
+        }
+        if (fixture.name === '52-ellipse-float-carryover.json') {
+            _check(
+                `${fixture.name} ellipse carry-over signals`,
+                'ellipse floats that straddle a page break should preserve true oval carry-over and constrain continuation lines on the next page',
+                () => {
+                    assertEllipseCarryoverSignals(pagesA, fixture.name, engine);
                 }
             );
         }

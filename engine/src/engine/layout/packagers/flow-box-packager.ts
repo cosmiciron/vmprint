@@ -312,6 +312,8 @@ export class FlowBoxPackager implements PackagerUnit {
             gapBottom: Number.isFinite(Number(exclusion.gapBottom)) ? Math.max(0, Number(exclusion.gapBottom)) : undefined,
             shape: exclusion.shape === 'circle'
                 ? 'circle'
+                : exclusion.shape === 'ellipse'
+                    ? 'ellipse'
                 : exclusion.shape === 'polygon'
                     ? 'polygon'
                     : 'rect',

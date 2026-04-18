@@ -1119,6 +1119,80 @@ async function testRendererCircularImageClip() {
     );
 }
 
+async function testRendererEllipseImageClip() {
+    log('Scenario: renderer clips ellipse-shaped image boxes through the shared context API');
+
+    class EllipseClipContext extends MockContext {
+        moves: Array<{ x: number; y: number }> = [];
+        beziers: Array<{ cp1x: number; cp1y: number; cp2x: number; cp2y: number; x: number; y: number }> = [];
+        clipCalls = 0;
+
+        override moveTo(x: number, y: number): this {
+            this.moves.push({ x, y });
+            return this;
+        }
+
+        override bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): this {
+            this.beziers.push({ cp1x, cp1y, cp2x, cp2y, x, y });
+            return this;
+        }
+
+        override clip(_rule?: 'nonzero' | 'evenodd'): this {
+            this.clipCalls += 1;
+            return this;
+        }
+    }
+
+    const config = buildConfig();
+    const renderer = new ContextRenderer(config, false);
+    const context = new EllipseClipContext();
+
+    const pages: Page[] = [{
+        index: 0,
+        width: 320,
+        height: 220,
+        boxes: [{
+            type: 'image',
+            x: 20,
+            y: 30,
+            w: 120,
+            h: 80,
+            image: {
+                base64Data: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7Z0ioAAAAASUVORK5CYII=',
+                mimeType: 'image/png',
+                intrinsicWidth: 1,
+                intrinsicHeight: 1,
+                fit: 'fill'
+            },
+            style: {},
+            properties: {
+                _imageClipShape: 'ellipse'
+            },
+            meta: {
+                sourceId: 'ellipse-image',
+                engineKey: 'ellipse-image',
+                sourceType: 'image',
+                fragmentIndex: 0,
+                isContinuation: false
+            }
+        }]
+    }];
+
+    await renderer.render(pages, context);
+
+    _check(
+        'ellipse image boxes emit bezier clip path commands',
+        'renderer defines an ellipse clip through cubic segments and applies it before drawing an ellipse-shaped image box',
+        () => {
+            assert.equal(context.moves.length, 1, 'expected one ellipse path move');
+            assert.equal(context.beziers.length, 4, 'expected four bezier segments for the ellipse path');
+            assert.equal(context.clipCalls, 1, 'expected one clip call');
+            assert.equal(context.imageCalls, 1, 'expected one image draw');
+            assert.deepEqual(context.moves[0], { x: 140, y: 70 });
+        }
+    );
+}
+
 async function testTablePaginationRepeatsHeaderRows() {
     log('Scenario: table primitive paginates by rows and repeats headers on continuation pages');
     const config = buildConfig();
@@ -2078,6 +2152,7 @@ async function run() {
     await testHyphenatedContinuationPreservesBoundaryWord();
     await testRendererZIndexOrdering();
     await testRendererCircularImageClip();
+    await testRendererEllipseImageClip();
     await testTablePaginationRepeatsHeaderRows();
     await testTableColSpanMaterializesSpanWidth();
     await testTableSplitStopsBeforeFullWidthViewportBlocker();
@@ -2098,4 +2173,3 @@ run().catch((err) => {
     console.error('[flat-pipeline.spec] FAILED', err);
     process.exit(1);
 });
-

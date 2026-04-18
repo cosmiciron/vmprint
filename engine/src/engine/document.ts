@@ -560,9 +560,9 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
     if (directive.gap !== undefined) assertFiniteNumberAt(directive.gap, `${path}.gap`, documentPath);
     if (directive.zIndex !== undefined) assertFiniteNumberAt(directive.zIndex, `${path}.zIndex`, documentPath);
     if (directive.path !== undefined) assertStringAt(directive.path, `${path}.path`, documentPath);
-    const validShapes = new Set(['rect', 'circle', 'polygon']);
+    const validShapes = new Set(['rect', 'circle', 'ellipse', 'polygon']);
     if (directive.shape !== undefined && !validShapes.has(directive.shape as string)) {
-        contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle, polygon.');
+        contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle, ellipse, polygon.');
     }
     if (directive.exclusionAssembly !== undefined) {
         const assembly = assertPlainObjectAt(directive.exclusionAssembly, `${path}.exclusionAssembly`, documentPath);
@@ -587,7 +587,7 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
                 contractError(documentPath, `${memberPath}.h`, 'expected a number greater than 0.');
             }
             if (memberObj.shape !== undefined && !validShapes.has(memberObj.shape as string)) {
-                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle, polygon.');
+                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle, ellipse, polygon.');
             }
         });
     }
@@ -599,7 +599,7 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
 
     const validWraps = new Set(['around', 'top-bottom', 'none']);
     const validAligns = new Set(['left', 'right', 'center']);
-    const validShapes = new Set(['rect', 'circle', 'polygon']);
+    const validShapes = new Set(['rect', 'circle', 'ellipse', 'polygon']);
     const validKinds = new Set(['exclude']);
 
     if (directive.kind !== undefined && !validKinds.has(directive.kind as string)) {
@@ -630,7 +630,7 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
         contractError(documentPath, `${path}.traversalInteraction`, 'expected one of: auto, wrap, overpass, ignore.');
     }
     if (directive.shape !== undefined && !validShapes.has(directive.shape as string)) {
-        contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle, polygon.');
+        contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle, ellipse, polygon.');
     }
     if (directive.hidden !== undefined) {
         assertBooleanAt(directive.hidden, `${path}.hidden`, documentPath);
@@ -661,7 +661,7 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
                 contractError(documentPath, `${memberPath}.h`, 'expected a number greater than 0.');
             }
             if (memberObj.shape !== undefined && !validShapes.has(memberObj.shape as string)) {
-                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle, polygon.');
+                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle, ellipse, polygon.');
             }
         });
     }

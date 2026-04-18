@@ -27,7 +27,7 @@ export interface ExclusionFieldDescriptor {
  */
 export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescriptor): OccupiedRect[] {
     const gap = Math.max(0, Number(descriptor.gap ?? 0));
-    const normalizedShape = (descriptor.shape ?? 'rect') as 'rect' | 'circle' | 'polygon';
+    const normalizedShape = (descriptor.shape ?? 'rect') as 'rect' | 'circle' | 'ellipse' | 'polygon';
     const assemblyMembers = Array.isArray(descriptor.exclusionAssembly?.members)
         ? descriptor.exclusionAssembly.members
         : [];
@@ -55,7 +55,7 @@ export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescripto
         h: Math.max(0, Number(member.h ?? 0)),
         wrap: descriptor.wrap,
         gap,
-        shape: ((member.shape ?? 'rect') as 'rect' | 'circle' | 'polygon'),
+        shape: ((member.shape ?? 'rect') as 'rect' | 'circle' | 'ellipse' | 'polygon'),
         path: member.shape === 'polygon' ? String(member.path || '') : undefined,
         zIndex: Number.isFinite(Number(member.zIndex))
             ? Number(member.zIndex)

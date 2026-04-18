@@ -1,0 +1,88 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 360
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Ellipse Carry-Over"
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "p",
+          "content": "The setup copy pushes a wide ellipse float down toward the bottom of the first page so we can prove the continuation logic is carrying an actual oval silhouette instead of collapsing back to a blunt rectangle."
+        },
+        {
+          "type": "p",
+          "content": "A second staging paragraph keeps the descent going. The goal is to let page one catch the upper shoulder of the ellipse while page two inherits the lower body and begins already under pressure from the carried obstacle."
+        },
+        {
+          "type": "p",
+          "content": "This last setup paragraph is the deliberate stress point. The non-square shape should cross the seam late enough that the first page shows only a clipped top portion, while the continuation page still has to honor the narrower lower arc before the measure opens back up."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "ellipse"
+          },
+          "properties": {
+            "sourceId": "ellipse-carryover-float",
+            "style": {
+              "width": 176,
+              "height": 112
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Once the float arrives, the body should slide around the broad upper curve on the first page, then continue around the carried lower half after the turn. If the continuation is honest, the second page should open with already-constrained lines rather than pretending the oval vanished at the boundary. Once the float arrives, the body should slide around the broad upper curve on the first page, then continue around the carried lower half after the turn. If the continuation is honest, the second page should open with already-constrained lines rather than pretending the oval vanished at the boundary."
+        },
+        {
+          "type": "p",
+          "content": "Below the carried remainder, the full column width should return naturally. That recovery matters because it proves the engine moved the ellipse geometry itself into the next page space instead of keeping only a stale bounding box. Below the carried remainder, the full column width should return naturally. That recovery matters because it proves the engine moved the ellipse geometry itself into the next page space instead of keeping only a stale bounding box."
+        }
+      ]
+    }
+  ]
+}

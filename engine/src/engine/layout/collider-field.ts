@@ -138,6 +138,69 @@ class CircleCollider implements CompiledCollider {
     }
 }
 
+class EllipseCollider implements CompiledCollider {
+    readonly wrap: StoryWrapMode;
+    readonly zIndex: number;
+    readonly traversalInteraction: TraversalInteractionPolicy;
+    readonly minY: number;
+    readonly maxY: number;
+
+    constructor(private readonly obstacle: OccupiedRect) {
+        this.wrap = obstacle.wrap;
+        this.zIndex = normalizeZIndex(obstacle.zIndex);
+        this.traversalInteraction = obstacle.traversalInteraction ?? 'auto';
+        const cy = obstacle.ellipseCy ?? (obstacle.y + obstacle.h / 2);
+        const baseRy = obstacle.ellipseRy ?? (obstacle.h / 2);
+        const ry = baseRy + obstacle.gap;
+        this.minY = cy - ry;
+        this.maxY = cy + ry;
+    }
+
+    overlapsBand(query: BandQuery): boolean {
+        const cy = this.obstacle.ellipseCy ?? (this.obstacle.y + this.obstacle.h / 2);
+        const baseRy = this.obstacle.ellipseRy ?? (this.obstacle.h / 2);
+        const ry = baseRy + this.obstacle.gap;
+        const ellipseTop = cy - ry;
+        const ellipseBottom = query.opticalUnderhang && this.wrap === 'around'
+            ? cy + baseRy
+            : cy + ry;
+        return query.bottom > ellipseTop && query.top < ellipseBottom;
+    }
+
+    queryBand(query: BandQuery): readonly BlockedInterval[] {
+        if (!this.overlapsBand(query)) return [];
+
+        const cx = this.obstacle.x + this.obstacle.w / 2;
+        const cy = this.obstacle.ellipseCy ?? (this.obstacle.y + this.obstacle.h / 2);
+        const rx = this.obstacle.w / 2 + this.obstacle.gap;
+        const baseRy = this.obstacle.ellipseRy ?? (this.obstacle.h / 2);
+        const ry = baseRy + this.obstacle.gap;
+        if (rx <= 0 || ry <= 0) return [];
+
+        const yClosest = Math.max(query.top, Math.min(query.bottom, cy));
+        const dy = yClosest - cy;
+        const normalizedY = Math.max(-1, Math.min(1, dy / ry));
+        const chordHalfW = rx * Math.sqrt(Math.max(0, 1 - (normalizedY * normalizedY)));
+
+        const align = this.obstacle.align ?? 'center';
+        const carveLeft = align === 'right'
+            ? cx - chordHalfW
+            : align === 'center'
+                ? cx - chordHalfW
+                : this.obstacle.x - rx - 1;
+        const carveRight = align === 'left'
+            ? cx + chordHalfW
+            : align === 'center'
+                ? cx + chordHalfW
+                : this.obstacle.x + this.obstacle.w + rx + 1;
+        return [{ left: carveLeft, right: carveRight }];
+    }
+
+    getBottomExtent(_opticalUnderhang?: boolean): number {
+        return this.obstacle.y + this.obstacle.h + (this.obstacle.gapBottom ?? this.obstacle.gap);
+    }
+}
+
 class PolygonCollider implements CompiledCollider {
     readonly wrap: StoryWrapMode;
     readonly zIndex: number;
@@ -400,6 +463,9 @@ export class ColliderField {
 function compileCollider(obstacle: OccupiedRect): CompiledCollider {
     if (obstacle.shape === 'circle') {
         return new CircleCollider(obstacle);
+    }
+    if (obstacle.shape === 'ellipse') {
+        return new EllipseCollider(obstacle);
     }
     if (obstacle.shape === 'polygon') {
         const translatedSubpaths = tryResolvePolygonSubpaths(obstacle);

@@ -80,10 +80,14 @@ type CarryOverObstacle = {
     gap: number;
     gapTop?: number;
     gapBottom?: number;
-    shape?: 'rect' | 'circle' | 'polygon';
+    shape?: 'rect' | 'circle' | 'ellipse' | 'polygon';
     path?: string;
     /** Circle centre Y in the new page's story-local coordinates. */
     circleCy?: number;
+    /** Ellipse centre Y in the new page's story-local coordinates. */
+    ellipseCy?: number;
+    /** Ellipse half-height from the original obstacle before visual cropping. */
+    ellipseRy?: number;
     align?: StoryFloatAlign;
     zIndex?: number;
     traversalInteraction?: 'auto' | 'pass-through' | 'block';
@@ -540,7 +544,7 @@ export class StoryPackager implements PackagerUnit {
             const rect: OccupiedRect = {
                 x: co.x, y: 0, w: co.w, h: co.remainingH, wrap: co.wrap, gap: co.gap,
                 gapTop: co.gapTop, gapBottom: co.gapBottom,
-                shape: co.shape, path: co.path, circleCy: co.circleCy, align: co.align, zIndex: co.zIndex,
+                shape: co.shape, path: co.path, circleCy: co.circleCy, ellipseCy: co.ellipseCy, ellipseRy: co.ellipseRy, align: co.align, zIndex: co.zIndex,
                 traversalInteraction: co.traversalInteraction
             };
             storyMap.register(rect);
@@ -965,6 +969,8 @@ export class StoryPackager implements PackagerUnit {
                 ? translateSvgPath(rect.path, rect.x - left, 0)
                 : rect.path,
             circleCy: rect.circleCy,
+            ellipseCy: rect.ellipseCy,
+            ellipseRy: rect.ellipseRy,
             align: rect.align,
             zIndex: rect.zIndex,
             traversalInteraction: rect.traversalInteraction
@@ -1086,6 +1092,8 @@ export class StoryPackager implements PackagerUnit {
                 shape: co.shape,
                 path: co.path,
                 circleCy: co.circleCy,
+                ellipseCy: co.ellipseCy,
+                ellipseRy: co.ellipseRy,
                 align: co.align,
                 zIndex: co.zIndex,
                 traversalInteraction: co.traversalInteraction
@@ -2280,11 +2288,18 @@ function buildCarryOverObstacles(obstacles: OccupiedRect[], splitY: number): Car
                 zIndex: obstacle.zIndex,
                 traversalInteraction: obstacle.traversalInteraction
             };
-            if (obstacle.shape === 'circle') {
-                // Translate the circle centre into the new page's coordinate space
+            if (obstacle.shape === 'circle' || obstacle.shape === 'ellipse') {
+                // Translate the round-shape centre into the new page's coordinate space
                 // (new page Y=0 corresponds to splitY in the old page).
-                const originalCy = obstacle.circleCy ?? (obstacle.y + obstacle.h / 2);
-                co.circleCy = originalCy - splitY;
+                const originalCy = obstacle.shape === 'ellipse'
+                    ? (obstacle.ellipseCy ?? (obstacle.y + obstacle.h / 2))
+                    : (obstacle.circleCy ?? (obstacle.y + obstacle.h / 2));
+                if (obstacle.shape === 'ellipse') {
+                    co.ellipseCy = originalCy - splitY;
+                    co.ellipseRy = obstacle.ellipseRy ?? (obstacle.h / 2);
+                } else {
+                    co.circleCy = originalCy - splitY;
+                }
             }
             if (obstacle.shape === 'polygon' && typeof obstacle.path === 'string' && obstacle.path.trim()) {
                 co.path = translateSvgPath(obstacle.path, 0, obstacle.y - splitY);

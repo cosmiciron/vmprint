@@ -91,7 +91,7 @@ export interface SpatialBlockObstacle {
     yAnchor: 'at-cursor';
     align: 'left' | 'center' | 'right';
     mode: 'float' | 'story-absolute';
-    shape?: 'rect' | 'circle' | 'polygon';
+    shape?: 'rect' | 'circle' | 'ellipse' | 'polygon';
     path?: string;
     exclusionAssembly?: {
         members: Array<{
@@ -99,7 +99,7 @@ export interface SpatialBlockObstacle {
             y: number;
             w: number;
             h: number;
-            shape?: 'rect' | 'circle' | 'polygon';
+            shape?: 'rect' | 'circle' | 'ellipse' | 'polygon';
             path?: string;
             zIndex?: number;
             traversalInteraction?: TraversalInteractionPolicy;

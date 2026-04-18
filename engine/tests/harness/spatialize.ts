@@ -171,7 +171,7 @@ interface BlockObstacle {
   yAnchor: 'at-cursor';
   align: 'left' | 'center' | 'right';
   mode: 'float' | 'story-absolute';
-  shape?: 'rect' | 'circle' | 'polygon';
+  shape?: 'rect' | 'circle' | 'ellipse' | 'polygon';
   path?: string;
   exclusionAssembly?: StoryLayoutDirective['exclusionAssembly'];
   zIndex?: number;
