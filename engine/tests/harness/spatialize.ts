@@ -20,6 +20,7 @@ interface SourceRef {
   language?: string;
   sourceSyntax?: string;
   sourceRange?: Record<string, unknown>;
+  __elementProperties?: Record<string, unknown>;
 }
 
 export interface SpatialDocumentFixture extends SpatialDocument {
@@ -90,6 +91,8 @@ interface ZoneStrip {
   content?: ZoneContent;
   balance?: boolean;
   blockStyle?: Record<string, unknown>;
+  frameOverflow?: 'move-whole' | 'continue';
+  worldBehavior?: 'fixed' | 'spanning';
   source: SourceRef;
 }
 
@@ -274,6 +277,7 @@ function buildSourceRef(element: Element, elementPath: string): SourceRef {
   if (typeof properties.language === 'string' && properties.language.trim()) source.language = properties.language;
   if (typeof properties.sourceSyntax === 'string' && properties.sourceSyntax.trim()) source.sourceSyntax = properties.sourceSyntax;
   if (isObject(properties.sourceRange)) source.sourceRange = { ...properties.sourceRange };
+  if (Object.keys(properties).length > 0) source.__elementProperties = deepSortObject(JSON.parse(JSON.stringify(properties)));
   return source;
 }
 
@@ -643,6 +647,8 @@ function normalizeZoneMap(element: Element, context: NormalizeContext, scope: Co
     overflow: 'independent',
     sourceKind: 'zone-map',
     zones,
+    ...(zoneOptions.frameOverflow ? { frameOverflow: zoneOptions.frameOverflow } : {}),
+    ...(zoneOptions.worldBehavior ? { worldBehavior: zoneOptions.worldBehavior } : {}),
     blockStyle: Object.keys(blockStyle).length > 0 ? blockStyle : undefined,
     source: buildSourceRef(element, scope.path)
   });

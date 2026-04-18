@@ -17,6 +17,7 @@ export interface SpatialSourceRef {
     language?: string;
     sourceSyntax?: string;
     sourceRange?: Record<string, unknown>;
+    __elementProperties?: Record<string, unknown>;
 }
 
 export interface SpatialDocument {
@@ -124,6 +125,8 @@ export interface SpatialZoneStrip {
     content?: SpatialZoneContent;
     balance?: boolean;
     blockStyle?: Record<string, unknown>;
+    frameOverflow?: 'move-whole' | 'continue';
+    worldBehavior?: 'fixed' | 'spanning';
     source: SpatialSourceRef;
 }
 
@@ -279,6 +282,27 @@ function adaptFlowBlock(
         allowLineSplit: block.allowLineSplit,
         overflowPolicy: block.overflowPolicy
     };
+    const passthrough = block.source?.__elementProperties;
+    if (passthrough && typeof passthrough === 'object') {
+        if (passthrough.toc && typeof passthrough.toc === 'object') {
+            properties.toc = JSON.parse(JSON.stringify(passthrough.toc));
+        }
+        if (passthrough.space && typeof passthrough.space === 'object') {
+            properties.space = JSON.parse(JSON.stringify(passthrough.space));
+        }
+        if (passthrough.spatialField && typeof passthrough.spatialField === 'object') {
+            properties.spatialField = JSON.parse(JSON.stringify(passthrough.spatialField));
+        }
+        if (typeof passthrough.onResolve === 'string') {
+            properties.onResolve = passthrough.onResolve;
+        }
+        if (typeof passthrough.onMessage === 'string') {
+            properties.onMessage = passthrough.onMessage;
+        }
+        if (passthrough._worldPlainOptions && typeof passthrough._worldPlainOptions === 'object') {
+            properties._worldPlainOptions = JSON.parse(JSON.stringify(passthrough._worldPlainOptions));
+        }
+    }
     element.properties = applySpatialSourceProperties(properties, block.source);
     return element;
 }
@@ -372,7 +396,9 @@ function adaptZoneStrip(strip: SpatialZoneStrip, options: SpatialAdaptOptions): 
         zones,
         zoneLayout: {
             columns: buildFixedColumns(widths),
-            gap
+            gap,
+            ...(strip.frameOverflow ? { frameOverflow: strip.frameOverflow } : {}),
+            ...(strip.worldBehavior ? { worldBehavior: strip.worldBehavior } : {})
         },
         properties: applySpatialSourceProperties({
             style: strip.blockStyle ? { ...strip.blockStyle } : undefined

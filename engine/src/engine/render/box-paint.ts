@@ -143,34 +143,65 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
     const contentHeight = Math.max(0, box.h - paddingTop - paddingBottom - borderTop - borderBottom);
     if (contentWidth <= 0 || contentHeight <= 0) return;
 
+    const carrySourceOffsetY = Number(box.properties?._carrySourceOffsetY ?? 0);
+    const authoredOriginalBoxWidth = Number(box.properties?._carryOriginalBoxWidth);
+    const authoredOriginalBoxHeight = Number(box.properties?._carryOriginalBoxHeight);
+    const originalBoxWidth = Number.isFinite(authoredOriginalBoxWidth)
+        ? Math.max(1, authoredOriginalBoxWidth)
+        : box.w;
+    const originalBoxHeight = Number.isFinite(authoredOriginalBoxHeight)
+        ? Math.max(1, authoredOriginalBoxHeight)
+        : box.h;
+    const hasCarryViewport =
+        (Number.isFinite(carrySourceOffsetY) && carrySourceOffsetY > 0)
+        || Math.abs(originalBoxWidth - box.w) > 0.001
+        || Math.abs(originalBoxHeight - box.h) > 0.001;
+    const originalContentWidth = Math.max(0, originalBoxWidth - paddingLeft - paddingRight - borderLeft - borderRight);
+    const originalContentHeight = Math.max(0, originalBoxHeight - paddingTop - paddingBottom - borderTop - borderBottom);
+    if (hasCarryViewport && (originalContentWidth <= 0 || originalContentHeight <= 0)) return;
+
     let drawX = contentX;
     let drawY = contentY;
-    let drawWidth = contentWidth;
-    let drawHeight = contentHeight;
+    let drawWidth = hasCarryViewport ? originalContentWidth : contentWidth;
+    let drawHeight = hasCarryViewport ? originalContentHeight : contentHeight;
 
     if (image.fit !== 'fill') {
         const intrinsicWidth = Math.max(1, Number(image.intrinsicWidth || 1));
         const intrinsicHeight = Math.max(1, Number(image.intrinsicHeight || 1));
-        const scale = Math.min(contentWidth / intrinsicWidth, contentHeight / intrinsicHeight);
+        const fitWidth = hasCarryViewport ? originalContentWidth : contentWidth;
+        const fitHeight = hasCarryViewport ? originalContentHeight : contentHeight;
+        const scale = Math.min(fitWidth / intrinsicWidth, fitHeight / intrinsicHeight);
         drawWidth = intrinsicWidth * scale;
         drawHeight = intrinsicHeight * scale;
-        drawX = contentX + ((contentWidth - drawWidth) / 2);
-        drawY = contentY + ((contentHeight - drawHeight) / 2);
+        const anchorWidth = hasCarryViewport ? originalContentWidth : contentWidth;
+        const anchorHeight = hasCarryViewport ? originalContentHeight : contentHeight;
+        drawX = contentX + ((anchorWidth - drawWidth) / 2);
+        drawY = contentY + ((anchorHeight - drawHeight) / 2);
+    }
+
+    if (hasCarryViewport) {
+        const originalToDrawScaleY = originalContentHeight > 0 ? (drawHeight / originalContentHeight) : 1;
+        drawY -= carrySourceOffsetY * originalToDrawScaleY;
     }
 
     const bytes = getImageBytes(image.base64Data);
     const clip = resolveClipDescriptor(box);
     const clipShape = clip.shape;
     const clipAssembly = clip.assembly;
+    const clipBoxWidth = hasCarryViewport ? originalBoxWidth : box.w;
+    const clipBoxHeight = hasCarryViewport ? originalBoxHeight : box.h;
+    const clipScaleX = clipBoxWidth > 0 ? drawWidth / clipBoxWidth : 1;
+    const clipScaleY = clipBoxHeight > 0 ? drawHeight / clipBoxHeight : 1;
     if (clipAssembly.length > 0) {
-        const scaleX = box.w > 0 ? drawWidth / box.w : 1;
-        const scaleY = box.h > 0 ? drawHeight / box.h : 1;
         context.save();
+        if (hasCarryViewport) {
+            context.rect(contentX, contentY, contentWidth, contentHeight).clip();
+        }
         for (const member of clipAssembly) {
-            const memberX = drawX + (Number(member.x || 0) * scaleX);
-            const memberY = drawY + (Number(member.y || 0) * scaleY);
-            const memberW = Math.max(0, Number(member.w || 0) * scaleX);
-            const memberH = Math.max(0, Number(member.h || 0) * scaleY);
+            const memberX = drawX + (Number(member.x || 0) * clipScaleX);
+            const memberY = drawY + (Number(member.y || 0) * clipScaleY);
+            const memberW = Math.max(0, Number(member.w || 0) * clipScaleX);
+            const memberH = Math.max(0, Number(member.h || 0) * clipScaleY);
             if (memberW <= 0 || memberH <= 0) continue;
             if (member.shape === 'circle') {
                 context.circle(
@@ -179,7 +210,7 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
                     Math.max(0, Math.min(memberW, memberH) / 2)
                 );
             } else if (member.shape === 'polygon' && typeof member.path === 'string' && member.path.trim()) {
-                drawPolygonPath(context, parseSvgPathSubpaths(member.path), memberX, memberY, scaleX, scaleY);
+                drawPolygonPath(context, parseSvgPathSubpaths(member.path), memberX, memberY, clipScaleX, clipScaleY);
             } else {
                 context.rect(memberX, memberY, memberW, memberH);
             }
@@ -197,6 +228,9 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
         const radius = Math.max(0, Math.min(drawWidth, drawHeight) / 2);
         if (radius > 0) {
             context.save();
+            if (hasCarryViewport) {
+                context.rect(contentX, contentY, contentWidth, contentHeight).clip();
+            }
             context.circle(drawX + (drawWidth / 2), drawY + (drawHeight / 2), radius).clip();
             context.image(bytes, drawX, drawY, {
                 width: drawWidth,
@@ -209,15 +243,29 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
     }
     if (clipShape === 'polygon' && clip.path) {
         context.save();
+        if (hasCarryViewport) {
+            context.rect(contentX, contentY, contentWidth, contentHeight).clip();
+        }
         drawPolygonPath(
             context,
             parseSvgPathSubpaths(clip.path),
             drawX,
             drawY,
-            box.w > 0 ? drawWidth / box.w : 1,
-            box.h > 0 ? drawHeight / box.h : 1
+            clipScaleX,
+            clipScaleY
         );
         context.clip();
+        context.image(bytes, drawX, drawY, {
+            width: drawWidth,
+            height: drawHeight,
+            mimeType: image.mimeType
+        });
+        context.restore();
+        return;
+    }
+    if (hasCarryViewport) {
+        context.save();
+        context.rect(contentX, contentY, contentWidth, contentHeight).clip();
         context.image(bytes, drawX, drawY, {
             width: drawWidth,
             height: drawHeight,

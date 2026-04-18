@@ -1,0 +1,89 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 360
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Polygon Carry-Over"
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "p",
+          "content": "The setup copy pushes the polygon float down toward the bottom of the first page so we can observe whether its silhouette survives the break as a real carried obstacle rather than collapsing into a dead rectangle."
+        },
+        {
+          "type": "p",
+          "content": "A second setup paragraph continues the descent. We want the image to arrive late enough that the first page sees only the upper portion of the diamond while the next page inherits the lower half and keeps wrapping around it."
+        },
+        {
+          "type": "p",
+          "content": "One more staging paragraph pins the float close to the page seam. This is the deliberate stress point: the image should no longer fit cleanly on page one, so the lower half of the polygon must become a real carried obstacle on page two."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,66 L66,0 L132,66 L66,132 Z"
+          },
+          "properties": {
+            "sourceId": "polygon-carryover-float",
+            "style": {
+              "width": 132,
+              "height": 132
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAkElEQVR42u3QMQ0AAAwDoEqv9Fnot4cEBSQtKwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmR9OyMOEkoQG4WbAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Once the float appears, the body should slide around the broad shoulder of the diamond on the first page, then continue around the carried lower half after the page turn. If the continuation logic is honest, the second page should begin with already-constrained lines instead of pretending the shape vanished at the boundary. Once the float appears, the body should slide around the broad shoulder of the diamond on the first page, then continue around the carried lower half after the page turn. If the continuation logic is honest, the second page should begin with already-constrained lines instead of pretending the shape vanished at the boundary."
+        },
+        {
+          "type": "p",
+          "content": "Below the carried remainder, the full column width should gradually return. That transition matters because it proves the polygon path itself was translated into the new page space, not just its bounding box. Below the carried remainder, the full column width should gradually return. That transition matters because it proves the polygon path itself was translated into the new page space, not just its bounding box."
+        }
+      ]
+    }
+  ]
+}

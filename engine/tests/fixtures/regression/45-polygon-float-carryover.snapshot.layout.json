@@ -1,0 +1,437 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 28.34375,
+        "lines": [
+          [
+            {
+              "text": "Polygon Carry-Over",
+              "width": 188.945313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 64.34375,
+        "w": 364,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "The setup copy pushes the polygon float down toward the bottom of the ",
+              "width": 351.613281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "first page so we can observe whether its silhouette survives the break as a",
+              "width": 362.575684,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "real carried obstacle rather than collapsing into a dead rectangle.",
+              "width": 316.137207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 116.532813,
+        "w": 364,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "A second setup paragraph continues the descent. We want the image to ",
+              "width": 354.465332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "arrive late enough that the first page sees only the upper portion of the ",
+              "width": 345.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "diamond while the next page inherits the lower half and keeps wrapping ",
+              "width": 351.60791,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around it.",
+              "width": 45.86377,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 183.021875,
+        "w": 364,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "One more staging paragraph pins the float close to the page seam. This is ",
+              "width": 363.816406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the deliberate stress point: the image should no longer fit cleanly on page ",
+              "width": 359.5625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "one, so the lower half of the polygon must become a real carried obstacle ",
+              "width": 360.147949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "on page two.",
+              "width": 62.992188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 28,
+        "y": 249.510938,
+        "w": 132,
+        "h": 82.489062,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 249.510938,
+        "w": 364,
+        "h": 71.5,
+        "lines": [
+          [
+            {
+              "text": "Once ",
+              "width": 29.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the float appears, the body should slide around the ",
+              "width": 250.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "broad",
+              "width": 28.133789,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shoulder of the diamond on the first page, then ",
+              "width": 230.543457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "co",
+              "width": 11.617676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ntinue around the carried lower half after the page ",
+              "width": 246.436523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "t",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "urn. If the continuation logic is honest, the ",
+              "width": 206.072754,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "second page should begin with ",
+              "width": 154.112793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 360,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 28,
+        "y": 28,
+        "w": 132,
+        "h": 49.510938,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 101.389063,
+        "lines": [
+          [
+            {
+              "text": "a",
+              "width": 6.117676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lready-constrained lines instead of pretending the",
+              "width": 240.318848,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sha",
+              "width": 17.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "pe vanished at the boundary. Once the float ",
+              "width": 215.665527,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "appear",
+              "width": 34.251465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "s, the body should slide around the broad shoulder of ",
+              "width": 262.345703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the ",
+              "width": 18.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "diamond on the first page, then continue around the ",
+              "width": 255.01416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "carried lower half after the page turn. If the continuation logic is honest, the",
+              "width": 363.827148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "second page should begin with already-constrained lines instead of ",
+              "width": 330.214844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "pretending the shape vanished at the boundary.",
+              "width": 232.192383,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 137.389063,
+        "w": 364,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "Below the carried remainder, the full column width should gradually return. ",
+              "width": 363.800293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "That transition matters because it proves the polygon path itself was ",
+              "width": 334.452637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "translated into the new page space, not just its bounding box. Below the ",
+              "width": 352.843262,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "carried remainder, the full column width should gradually return. That ",
+              "width": 337.503418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "transition matters because it proves the polygon path itself was translated ",
+              "width": 360.749512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "into the new page space, not just its bounding box.",
+              "width": 247.05957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

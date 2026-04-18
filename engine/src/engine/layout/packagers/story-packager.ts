@@ -87,6 +87,13 @@ type CarryOverObstacle = {
     zIndex?: number;
 };
 
+type CarryOverVisual = {
+    box: Box;
+    topY: number;
+    bottomY: number;
+    isAbsolute: boolean;
+};
+
 type PlacedTextElement = {
     kind: 'text';
     childIndex: number;
@@ -249,6 +256,8 @@ export class StoryPackager implements PackagerUnit {
     private storyActorEntries: StoryActorEntry[];
     /** Obstacles carried over from the preceding page (already started there). */
     private readonly initialObstacles: CarryOverObstacle[];
+    /** Visual fragments carried over from the preceding page. */
+    private readonly initialCarryOverVisuals: CarryOverVisual[];
     private readonly deferredLeadingPackager: PackagerUnit | null;
     /**
      * The story-local Y of this packager's origin relative to the overall
@@ -280,13 +289,15 @@ export class StoryPackager implements PackagerUnit {
         initialObstacles?: CarryOverObstacle[],
         storyYOffset?: number,
         identity?: PackagerIdentity,
-        deferredLeadingPackager?: PackagerUnit | null
+        deferredLeadingPackager?: PackagerUnit | null,
+        initialCarryOverVisuals?: CarryOverVisual[]
     ) {
         this.storyElement = storyElement;
         this.normalizedStory = normalizeStoryElement(storyElement);
         this.processor = processor;
         this.storyIndex = storyIndex;
         this.initialObstacles = initialObstacles ?? [];
+        this.initialCarryOverVisuals = initialCarryOverVisuals ?? [];
         this.storyYOffset = storyYOffset ?? 0;
         this.deferredLeadingPackager = deferredLeadingPackager ?? null;
         const resolvedIdentity = identity ?? createElementPackagerIdentity(storyElement, [storyIndex]);
@@ -325,11 +336,6 @@ export class StoryPackager implements PackagerUnit {
     }
 
     prepareLookahead(availableWidth: number, _availableHeight: number, context: PackagerContext): void {
-        const columnConfig = this.getStoryColumnConfig();
-        if (columnConfig.columns <= 1) {
-            this.prepare(availableWidth, _availableHeight, context);
-            return;
-        }
         const viewportSnapshot = resolveViewportSnapshot(context);
         if (
             this.lastAvailableWidth === availableWidth &&
@@ -339,9 +345,13 @@ export class StoryPackager implements PackagerUnit {
         ) {
             return;
         }
-        // Keep-with-next planning only needs a conservative fit probe. For multi-column stories,
-        // reuse the cheaper width-driven full-pour instead of a commit-grade column simulation.
-        this.lastResult = this.pourAll(availableWidth, context);
+        // Keep-with-next planning only needs collision/fit truth. Treat this as
+        // a capped probe and stop as soon as the local frontier has exceeded the
+        // remaining height instead of pouring the whole continuation story.
+        this.lastResult = this.pourAll(availableWidth, context, {
+            includeCarryOverVisuals: false,
+            stopAtHeight: Number.isFinite(_availableHeight) ? Math.max(0, _availableHeight) : undefined
+        });
         this.lastAvailableWidth = availableWidth;
         this.lastAvailableHeight = Number.POSITIVE_INFINITY;
         this.lastViewportSnapshot = viewportSnapshot;
@@ -490,16 +500,37 @@ export class StoryPackager implements PackagerUnit {
 
     private pourAll(
         availableWidth: number,
-        context: PackagerContext
+        context: PackagerContext,
+        options?: {
+            includeCarryOverVisuals?: boolean;
+            stopAtHeight?: number;
+        }
     ): FullPourResult {
         const margins = context.margins;
         const children = this.storyActorEntries;
         const storyMap = new SpatialMap();
         const registeredObstacles: OccupiedRect[] = [];
+        const includeCarryOverVisuals = options?.includeCarryOverVisuals !== false;
+        const stopAtHeight = Number.isFinite(options?.stopAtHeight)
+            ? Math.max(0, Number(options?.stopAtHeight))
+            : null;
+        const probeTolerance = 0.1;
 
         const resolveImageMetrics = (child: Element, index: number): { img: BoxImagePayload; w: number; h: number } | null => {
             return this.resolveCachedImageMetrics(child, index, availableWidth);
         };
+
+        const probeFrontierExceeded = (cursor: number): boolean => {
+            if (stopAtHeight === null) return false;
+            return Math.max(cursor, storyMap.maxObstacleBottom()) > stopAtHeight + probeTolerance;
+        };
+
+        const finishEarlyProbe = (): FullPourResult => ({
+            placedElements,
+            registeredObstacles,
+            totalHeight: stopAtHeight === null ? Math.max(cursorY, storyMap.maxObstacleBottom()) : stopAtHeight + 1,
+            allBoxes
+        });
 
         // Pre-register carry-over obstacles at Y=0 (they bleed in from the
         // previous page and occupy the top of this continuation page).
@@ -564,6 +595,22 @@ export class StoryPackager implements PackagerUnit {
         const allBoxes: Box[] = [];
         let cursorY = 0;
 
+        if (includeCarryOverVisuals) {
+            for (const visual of this.initialCarryOverVisuals) {
+                const box = visual.box;
+                placedElements.push({
+                    kind: 'image',
+                    childIndex: -1,
+                    box,
+                    topY: visual.topY,
+                    bottomY: visual.bottomY,
+                    isFloat: true,
+                    isAbsolute: visual.isAbsolute
+                });
+                allBoxes.push(box);
+            }
+        }
+
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             const layout = child.layout;
@@ -585,6 +632,9 @@ export class StoryPackager implements PackagerUnit {
                         kind: 'image', childIndex: child.childIndex, box,
                         topY: effectiveY, bottomY: effectiveY + imgH, isFloat: false, isAbsolute: true
                     });
+                    if (probeFrontierExceeded(cursorY)) {
+                        return finishEarlyProbe();
+                    }
                     continue;
                 }
 
@@ -617,6 +667,9 @@ export class StoryPackager implements PackagerUnit {
                     bottomY: effectiveY + dims.h,
                     isAbsolute: true
                 });
+                if (probeFrontierExceeded(cursorY)) {
+                    return finishEarlyProbe();
+                }
                 continue;
             }
 
@@ -660,6 +713,9 @@ export class StoryPackager implements PackagerUnit {
                     topY: cursorY, bottomY: cursorY + imgH, isFloat: true, isAbsolute: false
                 });
                 // Floats do NOT advance cursorY — text flows alongside them.
+                if (probeFrontierExceeded(cursorY)) {
+                    return finishEarlyProbe();
+                }
                 continue;
             }
 
@@ -717,6 +773,9 @@ export class StoryPackager implements PackagerUnit {
                         isAbsolute: false
                     });
                     // Float blocks do NOT advance cursorY — text flows alongside them.
+                    if (probeFrontierExceeded(cursorY)) {
+                        return finishEarlyProbe();
+                    }
                     continue;
                 }
                 // dims is null (missing style.width/height) → fall through to pourTextChild
@@ -745,6 +804,9 @@ export class StoryPackager implements PackagerUnit {
                     topY: boxY, bottomY: boxY + imgH, isFloat: false, isAbsolute: false
                 });
                 cursorY = boxY + imgH + marginBottom;
+                if (probeFrontierExceeded(cursorY)) {
+                    return finishEarlyProbe();
+                }
                 continue;
             }
 
@@ -756,6 +818,9 @@ export class StoryPackager implements PackagerUnit {
                 allBoxes.push(placed.box);
                 placedElements.push(placed);
                 cursorY = placed.cursorAfter;
+                if (probeFrontierExceeded(cursorY)) {
+                    return finishEarlyProbe();
+                }
             }
         }
 
@@ -1591,6 +1656,7 @@ export class StoryPackager implements PackagerUnit {
         let partAHeight = 0;
         let partBStartChildIdx = children.length; // default: all in partA
         let partBContinuationElement: Element | null = null;
+        const carryOverVisuals: CarryOverVisual[] = [];
 
         const recordPartAHeight = (candidateBottom: number): void => {
             if (candidateBottom > partAHeight) partAHeight = candidateBottom;
@@ -1616,8 +1682,22 @@ export class StoryPackager implements PackagerUnit {
                     // the carry-over logic (below) handles their remaining
                     // wrapping influence on the continuation page.
                     if (elem.topY <= splitH) {
-                        partABoxes.push({ ...elem.box });
-                        recordPartAHeight(bottom);
+                        const visibleHeight = Math.max(0, Math.min(bottom, splitH) - elem.topY);
+                        if (visibleHeight > 0.5) {
+                            const clippedBox = cloneBox(elem.box);
+                            if (bottom > splitH) {
+                                clippedBox.h = visibleHeight;
+                                clippedBox.properties = {
+                                    ...(clippedBox.properties || {}),
+                                    _carrySourceOffsetY: 0,
+                                    _carryOriginalBoxHeight: Number(clippedBox.properties?._carryOriginalBoxHeight ?? elem.box.h),
+                                    _carryOriginalBoxWidth: Number(clippedBox.properties?._carryOriginalBoxWidth ?? elem.box.w)
+                                };
+                                carryOverVisuals.push(buildCarryOverImageVisual(elem, splitH));
+                            }
+                            partABoxes.push(clippedBox);
+                            recordPartAHeight(elem.topY + visibleHeight);
+                        }
                     }
                 } else {
                     // Block image (top-bottom): include only if it fits.
@@ -1735,7 +1815,7 @@ export class StoryPackager implements PackagerUnit {
         // from partBStartChildIdx, which includes all future story-absolute
         // images by their original index order.
 
-        if (partBChildren.length === 0 && carryOvers.length === 0) {
+        if (partBChildren.length === 0 && carryOvers.length === 0 && carryOverVisuals.length === 0) {
             // Nothing left for partB.
             return { currentFragment: partA, continuationFragment: null };
         }
@@ -1751,7 +1831,9 @@ export class StoryPackager implements PackagerUnit {
             this.storyIndex,
             carryOvers,
             this.storyYOffset + splitH,
-            createContinuationIdentity(this)
+            createContinuationIdentity(this),
+            null,
+            carryOverVisuals
         );
 
         return { currentFragment: partA, continuationFragment: partB };
@@ -2055,6 +2137,21 @@ function cloneBoxes(boxes: Box[], pageIndex?: number): Box[] {
     }));
 }
 
+function cloneBox(box: Box, pageIndex?: number): Box {
+    return {
+        ...box,
+        properties: { ...(box.properties || {}) },
+        ...(box.meta
+            ? {
+                meta: {
+                    ...box.meta,
+                    ...(pageIndex !== undefined ? { pageIndex } : {})
+                }
+            }
+            : {})
+    };
+}
+
 function resolveViewportSnapshot(context: PackagerContext): StoryViewportSnapshot {
     return {
         pageIndex: Number.isFinite(context.pageIndex) ? Number(context.pageIndex) : 0,
@@ -2138,6 +2235,32 @@ function buildCarryOverObstacles(obstacles: OccupiedRect[], splitY: number): Car
         }
     }
     return carryOvers;
+}
+
+function buildCarryOverImageVisual(element: PlacedImageElement, splitY: number): CarryOverVisual {
+    const sourceBox = element.box;
+    const cropTop = Math.max(0, splitY - element.topY);
+    const originalCarryOffset = Number(sourceBox.properties?._carrySourceOffsetY ?? 0);
+    const originalBoxHeight = Number(sourceBox.properties?._carryOriginalBoxHeight ?? sourceBox.h);
+    const originalBoxWidth = Number(sourceBox.properties?._carryOriginalBoxWidth ?? sourceBox.w);
+    const box: Box = {
+        ...sourceBox,
+        y: 0,
+        h: Math.max(0, element.bottomY - splitY),
+        properties: {
+            ...(sourceBox.properties || {}),
+            _carrySourceOffsetY: originalCarryOffset + cropTop,
+            _carryOriginalBoxHeight: originalBoxHeight,
+            _carryOriginalBoxWidth: originalBoxWidth
+        },
+        ...(sourceBox.meta ? { meta: { ...sourceBox.meta } } : {})
+    };
+    return {
+        box,
+        topY: 0,
+        bottomY: Math.max(0, element.bottomY - splitY),
+        isAbsolute: element.isAbsolute
+    };
 }
 
 function projectStoryYToRegionStack(storyY: number, regions: StoryColumnRegion[]): { regionIndex: number; y: number } | null {

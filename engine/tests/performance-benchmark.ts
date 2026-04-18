@@ -91,7 +91,9 @@ const PERF_WATCHLIST = [
     '14-flow-images-multipage.json',
     '15-story-multi-column.json',
     '20-block-floats-and-column-span.json',
-    '22-story-nested-table-continuation.json'
+    '22-story-nested-table-continuation.json',
+    '44-polygon-float.json',
+    '45-polygon-float-carryover.json'
 ] as const;
 
 const HOT_PROFILE_KEYS: HotProfileMetricKey[] = [
