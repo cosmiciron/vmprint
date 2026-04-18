@@ -1,0 +1,120 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 420
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true,
+    "microLanePolicy": "typography"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "lead": {
+      "fontSize": 12,
+      "lineHeight": 1.35,
+      "marginBottom": 12,
+      "allowLineSplit": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Editorial Polygon Lanes"
+    },
+    {
+      "type": "lead",
+      "content": "This companion proof uses the same hostile authored silhouettes, but the document asks for the stricter editorial policy that should reject tiny carved slivers."
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 6,
+            "shape": "polygon",
+            "path": "M0,0 L160,0 L160,22 L102,22 L102,44 L160,44 L160,66 L92,66 L92,88 L160,88 L160,110 L0,110 Z"
+          },
+          "properties": {
+            "sourceId": "editorial-comb",
+            "style": {
+              "width": 160,
+              "height": 110
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTY/AO3fcfH2ZAF0DHw0MBALHrl0EmDPYJAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The same indigo comb returns, but this time the policy is allowed to refuse mathematically valid fragments when they cease to be useful reading lanes. The paragraph should still acknowledge the obstacle, yet it should prefer to slide below the noisiest stepped region instead of balancing tiny shards of text inside every single tooth. That is the version we want for calmer books, reports, and editorial layouts."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,72 L40,12 L82,34 L124,0 L168,48 L126,54 L146,110 L98,92 L82,150 L58,94 L10,112 L34,58 Z"
+          },
+          "properties": {
+            "sourceId": "editorial-wing",
+            "style": {
+              "width": 168,
+              "height": 150
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The teal wing still deserves honest wrapping, but the strict policy should turn the more ridiculous pockets into vertical deferral instead of pretending every opening is worth entering. This gives us a second authored silhouette to prove the behavior is not overfit to the comb. We want a lane policy, not a hardcoded exception for one toy path."
+        },
+        {
+          "type": "p",
+          "content": "As the story continues onto another page, the editorial document should feel calmer than its expressive sibling. It can still wrap around the polygons where the lanes are broad enough to matter, but it should stop performing circus tricks merely because the geometry technically permits them. That distinction is what makes the authoring surface viable for both spectacle demos and ordinary reading documents."
+        },
+        {
+          "type": "p",
+          "content": "Below the stricter shape gauntlet, full width should return naturally and without stale exclusions. The contrast between this fixture and the expressive version is the real point: same authored polygons, same engine, same collision field, but a different declared opinion about when a lane is worth using."
+        }
+      ]
+    }
+  ]
+}

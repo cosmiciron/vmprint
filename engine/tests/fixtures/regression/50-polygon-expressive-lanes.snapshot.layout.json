@@ -1,0 +1,544 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 28.34375,
+        "lines": [
+          [
+            {
+              "text": "Expressive Polygon Lanes",
+              "width": 253.4375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "lead",
+        "x": 28,
+        "y": 64.34375,
+        "w": 364,
+        "h": 52.81875,
+        "lines": [
+          [
+            {
+              "text": "This proof keeps micro lanes enabled on purpose so authored ",
+              "width": 332.871094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "concave silhouettes can preserve every last notch, tooth, and ",
+              "width": 328.857422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "mischievous little gap.",
+              "width": 117.386719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 232,
+        "y": 129.1625,
+        "w": 160,
+        "h": 110,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 129.1625,
+        "w": 364,
+        "h": 144.289063,
+        "lines": [
+          [
+            {
+              "text": "The indigo comb silhouette is ",
+              "width": 145.524414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "deliberately rude. It carves a sequence ",
+              "width": 192.000488,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "of stepped bites out of the measure so ",
+              "width": 190.174316,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the ",
+              "width": 18.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph has to decide whether it will ",
+              "width": 190.775879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "thread through tiny legal slots or ",
+              "width": 159.591309,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "abandon them. In expressive mode the ",
+              "width": 193.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "answer ",
+              "width": 38.516113,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should be yes. We want the funny ",
+              "width": 167.954102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shards, the almost comic-book ",
+              "width": 152.227539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "fragments, and the proof that the engine can preserve authored geometry ",
+              "width": 360.781738,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "even when the result stops looking conventionally typographic.",
+              "width": 304.519531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 28,
+        "y": 281.451563,
+        "w": 168,
+        "h": 110.548437,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 281.451563,
+        "w": 364,
+        "h": 100.1,
+        "lines": [
+          [
+            {
+              "text": "Below",
+              "width": 29.959961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "that, a ",
+              "width": 33.633789,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "teal wing-like concavity keeps the authored ",
+              "width": 212.786621,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "pat",
+              "width": 15.291504,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "h",
+              "width": 6.117676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "language from collapsing into one ",
+              "width": 167.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "gi",
+              "width": 8.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "mmick. The contour narrows, widens, ",
+              "width": 185.227539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a",
+              "width": 6.117676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "nd pinches back again, which should ",
+              "width": 182.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "produce visibly different line signatures from ",
+              "width": 217.459473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "t",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "he comb even though both are still plain ",
+              "width": 197.516602,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "p",
+              "width": 6.117676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "olygon fields. If we are ever going to ",
+              "width": 179.158203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 28,
+        "y": 28,
+        "w": 168,
+        "h": 39.451563,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "o",
+              "width": 6.117676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ut-drag",
+              "width": 34.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "on the older demo systems, this is the class of ",
+              "width": 228.045898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "authored ",
+              "width": 46.481445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "silhouette we need to be comfortable hosting as ",
+              "width": 236.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ordinary, ",
+              "width": 45.036621,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boring, maintained regression material.",
+              "width": 190.152832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 80.189063,
+        "w": 364,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "The continuation is intentionally long enough to spill onto another page so ",
+              "width": 361.420898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the proof is not just a first-page party trick. Even after the seams and later ",
+              "width": 360.728027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraphs arrive, the expressive policy should still read as honest to the ",
+              "width": 358.305664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "authored shape. It is allowed to be impractical. The whole point here is ",
+              "width": 346.081055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "that a frontend design tool or spectacle demo may genuinely want the ",
+              "width": 341.821777,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "improbable little text lane if it helps the composition feel alive.",
+              "width": 297.768066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 175.278125,
+        "w": 364,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Once the comb and wing both release the measure, ordinary width should ",
+              "width": 362.597168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "come back cleanly. That reset matters because it proves the engine is ",
+              "width": 342.799316,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "preserving authored weirdness without leaking phantom exclusions into ",
+              "width": 350.367188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the calm prose that follows after the showpiece shapes have had their ",
+              "width": 343.030273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "moment.",
+              "width": 42.791504,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -992,6 +992,82 @@ function assertPolygonMixedShapesSignals(pages: any[], fixtureName: string): voi
     assert.ok(new Set(widthSignatures).size >= 3, `${fixtureName}: expected mixed obstacle lanes to produce several distinct constrained width signatures`);
 }
 
+function collectConstrainedLineWidths(boxes: any[]): number[] {
+    return boxes.flatMap((box: any) => {
+        const widths: number[] = Array.isArray(box.properties?._lineWidths)
+            ? box.properties._lineWidths.map((n: any) => Number(n))
+            : [];
+        const offsets: number[] = Array.isArray(box.properties?._lineOffsets)
+            ? box.properties._lineOffsets.map((n: any) => Number(n))
+            : [];
+        return widths.filter((width, index) =>
+            Number.isFinite(width) && Number(offsets[index] || 0) > 0.5
+        );
+    });
+}
+
+function assertPolygonExpressiveLaneSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    assert.ok(pages.length >= 2, `${fixtureName}: expected the expressive polygon proof to span more than one page`);
+
+    const polygonImages = allBoxes.filter((box: any) =>
+        !!box.image && box.properties?._clipShape === 'polygon'
+    );
+    assert.ok(polygonImages.length >= 3, `${fixtureName}: expected visible polygon carry-over plus both authored polygon floats`);
+
+    const clipPaths = polygonImages
+        .map((box: any) => String(box.properties?._clipPath || '').trim())
+        .filter((path: string) => path.length > 0);
+    assert.ok(clipPaths.length >= 3, `${fixtureName}: expected expressive polygon boxes to preserve authored clip paths through carry-over`);
+    assert.ok(new Set(clipPaths).size >= 2, `${fixtureName}: expected at least two distinct authored polygon silhouettes`);
+
+    const constrainedWidths = collectConstrainedLineWidths(allBoxes);
+    assert.ok(constrainedWidths.length >= 12, `${fixtureName}: expected many constrained lines when micro lanes are fully allowed`);
+    assert.ok(
+        constrainedWidths.some((width) => width <= 10),
+        `${fixtureName}: expected expressive mode to preserve absurdly tiny legal sliver lanes`
+    );
+    assert.ok(
+        constrainedWidths.some((width) => width > 30 && width < 80),
+        `${fixtureName}: expected expressive mode to retain narrow but still readable mid-sized lanes`
+    );
+    assert.ok(
+        constrainedWidths.some((width) => width >= 180),
+        `${fixtureName}: expected expressive mode to also preserve broader constrained lanes from the same authored shapes`
+    );
+}
+
+function assertPolygonEditorialLaneSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+    assert.ok(pages.length >= 2, `${fixtureName}: expected the editorial polygon proof to span more than one page`);
+
+    const polygonImages = allBoxes.filter((box: any) =>
+        !!box.image && box.properties?._clipShape === 'polygon'
+    );
+    assert.ok(polygonImages.length >= 3, `${fixtureName}: expected visible polygon carry-over plus both authored polygon floats`);
+
+    const clipPaths = polygonImages
+        .map((box: any) => String(box.properties?._clipPath || '').trim())
+        .filter((path: string) => path.length > 0);
+    assert.ok(clipPaths.length >= 3, `${fixtureName}: expected editorial polygon boxes to preserve authored clip paths through carry-over`);
+    assert.ok(new Set(clipPaths).size >= 2, `${fixtureName}: expected at least two distinct authored polygon silhouettes`);
+
+    const constrainedWidths = collectConstrainedLineWidths(allBoxes);
+    assert.ok(constrainedWidths.length >= 3, `${fixtureName}: expected editorial mode to keep some honest wrap interaction with the polygons`);
+    assert.ok(
+        constrainedWidths.every((width) => width >= 60),
+        `${fixtureName}: expected editorial mode to reject the truly tiny micro-lane shards`
+    );
+    assert.ok(
+        constrainedWidths.filter((width) => width < 80).length <= 1,
+        `${fixtureName}: expected editorial mode to keep at most one narrow but still usable lane`
+    );
+    assert.ok(
+        constrainedWidths.some((width) => width >= 180),
+        `${fixtureName}: expected editorial mode to preserve broad useful lanes rather than deferring everything`
+    );
+}
+
 function assertZoneMapExclusionAssemblySignals(pages: any[], fixtureName: string): void {
     const allBoxes = pages.flatMap((page: any) => page.boxes || []);
     const hiddenFieldActors = allBoxes.filter((box: any) =>
@@ -2550,6 +2626,24 @@ async function run() {
                 'a document should support several distinct polygon silhouettes at once and preserve their independent wrap signatures',
                 () => {
                     assertPolygonMixedShapesSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '50-polygon-expressive-lanes.json') {
+            _check(
+                `${fixture.name} expressive polygon lane signals`,
+                'allow-mode polygon wrapping should preserve even tiny authored sliver lanes for spectacle-oriented layouts',
+                () => {
+                    assertPolygonExpressiveLaneSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '51-polygon-editorial-lanes.json') {
+            _check(
+                `${fixture.name} editorial polygon lane signals`,
+                'typography-mode polygon wrapping should reject useless micro lanes while preserving meaningful wider wraps',
+                () => {
+                    assertPolygonEditorialLaneSignals(pagesA, fixture.name);
                 }
             );
         }

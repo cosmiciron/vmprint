@@ -96,7 +96,10 @@ const PERF_WATCHLIST = [
     '45-polygon-float-carryover.json',
     '46-polygon-float-carryover-right.json',
     '47-polygon-top-bottom-carryover.json',
-    '48-polygon-multicolumn-carryover.json'
+    '48-polygon-multicolumn-carryover.json',
+    '49-polygon-mixed-shapes.json',
+    '50-polygon-expressive-lanes.json',
+    '51-polygon-editorial-lanes.json'
 ] as const;
 
 const HOT_PROFILE_KEYS: HotProfileMetricKey[] = [

@@ -1,0 +1,120 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 420
+    },
+    "margins": {
+      "top": 28,
+      "right": 28,
+      "bottom": 28,
+      "left": 28
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true,
+    "microLanePolicy": "allow"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "lead": {
+      "fontSize": 12,
+      "lineHeight": 1.35,
+      "marginBottom": 12,
+      "allowLineSplit": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Expressive Polygon Lanes"
+    },
+    {
+      "type": "lead",
+      "content": "This proof keeps micro lanes enabled on purpose so authored concave silhouettes can preserve every last notch, tooth, and mischievous little gap."
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 6,
+            "shape": "polygon",
+            "path": "M0,0 L160,0 L160,22 L102,22 L102,44 L160,44 L160,66 L92,66 L92,88 L160,88 L160,110 L0,110 Z"
+          },
+          "properties": {
+            "sourceId": "expressive-comb",
+            "style": {
+              "width": 160,
+              "height": 110
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTY/AO3fcfH2ZAF0DHw0MBALHrl0EmDPYJAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The indigo comb silhouette is deliberately rude. It carves a sequence of stepped bites out of the measure so the paragraph has to decide whether it will thread through tiny legal slots or abandon them. In expressive mode the answer should be yes. We want the funny shards, the almost comic-book fragments, and the proof that the engine can preserve authored geometry even when the result stops looking conventionally typographic."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,72 L40,12 L82,34 L124,0 L168,48 L126,54 L146,110 L98,92 L82,150 L58,94 L10,112 L34,58 Z"
+          },
+          "properties": {
+            "sourceId": "expressive-wing",
+            "style": {
+              "width": 168,
+              "height": 150
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Below that, a teal wing-like concavity keeps the authored path language from collapsing into one gimmick. The contour narrows, widens, and pinches back again, which should produce visibly different line signatures from the comb even though both are still plain polygon fields. If we are ever going to out-dragon the older demo systems, this is the class of authored silhouette we need to be comfortable hosting as ordinary, boring, maintained regression material."
+        },
+        {
+          "type": "p",
+          "content": "The continuation is intentionally long enough to spill onto another page so the proof is not just a first-page party trick. Even after the seams and later paragraphs arrive, the expressive policy should still read as honest to the authored shape. It is allowed to be impractical. The whole point here is that a frontend design tool or spectacle demo may genuinely want the improbable little text lane if it helps the composition feel alive."
+        },
+        {
+          "type": "p",
+          "content": "Once the comb and wing both release the measure, ordinary width should come back cleanly. That reset matters because it proves the engine is preserving authored weirdness without leaking phantom exclusions into the calm prose that follows after the showpiece shapes have had their moment."
+        }
+      ]
+    }
+  ]
+}
