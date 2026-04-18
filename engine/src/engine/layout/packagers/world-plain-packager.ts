@@ -255,6 +255,7 @@ export class WorldPlainPackager implements PackagerUnit {
                 wrap: directive.wrap ?? 'around',
                 gap: directive.gap ?? 0,
                 shape: directive.shape,
+                path: directive.path,
                 align: directive.align,
                 exclusionAssembly: directive.exclusionAssembly,
                 traversalInteraction: directive.traversalInteraction ?? this.traversalInteractionDefault,
@@ -276,6 +277,7 @@ export class WorldPlainPackager implements PackagerUnit {
                     gapTop: obstacle.gapTop,
                     gapBottom: obstacle.gapBottom,
                     shape: obstacle.shape,
+                    path: obstacle.path,
                     align: obstacle.align,
                     traversalInteraction: obstacle.traversalInteraction,
                     zIndex: obstacle.zIndex

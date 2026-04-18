@@ -181,11 +181,19 @@ function buildHostedRegionFieldState(
                         y: Number(member.y ?? 0),
                         w: Math.max(0, Number(member.w ?? 0)),
                         h: Math.max(0, Number(member.h ?? 0)),
-                        shape: (member.shape ?? 'rect') as 'rect' | 'circle'
+                        shape: (member.shape ?? 'rect') as 'rect' | 'circle' | 'polygon',
+                        ...(typeof member.path === 'string' && member.path.trim()
+                            ? { path: member.path.trim() }
+                            : {})
                     }))
                 }
                 : directive.shape
-                    ? { _clipShape: directive.shape }
+                    ? {
+                        _clipShape: directive.shape,
+                        ...(typeof directive.path === 'string' && directive.path.trim()
+                            ? { _clipPath: directive.path.trim() }
+                            : {})
+                    }
                     : {}),
             ...(hidden ? { opacity: 0 } : {})
         }
@@ -203,6 +211,7 @@ function buildHostedRegionFieldState(
                 h: fieldHeight,
                 gap: directive.gap ?? 0,
                 shape: directive.shape ?? 'rect',
+                path: directive.path,
                 align,
                 zIndex,
                 wrap,

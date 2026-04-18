@@ -733,6 +733,55 @@ function assertExclusionAssemblySignals(pages: any[], fixtureName: string): void
     assert.ok(widthBins.size >= 3, `${fixtureName}: expected the composed field to generate at least three distinct wrapped widths`);
 }
 
+function assertPolygonFloatSignals(pages: any[], fixtureName: string): void {
+    const allBoxes = pages.flatMap((page: any) => page.boxes || []);
+
+    const polygonImages = allBoxes.filter((box: any) =>
+        !!box.image && box.properties?._clipShape === 'polygon'
+    );
+    assert.ok(polygonImages.length >= 1, `${fixtureName}: expected at least one polygon-clipped image box`);
+    assert.ok(
+        polygonImages.some((box: any) => typeof box.properties?._clipPath === 'string' && box.properties._clipPath.length > 0),
+        `${fixtureName}: expected polygon image box to preserve authored clip path`
+    );
+
+    const wrappedBox = allBoxes
+        .filter((box: any) => {
+            const widths: number[] = Array.isArray(box.properties?._lineWidths)
+                ? box.properties._lineWidths.map((n: any) => Number(n))
+                : [];
+            const offsets: number[] = Array.isArray(box.properties?._lineOffsets)
+                ? box.properties._lineOffsets.map((n: any) => Number(n))
+                : [];
+            return widths.length >= 6 && offsets.some((offset) => Number.isFinite(offset) && offset > 0.5);
+        })
+        .sort((left: any, right: any) => {
+            const leftOffsets: number[] = Array.isArray(left.properties?._lineOffsets)
+                ? left.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => n > 0.5)
+                : [];
+            const rightOffsets: number[] = Array.isArray(right.properties?._lineOffsets)
+                ? right.properties._lineOffsets.map((n: any) => Number(n)).filter((n: number) => n > 0.5)
+                : [];
+            return rightOffsets.length - leftOffsets.length;
+        })[0];
+    assert.ok(wrappedBox, `${fixtureName}: expected wrapped polygon paragraph box`);
+    if (!wrappedBox) return;
+
+    const widths: number[] = Array.isArray(wrappedBox.properties?._lineWidths)
+        ? wrappedBox.properties._lineWidths.map((n: any) => Number(n))
+        : [];
+    const offsets: number[] = Array.isArray(wrappedBox.properties?._lineOffsets)
+        ? wrappedBox.properties._lineOffsets.map((n: any) => Number(n))
+        : [];
+    assert.ok(widths.length >= 6, `${fixtureName}: expected several measured lines in wrapped polygon paragraph`);
+    assert.ok(offsets.some((offset) => Number.isFinite(offset) && offset > 0.5), `${fixtureName}: expected polygon wrap to shift at least one line`);
+    assert.ok(offsets.some((offset) => Number.isFinite(offset) && offset <= 0.5), `${fixtureName}: expected polygon wrap to restore near-full-width lines after the obstacle`);
+
+    const constrainedWidths = widths.filter((width, index) => Number(offsets[index] || 0) > 0.5);
+    const widthBins = new Set(constrainedWidths.map((width) => Math.round(width * 2) / 2));
+    assert.ok(widthBins.size >= 3, `${fixtureName}: expected polygon silhouette to produce at least three distinct constrained widths`);
+}
+
 function assertZoneMapExclusionAssemblySignals(pages: any[], fixtureName: string): void {
     const allBoxes = pages.flatMap((page: any) => page.boxes || []);
     const hiddenFieldActors = allBoxes.filter((box: any) =>
@@ -2237,6 +2286,15 @@ async function run() {
                 'a zone-hosted story should wrap around an invisible composed field while sibling zones remain independent',
                 () => {
                     assertZoneMapExclusionAssemblySignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '44-polygon-float.json') {
+            _check(
+                `${fixture.name} polygon float signals`,
+                'polygon floats preserve clip geometry and produce multi-width wrapped lines',
+                () => {
+                    assertPolygonFloatSignals(pagesA, fixture.name);
                 }
             );
         }

@@ -298,7 +298,12 @@ export class FlowBoxPackager implements PackagerUnit {
             gap: Number.isFinite(Number(exclusion.gap)) ? Math.max(0, Number(exclusion.gap)) : 0,
             gapTop: Number.isFinite(Number(exclusion.gapTop)) ? Math.max(0, Number(exclusion.gapTop)) : undefined,
             gapBottom: Number.isFinite(Number(exclusion.gapBottom)) ? Math.max(0, Number(exclusion.gapBottom)) : undefined,
-            shape: exclusion.shape === 'circle' ? 'circle' : 'rect',
+            shape: exclusion.shape === 'circle'
+                ? 'circle'
+                : exclusion.shape === 'polygon'
+                    ? 'polygon'
+                    : 'rect',
+            path: typeof exclusion.path === 'string' && exclusion.path.trim() ? exclusion.path.trim() : undefined,
             align: exclusion.align,
             traversalInteraction: exclusion.traversalInteraction ?? 'auto',
             zIndex: Number.isFinite(Number(exclusion.zIndex)) ? Number(exclusion.zIndex) : 0

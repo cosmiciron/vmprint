@@ -46,6 +46,8 @@ type SpatialFieldReflowOptions = {
  */
 export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflowOptions): SpatialFieldTextPlacement | null {
     const anyProcessor = options.processor as any;
+    const session = anyProcessor.getCurrentLayoutSession?.() ?? null;
+    const colliderStatsBefore = options.spatialMap.getStatsSnapshot();
     const flowBox = anyProcessor.shapeElement(options.element, { path: options.path }) as FlowBox;
     if (!flowBox || flowBox._materializationMode !== 'reflowable') return null;
 
@@ -148,6 +150,8 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
 
     const linesHeight = anyProcessor.calculateLineBlockHeight(lines, style, lineLayoutOut.yOffsets);
     const contentHeight = linesHeight + insetV;
+    const colliderStatsAfter = options.spatialMap.getStatsSnapshot();
+    recordColliderFieldProfileDelta(session, colliderStatsBefore, colliderStatsAfter);
 
     return {
         flowBox,
@@ -191,4 +195,23 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
                 }
         }
     };
+}
+
+function recordColliderFieldProfileDelta(
+    session: { recordProfile(metric: string, delta: number): void } | null,
+    before: { queryCalls: number; bucketTouches: number; candidateColliderCount: number; narrowphaseCalls: number },
+    after: { queryCalls: number; bucketTouches: number; candidateColliderCount: number; narrowphaseCalls: number }
+): void {
+    if (!session) return;
+
+    session.recordProfile('colliderFieldQueryCalls', Math.max(0, after.queryCalls - before.queryCalls));
+    session.recordProfile('colliderFieldBucketTouches', Math.max(0, after.bucketTouches - before.bucketTouches));
+    session.recordProfile(
+        'colliderFieldCandidateColliders',
+        Math.max(0, after.candidateColliderCount - before.candidateColliderCount)
+    );
+    session.recordProfile(
+        'colliderFieldNarrowphaseCalls',
+        Math.max(0, after.narrowphaseCalls - before.narrowphaseCalls)
+    );
 }

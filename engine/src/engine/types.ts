@@ -346,7 +346,7 @@ export type StoryFloatAlign = 'left' | 'right' | 'center';
  *   'rect'   – rectangular bounding box (default)
  *   'circle' – circle inscribed in the bounding box; text conforms to the arc
  */
-export type StoryFloatShape = 'rect' | 'circle';
+export type StoryFloatShape = 'rect' | 'circle' | 'polygon';
 
 export interface StoryExclusionAssemblyMember {
     /** Local X offset from the float/story-absolute anchor box. */
@@ -359,6 +359,8 @@ export interface StoryExclusionAssemblyMember {
     h: number;
     /** Primitive wrap shape. */
     shape?: StoryFloatShape;
+    /** Local SVG path used when `shape` is `polygon`. */
+    path?: string;
     /** Optional depth override for this primitive. */
     zIndex?: number;
     /** Optional explicit interaction policy for traversing/root flow. */
@@ -377,6 +379,7 @@ export interface SpatialFieldDirective {
     wrap?: StoryWrapMode;
     gap?: number;
     shape?: StoryFloatShape;
+    path?: string;
     exclusionAssembly?: StoryExclusionAssembly;
     hidden?: boolean;
     zIndex?: number;
@@ -427,6 +430,8 @@ export interface StoryLayoutDirective {
     gap?: number;
     /** Exclusion-zone shape for text wrapping (default 'rect'). */
     shape?: StoryFloatShape;
+    /** Local SVG path used when `shape` is `polygon`. */
+    path?: string;
     /**
      * Optional composed exclusion field built from simple primitives.
      * When present, text wrapping uses the union of these members instead of a

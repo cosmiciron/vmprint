@@ -97,12 +97,12 @@ const ZONE_LAYOUT_KEYS = new Set(['columns', 'gap', 'frameOverflow', 'worldBehav
 const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
-const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'zIndex']);
-const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'exclusionAssembly', 'hidden', 'zIndex', 'traversalInteraction']);
+const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'path', 'exclusionAssembly', 'zIndex']);
+const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'path', 'exclusionAssembly', 'hidden', 'zIndex', 'traversalInteraction']);
 const SIMULATION_DIRECTIVE_KEYS = new Set(['enabled', 'maxTicks', 'updateKind', 'x', 'y', 'label']);
 const SIMULATION_MOTION_AXIS_KEYS = new Set(['start', 'velocity', 'amplitude', 'frequency', 'phase']);
 const STORY_EXCLUSION_ASSEMBLY_KEYS = new Set(['members']);
-const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape', 'zIndex', 'traversalInteraction']);
+const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape', 'path', 'zIndex', 'traversalInteraction']);
 const VALID_TRAVERSAL_INTERACTIONS = new Set(['auto', 'wrap', 'overpass', 'ignore']);
 const PAGE_REGION_DEFINITION_KEYS = new Set(['default', 'firstPage', 'odd', 'even']);
 const PAGE_REGION_CONTENT_KEYS = new Set(['elements', 'style']);
@@ -557,9 +557,10 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
     if (directive.y !== undefined) assertFiniteNumberAt(directive.y, `${path}.y`, documentPath);
     if (directive.gap !== undefined) assertFiniteNumberAt(directive.gap, `${path}.gap`, documentPath);
     if (directive.zIndex !== undefined) assertFiniteNumberAt(directive.zIndex, `${path}.zIndex`, documentPath);
-    const validShapes = new Set(['rect', 'circle']);
+    if (directive.path !== undefined) assertStringAt(directive.path, `${path}.path`, documentPath);
+    const validShapes = new Set(['rect', 'circle', 'polygon']);
     if (directive.shape !== undefined && !validShapes.has(directive.shape as string)) {
-        contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle.');
+        contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle, polygon.');
     }
     if (directive.exclusionAssembly !== undefined) {
         const assembly = assertPlainObjectAt(directive.exclusionAssembly, `${path}.exclusionAssembly`, documentPath);
@@ -576,6 +577,7 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
             assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
             assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
             if (memberObj.zIndex !== undefined) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
+            if (memberObj.path !== undefined) assertStringAt(memberObj.path, `${memberPath}.path`, documentPath);
             if (Number(memberObj.w) <= 0) {
                 contractError(documentPath, `${memberPath}.w`, 'expected a number greater than 0.');
             }
@@ -583,7 +585,7 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
                 contractError(documentPath, `${memberPath}.h`, 'expected a number greater than 0.');
             }
             if (memberObj.shape !== undefined && !validShapes.has(memberObj.shape as string)) {
-                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle.');
+                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle, polygon.');
             }
         });
     }
@@ -595,7 +597,7 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
 
     const validWraps = new Set(['around', 'top-bottom', 'none']);
     const validAligns = new Set(['left', 'right', 'center']);
-    const validShapes = new Set(['rect', 'circle']);
+    const validShapes = new Set(['rect', 'circle', 'polygon']);
     const validKinds = new Set(['exclude']);
 
     if (directive.kind !== undefined && !validKinds.has(directive.kind as string)) {
@@ -616,6 +618,9 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
     if (directive.gap !== undefined) {
         assertFiniteNumberAt(directive.gap, `${path}.gap`, documentPath);
     }
+    if (directive.path !== undefined) {
+        assertStringAt(directive.path, `${path}.path`, documentPath);
+    }
     if (directive.zIndex !== undefined) {
         assertFiniteNumberAt(directive.zIndex, `${path}.zIndex`, documentPath);
     }
@@ -623,7 +628,7 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
         contractError(documentPath, `${path}.traversalInteraction`, 'expected one of: auto, wrap, overpass, ignore.');
     }
     if (directive.shape !== undefined && !validShapes.has(directive.shape as string)) {
-        contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle.');
+        contractError(documentPath, `${path}.shape`, 'expected one of: rect, circle, polygon.');
     }
     if (directive.hidden !== undefined) {
         assertBooleanAt(directive.hidden, `${path}.hidden`, documentPath);
@@ -643,6 +648,7 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
             assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
             assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
             if (memberObj.zIndex !== undefined) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
+            if (memberObj.path !== undefined) assertStringAt(memberObj.path, `${memberPath}.path`, documentPath);
             if (memberObj.traversalInteraction !== undefined && !VALID_TRAVERSAL_INTERACTIONS.has(memberObj.traversalInteraction as string)) {
                 contractError(documentPath, `${memberPath}.traversalInteraction`, 'expected one of: auto, wrap, overpass, ignore.');
             }
@@ -653,7 +659,7 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
                 contractError(documentPath, `${memberPath}.h`, 'expected a number greater than 0.');
             }
             if (memberObj.shape !== undefined && !validShapes.has(memberObj.shape as string)) {
-                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle.');
+                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle, polygon.');
             }
         });
     }

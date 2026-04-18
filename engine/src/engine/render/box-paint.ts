@@ -1,6 +1,7 @@
 import type { Context } from '../../contracts';
 import { Box, ElementStyle } from '../types';
 import { parseEmbeddedImagePayloadCached } from '../image-data';
+import { parseSvgPathSubpaths } from '../geometry/svg-path';
 import { LayoutUtils } from '../layout/layout-utils';
 import { RendererLineSegment } from './types';
 
@@ -11,16 +12,19 @@ type ImageClipAssemblyMember = {
     y: number;
     w: number;
     h: number;
-    shape?: 'rect' | 'circle';
+    shape?: 'rect' | 'circle' | 'polygon';
+    path?: string;
 };
 
 type ClipDescriptor = {
     shape: string;
+    path: string;
     assembly: ImageClipAssemblyMember[];
 };
 
 const resolveClipDescriptor = (box: Box): ClipDescriptor => ({
     shape: String(box.properties?._clipShape || box.properties?._imageClipShape || '').trim(),
+    path: String(box.properties?._clipPath || box.properties?._imageClipPath || '').trim(),
     assembly: Array.isArray(box.properties?._clipAssembly)
         ? (box.properties?._clipAssembly as ImageClipAssemblyMember[])
         : (Array.isArray(box.properties?._imageClipAssembly)
@@ -49,6 +53,8 @@ const applyClipPath = (
                     memberY + (memberH / 2),
                     Math.max(0, Math.min(memberW, memberH) / 2)
                 );
+            } else if (member.shape === 'polygon' && typeof member.path === 'string' && member.path.trim()) {
+                drawPolygonPath(context, parseSvgPathSubpaths(member.path), memberX, memberY, 1, 1);
             } else {
                 context.rect(memberX, memberY, memberW, memberH);
             }
@@ -62,6 +68,11 @@ const applyClipPath = (
             context.circle(x + (w / 2), y + (h / 2), radius).clip();
             return true;
         }
+    }
+    if (clip.shape === 'polygon' && clip.path) {
+        drawPolygonPath(context, parseSvgPathSubpaths(clip.path), x, y, 1, 1);
+        context.clip();
+        return true;
     }
     return false;
 };
@@ -167,6 +178,8 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
                     memberY + (memberH / 2),
                     Math.max(0, Math.min(memberW, memberH) / 2)
                 );
+            } else if (member.shape === 'polygon' && typeof member.path === 'string' && member.path.trim()) {
+                drawPolygonPath(context, parseSvgPathSubpaths(member.path), memberX, memberY, scaleX, scaleY);
             } else {
                 context.rect(memberX, memberY, memberW, memberH);
             }
@@ -194,12 +207,53 @@ export const drawImageBox = (context: Context, box: Box, getImageBytes: ImageByt
             return;
         }
     }
+    if (clipShape === 'polygon' && clip.path) {
+        context.save();
+        drawPolygonPath(
+            context,
+            parseSvgPathSubpaths(clip.path),
+            drawX,
+            drawY,
+            box.w > 0 ? drawWidth / box.w : 1,
+            box.h > 0 ? drawHeight / box.h : 1
+        );
+        context.clip();
+        context.image(bytes, drawX, drawY, {
+            width: drawWidth,
+            height: drawHeight,
+            mimeType: image.mimeType
+        });
+        context.restore();
+        return;
+    }
     context.image(bytes, drawX, drawY, {
         width: drawWidth,
         height: drawHeight,
         mimeType: image.mimeType
     });
 };
+
+function drawPolygonPath(
+    context: Context,
+    subpaths: ReturnType<typeof parseSvgPathSubpaths>,
+    offsetX: number,
+    offsetY: number,
+    scaleX: number,
+    scaleY: number
+): void {
+    for (const subpath of subpaths) {
+        if (!Array.isArray(subpath.points) || subpath.points.length === 0) continue;
+        const first = subpath.points[0]!;
+        context.moveTo(offsetX + (first.x * scaleX), offsetY + (first.y * scaleY));
+        for (let index = 1; index < subpath.points.length; index++) {
+            const point = subpath.points[index]!;
+            context.lineTo(offsetX + (point.x * scaleX), offsetY + (point.y * scaleY));
+        }
+        if (subpath.closed) {
+            context.lineTo(offsetX + (first.x * scaleX), offsetY + (first.y * scaleY));
+        }
+    }
+}
 
 export const drawInlineImageSegment = (
     context: Context,

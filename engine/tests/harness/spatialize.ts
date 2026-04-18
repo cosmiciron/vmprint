@@ -168,6 +168,10 @@ interface BlockObstacle {
   yAnchor: 'at-cursor';
   align: 'left' | 'center' | 'right';
   mode: 'float' | 'story-absolute';
+  shape?: 'rect' | 'circle' | 'polygon';
+  path?: string;
+  exclusionAssembly?: StoryLayoutDirective['exclusionAssembly'];
+  zIndex?: number;
   content: FlowBlock;
   source: SourceRef;
 }
@@ -206,6 +210,9 @@ const PROVISIONAL_FIELDS = [
   'FlowBlock.image',
   'BlockObstacle.align',
   'BlockObstacle.mode',
+  'BlockObstacle.shape',
+  'BlockObstacle.path',
+  'BlockObstacle.exclusionAssembly',
   'Node.source provenance'
 ] as const;
 
@@ -478,6 +485,29 @@ function createBlockObstacle(element: Element, context: NormalizeContext, scope:
     yAnchor: 'at-cursor',
     align,
     mode,
+    ...(typeof layout?.shape === 'string' ? { shape: layout.shape } : {}),
+    ...(typeof layout?.path === 'string' && layout.path.trim()
+      ? { path: layout.path.trim() }
+      : {}),
+    ...(layout?.exclusionAssembly?.members?.length
+      ? {
+        exclusionAssembly: deepSortObject({
+          members: layout.exclusionAssembly.members.map((member) => ({
+            x: LayoutUtils.validateUnit(member.x),
+            y: LayoutUtils.validateUnit(member.y),
+            w: LayoutUtils.validateUnit(member.w),
+            h: LayoutUtils.validateUnit(member.h),
+            ...(typeof member.shape === 'string' ? { shape: member.shape } : {}),
+            ...(typeof member.path === 'string' && member.path.trim()
+              ? { path: member.path.trim() }
+              : {}),
+            ...(member.zIndex !== undefined ? { zIndex: LayoutUtils.validateUnit(member.zIndex) } : {}),
+            ...(member.traversalInteraction ? { traversalInteraction: member.traversalInteraction } : {})
+          }))
+        })
+      }
+      : {}),
+    ...(layout?.zIndex !== undefined ? { zIndex: LayoutUtils.validateUnit(layout.zIndex) } : {}),
     content: createFlowBlock(element, context, scope),
     source: buildSourceRef(element, scope.path)
   });

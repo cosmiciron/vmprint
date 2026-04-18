@@ -9,6 +9,7 @@ export interface ExclusionFieldDescriptor {
     wrap: StoryWrapMode;
     gap: number;
     shape?: StoryFloatShape;
+    path?: string;
     align?: StoryFloatAlign;
     exclusionAssembly?: StoryExclusionAssembly;
     zIndex?: number;
@@ -26,7 +27,7 @@ export interface ExclusionFieldDescriptor {
  */
 export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescriptor): OccupiedRect[] {
     const gap = Math.max(0, Number(descriptor.gap ?? 0));
-    const normalizedShape = (descriptor.shape ?? 'rect') as 'rect' | 'circle';
+    const normalizedShape = (descriptor.shape ?? 'rect') as 'rect' | 'circle' | 'polygon';
     const assemblyMembers = Array.isArray(descriptor.exclusionAssembly?.members)
         ? descriptor.exclusionAssembly.members
         : [];
@@ -40,6 +41,7 @@ export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescripto
             wrap: descriptor.wrap,
             gap,
             shape: normalizedShape,
+            path: normalizedShape === 'polygon' ? String(descriptor.path || '') : undefined,
             align: descriptor.align,
             zIndex: Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0,
             traversalInteraction: descriptor.traversalInteraction ?? 'auto'
@@ -53,7 +55,8 @@ export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescripto
         h: Math.max(0, Number(member.h ?? 0)),
         wrap: descriptor.wrap,
         gap,
-        shape: ((member.shape ?? 'rect') as 'rect' | 'circle'),
+        shape: ((member.shape ?? 'rect') as 'rect' | 'circle' | 'polygon'),
+        path: member.shape === 'polygon' ? String(member.path || '') : undefined,
         zIndex: Number.isFinite(Number(member.zIndex))
             ? Number(member.zIndex)
             : (Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0),

@@ -25,6 +25,7 @@ export type SpatialExclusion = {
     gapTop?: number;
     gapBottom?: number;
     shape?: StoryFloatShape;
+    path?: string;
     align?: StoryFloatAlign;
     traversalInteraction?: TraversalInteractionPolicy;
     surface?: ExclusionSurface;

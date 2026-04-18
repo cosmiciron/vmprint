@@ -51,7 +51,10 @@ function normalizeLayout(layout?: StoryLayoutDirective): NormalizedStoryLayout |
             y: Number(member.y ?? 0),
             w: Math.max(0, Number(member.w ?? 0)),
             h: Math.max(0, Number(member.h ?? 0)),
-            shape: (member.shape ?? 'rect') as StoryFloatShape
+            shape: (member.shape ?? 'rect') as StoryFloatShape,
+            ...(typeof member.path === 'string' && member.path.trim()
+                ? { path: member.path.trim() }
+                : {})
         }))
         : [];
     return {
@@ -62,6 +65,9 @@ function normalizeLayout(layout?: StoryLayoutDirective): NormalizedStoryLayout |
         wrap: (layout.wrap ?? 'around') as StoryWrapMode,
         gap: Math.max(0, Number(layout.gap ?? 0)),
         shape: (layout.shape ?? 'rect') as StoryFloatShape,
+        ...(typeof layout.path === 'string' && layout.path.trim()
+            ? { path: layout.path.trim() }
+            : {}),
         exclusionAssembly: normalizedMembers.length > 0
             ? { members: normalizedMembers }
             : undefined

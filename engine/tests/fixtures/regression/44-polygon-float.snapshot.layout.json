@@ -1,0 +1,287 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 520,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 36,
+        "y": 36,
+        "w": 348,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Polygon Float Wrapping",
+              "width": 252.581055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "lead",
+        "x": 36,
+        "y": 75.178125,
+        "w": 348,
+        "h": 70.425,
+        "lines": [
+          [
+            {
+              "text": "This proof exercises a real polygon silhouette instead of a circle ",
+              "width": 340.845703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "approximation or a composed lobe assembly. The text should ",
+              "width": 329.285156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shift differently across the diamond body, then recover its full ",
+              "width": 324.386719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measure below the obstacle.",
+              "width": 152.753906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 36,
+        "y": 159.603125,
+        "w": 132,
+        "h": 132,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 36,
+        "y": 159.603125,
+        "w": 348,
+        "h": 129.989063,
+        "lines": [
+          [
+            {
+              "text": "Polygon ",
+              "width": 42.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "wrap in VMPrint should behave like a genuine ",
+              "width": 226.246582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "collid",
+              "width": 25.066895,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "er feature instead of a decorative shortcut. The ",
+              "width": 231.128906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "op",
+              "width": 12.235352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ening lines give the diamond a wide berth near ",
+              "width": 230.538086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "t",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "he broad shoulders, then gradually reclaim ",
+              "width": 210.955078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "width as the scan band moves past the ",
+              "width": 193.225098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "narrow tail. This paragraph is intentionally ",
+              "width": 206.045898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lo",
+              "width": 8.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ng so the wrapped lines show multiple distinct ",
+              "width": 226.230469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "horiz",
+              "width": 23.842285,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ontal slots rather than collapsing into a simple ",
+              "width": 225.623535,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "two-stat",
+              "width": 38.510742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "e rectangle.",
+              "width": 57.481445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 36,
+        "y": 297.592188,
+        "w": 348,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Because the authored path is parsed once during lowering, the runtime",
+              "width": 345.495605,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "can keep the broadphase cheap and spend narrowphase work only on ",
+              "width": 346.129395,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the colliders that overlap the current line band. The text therefore reads",
+              "width": 346.086426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "around the silhouette while the engine still behaves like a fast spatial ",
+              "width": 336.321777,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "query system rather than a traditional page compositor.",
+              "width": 268.42041,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

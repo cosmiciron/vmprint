@@ -1,7 +1,8 @@
 import { StoryFloatAlign, StoryWrapMode, TraversalInteractionPolicy } from '../../types';
+import { ColliderField, type ColliderFieldStatsSnapshot } from '../collider-field';
 
 // ---------------------------------------------------------------------------
-// Interval – a horizontal slice of available space
+// Interval - a horizontal slice of available space
 // ---------------------------------------------------------------------------
 
 export interface Interval {
@@ -12,7 +13,7 @@ export interface Interval {
 }
 
 // ---------------------------------------------------------------------------
-// OccupiedRect – a registered obstacle in story-local coordinates
+// OccupiedRect - a registered obstacle in story-local coordinates
 // ---------------------------------------------------------------------------
 
 export interface OccupiedRect {
@@ -29,7 +30,9 @@ export interface OccupiedRect {
     gapTop?: number;
     gapBottom?: number;
     /** Exclusion-zone shape (default 'rect'). */
-    shape?: 'rect' | 'circle';
+    shape?: 'rect' | 'circle' | 'polygon';
+    /** Local SVG path used when `shape` is `polygon`. */
+    path?: string;
     /**
      * For circle obstacles only: story-local Y of the circle centre.
      * Defaults to rect.y + rect.h / 2 when absent.
@@ -39,11 +42,11 @@ export interface OccupiedRect {
     circleCy?: number;
     /**
      * Float alignment, used by circle obstacles to decide which side of the
-     * arc text wraps around.  'left' and 'right' extend the carve to the
+     * arc text wraps around. 'left' and 'right' extend the carve to the
      * opposite column edge so text never leaks into the near-side corner
      * regions (which are empty on a true circular image but would overlap a
-     * rectangular placeholder).  'center' keeps the symmetric dual-stream
-     * carve.  Unset → treated as 'center'.
+     * rectangular placeholder). 'center' keeps the symmetric dual-stream
+     * carve. Unset is treated as 'center'.
      */
     align?: StoryFloatAlign;
     /** Optional depth used for wrap interaction. Unset is treated as 0. */
@@ -57,26 +60,25 @@ export interface OccupiedRect {
 // ---------------------------------------------------------------------------
 
 /**
- * Tracks obstacle rectangles (images) in story-local coordinates and answers
+ * Tracks obstacle rectangles in story-local coordinates and answers
  * "what horizontal intervals are available for text at Y-slice [y, y+lineH]?"
  *
- * All coordinates are story-local; the origin is the top of the story's
- * content area (after the parent margin/padding).
- *
- * Wrap semantics:
- *   'none'       – obstacle is purely visual; full width always available.
- *   'top-bottom' – line is fully blocked; caller must advance Y past obstacle.
- *   'around'     – intervals remaining after subtracting the obstacle X-range.
+ * This remains the compatibility surface used by current packagers.
+ * Internally it now delegates band queries to a collider field so we can grow
+ * into richer collider types without forcing immediate caller changes.
  */
 export class SpatialMap {
     private readonly rects: OccupiedRect[] = [];
+    private readonly colliderField: ColliderField = new ColliderField();
 
     clear(): void {
         this.rects.length = 0;
+        this.colliderField.clear();
     }
 
     register(rect: OccupiedRect): void {
         this.rects.push(rect);
+        this.colliderField.registerObstacle(rect);
     }
 
     /**
@@ -84,7 +86,7 @@ export class SpatialMap {
      * the column [0, totalWidth].
      *
      * Returns an empty array when a 'top-bottom' obstacle blocks the entire
-     * line — the caller must advance Y via `topBottomClearY` and retry.
+     * line and the caller must advance Y via `topBottomClearY` and retry.
      */
     getAvailableIntervals(
         y: number,
@@ -92,173 +94,34 @@ export class SpatialMap {
         totalWidth: number,
         options?: { opticalUnderhang?: boolean; queryZIndex?: number }
     ): Interval[] {
-        let available: Interval[] = [{ x: 0, w: totalWidth }];
-        const lineBottom = y + lineH;
-        const lineTop = y;
-        const queryZIndex = normalizeZIndex(options?.queryZIndex);
-
-        for (const rect of this.rects) {
-            if (rect.wrap === 'none') continue;
-            if (!intersectsDepth(rect, queryZIndex)) continue;
-
-            const useOpticalUnderhang = options?.opticalUnderhang && rect.wrap === 'around';
-
-            if (rect.shape === 'circle') {
-                // Circle: exclusion zone is a disc of radius (r + gap) where r = rect.w / 2.
-                const cx = rect.x + rect.w / 2;
-                const cy = rect.circleCy ?? (rect.y + rect.h / 2);
-                const r = rect.w / 2 + rect.gap;
-
-                const circleTop = cy - r;
-                // Optical underhang: allow full-width lines once the line top clears
-                // the actual circle edge (no gap), matching rectangular behaviour.
-                const circleBottom = useOpticalUnderhang ? cy + rect.w / 2 : cy + r;
-
-                if (lineBottom <= circleTop || lineTop >= circleBottom) continue; // no Y overlap
-
-                if (rect.wrap === 'top-bottom') return [];
-
-                // Most conservative carve: use the Y within [lineTop, lineBottom]
-                // closest to the centre — that's where the chord is widest.
-                const yClosest = Math.max(lineTop, Math.min(lineBottom, cy));
-                const dy = yClosest - cy;
-                const chordHalfW = Math.sqrt(Math.max(0, r * r - dy * dy));
-
-                // For edge-aligned circles, extend the carve to the near column
-                // edge so text never leaks into the corner regions between the
-                // arc and the bounding box.  Center floats keep the symmetric
-                // dual-stream carve unchanged.
-                const align = rect.align ?? 'center';
-                const carveLeft = align === 'right'
-                    ? cx - chordHalfW
-                    : align === 'center'
-                        ? cx - chordHalfW
-                        : rect.x - r - 1;
-                const carveRight = align === 'left'
-                    ? cx + chordHalfW
-                    : align === 'center'
-                        ? cx + chordHalfW
-                        : rect.x + rect.w + r + 1;
-                available = carveInterval(available, carveLeft, carveRight);
-            } else {
-                const g = rect.gap;
-                const gapTop = rect.gapTop ?? g;
-                const gapBottom = rect.gapBottom ?? g;
-                const obsTop = rect.y - gapTop;
-                const obsBottom = rect.y + rect.h + gapBottom;
-                const overlapBottom = useOpticalUnderhang ? (rect.y + rect.h) : obsBottom;
-
-                if (lineBottom <= obsTop || lineTop >= overlapBottom) continue; // no Y overlap
-
-                if (rect.wrap === 'top-bottom') return []; // entire line blocked
-
-                // wrap === 'around': carve the obstacle's X-range from available intervals
-                const obsLeft = rect.x - g;
-                const obsRight = rect.x + rect.w + g;
-                available = carveInterval(available, obsLeft, obsRight);
-            }
-        }
-
-        return available.filter((iv) => iv.w > 0.5);
+        return this.colliderField.getAvailableIntervals(y, lineH, totalWidth, options);
     }
 
     /** Returns true when any top-bottom obstacle overlaps [y, y+lineH]. */
     hasTopBottomBlock(y: number, lineH: number, queryZIndex: number = 0): boolean {
-        const lineBottom = y + lineH;
-        return this.rects.some((r) => {
-            if (r.wrap !== 'top-bottom') return false;
-            if (!intersectsDepth(r, queryZIndex)) return false;
-            const gapTop = r.gapTop ?? r.gap;
-            const gapBottom = r.gapBottom ?? r.gap;
-            const obsTop = r.y - gapTop;
-            const obsBottom = r.y + r.h + gapBottom;
-            return lineBottom > obsTop && y < obsBottom;
-        });
+        return this.colliderField.hasTopBottomBlock(y, lineH, queryZIndex);
     }
 
     /**
-     * Returns the first Y at which no top-bottom obstacle blocks [y, …).
+     * Returns the first Y at which no top-bottom obstacle blocks [y, ...).
      * Iterates to handle chained consecutive obstacles.
      */
     topBottomClearY(y: number, queryZIndex: number = 0): number {
-        let clearY = y;
-        let changed = true;
-        while (changed) {
-            changed = false;
-            for (const r of this.rects) {
-                if (r.wrap !== 'top-bottom') continue;
-                if (!intersectsDepth(r, queryZIndex)) continue;
-                const gapTop = r.gapTop ?? r.gap;
-                const gapBottom = r.gapBottom ?? r.gap;
-                const obsTop = r.y - gapTop;
-                const obsBottom = r.y + r.h + gapBottom;
-                if (clearY < obsBottom && clearY >= obsTop) {
-                    clearY = obsBottom;
-                    changed = true;
-                }
-            }
-        }
-        return clearY;
+        return this.colliderField.topBottomClearY(y, queryZIndex);
     }
 
     /** The Y of the lowest point among all registered obstacles. */
     maxObstacleBottom(): number {
-        return this.rects.reduce(
-            (max, r) => Math.max(max, r.y + r.h + (r.gapBottom ?? r.gap)),
-            0
-        );
+        return this.colliderField.maxObstacleBottom();
+    }
+
+    /** Snapshot of internal collider-field work counters for profiling. */
+    getStatsSnapshot(): ColliderFieldStatsSnapshot {
+        return this.colliderField.getStatsSnapshot();
     }
 
     /** Read-only access to registered rects (used by split carry-over logic). */
     getRects(): ReadonlyArray<OccupiedRect> {
         return this.rects;
     }
-}
-
-// ---------------------------------------------------------------------------
-// Private helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Subtracts [removeLeft, removeRight] from a set of disjoint intervals,
- * returning the remaining fragments.
- */
-function carveInterval(
-    intervals: Interval[],
-    removeLeft: number,
-    removeRight: number
-): Interval[] {
-    const result: Interval[] = [];
-    for (const iv of intervals) {
-        const ivRight = iv.x + iv.w;
-        if (removeRight <= iv.x || removeLeft >= ivRight) {
-            // No overlap — keep as-is
-            result.push(iv);
-            continue;
-        }
-        // Left fragment
-        if (removeLeft > iv.x) {
-            result.push({ x: iv.x, w: removeLeft - iv.x });
-        }
-        // Right fragment
-        if (removeRight < ivRight) {
-            result.push({ x: removeRight, w: ivRight - removeRight });
-        }
-    }
-    return result;
-}
-
-function normalizeZIndex(value: unknown): number {
-    return Number.isFinite(Number(value)) ? Number(value) : 0;
-}
-
-function intersectsDepth(rect: OccupiedRect, queryZIndex: number): boolean {
-    const policy = rect.traversalInteraction ?? 'auto';
-    if (policy === 'ignore' || policy === 'overpass') {
-        return false;
-    }
-    if (policy === 'wrap') {
-        return true;
-    }
-    return normalizeZIndex(rect.zIndex) === normalizeZIndex(queryZIndex);
 }

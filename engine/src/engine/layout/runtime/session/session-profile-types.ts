@@ -108,6 +108,10 @@ export type LayoutProfileMetrics = {
     exclusionBandResolutionCalls: number;
     exclusionBandResolutionMs: number;
     exclusionLaneApplications: number;
+    colliderFieldQueryCalls: number;
+    colliderFieldBucketTouches: number;
+    colliderFieldCandidateColliders: number;
+    colliderFieldNarrowphaseCalls: number;
     observerCheckpointSweepCalls: number;
     observerSettleCalls: number;
     observerActorBoundarySettles: number;

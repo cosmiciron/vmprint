@@ -16,7 +16,11 @@ type HotProfileMetricKey =
     | 'flowWrapStreamMs'
     | 'actorMeasurementMs'
     | 'actorPreparedDispatchMs'
-    | 'keepWithNextPlanMs';
+    | 'keepWithNextPlanMs'
+    | 'colliderFieldQueryCalls'
+    | 'colliderFieldBucketTouches'
+    | 'colliderFieldCandidateColliders'
+    | 'colliderFieldNarrowphaseCalls';
 
 type HotProfileSummary = Record<HotProfileMetricKey, number> & {
     flowResolveSignatureCalls: number;
@@ -97,7 +101,11 @@ const HOT_PROFILE_KEYS: HotProfileMetricKey[] = [
     'flowWrapStreamMs',
     'actorMeasurementMs',
     'actorPreparedDispatchMs',
-    'keepWithNextPlanMs'
+    'keepWithNextPlanMs',
+    'colliderFieldQueryCalls',
+    'colliderFieldBucketTouches',
+    'colliderFieldCandidateColliders',
+    'colliderFieldNarrowphaseCalls'
 ];
 
 const engine = (engineModule as any).default ?? (engineModule as any)['module.exports'] ?? engineModule;
@@ -453,6 +461,10 @@ async function run(): Promise<void> {
             actorMeasurementMs: metric.hotProfile.actorMeasurementMs,
             actorPreparedDispatchMs: metric.hotProfile.actorPreparedDispatchMs,
             keepWithNextPlanMs: metric.hotProfile.keepWithNextPlanMs,
+            colliderFieldQueryCalls: metric.hotProfile.colliderFieldQueryCalls,
+            colliderFieldBucketTouches: metric.hotProfile.colliderFieldBucketTouches,
+            colliderFieldCandidateColliders: metric.hotProfile.colliderFieldCandidateColliders,
+            colliderFieldNarrowphaseCalls: metric.hotProfile.colliderFieldNarrowphaseCalls,
             flowResolveSignatureCalls: metric.hotProfile.flowResolveSignatureCalls,
             flowResolveSignatureRepeatedCalls: metric.hotProfile.flowResolveSignatureRepeatedCalls,
             flowResolveSignatureRepeatPct: metric.hotProfile.flowResolveSignatureRepeatPct
@@ -484,6 +496,10 @@ async function run(): Promise<void> {
             actorMeasurementMs: metric.hotProfile.actorMeasurementMs,
             actorPreparedDispatchMs: metric.hotProfile.actorPreparedDispatchMs,
             keepWithNextPlanMs: metric.hotProfile.keepWithNextPlanMs,
+            colliderFieldQueryCalls: metric.hotProfile.colliderFieldQueryCalls,
+            colliderFieldBucketTouches: metric.hotProfile.colliderFieldBucketTouches,
+            colliderFieldCandidateColliders: metric.hotProfile.colliderFieldCandidateColliders,
+            colliderFieldNarrowphaseCalls: metric.hotProfile.colliderFieldNarrowphaseCalls,
             flowResolveSignatureCalls: metric.hotProfile.flowResolveSignatureCalls,
             flowResolveSignatureRepeatedCalls: metric.hotProfile.flowResolveSignatureRepeatedCalls,
             flowResolveSignatureRepeatPct: metric.hotProfile.flowResolveSignatureRepeatPct

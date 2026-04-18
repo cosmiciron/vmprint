@@ -89,6 +89,21 @@ export interface SpatialBlockObstacle {
     yAnchor: 'at-cursor';
     align: 'left' | 'center' | 'right';
     mode: 'float' | 'story-absolute';
+    shape?: 'rect' | 'circle' | 'polygon';
+    path?: string;
+    exclusionAssembly?: {
+        members: Array<{
+            x: number;
+            y: number;
+            w: number;
+            h: number;
+            shape?: 'rect' | 'circle' | 'polygon';
+            path?: string;
+            zIndex?: number;
+            traversalInteraction?: 'block' | 'allow';
+        }>;
+    };
+    zIndex?: number;
     content: SpatialFlowBlock;
     source: SpatialSourceRef;
 }
@@ -288,16 +303,41 @@ function adaptBlockObstacle(obstacle: SpatialBlockObstacle, options: SpatialAdap
         width: obstacle.width,
         height: obstacle.height
     };
+    element.placement = {
+        mode: obstacle.mode,
+        align: obstacle.align,
+        wrap: obstacle.wrap,
+        gap: obstacle.gap,
+        ...(typeof obstacle.shape === 'string' ? { shape: obstacle.shape } : {}),
+        ...(typeof obstacle.path === 'string' && obstacle.path.trim()
+            ? { path: obstacle.path.trim() }
+            : {}),
+        ...(obstacle.exclusionAssembly?.members?.length
+            ? {
+                exclusionAssembly: {
+                    members: obstacle.exclusionAssembly.members.map((member) => ({
+                        x: member.x,
+                        y: member.y,
+                        w: member.w,
+                        h: member.h,
+                        ...(typeof member.shape === 'string' ? { shape: member.shape } : {}),
+                        ...(typeof member.path === 'string' && member.path.trim()
+                            ? { path: member.path.trim() }
+                            : {}),
+                        ...(Number.isFinite(Number(member.zIndex)) ? { zIndex: Number(member.zIndex) } : {}),
+                        ...(member.traversalInteraction === 'block' || member.traversalInteraction === 'allow'
+                            ? { traversalInteraction: member.traversalInteraction }
+                            : {})
+                    }))
+                }
+            }
+            : {}),
+        ...(Number.isFinite(Number(obstacle.zIndex)) ? { zIndex: Number(obstacle.zIndex) } : {}),
+        ...(obstacle.mode === 'story-absolute' ? { x: obstacle.resolvedX } : {})
+    };
     element.properties = applySpatialSourceProperties({
         ...(element.properties || {}),
-        style: baseStyle,
-        layout: {
-            mode: obstacle.mode,
-            align: obstacle.align,
-            wrap: obstacle.wrap,
-            gap: obstacle.gap,
-            ...(obstacle.mode === 'story-absolute' ? { x: obstacle.resolvedX } : {})
-        }
+        style: baseStyle
     }, obstacle.source);
     return element;
 }
@@ -330,12 +370,12 @@ function adaptZoneStrip(strip: SpatialZoneStrip, options: SpatialAdaptOptions): 
         type: 'zone-map',
         content: '',
         zones,
+        zoneLayout: {
+            columns: buildFixedColumns(widths),
+            gap
+        },
         properties: applySpatialSourceProperties({
-            style: strip.blockStyle ? { ...strip.blockStyle } : undefined,
-            zones: {
-                columns: buildFixedColumns(widths),
-                gap
-            }
+            style: strip.blockStyle ? { ...strip.blockStyle } : undefined
         }, strip.source)
     };
 }
@@ -357,6 +397,12 @@ function adaptSpatialGridCell(cell: SpatialGridCell, options: SpatialAdaptOption
         }
         if (resolvedHasChildren || !Array.isArray(element.children) || element.children.length === 0) {
             element.children = Array.isArray(resolved.children) ? resolved.children : [];
+        }
+        if (resolved.dropCap) {
+            element.dropCap = JSON.parse(JSON.stringify(resolved.dropCap));
+        }
+        if (resolved.image) {
+            element.image = JSON.parse(JSON.stringify(resolved.image));
         }
         element.properties = {
             ...(element.properties || {}),

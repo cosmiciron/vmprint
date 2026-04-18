@@ -50,11 +50,19 @@ export class SpatialFieldGeometryCapability {
                         y: Number(member.y ?? 0),
                         w: Math.max(0, Number(member.w ?? 0)),
                         h: Math.max(0, Number(member.h ?? 0)),
-                        shape: (member.shape ?? 'rect') as 'rect' | 'circle'
+                        shape: (member.shape ?? 'rect') as 'rect' | 'circle' | 'polygon',
+                        ...(typeof member.path === 'string' && member.path.trim()
+                            ? { path: member.path.trim() }
+                            : {})
                     }))
                 }
                 : {}),
-            ...(shape ? { _clipShape: shape } : {})
+            ...(shape ? { _clipShape: shape } : {}),
+            ...(typeof this.field?.path === 'string' && this.field.path.trim()
+                ? { _clipPath: this.field.path.trim() }
+                : typeof this.placement?.path === 'string' && this.placement.path.trim()
+                    ? { _clipPath: this.placement.path.trim() }
+                    : {})
         };
     }
 }

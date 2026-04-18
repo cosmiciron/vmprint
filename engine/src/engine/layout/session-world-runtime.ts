@@ -119,6 +119,7 @@ export class SessionWorldRuntime {
             ...(Number.isFinite(exclusion.gapTop) ? { gapTop: Math.max(0, Number(exclusion.gapTop)) } : {}),
             ...(Number.isFinite(exclusion.gapBottom) ? { gapBottom: Math.max(0, Number(exclusion.gapBottom)) } : {}),
             ...(typeof exclusion.shape === 'string' ? { shape: exclusion.shape } : {}),
+            ...(typeof exclusion.path === 'string' && exclusion.path.trim() ? { path: exclusion.path.trim() } : {}),
             ...(typeof exclusion.align === 'string' ? { align: exclusion.align } : {}),
             ...(typeof exclusion.traversalInteraction === 'string' ? { traversalInteraction: exclusion.traversalInteraction } : {}),
             ...(Number.isFinite(exclusion.zIndex) ? { zIndex: Number(exclusion.zIndex) } : {})

@@ -44,6 +44,7 @@
  */
 
 import { Box, BoxImagePayload, Element, ElementStyle, RichLine, StoryFloatAlign, StoryLayoutDirective, StoryWrapMode } from '../../types';
+import { translateSvgPath } from '../../geometry/svg-path';
 import { LayoutProcessor } from '../layout-core';
 import { buildExclusionFieldObstacles } from '../exclusion-field';
 import { LayoutUtils } from '../layout-utils';
@@ -78,10 +79,12 @@ type CarryOverObstacle = {
     gap: number;
     gapTop?: number;
     gapBottom?: number;
-    shape?: 'rect' | 'circle';
+    shape?: 'rect' | 'circle' | 'polygon';
+    path?: string;
     /** Circle centre Y in the new page's story-local coordinates. */
     circleCy?: number;
     align?: StoryFloatAlign;
+    zIndex?: number;
 };
 
 type PlacedTextElement = {
@@ -504,7 +507,7 @@ export class StoryPackager implements PackagerUnit {
             const rect: OccupiedRect = {
                 x: co.x, y: 0, w: co.w, h: co.remainingH, wrap: co.wrap, gap: co.gap,
                 gapTop: co.gapTop, gapBottom: co.gapBottom,
-                shape: co.shape, circleCy: co.circleCy, align: co.align
+                shape: co.shape, path: co.path, circleCy: co.circleCy, align: co.align, zIndex: co.zIndex
             };
             storyMap.register(rect);
             registeredObstacles.push(rect);
@@ -534,7 +537,8 @@ export class StoryPackager implements PackagerUnit {
                 h: dims.h,
                 wrap: layout.wrap,
                 gap: layout.gap,
-                shape: layout.shape
+                shape: layout.shape,
+                path: layout.path
             };
             for (const obstacle of buildExclusionFieldObstacles({
                 x: rect.x,
@@ -544,6 +548,7 @@ export class StoryPackager implements PackagerUnit {
                 wrap: layout.wrap,
                 gap: layout.gap,
                 shape: layout.shape,
+                path: layout.path,
                 align: layout.align,
                 exclusionAssembly: layout.exclusionAssembly
             })) {
@@ -637,6 +642,7 @@ export class StoryPackager implements PackagerUnit {
                         wrap: layout.wrap,
                         gap: layout.gap,
                         shape: layout.shape,
+                        path: layout.path,
                         align: layout.align,
                         exclusionAssembly: layout.exclusionAssembly
                     })) {
@@ -675,6 +681,7 @@ export class StoryPackager implements PackagerUnit {
                             wrap: layout.wrap,
                             gap: layout.gap,
                             shape: layout.shape,
+                            path: layout.path,
                             align: layout.align,
                             exclusionAssembly: layout.exclusionAssembly
                         })) {
@@ -876,7 +883,15 @@ export class StoryPackager implements PackagerUnit {
             wrap: rect.wrap,
             gap: rect.gap,
             gapTop: rect.gapTop,
-            gapBottom: rect.gapBottom
+            gapBottom: rect.gapBottom,
+            shape: rect.shape,
+            path: rect.shape === 'polygon' && typeof rect.path === 'string' && rect.path.trim()
+                ? translateSvgPath(rect.path, rect.x - left, 0)
+                : rect.path,
+            circleCy: rect.circleCy,
+            align: rect.align,
+            zIndex: rect.zIndex,
+            traversalInteraction: rect.traversalInteraction
         };
     }
 
@@ -1018,7 +1033,8 @@ export class StoryPackager implements PackagerUnit {
                 h: dims.h,
                 wrap: layout.wrap,
                 gap: layout.gap,
-                shape: layout.shape
+                shape: layout.shape,
+                path: layout.path
             };
             for (const obstacle of buildExclusionFieldObstacles({
                 x: rect.x,
@@ -1028,6 +1044,7 @@ export class StoryPackager implements PackagerUnit {
                 wrap: layout.wrap,
                 gap: layout.gap,
                 shape: layout.shape,
+                path: layout.path,
                 align: layout.align,
                 exclusionAssembly: layout.exclusionAssembly
             })) {
@@ -1297,6 +1314,7 @@ export class StoryPackager implements PackagerUnit {
                             wrap: layout.wrap,
                             gap: layout.gap,
                             shape: layout.shape,
+                            path: layout.path,
                             align: layout.align,
                             exclusionAssembly: layout.exclusionAssembly
                         })) {
@@ -1342,6 +1360,7 @@ export class StoryPackager implements PackagerUnit {
                                 wrap: layout.wrap,
                                 gap: layout.gap,
                                 shape: layout.shape,
+                                path: layout.path,
                                 align: layout.align,
                                 exclusionAssembly: layout.exclusionAssembly
                             })) {
@@ -1820,13 +1839,19 @@ export class StoryPackager implements PackagerUnit {
             properties: {
                 ...(flowBox.properties || {}),
                 _clipShape: element.placement?.shape,
+                ...(typeof element.placement?.path === 'string' && element.placement.path.trim()
+                    ? { _clipPath: element.placement.path.trim() }
+                    : {}),
                 _clipAssembly: element.placement?.exclusionAssembly?.members
                     ? element.placement.exclusionAssembly.members.map((member) => ({
                         x: Number(member.x ?? 0),
                         y: Number(member.y ?? 0),
                         w: Math.max(0, Number(member.w ?? 0)),
                         h: Math.max(0, Number(member.h ?? 0)),
-                        shape: member.shape ?? 'rect'
+                        shape: member.shape ?? 'rect',
+                        ...(typeof member.path === 'string' && member.path.trim()
+                            ? { path: member.path.trim() }
+                            : {})
                     }))
                     : undefined,
                 _isFirstLine: true,
@@ -2095,13 +2120,18 @@ function buildCarryOverObstacles(obstacles: OccupiedRect[], splitY: number): Car
                 gap: obstacle.gap,
                 gapTop: 0,
                 gapBottom: obstacle.gap,
-                shape: obstacle.shape
+                shape: obstacle.shape,
+                path: obstacle.path,
+                zIndex: obstacle.zIndex
             };
             if (obstacle.shape === 'circle') {
                 // Translate the circle centre into the new page's coordinate space
                 // (new page Y=0 corresponds to splitY in the old page).
                 const originalCy = obstacle.circleCy ?? (obstacle.y + obstacle.h / 2);
                 co.circleCy = originalCy - splitY;
+            }
+            if (obstacle.shape === 'polygon' && typeof obstacle.path === 'string' && obstacle.path.trim()) {
+                co.path = translateSvgPath(obstacle.path, 0, obstacle.y - splitY);
             }
             co.align = obstacle.align;
             carryOvers.push(co);

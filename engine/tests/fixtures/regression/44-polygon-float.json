@@ -1,0 +1,87 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 520
+    },
+    "margins": {
+      "top": 36,
+      "right": 36,
+      "bottom": 36,
+      "left": 36
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "lead": {
+      "fontSize": 12,
+      "lineHeight": 1.35,
+      "marginBottom": 14,
+      "allowLineSplit": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Polygon Float Wrapping"
+    },
+    {
+      "type": "lead",
+      "content": "This proof exercises a real polygon silhouette instead of a circle approximation or a composed lobe assembly. The text should shift differently across the diamond body, then recover its full measure below the obstacle."
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,66 L66,0 L132,66 L66,132 Z"
+          },
+          "properties": {
+            "sourceId": "polygon-float",
+            "style": {
+              "width": 132,
+              "height": 132
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAkElEQVR42u3QMQ0AAAwDoEqv9Fnot4cEBSQtKwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmR9OyMOEkoQG4WbAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Polygon wrap in VMPrint should behave like a genuine collider feature instead of a decorative shortcut. The opening lines give the diamond a wide berth near the broad shoulders, then gradually reclaim width as the scan band moves past the narrow tail. This paragraph is intentionally long so the wrapped lines show multiple distinct horizontal slots rather than collapsing into a simple two-state rectangle."
+        },
+        {
+          "type": "p",
+          "content": "Because the authored path is parsed once during lowering, the runtime can keep the broadphase cheap and spend narrowphase work only on the colliders that overlap the current line band. The text therefore reads around the silhouette while the engine still behaves like a fast spatial query system rather than a traditional page compositor."
+        }
+      ]
+    }
+  ]
+}
