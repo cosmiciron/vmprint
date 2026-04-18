@@ -6,6 +6,7 @@ import type {
     PageRegionContent,
     PageRegionDefinition,
     TableColumnSizing,
+    TraversalInteractionPolicy,
     ZoneDefinition
 } from './types';
 
@@ -101,7 +102,7 @@ export interface SpatialBlockObstacle {
             shape?: 'rect' | 'circle' | 'polygon';
             path?: string;
             zIndex?: number;
-            traversalInteraction?: 'block' | 'allow';
+            traversalInteraction?: TraversalInteractionPolicy;
         }>;
     };
     zIndex?: number;
@@ -349,7 +350,7 @@ function adaptBlockObstacle(obstacle: SpatialBlockObstacle, options: SpatialAdap
                             ? { path: member.path.trim() }
                             : {}),
                         ...(Number.isFinite(Number(member.zIndex)) ? { zIndex: Number(member.zIndex) } : {}),
-                        ...(member.traversalInteraction === 'block' || member.traversalInteraction === 'allow'
+                        ...(typeof member.traversalInteraction === 'string'
                             ? { traversalInteraction: member.traversalInteraction }
                             : {})
                     }))
