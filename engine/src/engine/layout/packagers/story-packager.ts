@@ -577,6 +577,8 @@ export class StoryPackager implements PackagerUnit {
                 gap: layout.gap,
                 shape: layout.shape,
                 path: layout.path
+                ,
+                exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
             };
             for (const obstacle of buildExclusionFieldObstacles({
                 x: rect.x,
@@ -588,7 +590,8 @@ export class StoryPackager implements PackagerUnit {
                 shape: layout.shape,
                 path: layout.path,
                 align: layout.align,
-                exclusionAssembly: layout.exclusionAssembly
+                exclusionAssembly: layout.exclusionAssembly,
+                exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
             })) {
                 storyMap.register(obstacle);
                 registeredObstacles.push(obstacle);
@@ -704,7 +707,8 @@ export class StoryPackager implements PackagerUnit {
                         shape: layout.shape,
                         path: layout.path,
                         align: layout.align,
-                        exclusionAssembly: layout.exclusionAssembly
+                        exclusionAssembly: layout.exclusionAssembly,
+                        exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
                     })) {
                         storyMap.register(obstacle);
                         registeredObstacles.push(obstacle);
@@ -746,7 +750,8 @@ export class StoryPackager implements PackagerUnit {
                             shape: layout.shape,
                             path: layout.path,
                             align: layout.align,
-                            exclusionAssembly: layout.exclusionAssembly
+                            exclusionAssembly: layout.exclusionAssembly,
+                            exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
                         })) {
                             storyMap.register(obstacle);
                             registeredObstacles.push(obstacle);
@@ -1137,7 +1142,8 @@ export class StoryPackager implements PackagerUnit {
                 shape: layout.shape,
                 path: layout.path,
                 align: layout.align,
-                exclusionAssembly: layout.exclusionAssembly
+                exclusionAssembly: layout.exclusionAssembly,
+                exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
             })) {
                 allObstacles.push(obstacle);
                 registeredObstacles.push(obstacle);
@@ -1407,7 +1413,8 @@ export class StoryPackager implements PackagerUnit {
                             shape: layout.shape,
                             path: layout.path,
                             align: layout.align,
-                            exclusionAssembly: layout.exclusionAssembly
+                            exclusionAssembly: layout.exclusionAssembly,
+                            exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
                         })) {
                             allObstacles.push(obstacle);
                             registeredObstacles.push(obstacle);
@@ -1453,7 +1460,8 @@ export class StoryPackager implements PackagerUnit {
                                 shape: layout.shape,
                                 path: layout.path,
                                 align: layout.align,
-                                exclusionAssembly: layout.exclusionAssembly
+                                exclusionAssembly: layout.exclusionAssembly,
+                                exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
                             })) {
                                 allObstacles.push(obstacle);
                                 registeredObstacles.push(obstacle);
@@ -1976,6 +1984,10 @@ export class StoryPackager implements PackagerUnit {
             element, { path: [this.storyIndex, childIndex] }
         );
         const session = this.processor.getCurrentLayoutSession();
+        const visualAssemblyMembers = (
+            element.placement?.exclusionAssembly?.members
+            || (element.placement as any)?.__compiledFromExclusionAssembly?.members
+        );
         return {
             type: element.type,
             x: absX,
@@ -1990,8 +2002,8 @@ export class StoryPackager implements PackagerUnit {
                 ...(typeof element.placement?.path === 'string' && element.placement.path.trim()
                     ? { _clipPath: element.placement.path.trim() }
                     : {}),
-                _clipAssembly: element.placement?.exclusionAssembly?.members
-                    ? element.placement.exclusionAssembly.members.map((member) => ({
+                _clipAssembly: Array.isArray(visualAssemblyMembers)
+                    ? visualAssemblyMembers.map((member: any) => ({
                         x: Number(member.x ?? 0),
                         y: Number(member.y ?? 0),
                         w: Math.max(0, Number(member.w ?? 0)),

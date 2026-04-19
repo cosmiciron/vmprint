@@ -1,0 +1,4364 @@
+[
+  {
+    "index": 0,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Circle Approximation Lane",
+              "width": 279.941406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "lead",
+        "x": 44,
+        "y": 77.178125,
+        "w": 380,
+        "h": 70.425,
+        "lines": [
+          [
+            {
+              "text": "This experiment keeps only one reference and two comparison cases: ",
+              "width": 375.527344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the real circle, the seven-rectangle union, and a seven-rectangle ",
+              "width": 344.871094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "anti-aliased union visualized with shoulder-focused taper bands around",
+              "width": 377.572266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the yellow core.",
+              "width": 83.373047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 179.603125,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Real Circle Field",
+              "width": 93.369141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 201.609375,
+        "w": 104,
+        "h": 104,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 201.609375,
+        "w": 380,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "This sample keeps the prose identical in both sections so ",
+              "width": 281.262695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the eye can compare only the wrapping lane. The ",
+              "width": 243.981934,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "opening lines should step inward gently near the top, ",
+              "width": 259.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hold a broader shoulder through the middle, and then ",
+              "width": 262.351074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "recover the full measure quickly once the obstacle ",
+              "width": 247.016602,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "clears.",
+              "width": 32.398438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 296.698438,
+        "w": 380,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Because the visible artwork is the same circular disc in ",
+              "width": 268.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "both sections, the important question is not whether the image looks round ",
+              "width": 365.658691,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "but whether the exclusion lane creates the same reading rhythm. If the line ",
+              "width": 366.260254,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "widths and recovery cadence stay close, then a coarse invisible field may ",
+              "width": 359.51416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "already be visually good enough.",
+              "width": 160.837402,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 395.4875,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Seven-Rectangle Union",
+              "width": 134.027344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "field-actor",
+        "x": 69,
+        "y": 417.49375,
+        "w": 54,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 432.49375,
+        "w": 86,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 46,
+        "y": 447.49375,
+        "w": 100,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 462.49375,
+        "w": 104,
+        "h": 14,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 46,
+        "y": 476.49375,
+        "w": 100,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 491.49375,
+        "w": 86,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 69,
+        "y": 506.49375,
+        "w": 54,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 417.49375,
+        "w": 380,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "This sample keeps the prose identical in both sections so",
+              "width": 278.206543,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the eye can compare only the wrapping lane. The ",
+              "width": 243.981934,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "opening lines should step inward gently near the top, ",
+              "width": 259.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hold a broader shoulder through the middle, and then ",
+              "width": 262.351074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "recover the full measure quickly once the obstacle ",
+              "width": 247.016602,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "clears.",
+              "width": 32.398438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 512.582813,
+        "w": 380,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Bec",
+              "width": 18.95459,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ause the visible artwork is the same circular disc in both ",
+              "width": 274.505859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sections, the important question is not whether the image looks round but ",
+              "width": 359.541016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "whether the exclusion lane creates the same reading rhythm. If the line widths",
+              "width": 379.091797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and recovery cadence stay close, then a coarse invisible field may already be ",
+              "width": 379.704102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "visually good enough.",
+              "width": 106.412109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 58,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Seven-Rectangle Union Antialiased",
+              "width": 201.380859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "field-actor",
+        "x": 64,
+        "y": 80.00625,
+        "w": 64,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 56,
+        "y": 90.00625,
+        "w": 80,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 50,
+        "y": 100.00625,
+        "w": 92,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 46,
+        "y": 110.00625,
+        "w": 100,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 120.00625,
+        "w": 104,
+        "h": 24,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 46,
+        "y": 144.00625,
+        "w": 100,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 50,
+        "y": 154.00625,
+        "w": 92,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 56,
+        "y": 164.00625,
+        "w": 80,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 64,
+        "y": 174.00625,
+        "w": 64,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 68,
+        "y": 80.00625,
+        "w": 56,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 60,
+        "y": 92.00625,
+        "w": 72,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 102.00625,
+        "w": 86,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 48,
+        "y": 112.00625,
+        "w": 96,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 122.00625,
+        "w": 104,
+        "h": 20,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 48,
+        "y": 142.00625,
+        "w": 96,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 152.00625,
+        "w": 86,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 60,
+        "y": 162.00625,
+        "w": 72,
+        "h": 10,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 68,
+        "y": 172.00625,
+        "w": 56,
+        "h": 12,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 63,
+        "y": 90.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 125,
+        "y": 90.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 100.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 133,
+        "y": 100.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 51,
+        "y": 110.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 137,
+        "y": 110.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 51,
+        "y": 150.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 137,
+        "y": 150.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 160.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 133,
+        "y": 160.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 63,
+        "y": 170.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 125,
+        "y": 170.00625,
+        "w": 4,
+        "h": 4,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 69,
+        "y": 80.00625,
+        "w": 54,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 95.00625,
+        "w": 86,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 46,
+        "y": 110.00625,
+        "w": 100,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 125.00625,
+        "w": 104,
+        "h": 14,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 46,
+        "y": 139.00625,
+        "w": 100,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 154.00625,
+        "w": 86,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 69,
+        "y": 169.00625,
+        "w": 54,
+        "h": 15,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 80.00625,
+        "w": 380,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "This sample keeps the prose identical in both sections ",
+              "width": 266.588867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "so the eye can compare only the wrapping lane. The ",
+              "width": 258.655762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "opening lines should step inward gently near the top, ",
+              "width": 259.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "hold a broader shoulder through the middle, and then ",
+              "width": 262.351074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "recover the full measure quickly once the obstacle ",
+              "width": 247.016602,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "clears.",
+              "width": 32.398438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 175.095313,
+        "w": 380,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Because the visible artwork is the same circular disc in ",
+              "width": 268.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "both sections, the important question is not whether the image looks round ",
+              "width": 365.658691,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "but whether the exclusion lane creates the same reading rhythm. If the line ",
+              "width": 366.260254,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "widths and recovery cadence stay close, then a coarse invisible field may ",
+              "width": 359.51416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "already be visually good enough.",
+              "width": 160.837402,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 273.884375,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Cat Silhouette Stress Test",
+              "width": 147.814453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "field-actor",
+        "x": 73,
+        "y": 295.890625,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 301.890625,
+        "w": 16,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 307.890625,
+        "w": 16,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 64,
+        "y": 313.890625,
+        "w": 31,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 54,
+        "y": 319.890625,
+        "w": 48,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 49,
+        "y": 325.890625,
+        "w": 59,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 49,
+        "y": 331.890625,
+        "w": 59,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 48,
+        "y": 337.890625,
+        "w": 64,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 45,
+        "y": 343.890625,
+        "w": 70,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 349.890625,
+        "w": 72,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 191,
+        "y": 349.890625,
+        "w": 16,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 355.890625,
+        "w": 74,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 355.890625,
+        "w": 26,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 47,
+        "y": 361.890625,
+        "w": 76,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 361.890625,
+        "w": 29,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 56,
+        "y": 367.890625,
+        "w": 73,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 184,
+        "y": 367.890625,
+        "w": 36,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 66,
+        "y": 373.890625,
+        "w": 69,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 181,
+        "y": 373.890625,
+        "w": 39,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 66,
+        "y": 379.890625,
+        "w": 69,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 181,
+        "y": 379.890625,
+        "w": 39,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 62,
+        "y": 385.890625,
+        "w": 80,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 181,
+        "y": 385.890625,
+        "w": 24,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 59,
+        "y": 391.890625,
+        "w": 92,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 182,
+        "y": 391.890625,
+        "w": 21,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 59,
+        "y": 397.890625,
+        "w": 92,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 185,
+        "y": 397.890625,
+        "w": 18,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 403.890625,
+        "w": 105,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 185,
+        "y": 403.890625,
+        "w": 20,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 409.890625,
+        "w": 112,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 192,
+        "y": 409.890625,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 415.890625,
+        "w": 114,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 192,
+        "y": 415.890625,
+        "w": 16,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 421.890625,
+        "w": 121,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 195,
+        "y": 421.890625,
+        "w": 17,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 62,
+        "y": 427.890625,
+        "w": 116,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 199,
+        "y": 427.890625,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 62,
+        "y": 433.890625,
+        "w": 122,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 201,
+        "y": 433.890625,
+        "w": 11,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 65,
+        "y": 439.890625,
+        "w": 35,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 102,
+        "y": 439.890625,
+        "w": 84,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 201,
+        "y": 439.890625,
+        "w": 11,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 66,
+        "y": 445.890625,
+        "w": 121,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 201,
+        "y": 445.890625,
+        "w": 12,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 69,
+        "y": 451.890625,
+        "w": 24,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 96,
+        "y": 451.890625,
+        "w": 91,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 204,
+        "y": 451.890625,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 457.890625,
+        "w": 20,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 96,
+        "y": 457.890625,
+        "w": 91,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 203,
+        "y": 457.890625,
+        "w": 10,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 463.890625,
+        "w": 20,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 96,
+        "y": 463.890625,
+        "w": 91,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 202,
+        "y": 463.890625,
+        "w": 11,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 469.890625,
+        "w": 20,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 96,
+        "y": 469.890625,
+        "w": 91,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 201,
+        "y": 469.890625,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 73,
+        "y": 475.890625,
+        "w": 18,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 100,
+        "y": 475.890625,
+        "w": 87,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 198,
+        "y": 475.890625,
+        "w": 12,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 481.890625,
+        "w": 17,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 101,
+        "y": 481.890625,
+        "w": 84,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 195,
+        "y": 481.890625,
+        "w": 12,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 71,
+        "y": 487.890625,
+        "w": 15,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 107,
+        "y": 487.890625,
+        "w": 77,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 188,
+        "y": 487.890625,
+        "w": 16,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 60,
+        "y": 493.890625,
+        "w": 24,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 91,
+        "y": 493.890625,
+        "w": 111,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 499.890625,
+        "w": 25,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 85,
+        "y": 499.890625,
+        "w": 111,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 505.890625,
+        "w": 24,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 85,
+        "y": 505.890625,
+        "w": 108,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 295.890625,
+        "w": 380,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "This stress test swaps the circular proof for a rough cat silhouette ",
+              "width": 320.364258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "made entirely from ordinary rectangles. Nothing here is ",
+              "width": 270.848145,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "unioned for the wrap lane; the field is published as a literal ",
+              "width": 286.177246,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "non-union ",
+              "width": 51.986816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "assembly so we can see how the same ",
+              "width": 194.428223,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "substr",
+              "width": 29.95459,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ate behaves once the authored shape ",
+              "width": 187.757324,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "bec",
+              "width": 17.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "omes more irregular.",
+              "width": 100.869141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 390.979688,
+        "w": 380,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "If the wrap still feels stable, then the ",
+              "width": 177.928223,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "implication is strong: rectangles can ",
+              "width": 177.305176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "serve as a practical authoring surface ",
+              "width": 185.87207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "even for more expressive silhouettes, ",
+              "width": 185.254395,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "with refinement happening later only ",
+              "width": 179.775879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "wh",
+              "width": 14.061523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ere it helps. The page does not need to ",
+              "width": 194.471191,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "know that the cat began as boxes. It only ",
+              "width": 202.404297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "needs a believable exclusion field.",
+              "width": 166.944336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 514.66875,
+        "w": 380,
+        "h": 1,
+        "lines": [
+          [
+            {
+              "text": ".",
+              "width": 0.277832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 1.117188,
+        "lines": [
+          [
+            {
+              "text": "",
+              "width": 0,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 44,
+        "y": 239.117188,
+        "w": 380,
+        "h": 17.00625,
+        "lines": [
+          [
+            {
+              "text": "Cat Silhouette Antialiased",
+              "width": 148.025391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "field-actor",
+        "x": 68,
+        "y": 261.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 88,
+        "y": 261.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 68,
+        "y": 267.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 90,
+        "y": 267.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 60,
+        "y": 273.123438,
+        "w": 10,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 90,
+        "y": 273.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 50,
+        "y": 279.123438,
+        "w": 12,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 97,
+        "y": 279.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 45,
+        "y": 285.123438,
+        "w": 7,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 104,
+        "y": 285.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 45,
+        "y": 291.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 110,
+        "y": 291.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 297.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 110,
+        "y": 297.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 303.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 114,
+        "y": 303.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 117,
+        "y": 309.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 309.123438,
+        "w": 24,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 118,
+        "y": 315.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 183,
+        "y": 315.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 209,
+        "y": 315.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 120,
+        "y": 321.123438,
+        "w": 7,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 183,
+        "y": 321.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 215,
+        "y": 321.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 327.123438,
+        "w": 1,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 125,
+        "y": 327.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 180,
+        "y": 327.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 218,
+        "y": 327.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 333.123438,
+        "w": 10,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 131,
+        "y": 333.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 177,
+        "y": 333.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 52,
+        "y": 339.123438,
+        "w": 12,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 137,
+        "y": 339.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 177,
+        "y": 339.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 58,
+        "y": 345.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 137,
+        "y": 345.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 177,
+        "y": 345.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 351.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 144,
+        "y": 351.123438,
+        "w": 11,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 177,
+        "y": 351.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 207,
+        "y": 351.123438,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 357.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 153,
+        "y": 357.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 177,
+        "y": 357.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 205,
+        "y": 357.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 363.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 153,
+        "y": 363.123438,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 178,
+        "y": 363.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 205,
+        "y": 363.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 369.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 164,
+        "y": 369.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 181,
+        "y": 369.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 207,
+        "y": 369.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 375.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 171,
+        "y": 375.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 181,
+        "y": 375.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 207,
+        "y": 375.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 381.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 173,
+        "y": 381.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 188,
+        "y": 381.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 210,
+        "y": 381.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 387.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 180,
+        "y": 387.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 188,
+        "y": 387.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 214,
+        "y": 387.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 393.123438,
+        "w": 7,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 180,
+        "y": 393.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 191,
+        "y": 393.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 214,
+        "y": 393.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 58,
+        "y": 399.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 186,
+        "y": 399.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 195,
+        "y": 399.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 214,
+        "y": 399.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 58,
+        "y": 405.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 188,
+        "y": 405.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 197,
+        "y": 405.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 214,
+        "y": 405.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 61,
+        "y": 411.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 189,
+        "y": 411.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 197,
+        "y": 411.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 215,
+        "y": 411.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 62,
+        "y": 417.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 189,
+        "y": 417.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 197,
+        "y": 417.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 215,
+        "y": 417.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 65,
+        "y": 423.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 189,
+        "y": 423.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 198,
+        "y": 423.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 215,
+        "y": 423.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 68,
+        "y": 429.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 189,
+        "y": 429.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 197,
+        "y": 429.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 215,
+        "y": 429.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 68,
+        "y": 435.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 189,
+        "y": 435.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 194,
+        "y": 435.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 212,
+        "y": 435.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 68,
+        "y": 441.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 93,
+        "y": 441.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 189,
+        "y": 441.123438,
+        "w": 7,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 212,
+        "y": 441.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 67,
+        "y": 447.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 91,
+        "y": 447.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 96,
+        "y": 447.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 447.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 209,
+        "y": 447.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 56,
+        "y": 453.123438,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 88,
+        "y": 453.123438,
+        "w": 17,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 206,
+        "y": 453.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 459.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 86,
+        "y": 459.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 204,
+        "y": 459.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 465.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 198,
+        "y": 465.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 53,
+        "y": 471.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 195,
+        "y": 471.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 70,
+        "y": 261.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 86,
+        "y": 261.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 70,
+        "y": 267.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 88,
+        "y": 267.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 62,
+        "y": 273.123438,
+        "w": 10,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 88,
+        "y": 273.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 52,
+        "y": 279.123438,
+        "w": 12,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 95,
+        "y": 279.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 47,
+        "y": 285.123438,
+        "w": 7,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 102,
+        "y": 285.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 47,
+        "y": 291.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 108,
+        "y": 291.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 46,
+        "y": 297.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 108,
+        "y": 297.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 303.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 112,
+        "y": 303.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 309.123438,
+        "w": 1,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 115,
+        "y": 309.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 189,
+        "y": 309.123438,
+        "w": 20,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 116,
+        "y": 315.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 185,
+        "y": 315.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 207,
+        "y": 315.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 118,
+        "y": 321.123438,
+        "w": 7,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 185,
+        "y": 321.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 213,
+        "y": 321.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 327.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 123,
+        "y": 327.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 182,
+        "y": 327.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 216,
+        "y": 327.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 45,
+        "y": 333.123438,
+        "w": 11,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 129,
+        "y": 333.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 179,
+        "y": 333.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 54,
+        "y": 339.123438,
+        "w": 12,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 135,
+        "y": 339.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 179,
+        "y": 339.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 60,
+        "y": 345.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 135,
+        "y": 345.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 179,
+        "y": 345.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 351.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 142,
+        "y": 351.123438,
+        "w": 11,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 179,
+        "y": 351.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 205,
+        "y": 351.123438,
+        "w": 15,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 357.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 151,
+        "y": 357.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 179,
+        "y": 357.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 203,
+        "y": 357.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 363.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 151,
+        "y": 363.123438,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 180,
+        "y": 363.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 203,
+        "y": 363.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 369.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 162,
+        "y": 369.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 183,
+        "y": 369.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 205,
+        "y": 369.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 375.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 169,
+        "y": 375.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 183,
+        "y": 375.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 205,
+        "y": 375.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 381.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 171,
+        "y": 381.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 190,
+        "y": 381.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 208,
+        "y": 381.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 387.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 178,
+        "y": 387.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 190,
+        "y": 387.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 212,
+        "y": 387.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 393.123438,
+        "w": 7,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 178,
+        "y": 393.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 193,
+        "y": 393.123438,
+        "w": 6,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 212,
+        "y": 393.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 60,
+        "y": 399.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 184,
+        "y": 399.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 197,
+        "y": 399.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 212,
+        "y": 399.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 60,
+        "y": 405.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 100,
+        "y": 405.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 186,
+        "y": 405.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 199,
+        "y": 405.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 212,
+        "y": 405.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 63,
+        "y": 411.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 411.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 199,
+        "y": 411.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 213,
+        "y": 411.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 64,
+        "y": 417.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 93,
+        "y": 417.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 417.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 199,
+        "y": 417.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 213,
+        "y": 417.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 67,
+        "y": 423.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 92,
+        "y": 423.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 423.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 200,
+        "y": 423.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 213,
+        "y": 423.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 70,
+        "y": 429.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 92,
+        "y": 429.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 429.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 199,
+        "y": 429.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 213,
+        "y": 429.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 70,
+        "y": 435.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 92,
+        "y": 435.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 435.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 196,
+        "y": 435.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 210,
+        "y": 435.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 70,
+        "y": 441.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 91,
+        "y": 441.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 441.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 193,
+        "y": 441.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 210,
+        "y": 441.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 69,
+        "y": 447.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 89,
+        "y": 447.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 98,
+        "y": 447.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 185,
+        "y": 447.123438,
+        "w": 10,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 207,
+        "y": 447.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 58,
+        "y": 453.123438,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 86,
+        "y": 453.123438,
+        "w": 21,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 184,
+        "y": 453.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 204,
+        "y": 453.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 459.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 84,
+        "y": 459.123438,
+        "w": 7,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 202,
+        "y": 459.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 465.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 82,
+        "y": 465.123438,
+        "w": 3,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 196,
+        "y": 465.123438,
+        "w": 8,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 55,
+        "y": 471.123438,
+        "w": 2,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 81,
+        "y": 471.123438,
+        "w": 4,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 193,
+        "y": 471.123438,
+        "w": 5,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 73,
+        "y": 261.123438,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 267.123438,
+        "w": 16,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 273.123438,
+        "w": 16,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 64,
+        "y": 279.123438,
+        "w": 31,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 54,
+        "y": 285.123438,
+        "w": 48,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 49,
+        "y": 291.123438,
+        "w": 59,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 49,
+        "y": 297.123438,
+        "w": 59,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 48,
+        "y": 303.123438,
+        "w": 64,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 45,
+        "y": 309.123438,
+        "w": 70,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 315.123438,
+        "w": 72,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 191,
+        "y": 315.123438,
+        "w": 16,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 44,
+        "y": 321.123438,
+        "w": 74,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 321.123438,
+        "w": 26,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 47,
+        "y": 327.123438,
+        "w": 76,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 187,
+        "y": 327.123438,
+        "w": 29,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 56,
+        "y": 333.123438,
+        "w": 73,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 184,
+        "y": 333.123438,
+        "w": 36,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 66,
+        "y": 339.123438,
+        "w": 69,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 181,
+        "y": 339.123438,
+        "w": 39,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 66,
+        "y": 345.123438,
+        "w": 69,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 181,
+        "y": 345.123438,
+        "w": 39,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 62,
+        "y": 351.123438,
+        "w": 80,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 181,
+        "y": 351.123438,
+        "w": 24,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 59,
+        "y": 357.123438,
+        "w": 92,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 182,
+        "y": 357.123438,
+        "w": 21,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 59,
+        "y": 363.123438,
+        "w": 92,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 185,
+        "y": 363.123438,
+        "w": 18,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 369.123438,
+        "w": 105,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 185,
+        "y": 369.123438,
+        "w": 20,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 375.123438,
+        "w": 112,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 192,
+        "y": 375.123438,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 381.123438,
+        "w": 114,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 192,
+        "y": 381.123438,
+        "w": 16,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 387.123438,
+        "w": 121,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 195,
+        "y": 387.123438,
+        "w": 17,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 62,
+        "y": 393.123438,
+        "w": 116,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 199,
+        "y": 393.123438,
+        "w": 13,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 62,
+        "y": 399.123438,
+        "w": 122,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 201,
+        "y": 399.123438,
+        "w": 11,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 65,
+        "y": 405.123438,
+        "w": 35,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 102,
+        "y": 405.123438,
+        "w": 84,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 201,
+        "y": 405.123438,
+        "w": 11,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 66,
+        "y": 411.123438,
+        "w": 121,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 201,
+        "y": 411.123438,
+        "w": 12,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 69,
+        "y": 417.123438,
+        "w": 24,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 96,
+        "y": 417.123438,
+        "w": 91,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 204,
+        "y": 417.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 423.123438,
+        "w": 20,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 96,
+        "y": 423.123438,
+        "w": 91,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 203,
+        "y": 423.123438,
+        "w": 10,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 429.123438,
+        "w": 20,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 96,
+        "y": 429.123438,
+        "w": 91,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 202,
+        "y": 429.123438,
+        "w": 11,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 435.123438,
+        "w": 20,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 96,
+        "y": 435.123438,
+        "w": 91,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 201,
+        "y": 435.123438,
+        "w": 9,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 73,
+        "y": 441.123438,
+        "w": 18,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 100,
+        "y": 441.123438,
+        "w": 87,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 198,
+        "y": 441.123438,
+        "w": 12,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 72,
+        "y": 447.123438,
+        "w": 17,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 101,
+        "y": 447.123438,
+        "w": 84,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 195,
+        "y": 447.123438,
+        "w": 12,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 71,
+        "y": 453.123438,
+        "w": 15,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 107,
+        "y": 453.123438,
+        "w": 77,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 188,
+        "y": 453.123438,
+        "w": 16,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 60,
+        "y": 459.123438,
+        "w": 24,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 91,
+        "y": 459.123438,
+        "w": 111,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 465.123438,
+        "w": 25,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 85,
+        "y": 465.123438,
+        "w": 111,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 57,
+        "y": 471.123438,
+        "w": 24,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "field-actor",
+        "x": 85,
+        "y": 471.123438,
+        "w": 108,
+        "h": 6,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 261.123438,
+        "w": 380,
+        "h": 101.389063,
+        "lines": [
+          [
+            {
+              "text": "This stress test swaps the circular proof for a rough cat ",
+              "width": 270.219727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "silhouette made entirely from ordinary rectangles. Nothing ",
+              "width": 284.92041,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "here is ",
+              "width": 36.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "unioned for the wrap lane; the field is ",
+              "width": 182.837402,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "publish",
+              "width": 34.858398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ed as a literal non-union assembly so ",
+              "width": 184.658203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "we ",
+              "width": 17.117676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "can see how the same substrate ",
+              "width": 161.422852,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "behaves once the authored shape ",
+              "width": 169.409668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "becomes more irregular.",
+              "width": 118.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 370.5125,
+        "w": 380,
+        "h": 115.689063,
+        "lines": [
+          [
+            {
+              "text": "If the wrap still feels stable, then the ",
+              "width": 177.928223,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "implication is strong: rectangles can ",
+              "width": 177.305176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "serve as a practical authoring surface ",
+              "width": 185.87207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "even for more expressive silhouettes, ",
+              "width": 185.254395,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "with refinement happening later only ",
+              "width": 179.775879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "where it helps. The page does not need ",
+              "width": 196.302734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "to know that the cat began as boxes. It ",
+              "width": 191.398926,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "only needs a believable exclusion field.",
+              "width": 190.179688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

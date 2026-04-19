@@ -11,6 +11,7 @@ export * from '../engine/context-renderer';
 export * from '../engine/text-delegate-load-error';
 export * from '../engine/layout/track-sizing';
 export * from '../engine/layout/exclusion-field';
+export * from '../engine/layout/exclusion-resistance-field';
 export * from '../engine/layout/simulation-report';
 export { buildDataUri, parseEmbeddedImagePayloadCached } from '../engine/image-data';
 export { LayoutUtils } from '../engine/layout/layout-utils';

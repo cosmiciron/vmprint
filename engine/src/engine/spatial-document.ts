@@ -103,6 +103,7 @@ export interface SpatialBlockObstacle {
             path?: string;
             zIndex?: number;
             traversalInteraction?: TraversalInteractionPolicy;
+            resistance?: number;
         }>;
     };
     zIndex?: number;
@@ -352,7 +353,8 @@ function adaptBlockObstacle(obstacle: SpatialBlockObstacle, options: SpatialAdap
                         ...(Number.isFinite(Number(member.zIndex)) ? { zIndex: Number(member.zIndex) } : {}),
                         ...(typeof member.traversalInteraction === 'string'
                             ? { traversalInteraction: member.traversalInteraction }
-                            : {})
+                            : {}),
+                        ...(member.resistance !== undefined ? { resistance: member.resistance } : {})
                     }))
                 }
             }

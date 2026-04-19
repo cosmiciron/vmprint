@@ -1,4 +1,11 @@
-import type { PageReservationSelector, StoryFloatAlign, StoryFloatShape, StoryWrapMode, TraversalInteractionPolicy } from '../../../types';
+import type {
+    PageReservationSelector,
+    StoryExclusionBoundaryProfile,
+    StoryFloatAlign,
+    StoryFloatShape,
+    StoryWrapMode,
+    TraversalInteractionPolicy
+} from '../../../types';
 
 export type RegionReservation = {
     id: string;
@@ -26,6 +33,7 @@ export type SpatialExclusion = {
     gapBottom?: number;
     shape?: StoryFloatShape;
     path?: string;
+    exclusionBoundaryProfile?: StoryExclusionBoundaryProfile;
     align?: StoryFloatAlign;
     traversalInteraction?: TraversalInteractionPolicy;
     surface?: ExclusionSurface;

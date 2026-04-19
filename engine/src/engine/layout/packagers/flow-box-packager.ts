@@ -318,6 +318,7 @@ export class FlowBoxPackager implements PackagerUnit {
                     ? 'polygon'
                     : 'rect',
             path: typeof exclusion.path === 'string' && exclusion.path.trim() ? exclusion.path.trim() : undefined,
+            exclusionBoundaryProfile: exclusion.exclusionBoundaryProfile,
             align: exclusion.align,
             traversalInteraction: exclusion.traversalInteraction ?? 'auto',
             zIndex: Number.isFinite(Number(exclusion.zIndex)) ? Number(exclusion.zIndex) : 0

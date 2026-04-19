@@ -258,6 +258,7 @@ export class WorldPlainPackager implements PackagerUnit {
                 path: directive.path,
                 align: directive.align,
                 exclusionAssembly: directive.exclusionAssembly,
+                exclusionBoundaryProfile: (directive as any).exclusionBoundaryProfile,
                 traversalInteraction: directive.traversalInteraction ?? this.traversalInteractionDefault,
                 zIndex: Number.isFinite(Number(directive.zIndex))
                     ? Number(directive.zIndex)
@@ -278,6 +279,7 @@ export class WorldPlainPackager implements PackagerUnit {
                     gapBottom: obstacle.gapBottom,
                     shape: obstacle.shape,
                     path: obstacle.path,
+                    exclusionBoundaryProfile: obstacle.exclusionBoundaryProfile,
                     align: obstacle.align,
                     traversalInteraction: obstacle.traversalInteraction,
                     zIndex: obstacle.zIndex

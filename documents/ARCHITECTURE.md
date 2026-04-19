@@ -3,6 +3,7 @@
 This document is the system map. It covers package layout, how the pieces fit together, the four extension contracts, and the full data flow from source to rendered output.
 
 For a deep dive into how the layout engine works — actors, packagers, boxes, speculative pathfinding, the simulation clock, oscillation detection — see [ENGINE-INTERNALS.md](ENGINE-INTERNALS.md).
+For the exclusion and text-wrapping substrate — including `exclusionAssembly`, weighted members, and resistance/tolerance policy — see [EXCLUSION-ASSEMBLY.md](EXCLUSION-ASSEMBLY.md).
 
 ---
 

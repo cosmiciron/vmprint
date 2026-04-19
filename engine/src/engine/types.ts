@@ -367,10 +367,42 @@ export interface StoryExclusionAssemblyMember {
     zIndex?: number;
     /** Optional explicit interaction policy for traversing/root flow. */
     traversalInteraction?: TraversalInteractionPolicy;
+    /** Optional wrap resistance. 1 = hard obstacle, lower values = softer exclusion. */
+    resistance?: number;
 }
 
 export interface StoryExclusionAssembly {
     members: StoryExclusionAssemblyMember[];
+}
+
+export type StoryExclusionBoundaryProfileTupleSpan = [number, number, number];
+export type StoryExclusionBoundaryProfileTupleBand = [
+    number,
+    number,
+    StoryExclusionBoundaryProfileTupleSpan[]
+];
+
+export interface StoryExclusionBoundaryProfileObjectSpan {
+    left: number;
+    right: number;
+    resistance: number;
+}
+
+export interface StoryExclusionBoundaryProfileObjectBand {
+    top: number;
+    bottom: number;
+    spans: StoryExclusionBoundaryProfileObjectSpan[];
+}
+
+export interface StoryExclusionBoundaryProfile {
+    kind: 'exclusion-boundary-profile';
+    mode?: 'hard' | 'weighted';
+    version?: string;
+    encoding?: 'band-tuples-v1';
+    width?: number;
+    height?: number;
+    gap?: number;
+    bands: Array<StoryExclusionBoundaryProfileTupleBand | StoryExclusionBoundaryProfileObjectBand>;
 }
 
 export interface SpatialFieldDirective {
@@ -383,6 +415,7 @@ export interface SpatialFieldDirective {
     shape?: StoryFloatShape;
     path?: string;
     exclusionAssembly?: StoryExclusionAssembly;
+    exclusionBoundaryProfile?: StoryExclusionBoundaryProfile;
     hidden?: boolean;
     zIndex?: number;
     traversalInteraction?: TraversalInteractionPolicy;
@@ -440,6 +473,12 @@ export interface StoryLayoutDirective {
      * single rect/circle obstacle.
      */
     exclusionAssembly?: StoryExclusionAssembly;
+    /**
+     * Optional compiled boundary substrate for wrapping.
+     * This should be treated as the runtime exclusion lane while any authored
+     * assembly remains available purely for visual clipping.
+     */
+    exclusionBoundaryProfile?: StoryExclusionBoundaryProfile;
     /** Optional depth for float/story-absolute obstacle interaction. */
     zIndex?: number;
 }

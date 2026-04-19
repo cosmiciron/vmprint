@@ -98,12 +98,12 @@ const ZONE_LAYOUT_KEYS = new Set(['columns', 'gap', 'frameOverflow', 'worldBehav
 const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
-const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'path', 'exclusionAssembly', 'zIndex']);
-const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'path', 'exclusionAssembly', 'hidden', 'zIndex', 'traversalInteraction']);
+const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'path', 'exclusionAssembly', 'exclusionBoundaryProfile', 'zIndex']);
+const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'path', 'exclusionAssembly', 'exclusionBoundaryProfile', 'hidden', 'zIndex', 'traversalInteraction']);
 const SIMULATION_DIRECTIVE_KEYS = new Set(['enabled', 'maxTicks', 'updateKind', 'x', 'y', 'label']);
 const SIMULATION_MOTION_AXIS_KEYS = new Set(['start', 'velocity', 'amplitude', 'frequency', 'phase']);
 const STORY_EXCLUSION_ASSEMBLY_KEYS = new Set(['members']);
-const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape', 'path', 'zIndex', 'traversalInteraction']);
+const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape', 'path', 'zIndex', 'traversalInteraction', 'resistance']);
 const VALID_TRAVERSAL_INTERACTIONS = new Set(['auto', 'wrap', 'overpass', 'ignore']);
 const PAGE_REGION_DEFINITION_KEYS = new Set(['default', 'firstPage', 'odd', 'even']);
 const PAGE_REGION_CONTENT_KEYS = new Set(['elements', 'style']);
@@ -579,6 +579,7 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
             assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
             assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
             if (memberObj.zIndex !== undefined) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
+            if (memberObj.resistance !== undefined) assertFiniteNumberAt(memberObj.resistance, `${memberPath}.resistance`, documentPath);
             if (memberObj.path !== undefined) assertStringAt(memberObj.path, `${memberPath}.path`, documentPath);
             if (Number(memberObj.w) <= 0) {
                 contractError(documentPath, `${memberPath}.w`, 'expected a number greater than 0.');
@@ -650,6 +651,7 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
             assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
             assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
             if (memberObj.zIndex !== undefined) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
+            if (memberObj.resistance !== undefined) assertFiniteNumberAt(memberObj.resistance, `${memberPath}.resistance`, documentPath);
             if (memberObj.path !== undefined) assertStringAt(memberObj.path, `${memberPath}.path`, documentPath);
             if (memberObj.traversalInteraction !== undefined && !VALID_TRAVERSAL_INTERACTIONS.has(memberObj.traversalInteraction as string)) {
                 contractError(documentPath, `${memberPath}.traversalInteraction`, 'expected one of: auto, wrap, overpass, ignore.');

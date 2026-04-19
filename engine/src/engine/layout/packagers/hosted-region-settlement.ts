@@ -169,15 +169,19 @@ function buildHostedRegionFieldState(
         ? Math.max(0, Number(directive.x))
         : resolveHostedRegionFieldAnchorX(align, regionWidth, fieldWidth);
     const fieldY = Number.isFinite(directive.y) ? Math.max(0, Number(directive.y)) : baseY;
+    const visualAssemblyMembers = (
+        directive.exclusionAssembly?.members
+        || (directive as any)?.__compiledFromExclusionAssembly?.members
+    );
     const translatedBoxes = emitted.map((box) => ({
         ...box,
         x: (box.x || 0) + fieldX,
         y: (box.y || 0) + fieldY,
         properties: {
             ...(box.properties || {}),
-            ...(directive.exclusionAssembly?.members
+            ...(Array.isArray(visualAssemblyMembers)
                 ? {
-                    _clipAssembly: directive.exclusionAssembly.members.map((member) => ({
+                    _clipAssembly: visualAssemblyMembers.map((member: any) => ({
                         x: Number(member.x ?? 0),
                         y: Number(member.y ?? 0),
                         w: Math.max(0, Number(member.w ?? 0)),
@@ -216,7 +220,8 @@ function buildHostedRegionFieldState(
                 align,
                 zIndex,
                 wrap,
-                exclusionAssembly: directive.exclusionAssembly
+                exclusionAssembly: directive.exclusionAssembly,
+                exclusionBoundaryProfile: (directive as any).exclusionBoundaryProfile
             })
         }
     };

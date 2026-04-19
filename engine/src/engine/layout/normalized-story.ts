@@ -1,5 +1,6 @@
 import type {
     Element,
+    StoryExclusionBoundaryProfile,
     StoryExclusionAssemblyMember,
     StoryFloatAlign,
     StoryFloatShape,
@@ -26,6 +27,7 @@ export interface NormalizedStoryLayout {
     exclusionAssembly?: {
         members: StoryExclusionAssemblyMember[];
     };
+    exclusionBoundaryProfile?: StoryExclusionBoundaryProfile;
 }
 
 export interface NormalizedStoryChild {
@@ -52,6 +54,9 @@ function normalizeLayout(layout?: StoryLayoutDirective): NormalizedStoryLayout |
             w: Math.max(0, Number(member.w ?? 0)),
             h: Math.max(0, Number(member.h ?? 0)),
             shape: (member.shape ?? 'rect') as StoryFloatShape,
+            ...(member.resistance !== undefined
+                ? { resistance: Math.max(0, Math.min(1, Number(member.resistance))) }
+                : {}),
             ...(typeof member.path === 'string' && member.path.trim()
                 ? { path: member.path.trim() }
                 : {})
@@ -67,6 +72,9 @@ function normalizeLayout(layout?: StoryLayoutDirective): NormalizedStoryLayout |
         shape: (layout.shape ?? 'rect') as StoryFloatShape,
         ...(typeof layout.path === 'string' && layout.path.trim()
             ? { path: layout.path.trim() }
+            : {}),
+        ...(layout.exclusionBoundaryProfile && Array.isArray(layout.exclusionBoundaryProfile.bands)
+            ? { exclusionBoundaryProfile: layout.exclusionBoundaryProfile as StoryExclusionBoundaryProfile }
             : {}),
         exclusionAssembly: normalizedMembers.length > 0
             ? { members: normalizedMembers }

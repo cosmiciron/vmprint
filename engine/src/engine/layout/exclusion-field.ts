@@ -1,4 +1,11 @@
-import type { StoryExclusionAssembly, StoryFloatAlign, StoryFloatShape, StoryWrapMode, TraversalInteractionPolicy } from '../types';
+import type {
+    StoryExclusionAssembly,
+    StoryExclusionBoundaryProfile,
+    StoryFloatAlign,
+    StoryFloatShape,
+    StoryWrapMode,
+    TraversalInteractionPolicy
+} from '../types';
 import type { OccupiedRect } from './packagers/spatial-map';
 
 export interface ExclusionFieldDescriptor {
@@ -12,6 +19,7 @@ export interface ExclusionFieldDescriptor {
     path?: string;
     align?: StoryFloatAlign;
     exclusionAssembly?: StoryExclusionAssembly;
+    exclusionBoundaryProfile?: StoryExclusionBoundaryProfile;
     zIndex?: number;
     traversalInteraction?: TraversalInteractionPolicy;
 }
@@ -42,6 +50,7 @@ export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescripto
             gap,
             shape: normalizedShape,
             path: normalizedShape === 'polygon' ? String(descriptor.path || '') : undefined,
+            exclusionBoundaryProfile: descriptor.exclusionBoundaryProfile,
             align: descriptor.align,
             zIndex: Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0,
             traversalInteraction: descriptor.traversalInteraction ?? 'auto'
@@ -60,7 +69,10 @@ export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescripto
         zIndex: Number.isFinite(Number(member.zIndex))
             ? Number(member.zIndex)
             : (Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0),
-        traversalInteraction: member.traversalInteraction ?? descriptor.traversalInteraction ?? 'auto'
+        traversalInteraction: member.traversalInteraction ?? descriptor.traversalInteraction ?? 'auto',
+        ...(member.resistance !== undefined
+            ? { resistance: Math.max(0, Math.min(1, Number(member.resistance))) }
+            : {})
         // Deliberately omit align here: assembled members should carve as local
         // lobes, not inherit the solitary edge-extension heuristic used for
         // single left/right circles.

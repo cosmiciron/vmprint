@@ -1,5 +1,6 @@
-import { StoryFloatAlign, StoryWrapMode, TraversalInteractionPolicy } from '../../types';
+import { StoryExclusionBoundaryProfile, StoryFloatAlign, StoryWrapMode, TraversalInteractionPolicy } from '../../types';
 import { ColliderField, type ColliderFieldStatsSnapshot } from '../collider-field';
+import { ExclusionResistanceFieldMap } from '../exclusion-resistance-field-map';
 
 // ---------------------------------------------------------------------------
 // Interval - a horizontal slice of available space
@@ -33,6 +34,10 @@ export interface OccupiedRect {
     shape?: 'rect' | 'circle' | 'ellipse' | 'polygon';
     /** Local SVG path used when `shape` is `polygon`. */
     path?: string;
+    /** Optional compiled boundary-profile substrate. */
+    exclusionBoundaryProfile?: StoryExclusionBoundaryProfile;
+    /** Optional wrap resistance. 1 = hard obstacle, lower values = softer exclusion. */
+    resistance?: number;
     /**
      * For circle / ellipse obstacles only: story-local Y of the shape centre.
      * Defaults to rect.y + rect.h / 2 when absent.
@@ -71,16 +76,20 @@ export interface OccupiedRect {
  */
 export class SpatialMap {
     private readonly rects: OccupiedRect[] = [];
+    private readonly resistanceFieldMap: ExclusionResistanceFieldMap = new ExclusionResistanceFieldMap();
     private readonly colliderField: ColliderField = new ColliderField();
 
     clear(): void {
         this.rects.length = 0;
+        this.resistanceFieldMap.clear();
         this.colliderField.clear();
     }
 
     register(rect: OccupiedRect): void {
         this.rects.push(rect);
-        this.colliderField.registerObstacle(rect);
+        if (!this.resistanceFieldMap.registerObstacle(rect)) {
+            this.colliderField.registerObstacle(rect);
+        }
     }
 
     /**
@@ -96,12 +105,21 @@ export class SpatialMap {
         totalWidth: number,
         options?: { opticalUnderhang?: boolean; queryZIndex?: number }
     ): Interval[] {
-        return this.colliderField.getAvailableIntervals(y, lineH, totalWidth, options);
+        if (!this.resistanceFieldMap.hasFields) {
+            return this.colliderField.getAvailableIntervals(y, lineH, totalWidth, options);
+        }
+        const fieldIntervals = this.resistanceFieldMap.getAvailableIntervals(y, lineH, totalWidth, options);
+        const colliderIntervals = this.colliderField.getAvailableIntervals(y, lineH, totalWidth, options);
+        return intersectIntervals(fieldIntervals, colliderIntervals);
     }
 
     /** Returns true when any top-bottom obstacle overlaps [y, y+lineH]. */
     hasTopBottomBlock(y: number, lineH: number, queryZIndex: number = 0): boolean {
-        return this.colliderField.hasTopBottomBlock(y, lineH, queryZIndex);
+        if (!this.resistanceFieldMap.hasFields) {
+            return this.colliderField.hasTopBottomBlock(y, lineH, queryZIndex);
+        }
+        return this.resistanceFieldMap.hasTopBottomBlock(y, lineH, queryZIndex)
+            || this.colliderField.hasTopBottomBlock(y, lineH, queryZIndex);
     }
 
     /**
@@ -109,7 +127,22 @@ export class SpatialMap {
      * Iterates to handle chained consecutive obstacles.
      */
     topBottomClearY(y: number, queryZIndex: number = 0): number {
-        return this.colliderField.topBottomClearY(y, queryZIndex);
+        if (!this.resistanceFieldMap.hasFields) {
+            return this.colliderField.topBottomClearY(y, queryZIndex);
+        }
+        let clearY = y;
+        let changed = true;
+        while (changed) {
+            changed = false;
+            const fieldClearY = this.resistanceFieldMap.topBottomClearY(clearY, queryZIndex);
+            const colliderClearY = this.colliderField.topBottomClearY(clearY, queryZIndex);
+            const nextClearY = Math.max(clearY, fieldClearY, colliderClearY);
+            if (nextClearY > clearY) {
+                clearY = nextClearY;
+                changed = true;
+            }
+        }
+        return clearY;
     }
 
     /**
@@ -119,21 +152,103 @@ export class SpatialMap {
      * lanes and resume once the obstacle shoulder clears.
      */
     bandClearY(y: number, lineH: number, queryZIndex: number = 0, opticalUnderhang: boolean = false): number {
-        return this.colliderField.bandClearY(y, lineH, queryZIndex, opticalUnderhang);
+        if (!this.resistanceFieldMap.hasFields) {
+            return this.colliderField.bandClearY(y, lineH, queryZIndex, opticalUnderhang);
+        }
+        let clearY = y;
+        let changed = true;
+        while (changed) {
+            changed = false;
+            const fieldClearY = this.resistanceFieldMap.bandClearY(clearY, lineH, queryZIndex, opticalUnderhang);
+            const colliderClearY = this.colliderField.bandClearY(clearY, lineH, queryZIndex, opticalUnderhang);
+            const nextClearY = Math.max(clearY, fieldClearY, colliderClearY);
+            if (nextClearY > clearY) {
+                clearY = nextClearY;
+                changed = true;
+            }
+        }
+        return clearY;
     }
 
     /** The Y of the lowest point among all registered obstacles. */
     maxObstacleBottom(): number {
-        return this.colliderField.maxObstacleBottom();
+        if (!this.resistanceFieldMap.hasFields) {
+            return this.colliderField.maxObstacleBottom();
+        }
+        return Math.max(
+            this.resistanceFieldMap.maxObstacleBottom(),
+            this.colliderField.maxObstacleBottom()
+        );
     }
 
     /** Snapshot of internal collider-field work counters for profiling. */
     getStatsSnapshot(): ColliderFieldStatsSnapshot {
-        return this.colliderField.getStatsSnapshot();
+        if (!this.resistanceFieldMap.hasFields) {
+            return this.colliderField.getStatsSnapshot();
+        }
+        const fieldStats = this.resistanceFieldMap.getStatsSnapshot();
+        const colliderStats = this.colliderField.getStatsSnapshot();
+        return {
+            registeredColliders: fieldStats.registeredColliders + colliderStats.registeredColliders,
+            bucketCount: fieldStats.bucketCount + colliderStats.bucketCount,
+            queryCalls: fieldStats.queryCalls + colliderStats.queryCalls,
+            bucketTouches: fieldStats.bucketTouches + colliderStats.bucketTouches,
+            candidateColliderCount: fieldStats.candidateColliderCount + colliderStats.candidateColliderCount,
+            narrowphaseCalls: fieldStats.narrowphaseCalls + colliderStats.narrowphaseCalls
+        };
     }
 
     /** Read-only access to registered rects (used by split carry-over logic). */
     getRects(): ReadonlyArray<OccupiedRect> {
         return this.rects;
     }
+}
+
+function intersectIntervals(left: readonly Interval[], right: readonly Interval[]): Interval[] {
+    if (left.length === 0 || right.length === 0) return [];
+    const intersections: Interval[] = [];
+    let leftIndex = 0;
+    let rightIndex = 0;
+
+    while (leftIndex < left.length && rightIndex < right.length) {
+        const leftInterval = left[leftIndex]!;
+        const rightInterval = right[rightIndex]!;
+        const start = Math.max(leftInterval.x, rightInterval.x);
+        const end = Math.min(leftInterval.x + leftInterval.w, rightInterval.x + rightInterval.w);
+        if (end > start) {
+            intersections.push({ x: start, w: end - start });
+        }
+        if ((leftInterval.x + leftInterval.w) <= (rightInterval.x + rightInterval.w)) {
+            leftIndex += 1;
+        } else {
+            rightIndex += 1;
+        }
+    }
+
+    return mergeIntervals(intersections.filter((interval) => interval.w > 0.5));
+}
+
+function mergeIntervals(intervals: readonly Interval[]): Interval[] {
+    if (intervals.length <= 1) return [...intervals];
+    const sorted = [...intervals].sort((left, right) => left.x - right.x || left.w - right.w);
+    const merged: Interval[] = [];
+
+    for (const interval of sorted) {
+        const previous = merged[merged.length - 1];
+        const intervalRight = interval.x + interval.w;
+        if (!previous) {
+            merged.push({ ...interval });
+            continue;
+        }
+
+        const previousRight = previous.x + previous.w;
+        if (interval.x <= previousRight + 0.5) {
+            previous.w = Math.max(previousRight, intervalRight) - previous.x;
+            continue;
+        }
+
+        merged.push({ ...interval });
+    }
+
+    return merged.filter((interval) => interval.w > 0.5);
 }
