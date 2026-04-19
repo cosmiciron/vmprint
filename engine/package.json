@@ -63,6 +63,7 @@
     "test:perf": "tsx --conditions tsx tests/performance-benchmark.ts",
     "test:perf-watch": "tsx --conditions tsx tests/performance-benchmark.ts --preset=watchlist --repeat=2 --warmup=1",
     "tool:compact-assembly": "tsx --conditions tsx tools/compact-exclusion-assembly.ts",
+    "tool:image-to-assembly": "tsx --conditions tsx tools/image-to-assembly.ts",
     "wip:cat": "tsx --conditions tsx ../documents/wip/cat-circle.ts",
     "wip:cat-convert": "tsx --conditions tsx ../documents/wip/cat-convert.ts",
     "wip:cat-bench": "tsx --conditions tsx ../documents/wip/cat-bench.ts",
@@ -83,10 +84,11 @@
     "unicode-trie": "^2.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.13.1",
+    "@types/node": "^22.19.17",
     "@vmprint/local-fonts": "*",
     "@vmprint/standard-fonts": "*",
     "rimraf": "^6.1.3",
+    "sharp": "^0.34.5",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.7.3"

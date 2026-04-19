@@ -40,21 +40,22 @@ function compactMembers(members: RawMember[]): { layers: CompactLayer[] } {
     return { layers };
 }
 
-function walkAndCompact(node: unknown): { node: unknown; count: number } {
-    if (node === null || typeof node !== 'object') return { node, count: 0 };
+function walkAndCompact(node: unknown): { node: unknown; compacted: number; found: number } {
+    if (node === null || typeof node !== 'object') return { node, compacted: 0, found: 0 };
 
     if (Array.isArray(node)) {
-        let count = 0;
+        let compacted = 0, found = 0;
         const result = node.map(item => {
             const r = walkAndCompact(item);
-            count += r.count;
+            compacted += r.compacted;
+            found += r.found;
             return r.node;
         });
-        return { node: result, count };
+        return { node: result, compacted, found };
     }
 
     const obj = node as Record<string, unknown>;
-    let count = 0;
+    let compacted = 0, found = 0;
     const result: Record<string, unknown> = {};
 
     for (const [key, val] of Object.entries(obj)) {
@@ -62,16 +63,20 @@ function walkAndCompact(node: unknown): { node: unknown; count: number } {
             const asm = val as Record<string, unknown>;
             if (Array.isArray(asm.members) && asm.members.length > 0) {
                 result[key] = compactMembers(asm.members as RawMember[]);
-                count++;
+                compacted++;
+                found++;
                 continue;
             }
+            // Already compact (layers) or unknown format — pass through, still count it
+            found++;
         }
         const r = walkAndCompact(val);
         result[key] = r.node;
-        count += r.count;
+        compacted += r.compacted;
+        found += r.found;
     }
 
-    return { node: result, count };
+    return { node: result, compacted, found };
 }
 
 const filePath = process.argv[2];
@@ -88,10 +93,10 @@ fs.writeFileSync(backupPath, original);
 console.log(`Backup written to ${backupPath}`);
 
 const doc = JSON.parse(original);
-const { node: compacted, count } = walkAndCompact(doc);
+const { node: compacted, compacted: compactedCount, found } = walkAndCompact(doc);
 
-if (count === 0) {
-    console.log('No exclusionAssembly members arrays found — file unchanged.');
+if (found === 0) {
+    console.log('No exclusionAssembly objects found — file unchanged.');
     fs.unlinkSync(backupPath);
     process.exit(0);
 }
@@ -126,5 +131,8 @@ fs.writeFileSync(absPath, output);
 const originalSize = Buffer.byteLength(original);
 const compactedSize = Buffer.byteLength(output);
 const saving = (((originalSize - compactedSize) / originalSize) * 100).toFixed(1);
-console.log(`Compacted ${count} assembly/assemblies in ${path.basename(absPath)}`);
+const action = compactedCount > 0
+    ? `Compacted ${compactedCount} and minified ${found} assembly/assemblies`
+    : `Minified ${found} already-compact assembly/assemblies`;
+console.log(`${action} in ${path.basename(absPath)}`);
 console.log(`Size: ${originalSize.toLocaleString()} → ${compactedSize.toLocaleString()} bytes (${saving}% smaller)`);
