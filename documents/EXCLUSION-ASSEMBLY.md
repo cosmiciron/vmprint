@@ -245,6 +245,42 @@ The current results satisfy the first two conditions strongly enough to make `ex
 
 ---
 
+## Compact Assembly Format
+
+High-density assemblies — particularly anti-aliased silhouettes with hundreds of weighted members — can become verbose in the JSON document. The engine supports a compact `layers` encoding as an alternative to the flat `members` array.
+
+### The layers format
+
+Instead of a flat list of member objects, an assembly can be expressed as resistance-grouped layers of coordinate tuples:
+
+```json
+"exclusionAssembly": {
+  "layers": [
+    {"r": 1,   "rects": [[29,0,13,6],[28,6,16,6],[28,12,16,6]]},
+    {"r": 0.6, "rects": [[24,0,56,12],[16,12,72,10]]},
+    {"r": 0.3, "rects": [[20,0,64,10],[12,10,80,10]]}
+  ]
+}
+```
+
+Each layer carries a single `r` (resistance) value that applies to all its rects. Omitting `r` is equivalent to a fully hard member. Each rect is a `[x, y, w, h]` tuple. Hard layers should come first.
+
+This encoding is accepted anywhere `exclusionAssembly` is valid. The engine normalizes it to the standard `members` representation during document parsing, so no other part of the system is affected.
+
+### Compacting an existing document
+
+The engine ships a tool that converts all `members`-style assemblies in a document to `layers` in a single pass. It modifies the file in-place, writing the rest of the document in pretty-printed form while keeping each assembly as a single dense line.
+
+```
+npm run tool:compact-assembly -- path/to/document.json
+```
+
+The original file is backed up as `document.json.bak` before any changes are written. If no assemblies are found the backup is removed and the file is left unchanged.
+
+Typical size reduction on a document containing large anti-aliased assemblies is around 4–5× on the assembly content itself.
+
+---
+
 ## Non-Goals
 
 This direction explicitly does not require:

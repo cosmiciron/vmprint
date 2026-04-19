@@ -102,8 +102,9 @@ const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 
 const SPATIAL_FIELD_KEYS = new Set(['kind', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'path', 'exclusionAssembly', 'exclusionBoundaryProfile', 'hidden', 'zIndex', 'traversalInteraction']);
 const SIMULATION_DIRECTIVE_KEYS = new Set(['enabled', 'maxTicks', 'updateKind', 'x', 'y', 'label']);
 const SIMULATION_MOTION_AXIS_KEYS = new Set(['start', 'velocity', 'amplitude', 'frequency', 'phase']);
-const STORY_EXCLUSION_ASSEMBLY_KEYS = new Set(['members']);
+const STORY_EXCLUSION_ASSEMBLY_KEYS = new Set(['members', 'layers']);
 const STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS = new Set(['x', 'y', 'w', 'h', 'shape', 'path', 'zIndex', 'traversalInteraction', 'resistance']);
+const STORY_EXCLUSION_ASSEMBLY_LAYER_KEYS = new Set(['r', 'rects']);
 const VALID_TRAVERSAL_INTERACTIONS = new Set(['auto', 'wrap', 'overpass', 'ignore']);
 const PAGE_REGION_DEFINITION_KEYS = new Set(['default', 'firstPage', 'odd', 'even']);
 const PAGE_REGION_CONTENT_KEYS = new Set(['elements', 'style']);
@@ -539,6 +540,68 @@ function validateDropCapSpec(value: unknown, path: string, documentPath: string)
     if (dropCap.characterStyle !== undefined) validateStyleObject(dropCap.characterStyle, `${path}.characterStyle`, documentPath);
 }
 
+function validateAndNormalizeExclusionAssembly(assembly: Record<string, unknown>, assemblyPath: string, documentPath: string): void {
+    assertAllowedKeys(assembly, STORY_EXCLUSION_ASSEMBLY_KEYS, assemblyPath, documentPath);
+    const validShapes = new Set(['rect', 'circle', 'ellipse', 'polygon']);
+
+    if (assembly.layers !== undefined) {
+        if (!Array.isArray(assembly.layers) || assembly.layers.length === 0) {
+            contractError(documentPath, `${assemblyPath}.layers`, 'expected a non-empty array.');
+        }
+        const expanded: Record<string, unknown>[] = [];
+        (assembly.layers as unknown[]).forEach((layer, li) => {
+            const layerPath = `${assemblyPath}.layers[${li}]`;
+            const layerObj = assertPlainObjectAt(layer, layerPath, documentPath);
+            assertAllowedKeys(layerObj, STORY_EXCLUSION_ASSEMBLY_LAYER_KEYS, layerPath, documentPath);
+            if (layerObj.r !== undefined) assertFiniteNumberAt(layerObj.r, `${layerPath}.r`, documentPath);
+            if (!Array.isArray(layerObj.rects) || layerObj.rects.length === 0) {
+                contractError(documentPath, `${layerPath}.rects`, 'expected a non-empty array.');
+            }
+            (layerObj.rects as unknown[]).forEach((rect, ri) => {
+                const rectPath = `${layerPath}.rects[${ri}]`;
+                if (!Array.isArray(rect) || rect.length < 4) {
+                    contractError(documentPath, rectPath, 'expected an array of [x, y, w, h].');
+                }
+                const [x, y, w, h] = rect as unknown[];
+                assertFiniteNumberAt(x, `${rectPath}[0]`, documentPath);
+                assertFiniteNumberAt(y, `${rectPath}[1]`, documentPath);
+                assertFiniteNumberAt(w, `${rectPath}[2]`, documentPath);
+                assertFiniteNumberAt(h, `${rectPath}[3]`, documentPath);
+                if (Number(w) <= 0) contractError(documentPath, `${rectPath}[2]`, 'expected a number greater than 0.');
+                if (Number(h) <= 0) contractError(documentPath, `${rectPath}[3]`, 'expected a number greater than 0.');
+                const member: Record<string, unknown> = { shape: 'rect', x, y, w, h };
+                if (layerObj.r !== undefined) member.resistance = layerObj.r;
+                expanded.push(member);
+            });
+        });
+        assembly.members = expanded;
+    } else {
+        if (!Array.isArray(assembly.members) || assembly.members.length === 0) {
+            contractError(documentPath, `${assemblyPath}.members`, 'expected a non-empty array.');
+        }
+        (assembly.members as unknown[]).forEach((member, index) => {
+            const memberPath = `${assemblyPath}.members[${index}]`;
+            const memberObj = assertPlainObjectAt(member, memberPath, documentPath);
+            assertAllowedKeys(memberObj, STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS, memberPath, documentPath);
+            assertFiniteNumberAt(memberObj.x, `${memberPath}.x`, documentPath);
+            assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
+            assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
+            assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
+            if (memberObj.zIndex !== undefined) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
+            if (memberObj.resistance !== undefined) assertFiniteNumberAt(memberObj.resistance, `${memberPath}.resistance`, documentPath);
+            if (memberObj.path !== undefined) assertStringAt(memberObj.path, `${memberPath}.path`, documentPath);
+            if (memberObj.traversalInteraction !== undefined && !VALID_TRAVERSAL_INTERACTIONS.has(memberObj.traversalInteraction as string)) {
+                contractError(documentPath, `${memberPath}.traversalInteraction`, 'expected one of: auto, wrap, overpass, ignore.');
+            }
+            if (Number(memberObj.w) <= 0) contractError(documentPath, `${memberPath}.w`, 'expected a number greater than 0.');
+            if (Number(memberObj.h) <= 0) contractError(documentPath, `${memberPath}.h`, 'expected a number greater than 0.');
+            if (memberObj.shape !== undefined && !validShapes.has(memberObj.shape as string)) {
+                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle, ellipse, polygon.');
+            }
+        });
+    }
+}
+
 function validateStoryLayoutDirective(value: unknown, path: string, documentPath: string): void {
     const directive = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(directive, STORY_LAYOUT_DIRECTIVE_KEYS, path, documentPath);
@@ -566,31 +629,7 @@ function validateStoryLayoutDirective(value: unknown, path: string, documentPath
     }
     if (directive.exclusionAssembly !== undefined) {
         const assembly = assertPlainObjectAt(directive.exclusionAssembly, `${path}.exclusionAssembly`, documentPath);
-        assertAllowedKeys(assembly, STORY_EXCLUSION_ASSEMBLY_KEYS, `${path}.exclusionAssembly`, documentPath);
-        if (!Array.isArray(assembly.members) || assembly.members.length === 0) {
-            contractError(documentPath, `${path}.exclusionAssembly.members`, 'expected a non-empty array.');
-        }
-        assembly.members.forEach((member, index) => {
-            const memberPath = `${path}.exclusionAssembly.members[${index}]`;
-            const memberObj = assertPlainObjectAt(member, memberPath, documentPath);
-            assertAllowedKeys(memberObj, STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS, memberPath, documentPath);
-            assertFiniteNumberAt(memberObj.x, `${memberPath}.x`, documentPath);
-            assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
-            assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
-            assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
-            if (memberObj.zIndex !== undefined) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
-            if (memberObj.resistance !== undefined) assertFiniteNumberAt(memberObj.resistance, `${memberPath}.resistance`, documentPath);
-            if (memberObj.path !== undefined) assertStringAt(memberObj.path, `${memberPath}.path`, documentPath);
-            if (Number(memberObj.w) <= 0) {
-                contractError(documentPath, `${memberPath}.w`, 'expected a number greater than 0.');
-            }
-            if (Number(memberObj.h) <= 0) {
-                contractError(documentPath, `${memberPath}.h`, 'expected a number greater than 0.');
-            }
-            if (memberObj.shape !== undefined && !validShapes.has(memberObj.shape as string)) {
-                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle, ellipse, polygon.');
-            }
-        });
+        validateAndNormalizeExclusionAssembly(assembly, `${path}.exclusionAssembly`, documentPath);
     }
 }
 
@@ -638,34 +677,7 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
     }
     if (directive.exclusionAssembly !== undefined) {
         const assembly = assertPlainObjectAt(directive.exclusionAssembly, `${path}.exclusionAssembly`, documentPath);
-        assertAllowedKeys(assembly, STORY_EXCLUSION_ASSEMBLY_KEYS, `${path}.exclusionAssembly`, documentPath);
-        if (!Array.isArray(assembly.members) || assembly.members.length === 0) {
-            contractError(documentPath, `${path}.exclusionAssembly.members`, 'expected a non-empty array.');
-        }
-        assembly.members.forEach((member, index) => {
-            const memberPath = `${path}.exclusionAssembly.members[${index}]`;
-            const memberObj = assertPlainObjectAt(member, memberPath, documentPath);
-            assertAllowedKeys(memberObj, STORY_EXCLUSION_ASSEMBLY_MEMBER_KEYS, memberPath, documentPath);
-            assertFiniteNumberAt(memberObj.x, `${memberPath}.x`, documentPath);
-            assertFiniteNumberAt(memberObj.y, `${memberPath}.y`, documentPath);
-            assertFiniteNumberAt(memberObj.w, `${memberPath}.w`, documentPath);
-            assertFiniteNumberAt(memberObj.h, `${memberPath}.h`, documentPath);
-            if (memberObj.zIndex !== undefined) assertFiniteNumberAt(memberObj.zIndex, `${memberPath}.zIndex`, documentPath);
-            if (memberObj.resistance !== undefined) assertFiniteNumberAt(memberObj.resistance, `${memberPath}.resistance`, documentPath);
-            if (memberObj.path !== undefined) assertStringAt(memberObj.path, `${memberPath}.path`, documentPath);
-            if (memberObj.traversalInteraction !== undefined && !VALID_TRAVERSAL_INTERACTIONS.has(memberObj.traversalInteraction as string)) {
-                contractError(documentPath, `${memberPath}.traversalInteraction`, 'expected one of: auto, wrap, overpass, ignore.');
-            }
-            if (Number(memberObj.w) <= 0) {
-                contractError(documentPath, `${memberPath}.w`, 'expected a number greater than 0.');
-            }
-            if (Number(memberObj.h) <= 0) {
-                contractError(documentPath, `${memberPath}.h`, 'expected a number greater than 0.');
-            }
-            if (memberObj.shape !== undefined && !validShapes.has(memberObj.shape as string)) {
-                contractError(documentPath, `${memberPath}.shape`, 'expected one of: rect, circle, ellipse, polygon.');
-            }
-        });
+        validateAndNormalizeExclusionAssembly(assembly, `${path}.exclusionAssembly`, documentPath);
     }
 }
 
