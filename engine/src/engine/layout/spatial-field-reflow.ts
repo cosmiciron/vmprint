@@ -106,7 +106,12 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
 
     let accumulatedYBonus = 0;
     let physicalLineCount = 0;
-    const pendingSlots: Array<{ width: number; xOffset: number; yOffset: number }> = [];
+    const pendingSlots: Array<{
+        width: number;
+        xOffset: number;
+        yOffset: number;
+        anchor?: 'left' | 'right' | 'center';
+    }> = [];
     const lineLayoutOut: { widths: number[]; offsets: number[]; yOffsets: number[] } = {
         widths: [],
         offsets: [],
@@ -115,13 +120,14 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const lineSlotWidths: number[] = [];
     const selectedSlotXOffsets: number[] = [];
     const selectedContainmentAnchors: Array<'left' | 'right' | 'center'> = [];
-    let previousContainmentCenter: number | null = null;
-    const preferredRoomCenter = Math.max(0, contentWidth / 2);
-
     const resolver = (): { width: number; xOffset: number; yOffset: number } => {
-        if (laneMode !== 'contain' && pendingSlots.length > 0) {
+        if (pendingSlots.length > 0) {
             const slot = pendingSlots.shift()!;
             lineSlotWidths.push(slot.width);
+            if (laneMode === 'contain') {
+                selectedSlotXOffsets.push(slot.xOffset);
+                selectedContainmentAnchors.push(slot.anchor ?? 'center');
+            }
             return slot;
         }
 
@@ -194,30 +200,30 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
             return { width: contentWidth, xOffset: 0, yOffset };
         }
 
-        if (laneMode !== 'contain' && usableIntervals.length > 1) {
-            for (let i = 1; i < usableIntervals.length; i++) {
-                pendingSlots.push({
-                    width: Math.max(0, usableIntervals[i].w - insetH),
-                    xOffset: usableIntervals[i].x,
-                    yOffset
-                });
-            }
+        const resolvedSlots = laneMode === 'contain'
+            ? (usableIntervals as ContainmentInterval[])
+                .slice()
+                .sort((a, b) => Number(a.x || 0) - Number(b.x || 0))
+                .map((interval) => ({
+                    width: Math.max(0, interval.w),
+                    xOffset: interval.x,
+                    yOffset,
+                    anchor: resolveContainmentAnchor(interval)
+                }))
+            : usableIntervals.map((interval) => ({
+                width: Math.max(0, interval.w - insetH),
+                xOffset: interval.x,
+                yOffset
+            }));
+
+        for (let i = 1; i < resolvedSlots.length; i++) {
+            pendingSlots.push(resolvedSlots[i]!);
         }
 
-        const chosenInterval = laneMode === 'contain'
-            ? chooseContainmentInterval(usableIntervals, previousContainmentCenter, preferredRoomCenter)
-            : usableIntervals[0]!;
-        const slot = {
-            width: laneMode === 'contain'
-                ? Math.max(0, chosenInterval.w)
-                : Math.max(0, chosenInterval.w - insetH),
-            xOffset: chosenInterval.x,
-            yOffset
-        };
+        const slot = resolvedSlots[0]!;
         if (laneMode === 'contain') {
             selectedSlotXOffsets.push(slot.xOffset);
-            selectedContainmentAnchors.push(resolveContainmentAnchor(chosenInterval as ContainmentInterval));
-            previousContainmentCenter = slot.xOffset + (slot.width / 2);
+            selectedContainmentAnchors.push(slot.anchor ?? 'center');
         }
         physicalLineCount++;
         lineSlotWidths.push(slot.width);
@@ -307,29 +313,6 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
                 }
         }
     };
-}
-
-function chooseContainmentInterval(
-    intervals: ContainmentInterval[],
-    previousCenter: number | null,
-    preferredCenter: number
-): ContainmentInterval {
-    if (intervals.length <= 1) return intervals[0]!;
-
-    let best = intervals[0]!;
-    let bestScore = Number.NEGATIVE_INFINITY;
-    for (const interval of intervals) {
-        const width = Math.max(0, Number(interval.w || 0));
-        const center = Number(interval.x || 0) + (width / 2);
-        const targetCenter = previousCenter ?? preferredCenter;
-        const continuityPenalty = Math.abs(center - targetCenter);
-        const score = (width * 4) - (continuityPenalty * 1.5);
-        if (score > bestScore) {
-            best = interval;
-            bestScore = score;
-        }
-    }
-    return best;
 }
 
 function resolveContainmentAnchor(interval: ContainmentInterval): 'left' | 'right' | 'center' {

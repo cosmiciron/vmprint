@@ -1,0 +1,221 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 468,
+      "height": 648
+    },
+    "margins": {
+      "top": 40,
+      "right": 44,
+      "bottom": 40,
+      "left": 44
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true,
+    "microLanePolicy": "balanced"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "lead": {
+      "fontSize": 12,
+      "lineHeight": 1.35,
+      "marginBottom": 14,
+      "allowLineSplit": true
+    },
+    "p": {
+      "marginBottom": 10,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Inside Shape Settlement"
+    },
+    {
+      "type": "lead",
+      "content": "This proof flips the usual exclusion logic. Instead of subtracting obstacle bands from the measure, the text host treats the authored shape as the only valid set of writing lanes."
+    },
+    {
+      "type": "h1",
+      "content": "Circle Modes"
+    },
+    {
+      "type": "lead",
+      "content": "These three circle samples keep the copy identical so we can compare only the mode: guiding lanes without clipping, guiding lanes with clipping, and clipping plus justification."
+    },
+    {
+      "type": "h1",
+      "content": "Guide Only"
+    },
+    {
+      "type": "p",
+      "content": "The circle host should no longer behave like a normal rectangular paragraph that merely gets clipped at draw time. The text should begin in the narrow crown of the circle, widen through the middle shoulder, and then compress again as the lower arc closes. If that happens, the line carver is no longer only avoiding shapes. It is actively settling text inside them. This is the smallest honest test of the new polarity. The same shape data that once meant forbidden space now means allowed space. That is the inversion we were after.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "circle",
+          "clip": false
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#eef6ff",
+          "borderWidth": 1,
+          "borderColor": "#9ab7d6",
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "h1",
+      "content": "Guide Plus Clip"
+    },
+    {
+      "type": "p",
+      "content": "The circle host should no longer behave like a normal rectangular paragraph that merely gets clipped at draw time. The text should begin in the narrow crown of the circle, widen through the middle shoulder, and then compress again as the lower arc closes. If that happens, the line carver is no longer only avoiding shapes. It is actively settling text inside them. This is the smallest honest test of the new polarity. The same shape data that once meant forbidden space now means allowed space. That is the inversion we were after.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "circle",
+          "clip": true
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#eef6ff",
+          "borderWidth": 1,
+          "borderColor": "#9ab7d6",
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "h1",
+      "content": "Guide Plus Clip Plus Justify"
+    },
+    {
+      "type": "p",
+      "content": "The circle host should no longer behave like a normal rectangular paragraph that merely gets clipped at draw time. The text should begin in the narrow crown of the circle, widen through the middle shoulder, and then compress again as the lower arc closes. If that happens, the line carver is no longer only avoiding shapes. It is actively settling text inside them. This is the smallest honest test of the new polarity. The same shape data that once meant forbidden space now means allowed space. That is the inversion we were after.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "circle",
+          "clip": true
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#eef6ff",
+          "borderWidth": 1,
+          "borderColor": "#9ab7d6",
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "textAlign": "justify",
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "h1",
+      "content": "Contained Polygon",
+      "properties": {
+        "style": {
+          "pageBreakBefore": true
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The polygon host is the harsher test because it introduces shoulders, steps, and sudden returns instead of one smooth arc. The text should not simply form a rectangle and lose pieces at the edges. It should discover the legal slots inside the authored hull and settle through them in a way that reflects the jagged geometry. That makes the shape feel structural rather than decorative. If the paragraph can inhabit this form, then the same packager really can read the authored intervals in either polarity: blocked for exclusion, allowed for containment.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "polygon",
+          "path": "M28,0 L188,0 L188,34 L140,34 L140,76 L188,76 L188,126 L120,126 L120,176 L188,176 L188,220 L28,220 L0,112 Z"
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#ffd9b8",
+          "borderWidth": 0,
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The polygon version matters because it pushes us closer to authored silhouettes that are not round, gentle, or forgiving. If this mode works here, then the same mechanism should eventually be able to inhabit dragons, logos, rough editorial cutouts, or any other hull that can be described through the assembly and path tools we already have."
+    },
+    {
+      "type": "h1",
+      "content": "Contained Irregular Polygon",
+      "properties": {
+        "style": {
+          "pageBreakBefore": true
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "This second polygon is intentionally more unruly. It introduces spikes, waists, shelves, and abrupt recoveries so the paragraph cannot survive by pretending the room is almost rectangular. If the settlement still feels coherent here, then contain mode is no longer a circle trick. It is becoming a general spatial behavior. The packager should discover narrow entries, open into broader chambers, and then contract again without losing the sense that the text is inhabiting one authored interior shape.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "polygon",
+          "path": "M62,0 L112,26 L166,8 L156,62 L214,92 L170,122 L198,176 L140,170 L114,220 L82,176 L24,194 L40,138 L0,98 L48,74 L34,28 Z"
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#dff3da",
+          "borderWidth": 0,
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "If this harsher sample holds, then the experiment has crossed the threshold from curiosity to fixture. A true regression proof should not depend on one forgiving circle and one mildly stepped polygon. It should show that the same room-settlement logic can navigate a much less polite hull and still produce text that feels structurally guided rather than randomly clipped."
+    }
+  ]
+}

@@ -45,19 +45,11 @@ export class SpatialFieldGeometryCapability {
         }
         const assembly = this.field?.exclusionAssembly ?? this.placement?.exclusionAssembly;
         const shape = this.field?.shape ?? this.placement?.shape;
+        const clipAssembly = normalizeClipAssemblyMembers(assembly);
         return {
-            ...(assembly?.members
+            ...(clipAssembly.length > 0
                 ? {
-                    _clipAssembly: assembly.members.map((member) => ({
-                        x: Number(member.x ?? 0),
-                        y: Number(member.y ?? 0),
-                        w: Math.max(0, Number(member.w ?? 0)),
-                        h: Math.max(0, Number(member.h ?? 0)),
-                        shape: (member.shape ?? 'rect') as 'rect' | 'circle' | 'ellipse' | 'polygon',
-                        ...(typeof member.path === 'string' && member.path.trim()
-                            ? { path: member.path.trim() }
-                            : {})
-                    }))
+                    _clipAssembly: clipAssembly
                 }
                 : {}),
             ...(shape ? { _clipShape: shape } : {}),
@@ -68,6 +60,88 @@ export class SpatialFieldGeometryCapability {
                     : {})
         };
     }
+}
+
+function normalizeClipAssemblyMembers(assembly: unknown): Array<{
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    shape: 'rect' | 'circle' | 'ellipse' | 'polygon';
+    path?: string;
+}> {
+    if (!assembly || typeof assembly !== 'object') {
+        return [];
+    }
+
+    const candidate = assembly as {
+        members?: Array<Record<string, unknown>>;
+        layers?: Array<Record<string, unknown>>;
+    };
+
+    if (Array.isArray(candidate.members) && candidate.members.length > 0) {
+        return candidate.members
+            .map((member) => normalizeClipAssemblyMember(member))
+            .filter((member): member is NonNullable<typeof member> => member !== null);
+    }
+
+    if (!Array.isArray(candidate.layers) || candidate.layers.length === 0) {
+        return [];
+    }
+
+    const expanded: Array<{
+        x: number;
+        y: number;
+        w: number;
+        h: number;
+        shape: 'rect' | 'circle' | 'ellipse' | 'polygon';
+    }> = [];
+
+    for (const layer of candidate.layers) {
+        const rects = Array.isArray(layer?.rects) ? layer.rects : null;
+        if (!rects) continue;
+        for (const rect of rects) {
+            if (!Array.isArray(rect) || rect.length < 4) continue;
+            const [x, y, w, h] = rect;
+            const normalized = normalizeClipAssemblyMember({ x, y, w, h, shape: 'rect' });
+            if (normalized) {
+                expanded.push(normalized);
+            }
+        }
+    }
+
+    return expanded;
+}
+
+function normalizeClipAssemblyMember(member: Record<string, unknown>): {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    shape: 'rect' | 'circle' | 'ellipse' | 'polygon';
+    path?: string;
+} | null {
+    const x = Number(member.x ?? 0);
+    const y = Number(member.y ?? 0);
+    const w = Math.max(0, Number(member.w ?? 0));
+    const h = Math.max(0, Number(member.h ?? 0));
+    if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) {
+        return null;
+    }
+
+    const normalized = {
+        x,
+        y,
+        w,
+        h,
+        shape: (member.shape ?? 'rect') as 'rect' | 'circle' | 'ellipse' | 'polygon'
+    };
+
+    if (typeof member.path === 'string' && member.path.trim()) {
+        return { ...normalized, path: member.path.trim() };
+    }
+
+    return normalized;
 }
 
 export class SpatialFieldMovementCapability {

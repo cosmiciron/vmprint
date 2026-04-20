@@ -1,0 +1,1155 @@
+[
+  {
+    "index": 0,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Inside Shape Settlement",
+              "width": 254.289063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "lead",
+        "x": 44,
+        "y": 79.178125,
+        "w": 380,
+        "h": 52.81875,
+        "lines": [
+          [
+            {
+              "text": "This proof flips the usual exclusion logic. Instead of subtracting ",
+              "width": 336.181641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstacle bands from the measure, the text host treats the authored ",
+              "width": 357.539063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shape as the only valid set of writing lanes.",
+              "width": 228.128906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 145.996875,
+        "w": 380,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Circle Modes",
+              "width": 136.930664,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "lead",
+        "x": 44,
+        "y": 185.175,
+        "w": 380,
+        "h": 52.81875,
+        "lines": [
+          [
+            {
+              "text": "These three circle samples keep the copy identical so we can compare ",
+              "width": 379.523438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "only the mode: guiding lanes without clipping, guiding lanes with ",
+              "width": 343.552734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "clipping, and clipping plus justification.",
+              "width": 202.787109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 251.99375,
+        "w": 380,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Guide Only",
+              "width": 117.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 299.171875,
+        "w": 220,
+        "h": 220,
+        "lines": [
+          [
+            {
+              "text": "The circle host should ",
+              "width": 105.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "no longer behave like a normal ",
+              "width": 146.507813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rectangular paragraph that merely ",
+              "width": 161.088867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "gets clipped at draw time. The text ",
+              "width": 162.826904,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should begin in the narrow crown of the ",
+              "width": 186.195557,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "circle, widen through the middle shoulder, ",
+              "width": 196.111084,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and then compress again as the lower arc ",
+              "width": 197.859375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "closes. If that happens, the line carver is no ",
+              "width": 204.862793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "longer only avoiding shapes. It is actively ",
+              "width": 193.188721,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "settling text inside them. This is the smallest",
+              "width": 204.832031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "honest test of the new polarity. The same ",
+              "width": 194.157715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shape data that once meant forbidden ",
+              "width": 179.797119,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "space now means allowed space. ",
+              "width": 159.925049,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "That is the inversion we ",
+              "width": 113.218506,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "were after.",
+              "width": 49.023926,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Guide Plus Clip",
+              "width": 162.572266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 87.178125,
+        "w": 220,
+        "h": 220,
+        "lines": [
+          [
+            {
+              "text": "The circle host should ",
+              "width": 105.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "no longer behave like a normal ",
+              "width": 146.507813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rectangular paragraph that merely ",
+              "width": 161.088867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "gets clipped at draw time. The text ",
+              "width": 162.826904,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should begin in the narrow crown of the ",
+              "width": 186.195557,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "circle, widen through the middle shoulder, ",
+              "width": 196.111084,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and then compress again as the lower arc ",
+              "width": 197.859375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "closes. If that happens, the line carver is no ",
+              "width": 204.862793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "longer only avoiding shapes. It is actively ",
+              "width": 193.188721,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "settling text inside them. This is the smallest",
+              "width": 204.832031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "honest test of the new polarity. The same ",
+              "width": 194.157715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shape data that once meant forbidden ",
+              "width": 179.797119,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "space now means allowed space. ",
+              "width": 159.925049,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "That is the inversion we ",
+              "width": 113.218506,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "were after.",
+              "width": 49.023926,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 309.283594,
+        "w": 380,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Guide Plus Clip Plus Justify",
+              "width": 292.166016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 356.461719,
+        "w": 220,
+        "h": 220,
+        "lines": [
+          [
+            {
+              "text": "The circle host should ",
+              "width": 105.05127,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "no longer behave like a normal ",
+              "width": 146.507813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rectangular paragraph that merely ",
+              "width": 161.088867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "gets clipped at draw time. The text ",
+              "width": 162.826904,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should begin in the narrow crown of the ",
+              "width": 186.195557,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "circle, widen through the middle shoulder, ",
+              "width": 196.111084,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and then compress again as the lower arc ",
+              "width": 197.859375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "closes. If that happens, the line carver is no ",
+              "width": 204.862793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "longer only avoiding shapes. It is actively ",
+              "width": 193.188721,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "settling text inside them. This is the smallest",
+              "width": 204.832031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "honest test of the new polarity. The same ",
+              "width": 194.157715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shape data that once meant forbidden ",
+              "width": 179.797119,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "space now means allowed space. ",
+              "width": 159.925049,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "That is the inversion we ",
+              "width": 113.218506,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "were after.",
+              "width": 49.023926,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Contained Polygon",
+              "width": 200.438477,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 87.178125,
+        "w": 220,
+        "h": 220,
+        "lines": [
+          [
+            {
+              "text": "The polygon host is the harsher ",
+              "width": 150.004395,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "test because it introduces",
+              "width": 119.068359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shoulders, steps, and ",
+              "width": 102.72876,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sudden returns instead of ",
+              "width": 121.411377,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "one smooth arc. The text ",
+              "width": 119.058105,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should not simply form a rectangle ",
+              "width": 162.826904,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and lose pieces at the edges. It should",
+              "width": 179.20752,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "discover the legal slots inside the ",
+              "width": 157.002686,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "authored hull and settle ",
+              "width": 112.080322,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "through them in a way ",
+              "width": 106.225342,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "that reflects the jagged",
+              "width": 106.235596,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "geometry. That makes",
+              "width": 103.677246,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the shape feel ",
+              "width": 68.885742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "structural rather than decorative. If ",
+              "width": 162.826904,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the paragraph can inhabit this ",
+              "width": 141.262939,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "form, then the same packager really can ",
+              "width": 190.26123,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "read the authored intervals in either polarity: ",
+              "width": 207.785156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "blocked for exclusion, allowed for ",
+              "width": 157.582031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "containment.",
+              "width": 60.118652,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 359.783594,
+        "w": 380,
+        "h": 77.945313,
+        "lines": [
+          [
+            {
+              "text": "The polygon version matters because it pushes us closer to authored ",
+              "width": 339.356445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "silhouettes that are not round, gentle, or forgiving. If this mode works here, ",
+              "width": 365.030273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "then the same mechanism should eventually be able to inhabit dragons, ",
+              "width": 352.83252,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "logos, rough editorial cutouts, or any other hull that can be described through ",
+              "width": 377.29248,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the assembly and path tools we already have.",
+              "width": 223.19043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 468,
+    "height": 648,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 44,
+        "y": 40,
+        "w": 380,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Contained Irregular Polygon",
+              "width": 295.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 87.178125,
+        "w": 220,
+        "h": 220,
+        "lines": [
+          [
+            {
+              "text": "This ",
+              "width": 22.753418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sec",
+              "width": 16.3396,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ond polygon is ",
+              "width": 70.634033,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "intentionally more unruly.",
+              "width": 115.946045,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "It introduces spikes, ",
+              "width": 95.709961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "waists, shelves, and ",
+              "width": 96.878906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "abrupt recoveries so the ",
+              "width": 115.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph cannot survive by pretending",
+              "width": 185.036865,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the room is almost rectangular. If ",
+              "width": 155.233887,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the settlement still feels ",
+              "width": 112.049561,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "coherent here, then contain ",
+              "width": 130.757813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "mode is no longer a circle trick.",
+              "width": 144.723633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "It is becoming a ",
+              "width": 76.453125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "general ",
+              "width": 37.94458,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "spatia",
+              "width": 28.018799,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "l ",
+              "width": 5.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "behav",
+              "width": 28.608398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ior. The packager should discover narrow ",
+              "width": 195.51123,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "entries, open into broader chambers, and ",
+              "width": 194.952393,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "then contract again without losing the sense ",
+              "width": 207.216064,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "that the text is inhabiting one authored ",
+              "width": 180.960938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "interior shape.",
+              "width": 66.537598,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 388.033594,
+        "w": 380,
+        "h": 77.945313,
+        "lines": [
+          [
+            {
+              "text": "If this harsher sample holds, then the experiment has crossed the threshold ",
+              "width": 369.92334,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "from curiosity to fixture. A true regression proof should not depend on one ",
+              "width": 361.979492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "forgiving circle and one mildly stepped polygon. It should show that the same ",
+              "width": 377.270996,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "room-settlement logic can navigate a much less polite hull and still produce ",
+              "width": 368.081055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "text that feels structurally guided rather than randomly clipped.",
+              "width": 303.273438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

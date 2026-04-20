@@ -48,6 +48,47 @@ That unification matters because it preserves backward compatibility and keeps t
 
 ---
 
+## Spatial Field Polarity
+
+The same authored field can now be consumed in two different spatial modes.
+
+### `exclude`: outside pressure
+
+This is the traditional behavior. The assembly publishes forbidden space and the packager settles text around it.
+
+Conceptually:
+
+- available space = host measure minus authored field intervals
+- the field behaves like an obstacle
+- optional clipping can make the visible host submit to the same silhouette
+
+This is the familiar float and wrap-around case.
+
+### `contain`: interior room
+
+This is the inverted behavior. The assembly no longer means "stay out." It means "these are the only valid writing lanes."
+
+Conceptually:
+
+- available space = authored field intervals
+- the field behaves like an interior room
+- the same line carver can be reused by flipping the polarity of the query
+
+This matters because it proves the authored field is not just an exclusion gimmick. It is a general spatial substrate.
+
+If a circle, polygon, or weighted assembly can act as a room, then the engine is no longer limited to wrapping around shapes. It can also settle text inside them.
+
+### Clipping and containment are separate concerns
+
+Containment should not be confused with visual clipping.
+
+- `contain` answers where text is allowed to settle
+- `clip` answers whether the host should visibly submit to the authored boundary
+
+That separation is important. Sometimes a shape is only a settlement guide. Sometimes it is both a guide and a visible mask. The document should be able to choose either behavior without changing the authored field itself.
+
+---
+
 ## The Authoring Model
 
 An authored exclusion assembly is a list of members. Each member is a local primitive relative to the hosting float or spatial field.
@@ -198,6 +239,15 @@ Good cases:
 - softening the outer edge of a traced silhouette
 - preventing a line from dipping awkwardly into a low-value gap
 
+### Use the same assembly for both outside-wrap and inside-settlement when it fits the authored intent
+
+The exact same `exclusionAssembly` may be used in either polarity:
+
+- outside as an obstacle that pushes neighboring content away
+- inside as a room that invites one text host to inhabit the authored silhouette
+
+That reuse is a major architectural win. It means a cat, dragon, logo, or traced alpha silhouette does not need one representation for wrapping and another for inhabitation. One authored field can serve both jobs.
+
 ### Treat visible debug rectangles as diagnostics
 
 Colored member rendering is extremely useful for debugging. It lets us verify that:
@@ -222,6 +272,8 @@ The recommended interpretation is:
 - add new member primitives later only when they fit naturally into the same assembly contract
 
 This keeps the public model simple. There is one exclusion language. Some members happen to be simple primitives.
+
+Primitive spatial fields also make useful containment proofs because they let us validate the polarity inversion on simple authored rooms before applying the same logic to dense assemblies.
 
 ---
 

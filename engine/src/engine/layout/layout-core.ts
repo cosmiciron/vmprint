@@ -50,6 +50,7 @@ import { AsyncThoughtRuntimeCollaborator } from './collaborators/async-thought-r
 import { InteractionArtifactCollaborator } from './collaborators/interaction-artifact-collaborator';
 import { ViewportCaptureArtifactCollaborator } from './collaborators/viewport-capture-artifact-collaborator';
 import { AsyncThoughtHost } from './async-thought-host';
+import { buildExclusionFieldObstacles } from './exclusion-field';
 import {
     buildTableModel,
     isTableElement,
@@ -59,11 +60,14 @@ import {
     SpatialGridLayoutContext
 } from './layout-table';
 import { buildTableModelFromNormalizedTable, normalizeTableElement } from './normalized-table';
+import { resolveDocumentMicroLanePolicy, resolveMinUsableLaneWidth } from './micro-lane-policy';
 import { DropCapPackager } from './packagers/dropcap-packager';
 import { createPackagers, ExternalPackagerFactory } from './packagers/create-packagers';
+import { SpatialMap } from './packagers/spatial-map';
 import { ScriptDocumentPackager } from './packagers/script-document-packager';
 import { createSimulationMarchRunner, executeSimulationMarch, type SimulationRunner } from './packagers/execute-simulation-march';
 import type { PackagerContext } from './packagers/packager-types';
+import { reflowTextElementAgainstSpatialField } from './spatial-field-reflow';
 import { SimulationLoop, type SimulationLoopOptions, type SimulationLoopScheduler } from './simulation-loop';
 
 
@@ -1354,6 +1358,19 @@ export class LayoutProcessor extends TextProcessor {
             return positionSpatialGridFlowBoxes(unit, x, y, pageIndex, this.getSpatialGridLayoutContext());
         }
 
+        const contained = this.tryPositionContainedFlowBox(
+            unit,
+            currentY,
+            layoutBefore,
+            margins,
+            _pageWidth,
+            pageIndex,
+            x
+        );
+        if (contained) {
+            return contained;
+        }
+
         return {
             type: unit.type,
             x,
@@ -1369,6 +1386,96 @@ export class LayoutProcessor extends TextProcessor {
             properties: { ...unit.properties },
             meta: {
                 ...unit.meta,
+                pageIndex
+            }
+        };
+    }
+
+    private tryPositionContainedFlowBox(
+        unit: FlowBox,
+        currentY: number,
+        layoutBefore: number,
+        margins: { left: number },
+        pageWidth: number,
+        pageIndex: number,
+        positionedX: number
+    ): Box | null {
+        const sourceElement = unit._sourceElement;
+        const directive = (sourceElement?.properties?.space ?? sourceElement?.properties?.spatialField) as { kind?: string } | undefined;
+        if (!sourceElement || directive?.kind !== 'contain' || unit.image) {
+            return null;
+        }
+
+        const style = unit.style || {};
+        const availableWidth = Number.isFinite(unit.measuredWidth)
+            ? Math.max(0, Number(unit.measuredWidth))
+            : style.width !== undefined
+                ? LayoutUtils.validateUnit(style.width)
+                : Math.max(0, pageWidth - LayoutUtils.validateUnit(style.marginLeft || 0) - LayoutUtils.validateUnit(style.marginRight || 0));
+        if (availableWidth <= 0) {
+            return null;
+        }
+
+        const spatialMap = new SpatialMap();
+        const hostWidth = style.width !== undefined ? Math.max(0, LayoutUtils.validateUnit(style.width)) : availableWidth;
+        const hostHeight = style.height !== undefined ? Math.max(0, LayoutUtils.validateUnit(style.height)) : Math.max(0, unit.measuredContentHeight);
+        if (hostWidth <= 0 || hostHeight <= 0) {
+            return null;
+        }
+
+        const obstacles = buildExclusionFieldObstacles({
+            x: Number.isFinite(Number((directive as any).x)) ? Number((directive as any).x) : 0,
+            y: (Number.isFinite(Number((directive as any).y)) ? Number((directive as any).y) : 0) + currentY + layoutBefore,
+            w: hostWidth,
+            h: hostHeight,
+            wrap: (directive as any).wrap ?? 'around',
+            gap: Number.isFinite(Number((directive as any).gap)) ? Math.max(0, Number((directive as any).gap)) : 0,
+            shape: (directive as any).shape,
+            path: (directive as any).path,
+            align: (directive as any).align,
+            exclusionAssembly: (directive as any).exclusionAssembly,
+            exclusionBoundaryProfile: (directive as any).exclusionBoundaryProfile,
+            zIndex: Number.isFinite(Number((directive as any).zIndex)) ? Number((directive as any).zIndex) : 0,
+            traversalInteraction: (directive as any).traversalInteraction ?? 'auto'
+        });
+        for (const obstacle of obstacles) {
+            spatialMap.register(obstacle);
+        }
+
+        const microLanePolicy = resolveDocumentMicroLanePolicy((this as any).config?.layout);
+        const minUsableSlotWidth = resolveMinUsableLaneWidth({
+            policy: microLanePolicy,
+            element: sourceElement,
+            availableWidth
+        });
+        const placed = reflowTextElementAgainstSpatialField({
+            processor: this,
+            element: sourceElement,
+            path: unit._normalizedFlowBlock?.identitySeed?.path ?? [0],
+            availableWidth,
+            currentY,
+            layoutBefore,
+            spatialMap,
+            leftMargin: margins.left,
+            xOffset: positionedX - margins.left,
+            pageIndex,
+            clearTopBeforeStart: false,
+            minUsableSlotWidth,
+            rejectSubMinimumSlots: microLanePolicy !== 'allow'
+        });
+        if (!placed) {
+            return null;
+        }
+
+        return {
+            ...placed.box,
+            meta: {
+                sourceId: String(placed.box.meta?.sourceId || unit.meta?.sourceId || sourceElement.properties?.sourceId || sourceElement.type || 'element'),
+                engineKey: String(placed.box.meta?.engineKey || unit.meta?.engineKey || `contain:${pageIndex}:${sourceElement.type || 'element'}`),
+                sourceType: String(placed.box.meta?.sourceType || unit.meta?.sourceType || sourceElement.type || 'element'),
+                fragmentIndex: Number(placed.box.meta?.fragmentIndex ?? unit.meta?.fragmentIndex ?? 0),
+                isContinuation: Boolean(placed.box.meta?.isContinuation ?? unit.meta?.isContinuation),
+                ...(placed.box.meta || {}),
                 pageIndex
             }
         };

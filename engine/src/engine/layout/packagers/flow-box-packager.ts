@@ -171,6 +171,9 @@ export class FlowBoxPackager implements PackagerUnit {
         }
         const processor = this.processor as unknown as FlowBoxProcessor;
         this.prepare(availableWidth, availableHeight, context);
+        if (this.cachedSpatialBoxes) {
+            return this.cachedSpatialBoxes;
+        }
 
         // Position at y=0 in local flow-box space, with layoutBefore matching
         // marginTop. The orchestration loop applies the outer page/frame
