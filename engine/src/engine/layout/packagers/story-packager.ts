@@ -54,6 +54,7 @@ import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
+import { SpatialFieldGeometryCapability } from './spatial-field-capability';
 import {
     bindPackagerSignalPublisher,
     LayoutBox,
@@ -858,23 +859,31 @@ export class StoryPackager implements PackagerUnit {
         const opticalUnderhang = !!((this.processor as any).config?.layout?.storyWrapOpticalUnderhang);
         const microLanePolicy = resolveDocumentMicroLanePolicy((this.processor as any).config?.layout);
         const session = this.processor.getCurrentLayoutSession();
+        const spatialDirective = (element.properties?.space ?? element.properties?.spatialField) as any;
+        const usesContainmentLanes = spatialDirective?.kind === 'contain';
         const shaped = (this.processor as any).shapeElement(
             element, { path: [this.storyIndex, childIndex] }
         );
+        const effectiveWidth = usesContainmentLanes
+            ? resolveContainmentStoryWidth(element, availableWidth)
+            : availableWidth;
+        const workingMap = usesContainmentLanes
+            ? this.buildContainmentStoryMap(element)
+            : storyMap;
         const marginTop = Math.max(0, shaped.marginTop);
         const minUsableSlotWidth = resolveMinUsableLaneWidth({
             policy: microLanePolicy,
             element,
-            availableWidth
+            availableWidth: effectiveWidth
         });
         const placed = reflowTextElementAgainstSpatialField({
             processor: this.processor,
             element,
             path: [this.storyIndex, childIndex],
-            availableWidth,
+            availableWidth: effectiveWidth,
             currentY: cursorY,
             layoutBefore: marginTop,
-            spatialMap: storyMap,
+            spatialMap: workingMap,
             xOffset,
             leftMargin: margins.left,
             pageIndex: session ? session.getCurrentPageIndex() : 0,
@@ -884,9 +893,14 @@ export class StoryPackager implements PackagerUnit {
             rejectSubMinimumSlots: microLanePolicy !== 'allow'
         });
         if (!placed) return null;
+        const clipProperties = new SpatialFieldGeometryCapability(element).buildClipProperties();
         const box = actor
             ? {
                 ...placed.box,
+                properties: {
+                    ...(placed.box.properties || {}),
+                    ...clipProperties
+                },
                 meta: placed.box.meta
                     ? { ...placed.box.meta, actorId: actor.actorId, sourceId: placed.box.meta.sourceId ?? actor.sourceId }
                     : {
@@ -898,7 +912,13 @@ export class StoryPackager implements PackagerUnit {
                         isContinuation: actor.fragmentIndex > 0 || !!actor.continuationOf
                     }
             }
-            : placed.box;
+            : {
+                ...placed.box,
+                properties: {
+                    ...(placed.box.properties || {}),
+                    ...clipProperties
+                }
+            };
 
         return {
             kind: 'text',
@@ -917,6 +937,35 @@ export class StoryPackager implements PackagerUnit {
             lineWidths: placed.lineWidths,
             uniformLH: placed.uniformLineHeight,
         };
+    }
+
+    private buildContainmentStoryMap(element: Element): SpatialMap {
+        const map = new SpatialMap();
+        const directive = (element.properties?.space ?? element.properties?.spatialField) as any;
+        if (!directive || directive.kind !== 'contain') return map;
+        const style = (element.properties?.style || {}) as { width?: unknown; height?: unknown };
+        const width = Number.isFinite(Number(style.width)) ? Math.max(0, Number(style.width)) : 0;
+        const height = Number.isFinite(Number(style.height)) ? Math.max(0, Number(style.height)) : 0;
+        if (width <= 0 || height <= 0) return map;
+        const obstacles = buildExclusionFieldObstacles({
+            x: Number.isFinite(Number(directive.x)) ? Number(directive.x) : 0,
+            y: Number.isFinite(Number(directive.y)) ? Number(directive.y) : 0,
+            w: width,
+            h: height,
+            wrap: directive.wrap ?? 'around',
+            gap: Number.isFinite(Number(directive.gap)) ? Math.max(0, Number(directive.gap)) : 0,
+            shape: directive.shape,
+            path: directive.path,
+            align: directive.align,
+            exclusionAssembly: directive.exclusionAssembly,
+            exclusionBoundaryProfile: directive.exclusionBoundaryProfile,
+            zIndex: Number.isFinite(Number(directive.zIndex)) ? Number(directive.zIndex) : 0,
+            traversalInteraction: directive.traversalInteraction ?? 'auto'
+        });
+        for (const obstacle of obstacles) {
+            map.register(obstacle);
+        }
+        return map;
     }
 
     // -- Split ---------------------------------------------------------------
@@ -2179,6 +2228,13 @@ export class StoryPackager implements PackagerUnit {
             viewportHeight: resolvedViewportHeight
         };
     }
+}
+
+function resolveContainmentStoryWidth(element: Element, fallbackWidth: number): number {
+    const style = (element.properties?.style || {}) as { width?: unknown };
+    const authoredWidth = Number(style.width);
+    if (Number.isFinite(authoredWidth) && authoredWidth > 0) return authoredWidth;
+    return fallbackWidth;
 }
 
 // ---------------------------------------------------------------------------

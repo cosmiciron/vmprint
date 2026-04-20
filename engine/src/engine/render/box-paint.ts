@@ -22,7 +22,7 @@ type ClipDescriptor = {
     assembly: ImageClipAssemblyMember[];
 };
 
-const resolveClipDescriptor = (box: Box): ClipDescriptor => ({
+export const resolveClipDescriptor = (box: Box): ClipDescriptor => ({
     shape: String(box.properties?._clipShape || box.properties?._imageClipShape || '').trim(),
     path: String(box.properties?._clipPath || box.properties?._imageClipPath || '').trim(),
     assembly: Array.isArray(box.properties?._clipAssembly)
@@ -50,7 +50,7 @@ function drawEllipsePath(context: Context, x: number, y: number, w: number, h: n
     context.bezierCurveTo(cx + ox, cy - ry, cx + rx, cy - oy, cx + rx, cy);
 }
 
-const applyClipPath = (
+export const applyClipPath = (
     context: Context,
     x: number,
     y: number,
@@ -132,7 +132,7 @@ export const drawBoxBackground = (context: Context, box: Box, boxStyle: ElementS
     if (!boxStyle.backgroundColor) return;
     const clip = resolveClipDescriptor(box);
     const radius = boxStyle.borderRadius || 0;
-    if (clip.assembly.length > 0 || clip.shape === 'circle' || clip.shape === 'ellipse') {
+    if (clip.assembly.length > 0 || !!clip.shape || !!clip.path) {
         context.save();
         if (applyClipPath(context, box.x, box.y, box.w, box.h, clip)) {
             context.rect(box.x, box.y, box.w, box.h).fillColor(boxStyle.backgroundColor).fill();

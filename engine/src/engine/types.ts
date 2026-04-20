@@ -406,7 +406,8 @@ export interface StoryExclusionBoundaryProfile {
 }
 
 export interface SpatialFieldDirective {
-    kind?: 'exclude';
+    kind?: 'exclude' | 'contain';
+    clip?: boolean;
     x?: number;
     y?: number;
     align?: StoryFloatAlign;

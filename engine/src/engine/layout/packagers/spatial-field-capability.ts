@@ -40,6 +40,9 @@ export class SpatialFieldGeometryCapability {
     }
 
     buildClipProperties(): Record<string, unknown> {
+        if (this.field?.clip === false) {
+            return {};
+        }
         const assembly = this.field?.exclusionAssembly ?? this.placement?.exclusionAssembly;
         const shape = this.field?.shape ?? this.placement?.shape;
         return {

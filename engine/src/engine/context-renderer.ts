@@ -14,9 +14,11 @@ import {
     drawDebugZoneOverlay
 } from './render/debug-draw';
 import {
+    applyClipPath,
     drawBoxBackground,
     drawBoxBorders,
-    drawImageBox
+    drawImageBox,
+    resolveClipDescriptor
 } from './render/box-paint';
 import { RendererImageBytesCache } from './render/image-bytes-cache';
 import { drawRichLines } from './render/rich-lines';
@@ -137,6 +139,12 @@ export class ContextRenderer extends BaseRenderer {
             const contentX = box.x + paddingLeft + borderLeft;
             const contentY = box.y + paddingTop + borderTop;
             const contentWidth = box.w - paddingLeft - paddingRight - borderLeft - borderRight;
+            const clip = resolveClipDescriptor(box);
+            const hasClip = clip.assembly.length > 0 || !!clip.shape || !!clip.path;
+            if (hasClip) {
+                context.save();
+                applyClipPath(context, box.x, box.y, box.w, box.h, clip);
+            }
             drawRichLines(
                 context,
                 box.lines as RendererLine[],
@@ -153,6 +161,9 @@ export class ContextRenderer extends BaseRenderer {
                 },
                 (box.properties || {}) as RendererBoxProperties
             );
+            if (hasClip) {
+                context.restore();
+            }
         } else if (box.content || box.glyphs) {
             const defaultFamily = (boxStyle.fontFamily as string | undefined) || this.config.layout.fontFamily;
             const defaultWeight = (boxStyle.fontWeight as number | string | undefined) ?? 400;
@@ -166,6 +177,12 @@ export class ContextRenderer extends BaseRenderer {
                 resolvedFontId: this.getFontId(defaultFamily, defaultWeight, defaultStyle),
                 resolvedFontAscent: this.getFontAscent(defaultFamily, defaultWeight, defaultStyle)
             }]] as RendererLine[];
+            const clip = resolveClipDescriptor(box);
+            const hasClip = clip.assembly.length > 0 || !!clip.shape || !!clip.path;
+            if (hasClip) {
+                context.save();
+                applyClipPath(context, box.x, box.y, box.w, box.h, clip);
+            }
             drawRichLines(
                 context,
                 lines,
@@ -182,6 +199,9 @@ export class ContextRenderer extends BaseRenderer {
                 },
                 (box.properties || {}) as RendererBoxProperties
             );
+            if (hasClip) {
+                context.restore();
+            }
         }
 
         drawBoxBorders(context, box, boxStyle);

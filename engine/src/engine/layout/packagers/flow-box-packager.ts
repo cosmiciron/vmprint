@@ -6,6 +6,7 @@ import type { SpatialExclusion } from '../runtime/session/session-spatial-types'
 import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { SpatialMap } from './spatial-map';
+import { buildExclusionFieldObstacles } from '../exclusion-field';
 import {
     PackagerContext,
     PackagerPlacementPreference,
@@ -219,10 +220,15 @@ export class FlowBoxPackager implements PackagerUnit {
 
     private prepareSpatialPlacement(context: PackagerContext): void {
         const sourceElement = this.flowBox._sourceElement;
+        const localSpatialDirective = (sourceElement?.properties?.space ?? sourceElement?.properties?.spatialField) as any;
+        const usesContainmentLanes = localSpatialDirective?.kind === 'contain';
+        const containmentWidth = usesContainmentLanes
+            ? resolveContainmentHostWidth(sourceElement, Math.max(0, context.pageWidth - context.margins.left - context.margins.right))
+            : Math.max(0, context.pageWidth - context.margins.left - context.margins.right);
         const exclusions = context.getWorldTraversalExclusions?.(context.pageIndex)
             ?? (context.getPageExclusions?.(context.pageIndex) ?? [])
                 .filter((exclusion) => exclusion.surface === 'world-traversal');
-        if (!sourceElement || this.flowBox.image || exclusions.length === 0) {
+        if (!sourceElement || this.flowBox.image || (!usesContainmentLanes && exclusions.length === 0)) {
             this.clearSpatialCache();
             return;
         }
@@ -240,8 +246,12 @@ export class FlowBoxPackager implements PackagerUnit {
         }
 
         this.spatialMap.clear();
-        for (const exclusion of exclusions) {
-            this.registerSpatialExclusion(this.spatialMap, exclusion, context);
+        if (usesContainmentLanes) {
+            this.registerContainmentField(this.spatialMap, sourceElement);
+        } else {
+            for (const exclusion of exclusions) {
+                this.registerSpatialExclusion(this.spatialMap, exclusion, context);
+            }
         }
 
         const path = this.flowBox._normalizedFlowBlock?.identitySeed?.path ?? [0];
@@ -252,13 +262,13 @@ export class FlowBoxPackager implements PackagerUnit {
         const minUsableSlotWidth = resolveMinUsableLaneWidth({
             policy: microLanePolicy,
             element: sourceElement,
-            availableWidth: Math.max(0, context.pageWidth - context.margins.left - context.margins.right)
+            availableWidth: containmentWidth
         });
         const placed = reflowTextElementAgainstSpatialField({
             processor: this.processor,
             element: sourceElement,
             path,
-            availableWidth: Math.max(0, context.pageWidth - context.margins.left - context.margins.right),
+            availableWidth: containmentWidth,
             currentY: 0,
             layoutBefore,
             spatialMap: this.spatialMap,
@@ -325,6 +335,33 @@ export class FlowBoxPackager implements PackagerUnit {
         });
     }
 
+    private registerContainmentField(spatialMap: SpatialMap, element: any): void {
+        const directive = (element.properties?.space ?? element.properties?.spatialField) as any;
+        if (!directive || directive.kind !== 'contain') return;
+        const style = (element.properties?.style || {}) as { width?: unknown; height?: unknown };
+        const width = Number.isFinite(Number(style.width)) ? Math.max(0, Number(style.width)) : 0;
+        const height = Number.isFinite(Number(style.height)) ? Math.max(0, Number(style.height)) : 0;
+        if (width <= 0 || height <= 0) return;
+        const obstacles = buildExclusionFieldObstacles({
+            x: Number.isFinite(Number(directive.x)) ? Number(directive.x) : 0,
+            y: Number.isFinite(Number(directive.y)) ? Number(directive.y) : 0,
+            w: width,
+            h: height,
+            wrap: directive.wrap ?? 'around',
+            gap: Number.isFinite(Number(directive.gap)) ? Math.max(0, Number(directive.gap)) : 0,
+            shape: directive.shape,
+            path: directive.path,
+            align: directive.align,
+            exclusionAssembly: directive.exclusionAssembly,
+            exclusionBoundaryProfile: directive.exclusionBoundaryProfile,
+            zIndex: Number.isFinite(Number(directive.zIndex)) ? Number(directive.zIndex) : 0,
+            traversalInteraction: directive.traversalInteraction ?? 'auto'
+        });
+        for (const obstacle of obstacles) {
+            spatialMap.register(obstacle);
+        }
+    }
+
     reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const processor = this.processor as unknown as FlowBoxProcessor;
         this.materialize(this.lastAvailableWidth, this.lastContentWidth);
@@ -360,4 +397,11 @@ export class FlowBoxPackager implements PackagerUnit {
         this.clearSpatialCache();
         return { currentFragment: partA, continuationFragment: partB };
     }
+}
+
+function resolveContainmentHostWidth(element: any, fallbackWidth: number): number {
+    const style = (element?.properties?.style || {}) as { width?: unknown };
+    const authoredWidth = Number(style.width);
+    if (Number.isFinite(authoredWidth) && authoredWidth > 0) return authoredWidth;
+    return fallbackWidth;
 }

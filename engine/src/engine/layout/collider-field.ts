@@ -34,6 +34,7 @@ export interface CompiledCollider {
 
     overlapsBand(query: BandQuery): boolean;
     queryBand(query: BandQuery): readonly BlockedInterval[];
+    queryOccupiedBand(query: BandQuery): readonly BlockedInterval[];
     getBottomExtent(opticalUnderhang?: boolean): number;
 }
 
@@ -74,6 +75,10 @@ class RectCollider implements CompiledCollider {
             left: this.obstacle.x - g,
             right: this.obstacle.x + this.obstacle.w + g
         }];
+    }
+
+    queryOccupiedBand(query: BandQuery): readonly BlockedInterval[] {
+        return this.queryBand(query);
     }
 
     getBottomExtent(_opticalUnderhang?: boolean): number {
@@ -131,6 +136,23 @@ class CircleCollider implements CompiledCollider {
                 ? cx + chordHalfW
                 : this.obstacle.x + this.obstacle.w + r + 1;
         return [{ left: carveLeft, right: carveRight }];
+    }
+
+    queryOccupiedBand(query: BandQuery): readonly BlockedInterval[] {
+        if (!this.overlapsBand(query)) return [];
+
+        const cx = this.obstacle.x + this.obstacle.w / 2;
+        const cy = this.obstacle.circleCy ?? (this.obstacle.y + this.obstacle.h / 2);
+        const r = this.obstacle.w / 2 + this.obstacle.gap;
+        const bandTop = Math.min(query.top, query.bottom);
+        const bandBottom = Math.max(query.top, query.bottom);
+        const dy = Math.max(Math.abs(bandTop - cy), Math.abs(bandBottom - cy));
+        const chordHalfW = Math.sqrt(Math.max(0, r * r - dy * dy));
+
+        return [{
+            left: cx - chordHalfW,
+            right: cx + chordHalfW
+        }];
     }
 
     getBottomExtent(_opticalUnderhang?: boolean): number {
@@ -194,6 +216,28 @@ class EllipseCollider implements CompiledCollider {
                 ? cx + chordHalfW
                 : this.obstacle.x + this.obstacle.w + rx + 1;
         return [{ left: carveLeft, right: carveRight }];
+    }
+
+    queryOccupiedBand(query: BandQuery): readonly BlockedInterval[] {
+        if (!this.overlapsBand(query)) return [];
+
+        const cx = this.obstacle.x + this.obstacle.w / 2;
+        const cy = this.obstacle.ellipseCy ?? (this.obstacle.y + this.obstacle.h / 2);
+        const rx = this.obstacle.w / 2 + this.obstacle.gap;
+        const baseRy = this.obstacle.ellipseRy ?? (this.obstacle.h / 2);
+        const ry = baseRy + this.obstacle.gap;
+        if (rx <= 0 || ry <= 0) return [];
+
+        const bandTop = Math.min(query.top, query.bottom);
+        const bandBottom = Math.max(query.top, query.bottom);
+        const dy = Math.max(Math.abs(bandTop - cy), Math.abs(bandBottom - cy));
+        const normalizedY = Math.max(-1, Math.min(1, dy / ry));
+        const chordHalfW = rx * Math.sqrt(Math.max(0, 1 - (normalizedY * normalizedY)));
+
+        return [{
+            left: cx - chordHalfW,
+            right: cx + chordHalfW
+        }];
     }
 
     getBottomExtent(_opticalUnderhang?: boolean): number {
@@ -265,6 +309,23 @@ class PolygonCollider implements CompiledCollider {
             }
         }
         return mergeBlockedIntervals(intervals);
+    }
+
+    queryOccupiedBand(query: BandQuery): readonly BlockedInterval[] {
+        if (!this.overlapsBand(query)) return [];
+
+        const sampleYs = resolvePolygonSampleYs(query.top, query.bottom, this.sampleYBreaks);
+        let occupied: BlockedInterval[] | null = null;
+        for (const sampleY of sampleYs) {
+            const scanlineIntervals = this.queryScanlineIntervals(sampleY);
+            if (occupied === null) {
+                occupied = scanlineIntervals;
+                continue;
+            }
+            occupied = intersectBlockedIntervals(occupied, scanlineIntervals);
+            if (occupied.length === 0) break;
+        }
+        return occupied ?? [];
     }
 
     getBottomExtent(_opticalUnderhang?: boolean): number {
@@ -339,6 +400,37 @@ export class ColliderField {
         }
 
         return available.filter((iv) => iv.w > 0.5);
+    }
+
+    getOccupiedIntervals(
+        y: number,
+        lineH: number,
+        totalWidth: number,
+        options?: { opticalUnderhang?: boolean; queryZIndex?: number }
+    ): Interval[] {
+        const query: BandQuery = {
+            top: y,
+            bottom: y + lineH,
+            queryZIndex: normalizeZIndex(options?.queryZIndex),
+            opticalUnderhang: options?.opticalUnderhang === true
+        };
+        const blocked: BlockedInterval[] = [];
+
+        for (const collider of this.getCandidateColliders(query.top, query.bottom)) {
+            this.narrowphaseCalls += 1;
+            if (!intersectsDepth(collider, query.queryZIndex)) continue;
+            if (!collider.overlapsBand(query)) continue;
+            for (const interval of collider.queryOccupiedBand(query)) {
+                blocked.push(interval);
+            }
+        }
+
+        return mergeBlockedIntervals(blocked)
+            .map((interval) => ({
+                x: Math.max(0, interval.left),
+                w: Math.min(totalWidth, interval.right) - Math.max(0, interval.left)
+            }))
+            .filter((interval) => interval.w > 0.5);
     }
 
     hasTopBottomBlock(y: number, lineH: number, queryZIndex: number = 0): boolean {
@@ -597,6 +689,33 @@ function mergeBlockedIntervals(intervals: readonly BlockedInterval[]): BlockedIn
         previous.right = Math.max(previous.right, interval.right);
     }
     return merged;
+}
+
+function intersectBlockedIntervals(
+    left: readonly BlockedInterval[],
+    right: readonly BlockedInterval[]
+): BlockedInterval[] {
+    if (left.length === 0 || right.length === 0) return [];
+    const mergedLeft = mergeBlockedIntervals(left);
+    const mergedRight = mergeBlockedIntervals(right);
+    const intersections: BlockedInterval[] = [];
+    let i = 0;
+    let j = 0;
+    while (i < mergedLeft.length && j < mergedRight.length) {
+        const a = mergedLeft[i]!;
+        const b = mergedRight[j]!;
+        const overlapLeft = Math.max(a.left, b.left);
+        const overlapRight = Math.min(a.right, b.right);
+        if (overlapRight > overlapLeft) {
+            intersections.push({ left: overlapLeft, right: overlapRight });
+        }
+        if (a.right < b.right) {
+            i++;
+        } else {
+            j++;
+        }
+    }
+    return intersections;
 }
 
 function approximatelyEqualNumber(left: number, right: number): boolean {

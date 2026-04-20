@@ -98,11 +98,11 @@ export class FieldActorPackager implements PackagerUnit {
         };
     }
 
-    emitBoxes(_availableWidth: number, _availableHeight: number, _context: PackagerContext): Box[] {
+    emitBoxes(_availableWidth: number, _availableHeight: number, context: PackagerContext): Box[] {
         const movementState = this.movement.state;
         return [{
             type: 'field-actor',
-            x: movementState.x,
+            x: Math.max(0, Number(context.margins?.left || 0)) + movementState.x,
             y: movementState.y,
             w: this.width,
             h: this.height,

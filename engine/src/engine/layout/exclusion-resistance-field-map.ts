@@ -76,6 +76,37 @@ export class ExclusionResistanceFieldMap {
         return available.filter((interval) => interval.w > 0.5);
     }
 
+    getOccupiedIntervals(
+        y: number,
+        lineH: number,
+        totalWidth: number,
+        options?: { opticalUnderhang?: boolean; queryZIndex?: number }
+    ): Interval[] {
+        const queryTop = y;
+        const queryBottom = y + lineH;
+        const queryZIndex = normalizeZIndex(options?.queryZIndex);
+        const blocked: Array<{ left: number; right: number }> = [];
+
+        for (const field of this.getCandidateFields(queryTop, queryBottom)) {
+            this.narrowphaseCalls += 1;
+            if (!intersectsDepth(field.traversalInteraction, field.zIndex, queryZIndex)) continue;
+            const overlappingBands = resolveOverlappingBands(field, queryTop, queryBottom, options?.opticalUnderhang === true);
+            if (overlappingBands.length === 0) continue;
+            for (const band of overlappingBands) {
+                for (const span of band.spans) {
+                    blocked.push({ left: span.left, right: span.right });
+                }
+            }
+        }
+
+        return mergeBlockedIntervals(blocked)
+            .map((interval) => ({
+                x: Math.max(0, interval.left),
+                w: Math.min(totalWidth, interval.right) - Math.max(0, interval.left)
+            }))
+            .filter((interval) => interval.w > 0.5);
+    }
+
     hasTopBottomBlock(y: number, lineH: number, queryZIndex: number = 0): boolean {
         const queryTop = y;
         const queryBottom = y + lineH;

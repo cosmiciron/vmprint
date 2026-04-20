@@ -3,6 +3,7 @@ import type { LayoutProcessor } from './layout-core';
 import type { FlowBox } from './layout-core-types';
 import { LayoutUtils } from './layout-utils';
 import type { SpatialMap } from './packagers/spatial-map';
+import { SpatialFieldGeometryCapability } from './packagers/spatial-field-capability';
 
 export type SpatialFieldTextPlacement = {
     flowBox: FlowBox;
@@ -18,6 +19,13 @@ export type SpatialFieldTextPlacement = {
     marginBottom: number;
     uniformLineHeight: number;
     elementStartY: number;
+};
+
+type ContainmentInterval = {
+    x: number;
+    w: number;
+    touchesLeft?: boolean;
+    touchesRight?: boolean;
 };
 
 type SpatialFieldReflowOptions = {
@@ -60,15 +68,32 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const fontSize = Number(style.fontSize || anyProcessor.config.layout.fontSize);
     const lineHeightRatio = Number(style.lineHeight || anyProcessor.config.layout.lineHeight);
     const uniformLH = lineHeightRatio * fontSize;
+    const nominalTextBandHeight = Math.max(1, fontSize);
+    const nominalLeading = Math.max(0, uniformLH - nominalTextBandHeight);
+    const containmentBandInset = nominalLeading / 2;
     const richSegments = anyProcessor.getRichSegments(options.element, style);
     if (!Array.isArray(richSegments) || richSegments.length === 0) return null;
 
     const font = anyProcessor.resolveMeasurementFontForStyle(style);
     const letterSpacing = Number(style.letterSpacing || 0);
     const textIndent = Number(style.textIndent || 0);
-    const insetH = LayoutUtils.getHorizontalInsets(style);
-    const insetV = LayoutUtils.getVerticalInsets(style);
+    const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? 0);
+    const paddingRight = LayoutUtils.validateUnit(style.paddingRight ?? style.padding ?? 0);
+    const paddingTop = LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? 0);
+    const paddingBottom = LayoutUtils.validateUnit(style.paddingBottom ?? style.padding ?? 0);
+    const borderLeft = LayoutUtils.validateUnit(style.borderLeftWidth ?? style.borderWidth ?? 0);
+    const borderRight = LayoutUtils.validateUnit(style.borderRightWidth ?? style.borderWidth ?? 0);
+    const borderTop = LayoutUtils.validateUnit(style.borderTopWidth ?? style.borderWidth ?? 0);
+    const borderBottom = LayoutUtils.validateUnit(style.borderBottomWidth ?? style.borderWidth ?? 0);
+    const insetLeft = paddingLeft + borderLeft;
+    const insetRight = paddingRight + borderRight;
+    const insetTop = paddingTop + borderTop;
+    const insetBottom = paddingBottom + borderBottom;
+    const insetH = insetLeft + insetRight;
+    const insetV = insetTop + insetBottom;
     const contentWidth = Math.max(0, options.availableWidth - insetH);
+    const spatialDirective = (options.element.properties?.space ?? options.element.properties?.spatialField) as { kind?: string } | undefined;
+    const laneMode = spatialDirective?.kind === 'contain' ? 'contain' : 'exclude';
     const minUsableSlotWidth = Math.max(0, Number(options.minUsableSlotWidth || 0));
     const rejectSubMinimumSlots = options.rejectSubMinimumSlots !== false && minUsableSlotWidth > 0;
 
@@ -88,9 +113,13 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         yOffsets: []
     };
     const lineSlotWidths: number[] = [];
+    const selectedSlotXOffsets: number[] = [];
+    const selectedContainmentAnchors: Array<'left' | 'right' | 'center'> = [];
+    let previousContainmentCenter: number | null = null;
+    const preferredRoomCenter = Math.max(0, contentWidth / 2);
 
     const resolver = (): { width: number; xOffset: number; yOffset: number } => {
-        if (pendingSlots.length > 0) {
+        if (laneMode !== 'contain' && pendingSlots.length > 0) {
             const slot = pendingSlots.shift()!;
             lineSlotWidths.push(slot.width);
             return slot;
@@ -104,10 +133,45 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         }
 
         const yOffset = (physicalLineCount * uniformLH) + accumulatedYBonus;
+        const geometryQueryY = laneMode === 'contain'
+            ? lineY + insetTop + containmentBandInset
+            : lineY;
+        const geometryQueryHeight = laneMode === 'contain'
+            ? nominalTextBandHeight
+            : uniformLH;
 
         const queryOptions = options.opticalUnderhang ? { opticalUnderhang: true, queryZIndex } : { queryZIndex };
-        const rawIntervals = options.spatialMap.getAvailableIntervals(lineY, uniformLH, options.availableWidth, queryOptions);
-        const intervals = rawIntervals.filter((interval) => Math.max(0, interval.w - insetH) >= minUsableSlotWidth);
+        const rawIntervals = laneMode === 'contain'
+            ? options.spatialMap.getOccupiedIntervals(geometryQueryY, geometryQueryHeight, options.availableWidth, queryOptions)
+            : options.spatialMap.getAvailableIntervals(lineY, uniformLH, options.availableWidth, queryOptions);
+        const normalizedIntervals = laneMode === 'contain'
+            ? rawIntervals.map((interval): ContainmentInterval => {
+                const intervalLeft = Number(interval.x || 0);
+                const intervalRight = intervalLeft + Number(interval.w || 0);
+                const contentLeft = insetLeft;
+                const contentRight = Math.max(contentLeft, options.availableWidth - insetRight);
+                const clippedLeft = Math.max(contentLeft, intervalLeft);
+                const clippedRight = Math.min(contentRight, intervalRight);
+                return {
+                    x: clippedLeft - insetLeft,
+                    w: Math.max(0, clippedRight - clippedLeft),
+                    touchesLeft: clippedLeft <= contentLeft + 0.5,
+                    touchesRight: clippedRight >= contentRight - 0.5
+                };
+            }).filter((interval) => interval.w > 0.5)
+            : rawIntervals;
+        const intervals = normalizedIntervals.filter((interval) =>
+            laneMode === 'contain'
+                ? Math.max(0, interval.w) >= minUsableSlotWidth
+                : Math.max(0, interval.w - insetH) >= minUsableSlotWidth
+        );
+        if (laneMode === 'contain' && rawIntervals.length === 0) {
+            const maxY = options.spatialMap.maxObstacleBottom();
+            if (geometryQueryY + geometryQueryHeight <= maxY + 0.1) {
+                accumulatedYBonus += uniformLH;
+                return resolver();
+            }
+        }
         if (rawIntervals.length > 0 && intervals.length === 0 && rejectSubMinimumSlots) {
             const clearY = options.spatialMap.bandClearY(lineY, uniformLH, queryZIndex, options.opticalUnderhang === true);
             if (clearY > lineY) {
@@ -116,14 +180,21 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
             }
         }
 
-        const usableIntervals = intervals.length > 0 ? intervals : rawIntervals;
+        const usableIntervals = intervals.length > 0 ? intervals : normalizedIntervals;
         if (usableIntervals.length === 0) {
+            if (laneMode === 'contain') {
+                const maxY = options.spatialMap.maxObstacleBottom();
+                if (geometryQueryY + geometryQueryHeight <= maxY + 0.1) {
+                    accumulatedYBonus += uniformLH;
+                    return resolver();
+                }
+            }
             physicalLineCount++;
             lineSlotWidths.push(contentWidth);
             return { width: contentWidth, xOffset: 0, yOffset };
         }
 
-        if (usableIntervals.length > 1) {
+        if (laneMode !== 'contain' && usableIntervals.length > 1) {
             for (let i = 1; i < usableIntervals.length; i++) {
                 pendingSlots.push({
                     width: Math.max(0, usableIntervals[i].w - insetH),
@@ -133,11 +204,21 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
             }
         }
 
+        const chosenInterval = laneMode === 'contain'
+            ? chooseContainmentInterval(usableIntervals, previousContainmentCenter, preferredRoomCenter)
+            : usableIntervals[0]!;
         const slot = {
-            width: Math.max(0, usableIntervals[0].w - insetH),
-            xOffset: usableIntervals[0].x,
+            width: laneMode === 'contain'
+                ? Math.max(0, chosenInterval.w)
+                : Math.max(0, chosenInterval.w - insetH),
+            xOffset: chosenInterval.x,
             yOffset
         };
+        if (laneMode === 'contain') {
+            selectedSlotXOffsets.push(slot.xOffset);
+            selectedContainmentAnchors.push(resolveContainmentAnchor(chosenInterval as ContainmentInterval));
+            previousContainmentCenter = slot.xOffset + (slot.width / 2);
+        }
         physicalLineCount++;
         lineSlotWidths.push(slot.width);
         return slot;
@@ -159,6 +240,29 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const contentHeight = linesHeight + insetV;
     const colliderStatsAfter = options.spatialMap.getStatsSnapshot();
     recordColliderFieldProfileDelta(session, colliderStatsBefore, colliderStatsAfter);
+    const clipProperties = laneMode === 'contain'
+        ? new SpatialFieldGeometryCapability(options.element).buildClipProperties()
+        : {};
+    if (
+        laneMode === 'contain'
+        && (!style.textAlign || style.textAlign === 'left')
+        && lineLayoutOut.offsets.length === lines.length
+    ) {
+        for (let index = 0; index < lines.length; index++) {
+            const slotWidth = Number(lineLayoutOut.widths[index] || 0);
+            const slotOffset = Number(selectedSlotXOffsets[index] ?? lineLayoutOut.offsets[index] ?? 0);
+            const anchor = selectedContainmentAnchors[index] ?? 'center';
+            const measuredLineWidth = measureRichLineWidth(lines[index]);
+            const adjustedLineWidth = Math.max(0, measuredLineWidth - letterSpacing);
+            const remainingWidth = Math.max(0, slotWidth - adjustedLineWidth);
+            const anchoredOffset = anchor === 'left'
+                ? slotOffset
+                : anchor === 'right'
+                    ? slotOffset + remainingWidth
+                    : slotOffset + (remainingWidth / 2);
+            lineLayoutOut.offsets[index] = anchoredOffset;
+        }
+    }
 
     return {
         flowBox,
@@ -177,12 +281,13 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
             type: flowBox.type,
             x: Number(options.leftMargin || 0) + Number(options.xOffset || 0),
             y: elementStartY,
-            w: options.availableWidth + insetH,
-            h: contentHeight,
+            w: options.availableWidth,
+            h: flowBox.heightOverride ?? contentHeight,
             lines,
             style,
             properties: {
                 ...(flowBox.properties || {}),
+                ...clipProperties,
                 _lineOffsets: lineLayoutOut.offsets,
                 _lineWidths: lineLayoutOut.widths,
                 _lineYOffsets: lineLayoutOut.yOffsets,
@@ -202,6 +307,46 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
                 }
         }
     };
+}
+
+function chooseContainmentInterval(
+    intervals: ContainmentInterval[],
+    previousCenter: number | null,
+    preferredCenter: number
+): ContainmentInterval {
+    if (intervals.length <= 1) return intervals[0]!;
+
+    let best = intervals[0]!;
+    let bestScore = Number.NEGATIVE_INFINITY;
+    for (const interval of intervals) {
+        const width = Math.max(0, Number(interval.w || 0));
+        const center = Number(interval.x || 0) + (width / 2);
+        const targetCenter = previousCenter ?? preferredCenter;
+        const continuityPenalty = Math.abs(center - targetCenter);
+        const score = (width * 4) - (continuityPenalty * 1.5);
+        if (score > bestScore) {
+            best = interval;
+            bestScore = score;
+        }
+    }
+    return best;
+}
+
+function resolveContainmentAnchor(interval: ContainmentInterval): 'left' | 'right' | 'center' {
+    const touchesLeft = interval.touchesLeft === true;
+    const touchesRight = interval.touchesRight === true;
+    if (touchesLeft && !touchesRight) return 'left';
+    if (touchesRight && !touchesLeft) return 'right';
+    return 'center';
+}
+
+function measureRichLineWidth(line: RichLine | undefined): number {
+    if (!Array.isArray(line)) return 0;
+    let width = 0;
+    for (const segment of line) {
+        width += Number((segment as { width?: number })?.width || 0);
+    }
+    return width;
 }
 
 function recordColliderFieldProfileDelta(

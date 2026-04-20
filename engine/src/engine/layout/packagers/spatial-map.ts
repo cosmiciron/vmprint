@@ -113,6 +113,20 @@ export class SpatialMap {
         return intersectIntervals(fieldIntervals, colliderIntervals);
     }
 
+    getOccupiedIntervals(
+        y: number,
+        lineH: number,
+        totalWidth: number,
+        options?: { opticalUnderhang?: boolean; queryZIndex?: number }
+    ): Interval[] {
+        if (!this.resistanceFieldMap.hasFields) {
+            return this.colliderField.getOccupiedIntervals(y, lineH, totalWidth, options);
+        }
+        const fieldIntervals = this.resistanceFieldMap.getOccupiedIntervals(y, lineH, totalWidth, options);
+        const colliderIntervals = this.colliderField.getOccupiedIntervals(y, lineH, totalWidth, options);
+        return mergeIntervals([...fieldIntervals, ...colliderIntervals]);
+    }
+
     /** Returns true when any top-bottom obstacle overlaps [y, y+lineH]. */
     hasTopBottomBlock(y: number, lineH: number, queryZIndex: number = 0): boolean {
         if (!this.resistanceFieldMap.hasFields) {
