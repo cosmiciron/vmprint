@@ -1434,7 +1434,6 @@ export class LayoutProcessor extends TextProcessor {
             path: (directive as any).path,
             align: (directive as any).align,
             exclusionAssembly: (directive as any).exclusionAssembly,
-            exclusionBoundaryProfile: (directive as any).exclusionBoundaryProfile,
             zIndex: Number.isFinite(Number((directive as any).zIndex)) ? Number((directive as any).zIndex) : 0,
             traversalInteraction: (directive as any).traversalInteraction ?? 'auto'
         });

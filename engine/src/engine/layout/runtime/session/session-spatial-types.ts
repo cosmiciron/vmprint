@@ -1,6 +1,5 @@
 import type {
     PageReservationSelector,
-    StoryExclusionBoundaryProfile,
     StoryFloatAlign,
     StoryFloatShape,
     StoryWrapMode,
@@ -33,7 +32,6 @@ export type SpatialExclusion = {
     gapBottom?: number;
     shape?: StoryFloatShape;
     path?: string;
-    exclusionBoundaryProfile?: StoryExclusionBoundaryProfile;
     align?: StoryFloatAlign;
     traversalInteraction?: TraversalInteractionPolicy;
     surface?: ExclusionSurface;

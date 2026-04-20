@@ -331,7 +331,6 @@ export class FlowBoxPackager implements PackagerUnit {
                     ? 'polygon'
                     : 'rect',
             path: typeof exclusion.path === 'string' && exclusion.path.trim() ? exclusion.path.trim() : undefined,
-            exclusionBoundaryProfile: exclusion.exclusionBoundaryProfile,
             align: exclusion.align,
             traversalInteraction: exclusion.traversalInteraction ?? 'auto',
             zIndex: Number.isFinite(Number(exclusion.zIndex)) ? Number(exclusion.zIndex) : 0
@@ -356,7 +355,6 @@ export class FlowBoxPackager implements PackagerUnit {
             path: directive.path,
             align: directive.align,
             exclusionAssembly: directive.exclusionAssembly,
-            exclusionBoundaryProfile: directive.exclusionBoundaryProfile,
             zIndex: Number.isFinite(Number(directive.zIndex)) ? Number(directive.zIndex) : 0,
             traversalInteraction: directive.traversalInteraction ?? 'auto'
         });

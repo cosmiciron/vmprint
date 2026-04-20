@@ -1,6 +1,5 @@
 import type {
     StoryExclusionAssembly,
-    StoryExclusionBoundaryProfile,
     StoryFloatAlign,
     StoryFloatShape,
     StoryWrapMode,
@@ -19,7 +18,6 @@ export interface ExclusionFieldDescriptor {
     path?: string;
     align?: StoryFloatAlign;
     exclusionAssembly?: StoryExclusionAssembly;
-    exclusionBoundaryProfile?: StoryExclusionBoundaryProfile;
     zIndex?: number;
     traversalInteraction?: TraversalInteractionPolicy;
 }
@@ -48,7 +46,6 @@ export function buildExclusionFieldObstacles(descriptor: ExclusionFieldDescripto
             gap,
             shape: normalizedShape,
             path: normalizedShape === 'polygon' ? String(descriptor.path || '') : undefined,
-            exclusionBoundaryProfile: descriptor.exclusionBoundaryProfile,
             align: descriptor.align,
             zIndex: Number.isFinite(Number(descriptor.zIndex)) ? Number(descriptor.zIndex) : 0,
             traversalInteraction: descriptor.traversalInteraction ?? 'auto'

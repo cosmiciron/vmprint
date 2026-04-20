@@ -120,9 +120,6 @@ export class SessionWorldRuntime {
             ...(Number.isFinite(exclusion.gapBottom) ? { gapBottom: Math.max(0, Number(exclusion.gapBottom)) } : {}),
             ...(typeof exclusion.shape === 'string' ? { shape: exclusion.shape } : {}),
             ...(typeof exclusion.path === 'string' && exclusion.path.trim() ? { path: exclusion.path.trim() } : {}),
-            ...(exclusion.exclusionBoundaryProfile && Array.isArray(exclusion.exclusionBoundaryProfile.bands)
-                ? { exclusionBoundaryProfile: exclusion.exclusionBoundaryProfile }
-                : {}),
             ...(typeof exclusion.align === 'string' ? { align: exclusion.align } : {}),
             ...(typeof exclusion.traversalInteraction === 'string' ? { traversalInteraction: exclusion.traversalInteraction } : {}),
             ...(Number.isFinite(exclusion.zIndex) ? { zIndex: Number(exclusion.zIndex) } : {})

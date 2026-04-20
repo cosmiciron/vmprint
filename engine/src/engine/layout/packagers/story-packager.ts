@@ -578,8 +578,6 @@ export class StoryPackager implements PackagerUnit {
                 gap: layout.gap,
                 shape: layout.shape,
                 path: layout.path
-                ,
-                exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
             };
             for (const obstacle of buildExclusionFieldObstacles({
                 x: rect.x,
@@ -591,8 +589,7 @@ export class StoryPackager implements PackagerUnit {
                 shape: layout.shape,
                 path: layout.path,
                 align: layout.align,
-                exclusionAssembly: layout.exclusionAssembly,
-                exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
+                exclusionAssembly: layout.exclusionAssembly
             })) {
                 storyMap.register(obstacle);
                 registeredObstacles.push(obstacle);
@@ -708,8 +705,7 @@ export class StoryPackager implements PackagerUnit {
                         shape: layout.shape,
                         path: layout.path,
                         align: layout.align,
-                        exclusionAssembly: layout.exclusionAssembly,
-                        exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
+                        exclusionAssembly: layout.exclusionAssembly
                     })) {
                         storyMap.register(obstacle);
                         registeredObstacles.push(obstacle);
@@ -751,8 +747,7 @@ export class StoryPackager implements PackagerUnit {
                             shape: layout.shape,
                             path: layout.path,
                             align: layout.align,
-                            exclusionAssembly: layout.exclusionAssembly,
-                            exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
+                            exclusionAssembly: layout.exclusionAssembly
                         })) {
                             storyMap.register(obstacle);
                             registeredObstacles.push(obstacle);
@@ -958,7 +953,6 @@ export class StoryPackager implements PackagerUnit {
             path: directive.path,
             align: directive.align,
             exclusionAssembly: directive.exclusionAssembly,
-            exclusionBoundaryProfile: directive.exclusionBoundaryProfile,
             zIndex: Number.isFinite(Number(directive.zIndex)) ? Number(directive.zIndex) : 0,
             traversalInteraction: directive.traversalInteraction ?? 'auto'
         });
@@ -1191,8 +1185,7 @@ export class StoryPackager implements PackagerUnit {
                 shape: layout.shape,
                 path: layout.path,
                 align: layout.align,
-                exclusionAssembly: layout.exclusionAssembly,
-                exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
+                exclusionAssembly: layout.exclusionAssembly
             })) {
                 allObstacles.push(obstacle);
                 registeredObstacles.push(obstacle);
@@ -1462,8 +1455,7 @@ export class StoryPackager implements PackagerUnit {
                             shape: layout.shape,
                             path: layout.path,
                             align: layout.align,
-                            exclusionAssembly: layout.exclusionAssembly,
-                            exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
+                            exclusionAssembly: layout.exclusionAssembly
                         })) {
                             allObstacles.push(obstacle);
                             registeredObstacles.push(obstacle);
@@ -1509,8 +1501,7 @@ export class StoryPackager implements PackagerUnit {
                                 shape: layout.shape,
                                 path: layout.path,
                                 align: layout.align,
-                                exclusionAssembly: layout.exclusionAssembly,
-                                exclusionBoundaryProfile: (layout as any).exclusionBoundaryProfile
+                                exclusionAssembly: layout.exclusionAssembly
                             })) {
                                 allObstacles.push(obstacle);
                                 registeredObstacles.push(obstacle);

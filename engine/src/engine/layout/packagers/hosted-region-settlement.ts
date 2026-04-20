@@ -220,8 +220,7 @@ function buildHostedRegionFieldState(
                 align,
                 zIndex,
                 wrap,
-                exclusionAssembly: directive.exclusionAssembly,
-                exclusionBoundaryProfile: (directive as any).exclusionBoundaryProfile
+                exclusionAssembly: directive.exclusionAssembly
             })
         }
     };
