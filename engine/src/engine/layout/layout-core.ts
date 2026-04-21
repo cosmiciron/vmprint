@@ -1451,6 +1451,7 @@ export class LayoutProcessor extends TextProcessor {
             processor: this,
             element: sourceElement,
             path: unit._normalizedFlowBlock?.identitySeed?.path ?? [0],
+            sourceFlowBox: unit,
             availableWidth,
             currentY,
             layoutBefore,

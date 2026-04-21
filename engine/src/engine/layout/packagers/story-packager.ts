@@ -875,6 +875,7 @@ export class StoryPackager implements PackagerUnit {
             processor: this.processor,
             element,
             path: [this.storyIndex, childIndex],
+            sourceFlowBox: shaped,
             availableWidth: effectiveWidth,
             currentY: cursorY,
             layoutBefore: marginTop,

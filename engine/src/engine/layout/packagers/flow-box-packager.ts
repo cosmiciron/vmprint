@@ -169,11 +169,11 @@ export class FlowBoxPackager implements PackagerUnit {
         if (this.cachedSpatialBoxes) {
             return this.cachedSpatialBoxes;
         }
-        const processor = this.processor as unknown as FlowBoxProcessor;
         this.prepare(availableWidth, availableHeight, context);
         if (this.cachedSpatialBoxes) {
             return this.cachedSpatialBoxes;
         }
+        const processor = this.processor as unknown as FlowBoxProcessor;
 
         // Position at y=0 in local flow-box space, with layoutBefore matching
         // marginTop. The orchestration loop applies the outer page/frame
@@ -221,10 +221,38 @@ export class FlowBoxPackager implements PackagerUnit {
         return this.flowBox.marginBottom;
     }
 
+    prepareLookahead(availableWidth: number, availableHeight: number, context: PackagerContext): void {
+        this.lastAvailableHeight = availableHeight;
+        if (this.prepareSealedContainmentLookahead()) {
+            return;
+        }
+        const contentWidth = context.contentWidthOverride ?? -1;
+        this.materialize(availableWidth, contentWidth);
+        this.prepareSpatialPlacement(context);
+    }
+
+    private prepareSealedContainmentLookahead(): boolean {
+        const sourceElement = this.flowBox._sourceElement;
+        const localSpatialDirective = (sourceElement?.properties?.space ?? sourceElement?.properties?.spatialField) as any;
+        if (!isSealedContainmentDirective(localSpatialDirective, this.flowBox)) {
+            return false;
+        }
+
+        const hostHeight = resolveFixedContainmentHostHeight(this.flowBox);
+        if (hostHeight <= 0) {
+            return false;
+        }
+
+        this.clearSpatialCache();
+        this.requiredHeight = Math.max(0, this.flowBox.marginTop) + hostHeight + this.flowBox.marginBottom;
+        return true;
+    }
+
     private prepareSpatialPlacement(context: PackagerContext): void {
         const sourceElement = this.flowBox._sourceElement;
         const localSpatialDirective = (sourceElement?.properties?.space ?? sourceElement?.properties?.spatialField) as any;
         const usesContainmentLanes = localSpatialDirective?.kind === 'contain';
+        const usesSealedContainmentLanes = isSealedContainmentDirective(localSpatialDirective, this.flowBox);
         const containmentWidth = usesContainmentLanes
             ? resolveContainmentHostWidth(sourceElement, Math.max(0, context.pageWidth - context.margins.left - context.margins.right))
             : Math.max(0, context.pageWidth - context.margins.left - context.margins.right);
@@ -238,11 +266,22 @@ export class FlowBoxPackager implements PackagerUnit {
 
         const layoutBefore = Number(context.layoutBefore ?? this.flowBox.marginTop);
         const cursorY = Number(context.cursorY);
+        const ignoreSpatialCursorForContainment = usesContainmentLanes;
+        const ignoreSpatialPageIndexForContainment = usesSealedContainmentLanes;
+        const exclusionIdentityMatches = usesContainmentLanes
+            ? true
+            : this.cachedSpatialExclusions === exclusions;
+        const cursorMatches = ignoreSpatialCursorForContainment
+            ? true
+            : this.cachedSpatialCursorY === cursorY;
+        const pageMatches = ignoreSpatialPageIndexForContainment
+            ? true
+            : this.cachedSpatialPageIndex === context.pageIndex;
         if (
             this.cachedSpatialBoxes
-            && this.cachedSpatialExclusions === exclusions
-            && this.cachedSpatialPageIndex === context.pageIndex
-            && this.cachedSpatialCursorY === cursorY
+            && exclusionIdentityMatches
+            && pageMatches
+            && cursorMatches
             && this.cachedSpatialLayoutBefore === layoutBefore
         ) {
             return;
@@ -271,6 +310,7 @@ export class FlowBoxPackager implements PackagerUnit {
             processor: this.processor,
             element: sourceElement,
             path,
+            sourceFlowBox: this.flowBox,
             availableWidth: containmentWidth,
             currentY: 0,
             layoutBefore,
@@ -293,9 +333,9 @@ export class FlowBoxPackager implements PackagerUnit {
             ...placed.box,
             y: Number(placed.box.y || 0)
         }];
-        this.cachedSpatialExclusions = exclusions;
-        this.cachedSpatialPageIndex = context.pageIndex;
-        this.cachedSpatialCursorY = cursorY;
+        this.cachedSpatialExclusions = usesContainmentLanes ? null : exclusions;
+        this.cachedSpatialPageIndex = usesSealedContainmentLanes ? null : context.pageIndex;
+        this.cachedSpatialCursorY = usesContainmentLanes ? null : cursorY;
         this.cachedSpatialLayoutBefore = layoutBefore;
         this.requiredHeight = placed.marginTop + placed.contentHeight + placed.marginBottom;
     }
@@ -405,4 +445,26 @@ function resolveContainmentHostWidth(element: any, fallbackWidth: number): numbe
     const authoredWidth = Number(style.width);
     if (Number.isFinite(authoredWidth) && authoredWidth > 0) return authoredWidth;
     return fallbackWidth;
+}
+
+function isSealedContainmentDirective(directive: any, flowBox: FlowBox): boolean {
+    if (!directive || directive.kind !== 'contain') return false;
+    if (directive.clip !== true) return false;
+    return flowBox.overflowPolicy === 'clip';
+}
+
+function resolveFixedContainmentHostHeight(flowBox: FlowBox): number {
+    const explicitHeight = Number(flowBox.heightOverride);
+    if (Number.isFinite(explicitHeight) && explicitHeight > 0) {
+        return Math.max(0, explicitHeight);
+    }
+
+    const sourceElement = flowBox._sourceElement;
+    const style = (sourceElement?.properties?.style || {}) as { height?: unknown };
+    const authoredHeight = Number(style.height);
+    if (Number.isFinite(authoredHeight) && authoredHeight > 0) {
+        return Math.max(0, authoredHeight);
+    }
+
+    return 0;
 }

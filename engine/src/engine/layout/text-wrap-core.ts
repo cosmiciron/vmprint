@@ -202,6 +202,7 @@ export function wrapTokenStream(params: {
     splitToGraphemes: (text: string, locale?: string) => string[];
     transformSegment: (segment: TextSegment, fontFamily?: string) => TextSegment;
     resolveRichFontInfo: (seg: TextSegment, defaultFontSize: number) => { font: any; fontSize: number };
+    shouldStopAfterLine?: (nextLineIndex: number) => boolean;
     onOverflowToken?: (durationMs: number) => void;
     onHyphenationAttempt?: (durationMs: number, succeeded: boolean) => void;
     onGraphemeFallback?: (durationMs: number, graphemeCount: number) => void;
@@ -214,6 +215,7 @@ export function wrapTokenStream(params: {
     let currentLineWidth = 0;
     // Cache the current line's width limit; recomputed only when a line is pushed.
     let cachedLineWidthLimit = params.getLineWidthLimit(params.maxWidth, 0, params.textIndent);
+    let stopRequested = false;
     const markCurrentLineForcedBreak = () => {
         if (currentLine.length === 0) return;
         const lastIdx = currentLine.length - 1;
@@ -227,6 +229,11 @@ export function wrapTokenStream(params: {
         finalLines.push(currentLine.length > 0 ? currentLine : [params.createEmptyMeasuredSegment(params.fallbackFont)]);
         currentLine = [];
         currentLineWidth = 0;
+        const nextLineIndex = finalLines.length;
+        if (params.shouldStopAfterLine?.(nextLineIndex)) {
+            stopRequested = true;
+            return;
+        }
         cachedLineWidthLimit = params.getLineWidthLimit(params.maxWidth, finalLines.length, params.textIndent);
     };
     const pushSegmentToLine = (segment: TextSegment, segmentWidth: number, allowMerge: boolean) => {
@@ -238,6 +245,7 @@ export function wrapTokenStream(params: {
         if (token.kind === 'newline') {
             markCurrentLineForcedBreak();
             pushCurrentLine();
+            if (stopRequested) break;
             continue;
         }
 
@@ -267,6 +275,7 @@ export function wrapTokenStream(params: {
                 pushSegmentToLine(hyphenated.head, hyphenated.headWidth, false);
                 if (currentLine.length > 0) {
                     pushCurrentLine();
+                    if (stopRequested) break;
                 }
 
                 if (fitsWidth(0, hyphenated.tailWidth, getCurrentLineWidthLimit())) {
@@ -304,9 +313,11 @@ export function wrapTokenStream(params: {
                 // than letting it widow at the start of the next line.
                 pushSegmentToLine(token.segment, segmentWidth, token.allowMerge);
                 pushCurrentLine();
+                if (stopRequested) break;
                 continue;
             }
             pushCurrentLine();
+            if (stopRequested) break;
         }
 
         if (token.segment.text.trim() === '' && token.segment.text !== '\n') {
@@ -342,6 +353,6 @@ export function wrapTokenStream(params: {
         if (params.onOverflowToken) params.onOverflowToken(performance.now() - overflowT0);
     }
 
-    if (currentLine.length > 0) pushCurrentLine();
+    if (!stopRequested && currentLine.length > 0) pushCurrentLine();
     return finalLines.length > 0 ? finalLines : [[params.createEmptyMeasuredSegment(params.fallbackFont)]];
 }

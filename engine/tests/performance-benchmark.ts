@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import * as engineModule from '../src/index.ts';
 import * as harnessModule from './harness/engine-harness.ts';
@@ -9,6 +10,8 @@ import { transformAstSource } from './harness/ast-transform';
 type BenchmarkMode = 'ast' | 'spatial-ir';
 type RuntimeMode = 'cold' | 'warm';
 type ProfileMode = 'off' | 'hot';
+type StressMode = 'off' | 'contained-paragraphs';
+type FixtureSet = 'regression' | 'performance-contained';
 type HotProfileMetricKey =
     | 'flowMaterializeMs'
     | 'flowResolveLinesMs'
@@ -32,6 +35,7 @@ type HotProfileSummary = Record<HotProfileMetricKey, number> & {
 
 type FixtureMetric = {
     file: string;
+    sourceFixture: string;
     mode: BenchmarkMode;
     pages: number;
     boxes: number;
@@ -125,6 +129,7 @@ const {
     LayoutUtils
 } = engine as any;
 const { MockContext, loadLocalFontManager } = harness as any;
+const PERFORMANCE_CONTAINED_FIXTURES_DIR = path.join(process.cwd(), 'tests', 'fixtures', 'performance-contained');
 
 function average(metrics: FixtureMetric[]): FixtureMetric[] {
     const byKey = new Map<string, FixtureMetric[]>();
@@ -142,6 +147,7 @@ function average(metrics: FixtureMetric[]): FixtureMetric[] {
             const sum = (selector: (item: FixtureMetric) => number) => bucket.reduce((acc, item) => acc + selector(item), 0);
             return {
                 file: sample.file,
+                sourceFixture: sample.sourceFixture,
                 mode: sample.mode,
                 pages: sample.pages,
                 boxes: sample.boxes,
@@ -290,9 +296,13 @@ async function measureFixture(
     runtime: any,
     file: string,
     fixturePath: string,
-    profileMode: ProfileMode
+    profileMode: ProfileMode,
+    stressMode: StressMode
 ): Promise<FixtureMetric> {
-    const rawDocument = parseDocumentSourceText(fs.readFileSync(fixturePath, 'utf8'), fixturePath);
+    const rawDocument = applyStressMode(
+        parseDocumentSourceText(fs.readFileSync(fixturePath, 'utf8'), fixturePath),
+        stressMode
+    );
     const document = resolveDocumentPaths(rawDocument, fixturePath);
     const spatialDocument = transformAstSource(rawDocument, fixturePath).spatialDocument;
     const config = toLayoutConfig(document, false);
@@ -312,7 +322,8 @@ async function measureFixture(
     const t3 = performance.now();
 
     return {
-        file,
+        file: formatFixtureLabel(file, stressMode),
+        sourceFixture: file,
         mode,
         pages: pages.length,
         boxes: pages.reduce((acc: number, page: { boxes: unknown[] }) => acc + page.boxes.length, 0),
@@ -330,16 +341,20 @@ async function run(): Promise<void> {
     const repeatArg = process.argv.find((arg) => arg.startsWith('--repeat='));
     const warmupArg = process.argv.find((arg) => arg.startsWith('--warmup='));
     const fixtureArg = process.argv.find((arg) => arg.startsWith('--fixture='));
+    const fixtureSetArg = process.argv.find((arg) => arg.startsWith('--fixture-set='));
     const modeArg = process.argv.find((arg) => arg.startsWith('--mode='));
     const presetArg = process.argv.find((arg) => arg.startsWith('--preset='));
     const runtimeArg = process.argv.find((arg) => arg.startsWith('--runtime='));
     const profileArg = process.argv.find((arg) => arg.startsWith('--profile='));
+    const stressArg = process.argv.find((arg) => arg.startsWith('--stress='));
     const repeatCount = Math.max(1, Number.parseInt((repeatArg?.split('=')[1] || '3'), 10) || 3);
     const warmupCount = Math.max(0, Number.parseInt((warmupArg?.split('=')[1] || '1'), 10) || 0);
     const fixtureFilter = (fixtureArg?.split('=')[1] || '').trim();
+    const fixtureSet = ((fixtureSetArg?.split('=')[1] || 'regression').trim().toLowerCase() || 'regression');
     const preset = (presetArg?.split('=')[1] || '').trim();
     const runtimeMode = ((runtimeArg?.split('=')[1] || 'cold').trim().toLowerCase() || 'cold');
     const profileMode = ((profileArg?.split('=')[1] || 'off').trim().toLowerCase() || 'off');
+    const stressMode = ((stressArg?.split('=')[1] || 'off').trim().toLowerCase() || 'off');
     const selectedModes = (modeArg?.split('=')[1] || 'ast,spatial-ir')
         .split(',')
         .map((entry) => entry.trim())
@@ -351,8 +366,18 @@ async function run(): Promise<void> {
     if (profileMode !== 'off' && profileMode !== 'hot') {
         throw new Error(`Invalid --profile=${profileMode}. Expected "off" or "hot".`);
     }
+    if (stressMode !== 'off' && stressMode !== 'contained-paragraphs') {
+        throw new Error(`Invalid --stress=${stressMode}. Expected "off" or "contained-paragraphs".`);
+    }
+    if (fixtureSet !== 'regression' && fixtureSet !== 'performance-contained') {
+        throw new Error(`Invalid --fixture-set=${fixtureSet}. Expected "regression" or "performance-contained".`);
+    }
 
-    const files = listAstFixtureNames()
+    const casesDir = fixtureSet === 'performance-contained'
+        ? PERFORMANCE_CONTAINED_FIXTURES_DIR
+        : undefined;
+
+    const files = listAstFixtureNames(casesDir)
         .sort((a, b) => a.localeCompare(b))
         .filter((file) => preset === 'watchlist' ? PERF_WATCHLIST.includes(file as typeof PERF_WATCHLIST[number]) : true)
         .filter((file) => !fixtureFilter || file.includes(fixtureFilter));
@@ -360,8 +385,8 @@ async function run(): Promise<void> {
     if (files.length === 0) {
         throw new Error(
             fixtureFilter
-                ? `No regression fixtures matched --fixture=${fixtureFilter}`
-                : 'No regression fixtures found for performance benchmark'
+                ? `No fixtures matched --fixture=${fixtureFilter} in fixture-set=${fixtureSet}`
+                : `No fixtures found for performance benchmark in fixture-set=${fixtureSet}`
         );
     }
 
@@ -374,10 +399,10 @@ async function run(): Promise<void> {
             ? createPrintEngineRuntime({ fontManager: new LocalFontManager() })
             : null;
         for (const file of files) {
-            const fixturePath = getAstFixturePath(file);
+            const fixturePath = getAstFixturePath(file, casesDir);
             for (const mode of modes) {
                 const runtime = sharedRuntime ?? createPrintEngineRuntime({ fontManager: new LocalFontManager() });
-                const metric = await measureFixture(mode, runtime, file, fixturePath, profileMode);
+                const metric = await measureFixture(mode, runtime, file, fixturePath, profileMode, stressMode);
                 if (!shouldRecord) continue;
                 rawMetrics.push(metric);
             }
@@ -442,8 +467,10 @@ async function run(): Promise<void> {
     console.log('=== VMPrint Engine Performance Benchmark ===');
     console.log(
         `runtimeMode=${runtimeMode}, profileMode=${profileMode}, warmupCount=${warmupCount}, repeatCount=${repeatCount}, fixtures=${files.length}, modes=${modes.join(',')}` +
+        `, fixtureSet=${fixtureSet}` +
         (fixtureFilter ? `, filter=${fixtureFilter}` : '') +
-        (preset ? `, preset=${preset}` : '')
+        (preset ? `, preset=${preset}` : '') +
+        (stressMode !== 'off' ? `, stress=${stressMode}` : '')
     );
     if (astRows.length > 0) {
         console.log('--- AST Path ---');
@@ -535,3 +562,26 @@ run().catch((error) => {
     console.error('[performance-benchmark] FAILED', error);
     process.exit(1);
 });
+
+function formatFixtureLabel(file: string, stressMode: StressMode): string {
+    return stressMode === 'off' ? file : `${file} [${stressMode}]`;
+}
+
+function applyStressMode(document: any, stressMode: StressMode): any {
+    if (stressMode === 'off') return document;
+    if (stressMode === 'contained-paragraphs') {
+        return amplifyContainedParagraphs(document);
+    }
+    return document;
+}
+
+function amplifyContainedParagraphs(document: any): any {
+    const clone = JSON.parse(JSON.stringify(document));
+    for (const element of clone.elements || []) {
+        if (element?.type !== 'p' || typeof element?.content !== 'string') continue;
+        const spatialDirective = element?.properties?.space ?? element?.properties?.spatialField;
+        if (spatialDirective?.kind !== 'contain') continue;
+        element.content = Array.from({ length: 8 }, () => element.content).join('\n\n');
+    }
+    return clone;
+}

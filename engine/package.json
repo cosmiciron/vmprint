@@ -62,6 +62,8 @@
     "test:shared-runtime-font-leak": "tsx --conditions tsx tests/shared-runtime-font-leak.spec.ts",
     "test:perf": "tsx --conditions tsx tests/performance-benchmark.ts",
     "test:perf-watch": "tsx --conditions tsx tests/performance-benchmark.ts --preset=watchlist --repeat=2 --warmup=1",
+    "test:perf-contained": "tsx --conditions tsx tests/performance-benchmark.ts --fixture=54-contained-shapes --mode=ast --profile=hot --repeat=3 --warmup=1 --runtime=warm --stress=contained-paragraphs",
+    "test:perf-contained-isolated": "tsx --conditions tsx tests/performance-benchmark.ts --fixture-set=performance-contained --mode=ast --profile=hot --repeat=3 --warmup=1 --runtime=warm",
     "tool:compact-assembly": "tsx --conditions tsx tools/compact-exclusion-assembly.ts",
     "tool:image-to-assembly": "tsx --conditions tsx tools/image-to-assembly.ts",
     "wip:cat": "tsx --conditions tsx ../documents/wip/cat-circle.ts",

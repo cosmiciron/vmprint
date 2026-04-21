@@ -604,7 +604,8 @@ function trySplitHostedRegionTextPlacement(
     availableHeight: number,
     availableWidth: number,
     activeFields: HostedRegionFieldState[],
-    continuationFields: HostedRegionFieldState[]
+    continuationFields: HostedRegionFieldState[],
+    options?: { continuationQualityChecks?: boolean }
 ): HostedRegionTextSplitPlacement | null {
     if (!placement) return null;
     const consumedTop = Math.max(0, placement.elementStartY - currentY);
@@ -739,6 +740,9 @@ function trySplitHostedRegionTextPlacement(
 
     let consumedLineCount = maxConsumedLineCount;
     let candidate = buildCandidate(consumedLineCount);
+    if (options?.continuationQualityChecks === false) {
+        return candidate;
+    }
     while (candidate) {
         const continuationPlacement = tryPlaceHostedRegionTextActor(
             candidate.continuationEntry.actor,
@@ -922,7 +926,8 @@ export function runHostedRegionSession(
 export function runHostedRegionSessionBounded(
     zone: HostedRegionActorQueue,
     contextBase: Omit<PackagerContext, 'pageIndex' | 'cursorY'>,
-    availableHeight: number
+    availableHeight: number,
+    options?: { continuationQualityChecks?: boolean }
 ): BoundedHostedRegionSessionResult {
     const zoneWidth = zone.rect.width;
     const zoneContextBase = { ...contextBase, pageWidth: zoneWidth, contentWidthOverride: zoneWidth };
@@ -1040,7 +1045,8 @@ export function runHostedRegionSessionBounded(
                         zoneWidth,
                         zoneContextBase,
                         pageIndex + 1
-                    )
+                    ),
+                    options
                 );
                 if (splitPlacement) {
                     placedBoxes.push(...annotateHostedActorBoxes(actor, splitPlacement.boxes));

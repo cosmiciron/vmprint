@@ -32,6 +32,7 @@ type SpatialFieldReflowOptions = {
     processor: LayoutProcessor;
     element: Element;
     path: number[];
+    sourceFlowBox?: FlowBox;
     availableWidth: number;
     currentY: number;
     layoutBefore: number;
@@ -57,7 +58,18 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const anyProcessor = options.processor as any;
     const session = anyProcessor.getCurrentLayoutSession?.() ?? null;
     const colliderStatsBefore = options.spatialMap.getStatsSnapshot();
-    const flowBox = anyProcessor.shapeElement(options.element, { path: options.path }) as FlowBox;
+    const sourceFlowBox = options.sourceFlowBox;
+    const flowBox = sourceFlowBox?._materializationMode === 'reflowable'
+        ? sourceFlowBox
+        : (() => {
+            // Contained/excluded text gets rewrapped against the spatial field below, so
+            // starting from a normalized reflowable flow box avoids paying for an initial
+            // rectangular line-wrap pass that would be thrown away immediately.
+            const normalizedFlowBlock = anyProcessor.normalizeFlowBlock?.(options.element, { path: options.path });
+            return normalizedFlowBlock
+                ? anyProcessor.shapeNormalizedFlowBlock(normalizedFlowBlock) as FlowBox
+                : anyProcessor.shapeElement(options.element, { path: options.path }) as FlowBox;
+        })();
     if (!flowBox || flowBox._materializationMode !== 'reflowable') return null;
 
     const style: ElementStyle = flowBox.style || {};
@@ -71,7 +83,7 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const nominalTextBandHeight = Math.max(1, fontSize);
     const nominalLeading = Math.max(0, uniformLH - nominalTextBandHeight);
     const containmentBandInset = nominalLeading / 2;
-    const richSegments = anyProcessor.getRichSegments(options.element, style);
+    const richSegments = resolveCachedSpatialRichSegments(anyProcessor, flowBox, options.element, style);
     if (!Array.isArray(richSegments) || richSegments.length === 0) return null;
 
     const font = anyProcessor.resolveMeasurementFontForStyle(style);
@@ -96,6 +108,12 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const laneMode = spatialDirective?.kind === 'contain' ? 'contain' : 'exclude';
     const minUsableSlotWidth = Math.max(0, Number(options.minUsableSlotWidth || 0));
     const rejectSubMinimumSlots = options.rejectSubMinimumSlots !== false && minUsableSlotWidth > 0;
+    const explicitContainedHostHeight = laneMode === 'contain'
+        ? resolveExplicitContainedHostHeight(flowBox, style, spatialDirective)
+        : null;
+    const maxVisibleContainedContentHeight = explicitContainedHostHeight !== null
+        ? Math.max(0, explicitContainedHostHeight - insetV)
+        : null;
 
     const marginTop = Math.max(0, flowBox.marginTop);
     const marginBottom = Math.max(0, flowBox.marginBottom);
@@ -132,10 +150,12 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         }
 
         let lineY = elementStartY + (physicalLineCount * uniformLH) + accumulatedYBonus;
-        while (options.spatialMap.hasTopBottomBlock(lineY, uniformLH, queryZIndex)) {
-            const clearY = options.spatialMap.topBottomClearY(lineY, queryZIndex);
-            accumulatedYBonus += clearY - lineY;
-            lineY = elementStartY + (physicalLineCount * uniformLH) + accumulatedYBonus;
+        if (laneMode !== 'contain') {
+            while (options.spatialMap.hasTopBottomBlock(lineY, uniformLH, queryZIndex)) {
+                const clearY = options.spatialMap.topBottomClearY(lineY, queryZIndex);
+                accumulatedYBonus += clearY - lineY;
+                lineY = elementStartY + (physicalLineCount * uniformLH) + accumulatedYBonus;
+            }
         }
 
         const yOffset = (physicalLineCount * uniformLH) + accumulatedYBonus;
@@ -238,12 +258,19 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         letterSpacing,
         textIndent,
         resolver,
-        lineLayoutOut
+        lineLayoutOut,
+        maxVisibleContainedContentHeight !== null
+            ? (_nextLineIndex: number, nextLineLayout: { width: number; xOffset: number; yOffset: number }) => {
+                return Number(nextLineLayout.yOffset || 0) >= maxVisibleContainedContentHeight;
+            }
+            : undefined
     );
     if (!Array.isArray(lines) || lines.length === 0) return null;
 
     const linesHeight = anyProcessor.calculateLineBlockHeight(lines, style, lineLayoutOut.yOffsets);
-    const contentHeight = linesHeight + insetV;
+    const contentHeight = explicitContainedHostHeight !== null
+        ? explicitContainedHostHeight
+        : (linesHeight + insetV);
     const colliderStatsAfter = options.spatialMap.getStatsSnapshot();
     recordColliderFieldProfileDelta(session, colliderStatsBefore, colliderStatsAfter);
     const clipProperties = laneMode === 'contain'
@@ -315,6 +342,32 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     };
 }
 
+function resolveCachedSpatialRichSegments(
+    processor: any,
+    flowBox: FlowBox,
+    element: Element,
+    style: ElementStyle
+): any[] {
+    const cacheHost = flowBox as FlowBox & {
+        _cachedSpatialRichSegments?: any[];
+        _cachedSpatialRichSegmentsStyle?: ElementStyle;
+        _cachedSpatialRichSegmentsElement?: Element;
+    };
+    if (
+        Array.isArray(cacheHost._cachedSpatialRichSegments)
+        && cacheHost._cachedSpatialRichSegmentsStyle === style
+        && cacheHost._cachedSpatialRichSegmentsElement === element
+    ) {
+        return cacheHost._cachedSpatialRichSegments;
+    }
+
+    const resolved = processor.getRichSegments(element, style);
+    cacheHost._cachedSpatialRichSegments = Array.isArray(resolved) ? resolved : [];
+    cacheHost._cachedSpatialRichSegmentsStyle = style;
+    cacheHost._cachedSpatialRichSegmentsElement = element;
+    return cacheHost._cachedSpatialRichSegments;
+}
+
 function resolveContainmentAnchor(interval: ContainmentInterval): 'left' | 'right' | 'center' {
     const touchesLeft = interval.touchesLeft === true;
     const touchesRight = interval.touchesRight === true;
@@ -322,6 +375,33 @@ function resolveContainmentAnchor(interval: ContainmentInterval): 'left' | 'righ
     if (touchesRight && !touchesLeft) return 'right';
     return 'center';
 }
+
+function resolveExplicitContainedHostHeight(
+    flowBox: FlowBox,
+    style: ElementStyle,
+    spatialDirective: { kind?: string; clip?: unknown } | undefined
+): number | null {
+    if (!spatialDirective || spatialDirective.kind !== 'contain' || spatialDirective.clip !== true) {
+        return null;
+    }
+    if (flowBox.overflowPolicy !== 'clip') {
+        return null;
+    }
+
+    const explicitHeight = Number(flowBox.heightOverride);
+    if (Number.isFinite(explicitHeight) && explicitHeight > 0) {
+        return Math.max(0, explicitHeight);
+    }
+
+    const authoredHeight = Number(style.height);
+    if (Number.isFinite(authoredHeight) && authoredHeight > 0) {
+        return Math.max(0, authoredHeight);
+    }
+
+    return null;
+}
+
+
 
 function measureRichLineWidth(line: RichLine | undefined): number {
     if (!Array.isArray(line)) return 0;

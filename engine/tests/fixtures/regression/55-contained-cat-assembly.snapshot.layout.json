@@ -728,76 +728,13 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ],
-          [
-            {
-              "text": "through the torso, recover across",
-              "width": 154.075195,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "the body shelf, and then respect ",
-              "width": 152.352539,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "the tail-side recovery without ",
-              "width": 135.977051,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "losing the sense that the ",
-              "width": 116.74585,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "paragraph is inhabiting one ",
-              "width": 129.593994,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "continuous room. That is the test",
-              "width": 152.326904,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "here.",
-              "width": 23.932617,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
           ]
         ]
       },
       {
         "type": "p",
         "x": 44,
-        "y": 412.283594,
+        "y": 311.178125,
         "w": 380,
         "h": 62.35625,
         "lines": [

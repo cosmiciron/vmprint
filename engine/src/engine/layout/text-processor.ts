@@ -687,7 +687,11 @@ export class TextProcessor extends FontProcessor {
         letterSpacing: number = 0,
         textIndent: number = 0,
         lineLayoutResolver?: (lineIndex: number) => { width: number; xOffset: number; yOffset?: number },
-        lineLayoutOut?: { widths: number[]; offsets: number[]; yOffsets: number[] }
+        lineLayoutOut?: { widths: number[]; offsets: number[]; yOffsets: number[] },
+        shouldStopAfterLine?: (
+            nextLineIndex: number,
+            nextLineLayout: { width: number; xOffset: number; yOffset: number }
+        ) => boolean
     ): RichLine[] {
         if (segments.length === 0) return [[this.createEmptyMeasuredSegment(font)]];
         const flattenedSegments = flattenSegmentsByHardBreak(segments);
@@ -799,6 +803,9 @@ export class TextProcessor extends FontProcessor {
             splitToGraphemes: (value, locale) => splitToGraphemes(value, locale, (fallback) => this.getGraphemeClusters(fallback)),
             transformSegment: (segment) => segment,
             resolveRichFontInfo: (seg, defaultSize) => resolveCachedRichFontInfo(seg, defaultSize),
+            shouldStopAfterLine: shouldStopAfterLine
+                ? (nextLineIndex) => shouldStopAfterLine(nextLineIndex, resolveLineLayout(nextLineIndex))
+                : undefined,
             onOverflowToken: session ? (durationMs) => {
                 session.recordProfile?.('wrapOverflowTokenCalls', 1);
                 session.recordProfile?.('wrapOverflowTokenMs', durationMs);

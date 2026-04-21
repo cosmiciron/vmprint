@@ -427,11 +427,26 @@ export class HostedRegionPackager implements PackagerUnit {
     }
 
     private materializeBounded(availableWidth: number, availableHeight: number, context: PackagerContext): void {
+        this.materializeBoundedWithOptions(availableWidth, availableHeight, context, {
+            continuationQualityChecks: true,
+            cacheAsLookahead: false
+        });
+    }
+
+    private materializeBoundedWithOptions(
+        availableWidth: number,
+        availableHeight: number,
+        context: PackagerContext,
+        options: {
+            continuationQualityChecks: boolean;
+            cacheAsLookahead: boolean;
+        }
+    ): void {
         const simulationTick = resolveMaterializationTick(context);
         if (
             this.boundedBoxes !== null
             && this.lastAvailableWidth === availableWidth
-            && this.lastAvailableHeight === availableHeight
+            && this.lastAvailableHeight === (options.cacheAsLookahead ? Number.POSITIVE_INFINITY : availableHeight)
             && areMaterializationTicksEqual(this.lastSimulationTick, simulationTick)
         ) {
             return;
@@ -453,7 +468,14 @@ export class HostedRegionPackager implements PackagerUnit {
                 this.actorId,
                 this.sourceId,
                 availableHeight,
-                runHostedRegionSessionBounded,
+                (zone, contextBase, zoneVisibleHeight) => runHostedRegionSessionBounded(
+                    zone,
+                    contextBase,
+                    zoneVisibleHeight,
+                    {
+                        continuationQualityChecks: options.continuationQualityChecks
+                    }
+                ),
                 contextBase
             );
         this.marginTopVal = this.fragmentMarginTop;
@@ -467,7 +489,7 @@ export class HostedRegionPackager implements PackagerUnit {
         }
         this.totalRegionHeight = totalHeight;
         this.lastAvailableWidth = availableWidth;
-        this.lastAvailableHeight = availableHeight;
+        this.lastAvailableHeight = options.cacheAsLookahead ? Number.POSITIVE_INFINITY : availableHeight;
         this.lastSimulationTick = simulationTick;
     }
 
@@ -520,6 +542,19 @@ export class HostedRegionPackager implements PackagerUnit {
         this.ensureRegionQueues(availableWidth);
         this.syncHostedActors(context.actorIndex);
         this.materialize(availableWidth, availableHeight, context);
+    }
+
+    prepareLookahead(availableWidth: number, availableHeight: number, context: PackagerContext): void {
+        this.ensureRegionQueues(availableWidth);
+        this.syncHostedActors(context.actorIndex);
+        if (!this.usesSpanningContinuation()) {
+            this.materializeMoveWhole(availableWidth, context);
+            return;
+        }
+        this.materializeBoundedWithOptions(availableWidth, availableHeight, context, {
+            continuationQualityChecks: false,
+            cacheAsLookahead: true
+        });
     }
 
     getPlacementPreference(fullAvailableWidth: number, _context: PackagerContext): PackagerPlacementPreference {

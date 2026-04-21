@@ -1,0 +1,259 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 468,
+      "height": 648
+    },
+    "margins": {
+      "top": 40,
+      "right": 44,
+      "bottom": 40,
+      "left": 44
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true,
+    "microLanePolicy": "balanced"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "p": {
+      "allowLineSplit": true,
+      "marginBottom": 18
+    }
+  },
+  "elements": [
+    {
+      "type": "p",
+      "content": "The contained compositor should behave like a self-sufficient room settlement pass rather than a rectangular paragraph that happens to be clipped later. The text should narrow at the crown, widen through the torso, and contract again as the room closes.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "circle",
+          "clip": true
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#eef6ff",
+          "borderWidth": 1,
+          "borderColor": "#9ab7d6",
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Because this sample exists only for performance evaluation, the important thing is not literary variety but a stable repeated workload that exercises the same lane discovery, interval queries, and line wrapping over and over again inside a sealed local host.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "circle",
+          "clip": true
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#eef6ff",
+          "borderWidth": 1,
+          "borderColor": "#9ab7d6",
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The host itself belongs to ordinary document flow, but the interior composition belongs to the room. That boundary is what we are timing here, and it is why paragraph-level overhead is worth measuring directly rather than assuming it is negligible.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "circle",
+          "clip": true
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#eef6ff",
+          "borderWidth": 1,
+          "borderColor": "#9ab7d6",
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The contained compositor should behave like a self-sufficient room settlement pass rather than a rectangular paragraph that happens to be clipped later. The text should narrow at the crown, widen through the torso, and contract again as the room closes.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "polygon",
+          "clip": true,
+          "path": "M28,0 L188,0 L188,34 L140,34 L140,76 L188,76 L188,126 L120,126 L120,176 L188,176 L188,220 L28,220 L0,112 Z"
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#ffd9b8",
+          "borderWidth": 0,
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Because this sample exists only for performance evaluation, the important thing is not literary variety but a stable repeated workload that exercises the same lane discovery, interval queries, and line wrapping over and over again inside a sealed local host.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "polygon",
+          "clip": true,
+          "path": "M28,0 L188,0 L188,34 L140,34 L140,76 L188,76 L188,126 L120,126 L120,176 L188,176 L188,220 L28,220 L0,112 Z"
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#ffd9b8",
+          "borderWidth": 0,
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The host itself belongs to ordinary document flow, but the interior composition belongs to the room. That boundary is what we are timing here, and it is why paragraph-level overhead is worth measuring directly rather than assuming it is negligible.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "polygon",
+          "clip": true,
+          "path": "M28,0 L188,0 L188,34 L140,34 L140,76 L188,76 L188,126 L120,126 L120,176 L188,176 L188,220 L28,220 L0,112 Z"
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#ffd9b8",
+          "borderWidth": 0,
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The contained compositor should behave like a self-sufficient room settlement pass rather than a rectangular paragraph that happens to be clipped later. The text should narrow at the crown, widen through the torso, and contract again as the room closes.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "circle",
+          "clip": true
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#dff3da",
+          "borderWidth": 1,
+          "borderColor": "#88ad84",
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "textAlign": "justify",
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Because this sample exists only for performance evaluation, the important thing is not literary variety but a stable repeated workload that exercises the same lane discovery, interval queries, and line wrapping over and over again inside a sealed local host.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "circle",
+          "clip": true
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#dff3da",
+          "borderWidth": 1,
+          "borderColor": "#88ad84",
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "textAlign": "justify",
+          "marginBottom": 18
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "The host itself belongs to ordinary document flow, but the interior composition belongs to the room. That boundary is what we are timing here, and it is why paragraph-level overhead is worth measuring directly rather than assuming it is negligible.",
+      "properties": {
+        "space": {
+          "kind": "contain",
+          "shape": "circle",
+          "clip": true
+        },
+        "style": {
+          "width": 220,
+          "height": 220,
+          "paddingTop": 6,
+          "paddingRight": 6,
+          "paddingBottom": 6,
+          "paddingLeft": 6,
+          "backgroundColor": "#dff3da",
+          "borderWidth": 1,
+          "borderColor": "#88ad84",
+          "fontSize": 10.5,
+          "lineHeight": 1.25,
+          "textAlign": "justify",
+          "marginBottom": 18
+        }
+      }
+    }
+  ]
+}
