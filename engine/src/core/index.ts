@@ -6,7 +6,6 @@ export * from '../engine/interaction-model';
 export * from '../engine/spatial-document';
 export * from '../engine/runtime';
 export * from '../engine/renderer';
-export * from '../engine/base-renderer';
 export * from '../engine/context-renderer';
 export * from '../engine/text-delegate-load-error';
 export * from '../engine/layout/track-sizing';

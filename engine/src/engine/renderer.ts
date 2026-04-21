@@ -1,2 +1,1 @@
-export { BaseRenderer } from './base-renderer';
-export { ContextRenderer } from './context-renderer';
+export { ContextRenderer, ContextRenderer as Renderer } from './context-renderer';
