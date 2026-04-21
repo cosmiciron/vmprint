@@ -32,6 +32,47 @@ function tokenizeSimpleLatinSegment(text: string): string[] {
     return text.match(/\s+|[^\s]+/g) ?? [];
 }
 
+function sliceSegmentByOffsets(
+    segment: TextSegment,
+    startOffset: number,
+    endOffset: number,
+    text: string,
+    fontFamily?: string
+): TextSegment {
+    const next: TextSegment = {
+        ...segment,
+        text,
+        ...(fontFamily ? { fontFamily } : {})
+    };
+
+    if (Number.isFinite(Number(segment.sourceStart))) {
+        const absoluteStart = Number(segment.sourceStart) + Math.max(0, startOffset);
+        next.sourceStart = absoluteStart;
+        next.sourceEnd = absoluteStart + Math.max(0, endOffset - startOffset);
+    }
+
+    return next;
+}
+
+function assignSequentialSourceRange(
+    segment: TextSegment,
+    cursor: { value: number },
+    sourceText: string
+): TextSegment {
+    if (!Number.isFinite(Number(segment.sourceStart))) {
+        return segment;
+    }
+
+    const sourceStart = cursor.value;
+    const sourceEnd = sourceStart + sourceText.length;
+    cursor.value = sourceEnd;
+    return {
+        ...segment,
+        sourceStart,
+        sourceEnd
+    };
+}
+
 export function buildRichWrapTokens(params: {
     flattenedSegments: TextSegment[];
     defaultFontSize: number;
@@ -87,11 +128,15 @@ export function buildRichWrapTokens(params: {
         if (canUseSimpleLatinPath) {
             const simpleSubSegments = tokenizeSimpleLatinSegment(seg.text);
             if (simpleSubSegments.length > 0) {
+                let simpleOffset = 0;
                 for (const segment of simpleSubSegments) {
-                    const richSubSeg = params.transformSegment({
-                        ...seg,
-                        text: segment
-                    }, seg.fontFamily);
+                    const startOffset = simpleOffset;
+                    const endOffset = startOffset + segment.length;
+                    const richSubSeg = params.transformSegment(
+                        sliceSegmentByOffsets(seg, startOffset, endOffset, segment, seg.fontFamily),
+                        seg.fontFamily
+                    );
+                    simpleOffset = endOffset;
                     const resolved = params.resolveRichFontInfo(richSubSeg, params.defaultFontSize);
                     tokens.push({
                         kind: 'segment',
@@ -109,27 +154,66 @@ export function buildRichWrapTokens(params: {
         }
 
         const scriptSegments = params.segmentTextByFont(seg.text, seg.fontFamily, locale);
+        let scriptOffset = 0;
         for (const scriptSeg of scriptSegments) {
+            const scriptStartOffset = scriptOffset;
+            const scriptEndOffset = scriptStartOffset + scriptSeg.text.length;
+            const scriptBaseSeg = sliceSegmentByOffsets(
+                seg,
+                scriptStartOffset,
+                scriptEndOffset,
+                scriptSeg.text,
+                scriptSeg.fontName || seg.fontFamily
+            );
+            scriptOffset = scriptEndOffset;
             const bidiT0 = params.onBidiSplit ? performance.now() : 0;
             const bidiRuns = params.splitByBidiDirection(scriptSeg.text, params.baseDirection);
             if (params.onBidiSplit) params.onBidiSplit(performance.now() - bidiT0);
+            let bidiOffset = 0;
             for (const bidiRun of bidiRuns) {
+                const bidiStartOffset = bidiOffset;
+                const bidiEndOffset = bidiStartOffset + bidiRun.text.length;
+                const bidiBaseSeg = sliceSegmentByOffsets(
+                    scriptBaseSeg,
+                    bidiStartOffset,
+                    bidiEndOffset,
+                    bidiRun.text,
+                    scriptBaseSeg.fontFamily
+                );
+                bidiOffset = bidiEndOffset;
                 const scriptT0 = params.onScriptSplit ? performance.now() : 0;
                 const scriptRuns = params.splitByScriptType(bidiRun.text);
                 if (params.onScriptSplit) params.onScriptSplit(performance.now() - scriptT0);
 
+                let runOffset = 0;
                 for (const run of scriptRuns) {
+                    const runStartOffset = runOffset;
+                    const runEndOffset = runStartOffset + run.text.length;
+                    const runBaseSeg = sliceSegmentByOffsets(
+                        bidiBaseSeg,
+                        runStartOffset,
+                        runEndOffset,
+                        run.text,
+                        bidiBaseSeg.fontFamily
+                    );
+                    runOffset = runEndOffset;
                     const segmenter = params.makeWordSegmenter(locale, run.isCJK);
                     const wordT0 = params.onWordSegment ? performance.now() : 0;
                     const subSegments = segmentTextRun(run.text, segmenter);
                     if (params.onWordSegment) params.onWordSegment(performance.now() - wordT0);
 
+                    let subOffset = 0;
                     for (const segment of subSegments) {
-                        const rawSubSeg = {
-                            ...seg,
-                            text: segment,
-                            fontFamily: scriptSeg.fontName || seg.fontFamily
-                        };
+                        const subStartOffset = subOffset;
+                        const subEndOffset = subStartOffset + segment.length;
+                        const rawSubSeg = sliceSegmentByOffsets(
+                            runBaseSeg,
+                            subStartOffset,
+                            subEndOffset,
+                            segment,
+                            scriptSeg.fontName || seg.fontFamily
+                        );
+                        subOffset = subEndOffset;
 
                         const richSubSeg = params.transformSegment(rawSubSeg, rawSubSeg.fontFamily);
                         const textValue = richSubSeg.text || '';
@@ -284,8 +368,20 @@ export function wrapTokenStream(params: {
                 } else {
                     const graphemeT0 = params.onGraphemeFallback ? performance.now() : 0;
                     const graphemes = params.splitToGraphemes(hyphenated.tail.text, token.locale);
+                    const graphemeCursor = {
+                        value: Number.isFinite(Number(hyphenated.tail.sourceStart))
+                            ? Number(hyphenated.tail.sourceStart)
+                            : 0
+                    };
                     for (const grapheme of graphemes) {
-                        const graphemeSegment = params.transformSegment({ ...hyphenated.tail, text: grapheme }, hyphenated.tail.fontFamily);
+                        const graphemeSegment = params.transformSegment(
+                            assignSequentialSourceRange(
+                                { ...hyphenated.tail, text: grapheme },
+                                graphemeCursor,
+                                grapheme
+                            ),
+                            hyphenated.tail.fontFamily
+                        );
                         const graphemeFont = params.resolveRichFontInfo(graphemeSegment, token.fontSize);
                         const graphemeWidth = params.measureText(
                             graphemeSegment.text,
@@ -329,8 +425,20 @@ export function wrapTokenStream(params: {
         if (segmentWidth > getCurrentLineWidthLimit()) {
             const graphemeT0 = params.onGraphemeFallback ? performance.now() : 0;
             const graphemes = params.splitToGraphemes(token.segment.text, token.locale);
+            const graphemeCursor = {
+                value: Number.isFinite(Number(token.segment.sourceStart))
+                    ? Number(token.segment.sourceStart)
+                    : 0
+            };
             for (const grapheme of graphemes) {
-                const graphemeSegment = params.transformSegment({ ...token.segment, text: grapheme }, token.segment.fontFamily);
+                const graphemeSegment = params.transformSegment(
+                    assignSequentialSourceRange(
+                        { ...token.segment, text: grapheme },
+                        graphemeCursor,
+                        grapheme
+                    ),
+                    token.segment.fontFamily
+                );
                 const graphemeFont = params.resolveRichFontInfo(graphemeSegment, token.fontSize);
                 const graphemeWidth = params.measureText(
                     graphemeSegment.text,

@@ -34,6 +34,8 @@ export type ShapedGlyph = {
 
 export type TextSegment = {
     text: string,
+    sourceStart?: number,
+    sourceEnd?: number,
     fontFamily?: string,
     linkTarget?: string,
     style?: Record<string, any>,

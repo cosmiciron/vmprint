@@ -75,6 +75,23 @@ export function getRichSegments(
     },
     inheritedLinkTarget?: string
 ): TextSegment[] {
+    const startingOffset = Number.isFinite(Number(element.properties?._sourceSliceStart))
+        ? Math.max(0, Number(element.properties._sourceSliceStart))
+        : 0;
+    const cursor = { value: startingOffset };
+    return getRichSegmentsAtOffset(element, inheritedStyle, params, cursor, inheritedLinkTarget);
+}
+
+function getRichSegmentsAtOffset(
+    element: Element,
+    inheritedStyle: any,
+    params: {
+        transformContent: (text: string, elementType: ElementType) => string;
+        resolveStyleForType: (type: string) => Record<string, any>;
+    },
+    cursor: { value: number },
+    inheritedLinkTarget?: string
+): TextSegment[] {
     const segments: TextSegment[] = [];
     const elementType = element.type as ElementType;
     const resolvedTypeStyle = params.resolveStyleForType(element.type) || {};
@@ -90,8 +107,13 @@ export function getRichSegments(
     if (isInlineImageElement(element)) {
         const imagePayload = element.image;
         if (!imagePayload) return segments;
+        const sourceStart = cursor.value;
+        const sourceEnd = sourceStart + INLINE_OBJECT_CHAR.length;
+        cursor.value = sourceEnd;
         segments.push({
             text: INLINE_OBJECT_CHAR,
+            sourceStart,
+            sourceEnd,
             style: currentStyle,
             fontFamily: currentStyle.fontFamily,
             ...(currentLinkTarget ? { linkTarget: currentLinkTarget } : {}),
@@ -104,8 +126,13 @@ export function getRichSegments(
     }
 
     if (isInlineBoxElement(element)) {
+        const sourceStart = cursor.value;
+        const sourceEnd = sourceStart + INLINE_OBJECT_CHAR.length;
+        cursor.value = sourceEnd;
         segments.push({
             text: INLINE_OBJECT_CHAR,
+            sourceStart,
+            sourceEnd,
             style: currentStyle,
             fontFamily: currentStyle.fontFamily,
             ...(currentLinkTarget ? { linkTarget: currentLinkTarget } : {}),
@@ -118,8 +145,14 @@ export function getRichSegments(
     }
 
     if (element.type === 'text' && element.content !== undefined && (!element.children || element.children.length === 0)) {
+        const text = params.transformContent(element.content, elementType);
+        const sourceStart = cursor.value;
+        const sourceEnd = sourceStart + text.length;
+        cursor.value = sourceEnd;
         segments.push({
-            text: params.transformContent(element.content, elementType),
+            text,
+            sourceStart,
+            sourceEnd,
             style: currentStyle,
             fontFamily: currentStyle.fontFamily,
             ...(currentLinkTarget ? { linkTarget: currentLinkTarget } : {})
@@ -129,11 +162,17 @@ export function getRichSegments(
 
     if (element.children && element.children.length > 0) {
         for (const child of element.children) {
-            segments.push(...getRichSegments(child, currentStyle, params, currentLinkTarget));
+            segments.push(...getRichSegmentsAtOffset(child, currentStyle, params, cursor, currentLinkTarget));
         }
     } else if (element.content !== undefined) {
+        const text = params.transformContent(element.content, elementType);
+        const sourceStart = cursor.value;
+        const sourceEnd = sourceStart + text.length;
+        cursor.value = sourceEnd;
         segments.push({
-            text: params.transformContent(element.content, elementType),
+            text,
+            sourceStart,
+            sourceEnd,
             style: currentStyle,
             fontFamily: currentStyle.fontFamily,
             ...(currentLinkTarget ? { linkTarget: currentLinkTarget } : {})
@@ -142,4 +181,3 @@ export function getRichSegments(
 
     return segments;
 }
-

@@ -84,6 +84,16 @@ export function appendSegmentToLine(
     newLast.width = (newLast.width || 0) + segmentWidth;
     const lastWidthOffset = (newLast.width || 0) - segmentWidth;
     newLast.text += nextSegment.text;
+    if (Number.isFinite(Number(last.sourceStart)) || Number.isFinite(Number(nextSegment.sourceStart))) {
+        newLast.sourceStart = Number.isFinite(Number(last.sourceStart))
+            ? Number(last.sourceStart)
+            : Number(nextSegment.sourceStart);
+    }
+    if (Number.isFinite(Number(nextSegment.sourceEnd)) || Number.isFinite(Number(last.sourceEnd))) {
+        newLast.sourceEnd = Number.isFinite(Number(nextSegment.sourceEnd))
+            ? Number(nextSegment.sourceEnd)
+            : Number(last.sourceEnd);
+    }
 
     if (newLast.glyphs && nextSegment.glyphs) {
         // Detach from the measurement cache's shared array reference before mutating.
@@ -106,15 +116,28 @@ export function flattenSegmentsByHardBreak(segments: TextSegment[]): TextSegment
     const flattened: TextSegment[] = [];
     for (const seg of segments) {
         const parts = seg.text.split('\n');
+        let localCursor = Number.isFinite(Number(seg.sourceStart)) ? Number(seg.sourceStart) : 0;
+        const hasSourceRange = Number.isFinite(Number(seg.sourceStart));
         parts.forEach((part, idx) => {
+            const partStart = localCursor;
+            const partEnd = partStart + part.length;
             if (part || idx < parts.length - 1) {
-                flattened.push({ ...seg, text: part });
+                flattened.push({
+                    ...seg,
+                    text: part,
+                    ...(hasSourceRange ? { sourceStart: partStart, sourceEnd: partEnd } : {})
+                });
             }
+            localCursor = partEnd;
             if (idx < parts.length - 1) {
-                flattened.push({ text: '\n', style: {} } as any);
+                flattened.push({
+                    text: '\n',
+                    style: {},
+                    ...(hasSourceRange ? { sourceStart: localCursor, sourceEnd: localCursor + 1 } : {})
+                } as any);
+                localCursor += 1;
             }
         });
     }
     return flattened;
 }
-

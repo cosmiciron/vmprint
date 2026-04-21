@@ -183,6 +183,16 @@ export function tryHyphenateSegmentToFit(params: {
         if (measuredHead.width > params.availableWidth + LAYOUT_DEFAULTS.wrapTolerance) continue;
 
         const measuredTail = params.cloneMeasuredSegment(params.seg, tailText, params.font, params.fontSize, params.letterSpacing);
+        if (Number.isFinite(Number(params.seg.sourceStart))) {
+            const sourceStart = Number(params.seg.sourceStart);
+            const consumedLength = cleanClusters.slice(0, idx).join('').length;
+            measuredHead.seg.sourceStart = sourceStart;
+            measuredHead.seg.sourceEnd = sourceStart + consumedLength;
+            measuredTail.seg.sourceStart = sourceStart + consumedLength;
+            measuredTail.seg.sourceEnd = Number.isFinite(Number(params.seg.sourceEnd))
+                ? Number(params.seg.sourceEnd)
+                : sourceStart + clean.length;
+        }
         return {
             head: measuredHead.seg,
             headWidth: measuredHead.width,
@@ -193,5 +203,4 @@ export function tryHyphenateSegmentToFit(params: {
 
     return null;
 }
-
 
