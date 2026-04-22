@@ -52,7 +52,7 @@ import { resolveDocumentMicroLanePolicy, resolveMinUsableLaneWidth } from '../mi
 import { normalizeStoryElement, type NormalizedStoryChild } from '../normalized-story';
 import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { buildContainedContinueFragment, resolveContainedContentSummary, resolveContainedVisibleHeight } from './contained-overflow-fragments';
-import { buildContainedSpatialMap } from './contained-field-geometry';
+import { buildContainedSpatialMap, resolveContainedHostWidth } from './contained-field-geometry';
 import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
