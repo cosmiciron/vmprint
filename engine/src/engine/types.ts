@@ -380,6 +380,7 @@ export interface StoryExclusionAssembly {
 export interface SpatialFieldDirective {
     kind?: 'exclude' | 'contain';
     clip?: boolean;
+    overflow?: 'continue' | 'stash';
     x?: number;
     y?: number;
     align?: StoryFloatAlign;

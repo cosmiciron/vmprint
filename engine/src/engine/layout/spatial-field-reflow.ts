@@ -2,8 +2,9 @@ import type { Box, Element, ElementStyle, RichLine } from '../types';
 import type { LayoutProcessor } from './layout-core';
 import type { FlowBox } from './layout-core-types';
 import { LayoutUtils } from './layout-utils';
+import type { ResolvedMicroLanePolicy } from './micro-lane-policy';
 import type { SpatialMap } from './packagers/spatial-map';
-import { SpatialFieldGeometryCapability } from './packagers/spatial-field-capability';
+import { resolveSpatialFieldOverflow } from './packagers/spatial-field-capability';
 
 export type SpatialFieldTextPlacement = {
     flowBox: FlowBox;
@@ -28,6 +29,13 @@ type ContainmentInterval = {
     touchesRight?: boolean;
 };
 
+type ResolvedContainmentSlot = {
+    width: number;
+    xOffset: number;
+    yOffset: number;
+    anchor?: 'left' | 'right' | 'center';
+};
+
 type SpatialFieldReflowOptions = {
     processor: LayoutProcessor;
     element: Element;
@@ -45,6 +53,7 @@ type SpatialFieldReflowOptions = {
     clearTopBeforeStart?: boolean;
     minUsableSlotWidth?: number;
     rejectSubMinimumSlots?: boolean;
+    microLanePolicy?: ResolvedMicroLanePolicy;
 };
 
 /**
@@ -83,12 +92,11 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const nominalTextBandHeight = Math.max(1, fontSize);
     const nominalLeading = Math.max(0, uniformLH - nominalTextBandHeight);
     const containmentBandInset = nominalLeading / 2;
-    const richSegments = resolveCachedSpatialRichSegments(anyProcessor, flowBox, options.element, style);
-    if (!Array.isArray(richSegments) || richSegments.length === 0) return null;
-
     const font = anyProcessor.resolveMeasurementFontForStyle(style);
     const letterSpacing = Number(style.letterSpacing || 0);
     const textIndent = Number(style.textIndent || 0);
+    const richSegments = resolveCachedSpatialRichSegments(anyProcessor, flowBox, options.element, style);
+    if (!Array.isArray(richSegments) || richSegments.length === 0) return null;
     const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? 0);
     const paddingRight = LayoutUtils.validateUnit(style.paddingRight ?? style.padding ?? 0);
     const paddingTop = LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? 0);
@@ -106,6 +114,7 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const contentWidth = Math.max(0, options.availableWidth - insetH);
     const spatialDirective = (options.element.properties?.space ?? options.element.properties?.spatialField) as { kind?: string } | undefined;
     const laneMode = spatialDirective?.kind === 'contain' ? 'contain' : 'exclude';
+    const expressiveContainment = laneMode === 'contain' && options.microLanePolicy !== 'typography';
     const minUsableSlotWidth = Math.max(0, Number(options.minUsableSlotWidth || 0));
     const rejectSubMinimumSlots = options.rejectSubMinimumSlots !== false && minUsableSlotWidth > 0;
     const explicitContainedHostHeight = laneMode === 'contain'
@@ -130,8 +139,10 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         yOffset: number;
         anchor?: 'left' | 'right' | 'center';
     }> = [];
+    let pendingSlotIndex = 0;
+    let previousContainmentSlot: ResolvedContainmentSlot | null = null;
     const lineLayoutOut: { widths: number[]; offsets: number[]; yOffsets: number[] } = {
-        widths: [],
+        widths: [], 
         offsets: [],
         yOffsets: []
     };
@@ -139,14 +150,18 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const selectedSlotXOffsets: number[] = [];
     const selectedContainmentAnchors: Array<'left' | 'right' | 'center'> = [];
     const resolver = (): { width: number; xOffset: number; yOffset: number } => {
-        if (pendingSlots.length > 0) {
-            const slot = pendingSlots.shift()!;
+        if (pendingSlotIndex < pendingSlots.length) {
+            const slot = pendingSlots[pendingSlotIndex++]!;
             lineSlotWidths.push(slot.width);
             if (laneMode === 'contain') {
                 selectedSlotXOffsets.push(slot.xOffset);
                 selectedContainmentAnchors.push(slot.anchor ?? 'center');
             }
             return slot;
+        }
+        if (pendingSlotIndex > 0) {
+            pendingSlots.length = 0;
+            pendingSlotIndex = 0;
         }
 
         let lineY = elementStartY + (physicalLineCount * uniformLH) + accumulatedYBonus;
@@ -170,6 +185,9 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         const rawIntervals = laneMode === 'contain'
             ? options.spatialMap.getOccupiedIntervals(geometryQueryY, geometryQueryHeight, options.availableWidth, queryOptions)
             : options.spatialMap.getAvailableIntervals(lineY, uniformLH, options.availableWidth, queryOptions);
+        const containmentInkGuardX = laneMode === 'contain'
+            ? resolveContainmentInkGuard(fontSize, letterSpacing, rawIntervals)
+            : 0;
         const normalizedIntervals = laneMode === 'contain'
             ? rawIntervals.map((interval): ContainmentInterval => {
                 const intervalLeft = Number(interval.x || 0);
@@ -178,9 +196,11 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
                 const contentRight = Math.max(contentLeft, options.availableWidth - insetRight);
                 const clippedLeft = Math.max(contentLeft, intervalLeft);
                 const clippedRight = Math.min(contentRight, intervalRight);
+                const guardedLeft = Math.min(clippedRight, clippedLeft + containmentInkGuardX);
+                const guardedRight = Math.max(guardedLeft, clippedRight - containmentInkGuardX);
                 return {
-                    x: clippedLeft - insetLeft,
-                    w: Math.max(0, clippedRight - clippedLeft),
+                    x: guardedLeft - insetLeft,
+                    w: Math.max(0, guardedRight - guardedLeft),
                     touchesLeft: clippedLeft <= contentLeft + 0.5,
                     touchesRight: clippedRight >= contentRight - 0.5
                 };
@@ -222,8 +242,6 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
 
         const resolvedSlots = laneMode === 'contain'
             ? (usableIntervals as ContainmentInterval[])
-                .slice()
-                .sort((a, b) => Number(a.x || 0) - Number(b.x || 0))
                 .map((interval) => ({
                     width: Math.max(0, interval.w),
                     xOffset: interval.x,
@@ -236,14 +254,31 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
                 yOffset
             }));
 
-        for (let i = 1; i < resolvedSlots.length; i++) {
-            pendingSlots.push(resolvedSlots[i]!);
-        }
-
-        const slot = resolvedSlots[0]!;
+        const containmentResolution = laneMode === 'contain'
+            ? resolveContainmentSlotsForLine(
+                resolvedSlots as ResolvedContainmentSlot[],
+                previousContainmentSlot,
+                expressiveContainment
+            )
+            : null;
+        const slot = laneMode === 'contain'
+            ? containmentResolution!.primary
+            : resolvedSlots[0]!;
         if (laneMode === 'contain') {
+            if (containmentResolution!.queued.length > 0) {
+                for (const queued of containmentResolution!.queued) {
+                    pendingSlots.push(queued);
+                }
+                previousContainmentSlot = null;
+            } else {
+                previousContainmentSlot = slot;
+            }
             selectedSlotXOffsets.push(slot.xOffset);
             selectedContainmentAnchors.push(slot.anchor ?? 'center');
+        } else {
+            for (let i = 1; i < resolvedSlots.length; i++) {
+                pendingSlots.push(resolvedSlots[i]!);
+            }
         }
         physicalLineCount++;
         lineSlotWidths.push(slot.width);
@@ -261,7 +296,9 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         lineLayoutOut,
         maxVisibleContainedContentHeight !== null
             ? (_nextLineIndex: number, nextLineLayout: { width: number; xOffset: number; yOffset: number }) => {
-                return Number(nextLineLayout.yOffset || 0) >= maxVisibleContainedContentHeight;
+                const nextLineTop = Number(nextLineLayout.yOffset || 0);
+                const nextLineBottom = nextLineTop + uniformLH;
+                return nextLineBottom > maxVisibleContainedContentHeight + 0.1;
             }
             : undefined
     );
@@ -273,27 +310,36 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         : (linesHeight + insetV);
     const colliderStatsAfter = options.spatialMap.getStatsSnapshot();
     recordColliderFieldProfileDelta(session, colliderStatsBefore, colliderStatsAfter);
-    const clipProperties = laneMode === 'contain'
-        ? new SpatialFieldGeometryCapability(options.element).buildClipProperties()
-        : {};
-    if (
-        laneMode === 'contain'
-        && (!style.textAlign || style.textAlign === 'left')
-        && lineLayoutOut.offsets.length === lines.length
-    ) {
+    if (laneMode === 'contain' && lineLayoutOut.offsets.length === lines.length) {
         for (let index = 0; index < lines.length; index++) {
             const slotWidth = Number(lineLayoutOut.widths[index] || 0);
             const slotOffset = Number(selectedSlotXOffsets[index] ?? lineLayoutOut.offsets[index] ?? 0);
             const anchor = selectedContainmentAnchors[index] ?? 'center';
-            const measuredLineWidth = measureRichLineWidth(lines[index]);
-            const adjustedLineWidth = Math.max(0, measuredLineWidth - letterSpacing);
-            const remainingWidth = Math.max(0, slotWidth - adjustedLineWidth);
-            const anchoredOffset = anchor === 'left'
-                ? slotOffset
-                : anchor === 'right'
-                    ? slotOffset + remainingWidth
-                    : slotOffset + (remainingWidth / 2);
-            lineLayoutOut.offsets[index] = anchoredOffset;
+            const textAlign = style.textAlign || 'left';
+            if (textAlign === 'justify') {
+                const justifyBoundaryCount = countLineJustifyBoundaries(lines[index]);
+                const justifyExtraWidth = measureLineJustifyExtraWidth(lines[index]);
+                const perBoundary = justifyBoundaryCount > 0 ? (justifyExtraWidth / justifyBoundaryCount) : 0;
+                if (justifyBoundaryCount > 0 && perBoundary > resolveContainmentJustifyBoundaryCap(fontSize, letterSpacing)) {
+                    clearLineJustifyAfter(lines[index]);
+                    lineLayoutOut.offsets[index] = resolveAnchoredContainmentOffset(
+                        slotOffset,
+                        slotWidth,
+                        measureRenderedRichLineWidth(lines[index], letterSpacing),
+                        anchor
+                    );
+                } else {
+                    lineLayoutOut.offsets[index] = slotOffset;
+                }
+                continue;
+            }
+
+            lineLayoutOut.offsets[index] = resolveAnchoredContainmentOffset(
+                slotOffset,
+                slotWidth,
+                measureRenderedRichLineWidth(lines[index], letterSpacing),
+                anchor
+            );
         }
     }
 
@@ -320,7 +366,6 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
             style,
             properties: {
                 ...(flowBox.properties || {}),
-                ...clipProperties,
                 _lineOffsets: lineLayoutOut.offsets,
                 _lineWidths: lineLayoutOut.widths,
                 _lineYOffsets: lineLayoutOut.yOffsets,
@@ -376,12 +421,97 @@ function resolveContainmentAnchor(interval: ContainmentInterval): 'left' | 'righ
     return 'center';
 }
 
+function resolvePreferredContainmentSlot(
+    slots: ResolvedContainmentSlot[],
+    previousSlot: ResolvedContainmentSlot | null
+): ResolvedContainmentSlot {
+    if (slots.length <= 1) {
+        return slots[0]!;
+    }
+
+    if (!previousSlot) {
+        return slots
+            .slice()
+            .sort((a, b) => {
+                const widthDelta = Number(b.width || 0) - Number(a.width || 0);
+                if (Math.abs(widthDelta) > 0.01) return widthDelta;
+                return Math.abs((Number(a.xOffset || 0) + (Number(a.width || 0) / 2)))
+                    - Math.abs((Number(b.xOffset || 0) + (Number(b.width || 0) / 2)));
+            })[0]!;
+    }
+
+    const prevLeft = Number(previousSlot.xOffset || 0);
+    const prevRight = prevLeft + Number(previousSlot.width || 0);
+    const prevCenter = prevLeft + (Number(previousSlot.width || 0) / 2);
+
+    return slots
+        .slice()
+        .sort((a, b) => {
+            const overlapA = resolveHorizontalOverlap(prevLeft, prevRight, Number(a.xOffset || 0), Number(a.width || 0));
+            const overlapB = resolveHorizontalOverlap(prevLeft, prevRight, Number(b.xOffset || 0), Number(b.width || 0));
+            if (Math.abs(overlapB - overlapA) > 0.01) return overlapB - overlapA;
+
+            const centerA = Number(a.xOffset || 0) + (Number(a.width || 0) / 2);
+            const centerB = Number(b.xOffset || 0) + (Number(b.width || 0) / 2);
+            const centerDistanceDelta = Math.abs(centerA - prevCenter) - Math.abs(centerB - prevCenter);
+            if (Math.abs(centerDistanceDelta) > 0.01) return centerDistanceDelta;
+
+            return Number(b.width || 0) - Number(a.width || 0);
+        })[0]!;
+}
+
+function resolveContainmentSlotsForLine(
+    slots: ResolvedContainmentSlot[],
+    previousSlot: ResolvedContainmentSlot | null,
+    expressiveContainment: boolean
+): { primary: ResolvedContainmentSlot; queued: ResolvedContainmentSlot[] } {
+    if (slots.length <= 1) {
+        return { primary: slots[0]!, queued: [] };
+    }
+
+    if (expressiveContainment) {
+        let bestIndex = 0;
+        for (let index = 1; index < slots.length; index++) {
+            const best = slots[bestIndex]!;
+            const current = slots[index]!;
+            const widthDelta = Number(current.width || 0) - Number(best.width || 0);
+            if (widthDelta > 0.01 || (Math.abs(widthDelta) <= 0.01 && Number(current.xOffset || 0) < Number(best.xOffset || 0))) {
+                bestIndex = index;
+            }
+        }
+        const queued: ResolvedContainmentSlot[] = [];
+        for (let index = 0; index < slots.length; index++) {
+            if (index === bestIndex) continue;
+            queued.push(slots[index]!);
+        }
+        queued.sort((a, b) => {
+            const widthDelta = Number(b.width || 0) - Number(a.width || 0);
+            if (Math.abs(widthDelta) > 0.01) return widthDelta;
+            return Number(a.xOffset || 0) - Number(b.xOffset || 0);
+        });
+        return { primary: slots[bestIndex]!, queued };
+    }
+
+    return {
+        primary: resolvePreferredContainmentSlot(slots, previousSlot),
+        queued: []
+    };
+}
+
+function resolveHorizontalOverlap(prevLeft: number, prevRight: number, nextLeft: number, nextWidth: number): number {
+    const nextRight = nextLeft + nextWidth;
+    return Math.max(0, Math.min(prevRight, nextRight) - Math.max(prevLeft, nextLeft));
+}
+
 function resolveExplicitContainedHostHeight(
     flowBox: FlowBox,
     style: ElementStyle,
-    spatialDirective: { kind?: string; clip?: unknown } | undefined
+    spatialDirective: { kind?: string; clip?: unknown; overflow?: unknown } | undefined
 ): number | null {
-    if (!spatialDirective || spatialDirective.kind !== 'contain' || spatialDirective.clip !== true) {
+    if (!spatialDirective || spatialDirective.kind !== 'contain') {
+        return null;
+    }
+    if (resolveSpatialFieldOverflow(spatialDirective as any) !== 'stash') {
         return null;
     }
     if (flowBox.overflowPolicy !== 'clip') {
@@ -429,4 +559,74 @@ function recordColliderFieldProfileDelta(
         'colliderFieldNarrowphaseCalls',
         Math.max(0, after.narrowphaseCalls - before.narrowphaseCalls)
     );
+}
+
+function resolveContainmentInkGuard(
+    fontSize: number,
+    letterSpacing: number,
+    intervals: Array<{ w?: number }>
+): number {
+    const baseGuard = Math.max(0, Number(fontSize || 0) * 0.32);
+    const spacingGuard = Math.max(0, Number(letterSpacing || 0) * 0.5);
+    const chamberCount = Array.isArray(intervals) ? intervals.length : 0;
+    const narrowestInterval = chamberCount > 0
+        ? Math.min(...intervals.map((interval) => Math.max(0, Number(interval.w || 0))))
+        : Infinity;
+    if (chamberCount > 1 || narrowestInterval < Math.max(24, Number(fontSize || 0) * 2.5)) {
+        return Math.min(2, Math.max(0.6, (baseGuard * 0.2) + (spacingGuard * 0.35) + 0.25));
+    }
+    return Math.min(6, baseGuard + spacingGuard + 0.75);
+}
+
+function measureLineJustifyExtraWidth(line: RichLine | undefined): number {
+    if (!Array.isArray(line)) return 0;
+    let extra = 0;
+    for (const segment of line) {
+        extra += Number((segment as { justifyAfter?: number })?.justifyAfter || 0);
+    }
+    return extra;
+}
+
+function countLineJustifyBoundaries(line: RichLine | undefined): number {
+    if (!Array.isArray(line)) return 0;
+    let count = 0;
+    for (const segment of line) {
+        if (Number((segment as { justifyAfter?: number })?.justifyAfter || 0) > 0.0001) {
+            count++;
+        }
+    }
+    return count;
+}
+
+function clearLineJustifyAfter(line: RichLine | undefined): void {
+    if (!Array.isArray(line)) return;
+    for (const segment of line) {
+        (segment as { justifyAfter?: number }).justifyAfter = 0;
+    }
+}
+
+function measureRenderedRichLineWidth(line: RichLine | undefined, letterSpacing: number): number {
+    const measuredLineWidth = measureRichLineWidth(line);
+    const justifyExtraWidth = measureLineJustifyExtraWidth(line);
+    return Math.max(0, measuredLineWidth + justifyExtraWidth - Math.max(0, Number(letterSpacing || 0)));
+}
+
+function resolveAnchoredContainmentOffset(
+    slotOffset: number,
+    slotWidth: number,
+    renderedLineWidth: number,
+    anchor: 'left' | 'right' | 'center'
+): number {
+    const remainingWidth = Math.max(0, slotWidth - renderedLineWidth);
+    return anchor === 'left'
+        ? slotOffset
+        : anchor === 'right'
+            ? slotOffset + remainingWidth
+            : slotOffset + (remainingWidth / 2);
+}
+
+function resolveContainmentJustifyBoundaryCap(fontSize: number, letterSpacing: number): number {
+    const sizeCap = Math.max(1.5, Number(fontSize || 0) * 0.18);
+    const spacingCap = Math.max(0, Number(letterSpacing || 0) * 0.5);
+    return sizeCap + spacingCap;
 }

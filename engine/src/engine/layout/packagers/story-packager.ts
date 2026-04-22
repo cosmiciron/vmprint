@@ -43,7 +43,7 @@
  * them on the same baseline; _lineOffsets provides the per-slot X position.
  */
 
-import { Box, BoxImagePayload, Element, ElementStyle, RichLine, StoryFloatAlign, StoryLayoutDirective, StoryWrapMode } from '../../types';
+import { Box, BoxImagePayload, Element, RichLine, StoryFloatAlign, StoryLayoutDirective, StoryWrapMode } from '../../types';
 import { translateSvgPath } from '../../geometry/svg-path';
 import { LayoutProcessor } from '../layout-core';
 import { buildExclusionFieldObstacles } from '../exclusion-field';
@@ -51,10 +51,12 @@ import { LayoutUtils } from '../layout-utils';
 import { resolveDocumentMicroLanePolicy, resolveMinUsableLaneWidth } from '../micro-lane-policy';
 import { normalizeStoryElement, type NormalizedStoryChild } from '../normalized-story';
 import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
+import { buildContainedContinueFragment, resolveContainedContentSummary, resolveContainedVisibleHeight } from './contained-overflow-fragments';
+import { buildContainedSpatialMap } from './contained-field-geometry';
 import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
-import { SpatialFieldGeometryCapability } from './spatial-field-capability';
+import { resolveSpatialFieldOverflow, SpatialFieldGeometryCapability } from './spatial-field-capability';
 import {
     bindPackagerSignalPublisher,
     LayoutBox,
@@ -117,6 +119,7 @@ type PlacedTextElement = {
     lineOffsets: number[];
     lineWidths: number[];
     uniformLH: number;
+    continuationElement?: Element;
 };
 
 type PlacedImageElement = {
@@ -819,16 +822,21 @@ export class StoryPackager implements PackagerUnit {
             }
 
             // ---- text / block element --------------------------------------
-            const placed = this.pourTextChild(
-                child.element, child.childIndex, availableWidth, margins, storyMap, cursorY, 0, child.actor
-            );
-            if (placed) {
+            let workingElement: Element | null = child.element;
+            while (workingElement) {
+                const placed = this.pourTextChild(
+                    workingElement, child.childIndex, availableWidth, margins, storyMap, cursorY, 0, child.actor
+                );
+                if (!placed) {
+                    break;
+                }
                 allBoxes.push(placed.box);
                 placedElements.push(placed);
                 cursorY = placed.cursorAfter;
                 if (probeFrontierExceeded(cursorY)) {
                     return finishEarlyProbe();
                 }
+                workingElement = placed.continuationElement ?? null;
             }
         }
 
@@ -856,14 +864,16 @@ export class StoryPackager implements PackagerUnit {
         const session = this.processor.getCurrentLayoutSession();
         const spatialDirective = (element.properties?.space ?? element.properties?.spatialField) as any;
         const usesContainmentLanes = spatialDirective?.kind === 'contain';
+        const containmentOverflow = resolveSpatialFieldOverflow(spatialDirective);
+        const clipProperties = new SpatialFieldGeometryCapability(element).buildClipProperties();
         const shaped = (this.processor as any).shapeElement(
             element, { path: [this.storyIndex, childIndex] }
         );
         const effectiveWidth = usesContainmentLanes
-            ? resolveContainmentStoryWidth(element, availableWidth)
+            ? resolveContainedHostWidth(element, availableWidth)
             : availableWidth;
         const workingMap = usesContainmentLanes
-            ? this.buildContainmentStoryMap(element)
+            ? buildContainedSpatialMap(element)
             : storyMap;
         const marginTop = Math.max(0, shaped.marginTop);
         const minUsableSlotWidth = resolveMinUsableLaneWidth({
@@ -886,10 +896,10 @@ export class StoryPackager implements PackagerUnit {
             opticalUnderhang,
             clearTopBeforeStart: true,
             minUsableSlotWidth,
-            rejectSubMinimumSlots: microLanePolicy !== 'allow'
+            rejectSubMinimumSlots: microLanePolicy !== 'allow',
+            microLanePolicy
         });
         if (!placed) return null;
-        const clipProperties = new SpatialFieldGeometryCapability(element).buildClipProperties();
         const box = actor
             ? {
                 ...placed.box,
@@ -916,10 +926,52 @@ export class StoryPackager implements PackagerUnit {
                 }
             };
 
+        const containedContinuePlacement = usesContainmentLanes && containmentOverflow === 'continue'
+            ? this.buildContainedContinuePlacement(element, box, placed, shaped)
+            : null;
+        if (containedContinuePlacement) {
+            return {
+                kind: 'text',
+                childIndex,
+                box: containedContinuePlacement.box,
+                topY: placed.elementStartY,
+                contentH: containedContinuePlacement.contentHeight,
+                insetV: placed.insetV,
+                marginTop: placed.marginTop,
+                marginBottom: 0,
+                cursorAfter: placed.elementStartY + containedContinuePlacement.contentHeight,
+                sourceElement: element,
+                lines: containedContinuePlacement.lines,
+                lineYOffsets: containedContinuePlacement.lineYOffsets,
+                lineOffsets: containedContinuePlacement.lineOffsets,
+                lineWidths: containedContinuePlacement.lineWidths,
+                uniformLH: placed.uniformLineHeight,
+                continuationElement: containedContinuePlacement.continuationElement
+            };
+        }
+
+        const containedContentSummary = usesContainmentLanes
+            ? resolveContainedContentSummary(
+                this.processor,
+                element,
+                placed.lines,
+                placed.lines.length,
+                containmentOverflow
+            )
+            : null;
+
         return {
             kind: 'text',
             childIndex,
-            box,
+            box: containedContentSummary
+                ? {
+                    ...box,
+                    properties: {
+                        ...(box.properties || {}),
+                        _containedContentSummary: containedContentSummary
+                    }
+                }
+                : box,
             topY: placed.elementStartY,
             contentH: placed.contentHeight,
             insetV: placed.insetV,
@@ -935,32 +987,45 @@ export class StoryPackager implements PackagerUnit {
         };
     }
 
-    private buildContainmentStoryMap(element: Element): SpatialMap {
-        const map = new SpatialMap();
-        const directive = (element.properties?.space ?? element.properties?.spatialField) as any;
-        if (!directive || directive.kind !== 'contain') return map;
-        const style = (element.properties?.style || {}) as { width?: unknown; height?: unknown };
-        const width = Number.isFinite(Number(style.width)) ? Math.max(0, Number(style.width)) : 0;
-        const height = Number.isFinite(Number(style.height)) ? Math.max(0, Number(style.height)) : 0;
-        if (width <= 0 || height <= 0) return map;
-        const obstacles = buildExclusionFieldObstacles({
-            x: Number.isFinite(Number(directive.x)) ? Number(directive.x) : 0,
-            y: Number.isFinite(Number(directive.y)) ? Number(directive.y) : 0,
-            w: width,
-            h: height,
-            wrap: directive.wrap ?? 'around',
-            gap: Number.isFinite(Number(directive.gap)) ? Math.max(0, Number(directive.gap)) : 0,
-            shape: directive.shape,
-            path: directive.path,
-            align: directive.align,
-            exclusionAssembly: directive.exclusionAssembly,
-            zIndex: Number.isFinite(Number(directive.zIndex)) ? Number(directive.zIndex) : 0,
-            traversalInteraction: directive.traversalInteraction ?? 'auto'
-        });
-        for (const obstacle of obstacles) {
-            map.register(obstacle);
-        }
-        return map;
+    private buildContainedContinuePlacement(
+        element: Element,
+        box: Box,
+        placed: ReturnType<typeof reflowTextElementAgainstSpatialField>,
+        shaped: any
+    ): {
+        box: Box;
+        contentHeight: number;
+        lines: RichLine[];
+        lineYOffsets: number[];
+        lineOffsets: number[];
+        lineWidths: number[];
+        continuationElement: Element;
+    } | null {
+        if (!placed) return null;
+        const fragment = buildContainedContinueFragment(
+            this.processor,
+            element,
+            box,
+            placed,
+            resolveContainedVisibleHeight(shaped, box.style)
+        );
+        if (!fragment) return null;
+
+        return {
+            box: {
+                ...fragment.box,
+                properties: {
+                    ...(fragment.box.properties || {}),
+                    _containedContentSummary: fragment.contentSummary
+                }
+            },
+            contentHeight: fragment.contentHeight,
+            lines: fragment.lines,
+            lineYOffsets: fragment.lineYOffsets,
+            lineOffsets: fragment.lineOffsets,
+            lineWidths: fragment.lineWidths,
+            continuationElement: fragment.continuationElement
+        };
     }
 
     // -- Split ---------------------------------------------------------------
@@ -2222,13 +2287,6 @@ export class StoryPackager implements PackagerUnit {
     }
 }
 
-function resolveContainmentStoryWidth(element: Element, fallbackWidth: number): number {
-    const style = (element.properties?.style || {}) as { width?: unknown };
-    const authoredWidth = Number(style.width);
-    if (Number.isFinite(authoredWidth) && authoredWidth > 0) return authoredWidth;
-    return fallbackWidth;
-}
-
 // ---------------------------------------------------------------------------
 // Module-level helpers
 // ---------------------------------------------------------------------------
@@ -2261,6 +2319,13 @@ function cloneBoxes(boxes: Box[], pageIndex?: number): Box[] {
             }
             : {})
     }));
+}
+
+function resolveContainmentStoryWidth(element: Element, fallbackWidth: number): number {
+    const style = (element.properties?.style || {}) as { width?: unknown };
+    const authoredWidth = Number(style.width);
+    if (Number.isFinite(authoredWidth) && authoredWidth > 0) return authoredWidth;
+    return fallbackWidth;
 }
 
 function cloneBox(box: Box, pageIndex?: number): Box {

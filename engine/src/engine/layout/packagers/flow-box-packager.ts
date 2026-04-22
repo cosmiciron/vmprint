@@ -6,7 +6,6 @@ import type { SpatialExclusion } from '../runtime/session/session-spatial-types'
 import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { SpatialMap } from './spatial-map';
-import { buildExclusionFieldObstacles } from '../exclusion-field';
 import {
     PackagerContext,
     PackagerPlacementPreference,
@@ -126,13 +125,13 @@ export class FlowBoxPackager implements PackagerUnit {
     }
 
     prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
+        this.lastAvailableHeight = availableHeight;
         // Use context.contentWidthOverride (set by zone sub-sessions) when present.
         // Falls back to -1 so createFlowMaterializationContext skips contentWidth,
         // causing getContextualContentWidth to use the style-based default width
         // (pageContentWidth) rather than the narrowed lane/available width.
         const contentWidth = context.contentWidthOverride ?? -1;
         this.materialize(availableWidth, contentWidth);
-        this.lastAvailableHeight = availableHeight;
         this.prepareSpatialPlacement(context);
     }
 
@@ -223,77 +222,36 @@ export class FlowBoxPackager implements PackagerUnit {
 
     prepareLookahead(availableWidth: number, availableHeight: number, context: PackagerContext): void {
         this.lastAvailableHeight = availableHeight;
-        if (this.prepareSealedContainmentLookahead()) {
-            return;
-        }
         const contentWidth = context.contentWidthOverride ?? -1;
         this.materialize(availableWidth, contentWidth);
         this.prepareSpatialPlacement(context);
     }
 
-    private prepareSealedContainmentLookahead(): boolean {
-        const sourceElement = this.flowBox._sourceElement;
-        const localSpatialDirective = (sourceElement?.properties?.space ?? sourceElement?.properties?.spatialField) as any;
-        if (!isSealedContainmentDirective(localSpatialDirective, this.flowBox)) {
-            return false;
-        }
-
-        const hostHeight = resolveFixedContainmentHostHeight(this.flowBox);
-        if (hostHeight <= 0) {
-            return false;
-        }
-
-        this.clearSpatialCache();
-        this.requiredHeight = Math.max(0, this.flowBox.marginTop) + hostHeight + this.flowBox.marginBottom;
-        return true;
-    }
-
     private prepareSpatialPlacement(context: PackagerContext): void {
         const sourceElement = this.flowBox._sourceElement;
-        const localSpatialDirective = (sourceElement?.properties?.space ?? sourceElement?.properties?.spatialField) as any;
-        const usesContainmentLanes = localSpatialDirective?.kind === 'contain';
-        const usesSealedContainmentLanes = isSealedContainmentDirective(localSpatialDirective, this.flowBox);
-        const containmentWidth = usesContainmentLanes
-            ? resolveContainmentHostWidth(sourceElement, Math.max(0, context.pageWidth - context.margins.left - context.margins.right))
-            : Math.max(0, context.pageWidth - context.margins.left - context.margins.right);
         const exclusions = context.getWorldTraversalExclusions?.(context.pageIndex)
             ?? (context.getPageExclusions?.(context.pageIndex) ?? [])
                 .filter((exclusion) => exclusion.surface === 'world-traversal');
-        if (!sourceElement || this.flowBox.image || (!usesContainmentLanes && exclusions.length === 0)) {
+        if (!sourceElement || this.flowBox.image || exclusions.length === 0) {
             this.clearSpatialCache();
             return;
         }
 
         const layoutBefore = Number(context.layoutBefore ?? this.flowBox.marginTop);
         const cursorY = Number(context.cursorY);
-        const ignoreSpatialCursorForContainment = usesContainmentLanes;
-        const ignoreSpatialPageIndexForContainment = usesSealedContainmentLanes;
-        const exclusionIdentityMatches = usesContainmentLanes
-            ? true
-            : this.cachedSpatialExclusions === exclusions;
-        const cursorMatches = ignoreSpatialCursorForContainment
-            ? true
-            : this.cachedSpatialCursorY === cursorY;
-        const pageMatches = ignoreSpatialPageIndexForContainment
-            ? true
-            : this.cachedSpatialPageIndex === context.pageIndex;
         if (
             this.cachedSpatialBoxes
-            && exclusionIdentityMatches
-            && pageMatches
-            && cursorMatches
+            && this.cachedSpatialExclusions === exclusions
+            && this.cachedSpatialPageIndex === context.pageIndex
+            && this.cachedSpatialCursorY === cursorY
             && this.cachedSpatialLayoutBefore === layoutBefore
         ) {
             return;
         }
 
         this.spatialMap.clear();
-        if (usesContainmentLanes) {
-            this.registerContainmentField(this.spatialMap, sourceElement);
-        } else {
-            for (const exclusion of exclusions) {
-                this.registerSpatialExclusion(this.spatialMap, exclusion, context);
-            }
+        for (const exclusion of exclusions) {
+            this.registerSpatialExclusion(this.spatialMap, exclusion, context);
         }
 
         const path = this.flowBox._normalizedFlowBlock?.identitySeed?.path ?? [0];
@@ -304,14 +262,14 @@ export class FlowBoxPackager implements PackagerUnit {
         const minUsableSlotWidth = resolveMinUsableLaneWidth({
             policy: microLanePolicy,
             element: sourceElement,
-            availableWidth: containmentWidth
+            availableWidth: Math.max(0, context.pageWidth - context.margins.left - context.margins.right)
         });
         const placed = reflowTextElementAgainstSpatialField({
             processor: this.processor,
             element: sourceElement,
             path,
             sourceFlowBox: this.flowBox,
-            availableWidth: containmentWidth,
+            availableWidth: Math.max(0, context.pageWidth - context.margins.left - context.margins.right),
             currentY: 0,
             layoutBefore,
             spatialMap: this.spatialMap,
@@ -333,9 +291,9 @@ export class FlowBoxPackager implements PackagerUnit {
             ...placed.box,
             y: Number(placed.box.y || 0)
         }];
-        this.cachedSpatialExclusions = usesContainmentLanes ? null : exclusions;
-        this.cachedSpatialPageIndex = usesSealedContainmentLanes ? null : context.pageIndex;
-        this.cachedSpatialCursorY = usesContainmentLanes ? null : cursorY;
+        this.cachedSpatialExclusions = exclusions;
+        this.cachedSpatialPageIndex = context.pageIndex;
+        this.cachedSpatialCursorY = cursorY;
         this.cachedSpatialLayoutBefore = layoutBefore;
         this.requiredHeight = placed.marginTop + placed.contentHeight + placed.marginBottom;
     }
@@ -377,32 +335,6 @@ export class FlowBoxPackager implements PackagerUnit {
         });
     }
 
-    private registerContainmentField(spatialMap: SpatialMap, element: any): void {
-        const directive = (element.properties?.space ?? element.properties?.spatialField) as any;
-        if (!directive || directive.kind !== 'contain') return;
-        const style = (element.properties?.style || {}) as { width?: unknown; height?: unknown };
-        const width = Number.isFinite(Number(style.width)) ? Math.max(0, Number(style.width)) : 0;
-        const height = Number.isFinite(Number(style.height)) ? Math.max(0, Number(style.height)) : 0;
-        if (width <= 0 || height <= 0) return;
-        const obstacles = buildExclusionFieldObstacles({
-            x: Number.isFinite(Number(directive.x)) ? Number(directive.x) : 0,
-            y: Number.isFinite(Number(directive.y)) ? Number(directive.y) : 0,
-            w: width,
-            h: height,
-            wrap: directive.wrap ?? 'around',
-            gap: Number.isFinite(Number(directive.gap)) ? Math.max(0, Number(directive.gap)) : 0,
-            shape: directive.shape,
-            path: directive.path,
-            align: directive.align,
-            exclusionAssembly: directive.exclusionAssembly,
-            zIndex: Number.isFinite(Number(directive.zIndex)) ? Number(directive.zIndex) : 0,
-            traversalInteraction: directive.traversalInteraction ?? 'auto'
-        });
-        for (const obstacle of obstacles) {
-            spatialMap.register(obstacle);
-        }
-    }
-
     reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const processor = this.processor as unknown as FlowBoxProcessor;
         this.materialize(this.lastAvailableWidth, this.lastContentWidth);
@@ -438,33 +370,4 @@ export class FlowBoxPackager implements PackagerUnit {
         this.clearSpatialCache();
         return { currentFragment: partA, continuationFragment: partB };
     }
-}
-
-function resolveContainmentHostWidth(element: any, fallbackWidth: number): number {
-    const style = (element?.properties?.style || {}) as { width?: unknown };
-    const authoredWidth = Number(style.width);
-    if (Number.isFinite(authoredWidth) && authoredWidth > 0) return authoredWidth;
-    return fallbackWidth;
-}
-
-function isSealedContainmentDirective(directive: any, flowBox: FlowBox): boolean {
-    if (!directive || directive.kind !== 'contain') return false;
-    if (directive.clip !== true) return false;
-    return flowBox.overflowPolicy === 'clip';
-}
-
-function resolveFixedContainmentHostHeight(flowBox: FlowBox): number {
-    const explicitHeight = Number(flowBox.heightOverride);
-    if (Number.isFinite(explicitHeight) && explicitHeight > 0) {
-        return Math.max(0, explicitHeight);
-    }
-
-    const sourceElement = flowBox._sourceElement;
-    const style = (sourceElement?.properties?.style || {}) as { height?: unknown };
-    const authoredHeight = Number(style.height);
-    if (Number.isFinite(authoredHeight) && authoredHeight > 0) {
-        return Math.max(0, authoredHeight);
-    }
-
-    return 0;
 }

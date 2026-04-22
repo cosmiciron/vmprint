@@ -6,6 +6,7 @@ import { Element, LayoutConfig, Page, DocumentInput } from '../src/engine/types'
 import { setDefaultEngineRuntime } from '../src/engine/runtime';
 import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { CURRENT_DOCUMENT_VERSION, resolveDocumentPaths, toLayoutConfig } from '../src';
+import { simulationArtifactKeys } from '../src/engine/layout/simulation-report';
 import { loadLocalFontManager, snapshotPages, MockContext } from './harness/engine-harness';
 import { logStep, check, checkAsync } from './harness/test-utils';
 
@@ -584,6 +585,240 @@ async function testPerBoxOverflowPolicy() {
                 /Invalid overflowPolicy/,
                 'expected invalid overflowPolicy to throw'
             );
+        }
+    );
+}
+
+async function testContainedOverflowModes() {
+    log('Scenario: contained text overflow is explicit world spill or hidden stash');
+    const config = buildConfig();
+    config.layout.pageSize = { width: 320, height: 260 };
+    config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
+
+    const engine = new LayoutEngine(config);
+    await engine.waitForFonts();
+
+    const roomText = 'Contained room settlement text should keep placing actors until the room fills, then either spill into world flow or hide the remainder depending on the room overflow mode. '.repeat(10);
+    const buildElement = (sourceId: string, overflow: 'continue' | 'stash', extras?: Record<string, unknown>): Element => ({
+        type: 'p',
+        content: roomText,
+        properties: {
+            sourceId,
+            space: {
+                kind: 'contain',
+                shape: 'circle',
+                overflow,
+                ...extras
+            },
+            style: {
+                width: 180,
+                height: 180,
+                paddingTop: 6,
+                paddingRight: 6,
+                paddingBottom: 6,
+                paddingLeft: 6,
+                fontSize: 10.5,
+                lineHeight: 1.25
+            }
+        }
+    });
+
+    const continuePages = engine.simulate([buildElement('contained-continue-report', 'continue')]);
+    const continueReportReader = engine.getLastSimulationReportReader();
+    const stashPages = engine.simulate([buildElement('contained-stash-report', 'stash')]);
+    const stashReportReader = engine.getLastSimulationReportReader();
+
+    const continueBoxes = continuePages.flatMap((p) => p.boxes).filter((b) => b.type === 'p');
+    const stashBoxes = stashPages.flatMap((p) => p.boxes).filter((b) => b.type === 'p');
+    const continueBox = continueBoxes[0];
+    const stashBox = stashBoxes[0];
+    const continueText = continueBoxes.map((box) => getBoxText(box)).join('\n');
+    const stashText = stashBoxes.map((box) => getBoxText(box)).join('\n');
+    const matchesSourceId = (actual: unknown, expected: string): boolean => {
+        const value = String(actual || '');
+        return value === expected || value.endsWith(`:${expected}`);
+    };
+    const continueContainedSummary = continueReportReader.require(simulationArtifactKeys.containedContentSummary)
+        .find((item: any) => matchesSourceId(item?.sourceId, 'contained-continue-report'));
+    const stashContainedSummary = stashReportReader.require(simulationArtifactKeys.containedContentSummary)
+        .find((item: any) => matchesSourceId(item?.sourceId, 'contained-stash-report'));
+
+    _check(
+        'contained continue spills below the room when actors do not fit',
+        'continue keeps more text alive while stash stops visible lines at the room boundary',
+        () => {
+            assert.ok(continueBox, 'expected continue-mode contained text box');
+            assert.ok(stashBox, 'expected stash-mode contained text box');
+            assert.equal(Math.round(Number(continueBox!.h)), 180, 'continue should preserve the authored room height');
+            assert.ok(continueText.length > stashText.length, 'continue should expose more text than stash');
+            assert.match(continueText, /world flow or hide[\s\S]*remainder/, 'continue should keep later text visible');
+        }
+    );
+
+    _check(
+        'contained stash seals overflow inside the room',
+        'stash stops visible composition at the authored room height',
+        () => {
+            assert.equal(Math.round(Number(stashBox!.h)), 180, 'stash should honor the authored host height');
+            assert.equal(stashBoxes.length, 1, 'stash should remain a single sealed room fragment');
+        }
+    );
+
+    _check(
+        'contained content reporting distinguishes continued overflow from stashed overflow',
+        'simulation report should expose explicit contained/stashed/overflowed char counts',
+        () => {
+            assert.ok(continueContainedSummary, 'expected continue-mode contained summary');
+            assert.ok(stashContainedSummary, 'expected stash-mode contained summary');
+            assert.equal(continueContainedSummary?.overflowMode, 'continue', 'continue summary should preserve overflow mode');
+            assert.equal(stashContainedSummary?.overflowMode, 'stash', 'stash summary should preserve overflow mode');
+            assert.ok(Number(continueContainedSummary?.containedCharCount || 0) > 0, 'continue summary should count contained chars');
+            assert.ok(Number(continueContainedSummary?.overflowedCharCount || 0) > 0, 'continue summary should count overflowed chars');
+            assert.equal(Number(continueContainedSummary?.stashedCharCount || 0), 0, 'continue summary should not count stashed chars');
+            assert.ok(Number(stashContainedSummary?.containedCharCount || 0) > 0, 'stash summary should count contained chars');
+            assert.ok(Number(stashContainedSummary?.stashedCharCount || 0) > 0, 'stash summary should count stashed chars');
+            assert.equal(Number(stashContainedSummary?.overflowedCharCount || 0), 0, 'stash summary should not count overflowed chars');
+            assert.equal(
+                Number(continueContainedSummary?.totalSourceCharCount || 0),
+                Number(continueContainedSummary?.containedCharCount || 0) + Number(continueContainedSummary?.overflowedCharCount || 0),
+                'continue summary should balance total chars'
+            );
+            assert.equal(
+                Number(stashContainedSummary?.totalSourceCharCount || 0),
+                Number(stashContainedSummary?.containedCharCount || 0) + Number(stashContainedSummary?.stashedCharCount || 0),
+                'stash summary should balance total chars'
+            );
+        }
+    );
+
+    _check(
+        'legacy contain clip documents still map to stash semantics',
+        'contain plus clip without overflow remains sealed for backward compatibility',
+        () => {
+            const legacyPages = engine.simulate([{
+                type: 'p',
+                content: roomText,
+                properties: {
+                    sourceId: 'contained-legacy-report',
+                    space: {
+                        kind: 'contain',
+                        shape: 'circle',
+                        clip: true
+                    },
+                    style: {
+                        width: 180,
+                        height: 180,
+                        paddingTop: 6,
+                        paddingRight: 6,
+                        paddingBottom: 6,
+                        paddingLeft: 6,
+                        fontSize: 10.5,
+                        lineHeight: 1.25
+                    }
+                }
+            }]);
+            const legacyBox = legacyPages.flatMap((p) => p.boxes).find((b) => b.type === 'p');
+            const legacySummary = engine.getLastSimulationReportReader()
+                .require(simulationArtifactKeys.containedContentSummary)
+                .find((item: any) => matchesSourceId(item?.sourceId, 'contained-legacy-report'));
+            assert.ok(legacyBox, 'expected legacy contained text box');
+            assert.equal(Math.round(Number(legacyBox!.h)), 180, 'legacy clip fallback should remain sealed');
+            assert.equal(getBoxText(legacyBox), getBoxText(stashBox), 'legacy clip fallback should match explicit stash behavior');
+            assert.equal(legacySummary?.overflowMode, 'stash', 'legacy clip fallback should report stash semantics');
+        }
+    );
+
+}
+
+async function testContainedAssemblyLanePolicies() {
+    log('Scenario: contained assembly settlement follows lane policy rather than one fixed wrapping style');
+    const buildEngine = async (microLanePolicy: LayoutConfig['layout']['microLanePolicy']) => {
+        const config = buildConfig();
+        config.layout.pageSize = { width: 320, height: 280 };
+        config.layout.margins = { top: 20, right: 20, bottom: 20, left: 20 };
+        config.layout.microLanePolicy = microLanePolicy;
+        const engine = new LayoutEngine(config);
+        await engine.waitForFonts();
+        return engine;
+    };
+
+    const assemblyElement: Element = {
+        type: 'p',
+        content: 'Contained assembly text should be able to occupy detached side chambers when the lane policy is expressive, but typography mode should stay conservative and refuse those same-baseline hops. '.repeat(4),
+        properties: {
+            space: {
+                kind: 'contain',
+                overflow: 'stash',
+                exclusionAssembly: {
+                    layers: [
+                        { rects: [[18, 0, 34, 8]] },
+                        { rects: [[12, 8, 46, 8]] },
+                        { rects: [[8, 16, 54, 8], [92, 16, 18, 8]] },
+                        { rects: [[6, 24, 58, 8], [90, 24, 20, 8]] },
+                        { rects: [[4, 32, 62, 8], [88, 32, 22, 8]] },
+                        { rects: [[4, 40, 62, 8], [88, 40, 22, 8]] },
+                        { rects: [[6, 48, 60, 8], [90, 48, 18, 8]] },
+                        { rects: [[10, 56, 54, 8], [92, 56, 14, 8]] },
+                        { rects: [[12, 64, 48, 8]] },
+                        { rects: [[16, 72, 42, 8]] },
+                        { rects: [[20, 80, 34, 8]] }
+                    ]
+                }
+            },
+            style: {
+                width: 120,
+                height: 88,
+                paddingTop: 4,
+                paddingRight: 4,
+                paddingBottom: 4,
+                paddingLeft: 4,
+                fontSize: 10.5,
+                lineHeight: 1.2,
+                allowLineSplit: true
+            }
+        }
+    };
+
+    const balancedEngine = await buildEngine('balanced');
+    const typographyEngine = await buildEngine('typography');
+    const balancedPages = balancedEngine.simulate([assemblyElement]);
+    const typographyPages = typographyEngine.simulate([assemblyElement]);
+
+    const balancedBox = balancedPages.flatMap((page) => page.boxes).find((box) => box.type === 'p');
+    const typographyBox = typographyPages.flatMap((page) => page.boxes).find((box) => box.type === 'p');
+    assert.ok(balancedBox, 'expected expressive contained assembly box');
+    assert.ok(typographyBox, 'expected editorial contained assembly box');
+
+    const balancedYOffsets = Array.isArray(balancedBox!.properties?._lineYOffsets)
+        ? (balancedBox!.properties!._lineYOffsets as number[])
+        : [];
+    const typographyYOffsets = Array.isArray(typographyBox!.properties?._lineYOffsets)
+        ? (typographyBox!.properties!._lineYOffsets as number[])
+        : [];
+    const countRepeatedBaselines = (offsets: number[]) => {
+        let repeated = 0;
+        for (let index = 1; index < offsets.length; index++) {
+            if (Math.abs(Number(offsets[index]) - Number(offsets[index - 1])) < 0.01) {
+                repeated++;
+            }
+        }
+        return repeated;
+    };
+
+    _check(
+        'expressive contained assemblies can occupy same-baseline side chambers',
+        'balanced policy should reuse a baseline across multiple chambers while typography stays single-chamber per baseline',
+        () => {
+            assert.ok(countRepeatedBaselines(balancedYOffsets) > 0, 'balanced policy should show same-baseline chamber reuse');
+            assert.equal(countRepeatedBaselines(typographyYOffsets), 0, 'typography policy should avoid same-baseline chamber hopping');
+        }
+    );
+
+    _check(
+        'expressive containment exposes more visible text in chambered rooms',
+        'balanced policy should inhabit more of the authored room than typography mode',
+        () => {
+            assert.ok(getBoxText(balancedBox).length > getBoxText(typographyBox).length, 'balanced policy should keep more text visible inside the room');
         }
     );
 }
@@ -2143,6 +2378,8 @@ async function run() {
     await testWidowOrphanEnforcement();
     await testWidowOrphanBackletterSpacingAndMultilingual();
     await testPerBoxOverflowPolicy();
+    await testContainedOverflowModes();
+    await testContainedAssemblyLanePolicies();
     await testPaginationContinuationMarkers();
     await testKeepWithNextChainMidPageSplitsTailUnit();
     await testKeepWithNextChainAtPageTopDoesNotStrandPrefixes();

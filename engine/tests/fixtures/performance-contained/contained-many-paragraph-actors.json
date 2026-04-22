@@ -34,7 +34,7 @@
         "space": {
           "kind": "contain",
           "shape": "circle",
-          "clip": true
+          "overflow": "stash"
         },
         "style": {
           "width": 220,
@@ -59,7 +59,7 @@
         "space": {
           "kind": "contain",
           "shape": "circle",
-          "clip": true
+          "overflow": "stash"
         },
         "style": {
           "width": 220,
@@ -84,7 +84,7 @@
         "space": {
           "kind": "contain",
           "shape": "circle",
-          "clip": true
+          "overflow": "stash"
         },
         "style": {
           "width": 220,
@@ -109,7 +109,7 @@
         "space": {
           "kind": "contain",
           "shape": "polygon",
-          "clip": true,
+          "overflow": "stash",
           "path": "M28,0 L188,0 L188,34 L140,34 L140,76 L188,76 L188,126 L120,126 L120,176 L188,176 L188,220 L28,220 L0,112 Z"
         },
         "style": {
@@ -134,7 +134,7 @@
         "space": {
           "kind": "contain",
           "shape": "polygon",
-          "clip": true,
+          "overflow": "stash",
           "path": "M28,0 L188,0 L188,34 L140,34 L140,76 L188,76 L188,126 L120,126 L120,176 L188,176 L188,220 L28,220 L0,112 Z"
         },
         "style": {
@@ -159,7 +159,7 @@
         "space": {
           "kind": "contain",
           "shape": "polygon",
-          "clip": true,
+          "overflow": "stash",
           "path": "M28,0 L188,0 L188,34 L140,34 L140,76 L188,76 L188,126 L120,126 L120,176 L188,176 L188,220 L28,220 L0,112 Z"
         },
         "style": {
@@ -184,7 +184,7 @@
         "space": {
           "kind": "contain",
           "shape": "circle",
-          "clip": true
+          "overflow": "stash"
         },
         "style": {
           "width": 220,
@@ -210,7 +210,7 @@
         "space": {
           "kind": "contain",
           "shape": "circle",
-          "clip": true
+          "overflow": "stash"
         },
         "style": {
           "width": 220,
@@ -236,7 +236,7 @@
         "space": {
           "kind": "contain",
           "shape": "circle",
-          "clip": true
+          "overflow": "stash"
         },
         "style": {
           "width": 220,

@@ -4,14 +4,13 @@ import {
     type ObservationResult,
     packagerOccupiesFlowSpace,
     type PackagerContext,
+    type PackagerUnit,
     type PackagerPlacementPreference,
     type PackagerReshapeResult,
     type PackagerReshapeProfile,
-    type PackagerUnit,
     resolvePackagerWorldYAtCursor
 } from './packager-types';
 import { type PackagerIdentity } from './packager-identity';
-import { FlowBoxPackager } from './flow-box-packager';
 import { SpatialFieldGeometryCapability, SpatialFieldMovementCapability } from './spatial-field-capability';
 
 export function hasSpatialCapabilityProperties(element: Element | undefined): boolean {
@@ -23,7 +22,7 @@ export function hasSpatialCapabilityProperties(element: Element | undefined): bo
 }
 
 export class SpatialCapabilityPackager implements PackagerUnit {
-    private readonly inner: FlowBoxPackager;
+    private readonly inner: PackagerUnit;
     private readonly geometry: SpatialFieldGeometryCapability;
     private readonly movement: SpatialFieldMovementCapability;
 
@@ -44,7 +43,7 @@ export class SpatialCapabilityPackager implements PackagerUnit {
     constructor(
         private readonly element: Element,
         processor: LayoutProcessor,
-        flowPackager: FlowBoxPackager,
+        flowPackager: PackagerUnit,
         identity?: PackagerIdentity
     ) {
         this.inner = flowPackager;
@@ -89,7 +88,7 @@ export class SpatialCapabilityPackager implements PackagerUnit {
             y: Number(box.y || 0) + movementState.y,
             properties: {
                 ...(box.properties || {}),
-                ...clipProperties,
+                ...((box.lines && box.lines.length > 0) ? {} : clipProperties),
                 ...(this.movement.enabled
                     ? {
                         _motionState: {

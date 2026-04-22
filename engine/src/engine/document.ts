@@ -99,7 +99,7 @@ const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
 const DROP_CAP_KEYS = new Set(['enabled', 'lines', 'characters', 'gap', 'characterStyle']);
 const STORY_LAYOUT_DIRECTIVE_KEYS = new Set(['mode', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'path', 'exclusionAssembly', 'zIndex']);
-const SPATIAL_FIELD_KEYS = new Set(['kind', 'clip', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'path', 'exclusionAssembly', 'hidden', 'zIndex', 'traversalInteraction']);
+const SPATIAL_FIELD_KEYS = new Set(['kind', 'clip', 'overflow', 'x', 'y', 'align', 'wrap', 'gap', 'shape', 'path', 'exclusionAssembly', 'hidden', 'zIndex', 'traversalInteraction']);
 const SIMULATION_DIRECTIVE_KEYS = new Set(['enabled', 'maxTicks', 'updateKind', 'x', 'y', 'label']);
 const SIMULATION_MOTION_AXIS_KEYS = new Set(['start', 'velocity', 'amplitude', 'frequency', 'phase']);
 const STORY_EXCLUSION_ASSEMBLY_KEYS = new Set(['members', 'layers']);
@@ -647,6 +647,9 @@ function validateSpatialFieldDirective(value: unknown, path: string, documentPat
     }
     if (directive.clip !== undefined) {
         assertBooleanAt(directive.clip, `${path}.clip`, documentPath);
+    }
+    if (directive.overflow !== undefined) {
+        assertEnumAt(directive.overflow, ['continue', 'stash'], `${path}.overflow`, documentPath);
     }
     if (directive.x !== undefined) {
         assertFiniteNumberAt(directive.x, `${path}.x`, documentPath);

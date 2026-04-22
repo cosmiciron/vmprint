@@ -23,8 +23,20 @@ type ClipDescriptor = {
 };
 
 export const resolveClipDescriptor = (box: Box): ClipDescriptor => ({
-    shape: String(box.properties?._clipShape || box.properties?._imageClipShape || '').trim(),
-    path: String(box.properties?._clipPath || box.properties?._imageClipPath || '').trim(),
+    shape: String(
+        box.properties?._clipShape
+        || box.properties?._imageClipShape
+        || box.properties?.space?.shape
+        || box.properties?.spatialField?.shape
+        || ''
+    ).trim(),
+    path: String(
+        box.properties?._clipPath
+        || box.properties?._imageClipPath
+        || box.properties?.space?.path
+        || box.properties?.spatialField?.path
+        || ''
+    ).trim(),
     assembly: Array.isArray(box.properties?._clipAssembly)
         ? (box.properties?._clipAssembly as ImageClipAssemblyMember[])
         : (Array.isArray(box.properties?._imageClipAssembly)
@@ -58,6 +70,21 @@ export const applyClipPath = (
     h: number,
     clip: ClipDescriptor
 ): boolean => {
+    const traced = traceClipPath(context, x, y, w, h, clip);
+    if (traced) {
+        context.clip();
+    }
+    return traced;
+};
+
+export const traceClipPath = (
+    context: Context,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    clip: ClipDescriptor
+): boolean => {
     if (clip.assembly.length > 0) {
         for (const member of clip.assembly) {
             const memberX = x + Number(member.x || 0);
@@ -79,24 +106,21 @@ export const applyClipPath = (
                 context.rect(memberX, memberY, memberW, memberH);
             }
         }
-        context.clip();
         return true;
     }
     if (clip.shape === 'circle') {
         const radius = Math.max(0, Math.min(w, h) / 2);
         if (radius > 0) {
-            context.circle(x + (w / 2), y + (h / 2), radius).clip();
+            context.circle(x + (w / 2), y + (h / 2), radius);
             return true;
         }
     }
     if (clip.shape === 'ellipse') {
         drawEllipsePath(context, x, y, w, h);
-        context.clip();
         return true;
     }
     if (clip.shape === 'polygon' && clip.path) {
         drawPolygonPath(context, parseSvgPathSubpaths(clip.path), x, y, 1, 1);
-        context.clip();
         return true;
     }
     return false;
@@ -134,8 +158,8 @@ export const drawBoxBackground = (context: Context, box: Box, boxStyle: ElementS
     const radius = boxStyle.borderRadius || 0;
     if (clip.assembly.length > 0 || !!clip.shape || !!clip.path) {
         context.save();
-        if (applyClipPath(context, box.x, box.y, box.w, box.h, clip)) {
-            context.rect(box.x, box.y, box.w, box.h).fillColor(boxStyle.backgroundColor).fill();
+        if (traceClipPath(context, box.x, box.y, box.w, box.h, clip)) {
+            context.fillColor(boxStyle.backgroundColor).fill();
             context.restore();
             return;
         }
@@ -422,6 +446,24 @@ export const drawInlineBoxSegment = (
 export const drawBoxBorders = (context: Context, box: Box, boxStyle: ElementStyle): void => {
     const borderWidth = LayoutUtils.validateUnit(boxStyle.borderWidth ?? 0);
     const borderColor = boxStyle.borderColor || 'black';
+    const clip = resolveClipDescriptor(box);
+    const hasClip = clip.assembly.length > 0 || !!clip.shape || !!clip.path;
+    if (
+        hasClip
+        && borderWidth > 0
+        && box.properties?._isFirstLine
+        && box.properties?._isLastLine
+        && box.properties?._isFirstFragmentInLine
+        && box.properties?._isLastFragmentInLine
+    ) {
+        context.save();
+        if (traceClipPath(context, box.x, box.y, box.w, box.h, clip)) {
+            context.lineWidth(borderWidth).strokeColor(borderColor).stroke();
+            context.restore();
+            return;
+        }
+        context.restore();
+    }
 
     const bTop = LayoutUtils.validateUnit(boxStyle.borderTopWidth ?? borderWidth);
     if (bTop > 0 && box.properties?._isFirstLine) {

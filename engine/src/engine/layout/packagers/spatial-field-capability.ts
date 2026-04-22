@@ -62,6 +62,16 @@ export class SpatialFieldGeometryCapability {
     }
 }
 
+export function resolveSpatialFieldOverflow(field: SpatialFieldDirective | undefined): 'continue' | 'stash' {
+    if (!field || field.kind !== 'contain') {
+        return 'continue';
+    }
+    if (field.overflow === 'continue' || field.overflow === 'stash') {
+        return field.overflow;
+    }
+    return field.clip === true ? 'stash' : 'continue';
+}
+
 function normalizeClipAssemblyMembers(assembly: unknown): Array<{
     x: number;
     y: number;

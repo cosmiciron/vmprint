@@ -53,24 +53,24 @@
     },
     {
       "type": "lead",
-      "content": "These three circle samples keep the copy identical so we can compare only the mode: guiding lanes without clipping, guiding lanes with clipping, and clipping plus justification."
+      "content": "These three circle samples keep the copy identical so we can compare only the room overflow decision: continue into world flow, stash overflow inside the room, and stash overflow with justification."
     },
     {
       "type": "h1",
-      "content": "Guide Only"
+      "content": "Continue Into World Flow"
     },
     {
       "type": "p",
-      "content": "The circle host should no longer behave like a normal rectangular paragraph that merely gets clipped at draw time. The text should begin in the narrow crown of the circle, widen through the middle shoulder, and then compress again as the lower arc closes. If that happens, the line carver is no longer only avoiding shapes. It is actively settling text inside them. This is the smallest honest test of the new polarity. The same shape data that once meant forbidden space now means allowed space. That is the inversion we were after.",
+      "content": "The circle host should no longer behave like a normal rectangular paragraph that merely hides overflow at draw time. The text should begin in the narrow crown of the circle, widen through the middle shoulder, and then compress again as the lower arc closes. Once the room is full, any actors that still do not fit should rejoin the world's normal flow below it. If that happens, the line carver is no longer only avoiding shapes. It is actively settling text inside them while still keeping overflow honest. That is the inversion we were after.",
       "properties": {
         "space": {
           "kind": "contain",
           "shape": "circle",
-          "clip": false
+          "overflow": "continue"
         },
         "style": {
           "width": 220,
-          "height": 220,
+          "height": 200,
           "paddingTop": 6,
           "paddingRight": 6,
           "paddingBottom": 6,
@@ -86,20 +86,20 @@
     },
     {
       "type": "h1",
-      "content": "Guide Plus Clip"
+      "content": "Stash Overflow"
     },
     {
       "type": "p",
-      "content": "The circle host should no longer behave like a normal rectangular paragraph that merely gets clipped at draw time. The text should begin in the narrow crown of the circle, widen through the middle shoulder, and then compress again as the lower arc closes. If that happens, the line carver is no longer only avoiding shapes. It is actively settling text inside them. This is the smallest honest test of the new polarity. The same shape data that once meant forbidden space now means allowed space. That is the inversion we were after.",
+      "content": "The circle host should no longer behave like a normal rectangular paragraph that merely hides overflow at draw time. The text should begin in the narrow crown of the circle, widen through the middle shoulder, and then compress again as the lower arc closes. Once the room is full, any actors that still do not fit should be stashed with the room instead of being forced through its walls. They are still logically there, but only the actors that fit on the main floor should remain visible. That is the containment behavior this sample is proving.",
       "properties": {
         "space": {
           "kind": "contain",
           "shape": "circle",
-          "clip": true
+          "overflow": "stash"
         },
         "style": {
           "width": 220,
-          "height": 220,
+          "height": 200,
           "paddingTop": 6,
           "paddingRight": 6,
           "paddingBottom": 6,
@@ -115,20 +115,20 @@
     },
     {
       "type": "h1",
-      "content": "Guide Plus Clip Plus Justify"
+      "content": "Stash Overflow Plus Justify"
     },
     {
       "type": "p",
-      "content": "The circle host should no longer behave like a normal rectangular paragraph that merely gets clipped at draw time. The text should begin in the narrow crown of the circle, widen through the middle shoulder, and then compress again as the lower arc closes. If that happens, the line carver is no longer only avoiding shapes. It is actively settling text inside them. This is the smallest honest test of the new polarity. The same shape data that once meant forbidden space now means allowed space. That is the inversion we were after.",
+      "content": "This final circle repeats the stash behavior under justification so we can prove the room semantics survive text alignment changes. The actors that fit should still settle through the circle's interior lanes, and the actors that do not fit should still stay stashed with the room instead of leaking halfway through the walls.",
       "properties": {
         "space": {
           "kind": "contain",
           "shape": "circle",
-          "clip": true
+          "overflow": "stash"
         },
         "style": {
           "width": 220,
-          "height": 220,
+          "height": 200,
           "paddingTop": 6,
           "paddingRight": 6,
           "paddingBottom": 6,
@@ -215,7 +215,7 @@
     },
     {
       "type": "p",
-      "content": "If this harsher sample holds, then the experiment has crossed the threshold from curiosity to fixture. A true regression proof should not depend on one forgiving circle and one mildly stepped polygon. It should show that the same room-settlement logic can navigate a much less polite hull and still produce text that feels structurally guided rather than randomly clipped."
+      "content": "If this harsher sample holds, then the experiment has crossed the threshold from curiosity to fixture. A true regression proof should not depend on one forgiving circle and one mildly stepped polygon. It should show that the same room-settlement logic can navigate a much less polite hull and still produce text that feels structurally guided rather than driven by clipping tricks."
     }
   ]
 }

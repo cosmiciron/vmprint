@@ -67,8 +67,8 @@
         "lines": [
           [
             {
-              "text": "Guide Only",
-              "width": 117.347656,
+              "text": "Continue Into World Flow",
+              "width": 265.987305,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -85,8 +85,8 @@
         "lines": [
           [
             {
-              "text": "The cat ",
-              "width": 37.934326,
+              "text": "The ",
+              "width": 21.010254,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -94,8 +94,17 @@
           ],
           [
             {
-              "text": "room is a ",
-              "width": 46.096436,
+              "text": "cat room ",
+              "width": 43.763672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "is a ",
+              "width": 19.256836,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -112,8 +121,8 @@
           ],
           [
             {
-              "text": "interior than ",
-              "width": 58.365234,
+              "text": "int",
+              "width": 11.0896,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -121,8 +130,8 @@
           ],
           [
             {
-              "text": "the ",
-              "width": 17.513672,
+              "text": "erior than the ",
+              "width": 64.789307,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -130,8 +139,17 @@
           ],
           [
             {
-              "text": "circle because it ",
-              "width": 78.201416,
+              "text": "circ",
+              "width": 16.329346,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "le because it ",
+              "width": 61.87207,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -148,8 +166,8 @@
           ],
           [
             {
-              "text": "es a sloped ",
-              "width": 56.62207,
+              "text": "es a sloped back, ",
+              "width": 84.635742,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -157,8 +175,8 @@
           ],
           [
             {
-              "text": "back",
-              "width": 22.179199,
+              "text": "a ",
+              "width": 8.756836,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -166,8 +184,8 @@
           ],
           [
             {
-              "text": ", a deep belly ",
-              "width": 65.378906,
+              "text": "deep belly opening, a ",
+              "width": 102.749268,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -175,8 +193,8 @@
           ],
           [
             {
-              "text": "open",
-              "width": 23.358398,
+              "text": "narr",
+              "width": 18.672363,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -184,8 +202,8 @@
           ],
           [
             {
-              "text": "ing, a narrow leg ",
-              "width": 80.544434,
+              "text": "ow leg channel, and a ",
+              "width": 105.076904,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -193,8 +211,8 @@
           ],
           [
             {
-              "text": "cha",
-              "width": 16.929199,
+              "text": "det",
+              "width": 14.596436,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -202,8 +220,8 @@
           ],
           [
             {
-              "text": "nnel, and a detached tail ",
-              "width": 117.340576,
+              "text": "ached tail chamber. If ",
+              "width": 102.723633,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -211,8 +229,8 @@
           ],
           [
             {
-              "text": "ch",
-              "width": 11.0896,
+              "text": "containment is real, the ",
+              "width": 111.475342,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -220,26 +238,8 @@
           ],
           [
             {
-              "text": "amber. If containment is ",
-              "width": 114.966797,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "real, the packager should ",
-              "width": 120.826904,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "not ",
-              "width": 17.513672,
+              "text": "packager should not ",
+              "width": 97.483887,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -256,8 +256,8 @@
           ],
           [
             {
-              "text": "this ",
-              "width": 19.256836,
+              "text": "this",
+              "width": 16.3396,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -283,8 +283,8 @@
           ],
           [
             {
-              "text": "happens to be ",
-              "width": 69.475342,
+              "text": "merely hides overflow ",
+              "width": 104.456543,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -292,107 +292,8 @@
           ],
           [
             {
-              "text": "clip",
-              "width": 15.755127,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "ped ",
-              "width": 20.436035,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "later. It should discover ",
-              "width": 110.306396,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "the ",
-              "width": 17.513672,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "authored lanes, widen ",
-              "width": 105.65625,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "through the torso, recover across",
-              "width": 154.075195,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "the body shelf, and then respect ",
-              "width": 152.352539,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "the tail-side recovery without ",
-              "width": 135.977051,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "losing the sense that the ",
-              "width": 116.74585,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "paragraph is inhabiting one ",
-              "width": 129.593994,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "continuous room. That is the test",
-              "width": 152.326904,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "here.",
-              "width": 23.932617,
+              "text": "later.",
+              "width": 22.763672,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -403,14 +304,59 @@
       {
         "type": "p",
         "x": 44,
-        "y": 518.280469,
+        "y": 409.175,
+        "w": 380,
+        "h": 57.421875,
+        "lines": [
+          [
+            {
+              "text": "It should discover the authored lanes, widen through the torso, recover across the",
+              "width": 379.384277,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "body shelf, and then respect the tail-side recovery without losing the sense that ",
+              "width": 370.048096,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the paragraph is inhabiting one continuous room. When the room fills, the ",
+              "width": 343.782715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remaining actors should rejoin normal world flow below it. That is the test here.",
+              "width": 364.751953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 44,
+        "y": 490.596875,
         "w": 380,
         "h": 62.35625,
         "lines": [
           [
             {
-              "text": "Guide-only mode matters because it exposes the raw settlement behavior ",
-              "width": 361.963379,
+              "text": "Continue mode matters because it proves the raw settlement behavior without",
+              "width": 379.69873,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -418,8 +364,8 @@
           ],
           [
             {
-              "text": "without visible clipping hiding the misses. If the text still feels structurally ",
-              "width": 352.762695,
+              "text": "pretending overflow vanished. If the text still feels structurally guided here, ",
+              "width": 363.193359,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -427,8 +373,8 @@
           ],
           [
             {
-              "text": "guided here, then the solver is genuinely reading the cat interior rather than ",
-              "width": 369.343262,
+              "text": "then the solver is genuinely reading the cat interior rather than merely ",
+              "width": 341.187988,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -436,8 +382,8 @@
           ],
           [
             {
-              "text": "merely masking a rectangular paragraph after the fact.",
-              "width": 264.746582,
+              "text": "masking a rectangular paragraph after the fact.",
+              "width": 228.685059,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -461,8 +407,8 @@
         "lines": [
           [
             {
-              "text": "Guide Plus Clip",
-              "width": 162.572266,
+              "text": "Stash Overflow",
+              "width": 160.155273,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -479,8 +425,8 @@
         "lines": [
           [
             {
-              "text": "The cat ",
-              "width": 37.934326,
+              "text": "The ",
+              "width": 21.010254,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -488,8 +434,17 @@
           ],
           [
             {
-              "text": "room is a ",
-              "width": 46.096436,
+              "text": "cat room ",
+              "width": 43.763672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "is a ",
+              "width": 19.256836,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -506,8 +461,8 @@
           ],
           [
             {
-              "text": "interior than ",
-              "width": 58.365234,
+              "text": "int",
+              "width": 11.0896,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -515,8 +470,8 @@
           ],
           [
             {
-              "text": "the ",
-              "width": 17.513672,
+              "text": "erior than the ",
+              "width": 64.789307,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -524,8 +479,17 @@
           ],
           [
             {
-              "text": "circle because it ",
-              "width": 78.201416,
+              "text": "circ",
+              "width": 16.329346,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "le because it ",
+              "width": 61.87207,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -542,8 +506,8 @@
           ],
           [
             {
-              "text": "es a sloped ",
-              "width": 56.62207,
+              "text": "es a sloped back, ",
+              "width": 84.635742,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -551,8 +515,8 @@
           ],
           [
             {
-              "text": "back",
-              "width": 22.179199,
+              "text": "a ",
+              "width": 8.756836,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -560,8 +524,8 @@
           ],
           [
             {
-              "text": ", a deep belly ",
-              "width": 65.378906,
+              "text": "deep belly opening, a ",
+              "width": 102.749268,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -569,8 +533,8 @@
           ],
           [
             {
-              "text": "open",
-              "width": 23.358398,
+              "text": "narr",
+              "width": 18.672363,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -578,8 +542,8 @@
           ],
           [
             {
-              "text": "ing, a narrow leg ",
-              "width": 80.544434,
+              "text": "ow leg channel, and a ",
+              "width": 105.076904,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -587,8 +551,8 @@
           ],
           [
             {
-              "text": "cha",
-              "width": 16.929199,
+              "text": "det",
+              "width": 14.596436,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -596,8 +560,8 @@
           ],
           [
             {
-              "text": "nnel, and a detached tail ",
-              "width": 117.340576,
+              "text": "ached tail chamber. If ",
+              "width": 102.723633,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -605,8 +569,8 @@
           ],
           [
             {
-              "text": "ch",
-              "width": 11.0896,
+              "text": "containment is real, the ",
+              "width": 111.475342,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -614,26 +578,8 @@
           ],
           [
             {
-              "text": "amber. If containment is ",
-              "width": 114.966797,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "real, the packager should ",
-              "width": 120.826904,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "not ",
-              "width": 17.513672,
+              "text": "packager should not ",
+              "width": 97.483887,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -650,8 +596,8 @@
           ],
           [
             {
-              "text": "this ",
-              "width": 19.256836,
+              "text": "this",
+              "width": 16.3396,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -677,8 +623,8 @@
           ],
           [
             {
-              "text": "happens to be ",
-              "width": 69.475342,
+              "text": "merely hides overflow ",
+              "width": 104.456543,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -686,44 +632,8 @@
           ],
           [
             {
-              "text": "clip",
-              "width": 15.755127,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "ped ",
-              "width": 20.436035,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "later. It should discover ",
-              "width": 110.306396,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "the ",
-              "width": 17.513672,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "authored lanes, widen ",
-              "width": 105.65625,
+              "text": "later.",
+              "width": 22.763672,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

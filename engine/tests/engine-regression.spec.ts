@@ -2249,6 +2249,10 @@ function assertSimulationReportSignals(engine: any, pages: any[], fixtureName: s
         `${fixtureName}: simulation report should expose headingTelemetry`
     );
     assert.ok(
+        reader.has(simulationArtifactKeys.containedContentSummary),
+        `${fixtureName}: simulation report should expose containedContentSummary`
+    );
+    assert.ok(
         reader.has(simulationArtifactKeys.pageOverrideSummary),
         `${fixtureName}: simulation report should expose pageOverrideSummary`
     );

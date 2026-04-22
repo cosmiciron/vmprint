@@ -55,7 +55,8 @@ export class SimulationReportBridge {
             asyncThoughtSummary: publishedArtifacts.get(simulationArtifactKeys.asyncThoughtSummary) as SimulationArtifactMap['asyncThoughtSummary'],
             temporalPresentationTimeline: publishedArtifacts.get(simulationArtifactKeys.temporalPresentationTimeline) as SimulationArtifactMap['temporalPresentationTimeline'],
             interactionMap: publishedArtifacts.get(simulationArtifactKeys.interactionMap) as SimulationArtifactMap['interactionMap'],
-            viewportCaptureSummary: publishedArtifacts.get(simulationArtifactKeys.viewportCaptureSummary) as SimulationArtifactMap['viewportCaptureSummary']
+            viewportCaptureSummary: publishedArtifacts.get(simulationArtifactKeys.viewportCaptureSummary) as SimulationArtifactMap['viewportCaptureSummary'],
+            containedContentSummary: publishedArtifacts.get(simulationArtifactKeys.containedContentSummary) as SimulationArtifactMap['containedContentSummary']
         };
 
         for (const [key, value] of publishedArtifacts.entries()) {

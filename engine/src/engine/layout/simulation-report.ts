@@ -13,6 +13,7 @@ import type { AsyncThoughtSummary } from './collaborators/async-thought-runtime-
 import type { TemporalPresentationTimeline } from './collaborators/temporal-presentation-collaborator';
 import type { InteractionArtifactSummary } from './collaborators/interaction-artifact-collaborator';
 import type { ViewportCaptureSummary } from './collaborators/viewport-capture-artifact-collaborator';
+import type { ContainedContentArtifactSummary } from './collaborators/contained-content-artifact-collaborator';
 import type { LayoutProfileMetrics } from './runtime/session/session-profile-types';
 import type { PageCaptureRecord } from './runtime/session/session-state-types';
 import type { Page } from '../types';
@@ -34,6 +35,7 @@ export type SimulationArtifactMap = {
     temporalPresentationTimeline?: TemporalPresentationTimeline;
     interactionMap?: InteractionArtifactSummary;
     viewportCaptureSummary?: ViewportCaptureSummary[];
+    containedContentSummary?: ContainedContentArtifactSummary[];
 };
 
 export type SimulationArtifactKey = keyof SimulationArtifactMap;
@@ -54,7 +56,8 @@ export const simulationArtifactKeys = {
     asyncThoughtSummary: 'asyncThoughtSummary',
     temporalPresentationTimeline: 'temporalPresentationTimeline',
     interactionMap: 'interactionMap',
-    viewportCaptureSummary: 'viewportCaptureSummary'
+    viewportCaptureSummary: 'viewportCaptureSummary',
+    containedContentSummary: 'containedContentSummary'
 } as const satisfies Record<SimulationArtifactKey, SimulationArtifactKey>;
 
 export const knownSimulationArtifactKeys: readonly SimulationArtifactKey[] = [
@@ -72,7 +75,8 @@ export const knownSimulationArtifactKeys: readonly SimulationArtifactKey[] = [
     simulationArtifactKeys.asyncThoughtSummary,
     simulationArtifactKeys.temporalPresentationTimeline,
     simulationArtifactKeys.interactionMap,
-    simulationArtifactKeys.viewportCaptureSummary
+    simulationArtifactKeys.viewportCaptureSummary,
+    simulationArtifactKeys.containedContentSummary
 ] as const;
 
 export type SimulationReport = {

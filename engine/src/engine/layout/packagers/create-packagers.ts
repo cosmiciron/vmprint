@@ -2,6 +2,7 @@ import { Element } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { PackagerUnit } from './packager-types';
 import { FlowBoxPackager } from './flow-box-packager';
+import { ContainedFlowPackager } from './contained-flow-packager';
 import { DropCapPackager } from './dropcap-packager';
 import { FieldActorPackager, isFieldActorElement } from './field-actor-packager';
 import { hasSpatialCapabilityProperties, SpatialCapabilityPackager } from './spatial-capability-packager';
@@ -84,7 +85,9 @@ export function buildPackagerForElement(
     if (scriptHost && hasMessageHandler) {
         return new ScriptedFlowBoxPackager(processor, flowBox, scriptHost, item, identity, [index], elements || [item]);
     }
-    const flowPackager = new FlowBoxPackager(processor, flowBox, identity);
+    const flowPackager = ((item.properties?.space ?? item.properties?.spatialField) as { kind?: string } | undefined)?.kind === 'contain'
+        ? new ContainedFlowPackager(processor, flowBox, identity)
+        : new FlowBoxPackager(processor, flowBox, identity);
     if (hasSpatialCapabilityProperties(item)) {
         return new SpatialCapabilityPackager(item, processor, flowPackager, identity);
     }
