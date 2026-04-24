@@ -356,8 +356,162 @@
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 77.875391,
+              "text": "A",
+              "width": 4.7396,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.846045,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.912207,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.794775,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.274512,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 3.992529,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.472266,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 2.93335,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -382,8 +536,141 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of ",
-              "width": 62.371875,
+              "text": "I",
+              "width": 2.315625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.749219,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.198437,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.089062,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.690625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.741406,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -391,8 +678,43 @@
           ],
           [
             {
-              "text": "Regions",
-              "width": 27.135938,
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -427,15 +749,141 @@
         "lines": [
           [
             {
-              "text": "A Study in Page ",
-              "width": 54.157813,
+              "text": "A",
+              "width": 4.928906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
             },
             {
-              "text": "Reg-",
-              "width": 15.298438,
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.975781,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.979687,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.921094,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 4.132031,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -443,8 +891,22 @@
           ],
           [
             {
-              "text": "ions",
-              "width": 14.286719,
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -638,8 +1100,183 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of Regions",
-              "width": 85.694824,
+              "text": "I",
+              "width": 2.289648,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.696143,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.054785,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.274512,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.014746,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.391211,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.688818,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.472266,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 2.93335,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -656,15 +1293,141 @@
         "lines": [
           [
             {
-              "text": "A Study in Page ",
-              "width": 54.157813,
+              "text": "A",
+              "width": 4.928906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
             },
             {
-              "text": "Reg-",
-              "width": 15.298438,
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.975781,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.979687,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.921094,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 4.132031,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -672,8 +1435,22 @@
           ],
           [
             {
-              "text": "ions",
-              "width": 14.286719,
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -708,8 +1485,141 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of ",
-              "width": 62.371875,
+              "text": "I",
+              "width": 2.315625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.749219,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.198437,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.089062,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.690625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.741406,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -717,8 +1627,43 @@
           ],
           [
             {
-              "text": "Regions",
-              "width": 27.135938,
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -920,8 +1865,162 @@
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 77.875391,
+              "text": "A",
+              "width": 4.7396,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.846045,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.912207,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.794775,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.274512,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 3.992529,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.472266,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 2.93335,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -946,8 +2045,141 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of ",
-              "width": 62.371875,
+              "text": "I",
+              "width": 2.315625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.749219,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.198437,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.089062,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.690625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.741406,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -955,8 +2187,43 @@
           ],
           [
             {
-              "text": "Regions",
-              "width": 27.135938,
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -991,15 +2258,141 @@
         "lines": [
           [
             {
-              "text": "A Study in Page ",
-              "width": 54.157813,
+              "text": "A",
+              "width": 4.928906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
             },
             {
-              "text": "Reg-",
-              "width": 15.298438,
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.975781,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.979687,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.921094,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 4.132031,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1007,8 +2400,22 @@
           ],
           [
             {
-              "text": "ions",
-              "width": 14.286719,
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1076,8 +2483,183 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of Regions",
-              "width": 85.694824,
+              "text": "I",
+              "width": 2.289648,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.696143,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.054785,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.274512,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.014746,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.391211,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.688818,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.472266,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 2.93335,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1094,15 +2676,141 @@
         "lines": [
           [
             {
-              "text": "A Study in Page ",
-              "width": 54.157813,
+              "text": "A",
+              "width": 4.928906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
             },
             {
-              "text": "Reg-",
-              "width": 15.298438,
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.975781,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.979687,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.921094,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 4.132031,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1110,8 +2818,22 @@
           ],
           [
             {
-              "text": "ions",
-              "width": 14.286719,
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1146,8 +2868,141 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of ",
-              "width": 62.371875,
+              "text": "I",
+              "width": 2.315625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.749219,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.198437,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.089062,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.690625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.741406,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1155,8 +3010,43 @@
           ],
           [
             {
-              "text": "Regions",
-              "width": 27.135938,
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1348,8 +3238,197 @@
         "lines": [
           [
             {
-              "text": "II - Resolution and Override",
-              "width": 90.461719,
+              "text": "I",
+              "width": 2.289648,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "I",
+              "width": 2.289648,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.696143,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.472266,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.33335,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.912207,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 3.992529,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "O",
+              "width": 5.36582,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "v",
+              "width": 3.787451,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.014746,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.014746,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 3.731689,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1366,15 +3445,141 @@
         "lines": [
           [
             {
-              "text": "A Study in Page ",
-              "width": 54.157813,
+              "text": "A",
+              "width": 4.928906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
             },
             {
-              "text": "Reg-",
-              "width": 15.298438,
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.975781,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.979687,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.921094,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 4.132031,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1382,8 +3587,22 @@
           ],
           [
             {
-              "text": "ions",
-              "width": 14.286719,
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1418,8 +3637,141 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of ",
-              "width": 62.371875,
+              "text": "I",
+              "width": 2.315625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.749219,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.198437,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.089062,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.690625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.741406,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1427,8 +3779,43 @@
           ],
           [
             {
-              "text": "Regions",
-              "width": 27.135938,
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1642,8 +4029,162 @@
         "lines": [
           [
             {
-              "text": "A Study in Page Regions",
-              "width": 77.875391,
+              "text": "A",
+              "width": 4.7396,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.846045,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.912207,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.794775,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.274512,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 3.992529,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.472266,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 2.93335,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1668,8 +4209,141 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of ",
-              "width": 62.371875,
+              "text": "I",
+              "width": 2.315625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.749219,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.198437,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.089062,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.690625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.741406,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1677,8 +4351,43 @@
           ],
           [
             {
-              "text": "Regions",
-              "width": 27.135938,
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1713,15 +4422,141 @@
         "lines": [
           [
             {
-              "text": "A Study in Page ",
-              "width": 54.157813,
+              "text": "A",
+              "width": 4.928906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
             },
             {
-              "text": "Reg-",
-              "width": 15.298438,
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.975781,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.979687,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.921094,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 4.132031,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1729,8 +4564,22 @@
           ],
           [
             {
-              "text": "ions",
-              "width": 14.286719,
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1940,8 +4789,183 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of Regions",
-              "width": 85.694824,
+              "text": "I",
+              "width": 2.289648,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.696143,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.054785,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.274512,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.014746,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.391211,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.688818,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.472266,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 2.93335,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1958,15 +4982,141 @@
         "lines": [
           [
             {
-              "text": "A Study in Page ",
-              "width": 54.157813,
+              "text": "A",
+              "width": 4.928906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
             },
             {
-              "text": "Reg-",
-              "width": 15.298438,
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.975781,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.979687,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.921094,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 4.132031,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -1974,8 +5124,22 @@
           ],
           [
             {
-              "text": "ions",
-              "width": 14.286719,
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2010,8 +5174,141 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of ",
-              "width": 62.371875,
+              "text": "I",
+              "width": 2.315625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.749219,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.198437,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.089062,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.690625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.741406,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2019,8 +5316,43 @@
           ],
           [
             {
-              "text": "Regions",
-              "width": 27.135938,
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2196,8 +5528,113 @@
         "lines": [
           [
             {
-              "text": "Epilogue - p. 10",
-              "width": 50.621484,
+              "text": "E",
+              "width": 4.062109,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "p",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.696143,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "p",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": ".",
+              "width": 2.293311,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "1",
+              "width": 4.20127,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "0",
+              "width": 3.80127,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2214,8 +5651,141 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of ",
-              "width": 62.371875,
+              "text": "I",
+              "width": 2.315625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.749219,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.198437,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.089062,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.690625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.741406,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2223,8 +5793,43 @@
           ],
           [
             {
-              "text": "Regions",
-              "width": 27.135938,
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2259,15 +5864,141 @@
         "lines": [
           [
             {
-              "text": "A Study in Page ",
-              "width": 54.157813,
+              "text": "A",
+              "width": 4.928906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
             },
             {
-              "text": "Reg-",
-              "width": 15.298438,
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "S",
+              "width": 3.975781,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "t",
+              "width": 2.979687,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "u",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "d",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "y",
+              "width": 3.921094,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.432812,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "a",
+              "width": 4.132031,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.108594,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.64375,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.280469,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 4.065625,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.135937,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2275,8 +6006,22 @@
           ],
           [
             {
-              "text": "ions",
-              "width": 14.286719,
+              "text": "o",
+              "width": 4.51875,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.503125,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 3.128906,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"
@@ -2457,8 +6202,183 @@
         "lines": [
           [
             {
-              "text": "I - The Problem of Regions",
-              "width": 85.694824,
+              "text": "I",
+              "width": 2.289648,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "-",
+              "width": 2.696143,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "T",
+              "width": 4.054785,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "h",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "P",
+              "width": 4.274512,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "r",
+              "width": 3.014746,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "b",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "l",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "m",
+              "width": 6.391211,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "f",
+              "width": 2.688818,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": " ",
+              "width": 2.095557,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "R",
+              "width": 4.472266,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "e",
+              "width": 4.131689,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "g",
+              "width": 3.930273,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "i",
+              "width": 2.121191,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "o",
+              "width": 4.355078,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "n",
+              "width": 4.34043,
+              "ascent": 952.148438,
+              "descent": 268.554688,
+              "fontFamily": "Carlito"
+            },
+            {
+              "text": "s",
+              "width": 2.93335,
               "ascent": 952.148438,
               "descent": 268.554688,
               "fontFamily": "Carlito"

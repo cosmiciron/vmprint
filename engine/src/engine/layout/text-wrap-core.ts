@@ -11,6 +11,7 @@ export type WrapSegmentToken = {
     allowMerge: boolean;
     hyphenationStyle?: ElementStyle | Record<string, any>;
     noLineStart?: boolean;
+    trackingAfter?: number;
 };
 
 export type WrapToken = { kind: 'newline' } | WrapSegmentToken;
@@ -73,6 +74,20 @@ function assignSequentialSourceRange(
     };
 }
 
+function resolveSegmentLetterSpacing(segment: TextSegment, fallback: number): number {
+    const value = Number(segment?.style?.letterSpacing);
+    return Number.isFinite(value) ? value : fallback;
+}
+
+function hasSegmentLetterSpacing(segment: TextSegment): boolean {
+    const value = Number(segment?.style?.letterSpacing);
+    return Number.isFinite(value) && value !== 0;
+}
+
+function splitToCodePointSegments(text: string): string[] {
+    return Array.from(text);
+}
+
 export function buildRichWrapTokens(params: {
     flattenedSegments: TextSegment[];
     defaultFontSize: number;
@@ -126,10 +141,14 @@ export function buildRichWrapTokens(params: {
             SIMPLE_LATIN_WRAP_RE.test(seg.text);
 
         if (canUseSimpleLatinPath) {
-            const simpleSubSegments = tokenizeSimpleLatinSegment(seg.text);
+            const segmentHasLetterSpacing = hasSegmentLetterSpacing(seg);
+            const simpleSubSegments = segmentHasLetterSpacing
+                ? splitToCodePointSegments(seg.text)
+                : tokenizeSimpleLatinSegment(seg.text);
             if (simpleSubSegments.length > 0) {
                 let simpleOffset = 0;
-                for (const segment of simpleSubSegments) {
+                for (let segmentIndex = 0; segmentIndex < simpleSubSegments.length; segmentIndex++) {
+                    const segment = simpleSubSegments[segmentIndex] || '';
                     const startOffset = simpleOffset;
                     const endOffset = startOffset + segment.length;
                     const richSubSeg = params.transformSegment(
@@ -144,9 +163,12 @@ export function buildRichWrapTokens(params: {
                         font: resolved.font,
                         fontSize: resolved.fontSize,
                         locale,
-                        allowMerge: true,
+                        allowMerge: !segmentHasLetterSpacing,
                         hyphenationStyle: (richSubSeg.style || seg.style || params.primaryStyle) as ElementStyle,
-                        noLineStart: isForbiddenLineStart(richSubSeg.text || '')
+                        noLineStart: isForbiddenLineStart(richSubSeg.text || ''),
+                        trackingAfter: segmentHasLetterSpacing && segmentIndex < simpleSubSegments.length - 1
+                            ? resolveSegmentLetterSpacing(richSubSeg, 0)
+                            : 0
                     });
                 }
                 continue;
@@ -206,55 +228,67 @@ export function buildRichWrapTokens(params: {
                     for (const segment of subSegments) {
                         const subStartOffset = subOffset;
                         const subEndOffset = subStartOffset + segment.length;
-                        const rawSubSeg = sliceSegmentByOffsets(
-                            runBaseSeg,
-                            subStartOffset,
-                            subEndOffset,
-                            segment,
-                            scriptSeg.fontName || seg.fontFamily
-                        );
-                        subOffset = subEndOffset;
+                        const rawSubSegHasLetterSpacing = hasSegmentLetterSpacing(runBaseSeg);
+                        const measuredSegments = rawSubSegHasLetterSpacing ? splitToCodePointSegments(segment) : [segment];
+                        let measuredSegmentOffset = 0;
+                        for (let measuredIndex = 0; measuredIndex < measuredSegments.length; measuredIndex++) {
+                            const measuredSegment = measuredSegments[measuredIndex] || '';
+                            const measuredStartOffset = subStartOffset + measuredSegmentOffset;
+                            const measuredEndOffset = measuredStartOffset + measuredSegment.length;
+                            measuredSegmentOffset += measuredSegment.length;
+                            const rawSubSeg = sliceSegmentByOffsets(
+                                runBaseSeg,
+                                measuredStartOffset,
+                                measuredEndOffset,
+                                measuredSegment,
+                                scriptSeg.fontName || seg.fontFamily
+                            );
 
-                        const richSubSeg = params.transformSegment(rawSubSeg, rawSubSeg.fontFamily);
-                        const textValue = richSubSeg.text || '';
-                        if (textValue.trim().length > 0) {
-                            const scriptClass = params.getScriptClass(textValue);
-                            richSubSeg.scriptClass = scriptClass;
-                            richSubSeg.direction = isNumericRunSegment(textValue) ? 'ltr' : bidiRun.direction;
+                            const richSubSeg = params.transformSegment(rawSubSeg, rawSubSeg.fontFamily);
+                            const textValue = richSubSeg.text || '';
+                            if (textValue.trim().length > 0) {
+                                const scriptClass = params.getScriptClass(textValue);
+                                richSubSeg.scriptClass = scriptClass;
+                                richSubSeg.direction = isNumericRunSegment(textValue) ? 'ltr' : bidiRun.direction;
 
-                            const optScale = params.getOpticalScale(scriptClass);
-                            if (optScale !== 1.0) {
-                                const currentStyle = richSubSeg.style || {};
-                                const baseSize = Number(currentStyle.fontSize || params.defaultFontSize);
-                                const scaledSize = baseSize * optScale;
-                                if (scaledSize !== baseSize) {
-                                    richSubSeg.style = {
-                                        ...currentStyle,
-                                        fontSize: scaledSize
-                                    };
+                                const optScale = params.getOpticalScale(scriptClass);
+                                if (optScale !== 1.0) {
+                                    const currentStyle = richSubSeg.style || {};
+                                    const baseSize = Number(currentStyle.fontSize || params.defaultFontSize);
+                                    const scaledSize = baseSize * optScale;
+                                    if (scaledSize !== baseSize) {
+                                        richSubSeg.style = {
+                                            ...currentStyle,
+                                            fontSize: scaledSize
+                                        };
+                                    }
                                 }
+                            } else {
+                                // Inherit BIDI run direction for spaces/empty tokens
+                                richSubSeg.direction = bidiRun.direction;
                             }
-                        } else {
-                            // Inherit BIDI run direction for spaces/empty tokens
-                            richSubSeg.direction = bidiRun.direction;
-                        }
-                        const preserveBoundaries =
-                            params.advancedJustify ||
-                            params.preserveDirectionalBoundaries ||
-                            (params.direction === 'auto' && params.hasRtlScript(richSubSeg.text || '')) ||
-                            ((richSubSeg.style as any)?.textAlign === 'justify' && params.isAdvancedJustifyEnabled(richSubSeg.style as any));
+                            const preserveBoundaries =
+                                params.advancedJustify ||
+                                params.preserveDirectionalBoundaries ||
+                                (params.direction === 'auto' && params.hasRtlScript(richSubSeg.text || '')) ||
+                                ((richSubSeg.style as any)?.textAlign === 'justify' && params.isAdvancedJustifyEnabled(richSubSeg.style as any));
 
-                        const resolved = params.resolveRichFontInfo(richSubSeg, params.defaultFontSize);
-                        tokens.push({
-                            kind: 'segment',
-                            segment: richSubSeg,
-                            font: resolved.font,
-                            fontSize: resolved.fontSize,
-                            locale,
-                            allowMerge: !preserveBoundaries,
-                            hyphenationStyle: (richSubSeg.style || seg.style || params.primaryStyle) as ElementStyle,
-                            noLineStart: isForbiddenLineStart(richSubSeg.text || '')
-                        });
+                            const resolved = params.resolveRichFontInfo(richSubSeg, params.defaultFontSize);
+                            tokens.push({
+                                kind: 'segment',
+                                segment: richSubSeg,
+                                font: resolved.font,
+                                fontSize: resolved.fontSize,
+                                locale,
+                                allowMerge: !preserveBoundaries && !rawSubSegHasLetterSpacing,
+                                hyphenationStyle: (richSubSeg.style || seg.style || params.primaryStyle) as ElementStyle,
+                                noLineStart: isForbiddenLineStart(richSubSeg.text || ''),
+                                trackingAfter: rawSubSegHasLetterSpacing && measuredIndex < measuredSegments.length - 1
+                                    ? resolveSegmentLetterSpacing(richSubSeg, 0)
+                                    : 0
+                            });
+                        }
+                        subOffset = subEndOffset;
                     }
                 }
             }
@@ -333,7 +367,12 @@ export function wrapTokenStream(params: {
             continue;
         }
 
-        const segmentWidth = params.measureText(token.segment.text, token.font, token.fontSize, params.letterSpacing, token.segment);
+        const segmentLetterSpacing = resolveSegmentLetterSpacing(token.segment, params.letterSpacing);
+        const measuredSegmentWidth = params.measureText(token.segment.text, token.font, token.fontSize, segmentLetterSpacing, token.segment);
+        const segmentWidth = measuredSegmentWidth + (Number.isFinite(Number(token.trackingAfter)) ? Number(token.trackingAfter) : 0);
+        if (token.trackingAfter) {
+            token.segment.width = segmentWidth;
+        }
         const lineWidthLimit = getCurrentLineWidthLimit();
 
         if (fitsWidth(currentLineWidth, segmentWidth, lineWidthLimit)) {
@@ -349,7 +388,7 @@ export function wrapTokenStream(params: {
                 token.segment,
                 token.font,
                 token.fontSize,
-                params.letterSpacing,
+                segmentLetterSpacing,
                 remainingWidth,
                 token.hyphenationStyle
             );
@@ -383,11 +422,12 @@ export function wrapTokenStream(params: {
                             hyphenated.tail.fontFamily
                         );
                         const graphemeFont = params.resolveRichFontInfo(graphemeSegment, token.fontSize);
+                        const graphemeLetterSpacing = resolveSegmentLetterSpacing(graphemeSegment, segmentLetterSpacing);
                         const graphemeWidth = params.measureText(
                             graphemeSegment.text,
                             graphemeFont.font,
                             graphemeFont.fontSize,
-                            params.letterSpacing,
+                            graphemeLetterSpacing,
                             graphemeSegment
                         );
 
@@ -440,11 +480,12 @@ export function wrapTokenStream(params: {
                     token.segment.fontFamily
                 );
                 const graphemeFont = params.resolveRichFontInfo(graphemeSegment, token.fontSize);
+                const graphemeLetterSpacing = resolveSegmentLetterSpacing(graphemeSegment, segmentLetterSpacing);
                 const graphemeWidth = params.measureText(
                     graphemeSegment.text,
                     graphemeFont.font,
                     graphemeFont.fontSize,
-                    params.letterSpacing,
+                    graphemeLetterSpacing,
                     graphemeSegment
                 );
 

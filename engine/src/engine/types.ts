@@ -524,6 +524,8 @@ export interface LayoutConfig {
         fontFamily: string;
         fontSize: number;
         lineHeight: number;
+        lineHeightMode?: 'print' | 'css';
+        lineHeightAdjustment?: number;
         /** Background fill colour for every page, e.g. "#fdf6ee" for a warm paper tone. */
         pageBackground?: string;
         /** Optical story wrap underhang: allow full-width lines once their top clears an obstacle bottom. */

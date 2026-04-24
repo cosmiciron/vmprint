@@ -118,8 +118,43 @@
               "fontFamily": ""
             },
             {
-              "text": "spaced",
-              "width": 38.695313,
+              "text": "s",
+              "width": 6.4,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "p",
+              "width": 7.073828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "a",
+              "width": 7.073828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "c",
+              "width": 6.4,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "e",
+              "width": 7.073828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "d",
+              "width": 6.673828,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -171,8 +206,442 @@
         "lines": [
           [
             {
-              "text": "One-off element override using properties.style.fontFamily = ",
-              "width": 448.714062,
+              "text": "O",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "n",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "-",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "o",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "f",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "f",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": " ",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "l",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "m",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "n",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "t",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": " ",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "o",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "v",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "r",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "r",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "i",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "d",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": " ",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "u",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "s",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "i",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "n",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "g",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": " ",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "p",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "r",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "o",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "p",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "r",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "t",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "i",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "s",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": ".",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "s",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "t",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "y",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "l",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": ".",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "f",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "o",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "n",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "t",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "F",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "a",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "m",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "i",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "l",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "y",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": " ",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "=",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": " ",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "C",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "o",
+              "width": 7.395313,
               "ascent": 781.25,
               "descent": 341.796875,
               "fontFamily": "Courier Prime"
@@ -180,8 +649,85 @@
           ],
           [
             {
-              "text": "Courier Prime.",
-              "width": 102.934375,
+              "text": "u",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "r",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "i",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "r",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": " ",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "P",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "r",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "i",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "m",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "e",
+              "width": 7.395313,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": ".",
+              "width": 7.195313,
               "ascent": 781.25,
               "descent": 341.796875,
               "fontFamily": "Courier Prime"

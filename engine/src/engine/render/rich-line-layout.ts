@@ -8,6 +8,19 @@ export type RendererLineFrameAccessors = {
     getLineY: (lineIndex: number) => number | null;
 };
 
+export type RendererLineHeightPolicy = {
+    mode?: 'print' | 'css';
+    adjustment?: number;
+};
+
+const resolveLineHeightPolicy = (policy?: RendererLineHeightPolicy): Required<RendererLineHeightPolicy> => ({
+    mode: policy?.mode === 'css' ? 'css' : 'print',
+    adjustment: Number.isFinite(Number(policy?.adjustment)) ? Number(policy?.adjustment) : 0
+});
+
+const applyLineHeightAdjustment = (height: number, policy: Required<RendererLineHeightPolicy>): number =>
+    Math.max(0, height + policy.adjustment);
+
 const lineEndsWithForcedBreak = (line: RendererLine): boolean => {
     if (!Array.isArray(line) || line.length === 0) return false;
     return !!line[line.length - 1]?.forcedBreakAfter;
@@ -31,14 +44,17 @@ const computeEffectiveLineHeight = (
     line: RendererRichLine,
     baseFontSize: number,
     lineHeight: number,
-    referenceAscentScale: number
+    referenceAscentScale: number,
+    lineHeightPolicy?: RendererLineHeightPolicy
 ): number => {
+    const policy = resolveLineHeightPolicy(lineHeightPolicy);
     const lineFontSize = line.reduce(
         (max, seg) => Math.max(max, Number(seg.style?.fontSize || baseFontSize)),
         Number(baseFontSize)
     );
     const nominal = lineFontSize * lineHeight;
-    if (line.length === 0) return nominal;
+    if (policy.mode === 'css') return applyLineHeightAdjustment(nominal, policy);
+    if (line.length === 0) return applyLineHeightAdjustment(nominal, policy);
 
     let maxAscentFromBaseline = 0;
     let maxDescentFromBaseline = 0;
@@ -61,10 +77,16 @@ const computeEffectiveLineHeight = (
     const neededTextHeight = neededAscentFromTop + maxDescentFromBaseline;
     const lead = nominal - lineFontSize;
     const neededHeight = neededTextHeight + lead;
-    return Math.max(nominal, neededHeight);
+    return applyLineHeightAdjustment(Math.max(nominal, neededHeight), policy);
 };
 
-export const buildParagraphMetrics = (lines: RendererLine[], fontSize: number, lineHeight: number): RendererParagraphMetrics => {
+export const buildParagraphMetrics = (
+    lines: RendererLine[],
+    fontSize: number,
+    lineHeight: number,
+    lineHeightPolicy?: RendererLineHeightPolicy
+): RendererParagraphMetrics => {
+    const policy = resolveLineHeightPolicy(lineHeightPolicy);
     const lineHasInlineObject = (line: RendererRichLine): boolean => line.some((seg) => !!seg?.inlineObject);
     const paragraphHasInlineObjects = lines.some((line) => Array.isArray(line) && lineHasInlineObject(line));
 
@@ -82,7 +104,7 @@ export const buildParagraphMetrics = (lines: RendererLine[], fontSize: number, l
             return {
                 lineFontSize: Number(fontSize),
                 referenceAscentScale: paragraphReferenceAscentScale,
-                effectiveLineHeight: Number(fontSize) * lineHeight
+                effectiveLineHeight: applyLineHeightAdjustment(Number(fontSize) * lineHeight, policy)
             };
         }
 
@@ -97,7 +119,7 @@ export const buildParagraphMetrics = (lines: RendererLine[], fontSize: number, l
         return {
             lineFontSize,
             referenceAscentScale,
-            effectiveLineHeight: computeEffectiveLineHeight(line, fontSize, lineHeight, referenceAscentScale)
+            effectiveLineHeight: computeEffectiveLineHeight(line, fontSize, lineHeight, referenceAscentScale, policy)
         };
     });
 

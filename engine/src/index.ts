@@ -14,7 +14,7 @@ export { createPrintEngineRuntime } from './font-management/runtime';
 export { loadDocument } from './engine/document';
 
 // ---------------------------------------------------------------------------
-// Document types — needed to construct VMPrintEngine
+// Document types - needed to construct VMPrintEngine
 // ---------------------------------------------------------------------------
 
 export type {
@@ -23,7 +23,7 @@ export type {
 } from './engine/types';
 
 // ---------------------------------------------------------------------------
-// Layout result types — needed when inspecting pages from layout()
+// Layout result types - needed when inspecting pages from layout()
 // ---------------------------------------------------------------------------
 
 export type {
@@ -41,7 +41,7 @@ export type {
 } from './engine/types';
 
 // ---------------------------------------------------------------------------
-// Contract types — exposed directly from this package so consumers don't need
+// Contract types - exposed directly from this package so consumers don't need
 // a separate contracts package just to wire a FontManager or Context
 // ---------------------------------------------------------------------------
 
@@ -60,14 +60,14 @@ export type {
     SimulationLoopState
 } from './engine/layout/simulation-loop';
 
-// SpatialDocument API — for zone-based layout compositions.
+// SpatialDocument API - for zone-based layout compositions.
 export type { SpatialDocument } from './engine/spatial-document';
 export {
     spatialDocumentToElements,
     spatialDocumentToElementsStrict
 } from './engine/spatial-document';
 
-// serializeDocumentIR — for tools that need to inspect or store the IR.
+// serializeDocumentIR - for tools that need to inspect or store the IR.
 export { serializeDocumentIR } from './engine/document';
 
 // ---------------------------------------------------------------------------

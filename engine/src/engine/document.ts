@@ -25,6 +25,8 @@ const LAYOUT_KEYS = new Set([
     'fontFamily',
     'fontSize',
     'lineHeight',
+    'lineHeightMode',
+    'lineHeightAdjustment',
     'pageBackground',
     'storyWrapOpticalUnderhang',
     'microLanePolicy',
@@ -290,6 +292,8 @@ function validateLayout(layout: unknown, documentPath: string): void {
     }
     assertFiniteNumberAt(obj.fontSize, 'layout.fontSize', documentPath);
     assertFiniteNumberAt(obj.lineHeight, 'layout.lineHeight', documentPath);
+    assertEnumAt(obj.lineHeightMode, ['print', 'css'], 'layout.lineHeightMode', documentPath);
+    if (obj.lineHeightAdjustment !== undefined) assertFiniteNumberAt(obj.lineHeightAdjustment, 'layout.lineHeightAdjustment', documentPath);
     if (obj.pageBackground !== undefined) assertStringAt(obj.pageBackground, 'layout.pageBackground', documentPath);
     if (obj.storyWrapOpticalUnderhang !== undefined) {
         assertBooleanAt(obj.storyWrapOpticalUnderhang, 'layout.storyWrapOpticalUnderhang', documentPath);

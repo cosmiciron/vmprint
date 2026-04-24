@@ -1,0 +1,125 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": "LETTER",
+    "margins": {
+      "top": 72,
+      "right": 72,
+      "bottom": 72,
+      "left": 72
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 18,
+    "lineHeight": 1.4,
+    "lineHeightMode": "css"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "marginBottom": 14,
+      "keepWithNext": true
+    },
+    "p": {
+      "marginBottom": 12,
+      "allowLineSplit": true,
+      "orphans": 1,
+      "widows": 1
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Letter Spacing Rich Segments"
+    },
+    {
+      "type": "p",
+      "content": "",
+      "properties": {
+        "sourceId": "plain-tracking"
+      },
+      "children": [
+        {
+          "type": "text",
+          "content": "Plain segment: "
+        },
+        {
+          "type": "text",
+          "content": "FIELD NOTE",
+          "properties": {
+            "style": {
+              "fontFamily": "Arimo",
+              "fontSize": 18,
+              "fontWeight": "700"
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": " sits in the paragraph."
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "content": "",
+      "properties": {
+        "sourceId": "spaced-tracking"
+      },
+      "children": [
+        {
+          "type": "text",
+          "content": "Spaced segment: "
+        },
+        {
+          "type": "text",
+          "content": "FIELD NOTE",
+          "properties": {
+            "style": {
+              "fontFamily": "Arimo",
+              "fontSize": 18,
+              "fontWeight": "700",
+              "letterSpacing": 2
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": " sits in the paragraph."
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "content": "",
+      "properties": {
+        "sourceId": "extreme-tracking"
+      },
+      "children": [
+        {
+          "type": "text",
+          "content": "Extreme segment: "
+        },
+        {
+          "type": "text",
+          "content": "FIELD NOTE",
+          "properties": {
+            "style": {
+              "fontFamily": "Arimo",
+              "fontSize": 18,
+              "fontWeight": "700",
+              "letterSpacing": 20
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": " sits in the paragraph."
+        }
+      ]
+    }
+  ]
+}

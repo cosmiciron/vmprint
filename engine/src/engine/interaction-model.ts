@@ -341,7 +341,10 @@ const buildInteractionTarget = (
     const contentBox = resolveContentBox(box);
     const baseFontSize = Number(boxStyle.fontSize || layout.fontSize);
     const lineHeight = Number(boxStyle.lineHeight || layout.lineHeight);
-    const paragraphMetrics = buildParagraphMetrics(rendererLines, baseFontSize, lineHeight);
+    const paragraphMetrics = buildParagraphMetrics(rendererLines, baseFontSize, lineHeight, {
+        mode: layout.lineHeightMode,
+        adjustment: layout.lineHeightAdjustment
+    });
     const lineFrame = createLineFrameAccessors((box.properties || {}) as RendererBoxProperties, contentBox.y, contentBox.w);
     const paragraphDirection = resolveParagraphDirection(
         rendererLines,

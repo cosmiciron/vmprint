@@ -172,12 +172,15 @@ export const drawRichLineSegments = (
             const otFeatures = seg.direction === 'rtl'
                 ? ['ccmp', 'isol', 'init', 'medi', 'fina', 'rlig', 'liga', 'calt', 'curs', 'kern']
                 : undefined;
+            const segmentLetterSpacing = Number.isFinite(Number(seg.style?.letterSpacing))
+                ? Number(seg.style?.letterSpacing)
+                : options.letterSpacing;
             if (!isNaN(dX) && !isNaN(finalY)) {
                 context.text(seg.text, dX, finalY, {
                     lineBreak: false,
                     width: dW,
                     height: dH,
-                    characterSpacing: options.letterSpacing,
+                    characterSpacing: segmentLetterSpacing,
                     ascent: segAscender,
                     features: otFeatures,
                     ...(seg.linkTarget ? { link: seg.linkTarget } : {})

@@ -47,7 +47,10 @@ export const drawRichLines = (
     const textIndent = LayoutUtils.validateUnit(containerStyle.textIndent || 0);
 
     const lineFrame = createLineFrameAccessors(boxProperties, startY, width);
-    const paragraphMetrics = buildParagraphMetrics(lines, fontSize, lineHeight);
+    const paragraphMetrics = buildParagraphMetrics(lines, fontSize, lineHeight, {
+        mode: runtime.layout.lineHeightMode,
+        adjustment: runtime.layout.lineHeightAdjustment
+    });
     const paragraphDirection = resolveParagraphDirection(
         lines,
         containerStyle,

@@ -358,7 +358,9 @@ export class TextProcessor extends FontProcessor {
         const fontKey: string = this.textDelegate.getFaceCacheKey(measurementFont);
         const ctxDirection = populateSegment?.direction || 'ltr';
         const ctxScriptClass = populateSegment?.scriptClass || 'none';
-        const cacheKey = `${fontKey}-${measurementFontSize}-${letterSpacing}-${ctxScriptClass}-${ctxDirection}-${text}`;
+        const ctxLineHeight = Number(populateSegment?.style?.lineHeight || this.config.layout.lineHeight || 0);
+        const ctxLineHeightMode = this.config.layout.lineHeightMode || 'print';
+        const cacheKey = `${fontKey}-${measurementFontSize}-${letterSpacing}-${ctxScriptClass}-${ctxDirection}-${ctxLineHeightMode}-${ctxLineHeight}-${text}`;
 
         const cached = this.runtime.measurementCache.get(cacheKey);
         if (cached) {
@@ -380,7 +382,9 @@ export class TextProcessor extends FontProcessor {
             const measured = this.textDelegate.measure(text, measurementFont, measurementFontSize, {
                 letterSpacing,
                 direction: populateSegment?.direction === 'rtl' ? 'rtl' : 'ltr',
-                scriptClass: populateSegment?.scriptClass || 'none'
+                scriptClass: populateSegment?.scriptClass || 'none',
+                lineHeight: ctxLineHeight,
+                lineHeightMode: ctxLineHeightMode
             });
             const width = measured.width;
             const glyphs = measured.glyphs;
@@ -417,6 +421,11 @@ export class TextProcessor extends FontProcessor {
         return this.measureText(text, font, fontSize, letterSpacing);
     }
 
+    private resolveSegmentLetterSpacing(segment: TextSegment, fallback: number = 0): number {
+        const value = Number(segment?.style?.letterSpacing);
+        return Number.isFinite(value) ? value : fallback;
+    }
+
     protected resolveLoadedFamilyFont(familyName: string, weight: number | string, style: string = 'normal'): any {
         const match = LayoutUtils.resolveFontMatch(familyName, weight, style, this.textDelegate);
         const cached = this.textDelegate.getCachedFace(match.config.src, this.runtime.textDelegateState);
@@ -442,7 +451,12 @@ export class TextProcessor extends FontProcessor {
 
             segmentFont = this.resolveLoadedFamilyFont(familyName, resolvedWeight, resolvedStyle);
 
-            return total + this.measureText(segment.text, segmentFont, fontSize, letterSpacing);
+            return total + this.measureText(
+                segment.text,
+                segmentFont,
+                fontSize,
+                this.resolveSegmentLetterSpacing(segment, letterSpacing)
+            );
         }, 0);
     }
 
@@ -460,6 +474,10 @@ export class TextProcessor extends FontProcessor {
     protected calculateEffectiveLineHeight(line: RichLine, baseFontSize: number, lineHeight: number): number {
         const maxLineFontSize = line.reduce((max, seg) => Math.max(max, Number(seg.style?.fontSize || baseFontSize)), baseFontSize);
         const nominalHeight = maxLineFontSize * lineHeight;
+        const lineHeightAdjustment = Number(this.config.layout.lineHeightAdjustment || 0);
+        if (this.config.layout.lineHeightMode === 'css') {
+            return Math.max(0, nominalHeight + lineHeightAdjustment);
+        }
 
         let maxAscent = 0;
         let maxDescentFromBaseline = 0;
@@ -484,7 +502,7 @@ export class TextProcessor extends FontProcessor {
         const leading = nominalHeight - maxLineFontSize;
         const neededHeight = neededTextHeight + leading;
 
-        return Math.max(nominalHeight, neededHeight);
+        return Math.max(0, Math.max(nominalHeight, neededHeight) + lineHeightAdjustment);
     }
 
     /**

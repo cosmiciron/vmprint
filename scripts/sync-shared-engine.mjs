@@ -23,6 +23,23 @@ function normalize(value) {
     return value.replace(/\\/g, '/');
 }
 
+function buildExcludedPathSet(manifest) {
+    const entries = Array.isArray(manifest.excludedProductFiles)
+        ? manifest.excludedProductFiles
+        : [];
+    const sourceRootPrefix = `${normalize(manifest.sourceRoot || '').replace(/\/+$/, '')}/`;
+    const excluded = new Set();
+    for (const entry of entries) {
+        const normalized = normalize(String(entry || '')).replace(/^\/+/, '');
+        if (!normalized) continue;
+        excluded.add(normalized);
+        if (sourceRootPrefix && normalized.startsWith(sourceRootPrefix)) {
+            excluded.add(normalized.slice(sourceRootPrefix.length));
+        }
+    }
+    return excluded;
+}
+
 function readManifest() {
     if (!fs.existsSync(manifestPath)) {
         throw new Error(`Shared engine manifest not found at ${manifestPath}`);
@@ -35,6 +52,7 @@ function main() {
     const sourceRoot = path.join(sharedRoot, manifest.sourceRoot);
     const targetRoot = path.join(repoRoot, manifest.targetRoot);
     const checkOnly = process.argv.includes('--check');
+    const excludedPaths = buildExcludedPathSet(manifest);
 
     if (!fs.existsSync(sourceRoot)) {
         throw new Error(`Shared source root not found at ${sourceRoot}`);
@@ -43,7 +61,7 @@ function main() {
         throw new Error(`Target root not found at ${targetRoot}`);
     }
 
-    const sourceFiles = walkFiles(sourceRoot);
+    const sourceFiles = walkFiles(sourceRoot).filter((relativePath) => !excludedPaths.has(normalize(relativePath)));
     let copied = 0;
     let changed = 0;
     let missing = 0;

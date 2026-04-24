@@ -121,6 +121,38 @@ function assertArabicMixedBidiSignals(pages: any[], fixtureName: string): void {
     );
 }
 
+function assertLetterSpacingRichSegmentSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '56-letter-spacing-rich.json') return;
+
+    const segmentsForSourceId = (sourceId: string) =>
+        boxesForSourceId(pages, sourceId)
+            .flatMap((box: any) => box.lines || [])
+            .flatMap((line: any[]) => line || []);
+    const trackedRun = (sourceId: string) =>
+        segmentsForSourceId(sourceId)
+            .filter((segment: any) => segment?.fontFamily === 'Arimo')
+            .slice(0, 10);
+    const trackedWidth = (sourceId: string) =>
+        trackedRun(sourceId).reduce((width: number, segment: any) => width + Number(segment.width || 0), 0);
+
+    const plain = segmentsForSourceId('plain-tracking').find((segment: any) => segment?.text === 'FIELD NOTE');
+    const spaced = trackedRun('spaced-tracking');
+    const extreme = trackedRun('extreme-tracking');
+    assert.ok(plain, `${fixtureName}: expected plain FIELD NOTE segment`);
+    assert.deepEqual(spaced.map((segment: any) => segment.text).join(''), 'FIELD NOTE', `${fixtureName}: expected tracked FIELD NOTE graphemes`);
+    assert.deepEqual(extreme.map((segment: any) => segment.text).join(''), 'FIELD NOTE', `${fixtureName}: expected extreme tracked FIELD NOTE graphemes`);
+    assert.ok(spaced.every((segment: any) => segment.style?.letterSpacing === 2), `${fixtureName}: expected +2 letterSpacing to survive on tracked subsegments`);
+    assert.ok(extreme.every((segment: any) => segment.style?.letterSpacing === 20), `${fixtureName}: expected +20 letterSpacing to survive on tracked subsegments`);
+    assert.ok(
+        trackedWidth('spaced-tracking') > Number(plain.width) + 12,
+        `${fixtureName}: expected letter-spaced segment pieces to measure wider`
+    );
+    assert.ok(
+        trackedWidth('extreme-tracking') > trackedWidth('spaced-tracking') + 150,
+        `${fixtureName}: expected extreme tracking to widen the segmented run`
+    );
+}
+
 function createReactiveProofEngine(overrides: Record<string, unknown> = {}): LayoutEngine {
     const layoutOverrides = (overrides.layout as Record<string, unknown>) || {};
     const engine = new LayoutEngine({
@@ -2408,6 +2440,15 @@ async function run() {
                 'Arabic runs keep shaped glyphs while embedded Latin and number runs remain unshaped',
                 () => {
                     assertArabicMixedBidiSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '56-letter-spacing-rich.json') {
+            _check(
+                `${fixture.name} segment-local letter spacing`,
+                'rich segment letterSpacing changes measured engine width',
+                () => {
+                    assertLetterSpacingRichSegmentSignals(pagesA, fixture.name);
                 }
             );
         }

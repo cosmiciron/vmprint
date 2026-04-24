@@ -1,0 +1,258 @@
+[
+  {
+    "index": 0,
+    "width": 612,
+    "height": 792,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 72,
+        "y": 72,
+        "w": 468,
+        "h": 30.8,
+        "lines": [
+          [
+            {
+              "text": "Letter Spacing Rich Segments",
+              "width": 317.850586,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 116.8,
+        "w": 468,
+        "h": 25.2,
+        "lines": [
+          [
+            {
+              "text": "Plain segment: ",
+              "width": 124.066406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "FIELD NOTE",
+              "width": 106.998047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " sits in the paragraph.",
+              "width": 173.100586,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 154,
+        "w": 468,
+        "h": 25.2,
+        "lines": [
+          [
+            {
+              "text": "Spaced segment: ",
+              "width": 145.089844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "F",
+              "width": 12.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "I",
+              "width": 7.000977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "E",
+              "width": 14.005859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "L",
+              "width": 12.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "D",
+              "width": 14.999023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " ",
+              "width": 7.000977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "N",
+              "width": 14.999023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "O",
+              "width": 16.000977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "T",
+              "width": 12.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "E",
+              "width": 12.005859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " sits in the paragraph.",
+              "width": 173.100586,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 191.2,
+        "w": 468,
+        "h": 50.4,
+        "lines": [
+          [
+            {
+              "text": "Extreme segment: ",
+              "width": 151.057617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "F",
+              "width": 30.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "I",
+              "width": 25.000977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "E",
+              "width": 32.005859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "L",
+              "width": 30.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "D",
+              "width": 32.999023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " ",
+              "width": 25.000977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "N",
+              "width": 32.999023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "O",
+              "width": 34.000977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "T",
+              "width": 30.995117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "E",
+              "width": 12.005859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": " ",
+              "width": 5.000977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sits in the paragraph.",
+              "width": 168.099609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

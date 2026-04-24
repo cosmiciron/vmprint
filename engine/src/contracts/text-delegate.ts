@@ -9,6 +9,8 @@ export type MeasureTextOptions = {
     letterSpacing?: number;
     direction?: 'ltr' | 'rtl';
     scriptClass?: string;
+    lineHeight?: number;
+    lineHeightMode?: 'print' | 'css';
 };
 
 export type MeasuredTextResult = {
