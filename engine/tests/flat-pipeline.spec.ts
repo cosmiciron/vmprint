@@ -821,6 +821,62 @@ async function testContainedAssemblyLanePolicies() {
             assert.ok(getBoxText(balancedBox).length > getBoxText(typographyBox).length, 'balanced policy should keep more text visible inside the room');
         }
     );
+
+    _check(
+        'stashed contained assemblies stop at the last occupied alpha band',
+        'transparent bottom padding should not turn into a full-width fallback line',
+        () => {
+            const width = 300;
+            const height = 260;
+            const alphaBottom = 218;
+            const bandHeight = 1;
+            const layers = [];
+            for (let y = 0; y < alphaBottom; y += bandHeight) {
+                const halfWidth = Math.floor((y / alphaBottom) * 140);
+                layers.push({
+                    rects: [[
+                        Math.floor(width / 2) - halfWidth,
+                        y,
+                        Math.max(1, halfWidth * 2),
+                        bandHeight
+                    ]]
+                });
+            }
+
+            const pages = balancedEngine.simulate([{
+                type: 'p',
+                content: 'The rain in Seattle did not just wash the streets; it slicked the neon signs of the 24-hour convenience stores into blurry, chromatic streaks. '.repeat(8),
+                properties: {
+                    sourceId: 'transparent-bottom-alpha-assembly',
+                    space: {
+                        kind: 'contain',
+                        overflow: 'stash',
+                        exclusionAssembly: { layers }
+                    },
+                    style: {
+                        width,
+                        height,
+                        fontSize: 18,
+                        lineHeight: 1.42,
+                        allowLineSplit: true
+                    }
+                }
+            }]);
+            const box = pages.flatMap((page) => page.boxes)
+                .find((candidate) => String(candidate.properties?.sourceId || '').endsWith('transparent-bottom-alpha-assembly'));
+            assert.ok(box, 'expected contained alpha assembly box');
+            const yOffsets = Array.isArray(box!.properties?._lineYOffsets)
+                ? (box!.properties!._lineYOffsets as number[])
+                : [];
+            assert.ok(yOffsets.length > 0, 'expected contained alpha assembly to publish line offsets');
+            const lineHeight = 18 * 1.42;
+            const maxVisibleBottom = Math.max(...yOffsets.map((offset) => Number(offset || 0) + lineHeight));
+            assert.ok(
+                maxVisibleBottom <= alphaBottom + 0.1,
+                `expected visible text to stop inside alpha silhouette, got bottom ${maxVisibleBottom}`
+            );
+        }
+    );
 }
 
 async function testPaginationContinuationMarkers() {

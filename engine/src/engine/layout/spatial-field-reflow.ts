@@ -130,6 +130,15 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         ? options.spatialMap.topBottomClearY(options.currentY, queryZIndex)
         : options.currentY;
     const elementStartY = cursorBase + Math.max(0, options.layoutBefore);
+    const effectiveMaxVisibleContainedContentHeight = maxVisibleContainedContentHeight !== null
+        ? resolveEffectiveContainedContentHeightLimit(
+            maxVisibleContainedContentHeight,
+            laneMode,
+            options.spatialMap,
+            elementStartY,
+            insetTop
+        )
+        : null;
 
     let accumulatedYBonus = 0;
     let physicalLineCount = 0;
@@ -294,11 +303,11 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
         textIndent,
         resolver,
         lineLayoutOut,
-        maxVisibleContainedContentHeight !== null
+        effectiveMaxVisibleContainedContentHeight !== null
             ? (_nextLineIndex: number, nextLineLayout: { width: number; xOffset: number; yOffset: number }) => {
                 const nextLineTop = Number(nextLineLayout.yOffset || 0);
                 const nextLineBottom = nextLineTop + uniformLH;
-                return nextLineBottom > maxVisibleContainedContentHeight + 0.1;
+                return nextLineBottom > effectiveMaxVisibleContainedContentHeight + 0.1;
             }
             : undefined
     );
@@ -529,6 +538,21 @@ function resolveExplicitContainedHostHeight(
     }
 
     return null;
+}
+
+function resolveEffectiveContainedContentHeightLimit(
+    hostContentHeight: number,
+    laneMode: 'contain' | 'exclude',
+    spatialMap: SpatialMap,
+    elementStartY: number,
+    insetTop: number
+): number {
+    if (laneMode !== 'contain') return hostContentHeight;
+    const obstacleBottom = spatialMap.maxObstacleBottom();
+    if (!(Number.isFinite(obstacleBottom) && obstacleBottom > 0)) return hostContentHeight;
+    const contentObstacleBottom = Math.max(0, obstacleBottom - elementStartY - insetTop);
+    if (!(contentObstacleBottom > 0)) return hostContentHeight;
+    return Math.min(hostContentHeight, contentObstacleBottom);
 }
 
 
