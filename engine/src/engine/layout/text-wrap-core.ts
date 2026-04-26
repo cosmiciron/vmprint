@@ -432,7 +432,10 @@ export function wrapTokenStream(params: {
                         );
 
                         if (!fitsWidth(currentLineWidth, graphemeWidth, getCurrentLineWidthLimit())) {
-                            if (currentLine.length > 0) pushCurrentLine();
+                            if (currentLine.length > 0) {
+                                pushCurrentLine();
+                                if (stopRequested) break;
+                            }
                         }
                         pushSegmentToLine(graphemeSegment, graphemeWidth, false);
                     }
@@ -490,7 +493,10 @@ export function wrapTokenStream(params: {
                 );
 
                 if (!fitsWidth(currentLineWidth, graphemeWidth, getCurrentLineWidthLimit())) {
-                    if (currentLine.length > 0) pushCurrentLine();
+                    if (currentLine.length > 0) {
+                        pushCurrentLine();
+                        if (stopRequested) break;
+                    }
                 }
                 pushSegmentToLine(graphemeSegment, graphemeWidth, token.allowMerge);
             }
