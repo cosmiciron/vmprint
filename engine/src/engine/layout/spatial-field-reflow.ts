@@ -120,6 +120,8 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const explicitContainedHostHeight = laneMode === 'contain'
         ? resolveExplicitContainedHostHeight(flowBox, style, spatialDirective)
         : null;
+    const strictLineBoxContainment = laneMode === 'contain'
+        && (spatialDirective as { strictLineBoxContainment?: unknown } | undefined)?.strictLineBoxContainment === true;
     const maxVisibleContainedContentHeight = explicitContainedHostHeight !== null
         ? Math.max(0, explicitContainedHostHeight - insetV)
         : null;
@@ -184,10 +186,10 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
 
         const yOffset = (physicalLineCount * uniformLH) + accumulatedYBonus;
         const geometryQueryY = laneMode === 'contain'
-            ? lineY + insetTop + containmentBandInset
+            ? lineY + insetTop + (strictLineBoxContainment ? 0 : containmentBandInset)
             : lineY;
         const geometryQueryHeight = laneMode === 'contain'
-            ? nominalTextBandHeight
+            ? (strictLineBoxContainment ? uniformLH : nominalTextBandHeight)
             : uniformLH;
 
         const queryOptions = options.opticalUnderhang ? { opticalUnderhang: true, queryZIndex } : { queryZIndex };

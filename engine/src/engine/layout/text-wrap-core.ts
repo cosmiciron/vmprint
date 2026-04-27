@@ -360,6 +360,8 @@ export function wrapTokenStream(params: {
     };
 
     for (const token of params.tokens) {
+        if (stopRequested) break;
+
         if (token.kind === 'newline') {
             markCurrentLineForcedBreak();
             pushCurrentLine();
