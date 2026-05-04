@@ -2619,7 +2619,7 @@ async function run() {
         }
         if (fixture.name === '25-total-pages-footer.json') {
             _check(
-                `${fixture.name} total-pages content-only reactive update`,
+                `${fixture.name} deferred total-pages footer materialization`,
                 'footer with {totalPages} token renders the actual final page count on every page, not a placeholder, without a second simulate() call',
                 () => {
                     const totalPages = pagesA.length;
@@ -2652,13 +2652,15 @@ async function run() {
                         );
                     }
 
-                    assert.ok(
-                        Number(report.profile.actorUpdateContentOnlyCalls || 0) > 0,
-                        `${fixture.name}: expected content-only actor updates for total-pages footer`
+                    const pageRegionSummary = report.require(simulationArtifactKeys.pageRegionSummary);
+                    assert.equal(
+                        pageRegionSummary.length,
+                        totalPages,
+                        `${fixture.name}: pageRegionSummary should include the deferred total-pages footer boxes`
                     );
                     assert.ok(
-                        Number(report.profile.actorUpdateRedrawCalls || 0) > 0,
-                        `${fixture.name}: expected in-place redraw calls for total-pages footer`
+                        pageRegionSummary.every((item: any) => Number(item?.footerBoxes || 0) > 0),
+                        `${fixture.name}: every page-region summary should include footer boxes`
                     );
                 }
             );

@@ -1217,8 +1217,9 @@ export class LayoutSession {
     ): { patchedActors: number; pageIndexes: number[] } {
         let patchedActors = 0;
         const touchedPageIndexes = new Set<number>();
+        const actorBoxRefs = collectActorBoxRefsByActorId(pages, currentPageBoxes, this.currentPageIndex);
         for (const actor of actors) {
-            const refs = collectActorBoxRefs(pages, currentPageBoxes, this.currentPageIndex, actor.actorId);
+            const refs = actorBoxRefs.get(actor.actorId) ?? [];
             if (refs.length === 0) continue;
 
             const first = refs[0].box;
@@ -1771,22 +1772,35 @@ function collectActorBoxRefs(
     currentPageIndex: number,
     actorId: string
 ): BoxRef[] {
-    const refs: BoxRef[] = [];
+    return collectActorBoxRefsByActorId(pages, currentPageBoxes, currentPageIndex).get(actorId) ?? [];
+}
+
+function collectActorBoxRefsByActorId(
+    pages: Page[],
+    currentPageBoxes: Box[],
+    currentPageIndex: number
+): Map<string, BoxRef[]> {
+    const refsByActorId = new Map<string, BoxRef[]>();
+    const addRef = (actorId: string | undefined, ref: BoxRef): void => {
+        if (!actorId) return;
+        const refs = refsByActorId.get(actorId);
+        if (refs) {
+            refs.push(ref);
+        } else {
+            refsByActorId.set(actorId, [ref]);
+        }
+    };
     for (const page of pages) {
         for (let index = 0; index < page.boxes.length; index++) {
             const box = page.boxes[index];
-            if (box.meta?.actorId === actorId) {
-                refs.push({ container: page.boxes, index, box, pageIndex: page.index });
-            }
+            addRef(box.meta?.actorId, { container: page.boxes, index, box, pageIndex: page.index });
         }
     }
     for (let index = 0; index < currentPageBoxes.length; index++) {
         const box = currentPageBoxes[index];
-        if (box.meta?.actorId === actorId) {
-            refs.push({ container: currentPageBoxes, index, box, pageIndex: currentPageIndex });
-        }
+        addRef(box.meta?.actorId, { container: currentPageBoxes, index, box, pageIndex: currentPageIndex });
     }
-    return refs;
+    return refsByActorId;
 }
 
 function assertContentOnlyGeometry(actorId: string, committed: Box, next: Box): void {
