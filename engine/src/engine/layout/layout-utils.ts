@@ -1,4 +1,4 @@
-import { LayoutConfig } from '../types';
+import { LayoutConfig, PageGeometry } from '../types';
 import type { FontConfig, TextDelegate } from '../../contracts';
 import { PAGE_SIZE_FALLBACK, PAGE_SIZE_POINTS } from './defaults';
 
@@ -30,8 +30,13 @@ export class LayoutUtils {
      * Returns standard PDF point dimensions for supported page sizes.
      */
     static getPageDimensions(config: LayoutConfig): { width: number, height: number } {
-        const pageSize = config.layout.pageSize;
-        const orientation = config.layout.orientation;
+        return this.resolvePageDimensions(config.layout.pageSize, config.layout.orientation);
+    }
+
+    static resolvePageDimensions(
+        pageSize: LayoutConfig['layout']['pageSize'],
+        orientation: LayoutConfig['layout']['orientation']
+    ): { width: number, height: number } {
 
         if (typeof pageSize === 'object') {
             return this.applyOrientation(pageSize, orientation);
@@ -43,6 +48,47 @@ export class LayoutUtils {
             return this.applyOrientation(PAGE_SIZE_POINTS.A4, orientation);
         }
         return this.applyOrientation(PAGE_SIZE_POINTS[PAGE_SIZE_FALLBACK], orientation);
+    }
+
+    static matchesPageSelector(pageIndex: number, selector: PageGeometry & { selector?: string }): boolean {
+        const normalizedIndex = Number.isFinite(pageIndex) ? Math.max(0, Math.floor(Number(pageIndex))) : 0;
+        switch (selector.selector) {
+            case 'first':
+                return normalizedIndex === 0;
+            case 'odd':
+                return (normalizedIndex + 1) % 2 === 1;
+            case 'even':
+                return (normalizedIndex + 1) % 2 === 0;
+            case 'all':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    static resolvePageGeometry(config: LayoutConfig, pageIndex: number): {
+        width: number;
+        height: number;
+        margins: { top: number; right: number; bottom: number; left: number };
+    } {
+        let pageSize = config.layout.pageSize;
+        let orientation = config.layout.orientation;
+        let margins = config.layout.margins;
+        for (const template of config.layout.pageTemplates || []) {
+            const matchesExplicitPage = Number.isInteger(template.pageIndex)
+                && Number(template.pageIndex) === pageIndex;
+            const matchesSelector = template.selector !== undefined && this.matchesPageSelector(pageIndex, template);
+            if (!matchesExplicitPage && !matchesSelector) continue;
+            pageSize = template.pageSize ?? pageSize;
+            orientation = template.orientation ?? orientation;
+            margins = template.margins ?? margins;
+        }
+        const size = this.resolvePageDimensions(pageSize, orientation);
+        return {
+            width: size.width,
+            height: size.height,
+            margins: { ...margins }
+        };
     }
 
     /**

@@ -4,8 +4,13 @@ export interface VmprintOutputStream {
     waitForFinish(): Promise<void>;
 }
 
+export interface ContextPageOptions {
+    size?: string | [number, number];
+    margins?: { top: number; right: number; bottom: number; left: number };
+}
+
 export interface Context {
-    addPage(): void;
+    addPage(options?: ContextPageOptions): void;
     end(): void;
     pipe(stream: VmprintOutputStream): void;
     registerFont(id: string, buffer: Uint8Array, options?: ContextFontRegistrationOptions): Promise<void>;

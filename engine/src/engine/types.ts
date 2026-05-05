@@ -9,7 +9,20 @@ export type VmprintDocumentVersion = '1.1';
 export type VmprintIRVersion = '1.0';
 export type ScriptMethodSource = string | string[];
 export type SimulationProgressionPolicy = 'until-settled' | 'fixed-tick-count';
-export type SimulationStopReason = 'settled' | 'fixed-tick-count';
+export type SimulationStopReason = 'settled' | 'fixed-tick-count' | 'page-limit';
+
+export type PageSizeSpec = 'A4' | 'LETTER' | { width: number, height: number };
+
+export interface PageGeometry {
+    pageSize?: PageSizeSpec;
+    orientation?: 'portrait' | 'landscape';
+    margins?: { top: number; right: number; bottom: number; left: number };
+}
+
+export interface PageTemplate extends PageGeometry {
+    pageIndex?: number;
+    selector?: PageReservationSelector;
+}
 
 export interface SimulationProgressionConfig {
     policy?: SimulationProgressionPolicy;
@@ -519,9 +532,10 @@ export interface ElementStyle {
 
 export interface LayoutConfig {
     layout: {
-        pageSize: 'A4' | 'LETTER' | { width: number, height: number };
+        pageSize: PageSizeSpec;
         orientation?: 'portrait' | 'landscape';
         margins: { top: number; right: number; bottom: number; left: number };
+        pageTemplates?: PageTemplate[];
         fontFamily: string;
         fontSize: number;
         lineHeight: number;

@@ -37,7 +37,9 @@ export class LifecycleRuntime {
 
     constructor(
         private readonly host: LifecycleRuntimeHost,
-        chunkPolicy: ChunkPolicy = new SequentialPageChunkPolicy()
+        chunkPolicy: ChunkPolicy = new SequentialPageChunkPolicy(),
+        private readonly resolvePageGeometry?: (pageIndex: number) => { width: number; height: number },
+        private readonly shouldStopAfterPage?: (pageIndex: number) => boolean
     ) {
         this.chunkPolicy = chunkPolicy;
     }
@@ -70,6 +72,8 @@ export class LifecycleRuntime {
             currentChunkIndex: currentPageIndex,
             chunkWidth: pageWidth,
             chunkHeight: pageHeight,
+            resolveChunkGeometry: this.resolvePageGeometry,
+            shouldStopAfterFinalizedChunk: this.shouldStopAfterPage,
             nextChunkStartY: nextPageTopY,
             finalizeChunk: (chunkIndex, width, height, boxes) =>
                 this.host.finalizeCommittedPage(chunkIndex, width, height, boxes),
@@ -150,6 +154,15 @@ export class LifecycleRuntime {
     }
 
     resolveChunkOriginWorldY(chunkIndex: number, chunkHeight: number): number {
+        if (this.resolvePageGeometry) {
+            const normalizedIndex = Number.isFinite(chunkIndex) ? Math.max(0, Math.floor(Number(chunkIndex))) : 0;
+            let origin = 0;
+            for (let index = 0; index < normalizedIndex; index += 1) {
+                const height = this.resolvePageGeometry(index).height;
+                origin += Number.isFinite(height) ? Math.max(0, Number(height)) : 0;
+            }
+            return origin;
+        }
         return this.chunkPolicy.resolveChunkOriginWorldY(chunkIndex, chunkHeight);
     }
 

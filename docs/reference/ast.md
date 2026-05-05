@@ -55,6 +55,7 @@ interface LayoutConfig {
     pageSize: 'A4' | 'LETTER' | { width: number; height: number };
     orientation?: 'portrait' | 'landscape';
     margins: { top: number; right: number; bottom: number; left: number };
+    pageTemplates?: PageTemplate[];
     fontFamily: string;
     fontSize: number;
     lineHeight: number;
@@ -94,7 +95,20 @@ interface LayoutConfig {
     microLanePolicy?: 'allow' | 'balanced' | 'typography';
     worldPlain?: WorldPlainOptions;
 }
+
+interface PageTemplate {
+    pageIndex?: number;
+    selector?: 'first' | 'odd' | 'even' | 'all';
+    pageSize?: 'A4' | 'LETTER' | { width: number; height: number };
+    orientation?: 'portrait' | 'landscape';
+    margins?: { top: number; right: number; bottom: number; left: number };
+}
 ```
+
+`layout.pageTemplates` overrides page geometry for matching pages. Templates are
+applied in declaration order over the document defaults, so later matches can
+refine earlier broad selectors. `pageIndex` is zero-based; `selector` uses
+human page parity, so page index `0` is the first odd page.
 
 `layout.microLanePolicy` controls whether spatial wrapping may use very narrow
 horizontal lanes carved by obstacles:

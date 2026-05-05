@@ -216,6 +216,8 @@ type LayoutSessionOptions = {
     runtime: EngineRuntime;
     collaborators?: readonly Collaborator[];
     asyncThoughtHost?: AsyncThoughtHost | null;
+    resolvePageGeometry?: (pageIndex: number) => { width: number; height: number };
+    shouldStopAfterPage?: (pageIndex: number) => boolean;
 };
 
 export class LayoutSession {
@@ -239,6 +241,7 @@ export class LayoutSession {
     readonly transitionsRuntime: TransitionsRuntime;
     readonly simulationClock = new SimulationClock();
     readonly asyncThoughtHost: AsyncThoughtHost | null;
+    readonly resolvePageGeometry?: (pageIndex: number) => { width: number; height: number };
     readonly profile: LayoutProfileMetrics = {
         handlerCalls: 0,
         handlerMs: 0,
@@ -394,6 +397,7 @@ export class LayoutSession {
     constructor(options: LayoutSessionOptions) {
         this.runtime = options.runtime;
         this.asyncThoughtHost = options.asyncThoughtHost ?? null;
+        this.resolvePageGeometry = options.resolvePageGeometry;
         this.collaborators = options.collaborators ?? [];
         this.eventDispatcher = new EventDispatcher(this.collaborators);
         this.actorCommunicationRuntime = new ActorCommunicationRuntime({
@@ -417,7 +421,7 @@ export class LayoutSession {
             notifyPageStart: (pageIndex, width, height, boxes) => this.notifyPageStart(pageIndex, width, height, boxes),
             createContinueLoopAction: (paginationState, nextActorIndex) =>
                 this.paginationLoopRuntime.createContinueLoopAction(paginationState, nextActorIndex)
-        });
+        }, undefined, options.resolvePageGeometry, options.shouldStopAfterPage);
         this.transitionsRuntime = new TransitionsRuntime({
             getContinuationArtifacts: (actorId) => this.fragmentSessionRuntime.getContinuationArtifacts(actorId),
             setContinuationArtifacts: (actorId, artifacts) => this.fragmentSessionRuntime.setContinuationArtifacts(actorId, artifacts),
@@ -686,14 +690,18 @@ export class LayoutSession {
         }
 
         if (Number.isFinite(resolvedActorIndex) && state) {
+            const currentPageOrigin = this.resolveChunkOriginWorldY(
+                state.paginationState.currentPageIndex,
+                Number(this.currentSurface?.height ?? state.context.pageHeight ?? 0)
+            );
             return {
                 pageIndex: state.paginationState.currentPageIndex,
                 cursorY: state.paginationState.currentY,
-                ...(Number.isFinite(this.currentSurface?.height)
+                ...(Number.isFinite(currentPageOrigin)
                     ? {
                         worldY: Math.max(
                             0,
-                            state.paginationState.currentPageIndex * Number(this.currentSurface?.height) + state.paginationState.currentY
+                            Number(currentPageOrigin) + state.paginationState.currentY
                         )
                     }
                     : {}),
@@ -1068,7 +1076,7 @@ export class LayoutSession {
             currentPageBoxes,
             currentPageIndex,
             currentY,
-            Math.max(0, currentPageIndex * currentPageHeight + currentY),
+            Math.max(0, this.resolveChunkOriginWorldY(currentPageIndex, currentPageHeight) + currentY),
             kind,
             () => this.fragmentSessionRuntime.captureLocalTransitionSnapshot(currentPageBoxes, currentY, lastSpacingAfter),
             () => this.captureSessionBranchStateSnapshot(actorQueue)

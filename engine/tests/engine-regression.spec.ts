@@ -4944,6 +4944,75 @@ async function run() {
         }
     );
 
+    await _checkAsync(
+        'page templates and partial simulation',
+        'document-level page templates can override page dimensions and simulation can stop after a requested page',
+        async () => {
+            const config = {
+                layout: {
+                    pageSize: { width: 240, height: 180 },
+                    margins: { top: 18, right: 18, bottom: 18, left: 18 },
+                    fontFamily: 'Arimo',
+                    fontSize: 10,
+                    lineHeight: 1.2,
+                    pageTemplates: [
+                        {
+                            pageIndex: 1,
+                            pageSize: { width: 360, height: 260 },
+                            margins: { top: 24, right: 30, bottom: 24, left: 30 }
+                        },
+                        {
+                            pageIndex: 2,
+                            pageSize: { width: 200, height: 220 }
+                        }
+                    ]
+                },
+                fonts: { regular: 'Arimo' },
+                styles: {
+                    p: { marginBottom: 8, allowLineSplit: true }
+                }
+            };
+            const elements = Array.from({ length: 18 }, (_, index) => ({
+                type: 'p',
+                content: repeatedParagraph(`Odd page geometry paragraph ${index + 1}.`, 10),
+                properties: { sourceId: `odd-page-geometry-${index + 1}` }
+            }));
+
+            const fullEngine = new LayoutEngine(config as any);
+            await fullEngine.waitForFonts();
+            const fullPages = fullEngine.simulate(elements as any);
+            assert.ok(fullPages.length >= 3, 'full simulation should produce at least three pages');
+            assert.deepEqual(
+                fullPages.slice(0, 3).map((page) => ({ width: page.width, height: page.height })),
+                [
+                    { width: 240, height: 180 },
+                    { width: 360, height: 260 },
+                    { width: 200, height: 220 }
+                ],
+                'pageTemplates should override physical page dimensions by page index'
+            );
+            assert.ok(
+                fullPages[1].boxes.every((box) => box.x >= 30 && box.x + box.w <= 330),
+                'second page boxes should respect its overridden horizontal margins'
+            );
+
+            const partialEngine = new LayoutEngine(config as any);
+            await partialEngine.waitForFonts();
+            const partialPages = partialEngine.simulate(elements as any, { stopAtPage: 1 });
+            assert.equal(partialPages.length, 2, 'partial simulation should stop after producing page index 1');
+            assert.deepEqual(
+                partialPages.map((page) => page.index),
+                [0, 1],
+                'partial simulation should return the finalized prefix'
+            );
+            assert.equal(
+                partialEngine.getLastSimulationReportReader().progression?.stopReason,
+                'page-limit',
+                'partial simulation should report page-limit as the stop reason'
+            );
+        }
+    );
+
     console.log(`[engine-regression.spec] OK (${fixtures.length} fixtures)`);
 }
 

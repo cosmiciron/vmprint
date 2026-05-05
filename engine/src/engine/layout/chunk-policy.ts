@@ -13,10 +13,19 @@ export type ChunkAdvanceInput = {
     currentChunkIndex: number;
     chunkWidth: number;
     chunkHeight: number;
+    resolveChunkGeometry?: (chunkIndex: number) => { width: number; height: number };
+    shouldStopAfterFinalizedChunk?: (chunkIndex: number) => boolean;
     nextChunkStartY: number;
     finalizeChunk: (chunkIndex: number, width: number, height: number, boxes: readonly Box[]) => Page;
     notifyChunkStart: (chunkIndex: number, width: number, height: number, boxes: Box[]) => void;
 };
+
+export class ChunkAdvanceStopped extends Error {
+    constructor(readonly chunkIndex: number) {
+        super(`Chunk advance stopped after chunk ${chunkIndex}.`);
+        this.name = 'ChunkAdvanceStopped';
+    }
+}
 
 export interface ChunkPolicy {
     resolveChunkOriginWorldY(chunkIndex: number, chunkHeight: number): number;
@@ -40,11 +49,18 @@ export class SequentialPageChunkPolicy implements ChunkPolicy {
                     input.currentChunkBoxes
                 )
             );
+            if (input.shouldStopAfterFinalizedChunk?.(input.currentChunkIndex)) {
+                throw new ChunkAdvanceStopped(input.currentChunkIndex);
+            }
         }
 
         const nextChunkIndex = input.currentChunkIndex + 1;
+        const nextGeometry = input.resolveChunkGeometry?.(nextChunkIndex) ?? {
+            width: input.chunkWidth,
+            height: input.chunkHeight
+        };
         const nextChunkBoxes: Box[] = [];
-        input.notifyChunkStart(nextChunkIndex, input.chunkWidth, input.chunkHeight, nextChunkBoxes);
+        input.notifyChunkStart(nextChunkIndex, nextGeometry.width, nextGeometry.height, nextChunkBoxes);
 
         return {
             nextChunkIndex,

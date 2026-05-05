@@ -31,6 +31,8 @@ export interface SimulateOptions {
     ticks?: number;
     /** Run this many settle passes instead of the default single-pass-to-settle. */
     passes?: number;
+    /** Stop once this zero-based page index has been produced. */
+    stopAtPage?: number;
 }
 
 export interface RenderOptions {
@@ -116,9 +118,9 @@ export class VMPrintEngine {
      * For most use cases you do not need to call this directly. render() calls
      * it automatically if layout has not been run yet.
      */
-    async layout(): Promise<Page[]> {
+    async layout(options?: Pick<SimulateOptions, 'stopAtPage'>): Promise<Page[]> {
         await this._inner.waitForFonts();
-        this._pages = this._inner.simulate(this._elements);
+        this._pages = this._inner.simulate(this._elements, options);
         return this._pages;
     }
 
@@ -133,7 +135,7 @@ export class VMPrintEngine {
      */
     async simulate(options?: SimulateOptions): Promise<Page[]> {
         if (!options?.ticks && !options?.passes) {
-            return this.layout();
+            return this.layout(options);
         }
         await this._inner.waitForFonts();
         // Multi-pass: re-run simulate the requested number of times.
@@ -141,7 +143,7 @@ export class VMPrintEngine {
         const passes = options.passes ?? 1;
         let pages: Page[] = [];
         for (let i = 0; i < passes; i++) {
-            pages = this._inner.simulate(this._elements);
+            pages = this._inner.simulate(this._elements, options);
         }
         this._pages = pages;
         return this._pages;

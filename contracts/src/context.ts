@@ -10,9 +10,14 @@ export interface VmprintOutputStream {
     waitForFinish(): Promise<void>;
 }
 
+export interface ContextPageOptions {
+    size?: string | [number, number];
+    margins?: { top: number; right: number; bottom: number; left: number };
+}
+
 export interface Context {
     // Document Lifecycle
-    addPage(): void;
+    addPage(options?: ContextPageOptions): void;
     end(): void;
 
     // Output - just return no-op if streaming is not supported by this context.

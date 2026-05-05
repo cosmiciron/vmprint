@@ -332,4 +332,3 @@ export class MockContext implements Context {
         return { width: this._pageWidth, height: this._pageHeight };
     }
 }
-

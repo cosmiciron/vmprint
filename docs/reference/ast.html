@@ -108,6 +108,7 @@ interface DocumentInput {
     pageSize: 'A4' | 'LETTER' | { width: number; height: number };
     orientation?: 'portrait' | 'landscape';
     margins: { top: number; right: number; bottom: number; left: number };
+    pageTemplates?: PageTemplate[];
     fontFamily: string;
     fontSize: number;
     lineHeight: number;
@@ -146,7 +147,19 @@ interface DocumentInput {
     storyWrapOpticalUnderhang?: boolean;
     worldPlain?: WorldPlainOptions;
 }
+
+interface PageTemplate {
+    pageIndex?: number;
+    selector?: 'first' | 'odd' | 'even' | 'all';
+    pageSize?: 'A4' | 'LETTER' | { width: number; height: number };
+    orientation?: 'portrait' | 'landscape';
+    margins?: { top: number; right: number; bottom: number; left: number };
+}
 </code></pre>
+<p><code>layout.pageTemplates</code> overrides page geometry for matching pages. Templates are
+applied in declaration order over the document defaults, so later matches can
+refine earlier broad selectors. <code>pageIndex</code> is zero-based; <code>selector</code> uses
+human page parity, so page index <code>0</code> is the first odd page.</p>
 <h3><code>layout.worldPlain</code></h3>
 <p><code>worldPlain</code> defines the document-stage world substrate. When present, root
 elements inhabit that stage instead of being treated as only sequential flow.</p>

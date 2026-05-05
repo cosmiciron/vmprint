@@ -22,6 +22,7 @@ const LAYOUT_KEYS = new Set([
     'pageSize',
     'orientation',
     'margins',
+    'pageTemplates',
     'fontFamily',
     'fontSize',
     'lineHeight',
@@ -61,6 +62,7 @@ const LAYOUT_KEYS = new Set([
 ]);
 const PROGRESSION_KEYS = new Set(['policy', 'maxTicks', 'tickRateHz']);
 const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
+const PAGE_TEMPLATE_KEYS = new Set(['pageIndex', 'selector', 'pageSize', 'orientation', 'margins']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
 const WORLD_PLAIN_KEYS = new Set(['style', 'frameOverflow', 'worldBehavior', 'rootFlowMode', 'traversalInteractionDefault']);
 const ELEMENT_KEYS = new Set(['type', 'name', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
@@ -196,6 +198,28 @@ function assertBooleanAt(value: unknown, path: string, documentPath: string): vo
     }
 }
 
+function validateMarginsObject(value: unknown, path: string, documentPath: string): void {
+    const margins = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(margins, MARGINS_KEYS, path, documentPath);
+    assertFiniteNumberAt(margins.top, `${path}.top`, documentPath);
+    assertFiniteNumberAt(margins.right, `${path}.right`, documentPath);
+    assertFiniteNumberAt(margins.bottom, `${path}.bottom`, documentPath);
+    assertFiniteNumberAt(margins.left, `${path}.left`, documentPath);
+}
+
+function validatePageSize(value: unknown, path: string, documentPath: string): void {
+    if (typeof value === 'string') {
+        if (value !== 'A4' && value !== 'LETTER') {
+            contractError(documentPath, path, 'expected "A4", "LETTER", or { width, height }.');
+        }
+        return;
+    }
+    const size = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(size, new Set(['width', 'height']), path, documentPath);
+    assertFiniteNumberAt(size.width, `${path}.width`, documentPath);
+    assertFiniteNumberAt(size.height, `${path}.height`, documentPath);
+}
+
 function assertStringAt(value: unknown, path: string, documentPath: string): void {
     if (typeof value !== 'string') {
         contractError(documentPath, path, 'expected a string.');
@@ -240,16 +264,7 @@ function validateLayout(layout: unknown, documentPath: string): void {
     if (obj.pageSize === undefined) {
         contractError(documentPath, 'layout.pageSize', 'is required.');
     }
-    if (typeof obj.pageSize === 'string') {
-        if (obj.pageSize !== 'A4' && obj.pageSize !== 'LETTER') {
-            contractError(documentPath, 'layout.pageSize', 'expected "A4", "LETTER", or { width, height }.');
-        }
-    } else {
-        const size = assertPlainObjectAt(obj.pageSize, 'layout.pageSize', documentPath);
-        assertAllowedKeys(size, new Set(['width', 'height']), 'layout.pageSize', documentPath);
-        assertFiniteNumberAt(size.width, 'layout.pageSize.width', documentPath);
-        assertFiniteNumberAt(size.height, 'layout.pageSize.height', documentPath);
-    }
+    validatePageSize(obj.pageSize, 'layout.pageSize', documentPath);
 
     assertEnumAt(obj.orientation, ['portrait', 'landscape'], 'layout.orientation', documentPath);
     assertEnumAt(obj.direction, ['ltr', 'rtl', 'auto'], 'layout.direction', documentPath);
@@ -280,12 +295,35 @@ function validateLayout(layout: unknown, documentPath: string): void {
     if (obj.margins === undefined) {
         contractError(documentPath, 'layout.margins', 'is required.');
     }
-    const margins = assertPlainObjectAt(obj.margins, 'layout.margins', documentPath);
-    assertAllowedKeys(margins, MARGINS_KEYS, 'layout.margins', documentPath);
-    assertFiniteNumberAt(margins.top, 'layout.margins.top', documentPath);
-    assertFiniteNumberAt(margins.right, 'layout.margins.right', documentPath);
-    assertFiniteNumberAt(margins.bottom, 'layout.margins.bottom', documentPath);
-    assertFiniteNumberAt(margins.left, 'layout.margins.left', documentPath);
+    validateMarginsObject(obj.margins, 'layout.margins', documentPath);
+    if (obj.pageTemplates !== undefined) {
+        if (!Array.isArray(obj.pageTemplates)) {
+            contractError(documentPath, 'layout.pageTemplates', 'expected an array.');
+        }
+        obj.pageTemplates.forEach((template: unknown, index: number) => {
+            const path = `layout.pageTemplates[${index}]`;
+            const item = assertPlainObjectAt(template, path, documentPath);
+            assertAllowedKeys(item, PAGE_TEMPLATE_KEYS, path, documentPath);
+            if (item.pageIndex !== undefined) {
+                assertFiniteNumberAt(item.pageIndex, `${path}.pageIndex`, documentPath);
+                if (!Number.isInteger(Number(item.pageIndex)) || Number(item.pageIndex) < 0) {
+                    contractError(documentPath, `${path}.pageIndex`, 'expected an integer greater than or equal to 0.');
+                }
+            }
+            if (item.selector !== undefined) {
+                assertStringAt(item.selector, `${path}.selector`, documentPath);
+                if (!PAGE_RESERVATION_SELECTOR_VALUES.has(String(item.selector))) {
+                    contractError(documentPath, `${path}.selector`, 'expected one of: first, odd, even, all.');
+                }
+            }
+            if (item.pageIndex === undefined && item.selector === undefined) {
+                contractError(documentPath, path, 'expected pageIndex or selector.');
+            }
+            if (item.pageSize !== undefined) validatePageSize(item.pageSize, `${path}.pageSize`, documentPath);
+            assertEnumAt(item.orientation, ['portrait', 'landscape'], `${path}.orientation`, documentPath);
+            if (item.margins !== undefined) validateMarginsObject(item.margins, `${path}.margins`, documentPath);
+        });
+    }
 
     if (obj.fontFamily !== undefined && obj.fontFamily !== null && typeof obj.fontFamily !== 'string') {
         contractError(documentPath, 'layout.fontFamily', 'expected a string.');

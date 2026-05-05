@@ -103,6 +103,32 @@ function ensureOverlayProvider(candidate: unknown, modulePath: string): OverlayP
     return overlay;
 }
 
+function createPdfContext(
+    PdfContextClass: new (...args: any[]) => any,
+    options: any
+): any {
+    const context = new PdfContextClass(options);
+    const fallbackAddPage = context.addPage.bind(context);
+
+    context.addPage = (pageOptions?: { size?: string | [number, number]; margins?: { top: number; right: number; bottom: number; left: number } }) => {
+        const doc = context.doc;
+        if (
+            doc &&
+            pageOptions?.size !== undefined &&
+            typeof doc.addPage === 'function'
+        ) {
+            doc.addPage({
+                size: pageOptions.size,
+                margins: pageOptions.margins ?? options.margins
+            });
+            return;
+        }
+        fallbackAddPage(pageOptions);
+    };
+
+    return context;
+}
+
 async function run() {
     const cliVersion = process.env.npm_package_version || '0.1.0';
     const program = new Command();
@@ -145,7 +171,7 @@ async function run() {
         console.log(`[vmprint] Bypassing layout, loaded ${stream.pages.length} pages from ${options.renderFromLayout}`);
 
         const { width, height } = stream.config.layout.pageSize as any;
-        const context = new PdfContextClass({
+        const context = createPdfContext(PdfContextClass, {
             size: typeof stream.config.layout.pageSize === 'object'
                 ? [stream.config.layout.pageSize.width, stream.config.layout.pageSize.height]
                 : stream.config.layout.pageSize,
@@ -231,7 +257,7 @@ async function run() {
         : undefined;
 
     const { pageSize: { width, height } } = engine.info;
-    const context = new PdfContextClass({
+    const context = createPdfContext(PdfContextClass, {
         size: [width, height],
         margins: { top: 0, left: 0, right: 0, bottom: 0 },
         autoFirstPage: false,

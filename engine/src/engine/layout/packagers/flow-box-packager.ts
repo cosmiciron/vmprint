@@ -126,11 +126,13 @@ export class FlowBoxPackager implements PackagerUnit {
 
     prepare(availableWidth: number, availableHeight: number, context: PackagerContext): void {
         this.lastAvailableHeight = availableHeight;
-        // Use context.contentWidthOverride (set by zone sub-sessions) when present.
-        // Falls back to -1 so createFlowMaterializationContext skips contentWidth,
-        // causing getContextualContentWidth to use the style-based default width
-        // (pageContentWidth) rather than the narrowed lane/available width.
-        const contentWidth = context.contentWidthOverride ?? -1;
+        // Use the resolved page content width so page templates reflow text
+        // against the actual owning page without treating collision lanes as
+        // permanent line-wrap width.
+        const hasPageTemplates = Array.isArray((this.processor as any).config?.layout?.pageTemplates)
+            && (this.processor as any).config.layout.pageTemplates.length > 0;
+        const pageContentWidth = Math.max(0, Number(context.pageWidth || 0) - context.margins.left - context.margins.right);
+        const contentWidth = context.contentWidthOverride ?? (hasPageTemplates ? pageContentWidth : -1);
         this.materialize(availableWidth, contentWidth);
         this.prepareSpatialPlacement(context);
     }
@@ -222,7 +224,10 @@ export class FlowBoxPackager implements PackagerUnit {
 
     prepareLookahead(availableWidth: number, availableHeight: number, context: PackagerContext): void {
         this.lastAvailableHeight = availableHeight;
-        const contentWidth = context.contentWidthOverride ?? -1;
+        const hasPageTemplates = Array.isArray((this.processor as any).config?.layout?.pageTemplates)
+            && (this.processor as any).config.layout.pageTemplates.length > 0;
+        const pageContentWidth = Math.max(0, Number(context.pageWidth || 0) - context.margins.left - context.margins.right);
+        const contentWidth = context.contentWidthOverride ?? (hasPageTemplates ? pageContentWidth : -1);
         this.materialize(availableWidth, contentWidth);
         this.prepareSpatialPlacement(context);
     }

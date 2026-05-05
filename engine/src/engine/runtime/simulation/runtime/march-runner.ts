@@ -7,6 +7,7 @@ import { LayoutSession } from '../../../layout/layout-session';
 import { PageSurface, type PaginationState } from '../../../layout/runtime/session/session-lifecycle-types';
 import type { PageCaptureRecord } from '../../../layout/runtime/session/session-state-types';
 import type { PaginationLoopAction } from '../../../layout/runtime/session/session-pagination-types';
+import { ChunkAdvanceStopped } from '../../../layout/chunk-policy';
 import { PackagerContext, type PackagerUnit, type LayoutBox, type SpatialFrontier } from '../../../layout/packagers/packager-types';
 import { createScriptMessageAckTopic, createScriptMessageTopic, LayoutUtils } from '../../../layout/layout-utils';
 import { handleBoundaryCheckpoint } from '../core/boundary-checkpoints';
@@ -56,11 +57,13 @@ export class SimulationMarchRunner implements SimulationRunner {
     private readonly reactiveResettlementSignatures = new Set<string>();
     private initialPlacementPass = true;
     private finalizedPageInCurrentIteration = false;
-    private readonly margins: PackagerContext['margins'];
+    private margins: PackagerContext['margins'];
+    private pageWidth: number;
+    private pageHeight: number;
     private currentY: number;
     private lastSpacingAfter = 0;
     private readonly paginationState: PaginationState;
-    private readonly pageLimit: number;
+    private pageLimit: number;
     private finished = false;
     private lastRenderRevisionPageIndexes: number[] = [];
     private lastUpdateSummary: SimulationUpdateSummary = createEmptyUpdateSummary();
@@ -76,7 +79,10 @@ export class SimulationMarchRunner implements SimulationRunner {
         this.maxReactiveResettlementCycles = getReactiveResettlementCycleCap();
         this.snapshotsEnabled = areSafeCheckpointsEnabled();
         this.positionFlowBox = (this.processor as FlowBoxPositioner).positionFlowBox.bind(this.processor);
-        this.margins = this.contextBase.margins;
+        const initialGeometry = this.resolvePageGeometry(0);
+        this.pageWidth = initialGeometry.width;
+        this.pageHeight = initialGeometry.height;
+        this.margins = initialGeometry.margins;
         this.currentY = this.margins.top;
         this.paginationState = {
             currentPageIndex: this.currentPageIndex,
@@ -84,9 +90,9 @@ export class SimulationMarchRunner implements SimulationRunner {
             currentY: this.currentY,
             lastSpacingAfter: this.lastSpacingAfter
         };
-        this.pageLimit = this.contextBase.pageHeight - this.margins.bottom;
+        this.pageLimit = this.pageHeight - this.margins.bottom;
         this.session.beginSimulationRun(this.progression);
-        this.session.notifyPageStart(this.currentPageIndex, this.contextBase.pageWidth, this.contextBase.pageHeight, this.currentPageBoxes);
+        this.session.notifyPageStart(this.currentPageIndex, this.pageWidth, this.pageHeight, this.currentPageBoxes);
         if (this.reactiveCheckpointsEnabled()) {
             this.session.recordSafeCheckpoint(
                 this.packagers,
@@ -95,7 +101,7 @@ export class SimulationMarchRunner implements SimulationRunner {
                 this.currentPageBoxes,
                 this.currentPageIndex,
                 this.currentY,
-                this.contextBase.pageHeight,
+                this.pageHeight,
                 this.lastSpacingAfter,
                 'page'
             );
@@ -192,8 +198,8 @@ export class SimulationMarchRunner implements SimulationRunner {
         }
         snapshot.push(new PageSurface(
             this.currentPageIndex,
-            this.contextBase.pageWidth,
-            this.contextBase.pageHeight,
+            this.pageWidth,
+            this.pageHeight,
             this.currentPageBoxes.map((box) => ({
                 ...box,
                 properties: box.properties ? { ...box.properties } : box.properties,
@@ -205,7 +211,17 @@ export class SimulationMarchRunner implements SimulationRunner {
 
     runToCompletion(): Page[] {
         while (!this.isFinished()) {
-            this.advanceTick();
+            try {
+                this.advanceTick();
+            } catch (error) {
+                if (!(error instanceof ChunkAdvanceStopped)) {
+                    throw error;
+                }
+                this.session.stopSimulationProgression('page-limit');
+                this.currentPageBoxes = [];
+                this.paginationState.currentPageBoxes = this.currentPageBoxes;
+                this.finished = true;
+            }
         }
         return this.pages;
     }
@@ -270,8 +286,8 @@ export class SimulationMarchRunner implements SimulationRunner {
                 currentPageIndex: this.currentPageIndex,
                 currentY: this.currentY,
                 lastSpacingAfter: this.lastSpacingAfter,
-                pageWidth: this.contextBase.pageWidth,
-                pageHeight: this.contextBase.pageHeight,
+                pageWidth: this.pageWidth,
+                pageHeight: this.pageHeight,
                 pageLimit: this.pageLimit,
                 margins: this.margins,
                 contextBase: chunkContextBase
@@ -368,8 +384,8 @@ export class SimulationMarchRunner implements SimulationRunner {
                 pages: this.pages,
                 currentPageBoxes: this.currentPageBoxes,
                 currentPageIndex: this.currentPageIndex,
-                pageWidth: this.contextBase.pageWidth,
-                pageHeight: this.contextBase.pageHeight,
+                pageWidth: this.pageWidth,
+                pageHeight: this.pageHeight,
                 nextPageTop: this.margins.top
             });
             this.session.recordProfile('wholeFormationOverflowMs', performance.now() - wholeFormationStart);
@@ -386,8 +402,8 @@ export class SimulationMarchRunner implements SimulationRunner {
                 pages: this.pages,
                 currentPageBoxes: this.currentPageBoxes,
                 currentPageIndex: this.currentPageIndex,
-                pageWidth: this.contextBase.pageWidth,
-                pageHeight: this.contextBase.pageHeight,
+                pageWidth: this.pageWidth,
+                pageHeight: this.pageHeight,
                 nextPageTopY: this.margins.top,
                 currentActorIndex: this.actorIndex,
                 actorQueue: this.packagers,
@@ -442,8 +458,8 @@ export class SimulationMarchRunner implements SimulationRunner {
                     pages: this.pages,
                     currentPageBoxes: this.currentPageBoxes,
                     currentPageIndex: this.currentPageIndex,
-                    pageWidth: this.contextBase.pageWidth,
-                    pageHeight: this.contextBase.pageHeight,
+                    pageWidth: this.pageWidth,
+                    pageHeight: this.pageHeight,
                     nextPageTopY: this.margins.top,
                     currentActorIndex: this.actorIndex,
                     currentY: this.currentY,
@@ -473,8 +489,8 @@ export class SimulationMarchRunner implements SimulationRunner {
                 pages: this.pages,
                 currentPageBoxes: this.currentPageBoxes,
                 currentPageIndex: this.currentPageIndex,
-                pageWidth: this.contextBase.pageWidth,
-                pageHeight: this.contextBase.pageHeight,
+                pageWidth: this.pageWidth,
+                pageHeight: this.pageHeight,
                 nextPageTopY: this.margins.top,
                 currentActorIndex: this.actorIndex,
                 currentY: this.currentY,
@@ -504,8 +520,8 @@ export class SimulationMarchRunner implements SimulationRunner {
                 pages: this.pages,
                 currentPageBoxes: this.currentPageBoxes,
                 currentPageIndex: this.currentPageIndex,
-                pageWidth: this.contextBase.pageWidth,
-                pageHeight: this.contextBase.pageHeight,
+                pageWidth: this.pageWidth,
+                pageHeight: this.pageHeight,
                 nextPageTopY: this.margins.top,
                 currentActorIndex: this.actorIndex,
                 actorQueue: this.packagers,
@@ -545,8 +561,8 @@ export class SimulationMarchRunner implements SimulationRunner {
                 this.pages,
                 this.currentPageBoxes,
                 this.currentPageIndex,
-                this.contextBase.pageWidth,
-                this.contextBase.pageHeight
+                this.pageWidth,
+                this.pageHeight
             );
             this.currentPageBoxes = [];
             this.paginationState.currentPageBoxes = this.currentPageBoxes;
@@ -567,6 +583,13 @@ export class SimulationMarchRunner implements SimulationRunner {
                     totalPageCount: this.pages.length
                 }
             });
+        }
+
+        if (this.stopIfPageLimitReached()) {
+            this.refreshUpdateSummaryPageIndexes(pageTokensBeforeTick);
+            this.refreshRenderRevisionPageIndexes(pageCaptureRevisionsBeforeTick);
+            this.normalizeReportedUpdateSummary();
+            return false;
         }
 
         if (!this.maybeSettleAtCheckpoint()) {
@@ -633,11 +656,35 @@ export class SimulationMarchRunner implements SimulationRunner {
         return prevAfter + marginTop;
     }
 
+    private resolvePageGeometry(pageIndex: number): {
+        width: number;
+        height: number;
+        margins: PackagerContext['margins'];
+    } {
+        const resolved = this.contextBase.resolvePageGeometry?.(pageIndex);
+        return {
+            width: Number.isFinite(resolved?.width) ? Number(resolved!.width) : this.contextBase.pageWidth,
+            height: Number.isFinite(resolved?.height) ? Number(resolved!.height) : this.contextBase.pageHeight,
+            margins: resolved?.margins ?? this.contextBase.margins
+        };
+    }
+
+    private syncCurrentPageGeometry(): void {
+        const geometry = this.resolvePageGeometry(this.currentPageIndex);
+        this.pageWidth = geometry.width;
+        this.pageHeight = geometry.height;
+        this.margins = geometry.margins;
+        this.pageLimit = this.pageHeight - this.margins.bottom;
+    }
+
     private buildChunkContextBase() {
         return {
             ...this.contextBase,
+            pageWidth: this.pageWidth,
+            pageHeight: this.pageHeight,
+            margins: this.margins,
             simulationTick: this.session.getSimulationTick(),
-            chunkOriginWorldY: this.session.resolveChunkOriginWorldY(this.currentPageIndex, this.contextBase.pageHeight)
+            chunkOriginWorldY: this.session.resolveChunkOriginWorldY(this.currentPageIndex, this.pageHeight)
         };
     }
 
@@ -647,6 +694,7 @@ export class SimulationMarchRunner implements SimulationRunner {
         this.currentPageBoxes = this.paginationState.currentPageBoxes as LayoutBox[];
         this.currentY = this.paginationState.currentY;
         this.lastSpacingAfter = this.paginationState.lastSpacingAfter;
+        this.syncCurrentPageGeometry();
         this.finalizedPageInCurrentIteration = false;
     }
 
@@ -656,7 +704,21 @@ export class SimulationMarchRunner implements SimulationRunner {
         this.currentPageBoxes = this.paginationState.currentPageBoxes as LayoutBox[];
         this.currentY = this.paginationState.currentY;
         this.lastSpacingAfter = this.paginationState.lastSpacingAfter;
+        this.syncCurrentPageGeometry();
         this.finalizedPageInCurrentIteration = false;
+    }
+
+    private stopIfPageLimitReached(): boolean {
+        const rawStopAtPage = Number(this.contextBase.stopAtPage);
+        const stopAtPage = Number.isFinite(rawStopAtPage)
+            ? Math.max(0, Math.floor(rawStopAtPage))
+            : null;
+        if (stopAtPage === null) return false;
+        const hasReachedLimit = this.pages.some((page) => page.index >= stopAtPage);
+        if (!hasReachedLimit) return false;
+        this.session.stopSimulationProgression('page-limit');
+        this.finished = true;
+        return true;
     }
 
     private reapplyResolvedCheckpoint(
@@ -672,8 +734,8 @@ export class SimulationMarchRunner implements SimulationRunner {
             restored,
             packagers: this.packagers,
             pages: this.pages,
-            pageWidth: this.contextBase.pageWidth,
-            pageHeight: this.contextBase.pageHeight,
+            pageWidth: this.pageWidth,
+            pageHeight: this.pageHeight,
             applyState: (state) => this.applySessionPaginationState(state),
             notifyPageStart: (pageIndex, pageWidth, pageHeight, currentPageBoxes) =>
                 this.session.notifyPageStart(pageIndex, pageWidth, pageHeight, currentPageBoxes),
@@ -709,8 +771,8 @@ export class SimulationMarchRunner implements SimulationRunner {
             actorSignalSequence: this.session.getActorSignalSequence(),
             pages: this.pages,
             packagers: this.packagers,
-            pageWidth: this.contextBase.pageWidth,
-            pageHeight: this.contextBase.pageHeight,
+            pageWidth: this.pageWidth,
+            pageHeight: this.pageHeight,
             recordUpdateSummary: (source, kind, actors, frontier, pageIndexes) =>
                 this.recordUpdateSummary(source, kind, actors, frontier, pageIndexes),
             recordProfile: (metric, delta) => this.session.recordProfile(metric, delta),
@@ -763,6 +825,9 @@ export class SimulationMarchRunner implements SimulationRunner {
     }
 
     private afterPotentialBoundary(previousPageIndex: number, previousActorIndex: number): boolean {
+        if (this.stopIfPageLimitReached()) {
+            return true;
+        }
         return handleBoundaryCheckpoint({
             previousPageIndex,
             previousActorIndex,
@@ -778,7 +843,7 @@ export class SimulationMarchRunner implements SimulationRunner {
                     this.currentPageBoxes,
                     this.currentPageIndex,
                     this.currentY,
-                    this.contextBase.pageHeight,
+                    this.pageHeight,
                     this.lastSpacingAfter,
                     kind
                 );

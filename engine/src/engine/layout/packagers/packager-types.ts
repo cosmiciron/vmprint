@@ -45,6 +45,12 @@ export interface PackagerContext {
     margins: { top: number; right: number; bottom: number; left: number };
     pageWidth: number;
     pageHeight: number;
+    resolvePageGeometry?: (pageIndex: number) => {
+        width: number;
+        height: number;
+        margins: { top: number; right: number; bottom: number; left: number };
+    };
+    stopAtPage?: number;
     /**
      * Optional override for the text line-wrapping width.
      * Set by zone sub-sessions (zone-map packager) so that flow-box packagers

@@ -392,7 +392,10 @@ export class ContextRenderer {
         await this.registerFonts(context, pages);
 
         pages.forEach((page) => {
-            context.addPage();
+            context.addPage({
+                size: [page.width, page.height],
+                margins: { top: 0, right: 0, bottom: 0, left: 0 }
+            });
             if (this.config.layout.pageBackground) {
                 context.save();
                 context.fillColor(this.config.layout.pageBackground).opacity(1)

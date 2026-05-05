@@ -1,5 +1,5 @@
 import { LayoutConfig } from './types';
-import { LayoutProcessor } from './layout/layout-core';
+import { LayoutProcessor, type LayoutSimulationOptions } from './layout/layout-core';
 import { LayoutUtils } from './layout/layout-utils';
 import {
     buildPageViewportHandle,
@@ -112,6 +112,10 @@ export class LayoutEngine extends LayoutProcessor {
             pages: snapshot.pages,
             pageCaptures: snapshot.reader.world?.pageCaptures ?? []
         }, request);
+    }
+
+    simulate(elements: Parameters<LayoutProcessor['simulate']>[0], options: LayoutSimulationOptions = {}): ReturnType<LayoutProcessor['simulate']> {
+        return super.simulate(elements, options);
     }
 
     simulateSpatialDocument(document: SpatialDocument): ReturnType<LayoutProcessor['simulate']> {

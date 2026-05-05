@@ -71,6 +71,9 @@ import type { PackagerContext } from './packagers/packager-types';
 import { reflowTextElementAgainstSpatialField } from './spatial-field-reflow';
 import { SimulationLoop, type SimulationLoopOptions, type SimulationLoopScheduler } from './simulation-loop';
 
+export type LayoutSimulationOptions = {
+    stopAtPage?: number;
+};
 
 export class LayoutProcessor extends TextProcessor {
     private static readonly REGION_LAYOUT_HEIGHT = 1000000;
@@ -706,8 +709,8 @@ export class LayoutProcessor extends TextProcessor {
      * Canonical flat pipeline:
      * input elements -> flow boxes -> paginated flow boxes -> positioned page boxes.
      */
-    simulate(elements: Element[]): Page[] {
-        const result = this.runSimulationReplayLoop(elements, null, null);
+    simulate(elements: Element[], options: LayoutSimulationOptions = {}): Page[] {
+        const result = this.runSimulationReplayLoop(elements, null, null, options);
         return result.pages;
     }
 
@@ -796,9 +799,9 @@ export class LayoutProcessor extends TextProcessor {
     private runSimulationReplayLoop(
         elements: Element[],
         existingScriptRuntimeHost: ScriptRuntimeHost | null,
-        asyncThoughtHost: AsyncThoughtHost | null
+        asyncThoughtHost: AsyncThoughtHost | null,
+        options: LayoutSimulationOptions = {}
     ): { pages: Page[]; session: LayoutSession } {
-        const { height: pageHeight, width: pageWidth } = this.getPageDimensions();
         const maxScriptReplayPasses = 3;
         const aggregateScriptProfile = Object.fromEntries(
             LayoutProcessor.SCRIPT_PROFILE_KEYS.map((key) => [key, 0])
@@ -827,7 +830,10 @@ export class LayoutProcessor extends TextProcessor {
                 activeScriptRuntimeHost,
                 scriptLifecycleState,
                 asyncThoughtHost,
-                collaborators
+                collaborators,
+                undefined,
+                0,
+                options
             );
             const pages = runner.runToCompletion();
             const finalized = session.finalizePages(pages);
@@ -870,18 +876,26 @@ export class LayoutProcessor extends TextProcessor {
         asyncThoughtHost: AsyncThoughtHost | null,
         collaborators: readonly Collaborator[],
         progressionOverride?: Required<SimulationProgressionConfig>,
-        timeOffsetSeconds: number = 0
+        timeOffsetSeconds: number = 0,
+        options: LayoutSimulationOptions = {}
     ): {
         runner: SimulationRunner;
         session: LayoutSession;
         scriptDocumentPackager: ScriptDocumentPackager | null;
     } {
-        const { height: pageHeight, width: pageWidth } = this.getPageDimensions();
+        const firstPageGeometry = LayoutUtils.resolvePageGeometry(this.config, 0);
+        const stopAtPage = Number.isFinite(Number(options.stopAtPage))
+            ? Math.max(0, Math.floor(Number(options.stopAtPage)))
+            : null;
         this.activeScriptRuntimeHost = scriptRuntimeHost;
         const session = new LayoutSession({
             runtime: this.getRuntime(),
             collaborators,
-            asyncThoughtHost
+            asyncThoughtHost,
+            resolvePageGeometry: (pageIndex) => LayoutUtils.resolvePageGeometry(this.config, pageIndex),
+            shouldStopAfterPage: stopAtPage === null
+                ? undefined
+                : (pageIndex) => pageIndex >= stopAtPage
         });
         this.lastLayoutSession = session;
         session.notifySimulationStart();
@@ -896,9 +910,11 @@ export class LayoutProcessor extends TextProcessor {
         }
         const contextBase = {
             processor: this,
-            pageWidth,
-            pageHeight,
-            margins: this.config.layout.margins,
+            pageWidth: firstPageGeometry.width,
+            pageHeight: firstPageGeometry.height,
+            margins: firstPageGeometry.margins,
+            resolvePageGeometry: (pageIndex: number) => LayoutUtils.resolvePageGeometry(this.config, pageIndex),
+            stopAtPage: stopAtPage ?? undefined,
             simulationTickRateHz: progressionOverride?.tickRateHz ?? this.getSimulationProgressionConfig().tickRateHz,
             simulationProgression: progressionOverride ?? this.getSimulationProgressionConfig(),
             simulationTimeOffsetSeconds: Number.isFinite(timeOffsetSeconds) ? Number(timeOffsetSeconds) : 0,

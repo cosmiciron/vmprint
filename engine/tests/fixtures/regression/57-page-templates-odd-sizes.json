@@ -1,0 +1,151 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 460,
+      "height": 360
+    },
+    "margins": {
+      "top": 32,
+      "right": 32,
+      "bottom": 32,
+      "left": 32
+    },
+    "pageBackground": "#f8fafc",
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.25,
+    "pageTemplates": [
+      {
+        "pageIndex": 1,
+        "pageSize": {
+          "width": 280,
+          "height": 420
+        },
+        "margins": {
+          "top": 34,
+          "right": 22,
+          "bottom": 34,
+          "left": 22
+        }
+      },
+      {
+        "pageIndex": 2,
+        "pageSize": {
+          "width": 420,
+          "height": 230
+        },
+        "margins": {
+          "top": 20,
+          "right": 44,
+          "bottom": 20,
+          "left": 44
+        }
+      }
+    ]
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "marginBottom": 10,
+      "keepWithNext": true,
+      "color": "#0f172a"
+    },
+    "h2": {
+      "fontSize": 15,
+      "fontWeight": "bold",
+      "marginTop": 0,
+      "marginBottom": 8,
+      "keepWithNext": true,
+      "color": "#1e293b"
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2,
+      "color": "#334155"
+    },
+    "label": {
+      "fontSize": 12,
+      "fontWeight": "bold",
+      "padding": 8,
+      "borderWidth": 1,
+      "borderColor": "#334155",
+      "backgroundColor": "#dbeafe",
+      "marginBottom": 10,
+      "keepWithNext": true
+    },
+    "tall": {
+      "padding": 8,
+      "borderWidth": 1,
+      "borderColor": "#64748b",
+      "backgroundColor": "#ecfeff",
+      "marginBottom": 8,
+      "height": 110
+    },
+    "wide": {
+      "padding": 8,
+      "borderWidth": 1,
+      "borderColor": "#64748b",
+      "backgroundColor": "#fef3c7",
+      "marginBottom": 8,
+      "height": 58
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Page Templates: Odd Sized Pages"
+    },
+    {
+      "type": "label",
+      "content": "Page 1 uses the document default: 460 x 360 pt, with 32 pt margins."
+    },
+    {
+      "type": "p",
+      "content": "The first page is intentionally the largest sheet in this visual fixture. Subsequent pages use document-level pageTemplates to override their dimensions before layout happens."
+    },
+    {
+      "type": "p",
+      "content": "This paragraph fills the default page enough to push the next section to the second page. The line length should be comfortably wide because the content box is 396 points across."
+    },
+    {
+      "type": "h2",
+      "content": "Tall Narrow Page"
+    },
+    {
+      "type": "label",
+      "content": "Page 2 overrides to 280 x 420 pt, with 22 pt side margins."
+    },
+    {
+      "type": "tall",
+      "content": "This cyan panel should look tall and narrow. The page is taller than the default but much narrower, so paragraph lines wrap aggressively."
+    },
+    {
+      "type": "p",
+      "content": "Narrow pages are useful for receipts, labels, inserts, and other odd production formats. The engine should resolve this page geometry before measuring the actors on it."
+    },
+    {
+      "type": "p",
+      "content": "More copy on the narrow page makes the wrap difference visible. The same text would need fewer lines on the default page, but here it forms a compact column."
+    },
+    {
+      "type": "h2",
+      "content": "Short Wide Page"
+    },
+    {
+      "type": "label",
+      "content": "Page 3 overrides to 420 x 230 pt, with 44 pt side margins."
+    },
+    {
+      "type": "wide",
+      "content": "This amber panel should look short and wide. It proves the next page can use a different height and different margins from both prior pages."
+    }
+  ]
+}
