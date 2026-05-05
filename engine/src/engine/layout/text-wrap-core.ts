@@ -16,8 +16,8 @@ export type WrapSegmentToken = {
 
 export type WrapToken = { kind: 'newline' } | WrapSegmentToken;
 
-// UAX #14 line break classes CL, CP, EX, IS — characters forbidden at line start in Western text
-const FORBIDDEN_LINE_START_RE = /^[,\.!?;:\)\]\}"'\u201D\u2019\u203A\u00BB\u2026\u2014\u2013]+$/;
+// UAX #14 line break classes CL, CP, EX, IS: characters forbidden at line start.
+const FORBIDDEN_LINE_START_RE = /^[,\.!?;:\)\]\}"'\u201D\u2019\u203A\u00BB\u2026\u2014\u2013\u060C\u061B\u061F]+$/;
 
 function isForbiddenLineStart(text: string): boolean {
     return FORBIDDEN_LINE_START_RE.test(text);
@@ -358,6 +358,50 @@ export function wrapTokenStream(params: {
         currentLine = params.appendSegmentToLine(currentLine, segment, segmentWidth, allowMerge);
         currentLineWidth += segmentWidth;
     };
+    const movePreviousClusterToNextLine = (
+        segment: TextSegment,
+        segmentWidth: number,
+        allowMerge: boolean
+    ): boolean => {
+        if (currentLine.length === 0) return false;
+
+        const originalLine = currentLine.slice();
+        const originalLineWidth = currentLineWidth;
+        const carry: TextSegment[] = [];
+        let carryWidth = 0;
+
+        while (currentLine.length > 0) {
+            const previous = currentLine.pop()!;
+            const previousWidth = Number(previous.width || 0);
+            currentLineWidth -= previousWidth;
+            if ((previous.text || '').trim().length === 0) {
+                continue;
+            }
+            carry.unshift(previous);
+            carryWidth += previousWidth;
+            break;
+        }
+
+        if (carry.length === 0 || currentLine.length === 0) {
+            currentLine = originalLine;
+            currentLineWidth = originalLineWidth;
+            return false;
+        }
+
+        const nextLineLimit = params.getLineWidthLimit(params.maxWidth, finalLines.length + 1, params.textIndent);
+        if (!fitsWidth(carryWidth, segmentWidth, nextLineLimit)) {
+            currentLine = originalLine;
+            currentLineWidth = originalLineWidth;
+            return false;
+        }
+
+        pushCurrentLine();
+        if (stopRequested) return true;
+        currentLine = carry;
+        currentLineWidth = carryWidth;
+        pushSegmentToLine(segment, segmentWidth, allowMerge);
+        return true;
+    };
 
     for (const token of params.tokens) {
         if (stopRequested) break;
@@ -450,8 +494,13 @@ export function wrapTokenStream(params: {
 
         if (currentLine.length > 0) {
             if (token.noLineStart) {
-                // Overflow: append closing punctuation onto the current line rather
-                // than letting it widow at the start of the next line.
+                if (movePreviousClusterToNextLine(token.segment, segmentWidth, token.allowMerge)) {
+                    if (stopRequested) break;
+                    continue;
+                }
+                // Fallback: append closing punctuation onto the current line rather
+                // than letting it widow at the start of the next line. This can
+                // still overfill only when the carried cluster itself cannot fit.
                 pushSegmentToLine(token.segment, segmentWidth, token.allowMerge);
                 pushCurrentLine();
                 if (stopRequested) break;

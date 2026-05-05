@@ -183,3 +183,34 @@ export const reorderItemsForVisualBidi = <T extends { seg: RendererLineSegment; 
     // their item order reversed so the RTL run reads correctly inside LTR context.
     return runs.flatMap((run) => run.dir === 'rtl' ? [...run.items].reverse() : run.items);
 };
+
+export const resolveVisualTextByItem = <T extends { seg: RendererLineSegment }>(
+    items: T[],
+    baseDirection: 'ltr' | 'rtl'
+): string[] => {
+    const visualTextByItem = items.map(() => '');
+    if (items.length === 0) return visualTextByItem;
+
+    const textParts: string[] = [];
+    const charToItem: number[] = [];
+    for (let itemIndex = 0; itemIndex < items.length; itemIndex += 1) {
+        const text = items[itemIndex]?.seg?.text || '\uFFFC';
+        textParts.push(text);
+        for (let charIndex = 0; charIndex < text.length; charIndex += 1) {
+            charToItem.push(itemIndex);
+        }
+    }
+
+    const lineText = textParts.join('');
+    if (!lineText) return items.map((item) => item?.seg?.text || '');
+
+    const embedding = bidi.getEmbeddingLevels(lineText, baseDirection as any);
+    const visualCharIndices = bidi.getReorderedIndices(lineText, embedding);
+    for (const charIndex of visualCharIndices) {
+        const itemIndex = charToItem[charIndex];
+        if (itemIndex === undefined) continue;
+        visualTextByItem[itemIndex] += lineText[charIndex] || '';
+    }
+
+    return visualTextByItem.map((text, index) => text || items[index]?.seg?.text || '');
+};

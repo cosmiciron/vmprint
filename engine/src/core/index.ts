@@ -11,6 +11,12 @@ export * from '../engine/text-delegate-load-error';
 export * from '../engine/layout/track-sizing';
 export * from '../engine/layout/exclusion-field';
 export * from '../engine/layout/simulation-report';
+export {
+    getStrongDirection,
+    reorderItemsForVisualBidi,
+    resolveVisualTextByItem,
+    resolveParagraphDirection
+} from '../engine/render/direction';
 export { buildDataUri, parseEmbeddedImagePayloadCached } from '../engine/image-data';
 export { LayoutUtils } from '../engine/layout/layout-utils';
 export { LAYOUT_DEFAULTS } from '../engine/layout/defaults';
