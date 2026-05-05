@@ -108,11 +108,22 @@ The document world is a **persistent coordinate system** with a stable origin, a
 
 A **page** is a **viewport projection** over a slice of world space. When the simulation fills a viewport, it advances to the next one. The page boundaries are a consequence of the viewport plan over world space — they are not containers that content is assigned to. They are windows that reveal portions of a continuous world as the simulation advances.
 
+Viewport geometry is resolved at the moment each page is explored. The document
+default gives the simulation its base page size and margins, but
+`layout.pageTemplates` can override those values for a specific page or selector.
+That means an odd-sized page is not a renderer trick after layout; it changes
+the available flow width, margin boxes, header/footer regions, debug geometry,
+and final media box for that page.
+
 This has practical consequences that matter:
 
 - **Zones are world regions, not page regions.** A multi-column story zone is defined against world coordinates. It extends across as many viewports as it takes to exhaust its content. The engine doesn't need linked frame workarounds — the zone is just a region in the world, and viewports reveal successive slices of it.
 - **Non-contiguous flows resolve naturally.** If content should continue in a non-adjacent region, that's a viewport planning question, not a special-case linked-frame mechanism.
 - **The page count is a derived fact, not a declaration.** You don't pre-declare ten pages and fill them. The simulation runs until the world is settled, and however many viewports it took is how many pages you have.
+- **The simulation horizon can be intentional.** A caller may stop after a
+  zero-based page prefix when it only needs a preview or flow probe. The report
+  records that as a page-limit stop rather than confusing it with a fully settled
+  document.
 
 - **Sequential document flow is one inhabitant of the world, not the world itself.** Stories and plain flow are rivers moving through the substrate. World-space actors such as `field-actor`s can exist alongside them and publish spatial fields that the settling actors must negotiate around.
 

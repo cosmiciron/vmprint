@@ -53,6 +53,13 @@ Optional scripting keys at root level: `methods`, `scriptVars`, `onBeforeLayout`
   "pageSize": { "width": 720, "height": 405 },
   "orientation": "landscape",
   "margins": { "top": 34, "right": 50, "bottom": 34, "left": 50 },
+  "pageTemplates": [
+    {
+      "pageIndex": 1,
+      "pageSize": { "width": 280, "height": 420 },
+      "margins": { "top": 34, "right": 22, "bottom": 34, "left": 22 }
+    }
+  ],
   "fontFamily": "Arimo",
   "fontSize": 10,
   "lineHeight": 1.35,
@@ -67,6 +74,12 @@ Optional scripting keys at root level: `methods`, `scriptVars`, `onBeforeLayout`
 | A4 portrait | 595 × 842 |
 | LETTER portrait | 612 × 792 |
 | 16:9 landscape | 720 × 405 |
+
+`pageTemplates` can override `pageSize`, `orientation`, and/or `margins` for
+matching pages. `pageIndex` is zero-based; selectors such as `"first"`, `"odd"`,
+`"even"`, and `"all"` are also supported. The engine resolves the active page
+geometry before measuring that page, so odd-sized pages change real flow space
+and render as matching PDF media boxes.
 
 **Content area math** (critical for fitting content on page):
 

@@ -159,7 +159,31 @@ interface PageTemplate {
 <p><code>layout.pageTemplates</code> overrides page geometry for matching pages. Templates are
 applied in declaration order over the document defaults, so later matches can
 refine earlier broad selectors. <code>pageIndex</code> is zero-based; <code>selector</code> uses
-human page parity, so page index <code>0</code> is the first odd page.</p>
+human page parity, so page index <code>0</code> is the first odd page. A matching template
+may override <code>pageSize</code>, <code>orientation</code>, <code>margins</code>, or any combination of those
+fields. Pages without a matching template keep the document-level layout.</p>
+<pre><code class="language-json">{
+  &quot;layout&quot;: {
+    &quot;pageSize&quot;: { &quot;width&quot;: 460, &quot;height&quot;: 360 },
+    &quot;margins&quot;: { &quot;top&quot;: 32, &quot;right&quot;: 32, &quot;bottom&quot;: 32, &quot;left&quot;: 32 },
+    &quot;pageTemplates&quot;: [
+      {
+        &quot;pageIndex&quot;: 1,
+        &quot;pageSize&quot;: { &quot;width&quot;: 280, &quot;height&quot;: 420 },
+        &quot;margins&quot;: { &quot;top&quot;: 34, &quot;right&quot;: 22, &quot;bottom&quot;: 34, &quot;left&quot;: 22 }
+      },
+      {
+        &quot;pageIndex&quot;: 2,
+        &quot;pageSize&quot;: { &quot;width&quot;: 420, &quot;height&quot;: 230 },
+        &quot;margins&quot;: { &quot;top&quot;: 20, &quot;right&quot;: 44, &quot;bottom&quot;: 20, &quot;left&quot;: 44 }
+      }
+    ]
+  }
+}
+</code></pre>
+<p>The engine resolves template geometry before measuring each page, so available
+flow width, header/footer regions, debug margins, overlays, and rendered page
+media boxes all use the active page’s dimensions.</p>
 <h3><code>layout.worldPlain</code></h3>
 <p><code>worldPlain</code> defines the document-stage world substrate. When present, root
 elements inhabit that stage instead of being treated as only sequential flow.</p>

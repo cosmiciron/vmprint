@@ -106,6 +106,33 @@
   }
 }
 </code></pre>
+<h2>Odd-sized pages</h2>
+<p>Use <code>layout.pageTemplates</code> when a document needs pages with different physical
+dimensions or margins. Templates are matched per page before layout, so the
+engine measures body flow, headers, footers, overlays, and debug geometry
+against the active page size.</p>
+<pre><code class="language-json">{
+  &quot;layout&quot;: {
+    &quot;pageSize&quot;: { &quot;width&quot;: 460, &quot;height&quot;: 360 },
+    &quot;margins&quot;: { &quot;top&quot;: 32, &quot;right&quot;: 32, &quot;bottom&quot;: 32, &quot;left&quot;: 32 },
+    &quot;pageTemplates&quot;: [
+      {
+        &quot;pageIndex&quot;: 1,
+        &quot;pageSize&quot;: { &quot;width&quot;: 280, &quot;height&quot;: 420 },
+        &quot;margins&quot;: { &quot;top&quot;: 34, &quot;right&quot;: 22, &quot;bottom&quot;: 34, &quot;left&quot;: 22 }
+      },
+      {
+        &quot;pageIndex&quot;: 2,
+        &quot;pageSize&quot;: { &quot;width&quot;: 420, &quot;height&quot;: 230 },
+        &quot;margins&quot;: { &quot;top&quot;: 20, &quot;right&quot;: 44, &quot;bottom&quot;: 20, &quot;left&quot;: 44 }
+      }
+    ]
+  }
+}
+</code></pre>
+<p><code>pageIndex</code> is zero-based: <code>1</code> means the second physical page. You can also use
+selectors such as <code>&quot;first&quot;</code>, <code>&quot;odd&quot;</code>, <code>&quot;even&quot;</code>, and <code>&quot;all&quot;</code> for broader rules;
+later templates refine earlier matches.</p>
 <h2>Page numbering</h2>
 <p>In headers and footers, token replacement happens automatically for values like:</p>
 <ul>
@@ -114,6 +141,16 @@
 <li><code>{totalPages}</code></li>
 </ul>
 <p>Use page regions for repeated composition; keep ordinary document content in <code>elements</code>.</p>
+<h2>Partial simulation</h2>
+<p>The engine can stop layout after a requested page. This is useful for previews,
+incremental flow APIs, and tools that only need to inspect the first part of a
+document.</p>
+<pre><code class="language-ts">const pages = await engine.layout({ stopAtPage: 1 });
+</code></pre>
+<p><code>stopAtPage</code> is also zero-based and inclusive, so <code>1</code> produces pages <code>0</code> and <code>1</code>
+when the document reaches that far. The simulation report records the stop as
+<code>&quot;page-limit&quot;</code>; this distinguishes an intentional prefix run from a complete
+document.</p>
 <p>Next:</p>
 <ul>
 <li><a href="05-images-tables-and-overlays.html">05-images-tables-and-overlays</a></li>

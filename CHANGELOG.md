@@ -10,6 +10,73 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.4.0] - 2026-05-05
+
+This release gathers the engine work since the last GitHub release into one
+public milestone. The headline is mixed page geometry: VMPrint can now resolve
+different page sizes and margins within a single document, carry those resolved
+dimensions through the layout stream, and render matching PDF media boxes.
+
+### Added
+- **Document-level page templates**: `layout.pageTemplates` can override page
+  size, orientation, and margins by zero-based `pageIndex` or by selectors such
+  as `first`, `odd`, `even`, and `all`.
+- **Mixed-size PDF output**: Renderers receive resolved `page.width` and
+  `page.height` per page, so saved layout streams and direct renders preserve
+  odd-sized sheets instead of forcing every page back to the document default.
+- **Partial simulation**: `engine.layout({ stopAtPage })` and lower-level
+  simulation options can intentionally stop after an inclusive zero-based page
+  prefix, with reports marking the stop reason as `page-limit`.
+- **Flow-friendly engine substrate**: The runtime now has stronger hosted-region,
+  world-plain, and persistent child-actor behavior, including live mutation paths
+  for zone-hosted and story-hosted content.
+- **Exclusion assembly and shape work**: Added weighted exclusion assemblies,
+  compression/generation tooling, circle and ellipse exclusion support, polygon
+  carry-over, and a micro-lane policy for controlling tiny wrap lanes.
+- **Text and rendering capabilities**: Added letter spacing support, CSS/browser
+  line-height calculation mode, a contract-level text delegate surface, and
+  pre-resolved renderer font handling.
+- **Authoring and documentation coverage**: Updated the quickstart, AST
+  reference, CLI reference, page-control guide, engine README, architecture docs,
+  internals guide, docs index, and VMPrint authoring skill for the new page
+  geometry and partial simulation surfaces.
+
+### Changed
+- **Renderer architecture**: Refactored rendering around `ContextRenderer`,
+  separating box traversal from context-specific drawing and trimming stale
+  renderer surfaces.
+- **Engine runtime ownership**: Moved more layout subsystems into runtime-owned
+  boundaries, tightened session/collaborator coordination, and made capture and
+  region identity clearer in the simulation report.
+- **Page identity model**: Reduced brittle `pageIndex * pageHeight` assumptions
+  by carrying chunk/frontier state more explicitly through checkpoints,
+  provenance, redraw, hosted-region settlement, and finalization.
+- **Repository and release workflow**: Clarified the shared-engine sync workflow,
+  contracted the repository around the engine/CLI/docs, and kept companion
+  runtime packages external to the CLI bundle.
+- **Browser demo evolution**: The docs playground gained engine-native selection,
+  cross-actor copy, copy-as-Markdown behavior, improved bidi selection
+  highlighting, and a richer dashboard-style preview surface.
+
+### Fixed
+- **Empty trailing page in odd-size documents**: The new page-template fixture now
+  produces only the intended pages, with no blank page after the second sheet.
+- **Deferred total-pages materialization**: Finalized page publication now
+  exposes deferred header/footer content in page-region summaries.
+- **Contained text stability**: Fixed contained grapheme overflow, strict
+  contained line-box wrapping, contained host-width import, and assembly lane
+  caps.
+- **Splitting and continuation stability**: Fixed constrained-height paragraph
+  splitting, hosted-region orphan-limit candidates, spanning-zone recovery,
+  table continuation metadata, and zone overlays.
+- **Performance regressions**: Restored fast paths around ASCII segmentation,
+  cached cluster/font resolution, optional interaction-map construction, and
+  the temporal presentation collaborator path.
+- **Packaging and typings**: Refreshed publish-time typings, dual CJS/ESM exports,
+  CLI runtime bundling, and packaged integration smoke checks.
+
+---
+
 ## [1.2.0] - 2026-04-13
 
 ### Added

@@ -53,6 +53,10 @@ vmprint --input document.json --output out.pdf --emit-layout
 
 The layout stream is serializable, diffable, and re-renderable. It is the basis of VMPrint's own regression test infrastructure — snapshot it, change something, diff it. `--omit-glyphs` drops per-character positioning data for smaller output; `--quantize` rounds coordinates to three decimal places for stable diffs.
 
+When a document uses `layout.pageTemplates`, the stream preserves each page's
+resolved `width` and `height`. That makes mixed-size documents portable across
+the layout and render stages.
+
 ### Render from layout — skip the layout pass entirely
 
 ```bash
@@ -60,6 +64,11 @@ vmprint --render-from-layout out.layout.json --output out.pdf
 ```
 
 `--render-from-layout` bypasses the layout engine and renders directly from a saved layout stream. This separates the two pipeline stages physically: layout once, render many times; cache layout results server-side and re-render on demand; move rendering to a different process, machine, or runtime.
+
+The PDF renderer honors per-page dimensions from the layout stream. A saved
+layout containing receipt-sized, insert-sized, or other odd-sized pages renders
+with matching PDF media boxes instead of forcing every page back to the document
+default.
 
 ### Overlay system
 

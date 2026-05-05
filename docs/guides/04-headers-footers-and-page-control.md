@@ -96,6 +96,38 @@ Use `pageBreakBefore` sparingly when a new section truly needs a fresh page.
 }
 ```
 
+## Odd-sized pages
+
+Use `layout.pageTemplates` when a document needs pages with different physical
+dimensions or margins. Templates are matched per page before layout, so the
+engine measures body flow, headers, footers, overlays, and debug geometry
+against the active page size.
+
+```json
+{
+  "layout": {
+    "pageSize": { "width": 460, "height": 360 },
+    "margins": { "top": 32, "right": 32, "bottom": 32, "left": 32 },
+    "pageTemplates": [
+      {
+        "pageIndex": 1,
+        "pageSize": { "width": 280, "height": 420 },
+        "margins": { "top": 34, "right": 22, "bottom": 34, "left": 22 }
+      },
+      {
+        "pageIndex": 2,
+        "pageSize": { "width": 420, "height": 230 },
+        "margins": { "top": 20, "right": 44, "bottom": 20, "left": 44 }
+      }
+    ]
+  }
+}
+```
+
+`pageIndex` is zero-based: `1` means the second physical page. You can also use
+selectors such as `"first"`, `"odd"`, `"even"`, and `"all"` for broader rules;
+later templates refine earlier matches.
+
 ## Page numbering
 
 In headers and footers, token replacement happens automatically for values like:
@@ -105,6 +137,21 @@ In headers and footers, token replacement happens automatically for values like:
 - `{totalPages}`
 
 Use page regions for repeated composition; keep ordinary document content in `elements`.
+
+## Partial simulation
+
+The engine can stop layout after a requested page. This is useful for previews,
+incremental flow APIs, and tools that only need to inspect the first part of a
+document.
+
+```ts
+const pages = await engine.layout({ stopAtPage: 1 });
+```
+
+`stopAtPage` is also zero-based and inclusive, so `1` produces pages `0` and `1`
+when the document reaches that far. The simulation report records the stop as
+`"page-limit"`; this distinguishes an intentional prefix run from a complete
+document.
 
 Next:
 

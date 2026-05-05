@@ -29,6 +29,14 @@ console.log(`${pages.length} pages, ${engine.info.pageSize.width}×${engine.info
 await engine.render(context);
 ```
 
+For a prefix preview or an incremental flow tool, limit layout to a page prefix:
+
+```ts
+const firstTwoPages = await engine.layout({ stopAtPage: 1 });
+```
+
+`stopAtPage` is zero-based and inclusive.
+
 ## Document shape
 
 Documents are JSON objects conforming to AST version `1.1`:
@@ -48,6 +56,10 @@ Documents are JSON objects conforming to AST version `1.1`:
   ]
 }
 ```
+
+Use `layout.pageTemplates` when individual pages need different dimensions or
+margins. The engine resolves those templates before measuring each page, and PDF
+rendering preserves the resulting per-page media size.
 
 Built-in font families (`Arimo`, `Tinos`, `Cousine`, `Caladea`, `Carlito`, and Noto variants for CJK/Arabic/Thai/Devanagari) require no `fonts` block. For custom font files, add a role map:
 

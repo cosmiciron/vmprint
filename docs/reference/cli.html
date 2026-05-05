@@ -54,10 +54,17 @@
 </code></pre>
 <p><code>--emit-layout</code> writes the full <code>Page[]</code> as annotated JSON after layout completes and before rendering begins. Each page contains every box, its absolute position, its type, its text content, and glyph-level positioning data.</p>
 <p>The layout stream is serializable, diffable, and re-renderable. It is the basis of VMPrint’s own regression test infrastructure — snapshot it, change something, diff it. <code>--omit-glyphs</code> drops per-character positioning data for smaller output; <code>--quantize</code> rounds coordinates to three decimal places for stable diffs.</p>
+<p>When a document uses <code>layout.pageTemplates</code>, the stream preserves each page’s
+resolved <code>width</code> and <code>height</code>. That makes mixed-size documents portable across
+the layout and render stages.</p>
 <h3>Render from layout — skip the layout pass entirely</h3>
 <pre><code class="language-bash">vmprint --render-from-layout out.layout.json --output out.pdf
 </code></pre>
 <p><code>--render-from-layout</code> bypasses the layout engine and renders directly from a saved layout stream. This separates the two pipeline stages physically: layout once, render many times; cache layout results server-side and re-render on demand; move rendering to a different process, machine, or runtime.</p>
+<p>The PDF renderer honors per-page dimensions from the layout stream. A saved
+layout containing receipt-sized, insert-sized, or other odd-sized pages renders
+with matching PDF media boxes instead of forcing every page back to the document
+default.</p>
 <h3>Overlay system</h3>
 <pre><code class="language-bash">vmprint --input document.json --output out.pdf --overlay ./watermark.js
 </code></pre>

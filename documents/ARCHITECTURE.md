@@ -150,6 +150,13 @@ The engine runs the AST through its spatial simulation and produces a flat list 
 
 Box coordinates are in points, top-left origin. Every box carries semantic provenance: `sourceId`, `fragmentIndex`, `transformKind`, `isContinuation`. The output is completely flat — no hierarchy, no relative positioning, no layout logic remaining.
 
+The page geometry in that output is resolved per page. Document defaults define
+the base viewport, and `layout.pageTemplates` can override dimensions,
+orientation, and margins for matching pages before the simulation measures that
+page. A mixed-media document can therefore contain a letter page, a narrow
+receipt, and a short insert in the same `Page[]` stream without renderer-side
+guesswork.
+
 If the document has scripts, they participate in the layout lifecycle from inside this stage. Scripts can set initial content, read settled facts (page count, discovered elements), mutate structure, and coordinate between elements via messages — all without triggering a full re-layout. See [SCRIPTING-API.md](SCRIPTING-API.md).
 
 ### Stage 3 — Page[] → Output (Render)
@@ -164,6 +171,10 @@ The engine walks each page, calls `context.addPage()`, and emits each box to the
 
 The overlay hooks fire per page at this stage — `backdrop` before page content, `overlay` after.
 
+Renderers receive the resolved `page.width` and `page.height` for every page.
+PDF contexts that support adding pages with explicit dimensions use those values
+as real media boxes, including when rendering from a cached layout stream.
+
 ---
 
 ## The Document Model
@@ -176,6 +187,9 @@ The overlay hooks fire per page at this stage — `backdrop` before page content
   "layout": {
     "pageSize": "LETTER",
     "margins": { "top": 72, "right": 72, "bottom": 72, "left": 72 },
+    "pageTemplates": [
+      { "pageIndex": 1, "pageSize": { "width": 280, "height": 420 } }
+    ],
     "fontFamily": "Times New Roman",
     "fontSize": 12,
     "lineHeight": 1.45

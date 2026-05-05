@@ -92,6 +92,7 @@
             <li>Arabic, Hebrew, Thai, CJK, and Latin on the same line — no HarfBuzz, no ICU.</li>
             <li>326 pages, warm layout: 718ms. No browser process. No subprocess.</li>
             <li>Every glyph's position is known data — build cursors, selection, and hit-testing from it.</li>
+            <li>Mixed page sizes in one document — receipts, inserts, and odd pages stay real media boxes.</li>
             <li>Documents can script themselves — handlers run inside the simulation, not after it.</li>
           </ul>
         </div>
@@ -109,7 +110,7 @@
       </article>
       <article class="metric-card">
         <h2>Full layout data</h2>
-        <p>Every glyph's X/Y position, every box boundary, every line break — inspectable, serializable, diffable JSON.</p>
+        <p>Every glyph's X/Y position, every box boundary, every line break, every page's dimensions — inspectable, serializable, diffable JSON.</p>
       </article>
     </section>
 

@@ -28,7 +28,15 @@ await engine.render(context);
 const pdf: Uint8Array = context.getOutput();
 ```
 
-If you want the positioned pages before rendering, call `await engine.layout()` first. The resulting `Page[]` is cached and reused by `render()`.
+If you want the positioned pages before rendering, call `await engine.layout()` first. The resulting `Page[]` is cached and reused by `render()`. Documents can use `layout.pageTemplates` to change page dimensions or margins per page; the returned `Page[]` carries those resolved sizes through to renderers that support per-page media boxes.
+
+For previews and incremental layout tools, `layout()` also accepts a page limit:
+
+```ts
+const firstTwoPages = await engine.layout({ stopAtPage: 1 });
+```
+
+`stopAtPage` is zero-based and inclusive. A value of `1` returns the page prefix through the second physical page and records the run as a `"page-limit"` stop in the simulation report.
 
 `VMPrintEngine` is the preferred API going forward, but it is not a hard break with the past. The older low-level bootstrap path built around `LayoutEngine`, `Renderer`, `createPrintEngineRuntime`, and `toLayoutConfig` is still supported for advanced integrations that want finer control over layout and rendering stages.
 
@@ -37,6 +45,7 @@ If you want the positioned pages before rendering, call `await engine.layout()` 
 - Document validation and normalization via `loadDocument`
 - Font-aware layout through a `FontManager`
 - Pagination and box generation
+- Per-page geometry resolution from document-level page templates
 - Rendering orchestration into any `Context`
 
 ## What stays outside

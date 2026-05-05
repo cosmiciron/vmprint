@@ -108,7 +108,34 @@ interface PageTemplate {
 `layout.pageTemplates` overrides page geometry for matching pages. Templates are
 applied in declaration order over the document defaults, so later matches can
 refine earlier broad selectors. `pageIndex` is zero-based; `selector` uses
-human page parity, so page index `0` is the first odd page.
+human page parity, so page index `0` is the first odd page. A matching template
+may override `pageSize`, `orientation`, `margins`, or any combination of those
+fields. Pages without a matching template keep the document-level layout.
+
+```json
+{
+  "layout": {
+    "pageSize": { "width": 460, "height": 360 },
+    "margins": { "top": 32, "right": 32, "bottom": 32, "left": 32 },
+    "pageTemplates": [
+      {
+        "pageIndex": 1,
+        "pageSize": { "width": 280, "height": 420 },
+        "margins": { "top": 34, "right": 22, "bottom": 34, "left": 22 }
+      },
+      {
+        "pageIndex": 2,
+        "pageSize": { "width": 420, "height": 230 },
+        "margins": { "top": 20, "right": 44, "bottom": 20, "left": 44 }
+      }
+    ]
+  }
+}
+```
+
+The engine resolves template geometry before measuring each page, so available
+flow width, header/footer regions, debug margins, overlays, and rendered page
+media boxes all use the active page's dimensions.
 
 `layout.microLanePolicy` controls whether spatial wrapping may use very narrow
 horizontal lanes carved by obstacles:

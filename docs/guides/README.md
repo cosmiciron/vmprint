@@ -7,7 +7,7 @@ Use it in this order:
 1. [01-your-first-document](01-your-first-document.html)
 2. [02-styles-and-text](02-styles-and-text.html)
 3. [03-stories-strips-and-zones](03-stories-strips-and-zones.html)
-4. [04-headers-footers-and-page-control](04-headers-footers-and-page-control.html)
+4. [04-headers-footers-and-page-control](04-headers-footers-and-page-control.html) - running regions, odd-sized pages, and partial simulation
 5. [05-images-tables-and-overlays](05-images-tables-and-overlays.html)
 6. [06-scripting](06-scripting.html)
 
