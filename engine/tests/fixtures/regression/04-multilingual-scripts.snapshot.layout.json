@@ -209,8 +209,15 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " (Hànzì) — Chinese characters used for Mandarin, Cantonese, and classical texts: ",
-              "width": 440.203125,
+              "text": " ",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "(Hànzì) — Chinese characters used for Mandarin, Cantonese, and classical texts: ",
+              "width": 436.869141,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -243,8 +250,15 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": " (Nihongo) — Japanese mixes kanji with hiragana and katakana syllabaries: ",
-              "width": 406.21875,
+              "text": " ",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "(Nihongo) — Japanese mixes kanji with hiragana and katakana syllabaries: ",
+              "width": 402.884766,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -410,8 +424,15 @@
               "fontFamily": "Noto Sans KR"
             },
             {
-              "text": " (Hangugeo) — Korean Hangul syllable blocks, each composed from jamo ",
-              "width": 397.535156,
+              "text": " ",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "(Hangugeo) — Korean Hangul syllable blocks, each composed from jamo ",
+              "width": 394.201172,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1164,8 +1185,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " means \"for publishing\" and ",
-              "width": 149.273438,
+              "text": " means ",
+              "width": 42.685547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "\"for publishing\" and ",
+              "width": 106.587891,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1178,8 +1206,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " means \"welcome\". Bidirectional text ",
-              "width": 196.599609,
+              "text": " means ",
+              "width": 42.685547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "\"welcome\". Bidirectional text ",
+              "width": 153.914063,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1431,8 +1466,15 @@
               "fontFamily": "Noto Sans Thai"
             },
             {
-              "text": " (\"thank you very much\") follows: every syllable carries at",
-              "width": 302.625,
+              "text": " ",
+              "width": 3.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "(\"thank you very much\") follows: every syllable carries at",
+              "width": 299.291016,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1687,8 +1729,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " with punctuation clusters (—, …, ",
-              "width": 179.402344,
+              "text": " with punctuation clusters ",
+              "width": 138.070313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "(—, …, ",
+              "width": 41.332031,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1729,8 +1778,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": ") and symbols (∑, ≤,",
-              "width": 107.167969,
+              "text": ") and symbols ",
+              "width": 78.029297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "(∑, ≤,",
+              "width": 29.138672,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1901,8 +1957,22 @@
         "lines": [
           [
             {
-              "text": "Combining marks that stack: q̈ (q + combining diaeresis), Z̧ (Z + combining cedilla ",
-              "width": 436.845703,
+              "text": "Combining marks that stack: q̈ ",
+              "width": 164.730469,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "(q + combining diaeresis), Z̧ ",
+              "width": 151.728516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "(Z + combining cedilla ",
+              "width": 120.386719,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -1910,8 +1980,15 @@
           ],
           [
             {
-              "text": "below), ẇ (w + combining dot above). These test that grapheme width is measured on ",
-              "width": 458.566406,
+              "text": "below), ẇ ",
+              "width": 54.017578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "(w + combining dot above). These test that grapheme width is measured on ",
+              "width": 404.548828,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"

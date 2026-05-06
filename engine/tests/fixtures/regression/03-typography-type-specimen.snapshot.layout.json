@@ -931,8 +931,15 @@
         "lines": [
           [
             {
-              "text": "string numeric \"650\" → stepped to 700",
-              "width": 220.775391,
+              "text": "string numeric ",
+              "width": 86.683594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "\"650\" → stepped to 700",
+              "width": 134.091797,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"

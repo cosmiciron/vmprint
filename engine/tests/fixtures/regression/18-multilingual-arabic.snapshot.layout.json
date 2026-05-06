@@ -275,8 +275,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " means 'for ",
-              "width": 186.943359,
+              "text": " means ",
+              "width": 128.056641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "'for ",
+              "width": 58.886719,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -284,8 +291,15 @@
           ],
           [
             {
-              "text": "publishing' and ",
-              "width": 249.064453,
+              "text": "publishing",
+              "width": 162.123047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "' and ",
+              "width": 86.941406,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -298,8 +312,8 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " means '",
-              "width": 134.929688,
+              "text": " means ",
+              "width": 128.056641,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
@@ -307,8 +321,15 @@
           ],
           [
             {
-              "text": "welcome' in Arabic.",
-              "width": 308.988281,
+              "text": "'welcome",
+              "width": 148.921875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
+            {
+              "text": "' in Arabic.",
+              "width": 166.939453,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"

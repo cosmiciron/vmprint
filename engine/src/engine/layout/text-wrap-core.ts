@@ -11,16 +11,39 @@ export type WrapSegmentToken = {
     allowMerge: boolean;
     hyphenationStyle?: ElementStyle | Record<string, any>;
     noLineStart?: boolean;
+    noLineEnd?: boolean;
     trackingAfter?: number;
 };
 
 export type WrapToken = { kind: 'newline' } | WrapSegmentToken;
 
 // UAX #14 line break classes CL, CP, EX, IS: characters forbidden at line start.
-const FORBIDDEN_LINE_START_RE = /^[,\.!?;:\)\]\}"'\u201D\u2019\u203A\u00BB\u2026\u2014\u2013\u060C\u061B\u061F]+$/;
+const FORBIDDEN_LINE_START_RE = /^[,\.!?;:%\)\]\}"'\u201D\u2019\u203A\u00BB\u2026\u2014\u2013\u060C\u061B\u061F]+$/;
+// UAX #14 line break classes OP/QU: opening punctuation forbidden at line end.
+const FORBIDDEN_LINE_END_RE = /^[\(\[\{"'\u201C\u2018\u2039\u00AB]+$/;
 
 function isForbiddenLineStart(text: string): boolean {
     return FORBIDDEN_LINE_START_RE.test(text);
+}
+
+function isForbiddenLineEnd(text: string): boolean {
+    return FORBIDDEN_LINE_END_RE.test(text);
+}
+
+function protectNoLineStartCarryTokens(tokens: WrapToken[]): WrapToken[] {
+    for (let index = 1; index < tokens.length; index++) {
+        const token = tokens[index]!;
+        const previous = tokens[index - 1]!;
+        if (
+            token.kind === 'segment' &&
+            token.noLineStart &&
+            previous.kind === 'segment' &&
+            isNumericRunSegment(previous.segment.text || '')
+        ) {
+            previous.allowMerge = false;
+        }
+    }
+    return tokens;
 }
 
 type ScriptSegment = { text: string; fontName?: string; fontObject?: any };
@@ -162,15 +185,17 @@ export function buildRichWrapTokens(params: {
                     );
                     simpleOffset = endOffset;
                     const resolved = params.resolveRichFontInfo(richSubSeg, params.defaultFontSize);
+                    const noLineEnd = isForbiddenLineEnd(richSubSeg.text || '');
                     tokens.push({
                         kind: 'segment',
                         segment: richSubSeg,
                         font: resolved.font,
                         fontSize: resolved.fontSize,
                         locale,
-                        allowMerge: !segmentHasLetterSpacing,
+                        allowMerge: !segmentHasLetterSpacing && !noLineEnd,
                         hyphenationStyle: (richSubSeg.style || seg.style || params.primaryStyle) as ElementStyle,
                         noLineStart: isForbiddenLineStart(richSubSeg.text || ''),
+                        noLineEnd,
                         trackingAfter: segmentHasLetterSpacing && segmentIndex < simpleSubSegments.length - 1
                             ? resolveSegmentLetterSpacing(richSubSeg, 0)
                             : 0
@@ -251,10 +276,11 @@ export function buildRichWrapTokens(params: {
 
                             const richSubSeg = params.transformSegment(rawSubSeg, rawSubSeg.fontFamily);
                             const textValue = richSubSeg.text || '';
+                            const numericAtom = isNumericRunSegment(textValue);
                             if (textValue.trim().length > 0) {
                                 const scriptClass = params.getScriptClass(textValue);
                                 richSubSeg.scriptClass = scriptClass;
-                                richSubSeg.direction = isLtrAtomSegment(textValue) ? 'ltr' : bidiRun.direction;
+                                richSubSeg.direction = (numericAtom || isLtrAtomSegment(textValue)) ? 'ltr' : bidiRun.direction;
 
                                 const optScale = params.getOpticalScale(scriptClass);
                                 if (optScale !== 1.0) {
@@ -277,6 +303,7 @@ export function buildRichWrapTokens(params: {
                                 params.preserveDirectionalBoundaries ||
                                 (params.direction === 'auto' && params.hasRtlScript(richSubSeg.text || '')) ||
                                 ((richSubSeg.style as any)?.textAlign === 'justify' && params.isAdvancedJustifyEnabled(richSubSeg.style as any));
+                            const noLineEnd = isForbiddenLineEnd(richSubSeg.text || '');
 
                             const resolved = params.resolveRichFontInfo(richSubSeg, params.defaultFontSize);
                             tokens.push({
@@ -285,9 +312,10 @@ export function buildRichWrapTokens(params: {
                                 font: resolved.font,
                                 fontSize: resolved.fontSize,
                                 locale,
-                                allowMerge: !preserveBoundaries && !rawSubSegHasLetterSpacing,
+                                allowMerge: !preserveBoundaries && !rawSubSegHasLetterSpacing && !noLineEnd,
                                 hyphenationStyle: (richSubSeg.style || seg.style || params.primaryStyle) as ElementStyle,
                                 noLineStart: isForbiddenLineStart(richSubSeg.text || ''),
+                                noLineEnd,
                                 trackingAfter: rawSubSegHasLetterSpacing && measuredIndex < measuredSegments.length - 1
                                     ? resolveSegmentLetterSpacing(richSubSeg, 0)
                                     : 0
@@ -300,7 +328,7 @@ export function buildRichWrapTokens(params: {
         }
     }
 
-    return tokens;
+    return protectNoLineStartCarryTokens(tokens);
 }
 
 export function wrapTokenStream(params: {
@@ -336,6 +364,7 @@ export function wrapTokenStream(params: {
     const finalLines: RichLine[] = [];
     let currentLine: TextSegment[] = [];
     let currentLineWidth = 0;
+    const lineEndForbiddenSegments = new WeakSet<TextSegment>();
     // Cache the current line's width limit; recomputed only when a line is pushed.
     let cachedLineWidthLimit = params.getLineWidthLimit(params.maxWidth, 0, params.textIndent);
     let stopRequested = false;
@@ -359,9 +388,45 @@ export function wrapTokenStream(params: {
         }
         cachedLineWidthLimit = params.getLineWidthLimit(params.maxWidth, finalLines.length, params.textIndent);
     };
-    const pushSegmentToLine = (segment: TextSegment, segmentWidth: number, allowMerge: boolean) => {
+    const pushSegmentToLine = (segment: TextSegment, segmentWidth: number, allowMerge: boolean, noLineEnd = false) => {
         currentLine = params.appendSegmentToLine(currentLine, segment, segmentWidth, allowMerge);
+        if (noLineEnd && currentLine.length > 0) {
+            lineEndForbiddenSegments.add(currentLine[currentLine.length - 1]!);
+        }
         currentLineWidth += segmentWidth;
+    };
+    const moveTrailingLineEndForbiddenToNextLine = (
+        segment: TextSegment,
+        segmentWidth: number,
+        allowMerge: boolean,
+        noLineEnd = false
+    ): boolean => {
+        if (currentLine.length <= 1) return false;
+        const last = currentLine[currentLine.length - 1]!;
+        if (!lineEndForbiddenSegments.has(last)) return false;
+
+        const originalLine = currentLine.slice();
+        const originalLineWidth = currentLineWidth;
+        const carryWidth = Number(last.width || 0);
+        const nextLineLimit = params.getLineWidthLimit(params.maxWidth, finalLines.length + 1, params.textIndent);
+        if (!fitsWidth(carryWidth, segmentWidth, nextLineLimit)) {
+            return false;
+        }
+
+        currentLine = currentLine.slice(0, -1);
+        currentLineWidth -= carryWidth;
+        if (currentLine.length === 0) {
+            currentLine = originalLine;
+            currentLineWidth = originalLineWidth;
+            return false;
+        }
+
+        pushCurrentLine();
+        if (stopRequested) return true;
+        currentLine = [last];
+        currentLineWidth = carryWidth;
+        pushSegmentToLine(segment, segmentWidth, allowMerge, noLineEnd);
+        return true;
     };
     const movePreviousClusterToNextLine = (
         segment: TextSegment,
@@ -427,7 +492,7 @@ export function wrapTokenStream(params: {
         const lineWidthLimit = getCurrentLineWidthLimit();
 
         if (fitsWidth(currentLineWidth, segmentWidth, lineWidthLimit)) {
-            pushSegmentToLine(token.segment, segmentWidth, token.allowMerge);
+            pushSegmentToLine(token.segment, segmentWidth, token.allowMerge, token.noLineEnd);
             continue;
         }
 
@@ -498,6 +563,18 @@ export function wrapTokenStream(params: {
         }
 
         if (currentLine.length > 0) {
+            if (moveTrailingLineEndForbiddenToNextLine(token.segment, segmentWidth, token.allowMerge, token.noLineEnd)) {
+                if (stopRequested) break;
+                continue;
+            }
+            if (token.noLineEnd) {
+                pushCurrentLine();
+                if (stopRequested) break;
+                currentLine = [token.segment];
+                currentLineWidth = segmentWidth;
+                lineEndForbiddenSegments.add(currentLine[0]!);
+                continue;
+            }
             if (token.noLineStart) {
                 if (movePreviousClusterToNextLine(token.segment, segmentWidth, token.allowMerge)) {
                     if (stopRequested) break;
@@ -506,7 +583,7 @@ export function wrapTokenStream(params: {
                 // Fallback: append closing punctuation onto the current line rather
                 // than letting it widow at the start of the next line. This can
                 // still overfill only when the carried cluster itself cannot fit.
-                pushSegmentToLine(token.segment, segmentWidth, token.allowMerge);
+                pushSegmentToLine(token.segment, segmentWidth, token.allowMerge, token.noLineEnd);
                 pushCurrentLine();
                 if (stopRequested) break;
                 continue;

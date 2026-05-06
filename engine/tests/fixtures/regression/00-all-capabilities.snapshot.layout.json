@@ -2474,14 +2474,21 @@
               "fontFamily": "Noto Sans KR"
             },
             {
-              "text": ". We also include punctuation, parentheses (",
-              "width": 236.589844,
+              "text": ". We also include punctuation, parentheses ",
+              "width": 232.59375,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": "Arimo"
             }
           ],
           [
+            {
+              "text": "(",
+              "width": 3.996094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            },
             {
               "text": "테스트",
               "width": 30.4704,

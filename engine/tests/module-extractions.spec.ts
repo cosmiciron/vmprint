@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { StyleSignatureCache, appendSegmentToLine } from '../src/engine/layout/text-wrap-utils';
+import { wrapTokenStream } from '../src/engine/layout/text-wrap-core';
 import { parseEmbeddedImagePayloadCached } from '../src/engine/image-data';
 import {
     isCJKChar,
@@ -130,6 +131,63 @@ function testAppendSegmentMerge(): void {
             assert.equal(merged.length, 2);
             assert.equal(merged[0].text, 'קצרה');
             assert.equal(merged[1].text, ', ');
+        }
+    );
+}
+
+function testWrapPunctuationBoundaries(): void {
+    const makeSegment = (text: string, width: number): TextSegment => ({
+        text,
+        width,
+        fontFamily: 'Arimo',
+        style: { fontSize: 12 },
+        direction: 'ltr'
+    });
+    const runWrap = (tokens: any[], maxWidth: number) => wrapTokenStream({
+        tokens,
+        maxWidth,
+        textIndent: 0,
+        letterSpacing: 0,
+        fallbackFont: {},
+        hyphenate: false,
+        createEmptyMeasuredSegment: () => makeSegment('', 0),
+        measureText: (_text, _font, _fontSize, _letterSpacing, segment) => Number(segment.width || 0),
+        appendSegmentToLine: (line, segment, segmentWidth, allowMerge) =>
+            appendSegmentToLine(line, segment, segmentWidth, allowMerge, () => true),
+        getLineWidthLimit: (totalWidth) => totalWidth,
+        tryHyphenateSegmentToFit: () => null,
+        splitToGraphemes: (text) => Array.from(text),
+        transformSegment: (segment) => segment,
+        resolveRichFontInfo: () => ({ font: {}, fontSize: 12 })
+    });
+
+    _check(
+        'wrap keeps percent with numeric atom',
+        'a percent sign cannot start a wrapped line detached from the preceding number',
+        () => {
+            const lines = runWrap([
+                { kind: 'segment', segment: makeSegment('percent ', 55), font: {}, fontSize: 12, allowMerge: true },
+                { kind: 'segment', segment: makeSegment('100', 30), font: {}, fontSize: 12, allowMerge: false },
+                { kind: 'segment', segment: makeSegment('%', 10), font: {}, fontSize: 12, allowMerge: true, noLineStart: true }
+            ], 85);
+            assert.equal(lines.length, 2);
+            assert.equal(lines[0].map((segment) => segment.text).join(''), 'percent ');
+            assert.equal(lines[1].map((segment) => segment.text).join(''), '100%');
+        }
+    );
+
+    _check(
+        'wrap keeps opening quote with following token',
+        'an opening quote cannot end a wrapped line detached from the quoted text',
+        () => {
+            const lines = runWrap([
+                { kind: 'segment', segment: makeSegment('quote ', 60), font: {}, fontSize: 12, allowMerge: true },
+                { kind: 'segment', segment: makeSegment('"', 5), font: {}, fontSize: 12, allowMerge: false, noLineEnd: true },
+                { kind: 'segment', segment: makeSegment('VMPrint', 55), font: {}, fontSize: 12, allowMerge: true }
+            ], 65);
+            assert.equal(lines.length, 2);
+            assert.equal(lines[0].map((segment) => segment.text).join(''), 'quote ');
+            assert.equal(lines[1].map((segment) => segment.text).join(''), '"VMPrint');
         }
     );
 }
@@ -1353,6 +1411,7 @@ async function run() {
     logStep('Scenario: extracted text layout modules preserve core behavior');
     testStyleSignatureCache();
     testAppendSegmentMerge();
+    testWrapPunctuationBoundaries();
     testRichTextStyleInheritance();
     testScriptSegmentationHelpers();
     testBidiMirroredPunctuation();
