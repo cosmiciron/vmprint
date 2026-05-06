@@ -1116,8 +1116,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "الرَّحِيمِ.",
-              "width": 30.1644,
+              "text": "الرَّحِيمِ",
+              "width": 27.1092,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": ".",
+              "width": 3.216,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"

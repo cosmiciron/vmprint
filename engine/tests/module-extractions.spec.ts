@@ -14,6 +14,7 @@ import {
 import { applyAdvancedJustification } from '../src/engine/layout/text-justification';
 import { tryHyphenateSegmentToFit } from '../src/engine/layout/text-hyphenation';
 import { getRichSegments } from '../src/engine/layout/rich-text-extractor';
+import { reorderItemsForVisualBidi } from '../src/engine/render/direction';
 import { TextSegment } from '../src/engine/types';
 import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, parseDocumentSourceText, resolveDocumentPaths, toLayoutConfig } from '../src';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
@@ -220,6 +221,44 @@ function testScriptSegmentationHelpers(): void {
             assert.equal(segments.length, 1);
             assert.equal(segments[0].fontName, 'Noto Sans Arabic');
             assert.equal(segments[0].text, 'في البداية');
+        }
+    );
+}
+
+function testBidiMirroredPunctuation(): void {
+    _check(
+        'bidi mirrored punctuation',
+        'parentheses around LTR numbers are mirrored after visual bidi resolution',
+        () => {
+            const line = ['هل', ' ', 'مثل', ' ', '(', '123,456', ')'].map((text, index) => ({
+                seg: {
+                    text,
+                    width: text.length * 5,
+                    ascent: 10,
+                    descent: 2,
+                    fontFamily: 'Arimo',
+                    style: {},
+                    direction: /[0-9(),]/.test(text) ? 'ltr' as const : 'rtl' as const
+                },
+                extra: 0,
+                logicalIndex: index
+            }));
+            const visual = reorderItemsForVisualBidi(line, 'rtl');
+            let cursorX = 200;
+            const placed = visual.map((item) => {
+                cursorX -= item.seg.width;
+                const placedItem = { text: item.seg.text, x: cursorX };
+                cursorX -= item.extra;
+                return placedItem;
+            });
+            const opening = placed.find((item) => item.text === '(');
+            const number = placed.find((item) => item.text === '123,456');
+            const closing = placed.find((item) => item.text === ')');
+            assert.ok(opening, 'expected opening parenthesis to remain present');
+            assert.ok(number, 'expected numeric island to remain present');
+            assert.ok(closing, 'expected closing parenthesis to remain present');
+            assert.ok(opening.x < number.x);
+            assert.ok(closing.x > number.x);
         }
     );
 }
@@ -1291,6 +1330,7 @@ async function run() {
     testAppendSegmentMerge();
     testRichTextStyleInheritance();
     testScriptSegmentationHelpers();
+    testBidiMirroredPunctuation();
     testAdvancedJustification();
     testAdvancedJustificationSkipsForcedBreakLines();
     testHyphenationSoftBreak();

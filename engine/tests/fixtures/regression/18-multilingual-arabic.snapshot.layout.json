@@ -166,8 +166,15 @@
           ],
           [
             {
-              "text": "المبرمجة.",
-              "width": 126.2322,
+              "text": "المبرمجة",
+              "width": 117.0666,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": ".",
+              "width": 9.648,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -616,8 +623,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "100%",
-              "width": 91.692,
+              "text": "100",
+              "width": 61.776,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "%",
+              "width": 29.916,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -760,8 +774,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "الترقيم؟",
-              "width": 104.4126,
+              "text": "الترقيم",
+              "width": 89.5698,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "؟",
+              "width": 14.8428,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -774,8 +795,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "نعم،",
-              "width": 57.456,
+              "text": "نعم",
+              "width": 46.2384,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "،",
+              "width": 11.2176,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"
@@ -788,8 +816,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": "بالتأكيد!",
-              "width": 104.9256,
+              "text": "بالتأكيد",
+              "width": 95.7258,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "!",
+              "width": 9.684,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"

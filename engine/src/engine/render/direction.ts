@@ -4,6 +4,48 @@ import bidiFactory from 'bidi-js';
 
 const bidi = bidiFactory();
 
+const mirrorSegmentText = (text: string, embeddingLevels: Uint8Array, startOffset: number): string | null => {
+    let mirroredText = '';
+    let changed = false;
+    for (let index = 0; index < text.length; index += 1) {
+        const char = text[index] || '';
+        const mirroredChar = (embeddingLevels[startOffset + index] & 1)
+            ? bidi.getMirroredCharacter(char)
+            : null;
+        mirroredText += mirroredChar || char;
+        if (mirroredChar) changed = true;
+    }
+    return changed ? mirroredText : null;
+};
+
+const resolveMirroredItems = <T extends { seg: RendererLineSegment }>(
+    items: T[],
+    textParts: string[],
+    embeddingLevels: Uint8Array
+): T[] => {
+    let offset = 0;
+    let changed = false;
+    const mirroredItems = items.map((item, itemIndex) => {
+        const text = textParts[itemIndex] || '';
+        const mirroredText = mirrorSegmentText(text, embeddingLevels, offset);
+        offset += text.length;
+        if (!mirroredText || mirroredText === item?.seg?.text) {
+            return item;
+        }
+        changed = true;
+        return {
+            ...item,
+            seg: {
+                ...item.seg,
+                text: mirroredText,
+                glyphs: undefined,
+                shapedGlyphs: undefined
+            }
+        };
+    });
+    return changed ? mirroredItems : items;
+};
+
 export const getStrongDirection = (text: string): 'ltr' | 'rtl' | 'neutral' => {
     for (const ch of text || '') {
         const cp = ch.codePointAt(0) || 0;
@@ -71,6 +113,7 @@ export const reorderItemsForVisualBidi = <T extends { seg: RendererLineSegment; 
     const lineText = textParts.join('');
     if (lineText.length > 0) {
         const embedding = bidi.getEmbeddingLevels(lineText, baseDirection as any);
+        const mirroredItems = resolveMirroredItems(items, textParts, embedding.levels);
         const visualCharIndices = bidi.getReorderedIndices(lineText, embedding);
         const seenItems = new Set<number>();
         const visualItems: T[] = [];
@@ -78,11 +121,11 @@ export const reorderItemsForVisualBidi = <T extends { seg: RendererLineSegment; 
             const itemIndex = charToItem[charIndex];
             if (itemIndex === undefined || seenItems.has(itemIndex)) continue;
             seenItems.add(itemIndex);
-            visualItems.push(items[itemIndex]);
+            visualItems.push(mirroredItems[itemIndex]);
         }
         for (let itemIndex = 0; itemIndex < items.length; itemIndex += 1) {
             if (seenItems.has(itemIndex)) continue;
-            visualItems.push(items[itemIndex]);
+            visualItems.push(mirroredItems[itemIndex]);
         }
         if (visualItems.length === items.length) {
             return baseDirection === 'rtl' ? visualItems.reverse() : visualItems;
@@ -209,7 +252,11 @@ export const resolveVisualTextByItem = <T extends { seg: RendererLineSegment }>(
     for (const charIndex of visualCharIndices) {
         const itemIndex = charToItem[charIndex];
         if (itemIndex === undefined) continue;
-        visualTextByItem[itemIndex] += lineText[charIndex] || '';
+        const char = lineText[charIndex] || '';
+        const mirroredChar = (embedding.levels[charIndex] & 1)
+            ? bidi.getMirroredCharacter(char)
+            : null;
+        visualTextByItem[itemIndex] += mirroredChar || char;
     }
 
     return visualTextByItem.map((text, index) => text || items[index]?.seg?.text || '');

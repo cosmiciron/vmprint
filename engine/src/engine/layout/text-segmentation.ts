@@ -1,4 +1,7 @@
 const ARABIC_SCRIPT_RE = /\p{Script=Arabic}/u;
+const RTL_SCRIPT_RE = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/u;
+const ARABIC_SCRIPT_EDGE_RE = /^(\p{Script=Arabic}+)([0-9][0-9.,:%+\-/]*)$/u;
+const NUMERIC_ARABIC_EDGE_RE = /^([0-9][0-9.,:%+\-/]*)(\p{Script=Arabic}+)$/u;
 const COMBINING_MARK_RE = /^\p{M}+$/u;
 const DECIMAL_DIGIT_RE = /\p{Nd}/u;
 
@@ -53,11 +56,24 @@ const containsArabicScript = (text: string): boolean => {
     return ARABIC_SCRIPT_RE.test(text);
 };
 
+const containsRtlScript = (text: string): boolean => {
+    if (!hasNonAscii(text)) return false;
+    return RTL_SCRIPT_RE.test(text);
+};
+
 const endsWithArabicNoSpacePunctuation = (text: string): boolean => {
     if (!text || text.length === 0) return false;
     const lastChar = text[text.length - 1] || '';
     if (!ARABIC_NO_SPACE_TRAILING_PUNCTUATION.has(lastChar)) return false;
     return containsArabicScript(text);
+};
+
+const shouldKeepPunctuationAtom = (previous: string, punctuation: string): boolean => {
+    if (!previous || !punctuation) return false;
+    if (containsRtlScript(previous)) return true;
+    if (isNumericRunSegment(previous) && punctuation === '%') return true;
+    if (isNumericRunSegment(previous) && /^[)\]}]$/u.test(punctuation)) return true;
+    return false;
 };
 
 const isLeftStickyPunctuationSegment = (text: string): boolean => {
@@ -113,6 +129,19 @@ const splitLeadingSpaceAndMarks = (text: string): { space: string; marks: string
     return { space: ' ', marks };
 };
 
+const splitArabicNumericEdge = (text: string): string[] | null => {
+    if (!text || !hasNonAscii(text)) return null;
+    const leadingArabic = text.match(ARABIC_SCRIPT_EDGE_RE);
+    if (leadingArabic && leadingArabic[1] && leadingArabic[2]) {
+        return [leadingArabic[1], leadingArabic[2]];
+    }
+    const trailingArabic = text.match(NUMERIC_ARABIC_EDGE_RE);
+    if (trailingArabic && trailingArabic[1] && trailingArabic[2]) {
+        return [trailingArabic[1], trailingArabic[2]];
+    }
+    return null;
+};
+
 /**
  * Normalizes tiny word/grapheme segments so the layout core sees stable,
  * human-meaningful runs for wrapping and bidi-sensitive punctuation.
@@ -146,9 +175,19 @@ export const normalizeTextSegments = (segments: string[]): string[] => {
         }
     }
 
+    const splitNumericEdges: string[] = [];
+    for (const segment of normalized) {
+        const split = splitArabicNumericEdge(segment);
+        if (split) {
+            splitNumericEdges.push(...split);
+        } else {
+            splitNumericEdges.push(segment);
+        }
+    }
+
     const merged: string[] = [];
     let prevIsNumeric = false;
-    for (const current of normalized) {
+    for (const current of splitNumericEdges) {
         const previous = merged[merged.length - 1];
         if (previous !== undefined && previous.trim().length > 0) {
             if (prevIsNumeric && TRAILING_NUMERIC_BOUNDARY_PUNCTUATION_RE.test(current)) {
@@ -156,7 +195,7 @@ export const normalizeTextSegments = (segments: string[]): string[] => {
                 prevIsNumeric = false;
                 continue;
             }
-            if (isLeftStickyPunctuationSegment(current)) {
+            if (isLeftStickyPunctuationSegment(current) && !shouldKeepPunctuationAtom(previous, current)) {
                 merged[merged.length - 1] = previous + current;
                 continue;
             }
