@@ -478,8 +478,15 @@
               "fontFamily": "Noto Sans Arabic"
             },
             {
-              "text": " 1234567890",
-              "width": 65.78,
+              "text": " ",
+              "width": 2.86,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": "1234567890",
+              "width": 62.92,
               "ascent": 1374,
               "descent": 738,
               "fontFamily": "Noto Sans Arabic"

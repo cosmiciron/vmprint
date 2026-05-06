@@ -107,6 +107,31 @@ function testAppendSegmentMerge(): void {
             assert.ok((merged[0].glyphs || []).length >= 3);
         }
     );
+
+    _check(
+        'segment line merge bidi boundary',
+        'segments with different resolved directions stay separate',
+        () => {
+            const rtlLine = [{
+                text: 'קצרה',
+                fontFamily: 'Arimo',
+                style: { fontSize: 12 },
+                width: 20,
+                direction: 'rtl' as const
+            }];
+            const ltrComma = {
+                text: ', ',
+                fontFamily: 'Arimo',
+                style: { fontSize: 12 },
+                width: 5,
+                direction: 'ltr' as const
+            };
+            const merged = appendSegmentToLine(rtlLine, ltrComma, 5, true, (left, right) => cache.areStylesEquivalent(left, right));
+            assert.equal(merged.length, 2);
+            assert.equal(merged[0].text, 'קצרה');
+            assert.equal(merged[1].text, ', ');
+        }
+    );
 }
 
 function testScriptSegmentationHelpers(): void {

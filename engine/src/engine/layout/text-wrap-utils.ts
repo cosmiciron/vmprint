@@ -73,6 +73,7 @@ export function appendSegmentToLine(
     const canMerge = allowMerge &&
         !!last &&
         last.fontFamily === nextSegment.fontFamily &&
+        last.direction === nextSegment.direction &&
         areStylesEquivalent(last.style, nextSegment.style);
 
     if (!canMerge) {
