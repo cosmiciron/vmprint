@@ -245,8 +245,29 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": "中文预览",
-              "width": 40.48,
+              "text": "中",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "文",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "预",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "览",
+              "width": 10.12,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans SC"
@@ -259,8 +280,43 @@
               "fontFamily": "Noto Sans SC"
             },
             {
-              "text": "字体样式示例",
-              "width": 60.72,
+              "text": "字",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "体",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "样",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "式",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "示",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "例",
+              "width": 10.12,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans SC"
@@ -291,8 +347,57 @@
               "fontFamily": "Noto Sans JP"
             },
             {
-              "text": "日本語プレビュー",
-              "width": 80.96,
+              "text": "日",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "本",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "語",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "プ",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "レ",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ビ",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ュ",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ー",
+              "width": 10.12,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans JP"
@@ -305,8 +410,57 @@
               "fontFamily": "Noto Sans JP"
             },
             {
-              "text": "フォントサンプル",
-              "width": 80.96,
+              "text": "フ",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ォ",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ン",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ト",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "サ",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ン",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "プ",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ル",
+              "width": 10.12,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans JP"
@@ -411,8 +565,29 @@
               "fontFamily": "Noto Sans Thai"
             },
             {
-              "text": "ตัวอย่างฟอนต์ภาษาไทย",
-              "width": 98.27136,
+              "text": "ตัวอย่าง",
+              "width": 34.20384,
+              "ascent": 1061,
+              "descent": 450,
+              "fontFamily": "Noto Sans Thai"
+            },
+            {
+              "text": "ฟอนต์",
+              "width": 26.4528,
+              "ascent": 1061,
+              "descent": 450,
+              "fontFamily": "Noto Sans Thai"
+            },
+            {
+              "text": "ภาษา",
+              "width": 21.7008,
+              "ascent": 1061,
+              "descent": 450,
+              "fontFamily": "Noto Sans Thai"
+            },
+            {
+              "text": "ไทย",
+              "width": 15.91392,
               "ascent": 1061,
               "descent": 450,
               "fontFamily": "Noto Sans Thai"
@@ -1226,8 +1401,50 @@
         "lines": [
           [
             {
-              "text": "日本語サンプル",
-              "width": 83.72,
+              "text": "日",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "本",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "語",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "サ",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ン",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "プ",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ル",
+              "width": 11.96,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans JP"
@@ -1240,8 +1457,218 @@
               "fontFamily": "Noto Sans JP"
             },
             {
-              "text": "フォントファミリーを要素単位で切り替えても、改行と計測が安定す",
-              "width": 370.76,
+              "text": "フ",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ォ",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ン",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ト",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "フ",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ァ",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ミ",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "リ",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ー",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "を",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "要",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "素",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "単",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "位",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "で",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "切",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "り",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "替",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "え",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "て",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "も",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "、",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "改",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "行",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "と",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "計",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "測",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "が",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "安",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "定",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "す",
+              "width": 11.96,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans JP"
@@ -1249,8 +1676,71 @@
           ],
           [
             {
-              "text": "ることを確認します。",
-              "width": 119.6,
+              "text": "る",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "こ",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "と",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "を",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "確",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "認",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "し",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ま",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "す",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "。",
+              "width": 11.96,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans JP"
@@ -1509,8 +1999,22 @@
               "fontFamily": ""
             },
             {
-              "text": "日本語",
-              "width": 35.88,
+              "text": "日",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "本",
+              "width": 11.96,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "語",
+              "width": 11.96,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans JP"

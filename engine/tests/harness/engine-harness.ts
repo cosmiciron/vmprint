@@ -82,7 +82,7 @@ export function snapshotPages(pages: Page[]): any {
     }));
 }
 
-function isUnsafeBoundaryChar(ch: string): boolean {
+function isUnsafeBoundaryStartChar(ch: string): boolean {
     if (!ch) return false;
     const cp = ch.codePointAt(0) || 0;
     if (cp === 0x200c || cp === 0x200d) return true;
@@ -91,13 +91,19 @@ function isUnsafeBoundaryChar(ch: string): boolean {
     return COMBINING_MARK_REGEX.test(ch);
 }
 
+function isUnsafeBoundaryEndChar(ch: string): boolean {
+    if (!ch) return false;
+    const cp = ch.codePointAt(0) || 0;
+    return cp === 0x200c || cp === 0x200d;
+}
+
 function lineBreakHasUnsafeBoundary(left: string, right: string): boolean {
     if (!left && !right) return false;
     const leftChars = Array.from(left);
     const rightChars = Array.from(right);
     const leftLast = leftChars[leftChars.length - 1] || '';
     const rightFirst = rightChars[0] || '';
-    return isUnsafeBoundaryChar(leftLast) || isUnsafeBoundaryChar(rightFirst);
+    return isUnsafeBoundaryEndChar(leftLast) || isUnsafeBoundaryStartChar(rightFirst);
 }
 
 function assertFiniteBoxGeometry(pages: Page[], fixtureName: string): void {

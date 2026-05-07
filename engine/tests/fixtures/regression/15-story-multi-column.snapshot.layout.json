@@ -334,8 +334,15 @@
               "fontFamily": "Arimo"
             },
             {
-              "text": "これ",
-              "width": 18.4,
+              "text": "こ",
+              "width": 9.2,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "れ",
+              "width": 9.2,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans JP"
@@ -357,8 +364,29 @@
           ],
           [
             {
-              "text": "ストです",
-              "width": 36.8,
+              "text": "ス",
+              "width": 9.2,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "ト",
+              "width": 9.2,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "で",
+              "width": 9.2,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": "す",
+              "width": 9.2,
               "ascent": 1160,
               "descent": 288,
               "fontFamily": "Noto Sans JP"

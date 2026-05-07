@@ -717,6 +717,7 @@ export class TextProcessor extends FontProcessor {
         const advancedJustify = this.isAdvancedJustifyEnabled(primaryStyle) && primaryStyle.textAlign === 'justify';
         const configuredDirection = String(primaryStyle.direction || this.config.layout.direction || LAYOUT_DEFAULTS.textLayout.direction);
         const paragraphText = flattenedSegments.map((seg) => seg.text || '').join('');
+        const isolateBidiRunBoundaries = true;
         const baseDirection = resolveBaseDirection(paragraphText, configuredDirection, 'ltr');
         const paragraphStrongDirection = getStrongDirection(paragraphText);
         const preserveDirectionalBoundaries =
@@ -775,6 +776,7 @@ export class TextProcessor extends FontProcessor {
             getSegmenterLocale: (style) => this.getSegmenterLocale(style),
             makeWordSegmenter: (locale, isCJK) => this.makeWordSegmenter(locale, isCJK),
             transformSegment: (segment) => segment,
+            isolateBidiRunBoundaries,
             hasRtlScript: (value) => this.hasRtlScript(value),
             isAdvancedJustifyEnabled: (style) => this.isAdvancedJustifyEnabled(style),
             resolveRichFontInfo: (seg, defaultSize) => resolveCachedRichFontInfo(seg, defaultSize),

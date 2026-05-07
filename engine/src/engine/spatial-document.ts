@@ -114,7 +114,9 @@ export interface SpatialBlockObstacle {
 export interface SpatialZone {
     id?: string;
     x: number;
+    y?: number;
     width: number;
+    height?: number;
     style?: Record<string, unknown>;
     content?: SpatialZoneContent;
 }
@@ -127,6 +129,7 @@ export interface SpatialZoneStrip {
     content?: SpatialZoneContent;
     balance?: boolean;
     blockStyle?: Record<string, unknown>;
+    placement?: Record<string, unknown>;
     frameOverflow?: 'move-whole' | 'continue';
     worldBehavior?: 'fixed' | 'spanning';
     source: SpatialSourceRef;
@@ -389,11 +392,19 @@ function adaptZoneStrip(strip: SpatialZoneStrip, options: SpatialAdaptOptions): 
     const gap = deriveUniformGutter(strip.zones);
     const zones: ZoneDefinition[] = strip.zones.map((zone) => ({
         id: zone.id,
+        region: zone.y !== undefined || zone.height !== undefined
+            ? {
+                x: zone.x,
+                y: zone.y ?? 0,
+                width: zone.width,
+                ...(zone.height !== undefined ? { height: zone.height } : {})
+            }
+            : undefined,
         style: zone.style ? { ...zone.style } : undefined,
         elements: spatialItemsToElements(zone.content?.items || [], options)
     }));
 
-    return {
+    const element: Element = {
         type: 'zone-map',
         content: '',
         zones,
@@ -407,6 +418,10 @@ function adaptZoneStrip(strip: SpatialZoneStrip, options: SpatialAdaptOptions): 
             style: strip.blockStyle ? { ...strip.blockStyle } : undefined
         }, strip.source)
     };
+    if (strip.placement && Object.keys(strip.placement).length > 0) {
+        element.placement = JSON.parse(JSON.stringify(strip.placement)) as Element['placement'];
+    }
+    return element;
 }
 
 function adaptSpatialGridCell(cell: SpatialGridCell, options: SpatialAdaptOptions): Element {

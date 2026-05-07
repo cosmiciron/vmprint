@@ -51,6 +51,7 @@ type ScriptRun = { text: string; isCJK: boolean };
 type BidiDirectionRun = { text: string; direction: 'ltr' | 'rtl' };
 
 const SIMPLE_LATIN_WRAP_RE = /^[\u0009\u0020-\u007E\u00A0-\u00FF\u2010-\u201F\u2026]*$/u;
+const RTL_BASE_LTR_TRAILING_NEUTRAL_RE = /^(.+?)([.!?:;]+)$/u;
 const ASCII_PUNCTUATION_ATOM_RE = /^[\u0021-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007E]+$/u;
 
 function tokenizeSimpleLatinSegment(text: string): string[] {
@@ -59,6 +60,13 @@ function tokenizeSimpleLatinSegment(text: string): string[] {
 
 function isLtrAtomSegment(text: string): boolean {
     return isNumericRunSegment(text) || ASCII_PUNCTUATION_ATOM_RE.test(text);
+}
+
+function splitRtlBaseLtrTrailingNeutral(text: string, enabled: boolean): string[] {
+    if (!enabled || !text || isNumericRunSegment(text)) return [text];
+    const match = text.match(RTL_BASE_LTR_TRAILING_NEUTRAL_RE);
+    if (!match || !match[1] || !match[2]) return [text];
+    return [match[1], match[2]];
 }
 
 function sliceSegmentByOffsets(
@@ -135,6 +143,7 @@ export function buildRichWrapTokens(params: {
     hasRtlScript: (text: string) => boolean;
     isAdvancedJustifyEnabled: (style?: ElementStyle | Record<string, any>) => boolean;
     resolveRichFontInfo: (seg: TextSegment, defaultFontSize: number) => { font: any; fontSize: number };
+    isolateBidiRunBoundaries?: boolean;
     onBidiSplit?: (durationMs: number) => void;
     onScriptSplit?: (durationMs: number) => void;
     onWordSegment?: (durationMs: number) => void;
@@ -259,7 +268,14 @@ export function buildRichWrapTokens(params: {
                         const subStartOffset = subOffset;
                         const subEndOffset = subStartOffset + segment.length;
                         const rawSubSegHasLetterSpacing = hasSegmentLetterSpacing(runBaseSeg);
-                        const measuredSegments = rawSubSegHasLetterSpacing ? splitToCodePointSegments(segment) : [segment];
+                        const measuredSegments = rawSubSegHasLetterSpacing
+                            ? splitToCodePointSegments(segment)
+                            : splitRtlBaseLtrTrailingNeutral(
+                                segment,
+                                !!params.isolateBidiRunBoundaries
+                                    && params.baseDirection === 'rtl'
+                                    && bidiRun.direction === 'ltr'
+                            );
                         let measuredSegmentOffset = 0;
                         for (let measuredIndex = 0; measuredIndex < measuredSegments.length; measuredIndex++) {
                             const measuredSegment = measuredSegments[measuredIndex] || '';
@@ -277,10 +293,16 @@ export function buildRichWrapTokens(params: {
                             const richSubSeg = params.transformSegment(rawSubSeg, rawSubSeg.fontFamily);
                             const textValue = richSubSeg.text || '';
                             const numericAtom = isNumericRunSegment(textValue);
+                            let preserveBidiTokenBoundary = false;
                             if (textValue.trim().length > 0) {
                                 const scriptClass = params.getScriptClass(textValue);
                                 richSubSeg.scriptClass = scriptClass;
                                 richSubSeg.direction = (numericAtom || isLtrAtomSegment(textValue)) ? 'ltr' : bidiRun.direction;
+                                preserveBidiTokenBoundary = !!params.isolateBidiRunBoundaries && (
+                                    scriptClass !== 'latin' ||
+                                    bidiRun.direction !== params.baseDirection ||
+                                    params.hasRtlScript(textValue)
+                                );
 
                                 const optScale = params.getOpticalScale(scriptClass);
                                 if (optScale !== 1.0) {
@@ -301,6 +323,7 @@ export function buildRichWrapTokens(params: {
                             const preserveBoundaries =
                                 params.advancedJustify ||
                                 params.preserveDirectionalBoundaries ||
+                                preserveBidiTokenBoundary ||
                                 (params.direction === 'auto' && params.hasRtlScript(richSubSeg.text || '')) ||
                                 ((richSubSeg.style as any)?.textAlign === 'justify' && params.isAdvancedJustifyEnabled(richSubSeg.style as any));
                             const noLineEnd = isForbiddenLineEnd(richSubSeg.text || '');

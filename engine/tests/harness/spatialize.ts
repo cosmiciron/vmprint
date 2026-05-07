@@ -78,7 +78,9 @@ type ZoneContentItem = FlowBlock | BlockObstacle | ZoneStrip | SpatialGrid;
 interface SpatialZone {
   id?: string;
   x: number;
+  y?: number;
   width: number;
+  height?: number;
   style?: Record<string, unknown>;
   content?: ZoneContent;
 }
@@ -91,6 +93,7 @@ interface ZoneStrip {
   content?: ZoneContent;
   balance?: boolean;
   blockStyle?: Record<string, unknown>;
+  placement?: Record<string, unknown>;
   frameOverflow?: 'move-whole' | 'continue';
   worldBehavior?: 'fixed' | 'spanning';
   source: SourceRef;
@@ -207,6 +210,7 @@ const PROVISIONAL_FIELDS = [
   'ZoneStrip.content for linked strips',
   'ZoneStrip.balance',
   'ZoneStrip.blockStyle',
+  'ZoneStrip.placement',
   'SpatialZone.style',
   'SpatialGrid.blockStyle',
   'CompiledPageRegion.kind',
@@ -629,12 +633,21 @@ function normalizeZoneMap(element: Element, context: NormalizeContext, scope: Co
     gap
   });
   const zones = declaredZones.map((zone: ZoneDefinition, index: number) => {
-    const x = solved.sizes.slice(0, index).reduce((sum, entry) => sum + entry, 0) + (index * gap);
-    const width = solved.sizes[index] ?? 0;
+    const explicitRegion = zone.region;
+    const x = explicitRegion
+      ? LayoutUtils.validateUnit(explicitRegion.x ?? 0)
+      : solved.sizes.slice(0, index).reduce((sum, entry) => sum + entry, 0) + (index * gap);
+    const width = explicitRegion
+      ? LayoutUtils.validateUnit(explicitRegion.width ?? 0)
+      : solved.sizes[index] ?? 0;
     return deepSortObject({
       id: zone.id,
       x,
+      y: explicitRegion ? LayoutUtils.validateUnit(explicitRegion.y ?? 0) : undefined,
       width,
+      height: explicitRegion?.height !== undefined
+        ? LayoutUtils.validateUnit(explicitRegion.height)
+        : undefined,
       style: zone.style ? { ...zone.style } : undefined,
       content: normalizeZoneContent(zone.elements || [], context, {
         contentWidth: computeContentWidth(width, zone.style || {}),
@@ -647,6 +660,7 @@ function normalizeZoneMap(element: Element, context: NormalizeContext, scope: Co
     overflow: 'independent',
     sourceKind: 'zone-map',
     zones,
+    placement: element.placement ? JSON.parse(JSON.stringify(element.placement)) : undefined,
     ...(zoneOptions.frameOverflow ? { frameOverflow: zoneOptions.frameOverflow } : {}),
     ...(zoneOptions.worldBehavior ? { worldBehavior: zoneOptions.worldBehavior } : {}),
     blockStyle: Object.keys(blockStyle).length > 0 ? blockStyle : undefined,
