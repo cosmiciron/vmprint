@@ -60,6 +60,7 @@
     "test:spatial-ir-engine": "tsx --conditions tsx tests/spatial-ir-engine.spec.ts",
     "test:spatial-ir-strict": "tsx --conditions tsx tests/spatial-ir-strict.spec.ts",
     "test:shared-runtime-font-leak": "tsx --conditions tsx tests/shared-runtime-font-leak.spec.ts",
+    "measure:server": "tsx --conditions tsx scripts/text-measure-server.ts",
     "test:perf": "tsx --conditions tsx tests/performance-benchmark.ts",
     "test:perf-watch": "tsx --conditions tsx tests/performance-benchmark.ts --preset=watchlist --repeat=2 --warmup=1",
     "test:perf-contained": "tsx --conditions tsx tests/performance-benchmark.ts --fixture=54-contained-shapes --mode=ast --profile=hot --repeat=3 --warmup=1 --runtime=warm --stress=contained-paragraphs",
