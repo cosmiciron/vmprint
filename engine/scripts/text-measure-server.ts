@@ -1,6 +1,7 @@
 import http from 'node:http';
 
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
+import { segmentTextRun } from '../src/engine/layout/text-segmentation';
 import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { loadLocalFontManager } from '../tests/harness/engine-harness';
 
@@ -15,6 +16,12 @@ type MeasureItem = {
     scriptClass?: string;
     lineHeight?: number;
     lineHeightMode?: 'print' | 'css';
+};
+
+type SegmentWordsItem = {
+    text?: string;
+    locale?: string;
+    isCjk?: boolean;
 };
 
 const DEFAULT_PORT = 4765;
@@ -56,6 +63,10 @@ function parseMeasureRequest(payload: unknown): { items: MeasureItem[]; single: 
     return { items: [payload as MeasureItem], single: true };
 }
 
+function parseSegmentWordsRequest(payload: unknown): SegmentWordsItem {
+    return payload && typeof payload === 'object' ? payload as SegmentWordsItem : {};
+}
+
 function normalizeFiniteNumber(value: unknown, fallback: number): number {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : fallback;
@@ -82,17 +93,27 @@ async function main(): Promise<void> {
             lineHeight: normalizeFiniteNumber(item?.lineHeight, 0),
             lineHeightMode: item?.lineHeightMode === 'css' ? 'css' : 'print'
         });
+        const bounds = runtime.textDelegate.estimateTextBoundsMetrics(font, String(item?.text ?? ''));
 
         return {
             width: measured.width,
             ascent: measured.ascent,
             descent: measured.descent,
+            ...(bounds ? { boundsAscent: bounds.ascent, boundsDescent: bounds.descent } : {}),
             glyphs: measured.glyphs,
             shapedGlyphs: measured.shapedGlyphs,
             fontFamily: match.config.family,
             fontName: match.config.name,
             fontWeight: match.resolvedWeight,
             fontStyle: match.resolvedStyle
+        };
+    }
+
+    function segmentWords(item: SegmentWordsItem) {
+        const granularity = item?.isCjk ? 'grapheme' : 'word';
+        const segmenter = new (Intl as any).Segmenter(item?.locale || undefined, { granularity });
+        return {
+            segments: segmentTextRun(String(item?.text ?? ''), segmenter)
         };
     }
 
@@ -114,7 +135,12 @@ async function main(): Promise<void> {
                 return;
             }
 
-            sendJson(res, 404, { error: 'Not found. Use GET /health or POST /measure.' });
+            if (req.method === 'POST' && req.url === '/segment-words') {
+                sendJson(res, 200, segmentWords(parseSegmentWordsRequest(await readJsonBody(req))));
+                return;
+            }
+
+            sendJson(res, 404, { error: 'Not found. Use GET /health, POST /measure, or POST /segment-words.' });
         } catch (error) {
             sendJson(res, 500, { error: error instanceof Error ? error.message : String(error) });
         }
