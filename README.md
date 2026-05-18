@@ -95,37 +95,3 @@ Start paths:
 | [`@vmprint/standard-fonts`](https://github.com/cosmiciron/vmprint-font-managers) | Standard PDF font manager with zero embedded font files |
 | [vmprint-preview](https://github.com/cosmiciron/vmprint-preview) | Browser preview and hit-testing surface built on top of the engine |
 | [vmprint-transmuters](https://github.com/cosmiciron/vmprint-transmuters) | Markdown to VMPrint document compilers |
-
----
-
-## FAQ
-
-**Just want to preview a document in the browser?**  
-[vmprint-preview](https://github.com/cosmiciron/vmprint-preview) packages the engine into a browser canvas with live preview, zoom, hit-testing, and export workflows. You do not need to write engine code for that.
-
-**Why not Typst?**  
-Typst is excellent for authored documents and produces beautiful output. It is also a Rust binary. You cannot import it into a Node process, run it in a browser, deploy it to a Cloudflare Worker, or call it as a library from a TypeScript application. If you need a layout engine embedded in a JS or TS runtime, Typst is not available to you.
-
-**Why not Puppeteer / headless Chrome?**  
-Puppeteer is a browser automation tool. It produces PDFs as a side effect of printing a rendered web page. Each concurrent worker requires a full Chrome instance, substantial RAM, cold-start overhead, and subprocess privilege. For one-off document generation it is adequate. For high-volume production workloads the resource cost is substantial and scales linearly with concurrency. VMPrint runs inside your existing application process.
-
-**Is this react-pdf?**  
-No. react-pdf is a declarative PDF component renderer that assembles PDF primitives through a React tree. VMPrint is a layout engine: it computes where things go, produces that result as inspectable data, and hands it to an output context. Layout computation and rendering are separate, explicit steps.
-
-**Why not LaTeX?**  
-LaTeX produces excellent typographic output. It is also a macro system wrapped around an external binary and usually requires multiple compilation passes plus auxiliary files to resolve cross-references. It is not embeddable as a library in a running TypeScript application.
-
-**Does it work in the browser?**  
-Yes. The engine is pure TypeScript with no native binary dependencies. Pair it with a browser-compatible context and font manager and the full layout pass can run client-side.
-
-**Can it handle Arabic, Hebrew, Thai, CJK?**  
-Yes. Bidi reordering, right-to-left paragraph flow, complex script segmentation, and multi-script baseline alignment are native to the engine, not bolted on through HarfBuzz or ICU.
-
-**Layout engines are notoriously hard to build correctly. Why trust this one?**  
-The architecture is covered by a patent application with reduction-to-practice evidence for the novel mechanisms, and the regression suite exercises a broad set of layout configurations. The large benchmark documents exercise floats, tables, drop caps, multi-column story flow, headers, footers, and cross-references together rather than in isolation.
-
-**Is the scripting system just a template engine?**  
-No. Template engines substitute variables before layout runs and produce a static document. VMPrint scripting runs as part of the simulation. Handlers fire at specific lifecycle points, can query settled layout facts, and can mutate document structure in ways that cause the simulation to resettle from the affected point.
-
-**Is the output format stable?**  
-The document AST is versioned (`"documentVersion": "1.1"`). The serialized layout output (`AnnotatedLayoutStream`) is stable enough to emit, diff, cache, and re-render later with `--render-from-layout`.
