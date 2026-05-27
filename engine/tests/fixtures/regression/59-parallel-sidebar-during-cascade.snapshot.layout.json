@@ -1,0 +1,420 @@
+[
+  {
+    "index": 0,
+    "width": 360,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "field-actor",
+        "x": 24,
+        "y": 28,
+        "w": 200,
+        "h": 240,
+        "lines": []
+      },
+      {
+        "type": "sidebar-label",
+        "x": 236,
+        "y": 28,
+        "w": 100,
+        "h": 10.9375,
+        "lines": [
+          [
+            {
+              "text": "S",
+              "width": 6.835938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "I",
+              "width": 3.722656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "D",
+              "width": 7.277344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "E",
+              "width": 6.835938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "B",
+              "width": 7.277344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "A",
+              "width": 7.277344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "R",
+              "width": 7.277344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": " ",
+              "width": 3.722656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "A",
+              "width": 7.277344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "C",
+              "width": 7.277344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "T",
+              "width": 6.386719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "O",
+              "width": 7.722656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "R",
+              "width": 5.777344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-body",
+        "x": 236,
+        "y": 42.9375,
+        "w": 100,
+        "h": 92.96875,
+        "lines": [
+          [
+            {
+              "text": "Sidebar frame one keeps ",
+              "width": 97.334961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "running while the main ",
+              "width": 87.411377,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "story waits. Sidebar frame",
+              "width": 98.256348,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "one keeps running while ",
+              "width": 94.0354,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the main story waits. ",
+              "width": 79.832764,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Sidebar frame one keeps ",
+              "width": 97.334961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "running while the main ",
+              "width": 87.411377,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "story waits.",
+              "width": 42.508301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "sidebar-body",
+        "x": 236,
+        "y": 141.90625,
+        "w": 100,
+        "h": 116.210938,
+        "lines": [
+          [
+            {
+              "text": "Sidebar frame two ",
+              "width": 71.336914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continues independently ",
+              "width": 94.043701,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "through the next page ",
+              "width": 85.066406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "turn. Sidebar frame two ",
+              "width": 90.706787,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continues independently ",
+              "width": 94.043701,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "through the next page ",
+              "width": 85.066406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "turn. Sidebar frame two ",
+              "width": 90.706787,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continues independently ",
+              "width": 94.043701,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "through the next page ",
+              "width": 85.066406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "turn.",
+              "width": 17.008301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 360,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "field-actor",
+        "x": 24,
+        "y": 24,
+        "w": 200,
+        "h": 250,
+        "lines": []
+      },
+      {
+        "type": "sidebar-body",
+        "x": 236,
+        "y": 24,
+        "w": 100,
+        "h": 46.484375,
+        "lines": [
+          [
+            {
+              "text": "After the main blocker ",
+              "width": 85.037354,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "clears, the sidebar can ",
+              "width": 87.880371,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keep flowing beside the ",
+              "width": 91.200684,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "resumed main story.",
+              "width": 76.367188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 360,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 200,
+        "h": 41.015625,
+        "lines": [
+          [
+            {
+              "text": "Main story resumes after the blocker clears. ",
+              "width": 196.738281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Main story resumes after the blocker clears. ",
+              "width": 196.738281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Main story resumes after the blocker clears.",
+              "width": 193.959961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 80.015625,
+        "w": 312,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Normal document flow resumes after both parallel actors finish.",
+              "width": 279.56543,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]
