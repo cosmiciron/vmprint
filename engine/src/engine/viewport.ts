@@ -240,6 +240,22 @@ export function buildPageViewportHandle(
     });
 }
 
+function buildCumulativePageWorldRects(pages: readonly Page[]): Array<{ pageIndex: number; x: number; y: number; w: number; h: number }> {
+    let cursorY = 0;
+    return pages.map((page) => {
+        const height = Math.max(0, Number(page.height || 0));
+        const rect = {
+            pageIndex: page.index,
+            x: 0,
+            y: cursorY,
+            w: Math.max(0, Number(page.width || 0)),
+            h: height
+        };
+        cursorY += height;
+        return rect;
+    });
+}
+
 export function buildWorldViewportHandle(
     snapshot: ViewportSnapshotSource,
     request: WorldViewportRequest
@@ -256,16 +272,23 @@ export function buildWorldViewportHandle(
         h: Math.max(1, Number(request.height))
     };
 
+    const cumulativeRects = buildCumulativePageWorldRects(snapshot.pages);
     const segments = snapshot.pages.flatMap((page) => {
         const capture = snapshot.pageCaptures
             ?.find((candidate) => candidate.pageIndex === page.index)
             ?? null;
         const descriptor = capture?.capture.viewport ?? null;
+        const fallback = cumulativeRects.find((rect) => rect.pageIndex === page.index) ?? {
+            x: 0,
+            y: page.index * page.height,
+            w: page.width,
+            h: page.height
+        };
         const pageWorldRect = {
-            x: Number(descriptor?.worldX ?? 0),
-            y: Number(descriptor?.worldY ?? (page.index * page.height)),
-            w: Number(descriptor?.width ?? page.width),
-            h: Number(descriptor?.height ?? page.height)
+            x: Number(descriptor?.worldX ?? fallback.x),
+            y: Number(descriptor?.worldY ?? fallback.y),
+            w: Number(descriptor?.width ?? fallback.w),
+            h: Number(descriptor?.height ?? fallback.h)
         };
         const intersection = intersectViewportRects(worldRect, pageWorldRect);
         if (!intersection) return [];

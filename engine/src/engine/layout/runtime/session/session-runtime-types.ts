@@ -115,6 +115,7 @@ export interface CollaboratorHost {
     notifyActorSpawn(actor: PackagerUnit): void;
     recordPageCapture(record: PageCaptureRecord): void;
     recordPageFinalization(state: PageFinalizationState): void;
+    resolveChunkOriginWorldY(chunkIndex: number, chunkHeight: number): number;
     createPageCaptureState(params: PageCaptureStateParams): PageCaptureState;
 }
 

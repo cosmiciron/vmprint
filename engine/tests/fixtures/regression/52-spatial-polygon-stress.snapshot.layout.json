@@ -1,0 +1,5382 @@
+[
+  {
+    "index": 0,
+    "width": 595,
+    "height": 842,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 40,
+        "y": 40,
+        "w": 515,
+        "h": 62.35625,
+        "lines": [
+          [
+            {
+              "text": "Spatial Layout Stress Test: Dense Text Around ",
+              "width": 493.066406,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Irregular Polygon Exclusions",
+              "width": 304.412109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "lead",
+        "x": 40,
+        "y": 112.35625,
+        "w": 515,
+        "h": 59.170312,
+        "lines": [
+          [
+            {
+              "text": "This fixture stresses the spatial layout path by flowing dense prose text around a ",
+              "width": 465.365723,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sequence of complex irregular polygon exclusions. It is designed to produce a high ",
+              "width": 479.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "volume of spatial-reflow and story-layout calls for reliable benchmark anchoring.",
+              "width": 458.827637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 387,
+        "y": 185.526563,
+        "w": 168,
+        "h": 150,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 185.526563,
+        "w": 515,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "Typography is the art and technique of arranging type to make written ",
+              "width": 341.19873,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "languag",
+              "width": 39.149902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "e ",
+              "width": 9.173828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "legible, readable, and appealing when displayed. The arrangement of type ",
+              "width": 364.47168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "involves selecting typefaces, point sizes, line lengths, line spacing, and ",
+              "width": 347.92334,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "letter spacing, as well as adjusting the space between pairs of letters. ",
+              "width": 340.575684,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "The term typography is also applied to the style, arrangement, and ",
+              "width": 326.51416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "appe",
+              "width": 24.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "arance of the letters, numbers, and symbols created by the process.",
+              "width": 331.391113,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 280.615625,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "When text flows around an irregular polygon obstacle the engine must ",
+              "width": 343.642578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "determine at each line band exactly how much horizontal space is ",
+              "width": 323.458008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "avail",
+              "width": 22.623047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "able ",
+              "width": 23.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "on each side of the exclusion zone. The broadphase narrows the candidate set ",
+              "width": 387.083984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "using a ",
+              "width": 38.526855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "spatial index and the narrowphase computes the precise chord width for each band ",
+              "width": 407.859375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "using the ",
+              "width": 47.700684,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "polygon edge intersection algorithm.",
+              "width": 176.719727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 361.404688,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The spatial reflow system handles multiple simultaneous exclusions on the same page, including circles, ",
+              "width": 509.920898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "polygons, and exclusion assemblies composed of overlapping primitives. Each paragraph element ",
+              "width": 480.600098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "entering the story layout loop is evaluated against the current collision field before lines are materialized ",
+              "width": 506.896973,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and text is fitted.",
+              "width": 80.099121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 427.89375,
+        "w": 515,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "Column gaps and exclusion zones interact through the same spatial field so a float that crosses a column ",
+              "width": 514.228516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boundary correctly clips both columns at once. The engine resolves these interactions during the story ",
+              "width": 499.543945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation phase before any final line positions are committed to the output page.",
+              "width": 395.01709,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 480.082812,
+        "w": 160,
+        "h": 110,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 480.082812,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Optical underhang correction applies a small fractional adjustment to ",
+              "width": 336.901855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lines whose terminal glyph would otherwise land on an optically heavy ",
+              "width": 343.637207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "stroke. This correction is computed after the geometric line-width constraint is ",
+              "width": 379.655762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "satisfied and before the line token sequence is finalized for the output ",
+              "width": 340.613281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "renderer.",
+              "width": 44.026855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 560.871875,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Paragraph continuation across page boundaries requires the story ",
+              "width": 325.311035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation to track the residual content stack and replay it against a ",
+              "width": 330.177246,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "fresh page geometry. Polygon floats that appear near the bottom of a ",
+              "width": 338.561523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page must be carried forward if the story continues and their bounding box would be clipped by the page ",
+              "width": 510.597656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "margin.",
+              "width": 36.679199,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 641.660938,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The line layout subsystem resolves each token sequence against the available width constraint, ",
+              "width": 467.768555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "producing a set of line breaks that respect soft-wrap opportunities while avoiding widows and orphans ",
+              "width": 497.116211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "according to the document-level keep rules. The resolver uses a greedy forward pass followed by a ",
+              "width": 485.477051,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "backward widow-correction sweep.",
+              "width": 170.569824,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 708.15,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Advanced hyphenation policies allow the engine to break words at syllable boundaries when the available",
+              "width": 513.057617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "width would otherwise force an unacceptably ragged right margin. The hyphenation dictionary lookup is ",
+              "width": 504.458496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "integrated into the token resolution phase so that the cost of each candidate break point is evaluated in ",
+              "width": 503.282227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "context.",
+              "width": 38.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 459,
+        "y": 774.639063,
+        "w": 96,
+        "h": 27.360937,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 774.639063,
+        "w": 515,
+        "h": 14.3,
+        "lines": [
+          [
+            {
+              "text": "The kern table for a given font pair is consulted for every adjacent glyph boundary during ",
+              "width": 434.145508,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the ",
+              "width": 18.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 595,
+    "height": 842,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 459,
+        "y": 40,
+        "w": 96,
+        "h": 68.639063,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 40,
+        "w": 515,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "line-level measurement phase. Ligature substitution is applied before kerning so that ",
+              "width": 413.354004,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the effective glyph sequence seen by the kern lookup reflects the final rendered ",
+              "width": 389.32373,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "form of the text rather than the raw character sequence.",
+              "width": 271.476563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 92.189063,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Floating images with wrap mode set to around generate a soft exclusion zone whose ",
+              "width": 415.180176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "bou",
+              "width": 18.353027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ndary is derived from the declared shape definition. For polygon shapes the boundary is the ",
+              "width": 448.824707,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "raw ",
+              "width": 20.780762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "SVG path data scaled to the image bounding box and offset to the image anchor point within the story ",
+              "width": 497.562012,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "flow coordinate system.",
+              "width": 114.936035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 158.678125,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "When the microLanePolicy is set to typography, the engine rejects spatial lanes narrower than a ",
+              "width": 468.772949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "configurable minimum token width. This prevents the layout from placing single-character fragments ",
+              "width": 488.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inside tight polygon pockets where they would be illegible in print. The policy is evaluated per-paragraph ",
+              "width": 508.744629,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "during the spatial reflow step.",
+              "width": 143.080566,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 225.167188,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Story layout simulation proceeds in multiple phases: first a geometry pass that places all anchored floats ",
+              "width": 509.92627,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and computes the collision field, then a content pass that reflows each paragraph and heading element ",
+              "width": 503.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "against the field, and finally a pagination pass that splits the simulated story into concrete page ",
+              "width": 463.503906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "assignments.",
+              "width": 64.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 291.65625,
+        "w": 140,
+        "h": 130,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 291.65625,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The collider field is built once per story simulation pass and shared across all ",
+              "width": 376.626465,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph reflow calls within that pass. Cache invalidation occurs when a new float ",
+              "width": 406.60791,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "anchor is placed that overlaps the scan range of a previously reflowed paragraph, ",
+              "width": 399.904785,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "triggering a partial re-simulation from the invalidation point forward.",
+              "width": 325.268066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 358.145312,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Zone continuations allow a single logical text frame to span multiple ",
+              "width": 331.401855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "physical pages while maintaining a consistent left and right margin offset ",
+              "width": 355.050781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "from the page boundary. The zone-continue system is separate from the ",
+              "width": 354.427734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "story simulation and operates at a higher level of abstraction in the ",
+              "width": 326.519531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "document processing pipeline.",
+              "width": 148.591309,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 438.934375,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Glyph metrics are resolved through a measurement dispatch system that batches all pending ",
+              "width": 454.899414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measurement requests before committing to a layout pass. This avoids the overhead of individual ",
+              "width": 476.308594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measurement round-trips and allows the engine to pipeline measurement work with layout computation ",
+              "width": 503.212402,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for improved throughput.",
+              "width": 119.845215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 505.423437,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The font registry maintains a cache of resolved font descriptors keyed by family name and variant. When ",
+              "width": 511.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a document requests a fallback font family the registry resolves the chain in order and returns the first ",
+              "width": 495.854004,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "descriptor that satisfies the requested weight and style constraints according to the CSS font-matching ",
+              "width": 500.763184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "algorithm.",
+              "width": 48.296875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 405,
+        "y": 571.9125,
+        "w": 150,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 571.9125,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Color management in the output renderer maps document-space colors to the ",
+              "width": 382.15332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "target ",
+              "width": 31.18457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ICC profile using a lookup table that is precomputed at document load time. ",
+              "width": 369.928711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Sp",
+              "width": 13.45459,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ot colors declared in the document palette are preserved as named ",
+              "width": 329.581055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "references through the layout pipeline and only resolved to CMYK during",
+              "width": 354.046387,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the final rendering step.",
+              "width": 114.962891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 652.701563,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Master pages define a repeating template that is applied to every output ",
+              "width": 352.83252,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page in the document. The template can include page headers, footers, ",
+              "width": 351.006348,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "background graphics, and column grid definitions. Story elements placed on ",
+              "width": 372.383301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "master pages are excluded from the main content flow and rendered at the bottom of the z-order stack.",
+              "width": 500.768555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 719.190625,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Overflow text that cannot fit in its assigned zone is placed into an overflow chain and will be picked up by ",
+              "width": 511.784668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the next available continuation zone in document order. The overflow chain preserves the full paragraph ",
+              "width": 507.530762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "context including style inheritance and hyphenation state so that the continuation appears seamless to ",
+              "width": 500.209961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the reader.",
+              "width": 52.59375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 785.679688,
+        "w": 515,
+        "h": 14.3,
+        "lines": [
+          [
+            {
+              "text": "Vertical rhythm alignment ensures that the baseline grid of the main text column is consistent across ",
+              "width": 489.741699,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 595,
+    "height": 842,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 40,
+        "y": 40,
+        "w": 515,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "adjacent columns and across page boundaries. The engine resolves baseline snapping after the ",
+              "width": 470.862305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph reflow phase and before the final line positioning step, using the document-level leading value ",
+              "width": 511.838379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "as the grid pitch.",
+              "width": 80.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 92.189063,
+        "w": 160,
+        "h": 90,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 92.189063,
+        "w": 515,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "Typography is the ",
+              "width": 89.885254,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "art and technique of arranging type to make written language legible, readable,",
+              "width": 383.420898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and appealing when displayed. The arrangement of type involves selecting",
+              "width": 363.843262,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "typefaces, point sizes, line lengths, line spacing, and letter spacing, as ",
+              "width": 344.867188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "well as adjusting the space between pairs of letters. The term ",
+              "width": 301.431152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "typography is also applied to the style, arrangement, and appearance of ",
+              "width": 352.837891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the letters, ",
+              "width": 54.414551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "numbers, and symbols created by the process.",
+              "width": 228.056641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 187.278125,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "When text flows around an irregular polygon obstacle the engine must determine at each line band ",
+              "width": 482.458496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "exactly how much horizontal space is available on each side of the exclusion zone. The broadphase ",
+              "width": 489.183105,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "narrows the candidate set using a spatial index and the narrowphase computes the precise chord width ",
+              "width": 505.076172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for each band using the polygon edge intersection algorithm.",
+              "width": 294.749512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 253.767187,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The spatial reflow system handles multiple simultaneous exclusions on the same page, including circles, ",
+              "width": 509.920898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "polygons, and exclusion assemblies composed of overlapping primitives. Each paragraph element ",
+              "width": 480.600098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "entering the story layout loop is evaluated against the current collision field before lines are materialized ",
+              "width": 506.896973,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and text is fitted.",
+              "width": 80.099121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 320.25625,
+        "w": 515,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "Column gaps and exclusion zones interact through the same spatial field so a float that crosses a column ",
+              "width": 514.228516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boundary correctly clips both columns at once. The engine resolves these interactions during the story ",
+              "width": 499.543945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation phase before any final line positions are committed to the output page.",
+              "width": 395.01709,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 425,
+        "y": 372.445313,
+        "w": 130,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 372.445313,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Optical underhang correction applies a small fractional adjustment to lines whose",
+              "width": 394.37793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "terminal glyph would otherwise land on an optically heavy stroke. This ",
+              "width": 343.008789,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "correction is computed after the geometric line-width constraint is satisfied ",
+              "width": 363.161133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and before the line token sequence is finalized for the output renderer.",
+              "width": 341.230957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 438.934375,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Paragraph continuation across page boundaries requires the story simulation ",
+              "width": 377.888672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "to track the residual content stack and replay it against a fresh page geometry. ",
+              "width": 383.786133,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Polygon floats that appear near the bottom of a page must be carried forward if ",
+              "width": 387.057129,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the story continues and their bounding box would be clipped by the page margin.",
+              "width": 392.594727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 505.423437,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The line layout subsystem resolves each token sequence against the available width constraint, ",
+              "width": 467.768555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "producing a set of line breaks that respect soft-wrap opportunities while avoiding widows and orphans ",
+              "width": 497.116211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "according to the document-level keep rules. The resolver uses a greedy forward pass followed by a ",
+              "width": 485.477051,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "backward widow-correction sweep.",
+              "width": 170.569824,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 571.9125,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Advanced hyphenation policies allow the engine to break words at syllable boundaries when the available",
+              "width": 513.057617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "width would otherwise force an unacceptably ragged right margin. The hyphenation dictionary lookup is ",
+              "width": 504.458496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "integrated into the token resolution phase so that the cost of each candidate break point is evaluated in ",
+              "width": 503.282227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "context.",
+              "width": 38.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 638.401563,
+        "w": 160,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 638.401563,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "The ",
+              "width": 22.010742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "kern table for a given font pair is consulted for every adjacent glyph boundary ",
+              "width": 378.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "durin",
+              "width": 24.459961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "g the line-level measurement phase. Ligature substitution is applied before ",
+              "width": 365.664063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "kerning so that the effective glyph sequence seen by the kern lookup ",
+              "width": 337.353027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reflects the final rendered form of the text rather than the raw character ",
+              "width": 347.896484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sequence.",
+              "width": 50.762207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 719.190625,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Floating images with wrap mode set to around generate a soft ",
+              "width": 304.503418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "exclusion zone whose boundary is derived from the declared shape ",
+              "width": 331.417969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "definition. For polygon shapes the boundary is the raw SVG path data ",
+              "width": 342.434082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "scaled to the image bounding box and offset to the image anchor point within the story flow coordinate ",
+              "width": 499.388184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "system.",
+              "width": 37.893066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "width": 595,
+    "height": 842,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 40,
+        "y": 40,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "When the microLanePolicy is set to typography, the engine rejects spatial lanes narrower than a ",
+              "width": 468.772949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "configurable minimum token width. This prevents the layout from placing single-character fragments ",
+              "width": 488.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inside tight polygon pockets where they would be illegible in print. The policy is evaluated per-paragraph ",
+              "width": 508.744629,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "during the spatial reflow step.",
+              "width": 143.080566,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 106.489063,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Story layout simulation proceeds in multiple phases: first a geometry pass that places all anchored floats ",
+              "width": 509.92627,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and computes the collision field, then a content pass that reflows each paragraph and heading element ",
+              "width": 503.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "against the field, and finally a pagination pass that splits the simulated story into concrete page ",
+              "width": 463.503906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "assignments.",
+              "width": 64.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 387,
+        "y": 172.978125,
+        "w": 168,
+        "h": 150,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 172.978125,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "The collider field is built once per story simulation pass and shared across all",
+              "width": 373.570313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragra",
+              "width": 37.914551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ph ",
+              "width": 15.291504,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reflow calls within that pass. Cache invalidation occurs when a new float ",
+              "width": 353.401855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "anchor is placed that overlaps the scan range of a previously reflowed ",
+              "width": 343.642578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph, triggering a partial re-simulation from the invalidation point ",
+              "width": 341.794922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "forward.",
+              "width": 39.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 253.767188,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Zone continuations allow a single logical text frame to span multiple ",
+              "width": 331.401855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ph",
+              "width": 12.235352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ysical pages while maintaining a consistent left and right margin offset ",
+              "width": 342.81543,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "from the page boundary. The zone-continue system is separate from ",
+              "width": 336.080078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the ",
+              "width": 18.347656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "story ",
+              "width": 26.893066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation and operates at a higher level of abstraction in the document processing ",
+              "width": 407.241699,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "pipeline.",
+              "width": 40.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 320.25625,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Glyph metrics are resolved through a measurement dispatch system that batches all ",
+              "width": 412.693359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "pending ",
+              "width": 42.206055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measurement requests before committing to a layout pass. This avoids the overhead of individual ",
+              "width": 476.308594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measurement round-trips and allows the engine to pipeline measurement work with layout computation ",
+              "width": 503.212402,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for improved throughput.",
+              "width": 119.845215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 386.745313,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The font registry maintains a cache of resolved font descriptors keyed by family name and variant. When ",
+              "width": 511.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a document requests a fallback font family the registry resolves the chain in order and returns the first ",
+              "width": 495.854004,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "descriptor that satisfies the requested weight and style constraints according to the CSS font-matching ",
+              "width": 500.763184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "algorithm.",
+              "width": 48.296875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 453.234375,
+        "w": 160,
+        "h": 110,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 453.234375,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Color management in the output renderer maps document-space ",
+              "width": 319.177246,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "colors to the target ICC profile using a lookup table that is ",
+              "width": 282.487305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "precomputed at document load time. Spot colors declared in the document palette ",
+              "width": 402.348633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "are preserved as named references through the layout pipeline and ",
+              "width": 330.821777,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "only resolved to CMYK during the final rendering step.",
+              "width": 263.532715,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 534.023438,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Master pages define a repeating template that is applied to every ",
+              "width": 319.193359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "output page in the document. The template can include page headers, ",
+              "width": 344.904785,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "footers, background graphics, and column grid definitions. Story ",
+              "width": 313.671875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "elements placed on master pages are excluded from the main content flow and rendered at the bottom of ",
+              "width": 514.244629,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the z-order stack.",
+              "width": 84.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 614.8125,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Overflow text that cannot fit in its assigned zone is placed into an overflow chain and will be picked up by ",
+              "width": 511.784668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the next available continuation zone in document order. The overflow chain preserves the full paragraph ",
+              "width": 507.530762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "context including style inheritance and hyphenation state so that the continuation appears seamless to ",
+              "width": 500.209961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the reader.",
+              "width": 52.59375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 681.301563,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Vertical rhythm alignment ensures that the baseline grid of the main text column is consistent across ",
+              "width": 489.741699,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "adjacent columns and across page boundaries. The engine resolves baseline snapping after the ",
+              "width": 470.862305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph reflow phase and before the final line positioning step, using the document-level leading value ",
+              "width": 511.838379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "as the grid pitch.",
+              "width": 80.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 459,
+        "y": 747.790625,
+        "w": 96,
+        "h": 54.209375,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 747.790625,
+        "w": 515,
+        "h": 42.9,
+        "lines": [
+          [
+            {
+              "text": "Typography is the art and technique of arranging type to make written language legible, ",
+              "width": 427.437012,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "read",
+              "width": 22.016113,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "able, and appealing when displayed. The arrangement of type involves selecting ",
+              "width": 393.808594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "typefaces, point sizes, line lengths, line spacing, and letter spacing, as well as ",
+              "width": 381.546387,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "width": 595,
+    "height": 842,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 459,
+        "y": 40,
+        "w": 96,
+        "h": 41.790625,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 40,
+        "w": 515,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "adjusting the space between pairs of letters. The term typography is also applied to ",
+              "width": 407.230957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the style, arrangement, and appearance of the letters, numbers, and symbols created ",
+              "width": 418.236328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "by the process.",
+              "width": 74.59375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 92.189063,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "When text flows around an irregular polygon obstacle the engine must determine at each line band ",
+              "width": 482.458496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "exactly how much horizontal space is available on each side of the exclusion zone. The broadphase ",
+              "width": 489.183105,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "narrows the candidate set using a spatial index and the narrowphase computes the precise chord width ",
+              "width": 505.076172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for each band using the polygon edge intersection algorithm.",
+              "width": 294.749512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 158.678125,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The spatial reflow system handles multiple simultaneous exclusions on the same page, including circles, ",
+              "width": 509.920898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "polygons, and exclusion assemblies composed of overlapping primitives. Each paragraph element ",
+              "width": 480.600098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "entering the story layout loop is evaluated against the current collision field before lines are materialized ",
+              "width": 506.896973,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and text is fitted.",
+              "width": 80.099121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 225.167188,
+        "w": 515,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "Column gaps and exclusion zones interact through the same spatial field so a float that crosses a column ",
+              "width": 514.228516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boundary correctly clips both columns at once. The engine resolves these interactions during the story ",
+              "width": 499.543945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation phase before any final line positions are committed to the output page.",
+              "width": 395.01709,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 277.35625,
+        "w": 140,
+        "h": 130,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 277.35625,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Optical underhang correction applies a small fractional adjustment to lines whose ",
+              "width": 397.434082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "terminal glyph would otherwise land on an optically heavy stroke. This correction is ",
+              "width": 405.361816,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "computed after the geometric line-width constraint is satisfied and before the line token ",
+              "width": 424.955566,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sequence is finalized for the output renderer.",
+              "width": 217.083496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 343.845313,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Paragraph continuation across page boundaries requires the story ",
+              "width": 325.311035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation to track the residual content stack and replay it against a fresh ",
+              "width": 357.687988,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page geometry. Polygon floats that appear near the bottom of a page must",
+              "width": 362.414551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "be carried forward if the story continues and their bounding box would be ",
+              "width": 357.714844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "clipped by the page margin.",
+              "width": 135.14209,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 424.634375,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The line layout subsystem resolves each token sequence against the available width constraint, ",
+              "width": 467.768555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "producing a set of line breaks that respect soft-wrap opportunities while avoiding widows and orphans ",
+              "width": 497.116211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "according to the document-level keep rules. The resolver uses a greedy forward pass followed by a ",
+              "width": 485.477051,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "backward widow-correction sweep.",
+              "width": 170.569824,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 491.123438,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Advanced hyphenation policies allow the engine to break words at syllable boundaries when the available",
+              "width": 513.057617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "width would otherwise force an unacceptably ragged right margin. The hyphenation dictionary lookup is ",
+              "width": 504.458496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "integrated into the token resolution phase so that the cost of each candidate break point is evaluated in ",
+              "width": 503.282227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "context.",
+              "width": 38.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 405,
+        "y": 557.6125,
+        "w": 150,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 557.6125,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "The kern table for a given font pair is consulted for every adjacent glyph boundary ",
+              "width": 400.511719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "during ",
+              "width": 33.633789,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the line-level measurement phase. Ligature substitution is applied before ",
+              "width": 356.490234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ker",
+              "width": 15.280762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ning so that the effective glyph sequence seen by the kern lookup reflects",
+              "width": 357.526855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the final rendered form of the text rather than the raw character ",
+              "width": 309.385742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sequence.",
+              "width": 50.762207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 638.401562,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Floating images with wrap mode set to around generate a soft exclusion ",
+              "width": 353.417969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zone whose boundary is derived from the declared shape definition. For ",
+              "width": 352.204102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "polygon shapes the boundary is the raw SVG path data scaled to the image ",
+              "width": 371.180176,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "bounding box and offset to the image anchor point within the story flow coordinate system.",
+              "width": 438.834473,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 704.890625,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "When the microLanePolicy is set to typography, the engine rejects spatial lanes narrower than a ",
+              "width": 468.772949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "configurable minimum token width. This prevents the layout from placing single-character fragments ",
+              "width": 488.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inside tight polygon pockets where they would be illegible in print. The policy is evaluated per-paragraph ",
+              "width": 508.744629,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "during the spatial reflow step.",
+              "width": 143.080566,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 771.379688,
+        "w": 515,
+        "h": 28.6,
+        "lines": [
+          [
+            {
+              "text": "Story layout simulation proceeds in multiple phases: first a geometry pass that places all anchored floats ",
+              "width": 509.92627,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and computes the collision field, then a content pass that reflows each paragraph and heading element ",
+              "width": 503.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "width": 595,
+    "height": 842,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 40,
+        "y": 40,
+        "w": 515,
+        "h": 29.889063,
+        "lines": [
+          [
+            {
+              "text": "against the field, and finally a pagination pass that splits the simulated story into concrete page ",
+              "width": 463.503906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "assignments.",
+              "width": 64.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 77.889062,
+        "w": 160,
+        "h": 90,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 77.889062,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "The collider field ",
+              "width": 83.149902,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "is built once per story simulation pass and shared across all paragraph reflow ",
+              "width": 379.081055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "calls within that pass. Cache invalidation occurs when a new float anchor is",
+              "width": 365.637207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "placed that overlaps the scan range of a previously reflowed ",
+              "width": 295.952637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph, triggering a partial re-simulation from the invalidation point ",
+              "width": 341.794922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "forward.",
+              "width": 39.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 158.678125,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Zone ",
+              "width": 28.128418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuations allow a single logical text frame to span multiple physical pages ",
+              "width": 379.097168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "while maintaining a consistent left and right margin offset from the page boundary. The zone-continue ",
+              "width": 495.494141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "system is separate from the story simulation and operates at a higher level of abstraction in the document",
+              "width": 512.987793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "processing pipeline.",
+              "width": 97.227539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 225.167188,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Glyph metrics are resolved through a measurement dispatch system that batches all pending ",
+              "width": 454.899414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measurement requests before committing to a layout pass. This avoids the overhead of individual ",
+              "width": 476.308594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measurement round-trips and allows the engine to pipeline measurement work with layout computation ",
+              "width": 503.212402,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for improved throughput.",
+              "width": 119.845215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 291.65625,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The font registry maintains a cache of resolved font descriptors keyed by family name and variant. When ",
+              "width": 511.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a document requests a fallback font family the registry resolves the chain in order and returns the first ",
+              "width": 495.854004,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "descriptor that satisfies the requested weight and style constraints according to the CSS font-matching ",
+              "width": 500.763184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "algorithm.",
+              "width": 48.296875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 425,
+        "y": 358.145312,
+        "w": 130,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 358.145312,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Color management in the output renderer maps document-space colors to the ",
+              "width": 382.15332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "target ICC profile using a lookup table that is precomputed at document load ",
+              "width": 374.220215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "time. Spot colors declared in the document palette are preserved as named ",
+              "width": 369.928711,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "references through the layout pipeline and only resolved to CMYK during the",
+              "width": 372.394043,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "final rendering step.",
+              "width": 96.615234,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 438.934375,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Master pages define a repeating template that is applied to every output page ",
+              "width": 380.359375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "in the document. The template can include page headers, footers, background ",
+              "width": 384.022461,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "graphics, and column grid definitions. Story elements placed on master pages ",
+              "width": 381.541016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "are excluded from the main content flow and rendered at the bottom of the z-order stack.",
+              "width": 431.067871,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 505.423437,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Overflow text that cannot fit in its assigned zone is placed into an overflow chain and will be picked up by ",
+              "width": 511.784668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the next available continuation zone in document order. The overflow chain preserves the full paragraph ",
+              "width": 507.530762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "context including style inheritance and hyphenation state so that the continuation appears seamless to ",
+              "width": 500.209961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the reader.",
+              "width": 52.59375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 571.9125,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Vertical rhythm alignment ensures that the baseline grid of the main text column is consistent across ",
+              "width": 489.741699,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "adjacent columns and across page boundaries. The engine resolves baseline snapping after the ",
+              "width": 470.862305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph reflow phase and before the final line positioning step, using the document-level leading value ",
+              "width": 511.838379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "as the grid pitch.",
+              "width": 80.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 638.401563,
+        "w": 160,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 638.401563,
+        "w": 515,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "Typo",
+              "width": 24.45459,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "graphy is the art and technique of arranging type to make written language ",
+              "width": 365.674805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "legibl",
+              "width": 25.68457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "e, readable, and appealing when displayed. The arrangement of type involves ",
+              "width": 381.583984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "selecting typefaces, point sizes, line lengths, line spacing, and letter ",
+              "width": 332.637207,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "spacing, as well as adjusting the space between pairs of letters. The term ",
+              "width": 360.131836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "typography is also applied to the style, arrangement, and appearance of ",
+              "width": 352.837891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the letters, numbers, and symbols created by the process.",
+              "width": 282.471191,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 733.490625,
+        "w": 515,
+        "h": 57.2,
+        "lines": [
+          [
+            {
+              "text": "When text flows around an irregular polygon obstacle the engine must ",
+              "width": 343.642578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "determine at each line band exactly how much horizontal space is ",
+              "width": 323.458008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "available on each side of the exclusion zone. The broadphase narrows the candidate set using a spatial ",
+              "width": 506.939941,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "index and the narrowphase computes the precise chord width for each band using the polygon edge ",
+              "width": 489.822266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "width": 595,
+    "height": 842,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 40,
+        "y": 40,
+        "w": 515,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "intersection algorithm.",
+              "width": 107.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 63.589062,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The spatial reflow system handles multiple simultaneous exclusions on the same page, including circles, ",
+              "width": 509.920898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "polygons, and exclusion assemblies composed of overlapping primitives. Each paragraph element ",
+              "width": 480.600098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "entering the story layout loop is evaluated against the current collision field before lines are materialized ",
+              "width": 506.896973,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and text is fitted.",
+              "width": 80.099121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 130.078125,
+        "w": 515,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "Column gaps and exclusion zones interact through the same spatial field so a float that crosses a column ",
+              "width": 514.228516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boundary correctly clips both columns at once. The engine resolves these interactions during the story ",
+              "width": 499.543945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation phase before any final line positions are committed to the output page.",
+              "width": 395.01709,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 387,
+        "y": 182.267188,
+        "w": 168,
+        "h": 150,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 182.267188,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Optical underhang correction applies a small fractional adjustment to lines ",
+              "width": 362.581055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "whose ",
+              "width": 34.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ter",
+              "width": 12.836914,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "minal glyph would otherwise land on an optically heavy stroke. This ",
+              "width": 330.171875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "correction is computed after the geometric line-width constraint is ",
+              "width": 319.751953,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "satisfied and before the line token sequence is finalized for the output ",
+              "width": 340.613281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "renderer.",
+              "width": 44.026855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 263.05625,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Paragraph continuation across page boundaries requires the story ",
+              "width": 325.311035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sim",
+              "width": 17.106934,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ulation to track the residual content stack and replay it against a fresh ",
+              "width": 340.581055,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page geometry. Polygon floats that appear near the bottom of a page ",
+              "width": 338.577637,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "must ",
+              "width": 26.893066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "be ",
+              "width": 15.291504,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "carried forward if the story continues and their bounding box would be clipped by ",
+              "width": 395.011719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the page ",
+              "width": 45.874512,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "margin.",
+              "width": 36.679199,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 343.845312,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The line layout subsystem resolves each token sequence against the available width constraint, ",
+              "width": 467.768555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "producing a set of line breaks that respect soft-wrap opportunities while avoiding widows and orphans ",
+              "width": 497.116211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "according to the document-level keep rules. The resolver uses a greedy forward pass followed by a ",
+              "width": 485.477051,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "backward widow-correction sweep.",
+              "width": 170.569824,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 410.334375,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Advanced hyphenation policies allow the engine to break words at syllable boundaries when the available",
+              "width": 513.057617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "width would otherwise force an unacceptably ragged right margin. The hyphenation dictionary lookup is ",
+              "width": 504.458496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "integrated into the token resolution phase so that the cost of each candidate break point is evaluated in ",
+              "width": 503.282227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "context.",
+              "width": 38.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 476.823437,
+        "w": 160,
+        "h": 110,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 476.823437,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "The kern table for a given font pair is consulted for every adjacent ",
+              "width": 322.233398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "glyph boundary during the line-level measurement phase. Ligature ",
+              "width": 325.92334,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "substitution is applied before kerning so that the effective glyph sequence seen by ",
+              "width": 401.559082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the kern lookup reflects the final rendered form of the text rather than ",
+              "width": 338.131836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the raw character sequence.",
+              "width": 138.799805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 557.6125,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Floating images with wrap mode set to around generate a soft ",
+              "width": 304.503418,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "exclusion zone whose boundary is derived from the declared shape ",
+              "width": 331.417969,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "definition. For polygon shapes the boundary is the raw SVG path data ",
+              "width": 342.434082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "scaled to the image bounding box and offset to the image anchor point within the story flow coordinate ",
+              "width": 499.388184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "system.",
+              "width": 37.893066,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 638.401562,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "When the microLanePolicy is set to typography, the engine rejects spatial lanes narrower than a ",
+              "width": 468.772949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "configurable minimum token width. This prevents the layout from placing single-character fragments ",
+              "width": 488.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inside tight polygon pockets where they would be illegible in print. The policy is evaluated per-paragraph ",
+              "width": 508.744629,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "during the spatial reflow step.",
+              "width": 143.080566,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 704.890625,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Story layout simulation proceeds in multiple phases: first a geometry pass that places all anchored floats ",
+              "width": 509.92627,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and computes the collision field, then a content pass that reflows each paragraph and heading element ",
+              "width": 503.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "against the field, and finally a pagination pass that splits the simulated story into concrete page ",
+              "width": 463.503906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "assignments.",
+              "width": 64.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 459,
+        "y": 771.379688,
+        "w": 96,
+        "h": 30.620312,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 771.379688,
+        "w": 515,
+        "h": 28.6,
+        "lines": [
+          [
+            {
+              "text": "The collider field is built once per story simulation pass and shared across all paragraph ",
+              "width": 429.83252,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "reflo",
+              "width": 21.398438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "w calls within that pass. Cache invalidation occurs when a new float anchor is placed ",
+              "width": 415.164063,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 7,
+    "width": 595,
+    "height": 842,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 459,
+        "y": 40,
+        "w": 96,
+        "h": 65.379688,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 40,
+        "w": 515,
+        "h": 29.889063,
+        "lines": [
+          [
+            {
+              "text": "that overlaps the scan range of a previously reflowed paragraph, triggering a partial ",
+              "width": 407.848633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "re-simulation from the invalidation point forward.",
+              "width": 234.163574,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 77.889062,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Zone continuations allow a single logical text frame to span multiple physical pages ",
+              "width": 407.225586,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "while maintaining a consistent left and right margin offset from the page boundary. The ",
+              "width": 423.333496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "zone",
+              "width": 23.853027,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "-continue system is separate from the story simulation and operates at a higher level of abstraction in the ",
+              "width": 512.987793,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "document processing pipeline.",
+              "width": 148.591309,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 144.378125,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Glyph metrics are resolved through a measurement dispatch system that batches all pending ",
+              "width": 454.899414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measurement requests before committing to a layout pass. This avoids the overhead of individual ",
+              "width": 476.308594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measurement round-trips and allows the engine to pipeline measurement work with layout computation ",
+              "width": 503.212402,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for improved throughput.",
+              "width": 119.845215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 210.867188,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The font registry maintains a cache of resolved font descriptors keyed by family name and variant. When ",
+              "width": 511.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a document requests a fallback font family the registry resolves the chain in order and returns the first ",
+              "width": 495.854004,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "descriptor that satisfies the requested weight and style constraints according to the CSS font-matching ",
+              "width": 500.763184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "algorithm.",
+              "width": 48.296875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 277.35625,
+        "w": 140,
+        "h": 130,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 277.35625,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Color management in the output renderer maps document-space colors to the target ",
+              "width": 413.337891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ICC profile using a lookup table that is precomputed at document load time. Spot colors",
+              "width": 424.955566,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "declared in the document palette are preserved as named references through the ",
+              "width": 398.690918,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "layout pipeline and only resolved to CMYK during the final rendering step.",
+              "width": 358.327148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 343.845312,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Master pages define a repeating template that is applied to every output ",
+              "width": 352.83252,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page in the document. The template can include page headers, footers, ",
+              "width": 351.006348,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "background graphics, and column grid definitions. Story elements placed ",
+              "width": 357.091797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "on master pages are excluded from the main content flow and rendered at ",
+              "width": 363.821777,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the bottom of the z-order stack.",
+              "width": 152.238281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 424.634375,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Overflow text that cannot fit in its assigned zone is placed into an overflow chain and will be picked up by ",
+              "width": 511.784668,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the next available continuation zone in document order. The overflow chain preserves the full paragraph ",
+              "width": 507.530762,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "context including style inheritance and hyphenation state so that the continuation appears seamless to ",
+              "width": 500.209961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the reader.",
+              "width": 52.59375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 491.123437,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Vertical rhythm alignment ensures that the baseline grid of the main text column is consistent across ",
+              "width": 489.741699,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "adjacent columns and across page boundaries. The engine resolves baseline snapping after the ",
+              "width": 470.862305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph reflow phase and before the final line positioning step, using the document-level leading value ",
+              "width": 511.838379,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "as the grid pitch.",
+              "width": 80.711426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 405,
+        "y": 557.6125,
+        "w": 150,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 557.6125,
+        "w": 515,
+        "h": 87.089062,
+        "lines": [
+          [
+            {
+              "text": "Typography is the art and technique of arranging type to make written language ",
+              "width": 389.522461,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "legible, ",
+              "width": 37.914551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "readable, and appealing when displayed. The arrangement of type involves ",
+              "width": 369.354004,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sel",
+              "width": 14.061523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "ecting typefaces, point sizes, line lengths, line spacing, and letter spacing,",
+              "width": 359.546387,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "as well as adjusting the space between pairs of letters. The term ",
+              "width": 316.10498,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "typography is also applied to the style, arrangement, and appearance of ",
+              "width": 352.837891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the letters, numbers, and symbols created by the process.",
+              "width": 282.471191,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 652.701562,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "When text flows around an irregular polygon obstacle the engine must ",
+              "width": 343.642578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "determine at each line band exactly how much horizontal space is available ",
+              "width": 369.934082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "on each side of the exclusion zone. The broadphase narrows the candidate set using a spatial index and ",
+              "width": 511.226074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the narrowphase computes the precise chord width for each band using the polygon edge intersection ",
+              "width": 498.367676,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "algorithm.",
+              "width": 48.296875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 733.490625,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The spatial reflow system handles multiple simultaneous exclusions on the same page, including circles, ",
+              "width": 509.920898,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "polygons, and exclusion assemblies composed of overlapping primitives. Each paragraph element ",
+              "width": 480.600098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "entering the story layout loop is evaluated against the current collision field before lines are materialized ",
+              "width": 506.896973,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and text is fitted.",
+              "width": 80.099121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 8,
+    "width": 595,
+    "height": 842,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 40,
+        "y": 40,
+        "w": 515,
+        "h": 44.189063,
+        "lines": [
+          [
+            {
+              "text": "Column gaps and exclusion zones interact through the same spatial field so a float that crosses a column ",
+              "width": 514.228516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boundary correctly clips both columns at once. The engine resolves these interactions during the story ",
+              "width": 499.543945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation phase before any final line positions are committed to the output page.",
+              "width": 395.01709,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 92.189063,
+        "w": 160,
+        "h": 90,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 92.189063,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Optical underhang",
+              "width": 89.895996,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "correction applies a small fractional adjustment to lines whose terminal glyph ",
+              "width": 376.01416,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "would otherwise land on an optically heavy stroke. This correction is ",
+              "width": 333.82959,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "computed after the geometric line-width constraint is satisfied and ",
+              "width": 322.217285,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "before the line token sequence is finalized for the output renderer.",
+              "width": 319.821777,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 158.678125,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Paragraph continuation across page boundaries requires the story ",
+              "width": 325.311035,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "simulation to track",
+              "width": 88.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the residual content stack and replay it against a fresh page geometry. Polygon ",
+              "width": 387.470703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "floats that appear near the bottom of a page must be carried forward if the story continues and their ",
+              "width": 485.498535,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "bounding box would be clipped by the page margin.",
+              "width": 251.345703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 225.167188,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The line layout subsystem resolves each token sequence against the available width constraint, ",
+              "width": 467.768555,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "producing a set of line breaks that respect soft-wrap opportunities while avoiding widows and orphans ",
+              "width": 497.116211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "according to the document-level keep rules. The resolver uses a greedy forward pass followed by a ",
+              "width": 485.477051,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "backward widow-correction sweep.",
+              "width": 170.569824,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 291.65625,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Advanced hyphenation policies allow the engine to break words at syllable boundaries when the available",
+              "width": 513.057617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "width would otherwise force an unacceptably ragged right margin. The hyphenation dictionary lookup is ",
+              "width": 504.458496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "integrated into the token resolution phase so that the cost of each candidate break point is evaluated in ",
+              "width": 503.282227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "context.",
+              "width": 38.521484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 425,
+        "y": 358.145312,
+        "w": 130,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 358.145312,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "The kern table for a given font pair is consulted for every adjacent glyph ",
+              "width": 351.586426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boundary during the line-level measurement phase. Ligature substitution is ",
+              "width": 366.270996,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "applied before kerning so that the effective glyph sequence seen by the kern ",
+              "width": 374.660645,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lookup reflects the final rendered form of the text rather than the raw ",
+              "width": 334.458008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "character sequence.",
+              "width": 99.671387,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 438.934375,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Floating images with wrap mode set to around generate a soft exclusion zone ",
+              "width": 380.327148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "whose boundary is derived from the declared shape definition. For polygon ",
+              "width": 366.883301,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shapes the boundary is the raw SVG path data scaled to the image bounding ",
+              "width": 377.915527,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "box and offset to the image anchor point within the story flow coordinate system.",
+              "width": 390.510742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 505.423437,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "When the microLanePolicy is set to typography, the engine rejects spatial lanes narrower than a ",
+              "width": 468.772949,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "configurable minimum token width. This prevents the layout from placing single-character fragments ",
+              "width": 488.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inside tight polygon pockets where they would be illegible in print. The policy is evaluated per-paragraph ",
+              "width": 508.744629,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "during the spatial reflow step.",
+              "width": 143.080566,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 571.9125,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Story layout simulation proceeds in multiple phases: first a geometry pass that places all anchored floats ",
+              "width": 509.92627,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and computes the collision field, then a content pass that reflows each paragraph and heading element ",
+              "width": 503.271484,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "against the field, and finally a pagination pass that splits the simulated story into concrete page ",
+              "width": 463.503906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "assignments.",
+              "width": 64.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 40,
+        "y": 638.401563,
+        "w": 160,
+        "h": 120,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 638.401563,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "The ",
+              "width": 22.010742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "collider field is built once per story simulation pass and shared across all ",
+              "width": 354.615723,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "parag",
+              "width": 28.133789,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "raph reflow calls within that pass. Cache invalidation occurs when a new float ",
+              "width": 378.474121,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "anchor is placed that overlaps the scan range of a previously reflowed ",
+              "width": 343.642578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph, triggering a partial re-simulation from the invalidation point ",
+              "width": 341.794922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "forward.",
+              "width": 39.735352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 719.190625,
+        "w": 515,
+        "h": 72.789063,
+        "lines": [
+          [
+            {
+              "text": "Zone continuations allow a single logical text frame to span multiple ",
+              "width": 331.401855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "physical pages while maintaining a consistent left and right margin ",
+              "width": 325.289551,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "offset from the page boundary. The zone-continue system is separate ",
+              "width": 340.785156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "from the story simulation and operates at a higher level of abstraction in the document processing ",
+              "width": 477.538574,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "pipeline.",
+              "width": 40.976074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 9,
+    "width": 595,
+    "height": 842,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 40,
+        "y": 40,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "Glyph metrics are resolved through a measurement dispatch system that batches all pending ",
+              "width": 454.899414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measurement requests before committing to a layout pass. This avoids the overhead of individual ",
+              "width": 476.308594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measurement round-trips and allows the engine to pipeline measurement work with layout computation ",
+              "width": 503.212402,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "for improved throughput.",
+              "width": 119.845215,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 40,
+        "y": 106.489063,
+        "w": 515,
+        "h": 58.489063,
+        "lines": [
+          [
+            {
+              "text": "The font registry maintains a cache of resolved font descriptors keyed by family name and variant. When ",
+              "width": 511.134766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "a document requests a fallback font family the registry resolves the chain in order and returns the first ",
+              "width": 495.854004,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "descriptor that satisfies the requested weight and style constraints according to the CSS font-matching ",
+              "width": 500.763184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "algorithm.",
+              "width": 48.296875,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

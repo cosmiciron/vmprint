@@ -523,6 +523,7 @@ export class LayoutSession {
             getRegisteredActors: () => this.kernel.actorRegistry,
             getFragmentTransitionSourceIds: () => this.kernel.getFragmentTransitionSourceIds(),
             getFragmentTransitionsBySource: (sourceActorId) => this.kernel.getFragmentTransitionsBySource(sourceActorId),
+            resolveChunkOriginWorldY: (chunkIndex, chunkHeight) => this.resolveChunkOriginWorldY(chunkIndex, chunkHeight),
             notifyActorSpawn: (actor) => this.notifyActorSpawn(actor)
         });
         this.placementSessionRuntime = new PlacementSessionRuntime(

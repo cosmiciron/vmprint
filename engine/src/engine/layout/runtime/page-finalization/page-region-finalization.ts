@@ -102,7 +102,7 @@ export class PageRegionCollaborator implements Collaborator {
 
         const capture = host.createPageCaptureState({
             pageIndex: page.index,
-            worldTopY: page.index * page.height,
+            worldTopY: host.resolveChunkOriginWorldY(page.index, page.height),
             pageWidth: page.width,
             pageHeight: page.height,
             margins: this.config.layout.margins,
