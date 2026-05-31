@@ -86,17 +86,21 @@ export function reflowTextElementAgainstSpatialField(options: SpatialFieldReflow
     const queryZIndex = Number.isFinite(Number(style.zIndex))
         ? Number(style.zIndex)
         : (Number.isFinite(Number(authoredStyle?.zIndex)) ? Number(authoredStyle?.zIndex) : 0);
+    const richSegments = resolveCachedSpatialRichSegments(anyProcessor, flowBox, options.element, style);
+    if (!Array.isArray(richSegments) || richSegments.length === 0) return null;
     const fontSize = Number(style.fontSize || anyProcessor.config.layout.fontSize);
     const lineHeightRatio = Number(style.lineHeight || anyProcessor.config.layout.lineHeight);
-    const uniformLH = lineHeightRatio * fontSize;
-    const nominalTextBandHeight = Math.max(1, fontSize);
+    const maxRichFontSize = richSegments.reduce((max, segment) => Math.max(
+        max,
+        Number((segment as { fontSize?: unknown })?.fontSize || segment?.style?.fontSize || fontSize)
+    ), fontSize);
+    const uniformLH = lineHeightRatio * maxRichFontSize;
+    const nominalTextBandHeight = Math.max(1, maxRichFontSize);
     const nominalLeading = Math.max(0, uniformLH - nominalTextBandHeight);
     const containmentBandInset = nominalLeading / 2;
     const font = anyProcessor.resolveMeasurementFontForStyle(style);
     const letterSpacing = Number(style.letterSpacing || 0);
     const textIndent = Number(style.textIndent || 0);
-    const richSegments = resolveCachedSpatialRichSegments(anyProcessor, flowBox, options.element, style);
-    if (!Array.isArray(richSegments) || richSegments.length === 0) return null;
     const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? 0);
     const paddingRight = LayoutUtils.validateUnit(style.paddingRight ?? style.padding ?? 0);
     const paddingTop = LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? 0);
