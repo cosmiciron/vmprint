@@ -23,6 +23,7 @@ export type MeasuredTextResult = {
         xOffset: number;
         yOffset: number;
     }>;
+    rightInkOverhang?: number;
     ascent: number;
     descent: number;
 };

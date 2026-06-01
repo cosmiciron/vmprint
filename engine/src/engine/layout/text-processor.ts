@@ -386,7 +386,14 @@ export class TextProcessor extends FontProcessor {
                 lineHeight: ctxLineHeight,
                 lineHeightMode: ctxLineHeightMode
             });
-            const width = measured.width;
+            const normalizedStyle = LayoutUtils.normalizeFontStyle(populateSegment?.style?.fontStyle);
+            const measuredRightInkOverhang = Math.max(0, Number(measured.rightInkOverhang || 0));
+            const italicRunEndGuard = normalizedStyle === 'italic' && !!(populateSegment as any)?.reserveItalicRunEndInk && /\S$/u.test(text)
+                ? Math.max(measuredRightInkOverhang, Math.min(5, Math.max(1, Number(measurementFontSize || 12) * 0.22)))
+                : 0;
+            // Italic ink can extend beyond the advance width. Reserve that run-end ink
+            // so the following styled run does not visually consume the inter-word gap.
+            const width = measured.width + italicRunEndGuard;
             const glyphs = measured.glyphs;
             const shapedGlyphs = measured.shapedGlyphs;
             const { ascent, descent } = measured;
@@ -694,6 +701,37 @@ export class TextProcessor extends FontProcessor {
         });
     }
 
+    private shouldReserveItalicRunEndInk(tokens: ReturnType<typeof buildRichWrapTokens>, index: number): boolean {
+        const token = tokens[index];
+        if (!token || token.kind !== 'segment') return false;
+        const current = token.segment;
+        if (LayoutUtils.normalizeFontStyle(current.style?.fontStyle) !== 'italic') return false;
+        if (!/\S$/u.test(current.text || '')) return false;
+
+        for (let nextIndex = index + 1; nextIndex < tokens.length; nextIndex++) {
+            const nextToken = tokens[nextIndex];
+            if (!nextToken || nextToken.kind !== 'segment') return false;
+            const next = nextToken.segment;
+            const sameRun =
+                current.fontFamily === next.fontFamily &&
+                current.direction === next.direction &&
+                this.styleSignatureCache.areStylesEquivalent(current.style, next.style);
+            if (!sameRun) return true;
+            if ((next.text || '').trim().length > 0) return false;
+        }
+
+        return false;
+    }
+
+    private markItalicRunEndInkGuards(tokens: ReturnType<typeof buildRichWrapTokens>): void {
+        for (let index = 0; index < tokens.length; index++) {
+            const token = tokens[index];
+            if (token?.kind === 'segment' && this.shouldReserveItalicRunEndInk(tokens, index)) {
+                (token.segment as any).reserveItalicRunEndInk = true;
+            }
+        }
+    }
+
     /**
      * Specialized word-wrapper for rich text segments.
      */
@@ -793,6 +831,7 @@ export class TextProcessor extends FontProcessor {
                 session.recordProfile?.('flowWordSegmentMs', durationMs);
             } : undefined
         });
+        this.markItalicRunEndInkGuards(tokens);
         session?.recordProfile?.('flowBuildTokensCalls', 1);
         if (session) session.recordProfile?.('flowBuildTokensMs', performance.now() - buildTokensT0);
         const wrapStreamT0 = session ? performance.now() : 0;
