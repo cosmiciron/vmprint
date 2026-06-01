@@ -1199,35 +1199,35 @@
           [
             {
               "text": "Inline italic sweep: ",
-              "width": 103.356797,
+              "width": 100.716797,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
             },
             {
               "text": "[100] ",
-              "width": 30.023438,
+              "width": 30.743437,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
             },
             {
               "text": "[300] ",
-              "width": 30.023438,
+              "width": 30.743437,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
             },
             {
               "text": "[500] ",
-              "width": 30.023438,
+              "width": 30.743437,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
             },
             {
               "text": "[700] ",
-              "width": 31.347656,
+              "width": 32.067656,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -1350,7 +1350,7 @@
           [
             {
               "text": "Italic 12pt",
-              "width": 54.003281,
+              "width": 52.083281,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

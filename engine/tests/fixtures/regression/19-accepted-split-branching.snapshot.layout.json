@@ -102,7 +102,7 @@
           [
             {
               "text": "Expected: the first long paragraph splits mid-page with exactly one A marker pair. The ",
-              "width": 343.669922,
+              "width": 343.83252,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -111,7 +111,7 @@
           [
             {
               "text": "second seam that follows later must remain unaffected by the first seam's preview cycle.",
-              "width": 351.206543,
+              "width": 351.369141,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -492,7 +492,7 @@
           [
             {
               "text": "Expected: the second split also emits exactly one B marker pair. If the first preview leaks ",
-              "width": 353.658691,
+              "width": 353.821289,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""

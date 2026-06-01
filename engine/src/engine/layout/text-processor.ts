@@ -360,7 +360,8 @@ export class TextProcessor extends FontProcessor {
         const ctxScriptClass = populateSegment?.scriptClass || 'none';
         const ctxLineHeight = Number(populateSegment?.style?.lineHeight || this.config.layout.lineHeight || 0);
         const ctxLineHeightMode = this.config.layout.lineHeightMode || 'print';
-        const cacheKey = `${fontKey}-${measurementFontSize}-${letterSpacing}-${ctxScriptClass}-${ctxDirection}-${ctxLineHeightMode}-${ctxLineHeight}-${text}`;
+        const ctxReserveItalicRunEndInk = (populateSegment as any)?.reserveItalicRunEndInk ? 'italic-boundary' : 'none';
+        const cacheKey = `${fontKey}-${measurementFontSize}-${letterSpacing}-${ctxScriptClass}-${ctxDirection}-${ctxLineHeightMode}-${ctxLineHeight}-${ctxReserveItalicRunEndInk}-${text}`;
 
         const cached = this.runtime.measurementCache.get(cacheKey);
         if (cached) {
@@ -388,8 +389,9 @@ export class TextProcessor extends FontProcessor {
             });
             const normalizedStyle = LayoutUtils.normalizeFontStyle(populateSegment?.style?.fontStyle);
             const measuredRightInkOverhang = Math.max(0, Number(measured.rightInkOverhang || 0));
+            const fallbackItalicRunEndGuard = Math.min(1.25, Math.max(0.5, Number(measurementFontSize || 12) * 0.06));
             const italicRunEndGuard = normalizedStyle === 'italic' && !!(populateSegment as any)?.reserveItalicRunEndInk && /\S$/u.test(text)
-                ? Math.max(measuredRightInkOverhang, Math.min(5, Math.max(1, Number(measurementFontSize || 12) * 0.22)))
+                ? (measuredRightInkOverhang > 0 ? measuredRightInkOverhang : fallbackItalicRunEndGuard)
                 : 0;
             // Italic ink can extend beyond the advance width. Reserve that run-end ink
             // so the following styled run does not visually consume the inter-word gap.
@@ -790,8 +792,8 @@ export class TextProcessor extends FontProcessor {
             const cacheKey = `${familyName}|${resolvedWeight}|${resolvedStyle}|${fontSize}`;
             const cached = richFontInfoCache.get(cacheKey);
             if (cached) return cached;
-            const resolved = resolveRichFontInfo(seg, defaultSize, this.config.layout.fontFamily, (resolvedFamilyName, weight) =>
-                this.resolveLoadedFamilyFont(resolvedFamilyName, weight)
+            const resolved = resolveRichFontInfo(seg, defaultSize, this.config.layout.fontFamily, (resolvedFamilyName, weight, style) =>
+                this.resolveLoadedFamilyFont(resolvedFamilyName, weight, style)
             );
             richFontInfoCache.set(cacheKey, resolved);
             return resolved;
