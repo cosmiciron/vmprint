@@ -490,16 +490,16 @@ export class LayoutProcessor extends TextProcessor {
         return Math.max(0, contentWidth + LayoutUtils.getHorizontalInsets(style));
     }
 
-    private getUniformLineHeight(lines: RichLine[], style: ElementStyle): number {
-        if (!lines || lines.length === 0) return 0;
-        const totalHeight = this.calculateLinesHeight(lines, style);
-        return totalHeight > 0 ? (totalHeight / lines.length) : 0;
+    private getLineEffectiveHeight(line: RichLine | undefined, style: ElementStyle): number {
+        if (!line) return 0;
+        const baseFontSize = Number(style.fontSize || this.config.layout.fontSize);
+        const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
+        return this.calculateEffectiveLineHeight(line, baseFontSize, lineHeight);
     }
 
     private calculateLineBlockHeight(lines: RichLine[], style: ElementStyle, lineYOffsets?: number[]): number {
         if (!lines || lines.length === 0) return 0;
-        const uniformLineHeight = this.getUniformLineHeight(lines, style);
-        if (!Array.isArray(lineYOffsets) || lineYOffsets.length === 0 || uniformLineHeight <= 0) {
+        if (!Array.isArray(lineYOffsets) || lineYOffsets.length === 0) {
             return this.calculateLinesHeight(lines, style);
         }
 
@@ -507,7 +507,7 @@ export class LayoutProcessor extends TextProcessor {
         for (let idx = 0; idx < lines.length; idx++) {
             const candidate = lineYOffsets[idx];
             const yOffset = Number.isFinite(candidate) ? Math.max(0, Number(candidate)) : 0;
-            const bottom = yOffset + uniformLineHeight;
+            const bottom = yOffset + this.getLineEffectiveHeight(lines[idx], style);
             if (bottom > maxBottom) maxBottom = bottom;
         }
         return maxBottom;

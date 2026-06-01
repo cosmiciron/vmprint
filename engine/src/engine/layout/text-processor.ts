@@ -516,22 +516,19 @@ export class TextProcessor extends FontProcessor {
 
     /**
      * Calculates the total height of a set of wrapped lines.
-     * Uses a UNIFORM line height across all lines in the element (the max
-     * effective height of any single line) so that mixed-script paragraphs
-     * have consistent vertical spacing throughout.
+     *
+     * Print editors conventionally let a large inline run enlarge the line it
+     * sits on, not every line in the paragraph. Baseline stability is handled
+     * inside each line's effective height calculation.
      */
     protected calculateLinesHeight(lines: RichLine[], style: any): number {
         const baseFontSize = Number(style.fontSize || this.config.layout.fontSize);
         const lineHeight = Number(style.lineHeight || this.config.layout.lineHeight);
 
-        // First pass: find the max effective line height across ALL lines
-        let uniformHeight = 0;
-        for (const line of lines) {
-            const h = this.calculateEffectiveLineHeight(line, baseFontSize, lineHeight);
-            if (h > uniformHeight) uniformHeight = h;
-        }
-
-        return lines.length * uniformHeight;
+        return lines.reduce(
+            (total, line) => total + this.calculateEffectiveLineHeight(line, baseFontSize, lineHeight),
+            0
+        );
     }
 
     protected splitByScriptType(text: string): { text: string, isCJK: boolean }[] {

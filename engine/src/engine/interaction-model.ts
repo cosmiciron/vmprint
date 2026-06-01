@@ -368,9 +368,7 @@ const buildInteractionTarget = (
         const metric = paragraphMetrics.lineMetrics[lineIndex];
         const actualLineFontSize = metric?.lineFontSize ?? baseFontSize;
         const referenceAscentScale = metric?.referenceAscentScale ?? paragraphMetrics.paragraphReferenceAscentScale;
-        const effectiveLineHeight = paragraphMetrics.paragraphHasInlineObjects
-            ? (metric?.effectiveLineHeight ?? paragraphMetrics.uniformLineHeight)
-            : paragraphMetrics.uniformLineHeight;
+        const effectiveLineHeight = metric?.effectiveLineHeight ?? paragraphMetrics.uniformLineHeight;
         const nominalLineHeight = actualLineFontSize * lineHeight;
         const nominalLeading = nominalLineHeight - actualLineFontSize;
         const vOffset = nominalLeading / 2;

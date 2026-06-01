@@ -62,9 +62,7 @@ export const drawRichLines = (
         const actualLineFontSize = paragraphMetrics.lineMetrics[lineIndex]?.lineFontSize ?? fontSize;
         const lineReferenceAscentScale =
             paragraphMetrics.lineMetrics[lineIndex]?.referenceAscentScale ?? paragraphMetrics.paragraphReferenceAscentScale;
-        const effectiveLineHeight = paragraphMetrics.paragraphHasInlineObjects
-            ? (paragraphMetrics.lineMetrics[lineIndex]?.effectiveLineHeight ?? paragraphMetrics.uniformLineHeight)
-            : paragraphMetrics.uniformLineHeight;
+        const effectiveLineHeight = paragraphMetrics.lineMetrics[lineIndex]?.effectiveLineHeight ?? paragraphMetrics.uniformLineHeight;
         const nominalLineHeight = actualLineFontSize * lineHeight;
         const nominalLeading = nominalLineHeight - actualLineFontSize;
         // Baseline alignment should be based on nominal leading only.
