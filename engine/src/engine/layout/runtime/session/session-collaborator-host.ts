@@ -17,6 +17,7 @@ export type SessionCollaboratorHostDeps = {
     recordProfile(metric: RuntimeProfileMetric, delta: number): void;
     recordKeepWithNextPrepare(actorKind: string, durationMs: number): void;
     publishActorSignal(signal: ActorSignalDraft): ActorSignal;
+    getActorSignals(topic?: string): readonly ActorSignal[];
     getPaginationLoopState(): PaginationLoopState | null;
     getActorSignalSequence(): number;
     getKeepWithNextPlan(actorId: string, signature?: string | null): KeepWithNextFormationPlan | undefined;
@@ -46,6 +47,10 @@ export class SessionCollaboratorHost implements CollaboratorHost {
 
     publishActorSignal(signal: ActorSignalDraft): ActorSignal {
         return this.deps.publishActorSignal(signal);
+    }
+
+    getActorSignals(topic?: string): readonly ActorSignal[] {
+        return this.deps.getActorSignals(topic);
     }
 
     getActorSignalSequence(): number {

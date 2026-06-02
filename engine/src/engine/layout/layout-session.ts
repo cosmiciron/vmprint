@@ -511,6 +511,7 @@ export class LayoutSession {
             recordProfile: (metric, delta) => this.recordProfile(metric, delta),
             recordKeepWithNextPrepare: (actorKind, durationMs) => this.recordKeepWithNextPrepare(actorKind, durationMs),
             publishActorSignal: (signal) => this.liveRuntimeHost.publishActorSignal(signal),
+            getActorSignals: (topic) => this.getActorSignals(topic),
             getPaginationLoopState: () => this.liveRuntimeHost.getPaginationLoopState(),
             getActorSignalSequence: () => this.actorCommunicationRuntime.getActorSignalSequence(),
             getKeepWithNextPlan: (actorId, signature) => this.aiRuntime.getKeepWithNextPlan(actorId, signature),

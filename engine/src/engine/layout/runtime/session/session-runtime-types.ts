@@ -108,6 +108,7 @@ export interface CollaboratorHost {
     // Script reads
     getScriptRegions(): readonly ScriptRegionRef[];
     findScriptRegionByName(name: string): ScriptRegionRef | null;
+    getActorSignals(topic?: string): readonly ActorSignal[];
 
     // Page finalization (PageRegionCollaborator)
     allocateLogicalPageNumber(usesLogicalNumbering: boolean): number | null;
