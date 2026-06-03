@@ -318,7 +318,14 @@ export class StoryPackager implements PackagerUnit {
         this.continuationOf = resolvedIdentity.continuationOf;
         this.storyActorEntries = this.normalizedStory.children.map((child) => ({
             ...child,
-            actor: buildPackagerForElement(child.element, child.childIndex, this.processor)
+            actor: buildPackagerForElement(
+                child.element,
+                child.childIndex,
+                this.processor,
+                undefined,
+                undefined,
+                [this.storyIndex, child.childIndex]
+            )
         }));
     }
 
@@ -2142,7 +2149,14 @@ export class StoryPackager implements PackagerUnit {
         this.normalizedStory = normalizeStoryElement(this.storyElement);
         this.storyActorEntries = this.normalizedStory.children.map((child, index) => ({
             ...child,
-            actor: previousActors[index] ?? buildPackagerForElement(child.element, child.childIndex, this.processor)
+            actor: previousActors[index] ?? buildPackagerForElement(
+                child.element,
+                child.childIndex,
+                this.processor,
+                undefined,
+                undefined,
+                [this.storyIndex, child.childIndex]
+            )
         }));
     }
 

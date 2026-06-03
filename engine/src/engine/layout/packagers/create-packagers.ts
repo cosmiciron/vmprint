@@ -44,13 +44,15 @@ export function buildPackagerForElement(
     index: number,
     processor: LayoutProcessor,
     elements?: Element[],
-    externalFactory?: ExternalPackagerFactory
+    externalFactory?: ExternalPackagerFactory,
+    identityPath?: number[]
 ): PackagerUnit {
     if (externalFactory) {
         const result = externalFactory(item, index, processor);
         if (result !== null) return result;
     }
-    const identity = createElementPackagerIdentity(item, [index]);
+    const path = Array.isArray(identityPath) && identityPath.length ? identityPath : [index];
+    const identity = createElementPackagerIdentity(item, path);
     if (item.type === 'story') {
         return new StoryPackager(item, processor, index, undefined, undefined, identity);
     }
@@ -65,10 +67,10 @@ export function buildPackagerForElement(
     }
     const shaper = processor as unknown as ElementShaper;
     if (isTableElement(item)) {
-        const flowBox = shaper.shapeElement(item, { path: [index] });
+        const flowBox = shaper.shapeElement(item, { path });
         return new SpatialGridPackager(processor, flowBox, identity);
     }
-    const normalizedFlowBlock = shaper.normalizeFlowBlock(item, { path: [index] });
+    const normalizedFlowBlock = shaper.normalizeFlowBlock(item, { path });
     const flowBox = shaper.shapeNormalizedFlowBlock(normalizedFlowBlock);
     if (item.type === 'toc') {
         return new TocPackager(processor, flowBox, identity);
@@ -83,7 +85,7 @@ export function buildPackagerForElement(
         (typeof item.properties?.onMessage === 'string' && item.properties.onMessage.length > 0)
         || !!(scriptHost && scriptHost.hasElementHandler(sourceId, 'onMessage'));
     if (scriptHost && hasMessageHandler) {
-        return new ScriptedFlowBoxPackager(processor, flowBox, scriptHost, item, identity, [index], elements || [item]);
+        return new ScriptedFlowBoxPackager(processor, flowBox, scriptHost, item, identity, path, elements || [item]);
     }
     const flowPackager = ((item.properties?.space ?? item.properties?.spatialField) as { kind?: string } | undefined)?.kind === 'contain'
         ? new ContainedFlowPackager(processor, flowBox, identity)
