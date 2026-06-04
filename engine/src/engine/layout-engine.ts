@@ -49,6 +49,17 @@ import {
 } from './layout/simulation-report';
 import { EngineRuntime } from './runtime';
 import { normalizeObservationResult } from './layout/packagers/packager-types';
+import {
+    buildRuntimeIntentTopic,
+    cloneRuntimeElementSourceSnapshot,
+    cloneRuntimeJsonValue,
+    isRuntimeRangeTarget,
+    normalizeRuntimeFormattingPatch,
+    restoreRuntimeElementSourceSnapshot,
+    runtimeElementSourceSnapshotsEqual,
+    type RuntimeFormattingPatch,
+    type RuntimeFormattingTarget
+} from './layout/runtime-formatting';
 
 const DEFAULT_ENGINE_LAYOUT_CONFIG: LayoutConfig = {
     layout: {
@@ -74,27 +85,6 @@ type RuntimeIntent = {
     restoreSnapshot?: unknown;
 };
 
-type RuntimeFormattingPatch = {
-    textAlign?: unknown;
-    fontFamily?: unknown;
-    fontSize?: unknown;
-    fontWeight?: unknown;
-    fontStyle?: unknown;
-    lineHeight?: unknown;
-    marginLeft?: unknown;
-    marginRight?: unknown;
-    textIndent?: unknown;
-};
-
-type RuntimeFormattingTarget = {
-    sourceId?: unknown;
-    containerKey?: unknown;
-    boxTargetId?: unknown;
-    actorId?: unknown;
-    sourceStart?: unknown;
-    sourceEnd?: unknown;
-};
-
 type RuntimeActor = {
     actorId?: string;
     sourceId?: string;
@@ -103,6 +93,7 @@ type RuntimeActor = {
     rebuildLiveFlowBox?(): boolean;
     updateCommittedState?(context: Record<string, unknown>): unknown;
     observeCommittedSignals?(context: Record<string, unknown>): unknown;
+    getHostedRuntimeActors?(): readonly RuntimeActor[];
     handlesHostedRuntimeActor?(targetActor: RuntimeActor): boolean;
     refreshHostedRuntimeActor?(targetActor: RuntimeActor): boolean;
 };
@@ -129,51 +120,6 @@ type RuntimeIntentResult = {
     replay?: unknown;
 };
 
-const RUNTIME_INTENT_TOPIC = 'runtime:intent';
-
-function normalizeRuntimeIntentSourceId(sourceId: unknown): string {
-    const raw = String(sourceId || '').trim();
-    return LayoutUtils.normalizeAuthorSourceId(raw) || raw;
-}
-
-function buildRuntimeIntentTopic(sourceId: unknown): string {
-    const normalized = normalizeRuntimeIntentSourceId(sourceId);
-    return normalized ? `${RUNTIME_INTENT_TOPIC}:${normalized}` : RUNTIME_INTENT_TOPIC;
-}
-
-function isRuntimeRangeTarget(target: RuntimeFormattingTarget = {}): boolean {
-    const start = Number(target.sourceStart);
-    const end = Number(target.sourceEnd);
-    return Number.isFinite(start) && Number.isFinite(end) && end > start;
-}
-
-function cloneRuntimeJsonValue<T>(value: T): T {
-    if (value === undefined) return value;
-    return JSON.parse(JSON.stringify(value));
-}
-
-function cloneRuntimeElementSourceSnapshot(element: Element): Record<string, unknown> {
-    const snapshot: Record<string, unknown> = {};
-    for (const key of ['type', 'content', 'children', 'properties'] as const) {
-        if (Object.prototype.hasOwnProperty.call(element || {}, key)) {
-            snapshot[key] = cloneRuntimeJsonValue((element as any)[key]);
-        }
-    }
-    return snapshot;
-}
-
-function restoreRuntimeElementSourceSnapshot(element: Element, snapshot: Record<string, unknown> = {}): boolean {
-    if (!element || typeof element !== 'object') return false;
-    for (const key of ['type', 'content', 'children', 'properties'] as const) {
-        if (Object.prototype.hasOwnProperty.call(snapshot, key)) {
-            (element as any)[key] = cloneRuntimeJsonValue(snapshot[key]);
-        } else {
-            delete (element as any)[key];
-        }
-    }
-    return true;
-}
-
 function findRuntimeHostActor(
     actors: readonly RuntimeActor[],
     targetActor: RuntimeActor
@@ -185,6 +131,25 @@ function findRuntimeHostActor(
         }
     }
     return null;
+}
+
+function collectRuntimeFormattingActors(actors: readonly RuntimeActor[]): RuntimeActor[] {
+    const collected: RuntimeActor[] = [];
+    const seen = new Set<string>();
+    const visit = (actor: RuntimeActor | null | undefined): void => {
+        if (!actor) return;
+        const actorKey = String(actor.actorId || actor.sourceId || '').trim();
+        if (actorKey && seen.has(actorKey)) return;
+        if (actorKey) seen.add(actorKey);
+        collected.push(actor);
+        for (const hostedActor of actor.getHostedRuntimeActors?.() ?? []) {
+            visit(hostedActor);
+        }
+    };
+    for (const actor of actors) {
+        visit(actor);
+    }
+    return collected;
 }
 
 function redrawRuntimeActorThroughHosts(
@@ -208,7 +173,7 @@ function redrawRuntimeActorThroughHosts(
     return { visibleActor, redraw };
 }
 
-function refreshRuntimeActorHostChain(actors: readonly RuntimeActor[], actor: RuntimeActor): void {
+function refreshRuntimeActorHostChain(actors: readonly RuntimeActor[], actor: RuntimeActor): RuntimeActor {
     let current = actor;
     const initialActorId = String(actor.actorId || actor.sourceId || '');
     const visitedActorIds = new Set<string>(initialActorId ? [initialActorId] : []);
@@ -220,6 +185,7 @@ function refreshRuntimeActorHostChain(actors: readonly RuntimeActor[], actor: Ru
         if (!host.refreshHostedRuntimeActor?.(current)) break;
         current = host;
     }
+    return current;
 }
 
 /**
@@ -284,6 +250,9 @@ export class LayoutEngine extends LayoutProcessor {
         if (kind === 'formatting' || kind === 'format' || kind === 'apply-formatting') {
             return this.applyRuntimeFormattingIntentInternal(elements, intent);
         }
+        if (kind === 'formatting-restore' || kind === 'restore-formatting') {
+            return this.applyRuntimeFormattingRestoreIntentInternal(elements, intent);
+        }
         return {
             changed: false,
             reason: 'unsupported-runtime-intent'
@@ -300,26 +269,14 @@ export class LayoutEngine extends LayoutProcessor {
         });
     }
 
-    private normalizeRuntimeFormattingPatch(patch: RuntimeFormattingPatch = {}): Record<string, unknown> {
-        const out: Record<string, unknown> = {};
-        if (['left', 'center', 'right', 'justify'].includes(String(patch.textAlign))) {
-            out.textAlign = String(patch.textAlign);
-            if (patch.textAlign === 'justify') {
-                out.justifyEngine = 'advanced';
-            }
-        }
-        if (typeof patch.fontFamily === 'string' && patch.fontFamily.trim()) {
-            out.fontFamily = patch.fontFamily.trim();
-        }
-        for (const key of ['fontSize', 'fontWeight', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent'] as const) {
-            if (Number.isFinite(Number(patch[key]))) {
-                out[key] = Number(patch[key]);
-            }
-        }
-        if (typeof patch.fontStyle === 'string' && patch.fontStyle.trim()) {
-            out.fontStyle = patch.fontStyle.trim();
-        }
-        return out;
+    applyRuntimeFormattingRestoreIntent(
+        elements: Parameters<LayoutProcessor['simulate']>[0],
+        intent: RuntimeIntent = {}
+    ): RuntimeIntentResult {
+        return this.applyRuntimeIntent(elements, {
+            ...intent,
+            kind: 'formatting-restore'
+        });
     }
 
     private resolveRuntimeFormattingTarget(target: RuntimeFormattingTarget = {}): {
@@ -343,7 +300,7 @@ export class LayoutEngine extends LayoutProcessor {
         if (typeof candidate?.getRegisteredActors !== 'function') return null;
         const { sourceId, actorId } = this.resolveRuntimeFormattingTarget(target);
         const normalized = LayoutUtils.normalizeAuthorSourceId(sourceId) || sourceId;
-        const actors = candidate.getRegisteredActors();
+        const actors = collectRuntimeFormattingActors(candidate.getRegisteredActors());
         if (actorId) {
             const exact = actors.find((actor) => actor?.actorId === actorId);
             if (exact && (!sourceId || exact.sourceId === sourceId || exact.sourceId === normalized)) return exact;
@@ -446,12 +403,174 @@ export class LayoutEngine extends LayoutProcessor {
         };
     }
 
+    private applyRuntimeFormattingRestoreIntentInternal(
+        _elements: Parameters<LayoutProcessor['simulate']>[0],
+        intent: RuntimeIntent = {}
+    ): RuntimeIntentResult {
+        const session = this.getCurrentLayoutSession();
+        const restoreSnapshot = intent.restoreSnapshot && typeof intent.restoreSnapshot === 'object'
+            ? intent.restoreSnapshot as Record<string, unknown>
+            : null;
+        if (!restoreSnapshot || !Object.keys(restoreSnapshot).length) {
+            return {
+                changed: false,
+                reason: 'unsupported-formatting-snapshot'
+            };
+        }
+        const actor = this.resolveRuntimeFormattingActor(session, intent.target || {});
+        const element = this.getRuntimeFormattingElement(actor);
+        const target = this.resolveRuntimeFormattingTarget(intent.target || {});
+        if (!session || !actor || !element) {
+            return {
+                changed: false,
+                reason: 'target-not-live',
+                sourceId: target.sourceId,
+                actorId: target.actorId
+            };
+        }
+        const runtimeSession = session as {
+            resolveActorRuntimeFrontier?(actor: RuntimeActor, options: { actorId?: string; sourceId?: string; preferVisibleActorRefs?: boolean }): {
+                pageIndex?: unknown;
+                cursorY?: unknown;
+                worldY?: unknown;
+            } | null;
+            invalidateSafeCheckpointsAfterFrontier?(frontier: unknown): void;
+            getRegisteredActors?(): readonly RuntimeActor[];
+            publishActorSignal?(signal: unknown): unknown;
+            applyContentOnlyActorUpdates?(
+                pages: readonly unknown[],
+                currentPageBoxes: unknown[],
+                actors: readonly RuntimeActor[],
+                contextBase: Record<string, unknown>
+            ): { patchedActors: number; pageIndexes: number[] };
+        };
+        const previousSnapshot = cloneRuntimeElementSourceSnapshot(element);
+        if (runtimeElementSourceSnapshotsEqual(previousSnapshot, restoreSnapshot)) {
+            return {
+                changed: false,
+                reason: 'already-current',
+                sourceId: target.sourceId || actor.sourceId,
+                actorId: actor.actorId
+            };
+        }
+        const frontier = runtimeSession.resolveActorRuntimeFrontier?.(actor, {
+            actorId: actor.actorId,
+            sourceId: actor.sourceId,
+            preferVisibleActorRefs: true
+        }) ?? null;
+        const pageIndex = Number.isFinite(Number(frontier?.pageIndex))
+            ? Math.max(0, Math.floor(Number(frontier?.pageIndex)))
+            : 0;
+        const contextBase = this.buildRuntimeFormattingContext(session, pageIndex);
+        const resolvedTarget = {
+            ...(intent.target || {}),
+            ...target,
+            sourceId: target.sourceId || actor.sourceId,
+            actorId: actor.actorId
+        };
+        runtimeSession.publishActorSignal?.({
+            topic: buildRuntimeIntentTopic(actor.sourceId || target.sourceId),
+            publisherActorId: 'app:runtime-intent',
+            publisherSourceId: 'app:runtime-intent',
+            publisherActorKind: 'runtime-intent',
+            pageIndex,
+            cursorY: Number.isFinite(Number(frontier?.cursorY)) ? Number(frontier?.cursorY) : 0,
+            ...(Number.isFinite(Number(frontier?.worldY)) ? { worldY: Number(frontier?.worldY) } : {}),
+            signalKey: this.nextRuntimeIntentSignalKey('formatting-restore', actor),
+            payload: {
+                kind: 'formatting',
+                target: resolvedTarget,
+                patch: cloneRuntimeJsonValue(intent.patch || {}),
+                restoreSnapshot: cloneRuntimeJsonValue(restoreSnapshot)
+            }
+        });
+        const observationResult = actor.updateCommittedState?.({
+            ...contextBase,
+            pageIndex,
+            cursorY: Number.isFinite(Number(frontier?.cursorY)) ? Number(frontier?.cursorY) : 0
+        }) ?? actor.observeCommittedSignals?.({
+            ...contextBase,
+            pageIndex,
+            cursorY: Number.isFinite(Number(frontier?.cursorY)) ? Number(frontier?.cursorY) : 0
+        });
+        const observation = normalizeObservationResult(observationResult as any);
+        if (!observation?.changed) {
+            restoreRuntimeElementSourceSnapshot(element, previousSnapshot);
+            return {
+                changed: false,
+                reason: 'actor-did-not-accept-intent',
+                sourceId: actor.sourceId,
+                actorId: actor.actorId
+            };
+        }
+        const affectedFrontier = frontier ?? observation.earliestAffectedFrontier ?? null;
+        if (affectedFrontier) {
+            runtimeSession.invalidateSafeCheckpointsAfterFrontier?.(affectedFrontier);
+        }
+        if (observation.geometryChanged) {
+            const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
+            refreshRuntimeActorHostChain(actors, actor);
+            const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting-restore');
+            return {
+                ...replay,
+                sourceId: actor.sourceId,
+                actorId: actor.actorId,
+                update: {
+                    ...(replay.update || { kind: 'geometry', source: 'runtime-formatting-restore', actorIds: [], sourceIds: [], pageIndexes: [] }),
+                    actorIds: [actor.actorId].filter((id): id is string => !!id),
+                    sourceIds: [actor.sourceId].filter((id): id is string => !!id)
+                }
+            };
+        }
+        const pages = this.getLastPrintPipelineSnapshot().pages;
+        const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
+        const visibleCandidate = refreshRuntimeActorHostChain(actors, actor);
+        const redrawActor = (candidate: RuntimeActor): { patchedActors: number; pageIndexes: number[] } =>
+            runtimeSession.applyContentOnlyActorUpdates?.(pages, [], [candidate], contextBase) ?? { patchedActors: 0, pageIndexes: [] };
+        try {
+            const { visibleActor, redraw } = redrawRuntimeActorThroughHosts(actors, visibleCandidate, redrawActor);
+            if (Number(redraw?.patchedActors || 0) === 0) {
+                restoreRuntimeElementSourceSnapshot(element, previousSnapshot);
+                actor.rebuildLiveFlowBox?.();
+                return {
+                    changed: false,
+                    reason: 'no-visible-boxes',
+                    sourceId: actor.sourceId,
+                    actorId: actor.actorId,
+                    pages
+                };
+            }
+            return {
+                changed: true,
+                kind: 'content-only',
+                sourceId: actor.sourceId,
+                actorId: actor.actorId,
+                visibleActorId: visibleActor.actorId,
+                frontier: affectedFrontier,
+                redraw,
+                update: {
+                    kind: 'content-only',
+                    source: 'runtime-formatting-restore',
+                    actorIds: [actor.actorId].filter((id): id is string => !!id),
+                    sourceIds: [actor.sourceId].filter((id): id is string => !!id),
+                    pageIndexes: redraw.pageIndexes || []
+                },
+                pageIndexes: redraw.pageIndexes || [],
+                pages
+            };
+        } catch (error) {
+            restoreRuntimeElementSourceSnapshot(element, previousSnapshot);
+            actor.rebuildLiveFlowBox?.();
+            throw error;
+        }
+    }
+
     private applyRuntimeFormattingIntentInternal(
         _elements: Parameters<LayoutProcessor['simulate']>[0],
         intent: RuntimeIntent = {}
     ): RuntimeIntentResult {
         const session = this.getCurrentLayoutSession();
-        const formatting = this.normalizeRuntimeFormattingPatch(intent.patch || {});
+        const formatting = normalizeRuntimeFormattingPatch(intent.patch || {});
         if (!Object.keys(formatting).length) {
             return {
                 changed: false,
@@ -471,7 +590,7 @@ export class LayoutEngine extends LayoutProcessor {
             };
         }
         const runtimeSession = session as {
-            resolveActorRuntimeFrontier?(actor: RuntimeActor, options: { actorId?: string; sourceId?: string }): {
+            resolveActorRuntimeFrontier?(actor: RuntimeActor, options: { actorId?: string; sourceId?: string; preferVisibleActorRefs?: boolean }): {
                 pageIndex?: unknown;
                 cursorY?: unknown;
                 worldY?: unknown;
@@ -501,7 +620,8 @@ export class LayoutEngine extends LayoutProcessor {
         }
         const frontier = runtimeSession.resolveActorRuntimeFrontier?.(actor, {
             actorId: actor.actorId,
-            sourceId: actor.sourceId
+            sourceId: actor.sourceId,
+            preferVisibleActorRefs: true
         }) ?? null;
         const pageIndex = Number.isFinite(Number(frontier?.pageIndex))
             ? Math.max(0, Math.floor(Number(frontier?.pageIndex)))
@@ -560,7 +680,7 @@ export class LayoutEngine extends LayoutProcessor {
             frontier: affectedFrontier
         });
         if (observation.geometryChanged) {
-            const actors = runtimeSession.getRegisteredActors?.() ?? [];
+            const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
             refreshRuntimeActorHostChain(actors, actor);
             const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier);
             return {
@@ -576,12 +696,12 @@ export class LayoutEngine extends LayoutProcessor {
             };
         }
         const pages = this.getLastPrintPipelineSnapshot().pages;
-        const actors = runtimeSession.getRegisteredActors?.() ?? [];
-        refreshRuntimeActorHostChain(actors, actor);
+        const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
+        const visibleCandidate = refreshRuntimeActorHostChain(actors, actor);
         const redrawActor = (candidate: RuntimeActor): { patchedActors: number; pageIndexes: number[] } =>
             runtimeSession.applyContentOnlyActorUpdates?.(pages, [], [candidate], contextBase) ?? { patchedActors: 0, pageIndexes: [] };
         try {
-            const { visibleActor, redraw } = redrawRuntimeActorThroughHosts(actors, actor, redrawActor);
+            const { visibleActor, redraw } = redrawRuntimeActorThroughHosts(actors, visibleCandidate, redrawActor);
             if (Number(redraw?.patchedActors || 0) === 0) {
                 restoreRuntimeElementSourceSnapshot(element, previousSnapshot);
                 actor.rebuildLiveFlowBox?.();

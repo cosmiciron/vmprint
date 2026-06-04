@@ -1,0 +1,372 @@
+import { Element } from '../types';
+import { LayoutUtils } from './layout-utils';
+import {
+    ObservationResult,
+    PackagerContext,
+    PackagerUnit,
+    resolvePackagerWorldYAtCursor
+} from './packagers/packager-types';
+
+export const RUNTIME_INTENT_TOPIC = 'runtime:intent';
+
+export type RuntimeFormattingPatch = {
+    textAlign?: unknown;
+    fontFamily?: unknown;
+    fontSize?: unknown;
+    fontWeight?: unknown;
+    fontStyle?: unknown;
+    lineHeight?: unknown;
+    marginLeft?: unknown;
+    marginRight?: unknown;
+    textIndent?: unknown;
+};
+
+export type RuntimeFormattingTarget = {
+    sourceId?: unknown;
+    containerKey?: unknown;
+    boxTargetId?: unknown;
+    actorId?: unknown;
+    sourceStart?: unknown;
+    sourceEnd?: unknown;
+};
+
+type RuntimeFormattingSignal = {
+    sequence?: unknown;
+    payload?: {
+        kind?: unknown;
+        target?: Record<string, unknown>;
+        patch?: Record<string, unknown>;
+        restoreSnapshot?: Record<string, unknown>;
+    };
+};
+
+export function normalizeRuntimeIntentSourceId(sourceId: unknown): string {
+    const raw = String(sourceId || '').trim();
+    return LayoutUtils.normalizeAuthorSourceId(raw) || raw;
+}
+
+export function buildRuntimeIntentTopic(sourceId: unknown): string {
+    const normalized = normalizeRuntimeIntentSourceId(sourceId);
+    return normalized ? `${RUNTIME_INTENT_TOPIC}:${normalized}` : RUNTIME_INTENT_TOPIC;
+}
+
+export function isRuntimeRangeTarget(target: RuntimeFormattingTarget | Record<string, unknown> = {}): boolean {
+    const start = Number(target.sourceStart);
+    const end = Number(target.sourceEnd);
+    return Number.isFinite(start) && Number.isFinite(end) && end > start;
+}
+
+export function normalizeRuntimeFormattingPatch(patch: RuntimeFormattingPatch = {}): Record<string, unknown> {
+    const out: Record<string, unknown> = {};
+    if (['left', 'center', 'right', 'justify'].includes(String(patch.textAlign))) {
+        out.textAlign = String(patch.textAlign);
+        if (patch.textAlign === 'justify') {
+            out.justifyEngine = 'advanced';
+        }
+    }
+    if (typeof patch.fontFamily === 'string' && patch.fontFamily.trim()) {
+        out.fontFamily = patch.fontFamily.trim();
+    }
+    for (const key of ['fontSize', 'fontWeight', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent'] as const) {
+        if (Number.isFinite(Number(patch[key]))) {
+            out[key] = Number(patch[key]);
+        }
+    }
+    if (typeof patch.fontStyle === 'string' && patch.fontStyle.trim()) {
+        out.fontStyle = patch.fontStyle.trim();
+    }
+    return out;
+}
+
+export function cloneRuntimeJsonValue<T>(value: T): T {
+    if (value === undefined) return value;
+    return JSON.parse(JSON.stringify(value));
+}
+
+function cloneRuntimeElementPart(part: unknown): any {
+    if (!part || typeof part !== 'object') return part;
+    return cloneRuntimeJsonValue(part);
+}
+
+export function cloneRuntimeElementSourceSnapshot(element: Element): Record<string, unknown> {
+    const snapshot: Record<string, unknown> = {};
+    for (const key of ['type', 'content', 'children', 'properties'] as const) {
+        if (Object.prototype.hasOwnProperty.call(element || {}, key)) {
+            snapshot[key] = cloneRuntimeJsonValue((element as any)[key]);
+        }
+    }
+    return snapshot;
+}
+
+export function restoreRuntimeElementSourceSnapshot(element: Element, snapshot: Record<string, unknown> = {}): boolean {
+    if (!element || typeof element !== 'object') return false;
+    for (const key of ['type', 'content', 'children', 'properties'] as const) {
+        if (Object.prototype.hasOwnProperty.call(snapshot, key)) {
+            (element as any)[key] = cloneRuntimeJsonValue(snapshot[key]);
+        } else {
+            delete (element as any)[key];
+        }
+    }
+    return true;
+}
+
+export function runtimeElementSourceSnapshotsEqual(
+    left: Record<string, unknown> = {},
+    right: Record<string, unknown> = {}
+): boolean {
+    return JSON.stringify(left || {}) === JSON.stringify(right || {});
+}
+
+function runtimeInlinePartLength(part: any): number {
+    if (typeof part?.content === 'string' && part.content.length > 0) return part.content.length;
+    if (part?.image || part?.inlineObject || part?.type === 'image') return 1;
+    return 0;
+}
+
+function stylesEqualForRuntimeMerge(left: Record<string, unknown> = {}, right: Record<string, unknown> = {}): boolean {
+    const leftKeys = Object.keys(left || {});
+    const rightKeys = Object.keys(right || {});
+    if (leftKeys.length !== rightKeys.length) return false;
+    return leftKeys.every((key) => left[key] === right[key]);
+}
+
+function mergeAdjacentRuntimeTextParts(parts: any[]): any[] {
+    const out: any[] = [];
+    for (const part of parts) {
+        const previous = out[out.length - 1];
+        const partStyle = part?.properties?.style || {};
+        const previousStyle = previous?.properties?.style || {};
+        if (
+            previous
+            && previous.type === 'text'
+            && part?.type === 'text'
+            && !previous.children
+            && !part.children
+            && stylesEqualForRuntimeMerge(previousStyle, partStyle)
+        ) {
+            previous.content = `${previous.content || ''}${part.content || ''}`;
+            continue;
+        }
+        out.push(part);
+    }
+    return out;
+}
+
+export function applyRuntimeRangeFormattingPatch(
+    sourceElement: Element,
+    patch: Record<string, unknown>,
+    target: RuntimeFormattingTarget | Record<string, unknown>
+): boolean {
+    const start = Math.max(0, Number(target.sourceStart));
+    const end = Math.max(start, Number(target.sourceEnd));
+    const sourceParts = Array.isArray(sourceElement.children) && sourceElement.children.length
+        ? sourceElement.children
+        : typeof sourceElement.content === 'string' && sourceElement.content.length
+            ? [{ type: 'text', content: sourceElement.content }]
+            : [];
+    if (!sourceParts.length) return false;
+
+    const nextChildren: any[] = [];
+    let cursor = 0;
+    let changed = false;
+    for (const sourcePart of sourceParts) {
+        const part = cloneRuntimeElementPart(sourcePart);
+        const length = runtimeInlinePartLength(part);
+        const partStart = cursor;
+        const partEnd = cursor + length;
+        cursor = partEnd;
+        if (!length || partEnd <= start || partStart >= end || typeof part.content !== 'string' || part.content.length === 0) {
+            nextChildren.push(part);
+            continue;
+        }
+
+        const localStart = Math.max(0, start - partStart);
+        const localEnd = Math.min(part.content.length, end - partStart);
+        if (localStart > 0) {
+            nextChildren.push({
+                ...cloneRuntimeElementPart(part),
+                content: part.content.slice(0, localStart)
+            });
+        }
+
+        const previousStyle = part.properties && typeof part.properties.style === 'object' && part.properties.style
+            ? part.properties.style
+            : {};
+        const nextStyle = { ...previousStyle, ...patch };
+        changed = changed || Object.entries(patch).some(([key, value]) => previousStyle[key] !== value);
+        nextChildren.push({
+            ...cloneRuntimeElementPart(part),
+            content: part.content.slice(localStart, localEnd),
+            properties: {
+                ...part.properties,
+                style: nextStyle
+            }
+        });
+
+        if (localEnd < part.content.length) {
+            nextChildren.push({
+                ...cloneRuntimeElementPart(part),
+                content: part.content.slice(localEnd)
+            });
+        }
+    }
+
+    if (!changed) return false;
+    sourceElement.content = '';
+    sourceElement.children = mergeAdjacentRuntimeTextParts(nextChildren) as Element[];
+    return true;
+}
+
+export function isGeometryRuntimeFormattingPatch(
+    patch: Record<string, unknown>,
+    target: RuntimeFormattingTarget | Record<string, unknown> | null = null
+): boolean {
+    if (target && isRuntimeRangeTarget(target)) {
+        return ['fontFamily', 'fontSize', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent', 'blockType']
+            .some((key) => patch[key] !== undefined);
+    }
+    return ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent', 'blockType']
+        .some((key) => patch[key] !== undefined);
+}
+
+export function readLatestRuntimeFormattingIntentSignal(
+    context: PackagerContext,
+    actor: Pick<PackagerUnit, 'actorId' | 'sourceId'>
+): RuntimeFormattingSignal | null {
+    const actorSourceId = normalizeRuntimeIntentSourceId(actor?.sourceId);
+    const topic = buildRuntimeIntentTopic(actorSourceId);
+    const signals = [
+        ...(context.readActorSignals?.(topic) ?? []),
+        ...(context.readActorSignals?.(RUNTIME_INTENT_TOPIC) ?? [])
+    ] as RuntimeFormattingSignal[];
+    return signals
+        .filter((signal) => {
+            const payload = signal?.payload;
+            if (!payload || payload.kind !== 'formatting') return false;
+            const target = payload.target || {};
+            const targetActorId = String(target.actorId || '').trim();
+            const targetSourceId = normalizeRuntimeIntentSourceId(target.sourceId || target.containerKey || target.boxTargetId);
+            if (targetActorId && targetActorId !== actor?.actorId) return false;
+            if (targetSourceId && targetSourceId !== actorSourceId) return false;
+            return targetActorId || targetSourceId;
+        })
+        .sort((a, b) => Number(b.sequence || 0) - Number(a.sequence || 0))[0] ?? null;
+}
+
+function resolveRuntimeFormattingFrontier(
+    context: PackagerContext,
+    actor: Pick<PackagerUnit, 'actorId' | 'sourceId'>
+) {
+    const session = context.processor?.getCurrentLayoutSession?.();
+    return session?.resolveActorRuntimeFrontier?.(actor as PackagerUnit, {
+        actorId: actor.actorId,
+        sourceId: actor.sourceId,
+        preferVisibleActorRefs: true
+    }) ?? {
+        pageIndex: context.pageIndex,
+        cursorY: context.cursorY,
+        worldY: resolvePackagerWorldYAtCursor(context),
+        actorId: actor.actorId,
+        sourceId: actor.sourceId
+    };
+}
+
+function classifyRuntimeFormattingGeometry(
+    patch: Record<string, unknown>,
+    target: Record<string, unknown>,
+    forceRangeGeometry = false
+): boolean {
+    return (forceRangeGeometry && isRuntimeRangeTarget(target))
+        || (Object.keys(patch).length ? isGeometryRuntimeFormattingPatch(patch, target) : true);
+}
+
+export function applyRuntimeFormattingIntentToSourceElement(options: {
+    context: PackagerContext;
+    actor: PackagerUnit;
+    sourceElement: Element | null | undefined;
+    rebuild: () => boolean;
+    forceRangeGeometry?: boolean;
+}): ObservationResult | null {
+    const { context, actor, sourceElement, rebuild, forceRangeGeometry = false } = options;
+    const signal = readLatestRuntimeFormattingIntentSignal(context, actor);
+    if (!signal || !sourceElement) return null;
+
+    const patch = signal.payload?.patch && typeof signal.payload.patch === 'object'
+        ? signal.payload.patch as Record<string, unknown>
+        : {};
+    const target = signal.payload?.target && typeof signal.payload.target === 'object'
+        ? signal.payload.target as Record<string, unknown>
+        : {};
+    const restoreSnapshot = signal.payload?.restoreSnapshot && typeof signal.payload.restoreSnapshot === 'object'
+        ? signal.payload.restoreSnapshot as Record<string, unknown>
+        : null;
+    const previousSnapshot = cloneRuntimeElementSourceSnapshot(sourceElement);
+
+    if (restoreSnapshot) {
+        if (runtimeElementSourceSnapshotsEqual(previousSnapshot, restoreSnapshot)) {
+            return {
+                changed: false,
+                geometryChanged: false,
+                updateKind: 'none'
+            };
+        }
+        restoreRuntimeElementSourceSnapshot(sourceElement, restoreSnapshot);
+        if (!rebuild()) {
+            restoreRuntimeElementSourceSnapshot(sourceElement, previousSnapshot);
+            return {
+                changed: false,
+                geometryChanged: false,
+                updateKind: 'none'
+            };
+        }
+        const geometryChanged = classifyRuntimeFormattingGeometry(patch, target, forceRangeGeometry);
+        return {
+            changed: true,
+            geometryChanged,
+            updateKind: geometryChanged ? 'geometry' : 'content-only',
+            earliestAffectedFrontier: resolveRuntimeFormattingFrontier(context, actor)
+        };
+    }
+
+    const rangeTarget = isRuntimeRangeTarget(target);
+    const previousStyle = sourceElement.properties && typeof sourceElement.properties.style === 'object' && sourceElement.properties.style
+        ? { ...sourceElement.properties.style }
+        : {};
+    const changed = rangeTarget
+        ? applyRuntimeRangeFormattingPatch(sourceElement, patch, target)
+        : Object.entries(patch).some(([key, value]) => previousStyle[key] !== value);
+    if (!changed) {
+        return {
+            changed: false,
+            geometryChanged: false,
+            updateKind: 'none'
+        };
+    }
+
+    if (!rangeTarget) {
+        sourceElement.properties = {
+            ...sourceElement.properties,
+            style: {
+                ...previousStyle,
+                ...patch
+            }
+        };
+    }
+
+    if (!rebuild()) {
+        restoreRuntimeElementSourceSnapshot(sourceElement, previousSnapshot);
+        return {
+            changed: false,
+            geometryChanged: false,
+            updateKind: 'none'
+        };
+    }
+
+    const geometryChanged = classifyRuntimeFormattingGeometry(patch, target, forceRangeGeometry);
+    return {
+        changed: true,
+        geometryChanged,
+        updateKind: geometryChanged ? 'geometry' : 'content-only',
+        earliestAffectedFrontier: resolveRuntimeFormattingFrontier(context, actor)
+    };
+}
