@@ -54,7 +54,8 @@ function resolveWorldPlainHostLayout(element: Element): {
 function buildWorldPlainRegionQueues(
     element: Element,
     availableWidth: number,
-    processor: LayoutProcessor
+    processor: LayoutProcessor,
+    basePath: number[]
 ) {
     return buildHostedRegionActorQueuesFromZones(
         [
@@ -68,7 +69,8 @@ function buildWorldPlainRegionQueues(
                 elements: [...(element.children || [])]
             }
         ],
-        processor
+        processor,
+        basePath
     );
 }
 
@@ -131,7 +133,7 @@ export class WorldPlainPackager implements PackagerUnit {
             ...resolvedIdentity,
             actorKind: 'world-plain'
         }, undefined, undefined, undefined, undefined, () => normalized, (availableWidth) =>
-            buildWorldPlainRegionQueues(element, availableWidth, processor), describeWorldPlainRegions);
+            buildWorldPlainRegionQueues(element, availableWidth, processor, resolvedIdentity.path ?? [0]), describeWorldPlainRegions);
         this.actorId = resolvedIdentity.actorId;
         this.sourceId = resolvedIdentity.sourceId;
         this.actorKind = 'world-plain';

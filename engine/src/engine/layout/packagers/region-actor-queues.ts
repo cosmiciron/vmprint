@@ -25,29 +25,32 @@ export type HostedRegionDescriptor = Pick<HostedRegionActorQueue, 'id' | 'rect' 
 
 function buildHostedRegionActorEntries(
     zone: NormalizedIndependentZone,
-    processor: LayoutProcessor
+    processor: LayoutProcessor,
+    zonePath: number[]
 ): HostedRegionActorEntry[] {
     return (zone.elements ?? []).map((element, index) => ({
         element,
-        actor: buildPackagerForElement(element, index, processor)
+        actor: buildPackagerForElement(element, index, processor, zone.elements, undefined, [...zonePath, index])
     }));
 }
 
 export function buildHostedRegionActorQueuesFromZones(
     zones: readonly NormalizedIndependentZone[],
-    processor: LayoutProcessor
+    processor: LayoutProcessor,
+    basePath: number[] = [0]
 ): HostedRegionActorQueue[] {
-    return zones.map((zone) => ({
+    return zones.map((zone, zoneIndex) => ({
         id: zone.id,
         rect: { ...zone.rect },
         style: zone.style,
-        actors: buildHostedRegionActorEntries(zone, processor)
+        actors: buildHostedRegionActorEntries(zone, processor, [...basePath, zoneIndex])
     }));
 }
 
 export function buildHostedRegionActorQueues(
     strip: NormalizedIndependentZoneStrip,
-    processor: LayoutProcessor
+    processor: LayoutProcessor,
+    basePath: number[] = [0]
 ): HostedRegionActorQueue[] {
-    return buildHostedRegionActorQueuesFromZones(strip.zones, processor);
+    return buildHostedRegionActorQueuesFromZones(strip.zones, processor, basePath);
 }

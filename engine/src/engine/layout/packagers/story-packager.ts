@@ -263,6 +263,7 @@ export class StoryPackager implements PackagerUnit {
     private normalizedStory;
     private readonly processor: LayoutProcessor;
     private readonly storyIndex: number;
+    private readonly identityPath: number[];
     private storyActorEntries: StoryActorEntry[];
     /** Obstacles carried over from the preceding page (already started there). */
     private readonly initialObstacles: CarryOverObstacle[];
@@ -316,6 +317,7 @@ export class StoryPackager implements PackagerUnit {
         this.actorKind = resolvedIdentity.actorKind;
         this.fragmentIndex = resolvedIdentity.fragmentIndex;
         this.continuationOf = resolvedIdentity.continuationOf;
+        this.identityPath = Array.isArray(resolvedIdentity.path) && resolvedIdentity.path.length ? resolvedIdentity.path : [storyIndex];
         this.storyActorEntries = this.normalizedStory.children.map((child) => ({
             ...child,
             actor: buildPackagerForElement(
@@ -324,7 +326,7 @@ export class StoryPackager implements PackagerUnit {
                 this.processor,
                 undefined,
                 undefined,
-                [this.storyIndex, child.childIndex]
+                this.childIdentityPath(child.childIndex)
             )
         }));
     }
@@ -807,7 +809,7 @@ export class StoryPackager implements PackagerUnit {
 
                 cursorY = storyMap.topBottomClearY(cursorY);
                 const flowBox = (this.processor as any).shapeElement(
-                    child.element, { path: [this.storyIndex, child.childIndex] }
+                    child.element, { path: this.childIdentityPath(child.childIndex) }
                 );
                 const marginTop = Math.max(0, flowBox.marginTop);
                 const marginBottom = Math.max(0, flowBox.marginBottom);
@@ -822,6 +824,43 @@ export class StoryPackager implements PackagerUnit {
                     topY: boxY, bottomY: boxY + imgH, isFloat: false, isAbsolute: false
                 });
                 cursorY = boxY + imgH + marginBottom;
+                if (probeFrontierExceeded(cursorY)) {
+                    return finishEarlyProbe();
+                }
+                continue;
+            }
+
+            const pkg = child.actor;
+            if (!(pkg instanceof FlowBoxPackager)) {
+                cursorY = storyMap.topBottomClearY(cursorY);
+                const remainingHeight = Number.POSITIVE_INFINITY;
+                const opaqueContext: PackagerContext = {
+                    ...this.createLocalFrameContext(
+                        context,
+                        availableWidth,
+                        {
+                            cursorY,
+                            margins: { ...margins },
+                            pageHeight: Number.POSITIVE_INFINITY
+                        },
+                        cursorY,
+                        remainingHeight
+                    )
+                };
+                pkg.prepare(availableWidth, remainingHeight, opaqueContext);
+                const emitted = (pkg.emitBoxes(availableWidth, remainingHeight, opaqueContext) || []) as Box[];
+                for (const b of emitted) b.y = (b.y || 0) + cursorY;
+                for (const b of emitted) allBoxes.push(b);
+                const requiredHeight = pkg.getRequiredHeight();
+                placedElements.push({
+                    kind: 'float-block',
+                    childIndex: child.childIndex,
+                    allBoxes: emitted,
+                    topY: cursorY,
+                    bottomY: cursorY + requiredHeight,
+                    isAbsolute: false
+                });
+                cursorY += requiredHeight;
                 if (probeFrontierExceeded(cursorY)) {
                     return finishEarlyProbe();
                 }
@@ -874,7 +913,7 @@ export class StoryPackager implements PackagerUnit {
         const containmentOverflow = resolveSpatialFieldOverflow(spatialDirective);
         const clipProperties = new SpatialFieldGeometryCapability(element).buildClipProperties();
         const shaped = (this.processor as any).shapeElement(
-            element, { path: [this.storyIndex, childIndex] }
+            element, { path: this.childIdentityPath(childIndex) }
         );
         const effectiveWidth = usesContainmentLanes
             ? resolveContainedHostWidth(element, availableWidth)
@@ -891,7 +930,7 @@ export class StoryPackager implements PackagerUnit {
         const placed = reflowTextElementAgainstSpatialField({
             processor: this.processor,
             element,
-            path: [this.storyIndex, childIndex],
+            path: this.childIdentityPath(childIndex),
             sourceFlowBox: shaped,
             availableWidth: effectiveWidth,
             currentY: cursorY,
@@ -1617,7 +1656,7 @@ export class StoryPackager implements PackagerUnit {
                     const regionMap = this.createRegionMap(region, allObstacles);
                     const top = regionMap.topBottomClearY(cursorY);
                     const flowBox = (this.processor as any).shapeElement(
-                        child.element, { path: [this.storyIndex, child.childIndex] }
+                        child.element, { path: this.childIdentityPath(child.childIndex) }
                     );
                     const marginTop = Math.max(0, flowBox.marginTop);
                     const marginBottom = Math.max(0, flowBox.marginBottom);
@@ -2094,7 +2133,7 @@ export class StoryPackager implements PackagerUnit {
         actor?: PackagerUnit
     ): Box {
         const flowBox = (this.processor as any).shapeElement(
-            element, { path: [this.storyIndex, childIndex] }
+            element, { path: this.childIdentityPath(childIndex) }
         );
         const session = this.processor.getCurrentLayoutSession();
         const visualAssemblyMembers = (
@@ -2140,6 +2179,10 @@ export class StoryPackager implements PackagerUnit {
         };
     }
 
+    private childIdentityPath(childIndex: number): number[] {
+        return [...this.identityPath, Math.max(0, Math.floor(Number(childIndex) || 0))];
+    }
+
     private findHostedActorIndex(targetActor: PackagerUnit): number {
         return this.storyActorEntries.findIndex((entry) => entry.actor.actorId === targetActor.actorId);
     }
@@ -2155,7 +2198,7 @@ export class StoryPackager implements PackagerUnit {
                 this.processor,
                 undefined,
                 undefined,
-                [this.storyIndex, child.childIndex]
+                this.childIdentityPath(child.childIndex)
             )
         }));
     }
@@ -2227,7 +2270,24 @@ export class StoryPackager implements PackagerUnit {
             };
         }
 
-        return (this.processor as any).trimLeadingContinuationWhitespace(continuation) as Element;
+        const beforeTrimLength = (this.processor as any).getElementText(continuation).length;
+        const trimmed = (this.processor as any).trimLeadingContinuationWhitespace(continuation) as Element;
+        const trimDelta = Math.max(
+            0,
+            beforeTrimLength - (this.processor as any).getElementText(trimmed).length
+        );
+        const sourceSliceStart = Math.max(
+            0,
+            Number(element.properties?._sourceSliceStart || 0) + consumedChars + trimDelta
+        );
+
+        return {
+            ...trimmed,
+            properties: {
+                ...(trimmed.properties || {}),
+                _sourceSliceStart: sourceSliceStart
+            }
+        } as Element;
     }
 
     private createNestedPackagerContext(
