@@ -4,6 +4,10 @@ import { FlowBox } from '../layout-core-types';
 import { LayoutUtils } from '../layout-utils';
 import { LAYOUT_DEFAULTS } from '../defaults';
 import {
+    applyRuntimeFormattingIntentToSourceElement,
+    buildRuntimeIntentTopic
+} from '../runtime-formatting';
+import {
     createContinuationFragmentMeta,
     createContinuationFragmentStyle,
     createLeadingFragmentMeta,
@@ -17,7 +21,8 @@ import {
     PackagerPlacementPreference,
     PackagerReshapeResult,
     PackagerReshapeProfile,
-    PackagerUnit
+    PackagerUnit,
+    ObservationResult
 } from './packager-types';
 import type { TextDelegate } from '../../../contracts';
 
@@ -28,6 +33,16 @@ type DropCapParts = {
     wrapOffsetX: number;
     unifiedLayoutBefore: number;
 };
+
+function withSourceSliceStart(element: Element, sourceSliceStart: number): Element {
+    return {
+        ...element,
+        properties: {
+            ...(element.properties || {}),
+            _sourceSliceStart: Math.max(0, sourceSliceStart)
+        }
+    };
+}
 
 class DropCapFragmentPackager implements PackagerUnit {
     private processor: LayoutProcessor;
@@ -260,6 +275,7 @@ export class DropCapPackager implements PackagerUnit {
     private element: Element;
     private index: number;
     private spec: DropCapSpec;
+    private identityPath: number[];
 
     private cachedParts: DropCapParts | null = null;
     private cachedAvailableWidth: number = -1;
@@ -285,6 +301,35 @@ export class DropCapPackager implements PackagerUnit {
         this.actorKind = resolvedIdentity.actorKind;
         this.fragmentIndex = resolvedIdentity.fragmentIndex;
         this.continuationOf = resolvedIdentity.continuationOf;
+        this.identityPath = Array.isArray(resolvedIdentity.path) && resolvedIdentity.path.length
+            ? resolvedIdentity.path
+            : [index];
+    }
+
+    rebuildLiveFlowBox(): boolean {
+        this.cachedParts = null;
+        this.cachedAvailableWidth = -1;
+        this.requiredHeight = 0;
+        (this.processor as any).resolvedLinesCache?.delete?.(this.element);
+        return true;
+    }
+
+    getCommittedSignalSubscriptions(): readonly string[] {
+        return [buildRuntimeIntentTopic(this.sourceId)];
+    }
+
+    participatesInCommittedSignalObservation(): boolean {
+        return false;
+    }
+
+    updateCommittedState(context: PackagerContext): ObservationResult | null {
+        return applyRuntimeFormattingIntentToSourceElement({
+            context,
+            actor: this,
+            sourceElement: this.element,
+            rebuild: () => this.rebuildLiveFlowBox(),
+            forceRangeGeometry: true
+        });
     }
 
     private materialize(availableWidth: number, context: PackagerContext): void {
@@ -294,7 +339,7 @@ export class DropCapPackager implements PackagerUnit {
             cursorY: Number.isFinite(context.cursorY) ? Number(context.cursorY) : 0
         };
 
-        const baseFlow = (this.processor as any).shapeElement(this.element, { path: [this.index] }) as FlowBox;
+        const baseFlow = (this.processor as any).shapeElement(this.element, { path: this.identityPath }) as FlowBox;
         const text = (this.processor as any).getElementText(this.element) as string;
 
         // Extract the first `characters` grapheme clusters as the drop cap text.
@@ -377,7 +422,7 @@ export class DropCapPackager implements PackagerUnit {
         };
 
         const dropCapFlow = (this.processor as any).shapeElement(dropCapElement, {
-            path: [this.index, 0],
+            path: [...this.identityPath, 0],
             sourceId: `${baseFlow.meta.sourceId}:dropcap`,
             engineKey: `${baseFlow.meta.engineKey}:dropcap`,
             sourceType: 'dropcap',
@@ -464,7 +509,14 @@ export class DropCapPackager implements PackagerUnit {
             };
         }
 
+        remainingElement = withSourceSliceStart(remainingElement, charUnitLength);
+        const beforeRemainingTrimLength = (this.processor as any).getElementText(remainingElement).length;
         remainingElement = (this.processor as any).trimLeadingContinuationWhitespace(remainingElement) as Element;
+        const remainingTrimDelta = Math.max(
+            0,
+            beforeRemainingTrimLength - (this.processor as any).getElementText(remainingElement).length
+        );
+        remainingElement = withSourceSliceStart(remainingElement, charUnitLength + remainingTrimDelta);
 
         const wrapLinesResult = (this.processor as any).resolveLines(
             remainingElement,
@@ -526,7 +578,17 @@ export class DropCapPackager implements PackagerUnit {
                     content: (this.processor as any).getElementText(remainingElement).slice(consumedNow)
                 };
             }
+            elementB = withSourceSliceStart(elementB, charUnitLength + remainingTrimDelta + consumedNow);
+            const beforeElementBTrimLength = (this.processor as any).getElementText(elementB).length;
             elementB = (this.processor as any).trimLeadingContinuationWhitespace(elementB);
+            const elementBTrimDelta = Math.max(
+                0,
+                beforeElementBTrimLength - (this.processor as any).getElementText(elementB).length
+            );
+            elementB = withSourceSliceStart(
+                elementB,
+                charUnitLength + remainingTrimDelta + consumedNow + elementBTrimDelta
+            );
         }
 
         const wrapStyle: ElementStyle = elementB
@@ -616,7 +678,7 @@ export class DropCapPackager implements PackagerUnit {
         if (!this.cachedParts) {
             const fallback = new FlowBoxPackager(
                 this.processor,
-                (this.processor as any).shapeElement(this.element, { path: [this.index] }),
+                (this.processor as any).shapeElement(this.element, { path: this.identityPath }),
                 {
                     actorId: this.actorId,
                     sourceId: this.sourceId,
@@ -696,7 +758,7 @@ export class DropCapPackager implements PackagerUnit {
     }
 
     isUnbreakable(_availableHeight: number): boolean {
-        const flowBox = (this.processor as any).shapeElement(this.element, { path: [this.index] }) as FlowBox;
+        const flowBox = (this.processor as any).shapeElement(this.element, { path: this.identityPath }) as FlowBox;
         if (!flowBox.allowLineSplit) return true;
         if (flowBox.overflowPolicy === 'move-whole') return true;
         return false;
@@ -704,7 +766,7 @@ export class DropCapPackager implements PackagerUnit {
 
     getLeadingSpacing(): number {
         if (this.cachedParts) return this.cachedParts.wrap.marginTop;
-        const flowBox = (this.processor as any).shapeElement(this.element, { path: [this.index] }) as FlowBox;
+        const flowBox = (this.processor as any).shapeElement(this.element, { path: this.identityPath }) as FlowBox;
         return flowBox.marginTop || 0;
     }
 
@@ -714,7 +776,7 @@ export class DropCapPackager implements PackagerUnit {
                 ? Math.max(0, this.cachedParts.body.marginBottom)
                 : Math.max(0, this.cachedParts.wrap.marginBottom || 0);
         }
-        const flowBox = (this.processor as any).shapeElement(this.element, { path: [this.index] }) as FlowBox;
+        const flowBox = (this.processor as any).shapeElement(this.element, { path: this.identityPath }) as FlowBox;
         return flowBox.marginBottom || 0;
     }
 }

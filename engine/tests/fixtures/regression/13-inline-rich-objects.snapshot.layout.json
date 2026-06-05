@@ -63,7 +63,7 @@
         "x": 72,
         "y": 188.96875,
         "w": 468,
-        "h": 170.971875,
+        "h": 106.698438,
         "lines": [
           [
             {
@@ -155,9 +155,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 371.940625,
+        "y": 307.667188,
         "w": 468,
-        "h": 170.971875,
+        "h": 106.698438,
         "lines": [
           [
             {
@@ -249,9 +249,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 554.9125,
+        "y": 426.365625,
         "w": 468,
-        "h": 85.485938,
+        "h": 106.698438,
         "lines": [
           [
             {
@@ -319,23 +319,7 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "index": 1,
-    "width": 612,
-    "height": 792,
-    "boxes": [
-      {
-        "type": "p",
-        "x": 72,
-        "y": 72,
-        "w": 468,
-        "h": 35.2125,
-        "lines": [
+          ],
           [
             {
               "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
@@ -359,9 +343,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 119.2125,
+        "y": 545.064063,
         "w": 468,
-        "h": 170.971875,
+        "h": 106.698438,
         "lines": [
           [
             {
@@ -449,13 +433,20 @@
             }
           ]
         ]
-      },
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 612,
+    "height": 792,
+    "boxes": [
       {
         "type": "p",
         "x": 72,
-        "y": 302.184375,
+        "y": 72,
         "w": 468,
-        "h": 170.971875,
+        "h": 106.698438,
         "lines": [
           [
             {
@@ -547,13 +538,295 @@
       {
         "type": "p",
         "x": 72,
-        "y": 485.15625,
+        "y": 190.698438,
         "w": 468,
-        "h": 170.971875,
+        "h": 106.698438,
         "lines": [
           [
             {
               "text": "Run 6 telemetry ",
+              "width": 88.037109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 14,
+              "ascent": 1166.666667,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " alert acknowledged, open settings ",
+              "width": 188.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 12,
+              "ascent": 1000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " then stamp status ",
+              "width": 101.384766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 64,
+              "ascent": 1833.333333,
+              "descent": 0,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and attach snapshot ",
+              "width": 111.416016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 54,
+              "ascent": 3000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " for traceability. The inline objects above must stay ",
+              "width": 271.236328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "standalone flow blocks.",
+              "width": 124.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 309.396875,
+        "w": 468,
+        "h": 106.698438,
+        "lines": [
+          [
+            {
+              "text": "Run 7 telemetry ",
+              "width": 88.037109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 14,
+              "ascent": 1166.666667,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " alert acknowledged, open settings ",
+              "width": 188.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 12,
+              "ascent": 1000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " then stamp status ",
+              "width": 101.384766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 64,
+              "ascent": 1833.333333,
+              "descent": 0,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and attach snapshot ",
+              "width": 111.416016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 54,
+              "ascent": 3000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " for traceability. The inline objects above must stay ",
+              "width": 271.236328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "standalone flow blocks.",
+              "width": 124.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 428.095313,
+        "w": 468,
+        "h": 106.698438,
+        "lines": [
+          [
+            {
+              "text": "Run 8 telemetry ",
+              "width": 88.037109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 14,
+              "ascent": 1166.666667,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " alert acknowledged, open settings ",
+              "width": 188.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 12,
+              "ascent": 1000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " then stamp status ",
+              "width": 101.384766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 64,
+              "ascent": 1833.333333,
+              "descent": 0,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and attach snapshot ",
+              "width": 111.416016,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 54,
+              "ascent": 3000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " for traceability. The inline objects above must stay ",
+              "width": 271.236328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
+              "width": 467.390625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "standalone flow blocks.",
+              "width": 124.072266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 546.79375,
+        "w": 468,
+        "h": 106.698438,
+        "lines": [
+          [
+            {
+              "text": "Run 9 telemetry ",
               "width": 88.037109,
               "ascent": 905.273438,
               "descent": 211.914063,
@@ -650,293 +923,481 @@
         "x": 72,
         "y": 72,
         "w": 468,
-        "h": 170.971875,
-        "lines": [
-          [
-            {
-              "text": "Run 7 telemetry ",
-              "width": 88.037109,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 14,
-              "ascent": 1166.666667,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " alert acknowledged, open settings ",
-              "width": 188.121094,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 12,
-              "ascent": 1000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " then stamp status ",
-              "width": 101.384766,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 64,
-              "ascent": 1833.333333,
-              "descent": 0,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "and attach snapshot ",
-              "width": 111.416016,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 54,
-              "ascent": 3000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " for traceability. The inline objects above must stay ",
-              "width": 271.236328,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
-              "width": 467.390625,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "standalone flow blocks.",
-              "width": 124.072266,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 72,
-        "y": 254.971875,
-        "w": 468,
-        "h": 170.971875,
-        "lines": [
-          [
-            {
-              "text": "Run 8 telemetry ",
-              "width": 88.037109,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 14,
-              "ascent": 1166.666667,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " alert acknowledged, open settings ",
-              "width": 188.121094,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 12,
-              "ascent": 1000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " then stamp status ",
-              "width": 101.384766,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 64,
-              "ascent": 1833.333333,
-              "descent": 0,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "and attach snapshot ",
-              "width": 111.416016,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 54,
-              "ascent": 3000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " for traceability. The inline objects above must stay ",
-              "width": 271.236328,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
-              "width": 467.390625,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "standalone flow blocks.",
-              "width": 124.072266,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 72,
-        "y": 437.94375,
-        "w": 468,
-        "h": 170.971875,
-        "lines": [
-          [
-            {
-              "text": "Run 9 telemetry ",
-              "width": 88.037109,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 14,
-              "ascent": 1166.666667,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " alert acknowledged, open settings ",
-              "width": 188.121094,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 12,
-              "ascent": 1000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " then stamp status ",
-              "width": 101.384766,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 64,
-              "ascent": 1833.333333,
-              "descent": 0,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "and attach snapshot ",
-              "width": 111.416016,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 54,
-              "ascent": 3000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " for traceability. The inline objects above must stay ",
-              "width": 271.236328,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "anchored in text order, break lines legally, and continue across pages without becoming ",
-              "width": 467.390625,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "standalone flow blocks.",
-              "width": 124.072266,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 72,
-        "y": 620.915625,
-        "w": 468,
-        "h": 85.485938,
+        "h": 98.698438,
         "lines": [
           [
             {
               "text": "Run 10 telemetry ",
+              "width": 94.710938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 14,
+              "ascent": 1166.666667,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " alert acknowledged, open settings ",
+              "width": 188.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 12,
+              "ascent": 1000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " then stamp status ",
+              "width": 101.384766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "￼",
+              "width": 64,
+              "ascent": 1833.333333,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " and attach snapshot ",
+              "width": 114.75,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 54,
+              "ascent": 3000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " for traceability. The inline objects above ",
+              "width": 216.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "becoming standalone flow blocks.",
+              "width": 179.4375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 182.698438,
+        "w": 468,
+        "h": 98.698438,
+        "lines": [
+          [
+            {
+              "text": "Run 11 telemetry ",
+              "width": 93.820313,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 14,
+              "ascent": 1166.666667,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " alert acknowledged, open settings ",
+              "width": 188.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 12,
+              "ascent": 1000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " then stamp status ",
+              "width": 101.384766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "￼",
+              "width": 64,
+              "ascent": 1833.333333,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " and attach snapshot ",
+              "width": 114.75,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 54,
+              "ascent": 3000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " for traceability. The inline objects above ",
+              "width": 216.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "becoming standalone flow blocks.",
+              "width": 179.4375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 293.396875,
+        "w": 468,
+        "h": 98.698438,
+        "lines": [
+          [
+            {
+              "text": "Run 12 telemetry ",
+              "width": 94.710938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 14,
+              "ascent": 1166.666667,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " alert acknowledged, open settings ",
+              "width": 188.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 12,
+              "ascent": 1000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " then stamp status ",
+              "width": 101.384766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "￼",
+              "width": 64,
+              "ascent": 1833.333333,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " and attach snapshot ",
+              "width": 114.75,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 54,
+              "ascent": 3000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " for traceability. The inline objects above ",
+              "width": 216.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "becoming standalone flow blocks.",
+              "width": 179.4375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 404.095313,
+        "w": 468,
+        "h": 98.698438,
+        "lines": [
+          [
+            {
+              "text": "Run 13 telemetry ",
+              "width": 94.710938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 14,
+              "ascent": 1166.666667,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " alert acknowledged, open settings ",
+              "width": 188.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 12,
+              "ascent": 1000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " then stamp status ",
+              "width": 101.384766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "￼",
+              "width": 64,
+              "ascent": 1833.333333,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " and attach snapshot ",
+              "width": 114.75,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 54,
+              "ascent": 3000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " for traceability. The inline objects above ",
+              "width": 216.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "becoming standalone flow blocks.",
+              "width": 179.4375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 514.79375,
+        "w": 468,
+        "h": 98.698438,
+        "lines": [
+          [
+            {
+              "text": "Run 14 telemetry ",
+              "width": 94.710938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 14,
+              "ascent": 1166.666667,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " alert acknowledged, open settings ",
+              "width": 188.121094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 12,
+              "ascent": 1000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " then stamp status ",
+              "width": 101.384766,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "￼",
+              "width": 64,
+              "ascent": 1833.333333,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " and attach snapshot ",
+              "width": 114.75,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 54,
+              "ascent": 3000,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " for traceability. The inline objects above ",
+              "width": 216.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
+              "width": 466.705078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "becoming standalone flow blocks.",
+              "width": 179.4375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 72,
+        "y": 625.492188,
+        "w": 468,
+        "h": 63.485938,
+        "lines": [
+          [
+            {
+              "text": "Run 15 telemetry ",
               "width": 94.710938,
               "ascent": 905.273438,
               "descent": 211.914063,
@@ -1042,484 +1503,7 @@
         "x": 72,
         "y": 119.2125,
         "w": 468,
-        "h": 170.971875,
-        "lines": [
-          [
-            {
-              "text": "Run 11 telemetry ",
-              "width": 93.820313,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 14,
-              "ascent": 1166.666667,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " alert acknowledged, open settings ",
-              "width": 188.121094,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 12,
-              "ascent": 1000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " then stamp status ",
-              "width": 101.384766,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "￼",
-              "width": 64,
-              "ascent": 1833.333333,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " and attach snapshot ",
-              "width": 114.75,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 54,
-              "ascent": 3000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " for traceability. The inline objects above ",
-              "width": 216.556641,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
-              "width": 466.705078,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "becoming standalone flow blocks.",
-              "width": 179.4375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 72,
-        "y": 302.184375,
-        "w": 468,
-        "h": 170.971875,
-        "lines": [
-          [
-            {
-              "text": "Run 12 telemetry ",
-              "width": 94.710938,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 14,
-              "ascent": 1166.666667,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " alert acknowledged, open settings ",
-              "width": 188.121094,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 12,
-              "ascent": 1000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " then stamp status ",
-              "width": 101.384766,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "￼",
-              "width": 64,
-              "ascent": 1833.333333,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " and attach snapshot ",
-              "width": 114.75,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 54,
-              "ascent": 3000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " for traceability. The inline objects above ",
-              "width": 216.556641,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
-              "width": 466.705078,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "becoming standalone flow blocks.",
-              "width": 179.4375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 72,
-        "y": 485.15625,
-        "w": 468,
-        "h": 170.971875,
-        "lines": [
-          [
-            {
-              "text": "Run 13 telemetry ",
-              "width": 94.710938,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 14,
-              "ascent": 1166.666667,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " alert acknowledged, open settings ",
-              "width": 188.121094,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 12,
-              "ascent": 1000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " then stamp status ",
-              "width": 101.384766,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "￼",
-              "width": 64,
-              "ascent": 1833.333333,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " and attach snapshot ",
-              "width": 114.75,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 54,
-              "ascent": 3000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " for traceability. The inline objects above ",
-              "width": 216.556641,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
-              "width": 466.705078,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "becoming standalone flow blocks.",
-              "width": 179.4375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "index": 4,
-    "width": 612,
-    "height": 792,
-    "boxes": [
-      {
-        "type": "p",
-        "x": 72,
-        "y": 72,
-        "w": 468,
-        "h": 170.971875,
-        "lines": [
-          [
-            {
-              "text": "Run 14 telemetry ",
-              "width": 94.710938,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 14,
-              "ascent": 1166.666667,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " alert acknowledged, open settings ",
-              "width": 188.121094,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 12,
-              "ascent": 1000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " then stamp status ",
-              "width": 101.384766,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "￼",
-              "width": 64,
-              "ascent": 1833.333333,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " and attach snapshot ",
-              "width": 114.75,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 54,
-              "ascent": 3000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " for traceability. The inline objects above ",
-              "width": 216.556641,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
-              "width": 466.705078,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "becoming standalone flow blocks.",
-              "width": 179.4375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 72,
-        "y": 254.971875,
-        "w": 468,
-        "h": 170.971875,
-        "lines": [
-          [
-            {
-              "text": "Run 15 telemetry ",
-              "width": 94.710938,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 14,
-              "ascent": 1166.666667,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " alert acknowledged, open settings ",
-              "width": 188.121094,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 12,
-              "ascent": 1000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " then stamp status ",
-              "width": 101.384766,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "￼",
-              "width": 64,
-              "ascent": 1833.333333,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " and attach snapshot ",
-              "width": 114.75,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            },
-            {
-              "text": "￼",
-              "width": 54,
-              "ascent": 3000,
-              "descent": 0,
-              "fontFamily": ""
-            },
-            {
-              "text": " for traceability. The inline objects above ",
-              "width": 216.556641,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
-              "width": 466.705078,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ],
-          [
-            {
-              "text": "becoming standalone flow blocks.",
-              "width": 179.4375,
-              "ascent": 905.273438,
-              "descent": 211.914063,
-              "fontFamily": ""
-            }
-          ]
-        ]
-      },
-      {
-        "type": "p",
-        "x": 72,
-        "y": 437.94375,
-        "w": 468,
-        "h": 170.971875,
+        "h": 98.698438,
         "lines": [
           [
             {
@@ -1611,9 +1595,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 620.915625,
+        "y": 229.910938,
         "w": 468,
-        "h": 85.485938,
+        "h": 98.698438,
         "lines": [
           [
             {
@@ -1681,23 +1665,7 @@
               "descent": 211.914063,
               "fontFamily": ""
             }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "index": 5,
-    "width": 612,
-    "height": 792,
-    "boxes": [
-      {
-        "type": "p",
-        "x": 72,
-        "y": 72,
-        "w": 468,
-        "h": 35.2125,
-        "lines": [
+          ],
           [
             {
               "text": "must stay anchored in text order, break lines legally, and continue across pages without ",
@@ -1721,9 +1689,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 119.2125,
+        "y": 340.609375,
         "w": 468,
-        "h": 170.971875,
+        "h": 98.698438,
         "lines": [
           [
             {
@@ -1815,9 +1783,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 302.184375,
+        "y": 451.307813,
         "w": 468,
-        "h": 170.971875,
+        "h": 98.698438,
         "lines": [
           [
             {
@@ -1909,9 +1877,9 @@
       {
         "type": "p",
         "x": 72,
-        "y": 485.15625,
+        "y": 562.00625,
         "w": 468,
-        "h": 170.971875,
+        "h": 98.698438,
         "lines": [
           [
             {

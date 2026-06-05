@@ -1,0 +1,102 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 360,
+      "height": 300
+    },
+    "margins": {
+      "top": 24,
+      "right": 24,
+      "bottom": 24,
+      "left": 24
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.25,
+    "microLanePolicy": "balanced",
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 18,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Dense Page-Turning Cascade"
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "top-bottom",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,0 L312,0 L312,470 L0,470 Z"
+          },
+          "properties": {
+            "sourceId": "primary-container-blocker",
+            "style": {
+              "width": 312,
+              "height": 470,
+              "backgroundColor": "#d8cec0"
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAkElEQVR42u3QMQ0AAAwDoEqv9Fnot4cEBSQtKwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmTJkiULBbJkyZIlCwWyZMmSJQsFsmR9OyMOEkoQG4WbAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The primary story container begins with a massive top-bottom obstacle. It should completely block the opening page frame before ordinary text is allowed to resume.",
+          "properties": {
+            "sourceId": "cascade-setup"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Cascade body begins only after the massive obstacle has cleared. Cascade body begins only after the massive obstacle has cleared. Cascade body begins only after the massive obstacle has cleared. Cascade body begins only after the massive obstacle has cleared.",
+          "properties": {
+            "sourceId": "cascade-body-open"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The continuation should then use full-width story lines with no phantom side lane. The continuation should then use full-width story lines with no phantom side lane. The continuation should then use full-width story lines with no phantom side lane.",
+          "properties": {
+            "sourceId": "cascade-body-follow"
+          }
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "content": "Normal document flow resumes after the dense blocked-story cascade.",
+      "properties": {
+        "sourceId": "post-cascade-flow"
+      }
+    }
+  ]
+}

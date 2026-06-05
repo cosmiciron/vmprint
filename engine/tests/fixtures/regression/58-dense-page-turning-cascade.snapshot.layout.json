@@ -1,0 +1,219 @@
+[
+  {
+    "index": 0,
+    "width": 360,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Dense Page-Turning Cascade",
+              "width": 252.738281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 24,
+        "y": 56.609375,
+        "w": 312,
+        "h": 219.390625,
+        "lines": []
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 360,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "image",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 250.609375,
+        "lines": []
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 360,
+    "height": 300,
+    "boxes": [
+      {
+        "type": "p",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 42.539063,
+        "lines": [
+          [
+            {
+              "text": "The primary story container begins with a massive top-bottom ",
+              "width": 303.23584,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstacle. It should completely block the opening page frame ",
+              "width": 295.345703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "before ordinary text is allowed to resume.",
+              "width": 201.152832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 74.539063,
+        "w": 312,
+        "h": 70.039063,
+        "lines": [
+          [
+            {
+              "text": "Cascade body begins only after the massive obstacle has ",
+              "width": 283.717285,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "cleared. Cascade body begins only after the massive obstacle ",
+              "width": 305.115723,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "has cleared. Cascade body begins only after the massive ",
+              "width": 281.880371,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "obstacle has cleared. Cascade body begins only after the ",
+              "width": 282.508789,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "massive obstacle has cleared.",
+              "width": 147.350586,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 152.578125,
+        "w": 312,
+        "h": 56.289063,
+        "lines": [
+          [
+            {
+              "text": "The continuation should then use full-width story lines with no ",
+              "width": 302.05957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "phantom side lane. The continuation should then use full-width ",
+              "width": 307.586426,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "story lines with no phantom side lane. The continuation should ",
+              "width": 306.351074,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "then use full-width story lines with no phantom side lane.",
+              "width": 275.150391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 216.867188,
+        "w": 312,
+        "h": 30.078125,
+        "lines": [
+          [
+            {
+              "text": "Normal document flow resumes after the dense blocked-story ",
+              "width": 302.634277,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "cascade.",
+              "width": 44.026855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -511,6 +511,7 @@ export class LayoutSession {
             recordProfile: (metric, delta) => this.recordProfile(metric, delta),
             recordKeepWithNextPrepare: (actorKind, durationMs) => this.recordKeepWithNextPrepare(actorKind, durationMs),
             publishActorSignal: (signal) => this.liveRuntimeHost.publishActorSignal(signal),
+            getActorSignals: (topic) => this.getActorSignals(topic),
             getPaginationLoopState: () => this.liveRuntimeHost.getPaginationLoopState(),
             getActorSignalSequence: () => this.actorCommunicationRuntime.getActorSignalSequence(),
             getKeepWithNextPlan: (actorId, signature) => this.aiRuntime.getKeepWithNextPlan(actorId, signature),
@@ -523,6 +524,7 @@ export class LayoutSession {
             getRegisteredActors: () => this.kernel.actorRegistry,
             getFragmentTransitionSourceIds: () => this.kernel.getFragmentTransitionSourceIds(),
             getFragmentTransitionsBySource: (sourceActorId) => this.kernel.getFragmentTransitionsBySource(sourceActorId),
+            resolveChunkOriginWorldY: (chunkIndex, chunkHeight) => this.resolveChunkOriginWorldY(chunkIndex, chunkHeight),
             notifyActorSpawn: (actor) => this.notifyActorSpawn(actor)
         });
         this.placementSessionRuntime = new PlacementSessionRuntime(
@@ -625,9 +627,10 @@ export class LayoutSession {
             actorIndex?: number;
             actorId?: string;
             sourceId?: string;
+            preferVisibleActorRefs?: boolean;
         }
     ): SpatialFrontier | null {
-        const owner = findHostedActorController(this.kernel.actorRegistry, actor) ?? actor;
+        const owner = findOutermostHostedActorController(this.kernel.actorRegistry, actor) ?? actor;
         const state = this.paginationLoopState;
         const finalizedPages = this.getFinalizedPages();
         const currentPageBoxes = state?.paginationState.currentPageBoxes ?? [];
@@ -641,6 +644,9 @@ export class LayoutSession {
         const resolvedActorIndex = Number.isFinite(resolvedActorIndexCandidate) && Number(resolvedActorIndexCandidate) >= 0
             ? Number(resolvedActorIndexCandidate)
             : undefined;
+        if (options?.preferVisibleActorRefs && refs.length > 0) {
+            return this.resolveActorRefFrontier(refs, finalizedPages as Page[], currentPageIndex, state, resolvedActorIndex, owner);
+        }
         const checkpointFrontier = this.actorCommunicationRuntime.resolveActorCheckpointFrontier(owner, resolvedActorIndex)
             ?? (Number.isFinite(resolvedActorIndex)
                 ? this.actorCommunicationRuntime.resolveQueueCheckpointFrontier(Number(resolvedActorIndex))
@@ -656,37 +662,7 @@ export class LayoutSession {
         }
 
         if (refs.length > 0) {
-            let earliest = refs[0];
-            for (const ref of refs.slice(1)) {
-                const currentY = Number(ref.box.y || 0);
-                const earliestY = Number(earliest.box.y || 0);
-                if (
-                    ref.pageIndex < earliest.pageIndex
-                    || (ref.pageIndex === earliest.pageIndex && currentY < earliestY)
-                ) {
-                    earliest = ref;
-                }
-            }
-
-            const pageHeight =
-                finalizedPages.find((page) => page.index === earliest.pageIndex)?.height
-                ?? (earliest.pageIndex === currentPageIndex
-                    ? state?.context.pageHeight ?? this.currentSurface?.height
-                    : this.currentSurface?.height);
-            const cursorY = Number(earliest.box.y || 0);
-            const chunkOriginWorldY = Number.isFinite(pageHeight)
-                ? this.resolveChunkOriginWorldY(earliest.pageIndex, Number(pageHeight))
-                : undefined;
-            return {
-                pageIndex: earliest.pageIndex,
-                cursorY,
-                ...(Number.isFinite(chunkOriginWorldY)
-                    ? { worldY: Math.max(0, Number(chunkOriginWorldY) + cursorY) }
-                    : {}),
-                ...(Number.isFinite(resolvedActorIndex) ? { actorIndex: Number(resolvedActorIndex) } : {}),
-                actorId: owner.actorId,
-                sourceId: owner.sourceId
-            };
+            return this.resolveActorRefFrontier(refs, finalizedPages as Page[], currentPageIndex, state, resolvedActorIndex, owner);
         }
 
         if (Number.isFinite(resolvedActorIndex) && state) {
@@ -712,6 +688,47 @@ export class LayoutSession {
         }
 
         return null;
+    }
+
+    private resolveActorRefFrontier(
+        refs: readonly BoxRef[],
+        finalizedPages: readonly Page[],
+        currentPageIndex: number,
+        state: PaginationLoopState | null,
+        resolvedActorIndex: number | undefined,
+        owner: PackagerUnit
+    ): SpatialFrontier {
+        let earliest = refs[0];
+        for (const ref of refs.slice(1)) {
+            const currentY = Number(ref.box.y || 0);
+            const earliestY = Number(earliest.box.y || 0);
+            if (
+                ref.pageIndex < earliest.pageIndex
+                || (ref.pageIndex === earliest.pageIndex && currentY < earliestY)
+            ) {
+                earliest = ref;
+            }
+        }
+
+        const pageHeight =
+            finalizedPages.find((page) => page.index === earliest.pageIndex)?.height
+            ?? (earliest.pageIndex === currentPageIndex
+                ? state?.context.pageHeight ?? this.currentSurface?.height
+                : this.currentSurface?.height);
+        const cursorY = Number(earliest.box.y || 0);
+        const chunkOriginWorldY = Number.isFinite(pageHeight)
+            ? this.resolveChunkOriginWorldY(earliest.pageIndex, Number(pageHeight))
+            : undefined;
+        return {
+            pageIndex: earliest.pageIndex,
+            cursorY,
+            ...(Number.isFinite(chunkOriginWorldY)
+                ? { worldY: Math.max(0, Number(chunkOriginWorldY) + cursorY) }
+                : {}),
+            ...(Number.isFinite(resolvedActorIndex) ? { actorIndex: Number(resolvedActorIndex) } : {}),
+            actorId: owner.actorId,
+            sourceId: owner.sourceId
+        };
     }
 
     resolveRuntimeFrontierAtActorIndex(actorIndex: number): SpatialFrontier | null {
@@ -1871,4 +1888,23 @@ function findHostedActorController(
         }
     }
     return null;
+}
+
+function findOutermostHostedActorController(
+    actors: readonly PackagerUnit[],
+    targetActor: PackagerUnit
+): HostedActorController | null {
+    let current = targetActor;
+    let owner: HostedActorController | null = null;
+    const visited = new Set<string>();
+    while (true) {
+        const currentKey = String(current.actorId || current.sourceId || '').trim();
+        if (currentKey && visited.has(currentKey)) break;
+        if (currentKey) visited.add(currentKey);
+        const next = findHostedActorController(actors, current);
+        if (!next) break;
+        owner = next;
+        current = next;
+    }
+    return owner;
 }

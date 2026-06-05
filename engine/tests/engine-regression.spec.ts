@@ -1036,6 +1036,78 @@ function assertPolygonTopBottomCarryoverSignals(pages: any[], fixtureName: strin
     assert.ok(offsets.every((offset) => !Number.isFinite(offset) || offset <= 0.5), `${fixtureName}: expected top-bottom continuation text to clear vertically rather than side-wrap`);
 }
 
+function assertDensePageTurningCascadeSignals(pages: any[], fixtureName: string): void {
+    assert.ok(pages.length >= 3, `${fixtureName}: expected dense blocker cascade to force at least three pages`);
+
+    const blockerPages = pageIndexesForSourceId(pages, 'primary-container-blocker');
+    assert.deepEqual(blockerPages, [0, 1], `${fixtureName}: expected blocker to occupy the first two page frames`);
+
+    const pageOneText = (pages[1]?.boxes || []).filter((box: any) => Array.isArray(box.lines) && box.lines.length > 0);
+    assert.equal(pageOneText.length, 0, `${fixtureName}: expected page two to remain completely blocked for text`);
+
+    const openingBoxes = boxesForSourceId(pages, 'cascade-body-open');
+    assert.ok(openingBoxes.length > 0, `${fixtureName}: expected body text after the blocked cascade`);
+    assert.ok(
+        openingBoxes.every((box: any) => Number(box.meta?.pageIndex) >= 2),
+        `${fixtureName}: cascade body should not appear until after the carried blocker clears`
+    );
+
+    const lineOffsets = openingBoxes.flatMap((box: any) =>
+        Array.isArray(box.properties?._lineOffsets)
+            ? box.properties._lineOffsets.map((offset: any) => Number(offset))
+            : []
+    );
+    assert.ok(lineOffsets.length > 0, `${fixtureName}: expected reflow metadata on cascade body`);
+    assert.ok(
+        lineOffsets.every((offset: number) => !Number.isFinite(offset) || offset <= 0.5),
+        `${fixtureName}: top-bottom cascade should clear vertically rather than side-wrap through a sliver`
+    );
+
+    const lineWidths = openingBoxes.flatMap((box: any) =>
+        Array.isArray(box.properties?._lineWidths)
+            ? box.properties._lineWidths.map((width: any) => Number(width))
+            : []
+    );
+    assert.ok(
+        lineWidths.every((width: number) => Number.isFinite(width) && width >= 300),
+        `${fixtureName}: body should resume in the next full-width vertical zone`
+    );
+}
+
+function assertParallelSidebarDuringCascadeSignals(pages: any[], fixtureName: string): void {
+    assert.ok(pages.length >= 3, `${fixtureName}: expected parallel cascade proof to span at least three frames`);
+
+    const blockerA = pageIndexesForSourceId(pages, 'main-container-blocker-a');
+    const blockerB = pageIndexesForSourceId(pages, 'main-container-blocker-b');
+    assert.deepEqual(blockerA, [0], `${fixtureName}: expected first main blocker slice on frame one`);
+    assert.deepEqual(blockerB, [1], `${fixtureName}: expected second main blocker slice on frame two`);
+
+    const mainResumePages = pageIndexesForSourceId(pages, 'main-after-cascade');
+    assert.ok(mainResumePages.length > 0, `${fixtureName}: expected main story text after blockers`);
+    assert.ok(
+        mainResumePages.every((pageIndex) => pageIndex >= 2),
+        `${fixtureName}: main story should wait until the blocked frames clear`
+    );
+
+    const sidebarPages = [
+        ...pageIndexesForSourceId(pages, 'parallel-sidebar-label'),
+        ...pageIndexesForSourceId(pages, 'parallel-sidebar-frame-one'),
+        ...pageIndexesForSourceId(pages, 'parallel-sidebar-frame-two'),
+        ...pageIndexesForSourceId(pages, 'parallel-sidebar-frame-three')
+    ];
+    assert.ok(sidebarPages.includes(0), `${fixtureName}: expected sidebar content on frame one`);
+    assert.ok(sidebarPages.includes(1), `${fixtureName}: expected sidebar content on frame two while main is blocked`);
+
+    const pageOneMainText = (pages[0]?.boxes || []).filter((box: any) =>
+        String(box.meta?.sourceId || '').endsWith(':main-after-cascade')
+    );
+    const pageTwoMainText = (pages[1]?.boxes || []).filter((box: any) =>
+        String(box.meta?.sourceId || '').endsWith(':main-after-cascade')
+    );
+    assert.equal(pageOneMainText.length, 0, `${fixtureName}: main text should not appear on blocked frame one`);
+    assert.equal(pageTwoMainText.length, 0, `${fixtureName}: main text should not appear on blocked frame two`);
+}
+
 function assertPolygonMultiColumnCarryoverSignals(pages: any[], fixtureName: string): void {
     assert.ok(pages.length >= 2, `${fixtureName}: expected multi-column polygon carry-over proof to span at least two pages`);
     const page1 = pages[1];
@@ -2619,8 +2691,8 @@ async function run() {
         }
         if (fixture.name === '25-total-pages-footer.json') {
             _check(
-                `${fixture.name} deferred total-pages footer materialization`,
-                'footer with {totalPages} token renders the actual final page count on every page, not a placeholder, without a second simulate() call',
+                `${fixture.name} reactive total-pages footer materialization`,
+                'footer with {totalPages} token renders through generated reactive page-region actors, not a deferred post-process append',
                 () => {
                     const totalPages = pagesA.length;
                     const report = engine.getLastSimulationReportReader();
@@ -2630,6 +2702,10 @@ async function run() {
                         const page = pagesA[pageIndex];
                         const footerBoxes = page.boxes.filter((box: any) => box.meta?.sourceType === 'footer');
                         assert.ok(footerBoxes.length > 0, `${fixture.name}: page ${pageIndex} should have footer boxes`);
+                        assert.ok(
+                            footerBoxes.every((box: any) => box.meta?.generated === true && String(box.meta?.actorId || '').startsWith('system:footer:reactive-region:')),
+                            `${fixture.name}: page ${pageIndex} footer boxes should be generated by reactive page-region actors`
+                        );
 
                         const footerText = footerBoxes.map((box: any) => {
                             if (typeof box.content === 'string') return box.content;
@@ -2761,6 +2837,24 @@ async function run() {
                 'top-bottom polygon carry-over should clear the continuation text vertically instead of carving side-wrap slots',
                 () => {
                     assertPolygonTopBottomCarryoverSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '58-dense-page-turning-cascade.json') {
+            _check(
+                `${fixture.name} dense page-turning cascade signals`,
+                'a massive top-bottom blocker should occupy consecutive page frames while text resumes only in the next full-width vertical zone',
+                () => {
+                    assertDensePageTurningCascadeSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '59-parallel-sidebar-during-cascade.json') {
+            _check(
+                `${fixture.name} parallel sidebar cascade signals`,
+                'a sidebar zone should continue filling blocked frames while the main story waits for its next available frame',
+                () => {
+                    assertParallelSidebarDuringCascadeSignals(pagesA, fixture.name);
                 }
             );
         }

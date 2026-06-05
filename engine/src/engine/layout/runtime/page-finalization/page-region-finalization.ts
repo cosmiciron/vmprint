@@ -25,7 +25,6 @@ type FinalizePagesCallbacks = {
 
 export class PageRegionCollaborator implements Collaborator {
     private reactiveRegionSequence = 0;
-    private deferredTotalPageRegions: DeferredTotalPageRegion[] = [];
 
     constructor(
         private readonly config: LayoutConfig,
@@ -44,30 +43,10 @@ export class PageRegionCollaborator implements Collaborator {
         const headerRect = getHeaderRect(this.config, page);
         const footerRect = getFooterRect(this.config, page);
 
-        const headerUsesTotalPages = regionContainsTotalPages(resolved.header);
-        const footerUsesTotalPages = regionContainsTotalPages(resolved.footer);
-        if (headerUsesTotalPages && resolved.header) {
-            this.deferredTotalPageRegions.push({
-                pageIndex: page.index,
-                physicalPageNumber,
-                logicalPageNumber: logicalNumber,
-                content: resolved.header,
-                rect: headerRect,
-                sourceType: 'header'
-            });
-        }
-        if (footerUsesTotalPages && resolved.footer) {
-            this.deferredTotalPageRegions.push({
-                pageIndex: page.index,
-                physicalPageNumber,
-                logicalPageNumber: logicalNumber,
-                content: resolved.footer,
-                rect: footerRect,
-                sourceType: 'footer'
-            });
-        }
-
-        const headerActor = headerUsesTotalPages ? null : createReactivePageRegionActor(
+        const initialTotalPageCount = resolveLatestPaginationFinalizedTotalPageCount(
+            host.getActorSignals('pagination:finalized')
+        ) ?? physicalPageNumber;
+        const headerActor = createReactivePageRegionActor(
             resolved.header,
             headerRect,
             page.index,
@@ -75,9 +54,10 @@ export class PageRegionCollaborator implements Collaborator {
             logicalNumber,
             'header',
             this.callbacks,
-            ++this.reactiveRegionSequence
+            ++this.reactiveRegionSequence,
+            initialTotalPageCount
         );
-        const footerActor = footerUsesTotalPages ? null : createReactivePageRegionActor(
+        const footerActor = createReactivePageRegionActor(
             resolved.footer,
             footerRect,
             page.index,
@@ -85,12 +65,13 @@ export class PageRegionCollaborator implements Collaborator {
             logicalNumber,
             'footer',
             this.callbacks,
-            ++this.reactiveRegionSequence
+            ++this.reactiveRegionSequence,
+            initialTotalPageCount
         );
-        const headerMaterialized = !headerUsesTotalPages && resolved.header
+        const headerMaterialized = !headerActor && resolved.header
             ? materializePageTokens(resolved.header, physicalPageNumber, logicalNumber)
             : null;
-        const footerMaterialized = !footerUsesTotalPages && resolved.footer
+        const footerMaterialized = !footerActor && resolved.footer
             ? materializePageTokens(resolved.footer, physicalPageNumber, logicalNumber)
             : null;
         const headerContent = headerActor
@@ -102,7 +83,7 @@ export class PageRegionCollaborator implements Collaborator {
 
         const capture = host.createPageCaptureState({
             pageIndex: page.index,
-            worldTopY: page.index * page.height,
+            worldTopY: host.resolveChunkOriginWorldY(page.index, page.height),
             pageWidth: page.width,
             pageHeight: page.height,
             margins: this.config.layout.margins,
@@ -152,42 +133,9 @@ export class PageRegionCollaborator implements Collaborator {
 
     onSimulationStart(host: CollaboratorHost): void {
         this.reactiveRegionSequence = 0;
-        this.deferredTotalPageRegions = [];
         host.resetLogicalPageNumbering(Number(this.config.layout.pageNumberStart ?? 1));
     }
-
-    onSimulationComplete(host: CollaboratorHost): void {
-        if (this.deferredTotalPageRegions.length === 0) return;
-        const pages = host.getFinalizedPages();
-        const totalPageCount = pages.length;
-        for (const region of this.deferredTotalPageRegions) {
-            const page = pages[region.pageIndex];
-            if (!page) continue;
-            const content = materializePageTokens(
-                region.content,
-                region.physicalPageNumber,
-                region.logicalPageNumber,
-                totalPageCount
-            );
-            if (!content) continue;
-            page.boxes.push(...this.callbacks.layoutRegion(
-                content,
-                region.rect,
-                region.pageIndex,
-                region.sourceType
-            ));
-        }
-    }
 }
-
-type DeferredTotalPageRegion = {
-    pageIndex: number;
-    physicalPageNumber: number;
-    logicalPageNumber: number | null;
-    content: PageRegionContent;
-    rect: RegionRect;
-    sourceType: 'header' | 'footer';
-};
 
 export type ResolvedRegions = {
     header: PageRegionContent | null;
@@ -467,6 +415,7 @@ class ReactivePageRegionActor implements PackagerUnit {
         content: PageRegionContent;
         rect: RegionRect;
         callbacks: FinalizePagesCallbacks;
+        initialTotalPageCount: number | null;
     }) {
         this.actorId = input.actorId;
         this.sourceId = input.sourceId;
@@ -477,6 +426,7 @@ class ReactivePageRegionActor implements PackagerUnit {
         this.content = input.content;
         this.rect = input.rect;
         this.callbacks = input.callbacks;
+        this.totalPageCount = normalizeInitialTotalPageCount(input.initialTotalPageCount);
     }
 
     readonly actorId: string;
@@ -484,7 +434,8 @@ class ReactivePageRegionActor implements PackagerUnit {
 
     prepare(_availableWidth: number, _availableHeight: number, _context: PackagerContext): void { }
 
-    emitBoxes(_availableWidth: number, _availableHeight: number, _context: PackagerContext): LayoutBox[] | null {
+    emitBoxes(_availableWidth: number, _availableHeight: number, context: PackagerContext): LayoutBox[] | null {
+        this.updateCommittedState(context);
         return this.emitCurrentBoxes();
     }
 
@@ -554,7 +505,8 @@ function createReactivePageRegionActor(
     logicalPageNumber: number | null,
     sourceType: PageRegionActorSourceType,
     callbacks: FinalizePagesCallbacks,
-    sequence: number
+    sequence: number,
+    initialTotalPageCount: number | null
 ): ReactivePageRegionActor | null {
     if (!content || !regionContainsTotalPages(content)) {
         return null;
@@ -568,7 +520,8 @@ function createReactivePageRegionActor(
         logicalPageNumber,
         content,
         rect,
-        callbacks
+        callbacks,
+        initialTotalPageCount
     });
 }
 
@@ -581,6 +534,16 @@ function normalizePublishedTotalPageCount(signal: ActorSignal): number | null {
     const total = signal.payload?.totalPageCount;
     if (!Number.isFinite(total)) return null;
     return Math.max(0, Math.floor(Number(total)));
+}
+
+function normalizeInitialTotalPageCount(value: unknown): number | null {
+    if (!Number.isFinite(value)) return null;
+    return Math.max(0, Math.floor(Number(value)));
+}
+
+function resolveLatestPaginationFinalizedTotalPageCount(signals: readonly ActorSignal[]): number | null {
+    const latest = readLatestPaginationFinalizedSignal(signals);
+    return latest ? normalizePublishedTotalPageCount(latest) : null;
 }
 
 export function finalizePagesWithCallbacks(

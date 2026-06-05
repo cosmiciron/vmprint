@@ -8,6 +8,7 @@ export type PackagerIdentity = {
     actorKind: string;
     fragmentIndex: number;
     continuationOf?: string;
+    path?: number[];
 };
 
 function normalizePath(path: number[]): number[] {
@@ -25,14 +26,16 @@ function buildActorId(sourceId: string, actorKind: string, fragmentIndex: number
 
 export function createElementPackagerIdentity(element: Element, path: number[]): PackagerIdentity {
     const actorKind = String(element.type || 'node').trim() || 'node';
+    const normalizedPath = normalizePath(path);
     const sourceId =
         LayoutUtils.normalizeAuthorSourceId(element.properties?.sourceId) ||
-        buildAutoSourceId(path, actorKind);
+        buildAutoSourceId(normalizedPath, actorKind);
     return {
         actorId: buildActorId(sourceId, actorKind, 0),
         sourceId,
         actorKind,
-        fragmentIndex: 0
+        fragmentIndex: 0,
+        path: normalizedPath
     };
 }
 
@@ -54,7 +57,8 @@ export function createFlowBoxPackagerIdentity(
         sourceId,
         actorKind,
         fragmentIndex,
-        continuationOf: overrides?.continuationOf
+        continuationOf: overrides?.continuationOf,
+        path: overrides?.path
     };
 }
 
@@ -68,6 +72,7 @@ export function createContinuationIdentity(identity: PackagerIdentity, fragmentI
         sourceId: identity.sourceId,
         actorKind: identity.actorKind,
         fragmentIndex: nextFragmentIndex,
-        continuationOf: identity.actorId
+        continuationOf: identity.actorId,
+        path: identity.path
     };
 }

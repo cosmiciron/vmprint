@@ -1,0 +1,1015 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 595,
+      "height": 842
+    },
+    "margins": {
+      "top": 40,
+      "right": 40,
+      "bottom": 40,
+      "left": 40
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "marginBottom": 10,
+      "keepWithNext": true
+    },
+    "lead": {
+      "fontSize": 13,
+      "lineHeight": 1.4,
+      "marginBottom": 14,
+      "allowLineSplit": true
+    },
+    "p": {
+      "marginBottom": 8,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "h1",
+      "content": "Spatial Layout Stress Test: Dense Text Around Irregular Polygon Exclusions"
+    },
+    {
+      "type": "lead",
+      "content": "This fixture stresses the spatial layout path by flowing dense prose text around a sequence of complex irregular polygon exclusions. It is designed to produce a high volume of spatial-reflow and story-layout calls for reliable benchmark anchoring."
+    },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,72 L40,12 L82,34 L124,0 L168,48 L126,54 L146,110 L98,92 L82,150 L58,94 L10,112 L34,58 Z"
+          },
+          "properties": {
+            "sourceId": "stress-wing-0",
+            "style": {
+              "width": 168,
+              "height": 150
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line spacing, and letter spacing, as well as adjusting the space between pairs of letters. The term typography is also applied to the style, arrangement, and appearance of the letters, numbers, and symbols created by the process."
+        },
+        {
+          "type": "p",
+          "content": "When text flows around an irregular polygon obstacle the engine must determine at each line band exactly how much horizontal space is available on each side of the exclusion zone. The broadphase narrows the candidate set using a spatial index and the narrowphase computes the precise chord width for each band using the polygon edge intersection algorithm."
+        },
+        {
+          "type": "p",
+          "content": "The spatial reflow system handles multiple simultaneous exclusions on the same page, including circles, polygons, and exclusion assemblies composed of overlapping primitives. Each paragraph element entering the story layout loop is evaluated against the current collision field before lines are materialized and text is fitted."
+        },
+        {
+          "type": "p",
+          "content": "Column gaps and exclusion zones interact through the same spatial field so a float that crosses a column boundary correctly clips both columns at once. The engine resolves these interactions during the story simulation phase before any final line positions are committed to the output page."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,0 L160,0 L160,22 L102,22 L102,44 L160,44 L160,66 L92,66 L92,88 L160,88 L160,110 L0,110 Z"
+          },
+          "properties": {
+            "sourceId": "stress-comb-1",
+            "style": {
+              "width": 160,
+              "height": 110
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Optical underhang correction applies a small fractional adjustment to lines whose terminal glyph would otherwise land on an optically heavy stroke. This correction is computed after the geometric line-width constraint is satisfied and before the line token sequence is finalized for the output renderer."
+        },
+        {
+          "type": "p",
+          "content": "Paragraph continuation across page boundaries requires the story simulation to track the residual content stack and replay it against a fresh page geometry. Polygon floats that appear near the bottom of a page must be carried forward if the story continues and their bounding box would be clipped by the page margin."
+        },
+        {
+          "type": "p",
+          "content": "The line layout subsystem resolves each token sequence against the available width constraint, producing a set of line breaks that respect soft-wrap opportunities while avoiding widows and orphans according to the document-level keep rules. The resolver uses a greedy forward pass followed by a backward widow-correction sweep."
+        },
+        {
+          "type": "p",
+          "content": "Advanced hyphenation policies allow the engine to break words at syllable boundaries when the available width would otherwise force an unacceptably ragged right margin. The hyphenation dictionary lookup is integrated into the token resolution phase so that the cost of each candidate break point is evaluated in context."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,48 L48,0 L96,48 L48,96 Z"
+          },
+          "properties": {
+            "sourceId": "stress-diamond-2",
+            "style": {
+              "width": 96,
+              "height": 96
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The kern table for a given font pair is consulted for every adjacent glyph boundary during the line-level measurement phase. Ligature substitution is applied before kerning so that the effective glyph sequence seen by the kern lookup reflects the final rendered form of the text rather than the raw character sequence."
+        },
+        {
+          "type": "p",
+          "content": "Floating images with wrap mode set to around generate a soft exclusion zone whose boundary is derived from the declared shape definition. For polygon shapes the boundary is the raw SVG path data scaled to the image bounding box and offset to the image anchor point within the story flow coordinate system."
+        },
+        {
+          "type": "p",
+          "content": "When the microLanePolicy is set to typography, the engine rejects spatial lanes narrower than a configurable minimum token width. This prevents the layout from placing single-character fragments inside tight polygon pockets where they would be illegible in print. The policy is evaluated per-paragraph during the spatial reflow step."
+        },
+        {
+          "type": "p",
+          "content": "Story layout simulation proceeds in multiple phases: first a geometry pass that places all anchored floats and computes the collision field, then a content pass that reflows each paragraph and heading element against the field, and finally a pagination pass that splits the simulated story into concrete page assignments."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,0 L80,0 L80,50 L140,50 L140,130 L0,130 Z"
+          },
+          "properties": {
+            "sourceId": "stress-l-shape-3",
+            "style": {
+              "width": 140,
+              "height": 130
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The collider field is built once per story simulation pass and shared across all paragraph reflow calls within that pass. Cache invalidation occurs when a new float anchor is placed that overlaps the scan range of a previously reflowed paragraph, triggering a partial re-simulation from the invalidation point forward."
+        },
+        {
+          "type": "p",
+          "content": "Zone continuations allow a single logical text frame to span multiple physical pages while maintaining a consistent left and right margin offset from the page boundary. The zone-continue system is separate from the story simulation and operates at a higher level of abstraction in the document processing pipeline."
+        },
+        {
+          "type": "p",
+          "content": "Glyph metrics are resolved through a measurement dispatch system that batches all pending measurement requests before committing to a layout pass. This avoids the overhead of individual measurement round-trips and allows the engine to pipeline measurement work with layout computation for improved throughput."
+        },
+        {
+          "type": "p",
+          "content": "The font registry maintains a cache of resolved font descriptors keyed by family name and variant. When a document requests a fallback font family the registry resolves the chain in order and returns the first descriptor that satisfies the requested weight and style constraints according to the CSS font-matching algorithm."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M75,0 L150,46 L122,120 L28,120 L0,46 Z"
+          },
+          "properties": {
+            "sourceId": "stress-pentagon-4",
+            "style": {
+              "width": 150,
+              "height": 120
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Color management in the output renderer maps document-space colors to the target ICC profile using a lookup table that is precomputed at document load time. Spot colors declared in the document palette are preserved as named references through the layout pipeline and only resolved to CMYK during the final rendering step."
+        },
+        {
+          "type": "p",
+          "content": "Master pages define a repeating template that is applied to every output page in the document. The template can include page headers, footers, background graphics, and column grid definitions. Story elements placed on master pages are excluded from the main content flow and rendered at the bottom of the z-order stack."
+        },
+        {
+          "type": "p",
+          "content": "Overflow text that cannot fit in its assigned zone is placed into an overflow chain and will be picked up by the next available continuation zone in document order. The overflow chain preserves the full paragraph context including style inheritance and hyphenation state so that the continuation appears seamless to the reader."
+        },
+        {
+          "type": "p",
+          "content": "Vertical rhythm alignment ensures that the baseline grid of the main text column is consistent across adjacent columns and across page boundaries. The engine resolves baseline snapping after the paragraph reflow phase and before the final line positioning step, using the document-level leading value as the grid pitch."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,20 L100,20 L100,0 L160,45 L100,90 L100,70 L0,70 Z"
+          },
+          "properties": {
+            "sourceId": "stress-arrow-5",
+            "style": {
+              "width": 160,
+              "height": 90
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line spacing, and letter spacing, as well as adjusting the space between pairs of letters. The term typography is also applied to the style, arrangement, and appearance of the letters, numbers, and symbols created by the process."
+        },
+        {
+          "type": "p",
+          "content": "When text flows around an irregular polygon obstacle the engine must determine at each line band exactly how much horizontal space is available on each side of the exclusion zone. The broadphase narrows the candidate set using a spatial index and the narrowphase computes the precise chord width for each band using the polygon edge intersection algorithm."
+        },
+        {
+          "type": "p",
+          "content": "The spatial reflow system handles multiple simultaneous exclusions on the same page, including circles, polygons, and exclusion assemblies composed of overlapping primitives. Each paragraph element entering the story layout loop is evaluated against the current collision field before lines are materialized and text is fitted."
+        },
+        {
+          "type": "p",
+          "content": "Column gaps and exclusion zones interact through the same spatial field so a float that crosses a column boundary correctly clips both columns at once. The engine resolves these interactions during the story simulation phase before any final line positions are committed to the output page."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M30,0 L100,0 L130,52 L118,120 L22,120 L0,52 Z"
+          },
+          "properties": {
+            "sourceId": "stress-hexagon-6",
+            "style": {
+              "width": 130,
+              "height": 120
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Optical underhang correction applies a small fractional adjustment to lines whose terminal glyph would otherwise land on an optically heavy stroke. This correction is computed after the geometric line-width constraint is satisfied and before the line token sequence is finalized for the output renderer."
+        },
+        {
+          "type": "p",
+          "content": "Paragraph continuation across page boundaries requires the story simulation to track the residual content stack and replay it against a fresh page geometry. Polygon floats that appear near the bottom of a page must be carried forward if the story continues and their bounding box would be clipped by the page margin."
+        },
+        {
+          "type": "p",
+          "content": "The line layout subsystem resolves each token sequence against the available width constraint, producing a set of line breaks that respect soft-wrap opportunities while avoiding widows and orphans according to the document-level keep rules. The resolver uses a greedy forward pass followed by a backward widow-correction sweep."
+        },
+        {
+          "type": "p",
+          "content": "Advanced hyphenation policies allow the engine to break words at syllable boundaries when the available width would otherwise force an unacceptably ragged right margin. The hyphenation dictionary lookup is integrated into the token resolution phase so that the cost of each candidate break point is evaluated in context."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M40,0 L120,0 L120,40 L140,40 L140,80 L160,80 L160,120 L0,120 L0,80 L20,80 L20,40 L40,40 Z"
+          },
+          "properties": {
+            "sourceId": "stress-pyramid-7",
+            "style": {
+              "width": 160,
+              "height": 120
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The kern table for a given font pair is consulted for every adjacent glyph boundary during the line-level measurement phase. Ligature substitution is applied before kerning so that the effective glyph sequence seen by the kern lookup reflects the final rendered form of the text rather than the raw character sequence."
+        },
+        {
+          "type": "p",
+          "content": "Floating images with wrap mode set to around generate a soft exclusion zone whose boundary is derived from the declared shape definition. For polygon shapes the boundary is the raw SVG path data scaled to the image bounding box and offset to the image anchor point within the story flow coordinate system."
+        },
+        {
+          "type": "p",
+          "content": "When the microLanePolicy is set to typography, the engine rejects spatial lanes narrower than a configurable minimum token width. This prevents the layout from placing single-character fragments inside tight polygon pockets where they would be illegible in print. The policy is evaluated per-paragraph during the spatial reflow step."
+        },
+        {
+          "type": "p",
+          "content": "Story layout simulation proceeds in multiple phases: first a geometry pass that places all anchored floats and computes the collision field, then a content pass that reflows each paragraph and heading element against the field, and finally a pagination pass that splits the simulated story into concrete page assignments."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,72 L40,12 L82,34 L124,0 L168,48 L126,54 L146,110 L98,92 L82,150 L58,94 L10,112 L34,58 Z"
+          },
+          "properties": {
+            "sourceId": "stress-wing-8",
+            "style": {
+              "width": 168,
+              "height": 150
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The collider field is built once per story simulation pass and shared across all paragraph reflow calls within that pass. Cache invalidation occurs when a new float anchor is placed that overlaps the scan range of a previously reflowed paragraph, triggering a partial re-simulation from the invalidation point forward."
+        },
+        {
+          "type": "p",
+          "content": "Zone continuations allow a single logical text frame to span multiple physical pages while maintaining a consistent left and right margin offset from the page boundary. The zone-continue system is separate from the story simulation and operates at a higher level of abstraction in the document processing pipeline."
+        },
+        {
+          "type": "p",
+          "content": "Glyph metrics are resolved through a measurement dispatch system that batches all pending measurement requests before committing to a layout pass. This avoids the overhead of individual measurement round-trips and allows the engine to pipeline measurement work with layout computation for improved throughput."
+        },
+        {
+          "type": "p",
+          "content": "The font registry maintains a cache of resolved font descriptors keyed by family name and variant. When a document requests a fallback font family the registry resolves the chain in order and returns the first descriptor that satisfies the requested weight and style constraints according to the CSS font-matching algorithm."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,0 L160,0 L160,22 L102,22 L102,44 L160,44 L160,66 L92,66 L92,88 L160,88 L160,110 L0,110 Z"
+          },
+          "properties": {
+            "sourceId": "stress-comb-9",
+            "style": {
+              "width": 160,
+              "height": 110
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Color management in the output renderer maps document-space colors to the target ICC profile using a lookup table that is precomputed at document load time. Spot colors declared in the document palette are preserved as named references through the layout pipeline and only resolved to CMYK during the final rendering step."
+        },
+        {
+          "type": "p",
+          "content": "Master pages define a repeating template that is applied to every output page in the document. The template can include page headers, footers, background graphics, and column grid definitions. Story elements placed on master pages are excluded from the main content flow and rendered at the bottom of the z-order stack."
+        },
+        {
+          "type": "p",
+          "content": "Overflow text that cannot fit in its assigned zone is placed into an overflow chain and will be picked up by the next available continuation zone in document order. The overflow chain preserves the full paragraph context including style inheritance and hyphenation state so that the continuation appears seamless to the reader."
+        },
+        {
+          "type": "p",
+          "content": "Vertical rhythm alignment ensures that the baseline grid of the main text column is consistent across adjacent columns and across page boundaries. The engine resolves baseline snapping after the paragraph reflow phase and before the final line positioning step, using the document-level leading value as the grid pitch."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,48 L48,0 L96,48 L48,96 Z"
+          },
+          "properties": {
+            "sourceId": "stress-diamond-10",
+            "style": {
+              "width": 96,
+              "height": 96
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line spacing, and letter spacing, as well as adjusting the space between pairs of letters. The term typography is also applied to the style, arrangement, and appearance of the letters, numbers, and symbols created by the process."
+        },
+        {
+          "type": "p",
+          "content": "When text flows around an irregular polygon obstacle the engine must determine at each line band exactly how much horizontal space is available on each side of the exclusion zone. The broadphase narrows the candidate set using a spatial index and the narrowphase computes the precise chord width for each band using the polygon edge intersection algorithm."
+        },
+        {
+          "type": "p",
+          "content": "The spatial reflow system handles multiple simultaneous exclusions on the same page, including circles, polygons, and exclusion assemblies composed of overlapping primitives. Each paragraph element entering the story layout loop is evaluated against the current collision field before lines are materialized and text is fitted."
+        },
+        {
+          "type": "p",
+          "content": "Column gaps and exclusion zones interact through the same spatial field so a float that crosses a column boundary correctly clips both columns at once. The engine resolves these interactions during the story simulation phase before any final line positions are committed to the output page."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,0 L80,0 L80,50 L140,50 L140,130 L0,130 Z"
+          },
+          "properties": {
+            "sourceId": "stress-l-shape-11",
+            "style": {
+              "width": 140,
+              "height": 130
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Optical underhang correction applies a small fractional adjustment to lines whose terminal glyph would otherwise land on an optically heavy stroke. This correction is computed after the geometric line-width constraint is satisfied and before the line token sequence is finalized for the output renderer."
+        },
+        {
+          "type": "p",
+          "content": "Paragraph continuation across page boundaries requires the story simulation to track the residual content stack and replay it against a fresh page geometry. Polygon floats that appear near the bottom of a page must be carried forward if the story continues and their bounding box would be clipped by the page margin."
+        },
+        {
+          "type": "p",
+          "content": "The line layout subsystem resolves each token sequence against the available width constraint, producing a set of line breaks that respect soft-wrap opportunities while avoiding widows and orphans according to the document-level keep rules. The resolver uses a greedy forward pass followed by a backward widow-correction sweep."
+        },
+        {
+          "type": "p",
+          "content": "Advanced hyphenation policies allow the engine to break words at syllable boundaries when the available width would otherwise force an unacceptably ragged right margin. The hyphenation dictionary lookup is integrated into the token resolution phase so that the cost of each candidate break point is evaluated in context."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M75,0 L150,46 L122,120 L28,120 L0,46 Z"
+          },
+          "properties": {
+            "sourceId": "stress-pentagon-12",
+            "style": {
+              "width": 150,
+              "height": 120
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The kern table for a given font pair is consulted for every adjacent glyph boundary during the line-level measurement phase. Ligature substitution is applied before kerning so that the effective glyph sequence seen by the kern lookup reflects the final rendered form of the text rather than the raw character sequence."
+        },
+        {
+          "type": "p",
+          "content": "Floating images with wrap mode set to around generate a soft exclusion zone whose boundary is derived from the declared shape definition. For polygon shapes the boundary is the raw SVG path data scaled to the image bounding box and offset to the image anchor point within the story flow coordinate system."
+        },
+        {
+          "type": "p",
+          "content": "When the microLanePolicy is set to typography, the engine rejects spatial lanes narrower than a configurable minimum token width. This prevents the layout from placing single-character fragments inside tight polygon pockets where they would be illegible in print. The policy is evaluated per-paragraph during the spatial reflow step."
+        },
+        {
+          "type": "p",
+          "content": "Story layout simulation proceeds in multiple phases: first a geometry pass that places all anchored floats and computes the collision field, then a content pass that reflows each paragraph and heading element against the field, and finally a pagination pass that splits the simulated story into concrete page assignments."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,20 L100,20 L100,0 L160,45 L100,90 L100,70 L0,70 Z"
+          },
+          "properties": {
+            "sourceId": "stress-arrow-13",
+            "style": {
+              "width": 160,
+              "height": 90
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The collider field is built once per story simulation pass and shared across all paragraph reflow calls within that pass. Cache invalidation occurs when a new float anchor is placed that overlaps the scan range of a previously reflowed paragraph, triggering a partial re-simulation from the invalidation point forward."
+        },
+        {
+          "type": "p",
+          "content": "Zone continuations allow a single logical text frame to span multiple physical pages while maintaining a consistent left and right margin offset from the page boundary. The zone-continue system is separate from the story simulation and operates at a higher level of abstraction in the document processing pipeline."
+        },
+        {
+          "type": "p",
+          "content": "Glyph metrics are resolved through a measurement dispatch system that batches all pending measurement requests before committing to a layout pass. This avoids the overhead of individual measurement round-trips and allows the engine to pipeline measurement work with layout computation for improved throughput."
+        },
+        {
+          "type": "p",
+          "content": "The font registry maintains a cache of resolved font descriptors keyed by family name and variant. When a document requests a fallback font family the registry resolves the chain in order and returns the first descriptor that satisfies the requested weight and style constraints according to the CSS font-matching algorithm."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M30,0 L100,0 L130,52 L118,120 L22,120 L0,52 Z"
+          },
+          "properties": {
+            "sourceId": "stress-hexagon-14",
+            "style": {
+              "width": 130,
+              "height": 120
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Color management in the output renderer maps document-space colors to the target ICC profile using a lookup table that is precomputed at document load time. Spot colors declared in the document palette are preserved as named references through the layout pipeline and only resolved to CMYK during the final rendering step."
+        },
+        {
+          "type": "p",
+          "content": "Master pages define a repeating template that is applied to every output page in the document. The template can include page headers, footers, background graphics, and column grid definitions. Story elements placed on master pages are excluded from the main content flow and rendered at the bottom of the z-order stack."
+        },
+        {
+          "type": "p",
+          "content": "Overflow text that cannot fit in its assigned zone is placed into an overflow chain and will be picked up by the next available continuation zone in document order. The overflow chain preserves the full paragraph context including style inheritance and hyphenation state so that the continuation appears seamless to the reader."
+        },
+        {
+          "type": "p",
+          "content": "Vertical rhythm alignment ensures that the baseline grid of the main text column is consistent across adjacent columns and across page boundaries. The engine resolves baseline snapping after the paragraph reflow phase and before the final line positioning step, using the document-level leading value as the grid pitch."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M40,0 L120,0 L120,40 L140,40 L140,80 L160,80 L160,120 L0,120 L0,80 L20,80 L20,40 L40,40 Z"
+          },
+          "properties": {
+            "sourceId": "stress-pyramid-15",
+            "style": {
+              "width": 160,
+              "height": 120
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line spacing, and letter spacing, as well as adjusting the space between pairs of letters. The term typography is also applied to the style, arrangement, and appearance of the letters, numbers, and symbols created by the process."
+        },
+        {
+          "type": "p",
+          "content": "When text flows around an irregular polygon obstacle the engine must determine at each line band exactly how much horizontal space is available on each side of the exclusion zone. The broadphase narrows the candidate set using a spatial index and the narrowphase computes the precise chord width for each band using the polygon edge intersection algorithm."
+        },
+        {
+          "type": "p",
+          "content": "The spatial reflow system handles multiple simultaneous exclusions on the same page, including circles, polygons, and exclusion assemblies composed of overlapping primitives. Each paragraph element entering the story layout loop is evaluated against the current collision field before lines are materialized and text is fitted."
+        },
+        {
+          "type": "p",
+          "content": "Column gaps and exclusion zones interact through the same spatial field so a float that crosses a column boundary correctly clips both columns at once. The engine resolves these interactions during the story simulation phase before any final line positions are committed to the output page."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,72 L40,12 L82,34 L124,0 L168,48 L126,54 L146,110 L98,92 L82,150 L58,94 L10,112 L34,58 Z"
+          },
+          "properties": {
+            "sourceId": "stress-wing-16",
+            "style": {
+              "width": 168,
+              "height": 150
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Optical underhang correction applies a small fractional adjustment to lines whose terminal glyph would otherwise land on an optically heavy stroke. This correction is computed after the geometric line-width constraint is satisfied and before the line token sequence is finalized for the output renderer."
+        },
+        {
+          "type": "p",
+          "content": "Paragraph continuation across page boundaries requires the story simulation to track the residual content stack and replay it against a fresh page geometry. Polygon floats that appear near the bottom of a page must be carried forward if the story continues and their bounding box would be clipped by the page margin."
+        },
+        {
+          "type": "p",
+          "content": "The line layout subsystem resolves each token sequence against the available width constraint, producing a set of line breaks that respect soft-wrap opportunities while avoiding widows and orphans according to the document-level keep rules. The resolver uses a greedy forward pass followed by a backward widow-correction sweep."
+        },
+        {
+          "type": "p",
+          "content": "Advanced hyphenation policies allow the engine to break words at syllable boundaries when the available width would otherwise force an unacceptably ragged right margin. The hyphenation dictionary lookup is integrated into the token resolution phase so that the cost of each candidate break point is evaluated in context."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,0 L160,0 L160,22 L102,22 L102,44 L160,44 L160,66 L92,66 L92,88 L160,88 L160,110 L0,110 Z"
+          },
+          "properties": {
+            "sourceId": "stress-comb-17",
+            "style": {
+              "width": 160,
+              "height": 110
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The kern table for a given font pair is consulted for every adjacent glyph boundary during the line-level measurement phase. Ligature substitution is applied before kerning so that the effective glyph sequence seen by the kern lookup reflects the final rendered form of the text rather than the raw character sequence."
+        },
+        {
+          "type": "p",
+          "content": "Floating images with wrap mode set to around generate a soft exclusion zone whose boundary is derived from the declared shape definition. For polygon shapes the boundary is the raw SVG path data scaled to the image bounding box and offset to the image anchor point within the story flow coordinate system."
+        },
+        {
+          "type": "p",
+          "content": "When the microLanePolicy is set to typography, the engine rejects spatial lanes narrower than a configurable minimum token width. This prevents the layout from placing single-character fragments inside tight polygon pockets where they would be illegible in print. The policy is evaluated per-paragraph during the spatial reflow step."
+        },
+        {
+          "type": "p",
+          "content": "Story layout simulation proceeds in multiple phases: first a geometry pass that places all anchored floats and computes the collision field, then a content pass that reflows each paragraph and heading element against the field, and finally a pagination pass that splits the simulated story into concrete page assignments."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,48 L48,0 L96,48 L48,96 Z"
+          },
+          "properties": {
+            "sourceId": "stress-diamond-18",
+            "style": {
+              "width": 96,
+              "height": 96
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The collider field is built once per story simulation pass and shared across all paragraph reflow calls within that pass. Cache invalidation occurs when a new float anchor is placed that overlaps the scan range of a previously reflowed paragraph, triggering a partial re-simulation from the invalidation point forward."
+        },
+        {
+          "type": "p",
+          "content": "Zone continuations allow a single logical text frame to span multiple physical pages while maintaining a consistent left and right margin offset from the page boundary. The zone-continue system is separate from the story simulation and operates at a higher level of abstraction in the document processing pipeline."
+        },
+        {
+          "type": "p",
+          "content": "Glyph metrics are resolved through a measurement dispatch system that batches all pending measurement requests before committing to a layout pass. This avoids the overhead of individual measurement round-trips and allows the engine to pipeline measurement work with layout computation for improved throughput."
+        },
+        {
+          "type": "p",
+          "content": "The font registry maintains a cache of resolved font descriptors keyed by family name and variant. When a document requests a fallback font family the registry resolves the chain in order and returns the first descriptor that satisfies the requested weight and style constraints according to the CSS font-matching algorithm."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,0 L80,0 L80,50 L140,50 L140,130 L0,130 Z"
+          },
+          "properties": {
+            "sourceId": "stress-l-shape-19",
+            "style": {
+              "width": 140,
+              "height": 130
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Color management in the output renderer maps document-space colors to the target ICC profile using a lookup table that is precomputed at document load time. Spot colors declared in the document palette are preserved as named references through the layout pipeline and only resolved to CMYK during the final rendering step."
+        },
+        {
+          "type": "p",
+          "content": "Master pages define a repeating template that is applied to every output page in the document. The template can include page headers, footers, background graphics, and column grid definitions. Story elements placed on master pages are excluded from the main content flow and rendered at the bottom of the z-order stack."
+        },
+        {
+          "type": "p",
+          "content": "Overflow text that cannot fit in its assigned zone is placed into an overflow chain and will be picked up by the next available continuation zone in document order. The overflow chain preserves the full paragraph context including style inheritance and hyphenation state so that the continuation appears seamless to the reader."
+        },
+        {
+          "type": "p",
+          "content": "Vertical rhythm alignment ensures that the baseline grid of the main text column is consistent across adjacent columns and across page boundaries. The engine resolves baseline snapping after the paragraph reflow phase and before the final line positioning step, using the document-level leading value as the grid pitch."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M75,0 L150,46 L122,120 L28,120 L0,46 Z"
+          },
+          "properties": {
+            "sourceId": "stress-pentagon-20",
+            "style": {
+              "width": 150,
+              "height": 120
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line spacing, and letter spacing, as well as adjusting the space between pairs of letters. The term typography is also applied to the style, arrangement, and appearance of the letters, numbers, and symbols created by the process."
+        },
+        {
+          "type": "p",
+          "content": "When text flows around an irregular polygon obstacle the engine must determine at each line band exactly how much horizontal space is available on each side of the exclusion zone. The broadphase narrows the candidate set using a spatial index and the narrowphase computes the precise chord width for each band using the polygon edge intersection algorithm."
+        },
+        {
+          "type": "p",
+          "content": "The spatial reflow system handles multiple simultaneous exclusions on the same page, including circles, polygons, and exclusion assemblies composed of overlapping primitives. Each paragraph element entering the story layout loop is evaluated against the current collision field before lines are materialized and text is fitted."
+        },
+        {
+          "type": "p",
+          "content": "Column gaps and exclusion zones interact through the same spatial field so a float that crosses a column boundary correctly clips both columns at once. The engine resolves these interactions during the story simulation phase before any final line positions are committed to the output page."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M0,20 L100,20 L100,0 L160,45 L100,90 L100,70 L0,70 Z"
+          },
+          "properties": {
+            "sourceId": "stress-arrow-21",
+            "style": {
+              "width": 160,
+              "height": 90
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Optical underhang correction applies a small fractional adjustment to lines whose terminal glyph would otherwise land on an optically heavy stroke. This correction is computed after the geometric line-width constraint is satisfied and before the line token sequence is finalized for the output renderer."
+        },
+        {
+          "type": "p",
+          "content": "Paragraph continuation across page boundaries requires the story simulation to track the residual content stack and replay it against a fresh page geometry. Polygon floats that appear near the bottom of a page must be carried forward if the story continues and their bounding box would be clipped by the page margin."
+        },
+        {
+          "type": "p",
+          "content": "The line layout subsystem resolves each token sequence against the available width constraint, producing a set of line breaks that respect soft-wrap opportunities while avoiding widows and orphans according to the document-level keep rules. The resolver uses a greedy forward pass followed by a backward widow-correction sweep."
+        },
+        {
+          "type": "p",
+          "content": "Advanced hyphenation policies allow the engine to break words at syllable boundaries when the available width would otherwise force an unacceptably ragged right margin. The hyphenation dictionary lookup is integrated into the token resolution phase so that the cost of each candidate break point is evaluated in context."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "right",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M30,0 L100,0 L130,52 L118,120 L22,120 L0,52 Z"
+          },
+          "properties": {
+            "sourceId": "stress-hexagon-22",
+            "style": {
+              "width": 130,
+              "height": 120
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The kern table for a given font pair is consulted for every adjacent glyph boundary during the line-level measurement phase. Ligature substitution is applied before kerning so that the effective glyph sequence seen by the kern lookup reflects the final rendered form of the text rather than the raw character sequence."
+        },
+        {
+          "type": "p",
+          "content": "Floating images with wrap mode set to around generate a soft exclusion zone whose boundary is derived from the declared shape definition. For polygon shapes the boundary is the raw SVG path data scaled to the image bounding box and offset to the image anchor point within the story flow coordinate system."
+        },
+        {
+          "type": "p",
+          "content": "When the microLanePolicy is set to typography, the engine rejects spatial lanes narrower than a configurable minimum token width. This prevents the layout from placing single-character fragments inside tight polygon pockets where they would be illegible in print. The policy is evaluated per-paragraph during the spatial reflow step."
+        },
+        {
+          "type": "p",
+          "content": "Story layout simulation proceeds in multiple phases: first a geometry pass that places all anchored floats and computes the collision field, then a content pass that reflows each paragraph and heading element against the field, and finally a pagination pass that splits the simulated story into concrete page assignments."
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 10,
+            "shape": "polygon",
+            "path": "M40,0 L120,0 L120,40 L140,40 L140,80 L160,80 L160,120 L0,120 L0,80 L20,80 L20,40 L40,40 Z"
+          },
+          "properties": {
+            "sourceId": "stress-pyramid-23",
+            "style": {
+              "width": 160,
+              "height": 120
+            }
+          },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The collider field is built once per story simulation pass and shared across all paragraph reflow calls within that pass. Cache invalidation occurs when a new float anchor is placed that overlaps the scan range of a previously reflowed paragraph, triggering a partial re-simulation from the invalidation point forward."
+        },
+        {
+          "type": "p",
+          "content": "Zone continuations allow a single logical text frame to span multiple physical pages while maintaining a consistent left and right margin offset from the page boundary. The zone-continue system is separate from the story simulation and operates at a higher level of abstraction in the document processing pipeline."
+        },
+        {
+          "type": "p",
+          "content": "Glyph metrics are resolved through a measurement dispatch system that batches all pending measurement requests before committing to a layout pass. This avoids the overhead of individual measurement round-trips and allows the engine to pipeline measurement work with layout computation for improved throughput."
+        },
+        {
+          "type": "p",
+          "content": "The font registry maintains a cache of resolved font descriptors keyed by family name and variant. When a document requests a fallback font family the registry resolves the chain in order and returns the first descriptor that satisfies the requested weight and style constraints according to the CSS font-matching algorithm."
+        }
+      ]
+    }
+  ]
+}

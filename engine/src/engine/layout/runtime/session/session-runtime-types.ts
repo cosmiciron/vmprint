@@ -108,6 +108,7 @@ export interface CollaboratorHost {
     // Script reads
     getScriptRegions(): readonly ScriptRegionRef[];
     findScriptRegionByName(name: string): ScriptRegionRef | null;
+    getActorSignals(topic?: string): readonly ActorSignal[];
 
     // Page finalization (PageRegionCollaborator)
     allocateLogicalPageNumber(usesLogicalNumbering: boolean): number | null;
@@ -115,6 +116,7 @@ export interface CollaboratorHost {
     notifyActorSpawn(actor: PackagerUnit): void;
     recordPageCapture(record: PageCaptureRecord): void;
     recordPageFinalization(state: PageFinalizationState): void;
+    resolveChunkOriginWorldY(chunkIndex: number, chunkHeight: number): number;
     createPageCaptureState(params: PageCaptureStateParams): PageCaptureState;
 }
 

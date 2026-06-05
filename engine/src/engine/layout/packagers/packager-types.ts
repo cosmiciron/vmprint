@@ -209,6 +209,12 @@ export interface PackagerUnit {
     updateCommittedState?(context: PackagerContext): ObservationResult | null | undefined;
 
     /**
+     * Return false for actors that expose updateCommittedState() only for direct
+     * runtime intents and should not participate in checkpoint observer sweeps.
+     */
+    participatesInCommittedSignalObservation?(): boolean;
+
+    /**
      * @deprecated Use observeCommittedState() or updateCommittedState().
      * Retained as a fallback for older reactive actors.
      */

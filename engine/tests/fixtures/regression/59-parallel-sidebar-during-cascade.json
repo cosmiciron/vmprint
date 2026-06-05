@@ -1,0 +1,156 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 360,
+      "height": 300
+    },
+    "margins": {
+      "top": 24,
+      "right": 24,
+      "bottom": 24,
+      "left": 24
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.25,
+    "microLanePolicy": "balanced",
+    "storyWrapOpticalUnderhang": true
+  },
+  "fonts": {
+    "regular": "Arimo",
+    "bold": "Arimo"
+  },
+  "styles": {
+    "h1": {
+      "fontSize": 16,
+      "fontWeight": "bold",
+      "marginBottom": 8,
+      "keepWithNext": true
+    },
+    "p": {
+      "marginBottom": 7,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "sidebar-label": {
+      "fontSize": 8,
+      "fontWeight": "bold",
+      "marginBottom": 4,
+      "letterSpacing": 1.5
+    },
+    "sidebar-body": {
+      "fontSize": 8.5,
+      "lineHeight": 1.25,
+      "marginBottom": 6,
+      "allowLineSplit": true
+    }
+  },
+  "elements": [
+    {
+      "type": "zone-map",
+      "content": "",
+      "properties": {
+        "sourceId": "parallel-cascade-zone",
+        "style": {
+          "marginTop": 4,
+          "marginBottom": 8
+        }
+      },
+      "zoneLayout": {
+        "columns": [
+          {
+            "mode": "flex",
+            "fr": 2
+          },
+          {
+            "mode": "flex",
+            "fr": 1
+          }
+        ],
+        "gap": 12,
+        "frameOverflow": "continue",
+        "worldBehavior": "spanning"
+      },
+      "zones": [
+        {
+          "id": "main",
+          "elements": [
+            {
+              "type": "field-actor",
+              "content": "",
+              "properties": {
+                "sourceId": "main-container-blocker-a",
+                "style": {
+                  "width": 200,
+                  "height": 240,
+                  "backgroundColor": "#d8cec0"
+                }
+              }
+            },
+            {
+              "type": "field-actor",
+              "content": "",
+              "properties": {
+                "sourceId": "main-container-blocker-b",
+                "style": {
+                  "width": 200,
+                  "height": 250,
+                  "backgroundColor": "#d8cec0"
+                }
+              }
+            },
+            {
+              "type": "p",
+              "content": "Main story resumes after the blocker clears. Main story resumes after the blocker clears. Main story resumes after the blocker clears.",
+              "properties": {
+                "sourceId": "main-after-cascade"
+              }
+            }
+          ]
+        },
+        {
+          "id": "side",
+          "elements": [
+            {
+              "type": "sidebar-label",
+              "content": "SIDEBAR ACTOR",
+              "properties": {
+                "sourceId": "parallel-sidebar-label"
+              }
+            },
+            {
+              "type": "sidebar-body",
+              "content": "Sidebar frame one keeps running while the main story waits. Sidebar frame one keeps running while the main story waits. Sidebar frame one keeps running while the main story waits.",
+              "properties": {
+                "sourceId": "parallel-sidebar-frame-one"
+              }
+            },
+            {
+              "type": "sidebar-body",
+              "content": "Sidebar frame two continues independently through the next page turn. Sidebar frame two continues independently through the next page turn. Sidebar frame two continues independently through the next page turn.",
+              "properties": {
+                "sourceId": "parallel-sidebar-frame-two"
+              }
+            },
+            {
+              "type": "sidebar-body",
+              "content": "After the main blocker clears, the sidebar can keep flowing beside the resumed main story.",
+              "properties": {
+                "sourceId": "parallel-sidebar-frame-three"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "p",
+      "content": "Normal document flow resumes after both parallel actors finish.",
+      "properties": {
+        "sourceId": "post-parallel-cascade-flow"
+      }
+    }
+  ]
+}

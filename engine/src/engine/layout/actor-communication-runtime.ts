@@ -126,6 +126,7 @@ export class ActorCommunicationRuntime<
             || typeof actor.observeCommittedState === 'function'
             || typeof actor.observeCommittedSignals === 'function';
         if (!hasCommittedUpdater) return;
+        if (actor.participatesInCommittedSignalObservation?.() === false) return;
 
         this.observerRegistry.set(actor.actorId, actor);
         const subscriptions = actor.getCommittedSignalSubscriptions?.()

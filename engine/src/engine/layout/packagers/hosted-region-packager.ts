@@ -182,6 +182,7 @@ export class HostedRegionPackager implements PackagerUnit {
     private boundedOverflow: boolean = false;
     private boundedContinuationQueues: HostedRegionActorQueue[] | null = null;
     private lastEmittedLeftMargin: number = 0;
+    private readonly identityPath: number[];
 
     readonly actorId: string;
     readonly sourceId: string;
@@ -229,6 +230,7 @@ export class HostedRegionPackager implements PackagerUnit {
         this.actorKind = resolved.actorKind;
         this.fragmentIndex = resolved.fragmentIndex;
         this.continuationOf = resolved.continuationOf;
+        this.identityPath = Array.isArray(resolved.path) && resolved.path.length ? resolved.path : [0];
         if (this.usesSpanningContinuation()) {
             this.marginTopVal = this.fragmentMarginTop;
             this.marginBottomVal = this.fragmentMarginBottom;
@@ -263,7 +265,7 @@ export class HostedRegionPackager implements PackagerUnit {
             return this.regionQueues;
         }
         const normalizedStrip = this.normalizeStrip(availableWidth);
-        this.regionQueues = buildHostedRegionActorQueues(normalizedStrip, this.processor);
+        this.regionQueues = buildHostedRegionActorQueues(normalizedStrip, this.processor, this.identityPath);
         return this.regionQueues;
     }
 
