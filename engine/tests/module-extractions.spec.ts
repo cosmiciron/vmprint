@@ -20,7 +20,7 @@ import { TextSegment } from '../src/engine/types';
 import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, parseDocumentSourceText, resolveDocumentPaths, toLayoutConfig } from '../src';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { solveTrackSizing } from '../src/engine/layout/track-sizing';
-import { isGeometryRuntimeFormattingPatch } from '../src/engine/layout/runtime-formatting';
+import { applyRuntimeRangeFormattingPatch, isGeometryRuntimeFormattingPatch } from '../src/engine/layout/runtime-formatting';
 import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { FontkitTextMeasurer } from '../src/font-management/text-delegate';
 import { loadFont } from '../src/font-management/font-cache-loader';
@@ -89,6 +89,53 @@ function testRuntimeRangeFormattingGeometryClassification(): void {
             assert.equal(isGeometryRuntimeFormattingPatch({ fontWeight: 700 }, rangeTarget), true);
             assert.equal(isGeometryRuntimeFormattingPatch({ fontStyle: 'italic' }, rangeTarget), true);
             assert.equal(isGeometryRuntimeFormattingPatch({ fontSize: 14 }, rangeTarget), true);
+        }
+    );
+}
+
+function testRuntimeRangeFormattingNestedInline(): void {
+    _check(
+        'range formatting nested inline source',
+        'range style edits recurse into existing inline style wrappers without flattening them',
+        () => {
+            const paragraph: any = {
+                type: 'paragraph',
+                content: '',
+                children: [{
+                    type: 'inline',
+                    content: '',
+                    properties: {
+                        style: {
+                            fontStyle: 'italic'
+                        }
+                    },
+                    children: [{
+                        type: 'text',
+                        content: 'Hassan-i Sabbah. The Old Man.'
+                    }]
+                }]
+            };
+
+            const changed = applyRuntimeRangeFormattingPatch(paragraph, { fontWeight: 700, fontSize: 18 }, {
+                sourceStart: 10,
+                sourceEnd: 16
+            });
+
+            assert.equal(changed, true);
+            assert.equal(paragraph.children.length, 1);
+            assert.equal(paragraph.children[0].type, 'inline');
+            assert.equal(paragraph.children[0].properties.style.fontStyle, 'italic');
+            assert.deepEqual(
+                paragraph.children[0].children.map((child: any) => ({
+                    text: child.content,
+                    style: child.properties?.style || {}
+                })),
+                [
+                    { text: 'Hassan-i S', style: {} },
+                    { text: 'abbah.', style: { fontWeight: 700, fontSize: 18 } },
+                    { text: ' The Old Man.', style: {} }
+                ]
+            );
         }
     );
 }
@@ -1435,6 +1482,7 @@ async function run() {
     testDocumentContractNormalization();
     testSourceTextRejectsInlineJsonScripting();
     testRuntimeRangeFormattingGeometryClassification();
+    testRuntimeRangeFormattingNestedInline();
     testEmbeddedImageContract();
     testTableLayoutContract();
     testAst11PromotedFieldsContract();

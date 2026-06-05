@@ -120,6 +120,9 @@ export function runtimeElementSourceSnapshotsEqual(
 function runtimeInlinePartLength(part: any): number {
     if (typeof part?.content === 'string' && part.content.length > 0) return part.content.length;
     if (part?.image || part?.inlineObject || part?.type === 'image') return 1;
+    if (Array.isArray(part?.children)) {
+        return part.children.reduce((sum: number, child: any) => sum + runtimeInlinePartLength(child), 0);
+    }
     return 0;
 }
 
@@ -152,6 +155,96 @@ function mergeAdjacentRuntimeTextParts(parts: any[]): any[] {
     return out;
 }
 
+function runtimePartStyleChanged(previousStyle: Record<string, unknown> = {}, patch: Record<string, unknown>): boolean {
+    return Object.entries(patch).some(([key, value]) => previousStyle[key] !== value);
+}
+
+function cloneRuntimePartWithContent(part: any, content: string): any {
+    const out = cloneRuntimeElementPart(part);
+    out.content = content;
+    if (Array.isArray(out.children)) {
+        delete out.children;
+    }
+    return out;
+}
+
+function applyRuntimePatchToWholePart(part: any, patch: Record<string, unknown>): { part: any; changed: boolean } {
+    const previousStyle = part.properties && typeof part.properties.style === 'object' && part.properties.style
+        ? part.properties.style
+        : {};
+    return {
+        part: {
+            ...cloneRuntimeElementPart(part),
+            properties: {
+                ...part.properties,
+                style: {
+                    ...previousStyle,
+                    ...patch
+                }
+            }
+        },
+        changed: runtimePartStyleChanged(previousStyle, patch)
+    };
+}
+
+function formatRuntimePartRange(
+    part: any,
+    patch: Record<string, unknown>,
+    start: number,
+    end: number
+): { parts: any[]; length: number; changed: boolean } {
+    const length = runtimeInlinePartLength(part);
+    if (!length || end <= 0 || start >= length) {
+        return { parts: [cloneRuntimeElementPart(part)], length, changed: false };
+    }
+
+    if (Array.isArray(part?.children) && !(typeof part?.content === 'string' && part.content.length > 0)) {
+        const nextChildren: any[] = [];
+        let cursor = 0;
+        let changed = false;
+        for (const child of part.children) {
+            const childLength = runtimeInlinePartLength(child);
+            const result = formatRuntimePartRange(child, patch, start - cursor, end - cursor);
+            nextChildren.push(...result.parts);
+            changed = changed || result.changed;
+            cursor += childLength;
+        }
+        const nextPart = {
+            ...cloneRuntimeElementPart(part),
+            content: typeof part?.content === 'string' ? part.content : '',
+            children: mergeAdjacentRuntimeTextParts(nextChildren)
+        };
+        return { parts: [nextPart], length, changed };
+    }
+
+    if (typeof part?.content === 'string' && part.content.length > 0) {
+        const localStart = Math.max(0, start);
+        const localEnd = Math.min(part.content.length, end);
+        const parts: any[] = [];
+        let changed = false;
+        if (localStart > 0) {
+            parts.push(cloneRuntimePartWithContent(part, part.content.slice(0, localStart)));
+        }
+
+        const middle = cloneRuntimePartWithContent(part, part.content.slice(localStart, localEnd));
+        const applied = applyRuntimePatchToWholePart(middle, patch);
+        parts.push(applied.part);
+        changed = changed || applied.changed;
+
+        if (localEnd < part.content.length) {
+            parts.push(cloneRuntimePartWithContent(part, part.content.slice(localEnd)));
+        }
+        return { parts, length, changed };
+    }
+
+    if (part?.image || part?.inlineObject || part?.type === 'image') {
+        const applied = applyRuntimePatchToWholePart(part, patch);
+        return { parts: [applied.part], length, changed: applied.changed };
+    }
+
+    return { parts: [cloneRuntimeElementPart(part)], length, changed: false };
+}
+
 export function applyRuntimeRangeFormattingPatch(
     sourceElement: Element,
     patch: Record<string, unknown>,
@@ -170,45 +263,18 @@ export function applyRuntimeRangeFormattingPatch(
     let cursor = 0;
     let changed = false;
     for (const sourcePart of sourceParts) {
-        const part = cloneRuntimeElementPart(sourcePart);
-        const length = runtimeInlinePartLength(part);
+        const length = runtimeInlinePartLength(sourcePart);
         const partStart = cursor;
         const partEnd = cursor + length;
         cursor = partEnd;
-        if (!length || partEnd <= start || partStart >= end || typeof part.content !== 'string' || part.content.length === 0) {
-            nextChildren.push(part);
+        if (!length || partEnd <= start || partStart >= end) {
+            nextChildren.push(cloneRuntimeElementPart(sourcePart));
             continue;
         }
 
-        const localStart = Math.max(0, start - partStart);
-        const localEnd = Math.min(part.content.length, end - partStart);
-        if (localStart > 0) {
-            nextChildren.push({
-                ...cloneRuntimeElementPart(part),
-                content: part.content.slice(0, localStart)
-            });
-        }
-
-        const previousStyle = part.properties && typeof part.properties.style === 'object' && part.properties.style
-            ? part.properties.style
-            : {};
-        const nextStyle = { ...previousStyle, ...patch };
-        changed = changed || Object.entries(patch).some(([key, value]) => previousStyle[key] !== value);
-        nextChildren.push({
-            ...cloneRuntimeElementPart(part),
-            content: part.content.slice(localStart, localEnd),
-            properties: {
-                ...part.properties,
-                style: nextStyle
-            }
-        });
-
-        if (localEnd < part.content.length) {
-            nextChildren.push({
-                ...cloneRuntimeElementPart(part),
-                content: part.content.slice(localEnd)
-            });
-        }
+        const result = formatRuntimePartRange(sourcePart, patch, start - partStart, end - partStart);
+        nextChildren.push(...result.parts);
+        changed = changed || result.changed;
     }
 
     if (!changed) return false;
