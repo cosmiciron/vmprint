@@ -20,10 +20,3 @@ export {
 export { buildDataUri, parseEmbeddedImagePayloadCached } from '../engine/image-data';
 export { LayoutUtils } from '../engine/layout/layout-utils';
 export { LAYOUT_DEFAULTS } from '../engine/layout/defaults';
-export {
-    buildParagraphMetrics,
-    computeAlignedLineX,
-    computeJustifyExtraAfter,
-    computeLineWidth,
-    createLineFrameAccessors
-} from '../engine/render/rich-line-layout';
