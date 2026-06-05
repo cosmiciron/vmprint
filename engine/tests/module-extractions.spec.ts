@@ -20,6 +20,7 @@ import { TextSegment } from '../src/engine/types';
 import { CURRENT_DOCUMENT_VERSION, CURRENT_IR_VERSION, parseDocumentSourceText, resolveDocumentPaths, toLayoutConfig } from '../src';
 import { LayoutUtils } from '../src/engine/layout/layout-utils';
 import { solveTrackSizing } from '../src/engine/layout/track-sizing';
+import { isGeometryRuntimeFormattingPatch } from '../src/engine/layout/runtime-formatting';
 import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { FontkitTextMeasurer } from '../src/font-management/text-delegate';
 import { loadFont } from '../src/font-management/font-cache-loader';
@@ -75,6 +76,19 @@ function testSourceTextRejectsInlineJsonScripting(): void {
 }`, 'memory://inline-json-scripting.json'),
                 /must declare scripting only in YAML front matter/
             );
+        }
+    );
+}
+
+function testRuntimeRangeFormattingGeometryClassification(): void {
+    _check(
+        'range formatting geometry classification',
+        'range bold and italic edits replay geometry because font face metrics can affect wrapping',
+        () => {
+            const rangeTarget = { sourceStart: 3, sourceEnd: 12 };
+            assert.equal(isGeometryRuntimeFormattingPatch({ fontWeight: 700 }, rangeTarget), true);
+            assert.equal(isGeometryRuntimeFormattingPatch({ fontStyle: 'italic' }, rangeTarget), true);
+            assert.equal(isGeometryRuntimeFormattingPatch({ fontSize: 14 }, rangeTarget), true);
         }
     );
 }
@@ -1420,6 +1434,7 @@ async function run() {
     testHyphenationSoftBreak();
     testDocumentContractNormalization();
     testSourceTextRejectsInlineJsonScripting();
+    testRuntimeRangeFormattingGeometryClassification();
     testEmbeddedImageContract();
     testTableLayoutContract();
     testAst11PromotedFieldsContract();

@@ -222,7 +222,7 @@ export function isGeometryRuntimeFormattingPatch(
     target: RuntimeFormattingTarget | Record<string, unknown> | null = null
 ): boolean {
     if (target && isRuntimeRangeTarget(target)) {
-        return ['fontFamily', 'fontSize', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent', 'blockType']
+        return ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent', 'blockType']
             .some((key) => patch[key] !== undefined);
     }
     return ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent', 'blockType']
