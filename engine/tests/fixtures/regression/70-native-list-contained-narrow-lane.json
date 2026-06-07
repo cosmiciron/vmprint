@@ -1,0 +1,42 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 240, "height": 260 },
+    "margins": { "top": 24, "right": 24, "bottom": 24, "left": 24 },
+    "fontFamily": "Arimo",
+    "fontSize": 9,
+    "lineHeight": 1.2,
+    "microLanePolicy": "balanced"
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo" },
+  "styles": {
+    "h1": { "fontSize": 12, "fontWeight": "bold", "marginBottom": 6 },
+    "list": { "marginTop": 2, "marginBottom": 6 },
+    "list-item": { "marginBottom": 3, "allowLineSplit": true },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Contained List Narrow Lane Guard" },
+    {
+      "type": "list",
+      "list": { "kind": "ordered", "markerStyle": "decimal", "indent": 54, "markerWidth": 42, "markerGap": 8 },
+      "properties": {
+        "sourceId": "contained-narrow-list",
+        "space": { "kind": "contain", "shape": "circle", "overflow": "stash" },
+        "style": {
+          "width": 72,
+          "height": 72,
+          "padding": 4,
+          "backgroundColor": "#eeeeee"
+        }
+      },
+      "children": [
+        {
+          "type": "list-item",
+          "content": "The marker column is deliberately too wide for most crown lanes, so the contained resolver must advance and finish deterministically.",
+          "properties": { "sourceId": "contained-narrow-one" }
+        }
+      ]
+    }
+  ]
+}

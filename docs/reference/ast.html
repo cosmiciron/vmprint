@@ -30,6 +30,7 @@
 <ul>
 <li><a href="../guides/">Authoring Guide</a></li>
 </ul>
+<p>Native lists are documented below in §11a. Use <code>list</code> and <code>list-item</code> elements for bullets, ordered numbering, nested levels, multilingual marker styles, and custom generated markers.</p>
 <hr>
 <h2>1. Pipeline Overview</h2>
 <pre><code class="language-text">Direct callers usually construct **`DocumentInput`**. The `SemanticDocument` layer is only relevant when using the [draft2final](https://github.com/cosmiciron/draft2final) standalone CLI.
@@ -214,6 +215,7 @@ host wrapper at runtime, but that wrapper is not part of the public AST.</p>
 
     image?: EmbeddedImagePayload;
     table?: TableLayoutOptions;
+    list?: ListLayoutOptions;
 
     slots?: StripSlot[];
     columns?: number;
@@ -257,6 +259,10 @@ host wrapper at runtime, but that wrapper is not part of the public AST.</p>
 <tr>
 <td><code>table</code></td>
 <td>Preferred on AST <code>1.1+</code> on <code>type: &quot;table&quot;</code> elements.</td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td>Preferred on AST <code>1.1+</code> on <code>type: &quot;list&quot;</code> elements.</td>
 </tr>
 <tr>
 <td><code>slots</code></td>
@@ -478,6 +484,18 @@ interface SpatialFieldDirective {
 <td>Multi-column flowing content area. Uses <code>columns</code>, <code>gutter</code>, <code>balance</code>. Direct children may carry <code>placement</code>.</td>
 </tr>
 <tr>
+<td><code>list</code></td>
+<td>Native list container. Children must be <code>list-item</code>. Uses <code>element.list</code>.</td>
+</tr>
+<tr>
+<td><code>list-item</code></td>
+<td>Native list item body. The engine generates marker boxes; do not author bullet or number text in <code>content</code>.</td>
+</tr>
+<tr>
+<td><code>list-marker</code></td>
+<td>Generated marker flow box type. May be styled through <code>styles[&quot;list-marker&quot;]</code>.</td>
+</tr>
+<tr>
 <td><code>table</code></td>
 <td>Table container. Children must be <code>table-row</code>. Uses <code>element.table</code>.</td>
 </tr>
@@ -568,7 +586,96 @@ interface SpatialFieldDirective {
 }
 </code></pre>
 <hr>
-<h2>11a. Strip (<code>type: &quot;strip&quot;</code>)</h2>
+<h2>11a. List (<code>type: &quot;list&quot;</code>)</h2>
+<p>A <code>list</code> is a native flowing block for unordered and ordered lists. The authored tree contains <code>list-item</code> children; VMPrint generates visible marker boxes at layout time so callers do not need to put bullets or numbers into item text. <code>list-item</code> nodes may contain inline children for rich text, plus block children such as <code>p</code>, <code>list</code>, <code>story</code>, <code>zone-map</code>, or <code>table</code>. Nested <code>list</code> children are laid out recursively, so marker generation, hanging indents, and host behavior travel through ordinary flow, stories/columns, zones, and table cell block content.</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;list&quot;,
+  &quot;content&quot;: &quot;&quot;,
+  &quot;list&quot;: {
+    &quot;kind&quot;: &quot;ordered&quot;,
+    &quot;markerStyle&quot;: &quot;decimal&quot;,
+    &quot;start&quot;: 3,
+    &quot;indent&quot;: 28,
+    &quot;markerWidth&quot;: 18,
+    &quot;markerGap&quot;: 10
+  },
+  &quot;children&quot;: [
+    { &quot;type&quot;: &quot;list-item&quot;, &quot;content&quot;: &quot;Third item body.&quot; },
+    { &quot;type&quot;: &quot;list-item&quot;, &quot;content&quot;: &quot;Fourth item body.&quot; }
+  ]
+}
+</code></pre>
+<pre><code class="language-typescript">interface ListLayoutOptions {
+    kind?: 'unordered' | 'ordered';
+    markerStyle?:
+        | 'disc'
+        | 'bullet'
+        | 'circle'
+        | 'square'
+        | 'decimal'
+        | 'arabic-indic'
+        | 'extended-arabic-indic'
+        | 'devanagari'
+        | 'thai'
+        | 'cjk-decimal'
+        | 'cjk-ideographic'
+        | 'hiragana'
+        | 'katakana'
+        | 'lower-alpha'
+        | 'upper-alpha'
+        | 'lower-roman'
+        | 'upper-roman';
+    markerText?: string;
+    markerTextStyle?: ElementStyle;
+    start?: number;
+    indent?: number;
+    markerWidth?: number;
+    markerGap?: number;
+    itemSpacing?: number;
+    nestedListSpacingBefore?: number;
+    nestedListSpacingAfter?: number;
+    levels?: ListLevelOptions[];
+}
+
+interface ListLevelOptions {
+    kind?: 'unordered' | 'ordered';
+    markerStyle?:
+        | 'disc'
+        | 'bullet'
+        | 'circle'
+        | 'square'
+        | 'decimal'
+        | 'arabic-indic'
+        | 'extended-arabic-indic'
+        | 'devanagari'
+        | 'thai'
+        | 'cjk-decimal'
+        | 'cjk-ideographic'
+        | 'hiragana'
+        | 'katakana'
+        | 'lower-alpha'
+        | 'upper-alpha'
+        | 'lower-roman'
+        | 'upper-roman';
+    markerText?: string;
+    markerTextStyle?: ElementStyle;
+    indent?: number;
+    markerWidth?: number;
+    markerGap?: number;
+    itemSpacing?: number;
+    nestedListSpacingBefore?: number;
+    nestedListSpacingAfter?: number;
+}
+</code></pre>
+<p><code>indent</code> is the distance from the list container's left edge to the item body. <code>markerWidth</code> is the marker column width, and <code>markerGap</code> is the space between the marker column and the item body. Wrapped item lines continue at the item body x-position, producing a hanging indent.</p>
+<p><code>markerText</code> overrides the generated marker label with a literal custom marker for that list level, such as <code>&gt;&gt;</code>, <code>✓</code>, or <code>Q:</code>. It still creates a generated marker box; callers should not repeat the marker in <code>list-item.content</code>.</p>
+<p><code>markerTextStyle</code> applies only to generated marker boxes. Use it for marker color, font family, font size, weight, and similar text styling without leaking that paint into the list item body.</p>
+<p>Ordered marker styles support Latin, Roman, CJK, kana, and several locale digit systems. <code>cjk-ideographic</code> emits informal Chinese number words such as <code>九.</code>, <code>十.</code>, and <code>十一.</code>; <code>cjk-decimal</code> emits CJK digit substitution such as <code>一〇.</code>. <code>hiragana</code> and <code>katakana</code> use Japanese kana sequences. <code>arabic-indic</code>, <code>extended-arabic-indic</code>, <code>devanagari</code>, and <code>thai</code> substitute decimal digits in their respective numeral systems. Marker text is still generated from list structure; callers should not put these marker strings in <code>list-item.content</code>.</p>
+<p><code>itemSpacing</code> adds vertical space between sibling list items. It is owned by the list actor, so pagination and continuation decisions include the same spacing that will render. <code>nestedListSpacingBefore</code> and <code>nestedListSpacingAfter</code> add space around nested list children without authoring spacer paragraphs.</p>
+<p><code>levels</code> provides per-depth defaults for native nested lists. <code>levels[0]</code> applies to the declaring list, <code>levels[1]</code> applies to nested list children, and so on. A nested <code>list</code> inherits the nearest ancestor level table unless it declares its own <code>list.levels</code>; explicit options on the nested list override the inherited level defaults.</p>
+<p>Pagination may split lists at item boundaries or through a nested item body. When a list item continues onto a later page, VMPrint suppresses the repeated parent marker and keeps the continuation aligned to the item body.</p>
+<hr>
+<h2>11b. Strip (<code>type: &quot;strip&quot;</code>)</h2>
 <p>A <code>strip</code> is a compact one-row horizontal composition band for bylines, folio lines, masthead sub-rows, and similar left/center/right compositions.</p>
 <pre><code class="language-json">{
   &quot;type&quot;: &quot;strip&quot;,
@@ -600,7 +707,7 @@ interface StripSlot {
 </code></pre>
 <p>Use <code>strip</code> for lightweight composition, not tabular data.</p>
 <hr>
-<h2>11b. Zone Map (<code>type: &quot;zone-map&quot;</code>)</h2>
+<h2>11c. Zone Map (<code>type: &quot;zone-map&quot;</code>)</h2>
 <p>A <code>zone-map</code> defines independent layout regions inside the current field. The
 classic strip form is still supported, but zones may also use explicit
 rectangular <code>region</code> bounds with <code>x</code>, <code>y</code>, <code>width</code>, and optional <code>height</code>.</p>
@@ -773,7 +880,15 @@ interface PageRegionContent {
 </tr>
 <tr>
 <td><code>table-cell</code></td>
-<td>Either <code>content</code> or inline <code>children</code>.</td>
+<td><code>content</code>, inline <code>children</code>, or block children such as <code>list</code> for nested cell flow.</td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td><code>list-item</code> only.</td>
+</tr>
+<tr>
+<td><code>list-item</code></td>
+<td>Inline children plus block children such as nested <code>list</code>, <code>p</code>, <code>story</code>, <code>zone-map</code>, or <code>table</code>.</td>
 </tr>
 <tr>
 <td>paragraph-like</td>
@@ -848,6 +963,37 @@ interface PageRegionContent {
   ]
 }
 </code></pre>
+<h3>Native List Example</h3>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;list&quot;,
+  &quot;list&quot;: {
+    &quot;kind&quot;: &quot;ordered&quot;,
+    &quot;markerStyle&quot;: &quot;cjk-ideographic&quot;,
+    &quot;start&quot;: 9,
+    &quot;indent&quot;: 34,
+    &quot;markerWidth&quot;: 24,
+    &quot;markerGap&quot;: 8,
+    &quot;levels&quot;: [
+      { &quot;kind&quot;: &quot;ordered&quot;, &quot;markerStyle&quot;: &quot;cjk-ideographic&quot;, &quot;indent&quot;: 34, &quot;markerWidth&quot;: 24, &quot;markerGap&quot;: 8 },
+      { &quot;kind&quot;: &quot;unordered&quot;, &quot;markerText&quot;: &quot;✓&quot;, &quot;indent&quot;: 24, &quot;markerWidth&quot;: 14, &quot;markerGap&quot;: 6 }
+    ]
+  },
+  &quot;children&quot;: [
+    {
+      &quot;type&quot;: &quot;list-item&quot;,
+      &quot;content&quot;: &quot;Ninth item uses generated ideographic numbering.&quot;,
+      &quot;children&quot;: [
+        {
+          &quot;type&quot;: &quot;list&quot;,
+          &quot;children&quot;: [
+            { &quot;type&quot;: &quot;list-item&quot;, &quot;content&quot;: &quot;Nested item uses a generated custom check marker.&quot; }
+          ]
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
 <h3>Story / Float Example</h3>
 <pre><code class="language-json">{
   &quot;type&quot;: &quot;story&quot;,
@@ -884,6 +1030,14 @@ interface PageRegionContent {
 <tr>
 <td>AST normalization</td>
 <td><a href="https://github.com/cosmiciron/vmprint/blob/main/engine/src/engine/document.ts">engine/src/engine/document.ts</a></td>
+</tr>
+<tr>
+<td>Native list option normalization</td>
+<td><a href="https://github.com/cosmiciron/vmprint/blob/main/engine/src/engine/layout/normalized-list.ts">engine/src/engine/layout/normalized-list.ts</a></td>
+</tr>
+<tr>
+<td>Native list packager</td>
+<td><a href="https://github.com/cosmiciron/vmprint/blob/main/engine/src/engine/layout/packagers/list-packager.ts">engine/src/engine/layout/packagers/list-packager.ts</a></td>
 </tr>
 <tr>
 <td>Spatial fixture normalization helper</td>

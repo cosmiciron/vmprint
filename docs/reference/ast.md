@@ -8,6 +8,10 @@ If you want the guided teaching path instead of the full contract, start with th
 
 - [Authoring Guide](../guides/)
 
+Native lists are documented in [§11a](#11a-list-type-list). Use `list` and
+`list-item` elements for bullets, ordered numbering, nested levels,
+multilingual marker styles, and custom generated markers.
+
 ---
 
 
@@ -187,6 +191,7 @@ interface Element {
 
     image?: EmbeddedImagePayload;
     table?: TableLayoutOptions;
+    list?: ListLayoutOptions;
 
     slots?: StripSlot[];
     columns?: number;
@@ -211,6 +216,7 @@ interface Element {
 | `children` | Structural children or inline runs. |
 | `image` | Preferred on AST `1.1+` for image-bearing nodes. |
 | `table` | Preferred on AST `1.1+` on `type: "table"` elements. |
+| `list` | Preferred on AST `1.1+` on `type: "list"` elements. |
 | `slots` | `strip` only. One-row horizontal composition slots. |
 | `columns` | `story` only. Number of columns. |
 | `gutter` | `story` only. Inter-column gap in points. |
@@ -340,6 +346,9 @@ See [engine/src/engine/types.ts](c:\Users\cosmic\Projects\vmprint\engine\src\eng
 | `type` | Purpose |
 |---|---|
 | `story` | Multi-column flowing content area. Uses `columns`, `gutter`, `balance`. Direct children may carry `placement`. |
+| `list` | Native list container. Children must be `list-item`. Uses `element.list`. |
+| `list-item` | Native list item body. The engine generates marker boxes; do not author bullet or number text in `content`. |
+| `list-marker` | Generated marker flow box type. May be styled through `styles["list-marker"]`. |
 | `table` | Table container. Children must be `table-row`. Uses `element.table`. |
 | `table-row` | Table row. Children must be `table-cell`. |
 | `table-cell` | Table cell. Supports `properties.colSpan` and `properties.rowSpan`. |
@@ -409,7 +418,139 @@ interface TableColumnSizing {
 
 ---
 
-## 11a. Strip (`type: "strip"`)
+## 11a. List (`type: "list"`)
+
+A `list` is a native flowing block for unordered and ordered lists. The authored
+tree contains `list-item` children; VMPrint generates visible marker boxes at
+layout time so callers do not need to put bullets or numbers into item text.
+`list-item` nodes may contain inline children for rich text, plus block
+children such as `p`, `list`, `story`, `zone-map`, or `table`. Nested `list`
+children are laid out recursively, so marker generation, hanging indents, and
+host behavior travel through ordinary flow, stories/columns, zones, and table
+cell block content.
+
+```json
+{
+  "type": "list",
+  "content": "",
+  "list": {
+    "kind": "ordered",
+    "markerStyle": "decimal",
+    "start": 3,
+    "indent": 28,
+    "markerWidth": 18,
+    "markerGap": 10
+  },
+  "children": [
+    { "type": "list-item", "content": "Third item body." },
+    { "type": "list-item", "content": "Fourth item body." }
+  ]
+}
+```
+
+```typescript
+interface ListLayoutOptions {
+    kind?: 'unordered' | 'ordered';
+    markerStyle?:
+        | 'disc'
+        | 'bullet'
+        | 'circle'
+        | 'square'
+        | 'decimal'
+        | 'arabic-indic'
+        | 'extended-arabic-indic'
+        | 'devanagari'
+        | 'thai'
+        | 'cjk-decimal'
+        | 'cjk-ideographic'
+        | 'hiragana'
+        | 'katakana'
+        | 'lower-alpha'
+        | 'upper-alpha'
+        | 'lower-roman'
+        | 'upper-roman';
+    markerText?: string;
+    markerTextStyle?: ElementStyle;
+    start?: number;
+    indent?: number;
+    markerWidth?: number;
+    markerGap?: number;
+    itemSpacing?: number;
+    nestedListSpacingBefore?: number;
+    nestedListSpacingAfter?: number;
+    levels?: ListLevelOptions[];
+}
+
+interface ListLevelOptions {
+    kind?: 'unordered' | 'ordered';
+    markerStyle?:
+        | 'disc'
+        | 'bullet'
+        | 'circle'
+        | 'square'
+        | 'decimal'
+        | 'arabic-indic'
+        | 'extended-arabic-indic'
+        | 'devanagari'
+        | 'thai'
+        | 'cjk-decimal'
+        | 'cjk-ideographic'
+        | 'hiragana'
+        | 'katakana'
+        | 'lower-alpha'
+        | 'upper-alpha'
+        | 'lower-roman'
+        | 'upper-roman';
+    markerText?: string;
+    markerTextStyle?: ElementStyle;
+    indent?: number;
+    markerWidth?: number;
+    markerGap?: number;
+    itemSpacing?: number;
+    nestedListSpacingBefore?: number;
+    nestedListSpacingAfter?: number;
+}
+```
+
+`indent` is the distance from the list container's left edge to the item body.
+`markerWidth` is the marker column width, and `markerGap` is the space between
+the marker column and the item body. Wrapped item lines continue at the item
+body x-position, producing a hanging indent.
+
+`markerText` overrides the generated marker label with a literal custom marker
+for that list level, such as `>>`, `✓`, or `Q:`. It still creates a generated
+marker box; callers should not repeat the marker in `list-item.content`.
+
+`markerTextStyle` applies only to generated marker boxes. Use it for marker
+color, font family, font size, weight, and similar text styling without leaking
+that paint into the list item body.
+
+Ordered marker styles support Latin, Roman, CJK, kana, and several locale digit
+systems. `cjk-ideographic` emits informal Chinese number words such as `九.`,
+`十.`, and `十一.`; `cjk-decimal` emits CJK digit substitution such as `一〇.`.
+`hiragana` and `katakana` use Japanese kana sequences. `arabic-indic`,
+`extended-arabic-indic`, `devanagari`, and `thai` substitute decimal digits in
+their respective numeral systems. Marker text is still generated from list
+structure; callers should not put these marker strings in `list-item.content`.
+
+`itemSpacing` adds vertical space between sibling list items. It is owned by the
+list actor, so pagination and continuation decisions include the same spacing
+that will render. `nestedListSpacingBefore` and `nestedListSpacingAfter` add
+space around nested list children without authoring spacer paragraphs.
+
+`levels` provides per-depth defaults for native nested lists. `levels[0]`
+applies to the declaring list, `levels[1]` applies to nested list children, and
+so on. A nested `list` inherits the nearest ancestor level table unless it
+declares its own `list.levels`; explicit options on the nested list override the
+inherited level defaults.
+
+Pagination may split lists at item boundaries or through a nested item body.
+When a list item continues onto a later page, VMPrint suppresses the repeated
+parent marker and keeps the continuation aligned to the item body.
+
+---
+
+## 11b. Strip (`type: "strip"`)
 
 A `strip` is a compact one-row horizontal composition band for bylines, folio lines, masthead sub-rows, and similar left/center/right compositions.
 
@@ -449,7 +590,7 @@ Use `strip` for lightweight composition, not tabular data.
 
 ---
 
-## 11b. Zone Map (`type: "zone-map"`)
+## 11c. Zone Map (`type: "zone-map"`)
 
 A `zone-map` defines independent layout regions inside the current field. The
 classic strip form is still supported, but zones may also use explicit
@@ -653,7 +794,9 @@ interface PageRegionContent {
 | `story` | Any block `Element`. Direct children may carry `placement`. |
 | `table` | `table-row` only. |
 | `table-row` | `table-cell` only. |
-| `table-cell` | Either `content` or inline `children`. |
+| `table-cell` | `content`, inline `children`, or block children such as `list` for nested cell flow. |
+| `list` | `list-item` only. |
+| `list-item` | Inline children plus block children such as nested `list`, `p`, `story`, `zone-map`, or `table`. |
 | paragraph-like | Inline `children`: `text`, `inline`, `image`, `inline-box`. |
 | page region | Any `Element`. |
 
@@ -727,6 +870,40 @@ interface PageRegionContent {
 }
 ```
 
+### Native List Example
+
+```json
+{
+  "type": "list",
+  "list": {
+    "kind": "ordered",
+    "markerStyle": "cjk-ideographic",
+    "start": 9,
+    "indent": 34,
+    "markerWidth": 24,
+    "markerGap": 8,
+    "levels": [
+      { "kind": "ordered", "markerStyle": "cjk-ideographic", "indent": 34, "markerWidth": 24, "markerGap": 8 },
+      { "kind": "unordered", "markerText": "✓", "indent": 24, "markerWidth": 14, "markerGap": 6 }
+    ]
+  },
+  "children": [
+    {
+      "type": "list-item",
+      "content": "Ninth item uses generated ideographic numbering.",
+      "children": [
+        {
+          "type": "list",
+          "children": [
+            { "type": "list-item", "content": "Nested item uses a generated custom check marker." }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
 ### Story / Float Example
 
 ```json
@@ -757,6 +934,8 @@ interface PageRegionContent {
 |---|---|
 | Type definitions | [engine/src/engine/types.ts](https://github.com/cosmiciron/vmprint/blob/main/engine/src/engine/types.ts) |
 | AST normalization | [engine/src/engine/document.ts](https://github.com/cosmiciron/vmprint/blob/main/engine/src/engine/document.ts) |
+| Native list option normalization | [engine/src/engine/layout/normalized-list.ts](https://github.com/cosmiciron/vmprint/blob/main/engine/src/engine/layout/normalized-list.ts) |
+| Native list packager | [engine/src/engine/layout/packagers/list-packager.ts](https://github.com/cosmiciron/vmprint/blob/main/engine/src/engine/layout/packagers/list-packager.ts) |
 | Spatial fixture normalization helper | [engine/tests/harness/spatialize.ts](https://github.com/cosmiciron/vmprint/blob/main/engine/tests/harness/spatialize.ts) |
 | Architecture and Runtime Internals | [ENGINE-INTERNALS.md](https://github.com/cosmiciron/vmprint/blob/main/documents/ENGINE-INTERNALS.md) |
 | Scripting API | [scripting.html](./scripting.html) |

@@ -1,0 +1,80 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 420, "height": 320 },
+    "margins": { "top": 24, "right": 24, "bottom": 24, "left": 24 },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.2
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo" },
+  "styles": {
+    "h1": { "fontSize": 18, "fontWeight": "bold", "marginBottom": 8 },
+    "h2": { "fontSize": 12, "fontWeight": "bold", "marginBottom": 5 },
+    "p": { "marginBottom": 6 },
+    "list": { "marginTop": 3, "marginBottom": 6 },
+    "list-item": { "marginBottom": 3 },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Nested Lists in Zones" },
+    {
+      "type": "zone-map",
+      "zoneLayout": {
+        "columns": [
+          { "mode": "flex", "fr": 2, "min": 210 },
+          { "mode": "fixed", "value": 120 }
+        ],
+        "gap": 16,
+        "frameOverflow": "move-whole"
+      },
+      "properties": { "sourceId": "nested-zone-map", "style": { "marginTop": 6, "marginBottom": 6 } },
+      "zones": [
+        {
+          "id": "main",
+          "elements": [
+            { "type": "h2", "content": "Main Zone" },
+            {
+              "type": "list",
+              "list": { "kind": "unordered", "markerStyle": "disc", "indent": 22, "markerWidth": 10, "markerGap": 6 },
+              "properties": { "sourceId": "nested-zone-main-list" },
+              "children": [
+                {
+                  "type": "list-item",
+                  "content": "Main zone parent item owns an ordered child list.",
+                  "properties": { "sourceId": "nested-zone-main-parent" },
+                  "children": [
+                    {
+                      "type": "list",
+                      "list": { "kind": "ordered", "markerStyle": "lower-roman", "indent": 20, "markerWidth": 12, "markerGap": 5 },
+                      "properties": { "sourceId": "nested-zone-main-child" },
+                      "children": [
+                        { "type": "list-item", "content": "Roman child one.", "properties": { "sourceId": "nested-zone-roman-one" } },
+                        { "type": "list-item", "content": "Roman child two.", "properties": { "sourceId": "nested-zone-roman-two" } }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sidebar",
+          "elements": [
+            { "type": "h2", "content": "Sidebar" },
+            {
+              "type": "list",
+              "list": { "kind": "ordered", "markerStyle": "upper-alpha", "indent": 22, "markerWidth": 12, "markerGap": 5 },
+              "properties": { "sourceId": "nested-zone-sidebar-list" },
+              "children": [
+                { "type": "list-item", "content": "Sidebar item A.", "properties": { "sourceId": "nested-zone-sidebar-a" } },
+                { "type": "list-item", "content": "Sidebar item B.", "properties": { "sourceId": "nested-zone-sidebar-b" } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

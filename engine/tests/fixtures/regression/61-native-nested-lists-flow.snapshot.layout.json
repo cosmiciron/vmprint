@@ -1,0 +1,355 @@
+[
+  {
+    "index": 0,
+    "width": 360,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 304,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Native Nested Lists",
+              "width": 184.511719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 65.34375,
+        "w": 304,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "This fixture proves recursive list layout in ordinary flow.",
+              "width": 241.757813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 32,
+        "y": 94.184082,
+        "w": 12,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "•",
+              "width": 3.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 52,
+        "y": 91.015625,
+        "w": 280,
+        "h": 33.882324,
+        "lines": [
+          [
+            {
+              "text": "Parent A keeps inline ",
+              "width": 97.280273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "Courier ",
+              "width": 64.757813,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": "13.5",
+              "width": 32.378906,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": ", ",
+              "width": 5.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "formatting",
+              "width": 49.438477,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": " and ",
+              "width": 22.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "an inline object ",
+              "width": 69.492188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            },
+            {
+              "text": "￼",
+              "width": 12,
+              "ascent": 800,
+              "descent": 0,
+              "fontFamily": ""
+            },
+            {
+              "text": " before nesting.",
+              "width": 68.935547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 56,
+        "y": 132.897949,
+        "w": 12,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "a.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 74,
+        "y": 132.897949,
+        "w": 258,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Alpha child one wraps with its own hanging indent and ",
+              "width": 242.93457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "generated marker.",
+              "width": 81.157227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 56,
+        "y": 164.241699,
+        "w": 12,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "b.",
+              "width": 8.886719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 74,
+        "y": 164.241699,
+        "w": 258,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Alpha child two owns a third level.",
+              "width": 150.078125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 78,
+        "y": 185.913574,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "▪",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 94,
+        "y": 185.913574,
+        "w": 238,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Square grandchild marker is generated by the ",
+              "width": 205.673828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "engine.",
+              "width": 32.807617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 78,
+        "y": 217.257324,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "▪",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 94,
+        "y": 217.257324,
+        "w": 238,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Second square grandchild stays under the nested ",
+              "width": 222.924805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "body column.",
+              "width": 59.477539,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 32,
+        "y": 264.601074,
+        "w": 12,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "•",
+              "width": 3.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 52,
+        "y": 264.601074,
+        "w": 280,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Parent B follows the nested structure and proves the outer ",
+              "width": 260.703125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sequence resumes.",
+              "width": 87.270508,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

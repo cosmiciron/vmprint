@@ -1,0 +1,90 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 360, "height": 420 },
+    "margins": { "top": 28, "right": 28, "bottom": 28, "left": 28 },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.25
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo" },
+  "styles": {
+    "h1": { "fontSize": 16, "fontWeight": "bold", "marginBottom": 8 },
+    "list": { "marginTop": 2, "marginBottom": 6 },
+    "list-item": { "marginBottom": 3, "allowLineSplit": true },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Native List Customization" },
+    {
+      "type": "list",
+      "list": {
+        "kind": "ordered",
+        "start": 4,
+        "levels": [
+          { "markerStyle": "decimal", "indent": 32, "markerWidth": 18, "markerGap": 7 },
+          { "kind": "ordered", "markerStyle": "lower-alpha", "indent": 24, "markerWidth": 13, "markerGap": 5 },
+          { "kind": "unordered", "markerStyle": "square", "indent": 20, "markerWidth": 10, "markerGap": 5 }
+        ]
+      },
+      "properties": { "sourceId": "custom-root-list" },
+      "children": [
+        {
+          "type": "list-item",
+          "content": "Root item uses level zero decimal markers starting at four and a wider marker gap.",
+          "properties": { "sourceId": "custom-root-four" },
+          "children": [
+            {
+              "type": "list",
+              "properties": { "sourceId": "custom-alpha-list" },
+              "children": [
+                {
+                  "type": "list-item",
+                  "content": "Inherited alpha child uses level one marker geometry.",
+                  "properties": { "sourceId": "custom-alpha-a" },
+                  "children": [
+                    {
+                      "type": "list",
+                      "properties": { "sourceId": "custom-square-list" },
+                      "children": [
+                        {
+                          "type": "list-item",
+                          "content": "Inherited square grandchild proves level two defaults travel recursively.",
+                          "properties": { "sourceId": "custom-square-one" }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "list-item",
+                  "content": "Second inherited alpha child keeps the same level one sequence.",
+                  "properties": { "sourceId": "custom-alpha-b" }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "list-item",
+          "content": "Root item five proves the outer ordered sequence continues after inherited descendants.",
+          "properties": { "sourceId": "custom-root-five" },
+          "children": [
+            {
+              "type": "list",
+              "list": { "kind": "unordered", "markerStyle": "circle", "indent": 18, "markerWidth": 9, "markerGap": 4 },
+              "properties": { "sourceId": "custom-override-list" },
+              "children": [
+                {
+                  "type": "list-item",
+                  "content": "Explicit child override uses circle instead of inherited alpha.",
+                  "properties": { "sourceId": "custom-override-circle" }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

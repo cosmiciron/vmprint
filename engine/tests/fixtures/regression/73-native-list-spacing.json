@@ -1,0 +1,83 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 340, "height": 240 },
+    "margins": { "top": 24, "right": 24, "bottom": 24, "left": 24 },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.25
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo" },
+  "styles": {
+    "h1": { "fontSize": 15, "fontWeight": "bold", "marginBottom": 8 },
+    "list": { "marginTop": 2, "marginBottom": 4 },
+    "list-item": { "marginBottom": 0, "allowLineSplit": true },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Native List Spacing" },
+    {
+      "type": "list",
+      "list": {
+        "kind": "ordered",
+        "itemSpacing": 8,
+        "nestedListSpacingBefore": 6,
+        "nestedListSpacingAfter": 7,
+        "levels": [
+          { "markerStyle": "decimal", "indent": 30, "markerWidth": 16, "markerGap": 6 },
+          { "kind": "unordered", "markerStyle": "circle", "indent": 22, "markerWidth": 10, "markerGap": 5, "itemSpacing": 4, "nestedListSpacingBefore": 4, "nestedListSpacingAfter": 5 },
+          { "kind": "unordered", "markerStyle": "square", "indent": 18, "markerWidth": 9, "markerGap": 4, "itemSpacing": 2 }
+        ]
+      },
+      "properties": { "sourceId": "spacing-root-list" },
+      "children": [
+        {
+          "type": "list-item",
+          "content": "First root item owns a nested list below its lead paragraph.",
+          "properties": { "sourceId": "spacing-root-one" },
+          "children": [
+            {
+              "type": "list",
+              "properties": { "sourceId": "spacing-child-list" },
+              "children": [
+                {
+                  "type": "list-item",
+                  "content": "First child item demonstrates inherited child spacing.",
+                  "properties": { "sourceId": "spacing-child-one" }
+                },
+                {
+                  "type": "list-item",
+                  "content": "Second child item owns a third visual level.",
+                  "properties": { "sourceId": "spacing-child-two" },
+                  "children": [
+                    {
+                      "type": "list",
+                      "properties": { "sourceId": "spacing-grandchild-list" },
+                      "children": [
+                        {
+                          "type": "list-item",
+                          "content": "Square grandchild proves level two spacing and indent.",
+                          "properties": { "sourceId": "spacing-grandchild-one" }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "list-item",
+          "content": "Second root item should sit after the nested list's after-spacing and the root sibling gap.",
+          "properties": { "sourceId": "spacing-root-two" }
+        },
+        {
+          "type": "list-item",
+          "content": "Third root item is deliberately long so that list spacing is preserved while the actor continues across a page boundary. The item keeps adding measured words to force the native list packager to split without duplicating marker spacing, without repeating authored marker text, and without losing the remaining list flow after continuation. Extra measured copy keeps the final root item taller than a fresh page so the continuation remains observable after the earlier items use the heading page correctly. The closing sentence confirms the resumed fragment carries only authored body text. More measured prose extends the final root item through several additional wrapped lines, keeping the generated marker anchored to the first fragment while the continuation carries only body content. This deliberately plain sentence adds one more run of words so pagination has to exercise the continuation actor instead of merely fitting the whole final item on the second page.",
+          "properties": { "sourceId": "spacing-root-three" }
+        }
+      ]
+    }
+  ]
+}

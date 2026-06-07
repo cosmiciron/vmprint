@@ -1,0 +1,205 @@
+[
+  {
+    "index": 0,
+    "width": 390,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 22,
+        "y": 22,
+        "w": 346,
+        "h": 20.275,
+        "lines": [
+          [
+            {
+              "text": "Native Lists Inside Tables",
+              "width": 194.4375,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 22,
+        "y": 50.275,
+        "w": 92,
+        "h": 67.61875,
+        "lines": [
+          [
+            {
+              "text": "Checklist",
+              "width": 34.481445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "table_cell",
+        "x": 114,
+        "y": 50.275,
+        "w": 254,
+        "h": 67.61875,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 118.5,
+        "y": 54.775,
+        "w": 245,
+        "h": 0,
+        "lines": []
+      },
+      {
+        "type": "list-marker",
+        "x": 123.5,
+        "y": 55.775,
+        "w": 8,
+        "h": 11.404687,
+        "lines": [
+          [
+            {
+              "text": "•",
+              "width": 3.150879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 136.5,
+        "y": 55.775,
+        "w": 227,
+        "h": 11.404687,
+        "lines": [
+          [
+            {
+              "text": "Table cell parent item.",
+              "width": 87.543457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 140.5,
+        "y": 69.179688,
+        "w": 10,
+        "h": 11.404687,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 7.505859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 154.5,
+        "y": 69.179688,
+        "w": 209,
+        "h": 11.404687,
+        "lines": [
+          [
+            {
+              "text": "Nested table child one.",
+              "width": 91.560059,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 140.5,
+        "y": 82.584375,
+        "w": 10,
+        "h": 11.404687,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 7.505859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 154.5,
+        "y": 82.584375,
+        "w": 209,
+        "h": 11.404687,
+        "lines": [
+          [
+            {
+              "text": "Nested table child two wraps inside the cell width.",
+              "width": 197.600098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 123.5,
+        "y": 97.989062,
+        "w": 8,
+        "h": 11.404687,
+        "lines": [
+          [
+            {
+              "text": "•",
+              "width": 3.150879,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 136.5,
+        "y": 97.989062,
+        "w": 227,
+        "h": 11.404687,
+        "lines": [
+          [
+            {
+              "text": "Second table cell parent item.",
+              "width": 118.568848,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

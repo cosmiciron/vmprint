@@ -1,0 +1,516 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 25.509375,
+        "lines": [
+          [
+            {
+              "text": "Native List Multilingual Numbering",
+              "width": 296.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 30,
+        "y": 65.707383,
+        "w": 24,
+        "h": 18.97456,
+        "lines": [
+          [
+            {
+              "text": "九",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 62,
+        "y": 68.509375,
+        "w": 330,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Ninth item uses Chinese ideographic numbering.",
+              "width": 237.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 30,
+        "y": 88.681943,
+        "w": 24,
+        "h": 18.97456,
+        "lines": [
+          [
+            {
+              "text": "十",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 62,
+        "y": 91.483935,
+        "w": 330,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Tenth item proves ten is not Latin decimal text.",
+              "width": 226.225098,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 65,
+        "y": 107.271005,
+        "w": 18,
+        "h": 18.97456,
+        "lines": [
+          [
+            {
+              "text": "あ",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 90,
+        "y": 110.072998,
+        "w": 302,
+        "h": 31.178125,
+        "lines": [
+          [
+            {
+              "text": "Hiragana child marker is generated from inherited level ",
+              "width": 270.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "defaults.",
+              "width": 41.583008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 65,
+        "y": 138.44913,
+        "w": 18,
+        "h": 18.97456,
+        "lines": [
+          [
+            {
+              "text": "い",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 90,
+        "y": 141.251123,
+        "w": 302,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Second hiragana child keeps native marker ownership.",
+              "width": 267.206543,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 30,
+        "y": 169.42369,
+        "w": 24,
+        "h": 18.97456,
+        "lines": [
+          [
+            {
+              "text": "十",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": "一",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans SC"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 62,
+        "y": 172.225683,
+        "w": 330,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Eleventh item confirms ideographic numbering continues.",
+              "width": 279.425781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 34,
+        "y": 197.04425,
+        "w": 24,
+        "h": 26.1261,
+        "lines": [
+          [
+            {
+              "text": "٨",
+              "width": 5.9774,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 66,
+        "y": 202.200243,
+        "w": 326,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Arabic-Indic digit marker eight is generated by the list actor.",
+              "width": 288.583496,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 34,
+        "y": 226.17035,
+        "w": 24,
+        "h": 26.1261,
+        "lines": [
+          [
+            {
+              "text": "٩",
+              "width": 5.9774,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 66,
+        "y": 231.326343,
+        "w": 326,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Arabic-Indic digit marker nine remains generated structure.",
+              "width": 286.128906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 34,
+        "y": 255.29645,
+        "w": 24,
+        "h": 26.1261,
+        "lines": [
+          [
+            {
+              "text": "١٠",
+              "width": 11.9548,
+              "ascent": 1374,
+              "descent": 738,
+              "fontFamily": "Noto Sans Arabic"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 66,
+        "y": 260.452443,
+        "w": 326,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Arabic-Indic ten proves multi-digit substitution.",
+              "width": 224.377441,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 34,
+        "y": 294.77655,
+        "w": 20,
+        "h": 18.97456,
+        "lines": [
+          [
+            {
+              "text": "ア",
+              "width": 10.12,
+              "ascent": 1160,
+              "descent": 288,
+              "fontFamily": "Noto Sans JP"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 62,
+        "y": 297.578543,
+        "w": 330,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Katakana root item owns Devanagari and Thai nested levels.",
+              "width": 296.55957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 65,
+        "y": 316.167605,
+        "w": 20,
+        "h": 17.521608,
+        "lines": [
+          [
+            {
+              "text": "१",
+              "width": 5.434,
+              "ascent": 896,
+              "descent": 408,
+              "fontFamily": "Noto Sans Devanagari"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 92,
+        "y": 316.167605,
+        "w": 300,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Devanagari digit marker appears at the second visual level.",
+              "width": 288.599609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 93,
+        "y": 333.043675,
+        "w": 20,
+        "h": 19.723,
+        "lines": [
+          [
+            {
+              "text": "๑",
+              "width": 5.62848,
+              "ascent": 1061,
+              "descent": 450,
+              "fontFamily": "Noto Sans Thai"
+            },
+            {
+              "text": ".",
+              "width": 3.056152,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 120,
+        "y": 334.756668,
+        "w": 272,
+        "h": 15.589063,
+        "lines": [
+          [
+            {
+              "text": "Thai digit marker appears at the third visual level.",
+              "width": 239.668945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -45,6 +45,12 @@ export type SpatialGridLayoutContext = {
     resolveMeasurementFontForStyle: (style: ElementStyle) => any;
     measureText: (text: string, font: any, fontSize: number, letterSpacing: number) => number;
     emitDropCapBoxes?: (element: Element, width: number, context?: FlowMaterializationContext) => Box[] | null;
+    emitBlockChildBoxes?: (
+        element: Element,
+        children: Element[],
+        width: number,
+        context?: FlowMaterializationContext
+    ) => { boxes: Box[]; height: number } | null;
 };
 
 export function isTableElement(element: Element | undefined): boolean {
@@ -140,6 +146,19 @@ function materializeTableCell(
     const insetsHorizontal = tableContext.getHorizontalInsets(mergedStyle);
     const text = tableContext.getElementText(cell);
     const hasChildElements = Array.isArray(cell.children) && cell.children.length > 0;
+    const hasBlockChildren = hasChildElements
+        && cell.children!.some((child) => {
+            const type = String(child?.type || '').trim().toLowerCase();
+            return type === 'list'
+                || type === 'table'
+                || type === 'story'
+                || type === 'zone-map'
+                || type === 'strip'
+                || type === 'p'
+                || type === 'paragraph'
+                || (type === 'image' && (!!child?.placement || child?.properties?.display === 'block'))
+                || /^h[1-6]$/.test(type);
+        });
     const image = tableContext.resolveEmbeddedImage(cell);
 
     if (image) {
@@ -200,6 +219,66 @@ function materializeTableCell(
                 measuredHeight,
                 childBoxes: dropCapBoxes,
                 properties: { ...(cell.properties || {}), _tableDropCap: true }
+            };
+        }
+    }
+
+    if (hasBlockChildren && typeof tableContext.emitBlockChildBoxes === 'function') {
+        const contentWidth = Math.max(0, width - insetsHorizontal);
+        const children = Array.isArray(cell.children) ? cell.children : [];
+        const blockChildren = text.trim().length > 0
+            ? [
+                {
+                    type: 'p',
+                    content: cell.content || '',
+                    children: children.filter((child) => {
+                        const type = String(child?.type || '').trim().toLowerCase();
+                        return type !== 'list'
+                            && type !== 'table'
+                            && type !== 'story'
+                            && type !== 'zone-map'
+                            && type !== 'strip'
+                            && type !== 'p'
+                            && type !== 'paragraph'
+                            && !(type === 'image' && (!!child?.placement || child?.properties?.display === 'block'))
+                            && !/^h[1-6]$/.test(type);
+                    }),
+                    properties: {
+                        ...(cell.properties || {}),
+                        sourceId: cell.properties?.sourceId
+                            ? `${cell.properties.sourceId}:lead`
+                            : undefined,
+                        style: {
+                            ...(cell.properties?.style || {}),
+                            marginTop: 0,
+                            marginBottom: 0,
+                            width: contentWidth
+                        }
+                    }
+                } as Element,
+                ...children.filter((child) => {
+                    const type = String(child?.type || '').trim().toLowerCase();
+                    return type === 'list'
+                        || type === 'table'
+                        || type === 'story'
+                        || type === 'zone-map'
+                        || type === 'strip'
+                        || type === 'p'
+                        || type === 'paragraph'
+                        || (type === 'image' && (!!child?.placement || child?.properties?.display === 'block'))
+                        || /^h[1-6]$/.test(type);
+                })
+            ]
+            : children;
+        const materializedChildren = tableContext.emitBlockChildBoxes(cell, blockChildren, contentWidth, context);
+        if (materializedChildren) {
+            return {
+                placement,
+                source: cell,
+                style: mergedStyle,
+                measuredHeight: Math.max(insetsVertical, materializedChildren.height + insetsVertical),
+                childBoxes: materializedChildren.boxes,
+                properties: { ...(cell.properties || {}), _tableBlockChildren: true }
             };
         }
     }

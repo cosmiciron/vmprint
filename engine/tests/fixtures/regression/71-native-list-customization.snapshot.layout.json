@@ -1,0 +1,288 @@
+[
+  {
+    "index": 0,
+    "width": 360,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 304,
+        "h": 21.875,
+        "lines": [
+          [
+            {
+              "text": "Native List Customization",
+              "width": 195.578125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 35,
+        "y": 59.875,
+        "w": 18,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "4.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 60,
+        "y": 59.875,
+        "w": 272,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Root item uses level zero decimal markers starting at four ",
+              "width": 257.875977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "and a wider marker gap.",
+              "width": 107.832031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 66,
+        "y": 92.21875,
+        "w": 13,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "a.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 84,
+        "y": 92.21875,
+        "w": 248,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Inherited alpha child uses level one marker geometry.",
+              "width": 236.606445,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 89,
+        "y": 110.890625,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "▪",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 104,
+        "y": 110.890625,
+        "w": 228,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Inherited square grandchild proves level two ",
+              "width": 198.447266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "defaults travel recursively.",
+              "width": 114.858398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 66,
+        "y": 147.234375,
+        "w": 13,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "b.",
+              "width": 8.886719,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 84,
+        "y": 147.234375,
+        "w": 248,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Second inherited alpha child keeps the same level one ",
+              "width": 244.604492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "sequence.",
+              "width": 46.147461,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 35,
+        "y": 183.578125,
+        "w": 18,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "5.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 60,
+        "y": 183.578125,
+        "w": 272,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Root item five proves the outer ordered sequence continues ",
+              "width": 267.93457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "after inherited descendants.",
+              "width": 123.413086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 65,
+        "y": 215.921875,
+        "w": 9,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 78,
+        "y": 215.921875,
+        "w": 254,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Explicit child override uses circle instead of inherited ",
+              "width": 233.999023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "alpha.",
+              "width": 27.246094,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

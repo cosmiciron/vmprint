@@ -1,0 +1,74 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 390, "height": 260 },
+    "margins": { "top": 22, "right": 22, "bottom": 22, "left": 22 },
+    "fontFamily": "Arimo",
+    "fontSize": 9,
+    "lineHeight": 1.15
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo" },
+  "styles": {
+    "h1": { "fontSize": 16, "fontWeight": "bold", "marginBottom": 8 },
+    "table": { "marginTop": 0, "marginBottom": 8, "padding": 0, "borderWidth": 0 },
+    "table-cell": { "fontSize": 8.5, "lineHeight": 1.15, "padding": 4, "borderWidth": 0.5, "borderColor": "#222222" },
+    "list": { "marginTop": 0, "marginBottom": 2 },
+    "list-item": { "marginBottom": 2, "allowLineSplit": true },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Native Lists Inside Tables" },
+    {
+      "type": "table",
+      "table": {
+        "columnGap": 0,
+        "rowGap": 0,
+        "columns": [
+          { "mode": "fixed", "value": 92 },
+          { "mode": "flex", "fr": 1, "min": 190 }
+        ],
+        "cellStyle": { "padding": 4, "borderWidth": 0.5, "borderColor": "#222222" }
+      },
+      "properties": { "sourceId": "nested-table" },
+      "children": [
+        {
+          "type": "table-row",
+          "children": [
+            { "type": "table-cell", "content": "Checklist" },
+            {
+              "type": "table-cell",
+              "content": "",
+              "properties": { "sourceId": "nested-table-cell-list" },
+              "children": [
+                {
+                  "type": "list",
+                  "list": { "kind": "unordered", "markerStyle": "disc", "indent": 18, "markerWidth": 8, "markerGap": 5 },
+                  "properties": { "sourceId": "nested-table-root-list" },
+                  "children": [
+                    {
+                      "type": "list-item",
+                      "content": "Table cell parent item.",
+                      "properties": { "sourceId": "nested-table-parent" },
+                      "children": [
+                        {
+                          "type": "list",
+                          "list": { "kind": "ordered", "markerStyle": "decimal", "indent": 18, "markerWidth": 10, "markerGap": 4 },
+                          "properties": { "sourceId": "nested-table-child-list" },
+                          "children": [
+                            { "type": "list-item", "content": "Nested table child one.", "properties": { "sourceId": "nested-table-child-one" } },
+                            { "type": "list-item", "content": "Nested table child two wraps inside the cell width.", "properties": { "sourceId": "nested-table-child-two" } }
+                          ]
+                        }
+                      ]
+                    },
+                    { "type": "list-item", "content": "Second table cell parent item.", "properties": { "sourceId": "nested-table-second" } }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

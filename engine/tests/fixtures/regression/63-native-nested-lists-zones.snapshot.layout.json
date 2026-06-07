@@ -1,0 +1,252 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 320,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 372,
+        "h": 23.709375,
+        "lines": [
+          [
+            {
+              "text": "Nested Lists in Zones",
+              "width": 186.038086,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 24,
+        "y": 61.709375,
+        "w": 236,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "Main Zone",
+              "width": 59.332031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 30,
+        "y": 85.515625,
+        "w": 10,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "•",
+              "width": 3.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 46,
+        "y": 85.515625,
+        "w": 214,
+        "h": 26.34375,
+        "lines": [
+          [
+            {
+              "text": "Main zone parent item owns an ordered child ",
+              "width": 202.333984,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "list.",
+              "width": 15,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 49,
+        "y": 117.859375,
+        "w": 12,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "i.",
+              "width": 5.556641,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 66,
+        "y": 117.859375,
+        "w": 194,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "Roman child one.",
+              "width": 77.822266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 49,
+        "y": 134.03125,
+        "w": 12,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "ii.",
+              "width": 8.334961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 66,
+        "y": 134.03125,
+        "w": 194,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "Roman child two.",
+              "width": 76.699219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "x": 276,
+        "y": 61.709375,
+        "w": 120,
+        "h": 15.80625,
+        "lines": [
+          [
+            {
+              "text": "Sidebar",
+              "width": 44.015625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 281,
+        "y": 85.515625,
+        "w": 12,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "A.",
+              "width": 10,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 298,
+        "y": 85.515625,
+        "w": 98,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "Sidebar item A.",
+              "width": 68.364258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 281,
+        "y": 101.6875,
+        "w": 12,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "B.",
+              "width": 10,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 298,
+        "y": 101.6875,
+        "w": 98,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "Sidebar item B.",
+              "width": 68.364258,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

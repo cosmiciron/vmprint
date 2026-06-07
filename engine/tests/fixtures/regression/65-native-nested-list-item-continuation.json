@@ -1,0 +1,59 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 320, "height": 210 },
+    "margins": { "top": 24, "right": 24, "bottom": 24, "left": 24 },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.2
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo" },
+  "styles": {
+    "h1": { "fontSize": 16, "fontWeight": "bold", "marginBottom": 8, "keepWithNext": true },
+    "p": { "marginBottom": 7, "allowLineSplit": true },
+    "list": { "marginTop": 2, "marginBottom": 6 },
+    "list-item": { "marginBottom": 4, "allowLineSplit": true },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Nested Item Continuation" },
+    {
+      "type": "p",
+      "content": "The first list item is too tall for one page; its continuation should not repeat the parent marker."
+    },
+    {
+      "type": "list",
+      "list": { "kind": "ordered", "markerStyle": "decimal", "indent": 24, "markerWidth": 14, "markerGap": 6 },
+      "properties": { "sourceId": "nested-continuation-root" },
+      "children": [
+        {
+          "type": "list-item",
+          "content": "Parent item begins before a nested list and has enough body content to force an item-level split.",
+          "properties": { "sourceId": "nested-continuation-parent" },
+          "children": [
+            {
+              "type": "list",
+              "list": { "kind": "unordered", "markerStyle": "circle", "indent": 20, "markerWidth": 10, "markerGap": 5 },
+              "properties": { "sourceId": "nested-continuation-child-list" },
+              "children": [
+                { "type": "list-item", "content": "Child one adds height before the page boundary.", "properties": { "sourceId": "nested-continuation-child-one" } },
+                { "type": "list-item", "content": "Child two continues the nested body and may be split or carried forward.", "properties": { "sourceId": "nested-continuation-child-two" } },
+                { "type": "list-item", "content": "Child three lands on the continuation page under the nested body indent.", "properties": { "sourceId": "nested-continuation-child-three" } },
+                { "type": "list-item", "content": "Child four gives the continuation enough material to prove the parent marker is not repeated.", "properties": { "sourceId": "nested-continuation-child-four" } },
+                { "type": "list-item", "content": "Child five makes the nested body taller than a fresh page.", "properties": { "sourceId": "nested-continuation-child-five" } },
+                { "type": "list-item", "content": "Child six should appear after the continuation without a repeated parent marker.", "properties": { "sourceId": "nested-continuation-child-six" } },
+                { "type": "list-item", "content": "Child seven keeps the carried nested list active.", "properties": { "sourceId": "nested-continuation-child-seven" } },
+                { "type": "list-item", "content": "Child eight closes the nested list before the second parent item resumes.", "properties": { "sourceId": "nested-continuation-child-eight" } }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "list-item",
+          "content": "Second parent item resumes numbering after the continued first item.",
+          "properties": { "sourceId": "nested-continuation-second" }
+        }
+      ]
+    }
+  ]
+}

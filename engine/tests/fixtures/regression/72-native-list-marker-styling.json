@@ -1,0 +1,143 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 360, "height": 420 },
+    "margins": { "top": 28, "right": 28, "bottom": 28, "left": 28 },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.25
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo", "mono": "Courier Prime" },
+  "styles": {
+    "h1": { "fontSize": 16, "fontWeight": "bold", "marginBottom": 8 },
+    "list": { "marginTop": 2, "marginBottom": 6 },
+    "list-item": { "marginBottom": 3, "allowLineSplit": true },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Native List Marker Styling" },
+    {
+      "type": "list",
+      "list": {
+        "kind": "ordered",
+        "markerTextStyle": {
+          "color": "#b91c1c",
+          "fontSize": 13,
+          "fontWeight": "bold"
+        },
+        "levels": [
+          {
+            "markerStyle": "decimal",
+            "indent": 34,
+            "markerWidth": 20,
+            "markerGap": 6
+          },
+          {
+            "kind": "ordered",
+            "markerStyle": "lower-alpha",
+            "indent": 25,
+            "markerWidth": 14,
+            "markerGap": 5,
+            "markerTextStyle": {
+              "color": "#1d4ed8",
+              "fontSize": 11,
+              "fontStyle": "italic"
+            }
+          },
+          {
+            "kind": "unordered",
+            "markerStyle": "square",
+            "indent": 20,
+            "markerWidth": 10,
+            "markerGap": 5,
+            "markerTextStyle": {
+              "color": "#047857",
+              "fontSize": 10
+            }
+          }
+        ]
+      },
+      "properties": { "sourceId": "marker-style-root-list" },
+      "children": [
+        {
+          "type": "list-item",
+          "content": "Root marker is red and larger, while body text keeps ordinary styling around ",
+          "properties": { "sourceId": "marker-style-root-one" },
+          "children": [
+            {
+              "type": "inline",
+              "content": "blue inline body text",
+              "properties": {
+                "style": {
+                  "color": "#2563eb",
+                  "fontFamily": "Courier Prime",
+                  "fontSize": 12
+                }
+              }
+            },
+            { "type": "text", "content": " before nesting." },
+            {
+              "type": "list",
+              "properties": { "sourceId": "marker-style-alpha-list" },
+              "children": [
+                {
+                  "type": "list-item",
+                  "content": "Alpha child marker inherits blue italic styling without coloring this body.",
+                  "properties": { "sourceId": "marker-style-alpha-a" },
+                  "children": [
+                    {
+                      "type": "list",
+                      "properties": { "sourceId": "marker-style-square-list" },
+                      "children": [
+                        {
+                          "type": "list-item",
+                          "content": "Square grandchild marker inherits green styling.",
+                          "properties": { "sourceId": "marker-style-square-one" }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "list-item",
+                  "content": "Second alpha child keeps the inherited marker paint.",
+                  "properties": { "sourceId": "marker-style-alpha-b" }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "list-item",
+          "content": "Second root item keeps red marker style after descendants.",
+          "properties": { "sourceId": "marker-style-root-two" },
+          "children": [
+            {
+              "type": "list",
+              "list": {
+                "kind": "unordered",
+                "markerStyle": "circle",
+                "indent": 18,
+                "markerWidth": 9,
+                "markerGap": 4,
+                "markerTextStyle": {
+                  "color": "#7c3aed",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              },
+              "properties": { "sourceId": "marker-style-override-list" },
+              "children": [
+                {
+                  "type": "list-item",
+                  "content": "Explicit child override uses purple circle marker styling.",
+                  "properties": { "sourceId": "marker-style-override-circle" }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

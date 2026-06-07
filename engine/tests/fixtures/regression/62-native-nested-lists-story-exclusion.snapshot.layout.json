@@ -1,0 +1,377 @@
+[
+  {
+    "index": 0,
+    "width": 420,
+    "height": 440,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 364,
+        "h": 24.609375,
+        "lines": [
+          [
+            {
+              "text": "Nested Lists in Columns and Exclusions",
+              "width": 347.071289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 28,
+        "y": 60.609375,
+        "w": 112,
+        "h": 96,
+        "lines": []
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 60.609375,
+        "w": 173,
+        "h": 155.171875,
+        "lines": [
+          [
+            {
+              "text": "The story begins beside a shaped ",
+              "width": 152.875977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "exclusion so the following list has to ",
+              "width": 161.196289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "accept the same narrowed lanes as ",
+              "width": 160.644531,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "other story actors.",
+              "width": 80.029297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 32,
+        "y": 225.78125,
+        "w": 14,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 52,
+        "y": 225.78125,
+        "w": 149,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "First column item contains a ",
+              "width": 127.265625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "nested unordered checklist.",
+              "width": 122.294922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 56,
+        "y": 259.125,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 72,
+        "y": 259.125,
+        "w": 129,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Child item flows in the story ",
+              "width": 124.487305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lane.",
+              "width": 21.68457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 56,
+        "y": 289.46875,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 72,
+        "y": 289.46875,
+        "w": 129,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Child item wraps while the ",
+              "width": 118.935547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "exclusion is still active.",
+              "width": 100.59082,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 32,
+        "y": 326.8125,
+        "w": 14,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 52,
+        "y": 326.8125,
+        "w": 149,
+        "h": 41.015625,
+        "lines": [
+          [
+            {
+              "text": "Second ordered item proves ",
+              "width": 128.40332,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "numbering continues after the ",
+              "width": 135.083008,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "nested subtree.",
+              "width": 68.935547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 32,
+        "y": 370.828125,
+        "w": 14,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "3.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 52,
+        "y": 370.828125,
+        "w": 149,
+        "h": 41.015625,
+        "lines": [
+          [
+            {
+              "text": "Third ordered item is deliberately ",
+              "width": 148.398438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "wordy so the story can push it ",
+              "width": 135.063477,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "into a later column while keeping ",
+              "width": 147.861328,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 243,
+        "y": 63.609375,
+        "w": 149,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "generated markers attached to ",
+              "width": 138.969727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "structure.",
+              "width": 41.679688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 219,
+        "y": 100.953125,
+        "w": 173,
+        "h": 26.171875,
+        "lines": [
+          [
+            {
+              "text": "Trailing story text confirms normal flow",
+              "width": 170.229492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "resumes after the nested list actor.",
+              "width": 152.851563,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -64,6 +64,8 @@ import { buildTableModelFromNormalizedTable, normalizeTableElement } from './nor
 import { resolveDocumentMicroLanePolicy, resolveMinUsableLaneWidth } from './micro-lane-policy';
 import { DropCapPackager } from './packagers/dropcap-packager';
 import { createPackagers, ExternalPackagerFactory } from './packagers/create-packagers';
+import { createHostedRegionSessionContextBase } from './packagers/hosted-region-runtime';
+import { runHostedRegionSession } from './packagers/hosted-region-settlement';
 import { SpatialMap } from './packagers/spatial-map';
 import { ScriptDocumentPackager } from './packagers/script-document-packager';
 import { createSimulationMarchRunner, executeSimulationMarch, type SimulationRunner } from './packagers/execute-simulation-march';
@@ -454,6 +456,25 @@ export class LayoutProcessor extends TextProcessor {
                     Number.isFinite(width) ? Math.max(0, Number(width)) : pageDims.width,
                     Number.POSITIVE_INFINITY,
                     packagerContext
+                );
+            },
+            emitBlockChildBoxes: (_element, children, width, context) => {
+                if (!Array.isArray(children) || children.length === 0) return null;
+                const pageDims = this.getPageDimensions();
+                const contentWidth = Number.isFinite(width) ? Math.max(0, Number(width)) : pageDims.width;
+                const actors = createPackagers(children, this).map((actor, index) => ({
+                    actor,
+                    element: children[index]
+                }));
+                return runHostedRegionSession(
+                    {
+                        rect: { x: 0, y: 0, width: contentWidth },
+                        actors
+                    },
+                    createHostedRegionSessionContextBase(contentWidth, this, {
+                        ...(Number.isFinite(context?.worldY) ? { chunkOriginWorldY: Number(context?.worldY) } : {}),
+                        viewportHeight: pageDims.height
+                    })
                 );
             }
         };

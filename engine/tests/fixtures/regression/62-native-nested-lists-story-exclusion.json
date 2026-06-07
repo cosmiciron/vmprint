@@ -1,0 +1,81 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 420, "height": 440 },
+    "margins": { "top": 28, "right": 28, "bottom": 28, "left": 28 },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.25,
+    "storyWrapOpticalUnderhang": true,
+    "microLanePolicy": "typography"
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo" },
+  "styles": {
+    "h1": { "fontSize": 18, "fontWeight": "bold", "marginBottom": 8 },
+    "p": { "marginBottom": 7, "allowLineSplit": true },
+    "list": { "marginTop": 3, "marginBottom": 7 },
+    "list-item": { "marginBottom": 3, "allowLineSplit": true },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Nested Lists in Columns and Exclusions" },
+    {
+      "type": "story",
+      "columns": 2,
+      "gutter": 18,
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,0 L112,0 L112,48 L72,48 L72,96 L0,96 Z"
+          },
+          "properties": { "sourceId": "nested-story-exclusion", "style": { "width": 112, "height": 96 } },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAWSURBVChTY/AO3fcfH2ZAF0DHw0MBALHrl0EmDPYJAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "p",
+          "content": "The story begins beside a shaped exclusion so the following list has to accept the same narrowed lanes as other story actors."
+        },
+        {
+          "type": "list",
+          "list": { "kind": "ordered", "markerStyle": "decimal", "indent": 24, "markerWidth": 14, "markerGap": 6 },
+          "properties": { "sourceId": "nested-story-root" },
+          "children": [
+            {
+              "type": "list-item",
+              "content": "First column item contains a nested unordered checklist.",
+              "properties": { "sourceId": "nested-story-one" },
+              "children": [
+                {
+                  "type": "list",
+                  "list": { "kind": "unordered", "markerStyle": "circle", "indent": 20, "markerWidth": 10, "markerGap": 6 },
+                  "properties": { "sourceId": "nested-story-child" },
+                  "children": [
+                    { "type": "list-item", "content": "Child item flows in the story lane.", "properties": { "sourceId": "nested-story-child-a" } },
+                    { "type": "list-item", "content": "Child item wraps while the exclusion is still active.", "properties": { "sourceId": "nested-story-child-b" } }
+                  ]
+                }
+              ]
+            },
+            { "type": "list-item", "content": "Second ordered item proves numbering continues after the nested subtree.", "properties": { "sourceId": "nested-story-two" } },
+            { "type": "list-item", "content": "Third ordered item is deliberately wordy so the story can push it into a later column while keeping generated markers attached to structure.", "properties": { "sourceId": "nested-story-three" } }
+          ]
+        },
+        {
+          "type": "p",
+          "content": "Trailing story text confirms normal flow resumes after the nested list actor."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,420 @@
+[
+  {
+    "index": 0,
+    "width": 360,
+    "height": 270,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 20.507813,
+        "lines": [
+          [
+            {
+              "text": "Native List Spatial Continuation",
+              "width": 225.849609,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 24,
+        "y": 51.507813,
+        "w": 126,
+        "h": 126,
+        "lines": []
+      },
+      {
+        "type": "list-marker",
+        "x": 144.853158,
+        "y": 53.507813,
+        "w": 14,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 24,
+        "y": 53.507813,
+        "w": 312,
+        "h": 38.671875,
+        "lines": [
+          [
+            {
+              "text": "First item fits beside the circular ",
+              "width": 143.374023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "exclusion and proves the generated ",
+              "width": 161.220703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "marker follows the narrowed lane.",
+              "width": 150.068359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 24,
+        "y": 96.179688,
+        "w": 312,
+        "h": 38.671875,
+        "lines": [
+          [
+            {
+              "text": "Second item owns a nested ",
+              "width": 125.629883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "subtree that is too tall for the ",
+              "width": 128.959961,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remaining page-one region.",
+              "width": 122.304688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 163.760391,
+        "y": 96.179688,
+        "w": 14,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 183.931835,
+        "y": 140.851563,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 24,
+        "y": 140.851563,
+        "w": 312,
+        "h": 38.671875,
+        "lines": [
+          [
+            {
+              "text": "Nested child item remains ",
+              "width": 117.822266,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "attached to the second parent ",
+              "width": 135.097656,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "before the page break.",
+              "width": 100.629883,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 55,
+        "y": 183.523438,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 24,
+        "y": 183.523438,
+        "w": 312,
+        "h": 26.171875,
+        "lines": [
+          [
+            {
+              "text": "Another nested child resumes as part of the same ",
+              "width": 223.452148,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "compound actor on page two.",
+              "width": 131.75293,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 55,
+        "y": 213.695313,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 24,
+        "y": 213.695313,
+        "w": 312,
+        "h": 26.171875,
+        "lines": [
+          [
+            {
+              "text": "Third nested child adds height so the parent cannot be ",
+              "width": 244.052734,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "treated as a single baked visual box.",
+              "width": 161.767578,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 360,
+    "height": 270,
+    "boxes": [
+      {
+        "type": "list-marker",
+        "x": 55,
+        "y": 28,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 70,
+        "y": 28,
+        "w": 266,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Fourth nested child proves carried child actors keep their ",
+              "width": 254.013672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "own generated markers.",
+              "width": 107.832031,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 55,
+        "y": 59.34375,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 70,
+        "y": 59.34375,
+        "w": 266,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Fifth nested child closes the continuation stress case.",
+              "width": 236.235352,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 30,
+        "y": 83.015625,
+        "w": 14,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "3.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 50,
+        "y": 83.015625,
+        "w": 286,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Third item resumes the ordered sequence after the nested ",
+              "width": 260.698242,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continuation clears.",
+              "width": 86.162109,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

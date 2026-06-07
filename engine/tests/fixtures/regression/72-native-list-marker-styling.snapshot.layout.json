@@ -1,0 +1,259 @@
+[
+  {
+    "index": 0,
+    "width": 360,
+    "height": 420,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 304,
+        "h": 21.875,
+        "lines": [
+          [
+            {
+              "text": "Native List Marker Styling",
+              "width": 195.617188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 36,
+        "y": 58.969727,
+        "w": 20,
+        "h": 17.773438,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 10.841797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 62,
+        "y": 59.875,
+        "w": 270,
+        "h": 17.964844,
+        "lines": [
+          [
+            {
+              "text": "blue inline body text",
+              "width": 151.101563,
+              "ascent": 781.25,
+              "descent": 341.796875,
+              "fontFamily": "Courier Prime"
+            },
+            {
+              "text": " before nesting.",
+              "width": 68.935547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 68,
+        "y": 81.93457,
+        "w": 14,
+        "h": 15.039063,
+        "lines": [
+          [
+            {
+              "text": "a.",
+              "width": 9.173828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 87,
+        "y": 82.839844,
+        "w": 245,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Alpha child marker inherits blue italic styling without ",
+              "width": 230.65918,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "coloring this body.",
+              "width": 79.858398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 92,
+        "y": 115.183594,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "▪",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 107,
+        "y": 115.183594,
+        "w": 225,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Square grandchild marker inherits green styling.",
+              "width": 212.329102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 68,
+        "y": 136.950195,
+        "w": 14,
+        "h": 15.039063,
+        "lines": [
+          [
+            {
+              "text": "b.",
+              "width": 9.775391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 87,
+        "y": 137.855469,
+        "w": 245,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Second alpha child keeps the inherited marker paint.",
+              "width": 232.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 36,
+        "y": 157.811523,
+        "w": 20,
+        "h": 17.773438,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 10.841797,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 62,
+        "y": 160.527344,
+        "w": 270,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Second root item keeps red marker style after descendants.",
+              "width": 264.575195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 67,
+        "y": 175.578125,
+        "w": 9,
+        "h": 19.140625,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 4.962891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 80,
+        "y": 179.199219,
+        "w": 252,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Explicit child override uses purple circle marker styling.",
+              "width": 242.30957,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

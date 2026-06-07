@@ -27,6 +27,7 @@ Design stance:
 If you only want one takeaway before diving in:
 
 - use normal flow for ordinary content
+- use `list` for bullets, ordered numbering, nested lists, and custom generated markers
 - use `story` for linked multi-column flow
 - use `strip` for one-row aligned bands
 - use `zone-map` for independent regions, including offset rectangular region fields

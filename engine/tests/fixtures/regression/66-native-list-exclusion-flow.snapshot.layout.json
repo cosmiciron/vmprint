@@ -1,0 +1,519 @@
+[
+  {
+    "index": 0,
+    "width": 430,
+    "height": 620,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 28,
+        "y": 28,
+        "w": 374,
+        "h": 21.875,
+        "lines": [
+          [
+            {
+              "text": "Native Lists Beside Shaped Exclusions",
+              "width": 297.882813,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 28,
+        "y": 57.875,
+        "w": 112,
+        "h": 112,
+        "lines": []
+      },
+      {
+        "type": "list-marker",
+        "x": 138.721145,
+        "y": 59.875,
+        "w": 16,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 28,
+        "y": 59.875,
+        "w": 374,
+        "h": 38.671875,
+        "lines": [
+          [
+            {
+              "text": "Circle case: the parent list item starts in the available ",
+              "width": 236.21582,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lane beside the rounded exclusion while its ",
+              "width": 192.900391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "generated marker remains outside the item body.",
+              "width": 217.148438,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 181,
+        "y": 103.546875,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 28,
+        "y": 103.546875,
+        "w": 374,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Nested child stays inside the circle side lane.",
+              "width": 198.432617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 152.798343,
+        "y": 126.21875,
+        "w": 16,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 28,
+        "y": 126.21875,
+        "w": 374,
+        "h": 38.671875,
+        "lines": [
+          [
+            {
+              "text": "Second circle item stretches the actor beyond the ",
+              "width": 221.782227,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "shoulder so the story must keep the compound list ",
+              "width": 225.673828,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "coherent through the active band.",
+              "width": 148.994141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 28,
+        "y": 173.890625,
+        "w": 112,
+        "h": 112,
+        "lines": []
+      },
+      {
+        "type": "list-marker",
+        "x": 114.499,
+        "y": 175.890625,
+        "w": 12,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "•",
+              "width": 3.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 28,
+        "y": 175.890625,
+        "w": 374,
+        "h": 38.671875,
+        "lines": [
+          [
+            {
+              "text": "Polygon case: the list actor accepts the diamond's available ",
+              "width": 266.503906,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "lane without materializing marker characters in the ",
+              "width": 225.654297,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "authored text.",
+              "width": 61.152344,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 178.999,
+        "y": 219.5625,
+        "w": 12,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "a.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 28,
+        "y": 219.5625,
+        "w": 374,
+        "h": 26.171875,
+        "lines": [
+          [
+            {
+              "text": "Alpha child proves numbering still belongs to ",
+              "width": 200.668945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the nested list.",
+              "width": 64.482422,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 131.15525,
+        "y": 254.734375,
+        "w": 12,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "•",
+              "width": 3.500977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 28,
+        "y": 254.734375,
+        "w": 374,
+        "h": 26.171875,
+        "lines": [
+          [
+            {
+              "text": "Second polygon item keeps the same hanging indent ",
+              "width": 237.939453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "while the outer actor is constrained by the shaped field.",
+              "width": 244.033203,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 28,
+        "y": 289.90625,
+        "w": 118,
+        "h": 112,
+        "lines": []
+      },
+      {
+        "type": "list-marker",
+        "x": 92.372606,
+        "y": 291.90625,
+        "w": 18,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "A.",
+              "width": 10,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 28,
+        "y": 291.90625,
+        "w": 374,
+        "h": 38.671875,
+        "lines": [
+          [
+            {
+              "text": "Assembly case: one visible actor publishes several exclusion ",
+              "width": 272.353516,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "members, and the native list still picks a lane beside",
+              "width": 230.112305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the compound field.",
+              "width": 87.280273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 183.116637,
+        "y": 335.578125,
+        "w": 11,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "▪",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 28,
+        "y": 335.578125,
+        "w": 374,
+        "h": 26.171875,
+        "lines": [
+          [
+            {
+              "text": "Square child marker remains generated ",
+              "width": 178.422852,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "inside the assembly lane.",
+              "width": 112.285156,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 159.873392,
+        "y": 370.75,
+        "w": 18,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "B.",
+              "width": 10,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 28,
+        "y": 370.75,
+        "w": 374,
+        "h": 38.671875,
+        "lines": [
+          [
+            {
+              "text": "Second assembly item confirms numbering and ",
+              "width": 213.432617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "marker placement stay attached to the native list ",
+              "width": 217.329102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "structure.",
+              "width": 41.679688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 28,
+        "y": 418.421875,
+        "w": 374,
+        "h": 26.171875,
+        "lines": [
+          [
+            {
+              "text": "After the shaped exclusion gauntlet clears, ordinary story text returns to the full ",
+              "width": 350.737305,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "measure.",
+              "width": 41.68457,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

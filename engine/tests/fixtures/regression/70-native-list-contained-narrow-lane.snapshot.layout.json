@@ -1,0 +1,168 @@
+[
+  {
+    "index": 0,
+    "width": 240,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 192,
+        "h": 31.6125,
+        "lines": [
+          [
+            {
+              "text": "Contained List Narrow Lane ",
+              "width": 162.685547,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Guard",
+              "width": 35.337891,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 240,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "field-actor",
+        "x": 24,
+        "y": 26,
+        "w": 72,
+        "h": 72,
+        "lines": []
+      },
+      {
+        "type": "list-marker",
+        "x": 24,
+        "y": 26,
+        "w": 72,
+        "h": 72,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 7.505859,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 24,
+        "y": 26,
+        "w": 72,
+        "h": 72,
+        "lines": [
+          [
+            {
+              "text": "The marker ",
+              "width": 48.51123,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "column is ",
+              "width": 40.513184,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "deliberately too ",
+              "width": 63.540527,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "wide for most ",
+              "width": 56.01709,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "crown lanes, so ",
+              "width": 65.030273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the contained ",
+              "width": 56.544434,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "resolver must ",
+              "width": 56.513672,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "advance and ",
+              "width": 54.043945,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "finish ",
+              "width": 23.510742,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "deterministically.",
+              "width": 65.852051,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -5,6 +5,7 @@ import { FlowBox } from '../layout-core-types';
 import type { ActorSignal, ActorSignalDraft } from '../actor-event-bus';
 import type { AsyncThoughtHandle, AsyncThoughtRequest } from '../async-thought-host';
 import type { SpatialExclusion } from '../runtime/session/session-spatial-types';
+import type { SpatialMap } from './spatial-map';
 
 export interface LayoutBox extends Box { }
 
@@ -59,6 +60,12 @@ export interface PackagerContext {
      * actors continue to wrap at their natural style-based content width.
      */
     contentWidthOverride?: number;
+    /**
+     * Host-owned spatial field for compound actors that can disassemble and
+     * reassemble their internal pieces against the same scanline lanes used by
+     * ordinary story text.
+     */
+    spatialMap?: SpatialMap;
     publishActorSignal(signal: ActorSignalDraft): ActorSignal;
     readActorSignals(topic?: string): readonly ActorSignal[];
     requestAsyncThought?(request: AsyncThoughtRequest): AsyncThoughtHandle | undefined;

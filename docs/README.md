@@ -22,7 +22,7 @@ A progressive six-chapter authoring guide, from first document to scripting:
 |---------|-------|
 | [Introduction](./guides/) | Overview and reading path |
 | [01 - Your First Document](./guides/01-your-first-document.html) | Document structure, layout config, a minimal working example |
-| [02 - Styles and Text](./guides/02-styles-and-text.html) | The style system, typography, inline formatting |
+| [02 - Styles and Text](./guides/02-styles-and-text.html) | The style system, typography, inline formatting, native lists |
 | [03 - Stories, Strips, and Zones](./guides/03-stories-strips-and-zones.html) | Multi-column layout, strips, zone maps |
 | [04 - Headers, Footers, and Page Control](./guides/04-headers-footers-and-page-control.html) | Running regions, page numbering, odd-sized pages, partial simulation |
 | [05 - Images, Tables, and Overlays](./guides/05-images-tables-and-overlays.html) | Embedded images, table layout, overlay system |
@@ -36,7 +36,7 @@ Detailed specifications for the document format and runtime APIs:
 
 | Document | Contents |
 |----------|----------|
-| [AST Reference](./reference/ast.html) | Complete `DocumentInput` schema - layout config, page templates, all element types, style properties |
+| [AST Reference](./reference/ast.html) | Complete `DocumentInput` schema - layout config, page templates, native lists, all element types, style properties |
 | [Scripting API](./reference/scripting.html) | All lifecycle methods, element addressing, messaging, mutation API |
 | [Overlay System](./reference/overlay.html) | `OverlayProvider` interface, render lifecycle, backdrop and overlay hooks |
 | [Standard Fonts](./reference/standard-fonts.html) | The 14 built-in PDF fonts, Win-ANSI encoding, sentinel buffer mechanism |

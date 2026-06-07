@@ -13,7 +13,11 @@ import {
 } from './runtime/session/session-pagination-types';
 import type { Box, Page } from '../types';
 import { getActorOverflowHandling, type ActorOverflowHandling } from './actor-overflow';
-import type { PackagerContext, PackagerUnit } from './packagers/packager-types';
+import {
+    resolvePackagerReshapeProfile,
+    type PackagerContext,
+    type PackagerUnit
+} from './packagers/packager-types';
 
 type PackagerWithFlowBox = PackagerUnit & {
     flowBox?: {
@@ -322,11 +326,13 @@ export class CollisionRuntime {
         const isStoryPackager = this.hasStoryElement(input.actor);
         const isContinuingRegionPackager = this.hasContinuingRegionField(input.actor);
         const isBreakableFlowBoxPackager = this.hasBreakableFlowBox(input.actor);
+        const hasContinuationSplitCapability = this.hasContinuationSplitCapability(input.actor);
         const allowsMidPageSplit =
             isSpatialGridPackager
             || isStoryPackager
             || isContinuingRegionPackager
-            || isBreakableFlowBoxPackager;
+            || isBreakableFlowBoxPackager
+            || hasContinuationSplitCapability;
         const emptyLayoutBefore = input.marginTop;
         const emptyAvailable = input.pageLimit - input.pageTop;
         const requiredOnEmpty = input.contentHeight + emptyLayoutBefore + input.marginBottom;
@@ -350,6 +356,13 @@ export class CollisionRuntime {
         if (flowBox.properties?._tableModel) return false;
         if (flowBox.image) return false;
         return flowBox.allowLineSplit === true;
+    }
+
+    private hasContinuationSplitCapability(actor: PackagerUnit): boolean {
+        const profile = resolvePackagerReshapeProfile(actor);
+        return !!profile?.capabilities?.some((capability) =>
+            capability.kind === 'split' && capability.producesContinuation === true
+        );
     }
 
     private hasStoryElement(actor: PackagerUnit): actor is PackagerWithStoryElement {

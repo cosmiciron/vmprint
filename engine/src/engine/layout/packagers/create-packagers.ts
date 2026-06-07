@@ -12,11 +12,13 @@ import { WorldPlainPackager, isWorldPlainElement } from './world-plain-packager'
 import { ZonePackager, isZoneMapElement } from './zone-packager';
 import { TocPackager } from './toc-packager';
 import { isTableElement } from '../layout-table';
+import { isListElement } from '../normalized-list';
 import type { FlowBox } from '../layout-core-types';
 import type { NormalizedFlowBlock } from '../normalized-flow-block';
 import { createElementPackagerIdentity } from './packager-identity';
 import { ScriptedFlowBoxPackager } from './scripted-flow-box-packager';
 import { ScriptRuntimeHost } from '../script-runtime-host';
+import { ListPackager } from './list-packager';
 
 type ElementShaper = {
     shapeElement(element: Element, options: { path: number[] }): FlowBox;
@@ -64,6 +66,9 @@ export function buildPackagerForElement(
     }
     if (isZoneMapElement(item)) {
         return new ZonePackager(item, processor, identity);
+    }
+    if (isListElement(item)) {
+        return new ListPackager(item, processor, identity);
     }
     const shaper = processor as unknown as ElementShaper;
     if (isTableElement(item)) {

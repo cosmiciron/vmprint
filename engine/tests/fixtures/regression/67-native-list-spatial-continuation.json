@@ -1,0 +1,103 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 360, "height": 270 },
+    "margins": { "top": 24, "right": 24, "bottom": 24, "left": 24 },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.25,
+    "storyWrapOpticalUnderhang": true,
+    "microLanePolicy": "typography"
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo" },
+  "styles": {
+    "h1": { "fontSize": 15, "fontWeight": "bold", "marginBottom": 7 },
+    "p": { "marginBottom": 6, "allowLineSplit": true },
+    "list": { "marginTop": 2, "marginBottom": 6 },
+    "list-item": { "marginBottom": 4, "allowLineSplit": true },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Native List Spatial Continuation" },
+    {
+      "type": "story",
+      "columns": 1,
+      "gutter": 0,
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "circle"
+          },
+          "properties": { "sourceId": "spatial-continuation-circle", "style": { "width": 126, "height": 126 } },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAWSURBVChTYzhiqv8fH2ZAF0DHw0MBAPbCicE8FeLNAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "list",
+          "list": { "kind": "ordered", "markerStyle": "decimal", "indent": 26, "markerWidth": 14, "markerGap": 6 },
+          "properties": { "sourceId": "spatial-continuation-root" },
+          "children": [
+            {
+              "type": "list-item",
+              "content": "First item fits beside the circular exclusion and proves the generated marker follows the narrowed lane.",
+              "properties": { "sourceId": "spatial-continuation-first" }
+            },
+            {
+              "type": "list-item",
+              "content": "Second item owns a nested subtree that is too tall for the remaining page-one region.",
+              "properties": { "sourceId": "spatial-continuation-second" },
+              "children": [
+                {
+                  "type": "list",
+                  "list": { "kind": "unordered", "markerStyle": "circle", "indent": 20, "markerWidth": 10, "markerGap": 5 },
+                  "properties": { "sourceId": "spatial-continuation-child-list" },
+                  "children": [
+                    {
+                      "type": "list-item",
+                      "content": "Nested child item remains attached to the second parent before the page break.",
+                      "properties": { "sourceId": "spatial-continuation-child-one" }
+                    },
+                    {
+                      "type": "list-item",
+                      "content": "Another nested child resumes as part of the same compound actor on page two.",
+                      "properties": { "sourceId": "spatial-continuation-child-two" }
+                    },
+                    {
+                      "type": "list-item",
+                      "content": "Third nested child adds height so the parent cannot be treated as a single baked visual box.",
+                      "properties": { "sourceId": "spatial-continuation-child-three" }
+                    },
+                    {
+                      "type": "list-item",
+                      "content": "Fourth nested child proves carried child actors keep their own generated markers.",
+                      "properties": { "sourceId": "spatial-continuation-child-four" }
+                    },
+                    {
+                      "type": "list-item",
+                      "content": "Fifth nested child closes the continuation stress case.",
+                      "properties": { "sourceId": "spatial-continuation-child-five" }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "list-item",
+              "content": "Third item resumes the ordered sequence after the nested continuation clears.",
+              "properties": { "sourceId": "spatial-continuation-third" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,500 @@
+[
+  {
+    "index": 0,
+    "width": 320,
+    "height": 210,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 272,
+        "h": 21.075,
+        "lines": [
+          [
+            {
+              "text": "Nested Item Continuation",
+              "width": 193.78125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "x": 24,
+        "y": 53.075,
+        "w": 272,
+        "h": 26.34375,
+        "lines": [
+          [
+            {
+              "text": "The first list item is too tall for one page; its continuation ",
+              "width": 249.008789,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "should not repeat the parent marker.",
+              "width": 161.210938,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 28,
+        "y": 88.41875,
+        "w": 14,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 48,
+        "y": 88.41875,
+        "w": 248,
+        "h": 26.34375,
+        "lines": [
+          [
+            {
+              "text": "Parent item begins before a nested list and has enough ",
+              "width": 247.944336,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "body content to force an item-level split.",
+              "width": 176.201172,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 53,
+        "y": 120.7625,
+        "w": 10,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 68,
+        "y": 120.7625,
+        "w": 228,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "Child one adds height before the page boundary.",
+              "width": 216.088867,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 53,
+        "y": 137.934375,
+        "w": 10,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 68,
+        "y": 137.934375,
+        "w": 228,
+        "h": 26.34375,
+        "lines": [
+          [
+            {
+              "text": "Child two continues the nested body and may be ",
+              "width": 218.47168,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "split or carried forward.",
+              "width": 101.699219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 320,
+    "height": 210,
+    "boxes": [
+      {
+        "type": "list-marker",
+        "x": 53,
+        "y": 28,
+        "w": 10,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 68,
+        "y": 28,
+        "w": 228,
+        "h": 26.34375,
+        "lines": [
+          [
+            {
+              "text": "Child three lands on the continuation page under ",
+              "width": 218.491211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the nested body indent.",
+              "width": 103.969727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 53,
+        "y": 58.34375,
+        "w": 10,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 68,
+        "y": 58.34375,
+        "w": 228,
+        "h": 26.34375,
+        "lines": [
+          [
+            {
+              "text": "Child four gives the continuation enough material to",
+              "width": 227.919922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "prove the parent marker is not repeated.",
+              "width": 178.432617,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 53,
+        "y": 88.6875,
+        "w": 10,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 68,
+        "y": 88.6875,
+        "w": 228,
+        "h": 26.34375,
+        "lines": [
+          [
+            {
+              "text": "Child five makes the nested body taller than a fresh",
+              "width": 227.348633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page.",
+              "width": 25.024414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 53,
+        "y": 119.03125,
+        "w": 10,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 68,
+        "y": 119.03125,
+        "w": 228,
+        "h": 26.34375,
+        "lines": [
+          [
+            {
+              "text": "Child six should appear after the continuation ",
+              "width": 202.905273,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "without a repeated parent marker.",
+              "width": 149.53125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 53,
+        "y": 149.375,
+        "w": 10,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 68,
+        "y": 149.375,
+        "w": 228,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "Child seven keeps the carried nested list active.",
+              "width": 211.220703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 320,
+    "height": 210,
+    "boxes": [
+      {
+        "type": "list-marker",
+        "x": 53,
+        "y": 28,
+        "w": 10,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 68,
+        "y": 28,
+        "w": 228,
+        "h": 26.34375,
+        "lines": [
+          [
+            {
+              "text": "Child eight closes the nested list before the second",
+              "width": 225.693359,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "parent item resumes.",
+              "width": 93.925781,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 28,
+        "y": 64.34375,
+        "w": 14,
+        "h": 13.171875,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 48,
+        "y": 64.34375,
+        "w": 248,
+        "h": 26.34375,
+        "lines": [
+          [
+            {
+              "text": "Second parent item resumes numbering after the ",
+              "width": 220.117188,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "continued first item.",
+              "width": 86.704102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

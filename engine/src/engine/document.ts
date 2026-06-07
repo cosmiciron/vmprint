@@ -65,7 +65,7 @@ const MARGINS_KEYS = new Set(['top', 'right', 'bottom', 'left']);
 const PAGE_TEMPLATE_KEYS = new Set(['pageIndex', 'selector', 'pageSize', 'orientation', 'margins']);
 const OPTICAL_SCALING_KEYS = new Set(['enabled', 'cjk', 'korean', 'thai', 'devanagari', 'arabic', 'cyrillic', 'latin', 'default']);
 const WORLD_PLAIN_KEYS = new Set(['style', 'frameOverflow', 'worldBehavior', 'rootFlowMode', 'traversalInteractionDefault']);
-const ELEMENT_KEYS = new Set(['type', 'name', 'content', 'children', 'image', 'table', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
+const ELEMENT_KEYS = new Set(['type', 'name', 'content', 'children', 'image', 'table', 'list', 'slots', 'columns', 'gutter', 'balance', 'zones', 'zoneLayout', 'stripLayout', 'dropCap', 'columnSpan', 'placement', 'properties']);
 const ZONE_DEFINITION_KEYS = new Set(['id', 'region', 'elements', 'style']);
 const ZONE_REGION_KEYS = new Set(['x', 'y', 'width', 'height']);
 const STRIP_SLOT_KEYS = new Set(['id', 'elements', 'style']);
@@ -98,6 +98,8 @@ const CONTINUATION_MARKER_KEYS = new Set(['type', 'content', 'style', 'propertie
 const SOURCE_RANGE_KEYS = new Set(['lineStart', 'colStart', 'lineEnd', 'colEnd']);
 const IMAGE_PAYLOAD_KEYS = new Set(['data', 'mimeType', 'fit']);
 const TABLE_LAYOUT_KEYS = new Set(['headerRows', 'repeatHeader', 'columnGap', 'rowGap', 'columns', 'cellStyle', 'headerCellStyle']);
+const LIST_LEVEL_KEYS = new Set(['kind', 'markerStyle', 'markerText', 'markerTextStyle', 'indent', 'markerWidth', 'markerGap', 'itemSpacing', 'nestedListSpacingBefore', 'nestedListSpacingAfter']);
+const LIST_LAYOUT_KEYS = new Set(['kind', 'markerStyle', 'markerText', 'markerTextStyle', 'start', 'indent', 'markerWidth', 'markerGap', 'itemSpacing', 'nestedListSpacingBefore', 'nestedListSpacingAfter', 'levels']);
 const ZONE_LAYOUT_KEYS = new Set(['columns', 'gap', 'frameOverflow', 'worldBehavior']);
 const STRIP_LAYOUT_KEYS = new Set(['tracks', 'gap']);
 const TABLE_COLUMN_KEYS = new Set(['mode', 'value', 'fr', 'min', 'max', 'basis', 'minContent', 'maxContent', 'grow', 'shrink']);
@@ -816,6 +818,61 @@ function validateTableLayoutOptions(value: unknown, path: string, documentPath: 
     }
 }
 
+function validateListLayoutOptions(value: unknown, path: string, documentPath: string): void {
+    const options = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(options, LIST_LAYOUT_KEYS, path, documentPath);
+
+    validateListLevelOptions(options, path, documentPath);
+    if (options.start !== undefined) assertFiniteNumberAt(options.start, `${path}.start`, documentPath);
+    if (options.levels !== undefined) {
+        if (!Array.isArray(options.levels)) {
+            contractError(documentPath, `${path}.levels`, 'expected an array.');
+        }
+        options.levels.forEach((entry, index) =>
+            validateListLevelOptions(entry, `${path}.levels[${index}]`, documentPath)
+        );
+    }
+}
+
+function validateListLevelOptions(value: unknown, path: string, documentPath: string): void {
+    const options = assertPlainObjectAt(value, path, documentPath);
+    assertAllowedKeys(options, path.endsWith(']') ? LIST_LEVEL_KEYS : LIST_LAYOUT_KEYS, path, documentPath);
+
+    assertEnumAt(options.kind, ['unordered', 'ordered'], `${path}.kind`, documentPath);
+    assertEnumAt(
+        options.markerStyle,
+        [
+            'disc',
+            'bullet',
+            'circle',
+            'square',
+            'decimal',
+            'arabic-indic',
+            'extended-arabic-indic',
+            'devanagari',
+            'thai',
+            'cjk-decimal',
+            'cjk-ideographic',
+            'hiragana',
+            'katakana',
+            'lower-alpha',
+            'upper-alpha',
+            'lower-roman',
+            'upper-roman'
+        ],
+        `${path}.markerStyle`,
+        documentPath
+    );
+    if (options.indent !== undefined) assertFiniteNumberAt(options.indent, `${path}.indent`, documentPath);
+    if (options.markerWidth !== undefined) assertFiniteNumberAt(options.markerWidth, `${path}.markerWidth`, documentPath);
+    if (options.markerGap !== undefined) assertFiniteNumberAt(options.markerGap, `${path}.markerGap`, documentPath);
+    if (options.itemSpacing !== undefined) assertFiniteNumberAt(options.itemSpacing, `${path}.itemSpacing`, documentPath);
+    if (options.nestedListSpacingBefore !== undefined) assertFiniteNumberAt(options.nestedListSpacingBefore, `${path}.nestedListSpacingBefore`, documentPath);
+    if (options.nestedListSpacingAfter !== undefined) assertFiniteNumberAt(options.nestedListSpacingAfter, `${path}.nestedListSpacingAfter`, documentPath);
+    if (options.markerText !== undefined) assertStringAt(options.markerText, `${path}.markerText`, documentPath);
+    if (options.markerTextStyle !== undefined) validateStyleObject(options.markerTextStyle, `${path}.markerTextStyle`, documentPath);
+}
+
 function validateZoneDefinition(value: unknown, path: string, documentPath: string): void {
     const zone = assertPlainObjectAt(value, path, documentPath);
     assertAllowedKeys(zone, ZONE_DEFINITION_KEYS, path, documentPath);
@@ -977,6 +1034,9 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
     if (element.table !== undefined) {
         validateTableLayoutOptions(element.table, `${path}.table`, documentPath);
     }
+    if (element.list !== undefined) {
+        validateListLayoutOptions(element.list, `${path}.list`, documentPath);
+    }
     if (element.zoneLayout !== undefined) {
         validateZoneLayoutOptions(element.zoneLayout, `${path}.zoneLayout`, documentPath);
     }
@@ -1006,6 +1066,17 @@ function validateElementNode(node: unknown, path: string, documentPath: string, 
 
     if (String(element.type).trim() === 'world-plain') {
         contractError(documentPath, `${path}.type`, 'world-plain is authored through layout.worldPlain, not as a regular element.');
+    }
+
+    if (String(element.type).trim() === 'list') {
+        if (element.children !== undefined && !Array.isArray(element.children)) {
+            contractError(documentPath, `${path}.children`, 'expected an array of list-item elements.');
+        }
+        (element.children || []).forEach((child: any, index: number) => {
+            if (String(child?.type || '').trim() !== 'list-item') {
+                contractError(documentPath, `${path}.children[${index}].type`, 'expected "list-item" inside list.');
+            }
+        });
     }
 
     if (element.zones !== undefined) {
@@ -1223,6 +1294,9 @@ function normalizeElementNode(element: Element): Element {
     }
     if (element.table !== undefined) {
         normalized.table = deepSortObject(element.table as any);
+    }
+    if (element.list !== undefined) {
+        normalized.list = deepSortObject(element.list as any);
     }
     if (element.zoneLayout !== undefined) {
         const normalizedZoneLayout = deepSortObject(element.zoneLayout as any) as Record<string, unknown>;

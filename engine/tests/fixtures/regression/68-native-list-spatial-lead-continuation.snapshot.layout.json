@@ -1,0 +1,312 @@
+[
+  {
+    "index": 0,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 312,
+        "h": 20.507813,
+        "lines": [
+          [
+            {
+              "text": "Native List Spatial Lead Continuation",
+              "width": 265.026855,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "image",
+        "x": 24,
+        "y": 51.507813,
+        "w": 126,
+        "h": 126,
+        "lines": []
+      },
+      {
+        "type": "list-marker",
+        "x": 144.853158,
+        "y": 53.507813,
+        "w": 14,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 24,
+        "y": 53.507813,
+        "w": 312,
+        "h": 26.171875,
+        "lines": [
+          [
+            {
+              "text": "First item fits beside the circular ",
+              "width": 143.374023,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "exclusion.",
+              "width": 44.467773,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 24,
+        "y": 83.679688,
+        "w": 312,
+        "h": 150,
+        "lines": [
+          [
+            {
+              "text": "Second item is a single long lead ",
+              "width": 148.979492,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph beside the active ",
+              "width": 126.196289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "circular exclusion. The native list ",
+              "width": 146.723633,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "actor should split this paragraph ",
+              "width": 144.526367,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "at a real spatial line boundary, ",
+              "width": 135.454102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keep the generated marker only on ",
+              "width": 157.875977,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the first fragment, and continue the ",
+              "width": 157.314453,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remaining authored text in the next ",
+              "width": 156.762695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "region before item three resumes. This sentence keeps adding ",
+              "width": 280.15625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "enough words for the line-level continuation to prove that no ",
+              "width": 267.949219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "rectangular fallback, repeated marker, or authored marker text is",
+              "width": 284.580078,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "involved. The extra clause keeps the first fragment under ",
+              "width": 254.575195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 161.593584,
+        "y": 83.679688,
+        "w": 14,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 360,
+    "height": 260,
+    "boxes": [
+      {
+        "type": "list-item",
+        "x": 50,
+        "y": 26,
+        "w": 286,
+        "h": 54.6875,
+        "lines": [
+          [
+            {
+              "text": "pressure after the wider single-lane shape exposes the ",
+              "width": 245.698242,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "curved shoulder, so the continuation page must carry real ",
+              "width": 256.811523,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "remaining prose rather than an empty bookkeeping ",
+              "width": 229.02832,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "fragment.",
+              "width": 42.241211,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 30,
+        "y": 84.6875,
+        "w": 14,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "3.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 50,
+        "y": 84.6875,
+        "w": 286,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Third item resumes ordered numbering after the continued lead ",
+              "width": 282.929688,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "paragraph.",
+              "width": 48.369141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,183 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 430, "height": 620 },
+    "margins": { "top": 28, "right": 28, "bottom": 28, "left": 28 },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.25,
+    "storyWrapOpticalUnderhang": true,
+    "microLanePolicy": "typography"
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo" },
+  "styles": {
+    "h1": { "fontSize": 16, "fontWeight": "bold", "marginBottom": 8 },
+    "p": { "marginBottom": 7, "allowLineSplit": true },
+    "list": { "marginTop": 2, "marginBottom": 6 },
+    "list-item": { "marginBottom": 3, "allowLineSplit": true },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Native Lists Beside Shaped Exclusions" },
+    {
+      "type": "story",
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "circle"
+          },
+          "properties": { "sourceId": "list-exclusion-circle", "style": { "width": 112, "height": 112 } },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAWSURBVChTYzhiqv8fH2ZAF0DHw0MBAPbCicE8FeLNAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "list",
+          "list": { "kind": "ordered", "markerStyle": "decimal", "indent": 28, "markerWidth": 16, "markerGap": 6 },
+          "properties": { "sourceId": "list-exclusion-circle-root" },
+          "children": [
+            {
+              "type": "list-item",
+              "content": "Circle case: the parent list item starts in the available lane beside the rounded exclusion while its generated marker remains outside the item body.",
+              "properties": { "sourceId": "list-exclusion-circle-one" },
+              "children": [
+                {
+                  "type": "list",
+                  "list": { "kind": "unordered", "markerStyle": "circle", "indent": 20, "markerWidth": 10, "markerGap": 5 },
+                  "properties": { "sourceId": "list-exclusion-circle-child-list" },
+                  "children": [
+                    {
+                      "type": "list-item",
+                      "content": "Nested child stays inside the circle side lane.",
+                      "properties": { "sourceId": "list-exclusion-circle-child" }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "list-item",
+              "content": "Second circle item stretches the actor beyond the shoulder so the story must keep the compound list coherent through the active band.",
+              "properties": { "sourceId": "list-exclusion-circle-two" }
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "polygon",
+            "path": "M0,56 L56,0 L112,56 L56,112 Z"
+          },
+          "properties": { "sourceId": "list-exclusion-polygon", "style": { "width": 112, "height": 112 } },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTYxDqmvQfH2ZAF0DHw0MBAHhRi0HkfmfoAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "list",
+          "list": { "kind": "unordered", "markerStyle": "disc", "indent": 26, "markerWidth": 12, "markerGap": 6 },
+          "properties": { "sourceId": "list-exclusion-polygon-root" },
+          "children": [
+            {
+              "type": "list-item",
+              "content": "Polygon case: the list actor accepts the diamond's available lane without materializing marker characters in the authored text.",
+              "properties": { "sourceId": "list-exclusion-polygon-one" },
+              "children": [
+                {
+                  "type": "list",
+                  "list": { "kind": "ordered", "markerStyle": "lower-alpha", "indent": 22, "markerWidth": 12, "markerGap": 5 },
+                  "properties": { "sourceId": "list-exclusion-polygon-child-list" },
+                  "children": [
+                    {
+                      "type": "list-item",
+                      "content": "Alpha child proves numbering still belongs to the nested list.",
+                      "properties": { "sourceId": "list-exclusion-polygon-child" }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "list-item",
+              "content": "Second polygon item keeps the same hanging indent while the outer actor is constrained by the shaped field.",
+              "properties": { "sourceId": "list-exclusion-polygon-two" }
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "exclusionAssembly": {
+              "members": [
+                { "shape": "circle", "x": 0, "y": 8, "w": 58, "h": 58 },
+                { "shape": "rect", "x": 34, "y": 28, "w": 70, "h": 34 },
+                { "shape": "circle", "x": 70, "y": 54, "w": 48, "h": 48 }
+              ]
+            }
+          },
+          "properties": { "sourceId": "list-exclusion-assembly", "style": { "width": 118, "height": 112 } },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWSURBVChTY7g2SeA/PsyALoCOh4cCAF2nncHanaMeAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "list",
+          "list": { "kind": "ordered", "markerStyle": "upper-alpha", "indent": 30, "markerWidth": 18, "markerGap": 6 },
+          "properties": { "sourceId": "list-exclusion-assembly-root" },
+          "children": [
+            {
+              "type": "list-item",
+              "content": "Assembly case: one visible actor publishes several exclusion members, and the native list still picks a lane beside the compound field.",
+              "properties": { "sourceId": "list-exclusion-assembly-one" },
+              "children": [
+                {
+                  "type": "list",
+                  "list": { "kind": "unordered", "markerStyle": "square", "indent": 22, "markerWidth": 11, "markerGap": 5 },
+                  "properties": { "sourceId": "list-exclusion-assembly-child-list" },
+                  "children": [
+                    {
+                      "type": "list-item",
+                      "content": "Square child marker remains generated inside the assembly lane.",
+                      "properties": { "sourceId": "list-exclusion-assembly-child" }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "list-item",
+              "content": "Second assembly item confirms numbering and marker placement stay attached to the native list structure.",
+              "properties": { "sourceId": "list-exclusion-assembly-two" }
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "content": "After the shaped exclusion gauntlet clears, ordinary story text returns to the full measure."
+        }
+      ]
+    }
+  ]
+}

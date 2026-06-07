@@ -1,0 +1,437 @@
+[
+  {
+    "index": 0,
+    "width": 340,
+    "height": 240,
+    "boxes": [
+      {
+        "type": "h1",
+        "x": 24,
+        "y": 24,
+        "w": 292,
+        "h": 20.507813,
+        "lines": [
+          [
+            {
+              "text": "Native List Spacing",
+              "width": 138.369141,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 32,
+        "y": 54.507813,
+        "w": 16,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "1.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 54,
+        "y": 54.507813,
+        "w": 262,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "First root item owns a nested list below its lead paragraph.",
+              "width": 257.900391,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 61,
+        "y": 74.179688,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 76,
+        "y": 74.179688,
+        "w": 240,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "First child item demonstrates inherited child spacing.",
+              "width": 232.324219,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 61,
+        "y": 91.851563,
+        "w": 10,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "◦",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 76,
+        "y": 91.851563,
+        "w": 240,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "Second child item owns a third visual level.",
+              "width": 190.092773,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 81,
+        "y": 109.523438,
+        "w": 9,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "▪",
+              "width": 3.544922,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": "Arimo"
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 94,
+        "y": 109.523438,
+        "w": 222,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Square grandchild proves level two spacing and ",
+              "width": 215.131836,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "indent.",
+              "width": 30.024414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-marker",
+        "x": 32,
+        "y": 156.867188,
+        "w": 16,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "2.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 54,
+        "y": 156.867188,
+        "w": 262,
+        "h": 27.34375,
+        "lines": [
+          [
+            {
+              "text": "Second root item should sit after the nested list's ",
+              "width": 217.578125,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "after-spacing and the root sibling gap.",
+              "width": 167.329102,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "width": 340,
+    "height": 240,
+    "boxes": [
+      {
+        "type": "list-marker",
+        "x": 32,
+        "y": 26,
+        "w": 16,
+        "h": 13.671875,
+        "lines": [
+          [
+            {
+              "text": "3.",
+              "width": 8.339844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      },
+      {
+        "type": "list-item",
+        "x": 54,
+        "y": 26,
+        "w": 262,
+        "h": 177.734375,
+        "lines": [
+          [
+            {
+              "text": "Third root item is deliberately long so that list spacing is ",
+              "width": 247.890625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "preserved while the actor continues across a page ",
+              "width": 225.683594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "boundary. The item keeps adding measured words to force",
+              "width": 260.512695,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the native list packager to split without duplicating marker ",
+              "width": 255.683594,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "spacing, without repeating authored marker text, and ",
+              "width": 236.25,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "without losing the remaining list flow after continuation. ",
+              "width": 244.575195,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "Extra measured copy keeps the final root item taller than a ",
+              "width": 261.245117,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "fresh page so the continuation remains observable after ",
+              "width": 249.594727,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "the earlier items use the heading page correctly. The ",
+              "width": 235.498047,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "closing sentence confirms the resumed fragment carries ",
+              "width": 251.220703,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "only authored body text. More measured prose extends the",
+              "width": 261.821289,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "final root item through several additional wrapped lines, ",
+              "width": 247.363281,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "keeping the generated marker anchored to the first ",
+              "width": 227.358398,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "width": 340,
+    "height": 240,
+    "boxes": [
+      {
+        "type": "list-item",
+        "x": 54,
+        "y": 26,
+        "w": 262,
+        "h": 68.359375,
+        "lines": [
+          [
+            {
+              "text": "fragment while the continuation carries only body content. ",
+              "width": 257.924805,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "This deliberately plain sentence adds one more run of ",
+              "width": 240.698242,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "words so pagination has to exercise the continuation actor ",
+              "width": 260.15625,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "instead of merely fitting the whole final item on the second ",
+              "width": 259.589844,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ],
+          [
+            {
+              "text": "page.",
+              "width": 25.024414,
+              "ascent": 905.273438,
+              "descent": 211.914063,
+              "fontFamily": ""
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

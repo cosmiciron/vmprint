@@ -1,0 +1,69 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": { "width": 360, "height": 260 },
+    "margins": { "top": 24, "right": 24, "bottom": 24, "left": 24 },
+    "fontFamily": "Arimo",
+    "fontSize": 10,
+    "lineHeight": 1.25,
+    "storyWrapOpticalUnderhang": true,
+    "microLanePolicy": "typography"
+  },
+  "fonts": { "regular": "Arimo", "bold": "Arimo" },
+  "styles": {
+    "h1": { "fontSize": 15, "fontWeight": "bold", "marginBottom": 7 },
+    "p": { "marginBottom": 6, "allowLineSplit": true },
+    "list": { "marginTop": 2, "marginBottom": 6 },
+    "list-item": { "marginBottom": 4, "allowLineSplit": true },
+    "list-marker": { "fontWeight": "bold" }
+  },
+  "elements": [
+    { "type": "h1", "content": "Native List Spatial Lead Continuation" },
+    {
+      "type": "story",
+      "columns": 1,
+      "gutter": 0,
+      "children": [
+        {
+          "type": "image",
+          "content": "",
+          "placement": {
+            "mode": "float",
+            "align": "left",
+            "wrap": "around",
+            "gap": 8,
+            "shape": "circle"
+          },
+          "properties": { "sourceId": "spatial-lead-circle", "style": { "width": 126, "height": 126 } },
+          "image": {
+            "mimeType": "image/png",
+            "fit": "fill",
+            "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAWSURBVChTYzhiqv8fH2ZAF0DHw0MBAPbCicE8FeLNAAAAAElFTkSuQmCC"
+          }
+        },
+        {
+          "type": "list",
+          "list": { "kind": "ordered", "markerStyle": "decimal", "indent": 26, "markerWidth": 14, "markerGap": 6 },
+          "properties": { "sourceId": "spatial-lead-root" },
+          "children": [
+            {
+              "type": "list-item",
+              "content": "First item fits beside the circular exclusion.",
+              "properties": { "sourceId": "spatial-lead-first" }
+            },
+            {
+              "type": "list-item",
+              "content": "Second item is a single long lead paragraph beside the active circular exclusion. The native list actor should split this paragraph at a real spatial line boundary, keep the generated marker only on the first fragment, and continue the remaining authored text in the next region before item three resumes. This sentence keeps adding enough words for the line-level continuation to prove that no rectangular fallback, repeated marker, or authored marker text is involved. The extra clause keeps the first fragment under pressure after the wider single-lane shape exposes the curved shoulder, so the continuation page must carry real remaining prose rather than an empty bookkeeping fragment.",
+              "properties": { "sourceId": "spatial-lead-second" }
+            },
+            {
+              "type": "list-item",
+              "content": "Third item resumes ordered numbering after the continued lead paragraph.",
+              "properties": { "sourceId": "spatial-lead-third" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

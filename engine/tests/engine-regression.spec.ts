@@ -42,6 +42,34 @@ function flattenBoxText(box: any): string {
         .join('');
 }
 
+function renderedFirstLineX(box: any): number {
+    const style = box?.style || {};
+    const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? 0);
+    const borderLeft = LayoutUtils.validateUnit(style.borderLeftWidth ?? style.borderWidth ?? 0);
+    const offsets = Array.isArray(box?.properties?._lineOffsets) ? box.properties._lineOffsets : [];
+    return Number(box?.x || 0) + paddingLeft + borderLeft + Number(offsets[0] || 0);
+}
+
+function renderedFirstLineBaseline(box: any): number | null {
+    const lines = Array.isArray(box?.lines) ? box.lines : [];
+    const firstLine = lines[0];
+    if (!Array.isArray(firstLine) || firstLine.length === 0) return null;
+    const style = box?.style || {};
+    const baseFontSize = Number(style.fontSize || 12);
+    const maxFontSize = firstLine.reduce(
+        (max: number, segment: any) => Math.max(max, Number(segment?.style?.fontSize || baseFontSize)),
+        baseFontSize
+    );
+    const maxAscent = firstLine.reduce(
+        (max: number, segment: any) => Math.max(max, Number(segment?.ascent || 0)),
+        0
+    );
+    if (!Number.isFinite(maxAscent) || maxAscent <= 0) return null;
+    const lineYOffsets = Array.isArray(box?.properties?._lineYOffsets) ? box.properties._lineYOffsets : [];
+    const firstLineY = Number.isFinite(Number(lineYOffsets[0])) ? Number(lineYOffsets[0]) : 0;
+    return Number(box?.y || 0) + firstLineY + (maxAscent / 1000) * maxFontSize;
+}
+
 function boxesForSourceId(pages: any[], sourceId: string): any[] {
     return pages.flatMap((page: any) =>
         (page.boxes || []).filter((box: any) => {
@@ -320,6 +348,577 @@ function assertPackagerShatterShowcaseSignals(pages: any[], fixtureName: string)
     assert.ok(
         topFirst && topContinuation && topFirst.pageIndex !== topContinuation.pageIndex,
         `${fixtureName}: expected page-top-split to span across pages`
+    );
+}
+
+function assertNativeListSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '60-native-lists.json') return;
+
+    const allBoxes = pages.flatMap((page: any, pageIndex: number) =>
+        (page.boxes || []).map((box: any) => ({ box, pageIndex }))
+    );
+    const markerEntries = allBoxes.filter((entry) => entry.box.properties?._listMarker === true);
+    const markerTexts = markerEntries.map((entry) => flattenBoxText(entry.box));
+    assert.ok(markerTexts.filter((text) => text === '•').length >= 3, `${fixtureName}: expected generated unordered markers`);
+    ['3.', '4.', '5.', '6.', '7.'].forEach((marker) => {
+        assert.ok(markerTexts.includes(marker), `${fixtureName}: expected generated ordered marker ${marker}`);
+    });
+
+    const unorderedOne = boxesForSourceId(pages, 'unordered-one')[0];
+    assert.ok(unorderedOne, `${fixtureName}: expected unordered item body box`);
+    assert.equal(
+        flattenBoxText(unorderedOne).startsWith('•'),
+        false,
+        `${fixtureName}: item body should not include authored bullet text`
+    );
+
+    const richSegments = boxesForSourceId(pages, 'unordered-rich')
+        .flatMap((box: any) => box.lines || [])
+        .flatMap((line: any[]) => line || []);
+    assert.ok(
+        richSegments.some((segment: any) => segment.text === 'formatting' && segment.style?.fontWeight === 'bold'),
+        `${fixtureName}: rich inline list item should preserve bold segment`
+    );
+
+    const wrapBody = boxesForSourceId(pages, 'unordered-wrap')[0];
+    const wrapMarker = boxesForSourceId(pages, 'unordered-wrap:marker')[0];
+    assert.ok(wrapBody && wrapMarker, `${fixtureName}: expected wrapping body and marker boxes`);
+    assert.ok((wrapBody.lines || []).length > 1, `${fixtureName}: expected long list item to wrap`);
+    assert.ok(
+        Number(wrapMarker.x) < Number(wrapBody.x),
+        `${fixtureName}: marker should sit to the left of hanging item body`
+    );
+    assert.ok(
+        Number(wrapBody.x) - (Number(wrapMarker.x) + Number(wrapMarker.w)) >= 9,
+        `${fixtureName}: markerGap should separate marker column from item body`
+    );
+
+    const firstOrderedPage = pageIndexesForSourceId(pages, 'ordered-three')[0];
+    const lastOrderedPage = pageIndexesForSourceId(pages, 'ordered-seven')[0];
+    assert.ok(
+        Number.isFinite(firstOrderedPage) && Number.isFinite(lastOrderedPage) && lastOrderedPage > firstOrderedPage,
+        `${fixtureName}: ordered list should continue onto a later page`
+    );
+}
+
+function assertNativeNestedListSignals(pages: any[], fixtureName: string): void {
+    const nestedFixtures = new Set([
+        '61-native-nested-lists-flow.json',
+        '62-native-nested-lists-story-exclusion.json',
+        '63-native-nested-lists-zones.json',
+        '64-native-nested-lists-table.json',
+        '65-native-nested-list-item-continuation.json',
+        '66-native-list-exclusion-flow.json',
+        '67-native-list-spatial-continuation.json',
+        '68-native-list-spatial-lead-continuation.json'
+    ]);
+    if (!nestedFixtures.has(fixtureName)) return;
+
+    const allBoxes = pages.flatMap((page: any, pageIndex: number) =>
+        (page.boxes || []).map((box: any) => ({ box, pageIndex }))
+    );
+    const markerEntries = allBoxes.filter((entry) => entry.box.properties?._listMarker === true);
+    const markerTexts = markerEntries.map((entry) => flattenBoxText(entry.box));
+    if (fixtureName !== '68-native-list-spatial-lead-continuation.json') {
+        assert.ok(markerEntries.length >= 4, `${fixtureName}: expected generated markers for nested lists`);
+    }
+
+    if (fixtureName === '61-native-nested-lists-flow.json') {
+        ['•', 'a.', 'b.', '▪'].forEach((marker) => {
+            assert.ok(markerTexts.includes(marker), `${fixtureName}: expected nested marker ${marker}`);
+        });
+        const parent = boxesForSourceId(pages, 'nested-flow-parent-a')[0];
+        const child = boxesForSourceId(pages, 'nested-flow-alpha-one')[0];
+        const grandchild = boxesForSourceId(pages, 'nested-flow-square-one')[0];
+        assert.ok(parent && child && grandchild, `${fixtureName}: expected parent, child, and grandchild item boxes`);
+        assert.ok(Number(parent.x) < Number(child.x), `${fixtureName}: child list body should be indented beyond parent`);
+        assert.ok(Number(child.x) < Number(grandchild.x), `${fixtureName}: grandchild list body should be indented beyond child`);
+        const parentSegments = (parent.lines || []).flatMap((line: any[]) => line || []);
+        const inlineObjectSegment = parentSegments.find((segment: any) => segment.inlineObject);
+        assert.ok(inlineObjectSegment, `${fixtureName}: inline object should survive inside list item`);
+        assert.equal(inlineObjectSegment.inlineObject?.kind, 'image', `${fixtureName}: inline image object should retain its object kind`);
+        assert.ok(
+            ['Courier ', '13.5'].every((text) => parentSegments.some((segment: any) =>
+                segment.text === text
+                    && segment.fontFamily === 'Courier Prime'
+                    && Number(segment.style?.fontSize) === 13.5
+            )),
+            `${fixtureName}: native list item should preserve mixed inline font family and font size`
+        );
+        assert.ok(
+            parentSegments.some((segment: any) => segment.text === 'formatting' && segment.style?.fontWeight === 'bold'),
+            `${fixtureName}: inline formatting should survive inside nested list item`
+        );
+    }
+
+    if (fixtureName === '62-native-nested-lists-story-exclusion.json') {
+        assert.ok(boxesForSourceId(pages, 'nested-story-exclusion').length > 0, `${fixtureName}: expected story exclusion actor`);
+        assert.ok(boxesForSourceId(pages, 'nested-story-one').length > 0, `${fixtureName}: expected story parent list item`);
+        assert.ok(boxesForSourceId(pages, 'nested-story-child-a').length > 0, `${fixtureName}: expected nested story child item`);
+        assert.ok(markerTexts.includes('1.') && markerTexts.includes('◦'), `${fixtureName}: expected ordered and nested circle markers`);
+        const thirdLead = allBoxes.find((entry) =>
+            flattenBoxText(entry.box).includes('Third ordered item is deliberately')
+        );
+        const thirdTail = allBoxes.find((entry) =>
+            flattenBoxText(entry.box).includes('generated markers attached to structure')
+        );
+        const trailingStoryText = allBoxes.find((entry) =>
+            flattenBoxText(entry.box).includes('Trailing story text confirms normal flow')
+        );
+        assert.ok(thirdLead && thirdTail && trailingStoryText, `${fixtureName}: expected split list tail and trailing story text`);
+        assert.equal(thirdTail.pageIndex, thirdLead.pageIndex, `${fixtureName}: split native list tail should continue in the next story column before paginating`);
+        assert.equal(trailingStoryText.pageIndex, thirdLead.pageIndex, `${fixtureName}: story text after the list should stay in the next column when space remains`);
+        assert.ok(Number(thirdTail.box.x) > Number(thirdLead.box.x), `${fixtureName}: split list tail should move into the later column`);
+        assert.ok(Number(trailingStoryText.box.x) > Number(thirdLead.box.x), `${fixtureName}: trailing story flow should resume in the later column`);
+    }
+
+    if (fixtureName === '63-native-nested-lists-zones.json') {
+        const main = boxesForSourceId(pages, 'nested-zone-main-parent')[0];
+        const sidebar = boxesForSourceId(pages, 'nested-zone-sidebar-a')[0];
+        assert.ok(main && sidebar, `${fixtureName}: expected main-zone and sidebar list items`);
+        assert.ok(
+            allBoxes.some((entry) => entry.box.properties?.__vmprintZoneDebug?.zoneId === 'main')
+                && allBoxes.some((entry) => entry.box.properties?.__vmprintZoneDebug?.zoneId === 'sidebar'),
+            `${fixtureName}: expected list boxes to retain zone debug provenance`
+        );
+        assert.ok(markerTexts.includes('i.') && markerTexts.includes('A.'), `${fixtureName}: expected roman and sidebar alpha markers`);
+    }
+
+    if (fixtureName === '64-native-nested-lists-table.json') {
+        assert.ok(boxesForSourceId(pages, 'nested-table-child-one').length > 0, `${fixtureName}: expected nested table cell child item`);
+        assert.ok(
+            markerEntries.some((entry) => entry.box.properties?._interactionContainerType === 'table_cell'),
+            `${fixtureName}: expected generated list markers to be emitted as table cell child boxes`
+        );
+        assert.ok(markerTexts.includes('1.') && markerTexts.includes('•'), `${fixtureName}: expected unordered and ordered table markers`);
+    }
+
+    if (fixtureName === '65-native-nested-list-item-continuation.json') {
+        const parentMarkerEntries = markerEntries.filter((entry) =>
+            String(entry.box.meta?.sourceId || '').endsWith('nested-continuation-parent:marker')
+        );
+        assert.equal(parentMarkerEntries.length, 1, `${fixtureName}: continued parent item should not repeat its marker`);
+        const markerPage = parentMarkerEntries[0]?.pageIndex;
+        const continuedChildPages = pageIndexesForSourceId(pages, 'nested-continuation-child-five');
+        assert.ok(
+            continuedChildPages.some((pageIndex) => Number.isFinite(markerPage) && pageIndex > markerPage),
+            `${fixtureName}: nested child content should continue onto a later page`
+        );
+        assert.ok(markerTexts.includes('2.'), `${fixtureName}: second parent item should resume ordered numbering after continuation`);
+    }
+
+    if (fixtureName === '66-native-list-exclusion-flow.json') {
+        const assertShapedExclusionList = (
+            shapeLabel: string,
+            parentText: string,
+            childText: string,
+            markerText: string
+        ) => {
+            const parentEntry = allBoxes.find((entry) => flattenBoxText(entry.box).startsWith(parentText));
+            const childEntry = allBoxes.find((entry) => flattenBoxText(entry.box).startsWith(childText));
+            const parentBody = parentEntry?.box;
+            const childBody = childEntry?.box;
+            const obstacleBox = parentBody
+                ? allBoxes
+                    .filter((entry) => entry.pageIndex === parentEntry?.pageIndex && entry.box.type === 'image')
+                    .map((entry) => entry.box)
+                    .filter((box) => Number(box.y) <= Number(parentBody.y) + 0.1)
+                    .sort((left, right) => Number(right.y) - Number(left.y))[0]
+                : undefined;
+            const parentMarker = parentBody
+                ? allBoxes
+                    .filter((entry) => entry.box.properties?._listMarker === true || entry.box.type === 'list-marker')
+                    .map((entry) => entry.box)
+                    .filter((box) => flattenBoxText(box) === markerText)
+                    .filter((box) => Math.abs(Number(box.y) - Number(parentBody.y)) < 0.5)
+                    .sort((left, right) => Number(right.x) - Number(left.x))[0]
+                : undefined;
+            assert.ok(
+                obstacleBox && parentMarker && parentBody && childBody,
+                `${fixtureName}: expected ${shapeLabel} obstacle, parent marker/body, and nested child body`
+                    + ` (obstacle=${!!obstacleBox} marker=${!!parentMarker} parent=${!!parentBody} child=${!!childBody})`
+            );
+            const obstacleBottom = Number(obstacleBox.y) + Number(obstacleBox.h);
+            const obstacleMidX = Number(obstacleBox.x) + Number(obstacleBox.w) / 2;
+            assert.ok(
+                Number(parentMarker.y) < obstacleBottom,
+                `${fixtureName}: ${shapeLabel} parent marker should overlap the active exclusion band vertically`
+            );
+            assert.ok(
+                Number(parentBody.y) < obstacleBottom,
+                `${fixtureName}: ${shapeLabel} parent body should overlap the active exclusion band vertically`
+            );
+            const parentTextX = renderedFirstLineX(parentBody);
+            const childTextX = renderedFirstLineX(childBody);
+            assert.ok(
+                Number(parentMarker.x) > obstacleMidX,
+                `${fixtureName}: ${shapeLabel} parent marker should use the side lane selected by shaped collision geometry`
+            );
+            assert.ok(
+                Number(parentMarker.x) < parentTextX,
+                `${fixtureName}: ${shapeLabel} generated marker should remain outside the rendered list item text`
+            );
+            assert.ok(
+                parentTextX > obstacleMidX,
+                `${fixtureName}: ${shapeLabel} parent text should be assembled in the shaped side lane`
+            );
+            assert.ok(
+                Number(parentBody.x) <= Number(parentMarker.x) && Number(parentMarker.x) <= Number(parentBody.x) + Number(parentBody.w),
+                `${fixtureName}: ${shapeLabel} generated marker should be assembled inside the reflowed list item lane box`
+            );
+            assert.ok(
+                childTextX > parentTextX,
+                `${fixtureName}: ${shapeLabel} nested child body should retain nested indent inside the side lane`
+            );
+        };
+
+        assertShapedExclusionList(
+            'circle',
+            'Circle case:',
+            'Nested child stays inside the circle side lane.',
+            '1.'
+        );
+        assertShapedExclusionList(
+            'polygon',
+            'Polygon case:',
+            'Alpha child proves numbering',
+            '•'
+        );
+        assertShapedExclusionList(
+            'assembly',
+            'Assembly case:',
+            'Square child marker remains generated',
+            'A.'
+        );
+        assert.ok(markerTexts.includes('a.'), `${fixtureName}: expected nested alpha marker beside polygon exclusion`);
+        assert.ok(markerTexts.includes('A.'), `${fixtureName}: expected upper-alpha marker beside assembly exclusion`);
+        assert.ok(markerTexts.includes('▪'), `${fixtureName}: expected nested square marker beside assembly exclusion`);
+    }
+
+    if (fixtureName === '67-native-list-spatial-continuation.json') {
+        const secondMarkerEntries = markerEntries.filter((entry) => flattenBoxText(entry.box) === '2.');
+        assert.equal(secondMarkerEntries.length, 1, `${fixtureName}: continued spatial parent item should not repeat marker 2`);
+        const childOnePages = pageIndexesForSourceId(pages, 'spatial-continuation-child-one');
+        const childFivePages = pageIndexesForSourceId(pages, 'spatial-continuation-child-five');
+        assert.ok(childOnePages.length > 0 && childFivePages.length > 0, `${fixtureName}: expected first and final child fragments`);
+        assert.ok(
+            Math.max(...childFivePages) > Math.min(...childOnePages),
+            `${fixtureName}: nested child actors should continue to a later page or region`
+        );
+        assert.ok(markerTexts.includes('3.'), `${fixtureName}: third item should resume ordered numbering after spatial continuation`);
+    }
+
+    if (fixtureName === '68-native-list-spatial-lead-continuation.json') {
+        const secondMarkerEntries = markerEntries.filter((entry) => flattenBoxText(entry.box) === '2.');
+        assert.equal(secondMarkerEntries.length, 1, `${fixtureName}: line-level lead continuation should not repeat marker 2`);
+        const secondBoxes = boxesForSourceId(pages, 'spatial-lead-second');
+        assert.ok(secondBoxes.length >= 2, `${fixtureName}: long lead item should split into multiple boxes`);
+        const isSpatialLeadSecond = (box: any): boolean => {
+            const sourceId = String(box.meta?.sourceId || '');
+            return sourceId === 'spatial-lead-second' || sourceId.endsWith(':spatial-lead-second');
+        };
+        const firstFragment = allBoxes.find((entry) =>
+            isSpatialLeadSecond(entry.box)
+                && flattenBoxText(entry.box).includes('single long lead paragraph')
+        );
+        const continuationFragment = allBoxes.find((entry) => {
+            if (!firstFragment || !isSpatialLeadSecond(entry.box) || entry === firstFragment) return false;
+            if (!flattenBoxText(entry.box).trim()) return false;
+            return entry.pageIndex > firstFragment.pageIndex
+                || Number(entry.box.x) > Number(firstFragment.box.x)
+                || Number(entry.box.y) > Number(firstFragment.box.y);
+        });
+        assert.ok(firstFragment && continuationFragment, `${fixtureName}: expected first and continuation lead fragments`);
+        assert.ok(
+            continuationFragment.pageIndex > firstFragment.pageIndex
+                || Number(continuationFragment.box.x) > Number(firstFragment.box.x),
+            `${fixtureName}: continuation lead fragment should move to a later page or region`
+        );
+        assert.ok(markerTexts.includes('3.'), `${fixtureName}: third item should resume after line-level lead continuation`);
+    }
+}
+
+function assertNativeContainedListSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '69-native-list-contained-shapes.json') return;
+    const allBoxes = pages.flatMap((page: any, pageIndex: number) =>
+        (page.boxes || []).map((box: any) => ({ box, pageIndex }))
+    );
+    const markerTexts = allBoxes
+        .filter((entry) => entry.box.properties?._listMarker === true)
+        .map((entry) => flattenBoxText(entry.box));
+    ['1.', '2.', '▪'].forEach((marker) => {
+        assert.ok(markerTexts.includes(marker), `${fixtureName}: expected generated marker ${marker} inside contained shape`);
+    });
+    const containedMarkers = allBoxes
+        .map((entry) => entry.box)
+        .filter((box) => box.properties?._listMarker === true || box.type === 'list-marker')
+        .filter((box) => String(box.meta?.sourceId || '').includes('contained-'));
+    assert.ok(containedMarkers.length >= 4, `${fixtureName}: expected contained list marker boxes`);
+    assert.ok(
+        containedMarkers.every((box) => !box.style?.backgroundColor && !box.style?.borderColor),
+        `${fixtureName}: generated markers should not inherit contained host background or border paint`
+    );
+    const backgroundBoxes = allBoxes
+        .map((entry) => entry.box)
+        .filter((box) => box.properties?._containedListBackground === true);
+    assert.ok(
+        backgroundBoxes.some((box) =>
+            box.style?.backgroundColor === '#eeeeee'
+                && box.properties?._clipShape === 'circle'
+        ),
+        `${fixtureName}: expected clipped light grey circle background for contained list`
+    );
+    assert.ok(
+        backgroundBoxes.some((box) =>
+            box.style?.backgroundColor === '#eeeeee'
+                && box.properties?._clipShape === 'polygon'
+                && typeof box.properties?._clipPath === 'string'
+                && box.properties._clipPath.length > 0
+        ),
+        `${fixtureName}: expected clipped light grey polygon background for contained list`
+    );
+
+    const assertContainedLanes = (sourceId: string, label: string): void => {
+        const box = boxesForSourceId(pages, sourceId)[0];
+        assert.ok(box, `${fixtureName}: expected ${label} body box`);
+        const widths = (Array.isArray(box.properties?._lineWidths) ? box.properties._lineWidths : [])
+            .map((value: unknown) => Number(value))
+            .filter((value: number) => Number.isFinite(value));
+        assert.ok(widths.length >= 2, `${fixtureName}: expected ${label} to wrap across contained lanes`);
+        const roundedWidths = new Set(widths.map((value: number) => Math.round(value)));
+        assert.ok(roundedWidths.size >= 2, `${fixtureName}: expected ${label} lane widths to vary inside the contained shape`);
+    };
+
+    assertContainedLanes('contained-circle-one', 'circle list item');
+    assertContainedLanes('contained-polygon-one', 'polygon list item');
+
+    const circleMarker = allBoxes.find((entry) => flattenBoxText(entry.box) === '1.')?.box;
+    const circleBody = boxesForSourceId(pages, 'contained-circle-one')[0];
+    assert.ok(circleMarker && circleBody, `${fixtureName}: expected circle marker and body`);
+    assert.ok(
+        Number(circleMarker.x) < renderedFirstLineX(circleBody),
+        `${fixtureName}: contained marker should remain attached before the item body line`
+    );
+}
+
+function assertNativeListCustomizationSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '71-native-list-customization.json') return;
+    const allBoxes = pages.flatMap((page: any, pageIndex: number) =>
+        (page.boxes || []).map((box: any) => ({ box, pageIndex }))
+    );
+    const markerEntries = allBoxes.filter((entry) => entry.box.properties?._listMarker === true);
+    const markerTexts = markerEntries.map((entry) => flattenBoxText(entry.box));
+    ['4.', '5.', 'a.', 'b.', '▪', '◦'].forEach((marker) => {
+        assert.ok(markerTexts.includes(marker), `${fixtureName}: expected customized marker ${marker}`);
+    });
+
+    const markerFor = (sourceId: string) => markerEntries
+        .map((entry) => entry.box)
+        .find((box) => String(box.meta?.sourceId || '').endsWith(`${sourceId}:marker`));
+    const rootMarker = markerFor('custom-root-four');
+    const rootBody = boxesForSourceId(pages, 'custom-root-four')[0];
+    const alphaMarker = markerFor('custom-alpha-a');
+    const alphaBody = boxesForSourceId(pages, 'custom-alpha-a')[0];
+    const overrideMarker = markerFor('custom-override-circle');
+    const overrideBody = boxesForSourceId(pages, 'custom-override-circle')[0];
+    assert.ok(rootMarker && rootBody && alphaMarker && alphaBody && overrideMarker && overrideBody, `${fixtureName}: expected customized marker/body pairs`);
+    assert.ok(
+        renderedFirstLineX(rootBody) - (Number(rootMarker.x) + Number(rootMarker.w)) >= 6.5,
+        `${fixtureName}: root marker gap should honor customized level zero geometry`
+    );
+    assert.ok(
+        renderedFirstLineX(alphaBody) - (Number(alphaMarker.x) + Number(alphaMarker.w)) >= 4.5,
+        `${fixtureName}: inherited alpha marker gap should honor level one geometry`
+    );
+    assert.ok(
+        renderedFirstLineX(overrideBody) - (Number(overrideMarker.x) + Number(overrideMarker.w)) >= 3.5,
+        `${fixtureName}: explicit child override marker gap should honor local geometry`
+    );
+}
+
+function assertNativeListMarkerStylingSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '72-native-list-marker-styling.json') return;
+    const allBoxes = pages.flatMap((page: any, pageIndex: number) =>
+        (page.boxes || []).map((box: any) => ({ box, pageIndex }))
+    );
+    const markerEntries = allBoxes.filter((entry) => entry.box.properties?._listMarker === true);
+    const markerTexts = markerEntries.map((entry) => flattenBoxText(entry.box));
+    ['1.', '2.', 'a.', 'b.', '▪', '◦'].forEach((marker) => {
+        assert.ok(markerTexts.includes(marker), `${fixtureName}: expected styled marker ${marker}`);
+    });
+
+    const markerFor = (sourceId: string) => markerEntries
+        .map((entry) => entry.box)
+        .find((box) => String(box.meta?.sourceId || '').endsWith(`${sourceId}:marker`));
+    const rootMarker = markerFor('marker-style-root-one');
+    const alphaMarker = markerFor('marker-style-alpha-a');
+    const squareMarker = markerFor('marker-style-square-one');
+    const overrideMarker = markerFor('marker-style-override-circle');
+    const rootBody = boxesForSourceId(pages, 'marker-style-root-one')[0];
+    const alphaBody = boxesForSourceId(pages, 'marker-style-alpha-a')[0];
+    assert.ok(rootMarker && alphaMarker && squareMarker && overrideMarker && rootBody && alphaBody, `${fixtureName}: expected styled marker/body pairs`);
+
+    assert.equal(rootMarker.style?.color, '#b91c1c', `${fixtureName}: root marker should use root markerTextStyle color`);
+    assert.equal(rootMarker.style?.fontSize, 13, `${fixtureName}: root marker should use root markerTextStyle font size`);
+    assert.equal(alphaMarker.style?.color, '#1d4ed8', `${fixtureName}: alpha marker should inherit level one markerTextStyle color`);
+    assert.equal(alphaMarker.style?.fontStyle, 'italic', `${fixtureName}: alpha marker should inherit level one markerTextStyle font style`);
+    assert.equal(squareMarker.style?.color, '#047857', `${fixtureName}: square marker should inherit level two markerTextStyle color`);
+    assert.equal(overrideMarker.style?.color, '#7c3aed', `${fixtureName}: explicit nested markerTextStyle should override inherited level style`);
+    assert.equal(overrideMarker.style?.fontWeight, 'normal', `${fixtureName}: explicit nested markerTextStyle should override global marker weight`);
+
+    const assertMarkerBaseline = (marker: any, body: any, label: string): void => {
+        const markerBaseline = renderedFirstLineBaseline(marker);
+        const bodyBaseline = renderedFirstLineBaseline(body);
+        assert.ok(markerBaseline !== null && bodyBaseline !== null, `${fixtureName}: expected first-line baseline metrics for ${label}`);
+        assert.ok(
+            Math.abs(markerBaseline - bodyBaseline) <= 0.25,
+            `${fixtureName}: ${label} marker baseline should align with item body baseline`
+        );
+    };
+    assertMarkerBaseline(rootMarker, rootBody, 'root');
+    assertMarkerBaseline(alphaMarker, alphaBody, 'alpha');
+    assertMarkerBaseline(squareMarker, boxesForSourceId(pages, 'marker-style-square-one')[0], 'square');
+    assertMarkerBaseline(overrideMarker, boxesForSourceId(pages, 'marker-style-override-circle')[0], 'override');
+
+    assert.notEqual(rootBody.style?.color, rootMarker.style?.color, `${fixtureName}: root marker color should not leak into item body style`);
+    assert.notEqual(alphaBody.style?.color, alphaMarker.style?.color, `${fixtureName}: inherited marker color should not leak into child body style`);
+    const rootInlineSegments = (rootBody.lines || []).flat();
+    assert.ok(
+        rootInlineSegments.some((segment: any) => segment.text?.includes('blue inline body text') && segment.style?.color === '#2563eb'),
+        `${fixtureName}: inline body styling should remain independent from marker styling`
+    );
+}
+
+function assertNativeListSpacingSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '73-native-list-spacing.json') return;
+    const allBoxes = pages.flatMap((page: any, pageIndex: number) =>
+        (page.boxes || []).map((box: any) => ({ box, pageIndex }))
+    );
+    const markerEntries = allBoxes.filter((entry) => entry.box.properties?._listMarker === true);
+    const markerTexts = markerEntries.map((entry) => flattenBoxText(entry.box));
+    ['1.', '2.', '3.', '◦', '▪'].forEach((marker) => {
+        assert.ok(markerTexts.includes(marker), `${fixtureName}: expected generated marker ${marker}`);
+    });
+    assert.ok(
+        markerEntries.some((entry) => entry.pageIndex === 0 && flattenBoxText(entry.box) === '1.'),
+        `${fixtureName}: first list fragment should use remaining space on the heading page`
+    );
+
+    const rootOne = boxesForSourceId(pages, 'spacing-root-one')[0];
+    const childOne = boxesForSourceId(pages, 'spacing-child-one')[0];
+    const childTwo = boxesForSourceId(pages, 'spacing-child-two')[0];
+    const grandchildOne = boxesForSourceId(pages, 'spacing-grandchild-one')[0];
+    const rootTwo = boxesForSourceId(pages, 'spacing-root-two')[0];
+    assert.ok(rootOne && childOne && childTwo && grandchildOne && rootTwo, `${fixtureName}: expected root, child, and grandchild spacing boxes`);
+    assert.ok(
+        Number(childOne.y) - (Number(rootOne.y) + Number(rootOne.h)) >= 5.5,
+        `${fixtureName}: nested list should honor before spacing after parent lead`
+    );
+    assert.ok(
+        Number(childTwo.y) - (Number(childOne.y) + Number(childOne.h)) >= 3.5,
+        `${fixtureName}: inherited child itemSpacing should separate nested siblings`
+    );
+    assert.ok(
+        renderedFirstLineX(grandchildOne) > renderedFirstLineX(childTwo),
+        `${fixtureName}: level two grandchild body should sit deeper than level one child body`
+    );
+    assert.ok(
+        Number(grandchildOne.y) - (Number(childTwo.y) + Number(childTwo.h)) >= 3.5,
+        `${fixtureName}: level one nestedListSpacingBefore should separate child lead from grandchild list`
+    );
+    assert.ok(
+        Number(rootTwo.y) - (Number(grandchildOne.y) + Number(grandchildOne.h)) >= 14.5,
+        `${fixtureName}: nested after spacing plus root itemSpacing should separate next root item`
+    );
+
+    const thirdMarkerEntries = markerEntries.filter((entry) => flattenBoxText(entry.box) === '3.');
+    assert.equal(thirdMarkerEntries.length, 1, `${fixtureName}: continued final item should not repeat marker 3`);
+    const rootThreePages = pageIndexesForSourceId(pages, 'spacing-root-three');
+    assert.ok(
+        rootThreePages.length >= 2 && Math.max(...rootThreePages) > Math.min(...rootThreePages),
+        `${fixtureName}: long final item should continue across a page boundary`
+    );
+}
+
+function assertNativeListMultilingualNumberingSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '74-native-list-multilingual-numbering.json') return;
+    const allBoxes = pages.flatMap((page: any, pageIndex: number) =>
+        (page.boxes || []).map((box: any) => ({ box, pageIndex }))
+    );
+    const markerEntries = allBoxes.filter((entry) => entry.box.properties?._listMarker === true);
+    const markerTexts = markerEntries.map((entry) => flattenBoxText(entry.box));
+    ['九.', '十.', '十一.', 'あ.', 'い.', '٨.', '٩.', '١٠.', 'ア.', '१.', '๑.'].forEach((marker) => {
+        assert.ok(markerTexts.includes(marker), `${fixtureName}: expected generated multilingual marker ${marker}`);
+    });
+
+    const assertMarkerNotAuthored = (sourceId: string, marker: string): void => {
+        const body = boxesForSourceId(pages, sourceId)[0];
+        assert.ok(body, `${fixtureName}: expected body box for ${sourceId}`);
+        assert.equal(
+            flattenBoxText(body).startsWith(marker),
+            false,
+            `${fixtureName}: body ${sourceId} should not contain authored marker ${marker}`
+        );
+    };
+    assertMarkerNotAuthored('multi-cjk-ten', '十.');
+    assertMarkerNotAuthored('multi-hiragana-a', 'あ.');
+    assertMarkerNotAuthored('multi-arabic-ten', '١٠.');
+    assertMarkerNotAuthored('multi-devanagari-one', '१.');
+
+    const katakanaBody = boxesForSourceId(pages, 'multi-katakana-a')[0];
+    const devanagariBody = boxesForSourceId(pages, 'multi-devanagari-one')[0];
+    const thaiBody = boxesForSourceId(pages, 'multi-thai-one')[0];
+    assert.ok(katakanaBody && devanagariBody && thaiBody, `${fixtureName}: expected nested multilingual bodies`);
+    assert.ok(
+        renderedFirstLineX(katakanaBody) < renderedFirstLineX(devanagariBody)
+            && renderedFirstLineX(devanagariBody) < renderedFirstLineX(thaiBody),
+        `${fixtureName}: multilingual nested levels should preserve recursive hanging indent`
+    );
+}
+
+function assertNativeListCustomMarkerSignals(pages: any[], fixtureName: string): void {
+    if (fixtureName !== '75-native-list-custom-markers.json') return;
+    const allBoxes = pages.flatMap((page: any, pageIndex: number) =>
+        (page.boxes || []).map((box: any) => ({ box, pageIndex }))
+    );
+    const markerEntries = allBoxes.filter((entry) => entry.box.properties?._listMarker === true);
+    const markerTexts = markerEntries.map((entry) => flattenBoxText(entry.box));
+    ['>>', '✓', '◆', 'Q:'].forEach((marker) => {
+        assert.ok(markerTexts.includes(marker), `${fixtureName}: expected generated custom marker ${marker}`);
+    });
+    assert.equal(
+        markerTexts.filter((marker) => marker === '✓').length,
+        2,
+        `${fixtureName}: inherited custom child marker should repeat structurally for child siblings`
+    );
+
+    const assertMarkerNotAuthored = (sourceId: string, marker: string): void => {
+        const body = boxesForSourceId(pages, sourceId)[0];
+        assert.ok(body, `${fixtureName}: expected body box for ${sourceId}`);
+        assert.equal(
+            flattenBoxText(body).startsWith(marker),
+            false,
+            `${fixtureName}: body ${sourceId} should not contain authored custom marker ${marker}`
+        );
+    };
+    assertMarkerNotAuthored('custom-marker-root-one', '>>');
+    assertMarkerNotAuthored('custom-marker-check-one', '✓');
+    assertMarkerNotAuthored('custom-marker-diamond-one', '◆');
+    assertMarkerNotAuthored('custom-marker-question-one', 'Q:');
+
+    const rootBody = boxesForSourceId(pages, 'custom-marker-root-one')[0];
+    const checkBody = boxesForSourceId(pages, 'custom-marker-check-one')[0];
+    const diamondBody = boxesForSourceId(pages, 'custom-marker-diamond-one')[0];
+    const questionBody = boxesForSourceId(pages, 'custom-marker-question-one')[0];
+    assert.ok(rootBody && checkBody && diamondBody && questionBody, `${fixtureName}: expected custom marker body boxes`);
+    assert.ok(
+        renderedFirstLineX(rootBody) < renderedFirstLineX(checkBody)
+            && renderedFirstLineX(checkBody) < renderedFirstLineX(diamondBody),
+        `${fixtureName}: inherited custom marker levels should keep recursive hanging indent`
+    );
+    assert.ok(
+        renderedFirstLineX(questionBody) > renderedFirstLineX(rootBody),
+        `${fixtureName}: explicit custom marker override should still lay out as a nested list actor`
     );
 }
 
@@ -2618,6 +3217,105 @@ async function run() {
                 'keepWithNext, mid-page table, and page-top overflow splits are all exercised',
                 () => {
                     assertPackagerShatterShowcaseSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '60-native-lists.json') {
+            _check(
+                `${fixture.name} native list signals`,
+                'unordered and ordered markers are generated separately from list item body flow, with hanging indent and continuation coverage',
+                () => {
+                    assertNativeListSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '69-native-list-contained-shapes.json') {
+            _check(
+                `${fixture.name} native contained list signals`,
+                'native list markers and item bodies should fill contained circle and polygon lanes',
+                () => {
+                    assertNativeContainedListSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '71-native-list-customization.json') {
+            _check(
+                `${fixture.name} native list customization signals`,
+                'per-level marker styles, marker gaps, and explicit child overrides are honored',
+                () => {
+                    assertNativeListCustomizationSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '72-native-list-marker-styling.json') {
+            _check(
+                `${fixture.name} native list marker styling signals`,
+                'marker text style travels through levels and explicit overrides without leaking into item bodies',
+                () => {
+                    assertNativeListMarkerStylingSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '73-native-list-spacing.json') {
+            _check(
+                `${fixture.name} native list spacing signals`,
+                'sibling and nested list spacing are honored without duplicated continuation markers',
+                () => {
+                    assertNativeListSpacingSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '74-native-list-multilingual-numbering.json') {
+            _check(
+                `${fixture.name} native list multilingual numbering signals`,
+                'non-English marker numbering is generated structurally and inherited through nested levels',
+                () => {
+                    assertNativeListMultilingualNumberingSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '75-native-list-custom-markers.json') {
+            _check(
+                `${fixture.name} native list custom marker signals`,
+                'literal custom markers are generated structurally and inherited through nested levels',
+                () => {
+                    assertNativeListCustomMarkerSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (
+            fixture.name === '61-native-nested-lists-flow.json'
+            || fixture.name === '62-native-nested-lists-story-exclusion.json'
+            || fixture.name === '63-native-nested-lists-zones.json'
+            || fixture.name === '64-native-nested-lists-table.json'
+            || fixture.name === '65-native-nested-list-item-continuation.json'
+            || fixture.name === '66-native-list-exclusion-flow.json'
+            || fixture.name === '67-native-list-spatial-continuation.json'
+            || fixture.name === '68-native-list-spatial-lead-continuation.json'
+        ) {
+            _check(
+                `${fixture.name} native nested list signals`,
+                'nested markers, hanging indents, host-context provenance, table cell children, and inline objects are preserved',
+                () => {
+                    assertNativeNestedListSignals(pagesA, fixture.name);
+                }
+            );
+        }
+        if (fixture.name === '68-native-list-spatial-lead-continuation.json') {
+            _check(
+                `${fixture.name} native list transform capability`,
+                'native list actors declare split and morph reflow capability for spatial continuation',
+                () => {
+                    assertTransformCapabilitySourceSignals(fixture.name, engine, 'spatial-lead-root', ['split', 'morph']);
+                    assertTransformCapabilityDetails(
+                        fixture.name,
+                        engine,
+                        { sourceId: 'spatial-lead-root' },
+                        {
+                            split: { preservesIdentity: true, producesContinuation: true },
+                            morph: { preservesIdentity: true, reflowsContent: true }
+                        }
+                    );
                 }
             );
         }

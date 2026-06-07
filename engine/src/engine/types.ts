@@ -184,6 +184,8 @@ export interface Element {
     zoneLayout?: ZoneLayoutOptions;
     /** Strip track model. Preferred on AST 1.1+. */
     stripLayout?: StripLayoutOptions;
+    /** Native list layout model. Preferred on `type: "list"` elements. */
+    list?: ListLayoutOptions;
     /** Drop-cap configuration. */
     dropCap?: DropCapSpec;
     /** Story-local full-width span directive. */
@@ -245,6 +247,54 @@ export interface TableLayoutOptions {
     columns?: TableColumnSizing[];
     cellStyle?: Record<string, any>;
     headerCellStyle?: Record<string, any>;
+}
+
+export type ListKind = 'unordered' | 'ordered';
+export type ListMarkerStyle =
+    | 'disc'
+    | 'bullet'
+    | 'circle'
+    | 'square'
+    | 'decimal'
+    | 'arabic-indic'
+    | 'extended-arabic-indic'
+    | 'devanagari'
+    | 'thai'
+    | 'cjk-decimal'
+    | 'cjk-ideographic'
+    | 'hiragana'
+    | 'katakana'
+    | 'lower-alpha'
+    | 'upper-alpha'
+    | 'lower-roman'
+    | 'upper-roman';
+
+export interface ListLayoutOptions {
+    kind?: ListKind;
+    markerStyle?: ListMarkerStyle;
+    markerText?: string;
+    markerTextStyle?: ElementStyle;
+    start?: number;
+    indent?: number;
+    markerWidth?: number;
+    markerGap?: number;
+    itemSpacing?: number;
+    nestedListSpacingBefore?: number;
+    nestedListSpacingAfter?: number;
+    levels?: ListLevelOptions[];
+}
+
+export interface ListLevelOptions {
+    kind?: ListKind;
+    markerStyle?: ListMarkerStyle;
+    markerText?: string;
+    markerTextStyle?: ElementStyle;
+    indent?: number;
+    markerWidth?: number;
+    markerGap?: number;
+    itemSpacing?: number;
+    nestedListSpacingBefore?: number;
+    nestedListSpacingAfter?: number;
 }
 
 /**
