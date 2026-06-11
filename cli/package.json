@@ -1,6 +1,6 @@
 {
   "name": "@vmprint/cli",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Deterministic typesetting CLI for the programmable web. Convert JSON document streams to bit-perfect PDFs.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
@@ -37,13 +37,13 @@
     "dev": "tsx --tsconfig tsconfig.dev.json src/index.ts"
   },
   "dependencies": {
-    "@vmprint/context-pdf": "^1.0.2",
-    "@vmprint/local-fonts": "^1.1.3"
+    "@vmprint/context-pdf": "*",
+    "@vmprint/local-fonts": "*"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
-    "@vmprint/contracts": "file:../contracts",
-    "@vmprint/engine": "file:../engine",
+    "@vmprint/contracts": "*",
+    "@vmprint/engine": "*",
     "rimraf": "^6.1.3",
     "commander": "^14.0.3",
     "tsup": "^8.5.1",

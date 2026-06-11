@@ -10,6 +10,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.5.0] - 2026-06-11
+
+This release migrates the companion packages and tools into the core `vmprint` repository, converting the codebase into a unified monorepo. This simplifies repository maintenance and enables rapid development cycles with local package links.
+
+### Added
+- **Monorepo Structure**: Integrated the companion projects `contexts/` (canvas, pdf, pdf-lite, dev-cli), `font-managers/` (local, standard, web), `transmuters/` (markdown-core, mkd-* compilers), and `preview/` (canvas preview surface, hit-testing, local playground) directly into the monorepo workspaces.
+
+### Changed
+- **Workspace Dependencies**: Updated all internal `@vmprint/` package cross-references across all 16 packages to use `*` wildcards, ensuring they resolve and compile against the local in-repo workspaces.
+- **Developer Tooling Build Settings**: Configured `--packages=external` for `@vmprint/transmuter-dev` in `transmuters/dev-cli` to keep its dependencies external, resulting in faster compilations and a dramatic bundle size reduction from 4.4MB to 10.5KB.
+- **Updated Root README**: Documented the new unified monorepo directory layout and list of workspace packages.
+
 ## [1.4.0] - 2026-05-05
 
 This release gathers the engine work since the last GitHub release into one

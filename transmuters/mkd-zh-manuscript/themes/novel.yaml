@@ -1,0 +1,165 @@
+layout:
+  fontFamily: Noto Serif SC
+  fontSize: 11
+  lineHeight: 1.75
+  pageSize:
+    width: 420
+    height: 595
+  margins:
+    top: 64
+    right: 54
+    bottom: 60
+    left: 54
+  hyphenation: "off"
+  justifyEngine: legacy
+
+footer:
+  default:
+    elements:
+      - type: paragraph
+        content: "\u2014 {pageNumber} \u2014"
+        properties:
+          style:
+            textAlign: center
+            fontSize: 9
+            color: "#8a7d6e"
+            fontFamily: Noto Serif SC
+            marginTop: 26
+
+styles:
+  # Cover page — large centered title, minimal submission details below
+  cover-title:
+    textAlign: center
+    fontWeight: 700
+    fontSize: 26
+    lineHeight: 1.3
+    marginTop: 140
+    marginBottom: 28
+    letterSpacing: 4
+    hyphenation: "off"
+  cover-line:
+    textAlign: center
+    fontSize: 10
+    lineHeight: 1.6
+    color: "#4a3f32"
+    marginBottom: 9
+
+  # Chapter heading — centered, prominent, with breathing room
+  chapter-heading:
+    textAlign: center
+    fontWeight: 700
+    fontSize: 18
+    lineHeight: 1.4
+    letterSpacing: 2
+    marginTop: 72
+    marginBottom: 32
+    hyphenation: "off"
+    keepWithNext: true
+
+  # Scene break — the scene-break symbol (※ by default) centered between scenes
+  scene-break:
+    textAlign: center
+    fontSize: 11
+    marginTop: 28
+    marginBottom: 28
+    hyphenation: "off"
+
+  # Body — 2em indent on every paragraph (Chinese typesetting convention 首行缩进)
+  paragraph:
+    textAlign: justify
+    textIndent: 22
+    lineHeight: 1.75
+    marginBottom: 0
+  paragraph-first:
+    textAlign: justify
+    textIndent: 22
+    lineHeight: 1.75
+    marginBottom: 0
+
+  # Block elements
+  blockquote:
+    textAlign: justify
+    fontStyle: italic
+    fontSize: 10.4
+    lineHeight: 1.65
+    color: "#2e2618"
+    paddingLeft: 22
+    paddingRight: 22
+    borderLeftWidth: 0
+    marginTop: 12
+    marginBottom: 12
+  literary-quote:
+    textAlign: justify
+    fontStyle: normal
+    fontSize: 10.4
+    lineHeight: 1.65
+    marginTop: 14
+    marginBottom: 14
+    marginLeft: 44
+    marginRight: 44
+  poem:
+    textAlign: left
+    lineHeight: 1.75
+    marginTop: 14
+    marginBottom: 14
+    marginLeft: 44
+    marginRight: 44
+  lyrics:
+    textAlign: left
+    lineHeight: 1.75
+    fontStyle: normal
+    marginTop: 14
+    marginBottom: 14
+    marginLeft: 44
+    marginRight: 44
+
+  # Epigraph — centered italic quotation before a chapter, with right-aligned attribution
+  epigraph:
+    textAlign: center
+    fontStyle: italic
+    fontSize: 10.4
+    lineHeight: 1.65
+    color: "#2e2618"
+    marginTop: 22
+    marginBottom: 6
+    marginLeft: 44
+    marginRight: 44
+    keepWithNext: true
+  epigraph-attribution:
+    textAlign: right
+    fontStyle: normal
+    fontSize: 9.4
+    color: "#7a6e5e"
+    marginTop: 4
+    marginBottom: 22
+    marginLeft: 44
+    marginRight: 44
+
+  # Inline and structural
+  footnote-marker:
+    fontSize: 8
+    baselineShift: 2.5
+  thematic-break:
+    width: 44
+    marginLeft: 112
+    borderTopWidth: 0.5
+    borderTopColor: "#c0b09a"
+    marginTop: 16
+    marginBottom: 16
+
+  # Endnotes
+  notes-heading:
+    textAlign: left
+    fontWeight: 700
+    fontSize: 10.4
+    hyphenation: "off"
+    marginTop: 14
+    marginBottom: 8
+  notes-item:
+    textAlign: left
+    fontSize: 9.4
+    lineHeight: 1.5
+    paddingLeft: 16
+    textIndent: -16
+    marginBottom: 4
+    hyphenation: "off"

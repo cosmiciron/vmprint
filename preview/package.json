@@ -1,0 +1,55 @@
+{
+  "name": "@vmprint/preview",
+  "version": "1.0.2",
+  "description": "Script-first browser preview controller for VMPrint. Renders document pages to caller-owned canvases and supports PDF/SVG export.",
+  "author": "cosmiciron",
+  "license": "Apache-2.0",
+  "keywords": [
+    "pdf",
+    "canvas",
+    "preview",
+    "svg",
+    "document",
+    "layout",
+    "typesetting",
+    "vmprint",
+    "browser"
+  ],
+  "sideEffects": false,
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.map",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run clean && node scripts/build.mjs",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@vmprint/context-canvas": "*",
+    "@vmprint/context-pdf-lite": "*",
+    "@vmprint/engine": "*",
+    "@vmprint/local-fonts": "*",
+    "@vmprint/web-fonts": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "esbuild": "^0.25.10",
+    "rimraf": "^6.1.3",
+    "typescript": "^5.7.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

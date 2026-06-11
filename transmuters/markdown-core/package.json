@@ -1,0 +1,45 @@
+{
+  "name": "@vmprint/markdown-core",
+  "version": "1.0.3",
+  "description": "Runtime-neutral Markdown compiler core for VMPrint.",
+  "author": "cosmiciron",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "source": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build:js": "esbuild src/index.ts --bundle --platform=node --target=node18 --external:yaml --external:remark --external:remark-gfm --external:remark-parse --outfile=dist/index.js",
+    "build:mjs": "esbuild src/index.ts --bundle --platform=node --target=node18 --format=esm --external:yaml --external:remark --external:remark-gfm --external:remark-parse --outfile=dist/index.mjs",
+    "build:dts": "dts-bundle-generator --no-check src/index.ts -o dist/index.d.ts",
+    "build": "rimraf dist && npm run build:js && npm run build:mjs && npm run build:dts",
+    "clean": "rimraf dist"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "dts-bundle-generator": "^9.5.1",
+    "esbuild": "^0.25.0",
+    "rimraf": "^6.0.0",
+    "typescript": "^5.7.3"
+  }
+}

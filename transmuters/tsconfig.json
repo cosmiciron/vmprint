@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@vmprint/markdown-core": ["markdown-core/src/index.ts"],
+      "@vmprint/mkd-mkd": ["mkd-mkd/src/index.ts"],
+      "@vmprint/mkd-academic": ["mkd-academic/src/index.ts"],
+      "@vmprint/mkd-literature": ["mkd-literature/src/index.ts"],
+      "@vmprint/mkd-manuscript": ["mkd-manuscript/src/index.ts"],
+      "@vmprint/mkd-screenplay": ["mkd-screenplay/src/index.ts"],
+      "@vmprint/mkd-zh-manuscript": ["mkd-zh-manuscript/src/index.ts"]
+    },
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
+}

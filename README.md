@@ -78,20 +78,23 @@ Start paths:
 
 ## Packages
 
-**This repository**
+All VMPrint core engine, contexts, font managers, transmuters, and preview utilities are managed collectively in this monorepo under the following workspace directories:
 
-| Package | Purpose |
-|---|---|
-| [`@vmprint/engine`](engine/) | Layout engine and primary API |
-| [`@vmprint/cli`](cli/) | CLI for batch JSON-to-PDF workflows |
-| [`pressrun`](pressrun/) | Smallest practical engine bootstrap example |
-
-**Companion repositories**
-
-| Package / Repository | Purpose |
-|---|---|
-| [`@vmprint/context-pdf`](https://github.com/cosmiciron/vmprint-contexts) | PDF output context |
-| [`@vmprint/local-fonts`](https://github.com/cosmiciron/vmprint-font-managers) | Font manager for Node.js and URL-backed fonts |
-| [`@vmprint/standard-fonts`](https://github.com/cosmiciron/vmprint-font-managers) | Standard PDF font manager with zero embedded font files |
-| [vmprint-preview](https://github.com/cosmiciron/vmprint-preview) | Browser preview and hit-testing surface built on top of the engine |
-| [vmprint-transmuters](https://github.com/cosmiciron/vmprint-transmuters) | Markdown to VMPrint document compilers |
+| Directory | Package Name | Purpose |
+|---|---|---|
+| [`engine/`](engine/) | `@vmprint/engine` | Core spatial-simulation layout engine |
+| [`contracts/`](contracts/) | `@vmprint/contracts` | Common TypeScript interfaces and contracts |
+| [`cli/`](cli/) | `@vmprint/cli` | Command Line Interface for batch document typesetting |
+| [`preview/`](preview/) | `@vmprint/preview` | Browser-side preview controller, selection, and SVG/PDF exporter |
+| [`contexts/`](contexts/) | | Rendering surfaces and contexts |
+| &nbsp;&nbsp;&nbsp;&nbsp;`canvas/` | `@vmprint/context-canvas` | Browser rendering context backed by SVG page scenes |
+| &nbsp;&nbsp;&nbsp;&nbsp;`pdf/` | `@vmprint/context-pdf` | Server/Node PDF rendering context powered by PDFKit |
+| &nbsp;&nbsp;&nbsp;&nbsp;`pdf-lite/` | `@vmprint/context-pdf-lite` | Lightweight PDF rendering context powered by jsPDF |
+| [`font-managers/`](font-managers/) | | Font assets and managers |
+| &nbsp;&nbsp;&nbsp;&nbsp;`local/` | `@vmprint/local-fonts` | Node/filesystem font manager bundling open-source fonts |
+| &nbsp;&nbsp;&nbsp;&nbsp;`standard/` | `@vmprint/standard-fonts` | Sentinel AFM proxy font manager (zero binary assets) |
+| &nbsp;&nbsp;&nbsp;&nbsp;`web/` | `@vmprint/web-fonts` | Browser URL/caching font manager |
+| [`transmuters/`](transmuters/) | | Content transmuters (compilers) |
+| &nbsp;&nbsp;&nbsp;&nbsp;`markdown-core/` | `@vmprint/markdown-core` | Runtime-neutral Markdown compiler substrate |
+| &nbsp;&nbsp;&nbsp;&nbsp;`mkd-*` | `@vmprint/mkd-*` | Concrete transmuter targets (screenplay, academic, novel, etc.) |
+| [`pressrun/`](pressrun/) | `pressrun` | Smallest practical engine bootstrap example |

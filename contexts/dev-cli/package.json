@@ -1,0 +1,30 @@
+{
+  "name": "@vmprint/dev-cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Developer CLI for rapidly testing VMPrint layout output across local contexts.",
+  "main": "dist/index.js",
+  "bin": {
+    "vmprint-context-test": "dist/index.js"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --packages=external --platform=node --target=node18 --format=cjs --outfile=dist/index.js",
+    "dev": "tsx src/index.ts",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@vmprint/contracts": "*",
+    "@vmprint/engine": "*",
+    "@vmprint/local-fonts": "*",
+    "@vmprint/context-pdf": "*",
+    "@vmprint/context-pdf-lite": "*",
+    "@vmprint/context-canvas": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.27.4",
+    "rimraf": "^6.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.3"
+  }
+}

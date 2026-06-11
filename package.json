@@ -1,6 +1,6 @@
 {
   "name": "vmprint-workspace",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Deterministic typesetting engine for the programmable web. Pure-JS, zero-browser document composition with bit-perfect PDF output.",
   "author": "cosmiciron",
   "license": "Apache-2.0",
@@ -17,17 +17,21 @@
     "contracts",
     "engine",
     "cli",
-    "pressrun"
+    "pressrun",
+    "preview",
+    "contexts/*",
+    "font-managers/*",
+    "transmuters/*"
   ],
   "scripts": {
     "clean": "npm run clean --workspaces --if-present",
-    "build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=cli",
-    "release:build": "npm run build --workspace=contracts && npm run build --workspace=engine && npm run build --workspace=cli",
+    "build": "npm run build --workspace=@vmprint/contracts && npm run build --workspace=@vmprint/markdown-core && npm run build --workspace=@vmprint/standard-fonts && npm run build --workspace=@vmprint/local-fonts && npm run build --workspace=@vmprint/web-fonts && npm run build --workspace=@vmprint/context-canvas && npm run build --workspace=@vmprint/context-pdf && npm run build --workspace=@vmprint/context-pdf-lite && npm run build --workspace=@vmprint/engine && npm run build --workspace=@vmprint/preview && npm run build --workspace=@vmprint/cli && npm run build --workspace=@vmprint/mkd-mkd --workspace=@vmprint/mkd-academic --workspace=@vmprint/mkd-literature --workspace=@vmprint/mkd-manuscript --workspace=@vmprint/mkd-screenplay --workspace=@vmprint/mkd-zh-manuscript && npm run build --workspace=@vmprint/dev-cli --workspace=@vmprint/transmuter-dev",
+    "release:build": "npm run build",
     "sync:shared-engine": "node scripts/sync-shared-engine.mjs",
     "sync:shared-engine:check": "node scripts/sync-shared-engine.mjs --check",
     "measure:server": "npm run measure:server --workspace=engine",
     "test": "npm run test --prefix engine && npm run test:packaged-integration",
-    "test:packaged-integration": "npm run build --workspace=contracts && npm run build --workspace=engine && node scripts/test-packaged-vmprint-integration.mjs",
+    "test:packaged-integration": "npm run build && node scripts/test-packaged-vmprint-integration.mjs",
     "pressrun": "tsx pressrun/src/index.ts"
   },
   "devDependencies": {

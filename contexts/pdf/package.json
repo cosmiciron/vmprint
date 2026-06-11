@@ -1,0 +1,45 @@
+{
+  "name": "@vmprint/context-pdf",
+  "version": "1.0.3",
+  "description": "PDF rendering context for VMPrint, powered by pdfkit.",
+  "author": "cosmiciron",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cosmiciron/vmprint-contexts.git",
+    "directory": "pdf"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@vmprint/contracts": "*",
+    "buffer": "^6.0.3",
+    "pdfkit": "^0.17.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "@types/pdfkit": "^0.17.5",
+    "rimraf": "^6.1.3",
+    "tsup": "^8.5.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.7.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
