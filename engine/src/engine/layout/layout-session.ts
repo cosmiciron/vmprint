@@ -1230,6 +1230,10 @@ export class LayoutSession {
         return this.sessionCollaborationRuntime.finalizePages(pages);
     }
 
+    publishPartialLayoutPages(pages: Page[]): Page[] {
+        return this.sessionCollaborationRuntime.publishPartialLayoutPages(pages);
+    }
+
     onSimulationComplete(): void {
         this.sessionCollaborationRuntime.onSimulationComplete();
     }

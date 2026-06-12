@@ -4,7 +4,7 @@ This document formalizes the public API for VMPrint Scripting Series 1.
 
 Series 1 is about one thing:
 
-- dynamic document content manipulation
+- dynamic document content and style manipulation
 
 It is intentionally not about page scripting, animation, rich world interaction, or open-ended runtime state systems.
 
@@ -269,6 +269,7 @@ Typical element-facing members:
 - `self.append(...)`
 - `self.prepend(...)`
 - `self.setContent(...)`
+- `self.setStyle(...)`
 - `self.sendMessage(recipient, msg)`
 
 For document handlers, `self` is the document.
@@ -281,6 +282,7 @@ These helpers are available directly inside handlers.
 - `elementsByType(type)`
 - `sendMessage(recipient, msg)`
 - `setContent(target, value)`
+- `setStyle(target, patch)`
 - `replace(value)`
 - `append(value)`
 - `prepend(value)`
@@ -326,7 +328,62 @@ The runtime is responsible for normalizing that input.
 
 `replace(...)` accepts the same shapes.
 
+## System Script Protocol
+
+Engine-owned system scripts may handle host requests through `onRequest(name, payload)`.
+This is a privileged internal layer, not a document-authoring API. It lets an
+application send one named request to the engine while the behavior remains
+inside VMPrint Script.
+
+Current engine protocol requests:
+
+- `layout.pageCount`
+- `layout.pageViewport`
+- `layout.defaultViewport`
+- `layout.worldViewport`
+- `layout.profileSnapshot`
+- `layout.simulationStatus`
+- `layout.startInitialLayout`
+- `layout.continueInitialLayout`
+- `layout.startReplayAroundViewport`
+- `layout.continueReplay`
+- `layout.applyRuntimeFormatting`
+- `layout.restoreRuntimeFormatting`
+- `layout.applyRuntimeIntent`
+
+System scripts may emit matching events with `emit(name, payload)`. Host-facing
+consumers should treat returned payloads and emitted event payloads as snapshots.
+Viewport replay requests also emit `layout.replayProgress` progress snapshots.
+The engine keeps replay continuations private; protocol payloads contain a
+`replay.replayId` and cloned page snapshots, not live runner/session objects.
+
 This is the preferred structural mutation primitive for compound or ambiguous elements, where `setContent(...)` may not have a clear meaning.
+
+### Style Mutation
+
+`setStyle(target, patch)` changes the style of a named element or element reference.
+
+`self.setStyle(patch)` applies the same operation to the current receiver.
+
+Supported Series 1 patch keys:
+
+- paint-only keys: `color`, `backgroundColor`, `borderColor`
+- formatting keys: `fontFamily`, `fontSize`, `fontWeight`, `fontStyle`, `lineHeight`, `marginLeft`, `marginRight`, `textAlign`, `textIndent`
+
+The engine classifies the result. Paint-only changes are content-only redraws.
+Formatting changes that do not alter measured geometry may also remain content-only.
+Formatting changes that alter measured geometry cause geometry replay from the affected participant.
+
+Example:
+
+```js
+setStyle("status", {
+  color: "#0f766e",
+  backgroundColor: "#ccfbf1"
+})
+
+self.setStyle({ fontWeight: 700 })
+```
 
 ### Recipient / Target Resolution
 

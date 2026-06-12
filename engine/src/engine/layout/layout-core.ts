@@ -75,6 +75,7 @@ import { SimulationLoop, type SimulationLoopOptions, type SimulationLoopSchedule
 
 export type LayoutSimulationOptions = {
     stopAtPage?: number;
+    stopAtWorldY?: number;
 };
 
 export class LayoutProcessor extends TextProcessor {
@@ -908,15 +909,33 @@ export class LayoutProcessor extends TextProcessor {
         const stopAtPage = Number.isFinite(Number(options.stopAtPage))
             ? Math.max(0, Math.floor(Number(options.stopAtPage)))
             : null;
+        const stopAtWorldY = Number.isFinite(Number(options.stopAtWorldY))
+            ? Math.max(0, Number(options.stopAtWorldY))
+            : null;
+        const resolvePageBottomWorldY = (pageIndex: number): number => {
+            const normalizedPageIndex = Number.isFinite(Number(pageIndex))
+                ? Math.max(0, Math.floor(Number(pageIndex)))
+                : 0;
+            let bottom = 0;
+            for (let index = 0; index <= normalizedPageIndex; index += 1) {
+                const geometry = LayoutUtils.resolvePageGeometry(this.config, index);
+                bottom += Math.max(1, Number(geometry.height || 0));
+            }
+            return bottom;
+        };
         this.activeScriptRuntimeHost = scriptRuntimeHost;
         const session = new LayoutSession({
             runtime: this.getRuntime(),
             collaborators,
             asyncThoughtHost,
             resolvePageGeometry: (pageIndex) => LayoutUtils.resolvePageGeometry(this.config, pageIndex),
-            shouldStopAfterPage: stopAtPage === null
+            shouldStopAfterPage: stopAtPage === null && stopAtWorldY === null
                 ? undefined
-                : (pageIndex) => pageIndex >= stopAtPage
+                : (pageIndex) => {
+                    if (stopAtPage !== null && pageIndex >= stopAtPage) return true;
+                    if (stopAtWorldY !== null && resolvePageBottomWorldY(pageIndex) >= stopAtWorldY) return true;
+                    return false;
+                }
         });
         this.lastLayoutSession = session;
         session.notifySimulationStart();
@@ -935,7 +954,10 @@ export class LayoutProcessor extends TextProcessor {
             pageHeight: firstPageGeometry.height,
             margins: firstPageGeometry.margins,
             resolvePageGeometry: (pageIndex: number) => LayoutUtils.resolvePageGeometry(this.config, pageIndex),
+            publicationMode: LayoutUtils.resolvePublicationMode(this.config),
+            printBreakPolicy: LayoutUtils.resolvePrintBreakPolicy(this.config),
             stopAtPage: stopAtPage ?? undefined,
+            stopAtWorldY: stopAtWorldY ?? undefined,
             simulationTickRateHz: progressionOverride?.tickRateHz ?? this.getSimulationProgressionConfig().tickRateHz,
             simulationProgression: progressionOverride ?? this.getSimulationProgressionConfig(),
             simulationTimeOffsetSeconds: Number.isFinite(timeOffsetSeconds) ? Number(timeOffsetSeconds) : 0,

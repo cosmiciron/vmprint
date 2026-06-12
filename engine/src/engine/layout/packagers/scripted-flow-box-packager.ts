@@ -4,6 +4,7 @@ import type { FlowBox } from '../layout-core-types';
 import type { LayoutProcessor } from '../layout-core';
 import type { LayoutSession } from '../layout-session';
 import { LayoutUtils, createScriptMessageAckTopic, createScriptMessageTopic } from '../layout-utils';
+import { normalizeRuntimeFormattingPatch } from '../runtime-formatting';
 import { ScriptRuntimeHost, type ScriptGlobals } from '../script-runtime-host';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createPackagers, type ExternalPackagerFactory } from './create-packagers';
@@ -105,6 +106,24 @@ function normalizeScriptElements(value: unknown): Element[] {
     if (Array.isArray(value)) return (value as Element[]).map((element) => normalizeRuntimeElement(element));
     if (value && typeof value === 'object') return [normalizeRuntimeElement(value as Element)];
     return [];
+}
+
+function applyRuntimeStylePatchToElement(element: Element, patch: unknown): boolean {
+    const normalized = normalizeRuntimeFormattingPatch((patch && typeof patch === 'object' ? patch : {}) as any);
+    if (!Object.keys(normalized).length) return false;
+    const previousStyle = element.properties && typeof element.properties.style === 'object' && element.properties.style
+        ? element.properties.style
+        : {};
+    const changed = Object.entries(normalized).some(([key, value]) => previousStyle[key] !== value);
+    if (!changed) return false;
+    element.properties = {
+        ...(element.properties || {}),
+        style: {
+            ...previousStyle,
+            ...normalized
+        }
+    };
+    return true;
 }
 
 function chooseEarlierFrontier(current: SpatialFrontier | null, next: SpatialFrontier): SpatialFrontier {
@@ -629,6 +648,15 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 }
                 return true;
             },
+            setStyle: (patch: unknown) => {
+                const changed = applyRuntimeStylePatchToElement(element, patch);
+                if (!changed) return false;
+                session.recordProfile('setContentCalls', 1);
+                if (element === this.sourceElement) {
+                    this.rebuildInner();
+                }
+                return true;
+            },
             replace: (value: unknown) => {
                 if (!sourceId) return false;
                 const elements = normalizeScriptElements(value);
@@ -754,6 +782,19 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
             return findByType(this.elements, type).map((node) => this.createElementRef(session, node, () => false));
         };
         const selfRef = this.createElementRef(session, this.sourceElement, (recipient, msg) => this.publishScriptMessage(context, recipient, msg));
+        const setStyle = (target: unknown, patch: unknown) => {
+            const sourceId = this.resolveSourceId(target);
+            if (!sourceId || sourceId === 'doc') return false;
+            const node = findBySourceId(this.elements, sourceId);
+            if (!node) return false;
+            const changed = applyRuntimeStylePatchToElement(node, patch);
+            if (!changed) return false;
+            session.recordProfile('setContentCalls', 1);
+            if (node === this.sourceElement) {
+                this.rebuildInner();
+            }
+            return true;
+        };
         const append = (value: unknown) => {
             const handler = selfRef as Record<string, unknown>;
             const appendFn = handler.append as ((value: unknown) => boolean) | undefined;
@@ -798,6 +839,7 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
                 }
                 return true;
             },
+            setStyle,
             replaceElement: (target: unknown, elements: Element[]) => {
                 const sourceId = this.resolveSourceId(target);
                 if (!sourceId || sourceId === 'doc') return false;

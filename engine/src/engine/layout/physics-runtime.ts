@@ -107,7 +107,8 @@ export class PhysicsRuntime {
         }
 
         const isAtPageTop = input.currentY === input.margins.top && input.currentPageBoxes.length === 0;
-        if (input.actor.pageBreakBefore && !isAtPageTop) {
+        const honorPrintBreaks = input.contextBase.printBreakPolicy !== 'ignore';
+        if (honorPrintBreaks && input.actor.pageBreakBefore && !isAtPageTop) {
             return {
                 action: 'continue-loop',
                 loopAction: this.host.restartCurrentActorOnNextPage(

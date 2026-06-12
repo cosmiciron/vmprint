@@ -79,6 +79,11 @@ export class SessionCollaborationRuntime {
         return this.simulationReportBridge.finalizePages(pages);
     }
 
+    publishPartialLayoutPages(pages: Page[]): Page[] {
+        this.lifecycleRuntime.setFinalizedPages(pages);
+        return pages;
+    }
+
     onSimulationComplete(): void {
         this.eventDispatcher.onSimulationComplete(this.host.getCollaboratorHost());
     }

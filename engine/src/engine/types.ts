@@ -10,6 +10,8 @@ export type VmprintIRVersion = '1.0';
 export type ScriptMethodSource = string | string[];
 export type SimulationProgressionPolicy = 'until-settled' | 'fixed-tick-count';
 export type SimulationStopReason = 'settled' | 'fixed-tick-count' | 'page-limit';
+export type PublicationMode = 'paginated' | 'continuous';
+export type PrintBreakPolicy = 'preserve' | 'ignore';
 
 export type PageSizeSpec = 'A4' | 'LETTER' | { width: number, height: number };
 
@@ -599,6 +601,17 @@ export interface LayoutConfig {
         microLanePolicy?: MicroLanePolicy;
         /** Optional world substrate for this document. When present, root elements inhabit the world plain. */
         worldPlain?: WorldPlainOptions;
+        /**
+         * Controls how the engine publishes the settled world. The default
+         * "paginated" mode captures print pages. "continuous" captures the
+         * root flow as one browser-like world page.
+         */
+        publicationMode?: PublicationMode;
+        /**
+         * Controls whether authored print breaks affect layout. Defaults to
+         * "preserve" in paginated mode and "ignore" in continuous mode.
+         */
+        printBreakPolicy?: PrintBreakPolicy;
         headerInsetTop?: number;
         headerInsetBottom?: number;
         footerInsetTop?: number;

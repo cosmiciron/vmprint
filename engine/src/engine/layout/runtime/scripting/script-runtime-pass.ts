@@ -2,6 +2,7 @@ import type { Element } from '../../../types';
 import type { Collaborator, CollaboratorHost } from '../session/session-runtime-types';
 
 import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../../script-runtime-host';
+import { normalizeRuntimeFormattingPatch } from '../../runtime-formatting';
 
 type ScriptMessage = {
     subject: string;
@@ -87,6 +88,24 @@ function normalizeScriptElements(value: unknown): Element[] {
     if (Array.isArray(value)) return (value as Element[]).map((element) => normalizeRuntimeElement(element));
     if (value && typeof value === 'object') return [normalizeRuntimeElement(value as Element)];
     return [];
+}
+
+function applyRuntimeStylePatchToElement(element: Element, patch: unknown): boolean {
+    const normalized = normalizeRuntimeFormattingPatch((patch && typeof patch === 'object' ? patch : {}) as any);
+    if (!Object.keys(normalized).length) return false;
+    const previousStyle = element.properties && typeof element.properties.style === 'object' && element.properties.style
+        ? element.properties.style
+        : {};
+    const changed = Object.entries(normalized).some(([key, value]) => previousStyle[key] !== value);
+    if (!changed) return false;
+    element.properties = {
+        ...(element.properties || {}),
+        style: {
+            ...previousStyle,
+            ...normalized
+        }
+    };
+    return true;
 }
 
 function findBySourceId(elements: Element[], sourceId: string): Element | null {
@@ -264,6 +283,12 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 host.recordProfile('setContentCalls', 1);
                 return true;
             },
+            setStyle: (patch: unknown) => {
+                const changed = applyRuntimeStylePatchToElement(element, patch);
+                if (!changed) return false;
+                host.recordProfile('setContentCalls', 1);
+                return true;
+            },
             replace: (value: unknown) => {
                 if (!sourceId) return false;
                 const elements = normalizeScriptElements(value);
@@ -373,6 +398,16 @@ export class ScriptRuntimeCollaborator implements Collaborator {
             host.recordProfile('setContentCalls', 1);
             return true;
         };
+        const setStyle = (target: unknown, patch: unknown) => {
+            const sourceId = this.resolveSourceId(target);
+            if (!sourceId) return false;
+            const node = findBySourceId(this.elements, sourceId);
+            if (!node) return false;
+            const changed = applyRuntimeStylePatchToElement(node, patch);
+            if (!changed) return false;
+            host.recordProfile('setContentCalls', 1);
+            return true;
+        };
         const replaceElement = (target: unknown, elements: Element[]) => {
             const sourceId = this.resolveSourceId(target);
             if (!sourceId) return false;
@@ -470,6 +505,7 @@ export class ScriptRuntimeCollaborator implements Collaborator {
                 return true;
             },
             setContent,
+            setStyle,
             replaceElement,
             insertBefore: insertElementsBefore,
             insertAfter: insertElementsAfter,

@@ -32,6 +32,8 @@ const LAYOUT_KEYS = new Set([
     'storyWrapOpticalUnderhang',
     'microLanePolicy',
     'worldPlain',
+    'publicationMode',
+    'printBreakPolicy',
     'headerInsetTop',
     'headerInsetBottom',
     'footerInsetTop',
@@ -273,6 +275,8 @@ function validateLayout(layout: unknown, documentPath: string): void {
     assertEnumAt(obj.hyphenation, ['off', 'auto', 'soft'], 'layout.hyphenation', documentPath);
     assertEnumAt(obj.justifyEngine, ['legacy', 'advanced'], 'layout.justifyEngine', documentPath);
     assertEnumAt(obj.justifyStrategy, ['auto', 'space', 'inter-character'], 'layout.justifyStrategy', documentPath);
+    assertEnumAt(obj.publicationMode, ['paginated', 'continuous'], 'layout.publicationMode', documentPath);
+    assertEnumAt(obj.printBreakPolicy, ['preserve', 'ignore'], 'layout.printBreakPolicy', documentPath);
     if (obj.progression !== undefined) {
         const progression = assertPlainObjectAt(obj.progression, 'layout.progression', documentPath);
         assertAllowedKeys(progression, PROGRESSION_KEYS, 'layout.progression', documentPath);

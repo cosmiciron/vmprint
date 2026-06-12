@@ -1,8 +1,8 @@
 import { runtimePerformance as performance } from '../performance';
 import type { Element, LayoutScriptingConfig } from '../types';
-import type { CollaboratorHost } from './runtime/session/session-runtime-types';
+import type { RuntimeProfileMetric } from './runtime/session/session-runtime-types';
 
-export type ScriptPhase = 'onLoad' | 'onCreate' | 'onReady' | 'onRefresh' | 'onChanged' | 'onTick' | 'onMessage';
+export type ScriptPhase = 'onLoad' | 'onCreate' | 'onReady' | 'onRefresh' | 'onChanged' | 'onTick' | 'onMessage' | 'onRequest';
 
 export type ScriptGlobals = {
     doc?: unknown;
@@ -12,6 +12,7 @@ export type ScriptGlobals = {
     elementsByType?: unknown;
     sendMessage?: unknown;
     setContent?: unknown;
+    setStyle?: unknown;
     replace?: unknown;
     append?: unknown;
     prepend?: unknown;
@@ -23,13 +24,29 @@ export type ScriptGlobals = {
     findElementsByType?: unknown;
     insertElementsBefore?: unknown;
     insertElementsAfter?: unknown;
+    emit?: unknown;
+    getPageCount?: unknown;
+    getPageViewport?: unknown;
+    getWorldViewport?: unknown;
+    getProfileSnapshot?: unknown;
+    getSimulationStatus?: unknown;
+    startInitialLayout?: unknown;
+    continueInitialLayout?: unknown;
+    startReplayAroundViewport?: unknown;
+    continueReplay?: unknown;
+    applyRuntimeFormatting?: unknown;
+    restoreRuntimeFormatting?: unknown;
 };
 
 type CompiledHandler = {
     name: string;
     declaredParams: string[];
     injectedVarNames: string[];
-    invoke: (...args: unknown[]) => void;
+    invoke: (...args: unknown[]) => unknown;
+};
+
+type ScriptProfileHost = {
+    recordProfile(metric: RuntimeProfileMetric, delta: number): void;
 };
 
 export type ScriptLifecycleState = {
@@ -49,6 +66,7 @@ const RESERVED_GLOBAL_NAMES = [
     'elementsByType',
     'sendMessage',
     'setContent',
+    'setStyle',
     'replace',
     'append',
     'prepend',
@@ -59,7 +77,19 @@ const RESERVED_GLOBAL_NAMES = [
     'findElementByName',
     'findElementsByType',
     'insertElementsBefore',
-    'insertElementsAfter'
+    'insertElementsAfter',
+    'emit',
+    'getPageCount',
+    'getPageViewport',
+    'getWorldViewport',
+    'getProfileSnapshot',
+    'getSimulationStatus',
+    'startInitialLayout',
+    'continueInitialLayout',
+    'startReplayAroundViewport',
+    'continueReplay',
+    'applyRuntimeFormatting',
+    'restoreRuntimeFormatting'
 ] as const;
 
 function normalizeMethodSource(source: string | string[]): string {
@@ -137,7 +167,7 @@ export class ScriptRuntimeHost {
                 name: parsed.name,
                 declaredParams: parsed.params,
                 injectedVarNames: this.injectedVarNames,
-                invoke: new Function(...orderedParams, `"use strict";\n${source}`) as (...args: unknown[]) => void
+                invoke: new Function(...orderedParams, `"use strict";\n${source}`) as (...args: unknown[]) => unknown
             });
         }
     }
@@ -220,8 +250,8 @@ export class ScriptRuntimeHost {
         phase: ScriptPhase,
         globals: ScriptGlobals,
         eventParams: Record<string, unknown>,
-        host: CollaboratorHost
-    ): void {
+        host: ScriptProfileHost
+    ): unknown {
         const handler = this.handlers.get(handlerName);
         if (!handler) {
             throw new Error(`[ScriptRuntimeHost] Missing method "${handlerName}" for ${phase}.`);
@@ -250,6 +280,9 @@ export class ScriptRuntimeHost {
             case 'onMessage':
                 host.recordProfile('messageHandlerCalls', 1);
                 break;
+            case 'onRequest':
+                host.recordProfile('messageHandlerCalls', 1);
+                break;
         }
 
         const orderedArgs = dedupeNames([
@@ -266,7 +299,7 @@ export class ScriptRuntimeHost {
             return eventParams[name];
         });
 
-        handler.invoke(...orderedArgs);
+        const result = handler.invoke(...orderedArgs);
 
         const elapsed = performance.now() - startedAt;
         host.recordProfile('handlerMs', elapsed);
@@ -290,6 +323,9 @@ export class ScriptRuntimeHost {
                 break;
             case 'onMessage':
                 break;
+            case 'onRequest':
+                break;
         }
+        return result;
     }
 }

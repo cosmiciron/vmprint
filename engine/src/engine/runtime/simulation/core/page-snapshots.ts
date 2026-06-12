@@ -27,6 +27,15 @@ export function buildPageSnapshotToken(page: Page): string {
             String(Math.round(Number(box.w ?? 0))),
             String(Math.round(Number(box.h ?? 0))),
             sourceId,
+            String(box.style?.backgroundColor ?? ''),
+            String(box.style?.borderColor ?? ''),
+            String(box.style?.borderWidth ?? ''),
+            String(box.style?.color ?? ''),
+            String(box.style?.fontFamily ?? ''),
+            String(box.style?.fontSize ?? ''),
+            String(box.style?.fontWeight ?? ''),
+            String(box.style?.fontStyle ?? ''),
+            String(box.style?.lineHeight ?? ''),
             typeof box.content === 'string' ? box.content : lineText
         ];
         hash ^= hashString(parts.join('|'));
@@ -57,18 +66,35 @@ export function computeChangedPageIndexes<T>(
     previousTokens: Map<number, T>,
     nextTokens: Map<number, T>
 ): number[] {
+    return computePageTokenChanges(previousTokens, nextTokens).pageIndexes;
+}
+
+export function computePageTokenChanges<T>(
+    previousTokens: Map<number, T>,
+    nextTokens: Map<number, T>
+): { pageIndexes: number[]; addedPageIndexes: number[]; removedPageIndexes: number[] } {
     const changed = new Set<number>();
+    const added = new Set<number>();
+    const removed = new Set<number>();
     for (const [pageIndex, nextToken] of nextTokens.entries()) {
-        if (previousTokens.get(pageIndex) !== nextToken) {
+        if (!previousTokens.has(pageIndex)) {
+            added.add(pageIndex);
+            changed.add(pageIndex);
+        } else if (previousTokens.get(pageIndex) !== nextToken) {
             changed.add(pageIndex);
         }
     }
     for (const pageIndex of previousTokens.keys()) {
         if (!nextTokens.has(pageIndex)) {
+            removed.add(pageIndex);
             changed.add(pageIndex);
         }
     }
-    return Array.from(changed).sort((a, b) => a - b);
+    return {
+        pageIndexes: Array.from(changed).sort((a, b) => a - b),
+        addedPageIndexes: Array.from(added).sort((a, b) => a - b),
+        removedPageIndexes: Array.from(removed).sort((a, b) => a - b)
+    };
 }
 
 export function updateSummaryWithChangedPages(
@@ -76,9 +102,12 @@ export function updateSummaryWithChangedPages(
     previousTokens: Map<number, string>,
     nextTokens: Map<number, string>
 ): SimulationUpdateSummary {
+    const changes = computePageTokenChanges(previousTokens, nextTokens);
     return {
         ...summary,
-        pageIndexes: computeChangedPageIndexes(previousTokens, nextTokens)
+        pageIndexes: changes.pageIndexes.length > 0 ? changes.pageIndexes : summary.pageIndexes,
+        addedPageIndexes: changes.addedPageIndexes,
+        removedPageIndexes: changes.removedPageIndexes
     };
 }
 
@@ -94,6 +123,9 @@ export function normalizeUpdateSummary(
         source: 'none',
         actorIds: [],
         sourceIds: [],
-        pageIndexes: []
+        pageIndexes: [],
+        addedPageIndexes: [],
+        removedPageIndexes: [],
+        replayFrontier: null
     };
 }

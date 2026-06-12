@@ -420,6 +420,7 @@ export class ListPackager implements PackagerUnit {
     private marginBottom: number = 0;
     private listStyle: ElementStyle = {};
     private readonly continuationActorsByItem: Map<number, HostedRegionActorEntry[]>;
+    private readonly hostedBodyActorsByItem: Map<number, HostedRegionActorEntry[]> = new Map();
     private readonly suppressFirstMarker: boolean;
     private containedBackgroundBox: Box | null = null;
 
@@ -585,9 +586,12 @@ export class ListPackager implements PackagerUnit {
 
     private buildBodyActors(item: Element, itemIndex: number, bodyWidth: number): HostedRegionActorEntry[] {
         const continuationActors = this.continuationActorsByItem.get(itemIndex);
-        if (continuationActors) return continuationActors;
+        if (continuationActors) {
+            this.hostedBodyActorsByItem.set(itemIndex, continuationActors);
+            return continuationActors;
+        }
         const bodyElements = this.createBodyElements(item, itemIndex, bodyWidth);
-        return bodyElements.map((element, bodyIndex) => ({
+        const actors = bodyElements.map((element, bodyIndex) => ({
             element,
             actor: buildPackagerForElement(
                 element,
@@ -598,6 +602,8 @@ export class ListPackager implements PackagerUnit {
                 [...this.identityPath, itemIndex, 1, bodyIndex]
             )
         }));
+        this.hostedBodyActorsByItem.set(itemIndex, actors);
+        return actors;
     }
 
     private createPreparedMarker(
@@ -1096,6 +1102,58 @@ export class ListPackager implements PackagerUnit {
                 }
             ]
         };
+    }
+
+    getHostedRuntimeActors(): readonly PackagerUnit[] {
+        return Array.from(this.hostedBodyActorsByItem.values()).flat().map((entry) => entry.actor);
+    }
+
+    handlesHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        return !!this.findHostedRuntimeActorEntry(targetActor);
+    }
+
+    refreshHostedRuntimeActor(targetActor: PackagerUnit): boolean {
+        const found = this.findHostedRuntimeActorEntry(targetActor);
+        if (!found) return false;
+        const sourceElement = (found.entry.actor as unknown as { flowBox?: { _sourceElement?: Element }; element?: Element }).flowBox?._sourceElement
+            || (found.entry.actor as unknown as { element?: Element }).element
+            || found.entry.element;
+        const sourceText = String(sourceElement?.content || '');
+        const sourceStyle = sourceElement?.properties?.style && typeof sourceElement.properties.style === 'object'
+            ? { ...sourceElement.properties.style }
+            : {};
+        const nextChildren = [...(this.listElement.children || [])];
+        const item = { ...(nextChildren[found.itemIndex] || this.normalizedList.items[found.itemIndex]) };
+        const itemStyle = item.properties?.style && typeof item.properties.style === 'object'
+            ? { ...item.properties.style }
+            : {};
+        nextChildren[found.itemIndex] = {
+            ...item,
+            content: sourceText,
+            properties: {
+                ...(item.properties || {}),
+                style: {
+                    ...itemStyle,
+                    ...sourceStyle
+                }
+            }
+        };
+        this.listElement.children = nextChildren;
+        this.hostedBodyActorsByItem.delete(found.itemIndex);
+        this.preparedItems = [];
+        this.preparedMode = 'none';
+        this.lastAvailableWidth = -1;
+        this.requiredHeight = 0;
+        this.containedBackgroundBox = null;
+        return true;
+    }
+
+    private findHostedRuntimeActorEntry(targetActor: PackagerUnit): { itemIndex: number; entry: HostedRegionActorEntry } | null {
+        for (const [itemIndex, entries] of this.hostedBodyActorsByItem.entries()) {
+            const entry = entries.find((candidate) => candidate.actor === targetActor || candidate.actor.actorId === targetActor.actorId);
+            if (entry) return { itemIndex, entry };
+        }
+        return null;
     }
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] {

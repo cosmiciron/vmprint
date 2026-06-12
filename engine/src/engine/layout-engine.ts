@@ -1,4 +1,4 @@
-import { Element, LayoutConfig } from './types';
+import { Element, LayoutConfig, type LayoutScriptingConfig } from './types';
 import { LayoutProcessor, type LayoutSimulationOptions } from './layout/layout-core';
 import { LayoutUtils } from './layout/layout-utils';
 import {
@@ -60,6 +60,17 @@ import {
     type RuntimeFormattingPatch,
     type RuntimeFormattingTarget
 } from './layout/runtime-formatting';
+import {
+    buildPageSnapshotToken,
+    computePageTokenChanges
+} from './runtime/simulation/core/page-snapshots';
+import type {
+    SimulationContinueOptions,
+    SimulationContinueResult,
+    SimulationRunner
+} from './runtime/simulation/types';
+import { ScriptRuntimeHost } from './layout/script-runtime-host';
+import type { RuntimeProfileMetric } from './layout/runtime/session/session-runtime-types';
 
 const DEFAULT_ENGINE_LAYOUT_CONFIG: LayoutConfig = {
     layout: {
@@ -83,7 +94,150 @@ type RuntimeIntent = {
     target?: RuntimeFormattingTarget | null;
     patch?: RuntimeFormattingPatch | null;
     restoreSnapshot?: unknown;
+    replayUntilPage?: unknown;
+    replayUntilY?: unknown;
+    replayUntil?: RuntimeReplayUntilOptions | null;
 };
+
+type RuntimeReplayUntilOptions = {
+    page?: unknown;
+    y?: unknown;
+    untilPage?: unknown;
+    untilY?: unknown;
+    maxMilliseconds?: unknown;
+};
+
+type RuntimeReplayContinuation = {
+    continueUntil(options?: RuntimeReplayUntilOptions | null): RuntimeIntentResult;
+    continueUntilPage(pageIndex: number): RuntimeIntentResult;
+    continueUntilY(y: number): RuntimeIntentResult;
+    getCurrentPages(): unknown[];
+    isFinished(): boolean;
+};
+
+type InitialLayoutContinuationOptions = SimulationContinueOptions;
+
+type InitialLayoutResult = {
+    changed: boolean;
+    kind?: 'geometry';
+    layoutKind?: 'initial';
+    completion?: 'partial' | 'complete';
+    pending?: boolean;
+    reason?: string;
+    progress?: SimulationContinueResult;
+    update?: {
+        kind: 'geometry';
+        source: 'initial-layout' | 'initial-layout-continuation';
+        pageIndexes: number[];
+    };
+    pageIndexes?: number[];
+    pages?: unknown[];
+};
+
+export type EngineProtocolEvent = {
+    name: string;
+    payload: unknown;
+    requestName?: string;
+    timestamp: number;
+};
+
+export type EngineProtocolListener = (event: EngineProtocolEvent) => void;
+
+const ENGINE_PROTOCOL_SCRIPT: LayoutScriptingConfig = {
+    methods: {
+        'onRequest(name, payload)': [
+            'if (name === "layout.pageCount") {',
+            '  var count = getPageCount();',
+            '  emit("layout.pageCount", { pageCount: count });',
+            '  return { pageCount: count };',
+            '}',
+            'if (name === "layout.pageViewport") {',
+            '  var pageViewport = getPageViewport(payload && payload.pageIndex);',
+            '  emit("layout.pageViewport", pageViewport);',
+            '  return pageViewport;',
+            '}',
+            'if (name === "layout.defaultViewport") {',
+            '  var defaultViewport = getPageViewport(0);',
+            '  emit("layout.defaultViewport", defaultViewport);',
+            '  return defaultViewport;',
+            '}',
+            'if (name === "layout.worldViewport") {',
+            '  var viewport = getWorldViewport(payload);',
+            '  emit("layout.worldViewport", viewport);',
+            '  return viewport;',
+            '}',
+            'if (name === "layout.profileSnapshot") {',
+            '  var profileSnapshot = getProfileSnapshot();',
+            '  emit("layout.profileSnapshot", profileSnapshot);',
+            '  return profileSnapshot;',
+            '}',
+            'if (name === "layout.simulationStatus") {',
+            '  var simulationStatus = getSimulationStatus();',
+            '  emit("layout.simulationStatus", simulationStatus);',
+            '  return simulationStatus;',
+            '}',
+            'if (name === "layout.startInitialLayout") {',
+            '  var startResult = startInitialLayout(payload && payload.elements, payload && payload.options);',
+            '  emit("layout.startInitialLayout", startResult);',
+            '  emit("layout.initialLayoutProgress", startResult);',
+            '  return startResult;',
+            '}',
+            'if (name === "layout.continueInitialLayout") {',
+            '  var continueResult = continueInitialLayout(payload && payload.options);',
+            '  emit("layout.continueInitialLayout", continueResult);',
+            '  emit("layout.initialLayoutProgress", continueResult);',
+            '  return continueResult;',
+            '}',
+            'if (name === "layout.startReplayAroundViewport") {',
+            '  var replayResult = startReplayAroundViewport(payload);',
+            '  emit("layout.startReplayAroundViewport", replayResult);',
+            '  emit("layout.replayProgress", replayResult);',
+            '  return replayResult;',
+            '}',
+            'if (name === "layout.continueReplay") {',
+            '  var replayContinueResult = continueReplay(payload);',
+            '  emit("layout.continueReplay", replayContinueResult);',
+            '  emit("layout.replayProgress", replayContinueResult);',
+            '  return replayContinueResult;',
+            '}',
+            'if (name === "layout.applyRuntimeFormatting") {',
+            '  var formattingResult = applyRuntimeFormatting(payload && payload.elements, payload && payload.intent);',
+            '  emit("layout.runtimeFormattingApplied", formattingResult);',
+            '  return formattingResult;',
+            '}',
+            'if (name === "layout.restoreRuntimeFormatting") {',
+            '  var restoreResult = restoreRuntimeFormatting(payload && payload.elements, payload && payload.intent);',
+            '  emit("layout.runtimeFormattingRestored", restoreResult);',
+            '  return restoreResult;',
+            '}',
+            'if (name === "layout.applyRuntimeIntent") {',
+            '  var intent = payload && payload.intent || {};',
+            '  var kind = String(intent.kind || intent.type || "").trim();',
+            '  var runtimeIntentResult;',
+            '  if (kind === "formatting" || kind === "format" || kind === "apply-formatting") {',
+            '    runtimeIntentResult = applyRuntimeFormatting(payload && payload.elements, intent);',
+            '  } else if (kind === "formatting-restore" || kind === "restore-formatting") {',
+            '    runtimeIntentResult = restoreRuntimeFormatting(payload && payload.elements, intent);',
+            '  } else {',
+            '    runtimeIntentResult = { changed: false, reason: "unsupported-runtime-intent" };',
+            '  }',
+            '  emit("layout.runtimeIntentApplied", runtimeIntentResult);',
+            '  return runtimeIntentResult;',
+            '}',
+            'return { ok: false, reason: "unknown-request", name: name };'
+        ]
+    }
+};
+
+const ENGINE_PROTOCOL_PROFILE_HOST = {
+    recordProfile(_metric: RuntimeProfileMetric, _delta: number): void {
+        // Protocol probes reuse the script host but are outside a layout session.
+    }
+};
+
+function cloneEngineProtocolPayload<T>(payload: T): T {
+    return cloneRuntimeJsonValue(payload);
+}
 
 type RuntimeActor = {
     actorId?: string;
@@ -113,11 +267,28 @@ type RuntimeIntentResult = {
         actorIds: string[];
         sourceIds: string[];
         pageIndexes: number[];
+        addedPageIndexes?: number[];
+        removedPageIndexes?: number[];
+        replayFrontier?: {
+            pageIndex: number;
+            cursorY?: number;
+            worldY?: number;
+            actorIndex?: number;
+            actorId?: string;
+            sourceId?: string;
+        } | null;
     };
     pageIndexes?: number[];
     pages?: unknown;
     history?: unknown;
     replay?: unknown;
+    replaySession?: RuntimeReplayContinuation;
+};
+
+type RuntimeReplayState = {
+    id: string;
+    session: RuntimeReplayContinuation;
+    source: string;
 };
 
 function findRuntimeHostActor(
@@ -150,6 +321,202 @@ function collectRuntimeFormattingActors(actors: readonly RuntimeActor[]): Runtim
         visit(actor);
     }
     return collected;
+}
+
+function normalizeRuntimeReplayFrontier(frontier: unknown): NonNullable<RuntimeIntentResult['update']>['replayFrontier'] {
+    if (!frontier || typeof frontier !== 'object') return null;
+    const raw = frontier as Record<string, unknown>;
+    if (!Number.isFinite(raw.pageIndex)) return null;
+    return {
+        pageIndex: Math.max(0, Math.floor(Number(raw.pageIndex))),
+        ...(Number.isFinite(raw.cursorY) ? { cursorY: Number(raw.cursorY) } : {}),
+        ...(Number.isFinite(raw.worldY) ? { worldY: Number(raw.worldY) } : {}),
+        ...(Number.isFinite(raw.actorIndex) ? { actorIndex: Math.max(0, Math.floor(Number(raw.actorIndex))) } : {}),
+        ...(typeof raw.actorId === 'string' && raw.actorId ? { actorId: raw.actorId } : {}),
+        ...(typeof raw.sourceId === 'string' && raw.sourceId ? { sourceId: raw.sourceId } : {})
+    };
+}
+
+function normalizeRuntimeReplayUntilOptions(options: RuntimeReplayUntilOptions | null | undefined): {
+    untilPage?: number;
+    untilY?: number;
+    maxMilliseconds?: number;
+} | null {
+    if (!options || typeof options !== 'object') return null;
+    const result: { untilPage?: number; untilY?: number; maxMilliseconds?: number } = {};
+    if (Number.isFinite(Number(options.page ?? options.untilPage))) {
+        result.untilPage = Math.max(0, Math.floor(Number(options.page ?? options.untilPage)));
+    }
+    if (Number.isFinite(Number(options.y ?? options.untilY))) {
+        result.untilY = Math.max(0, Number(options.y ?? options.untilY));
+    }
+    if (Number.isFinite(Number(options.maxMilliseconds))) {
+        result.maxMilliseconds = Math.max(0, Number(options.maxMilliseconds));
+    }
+    return Number.isFinite(result.untilPage) || Number.isFinite(result.untilY) || Number.isFinite(result.maxMilliseconds)
+        ? result
+        : null;
+}
+
+function resolveRuntimeReplayUntilIntent(intent: RuntimeIntent): RuntimeReplayUntilOptions | null {
+    if (Number.isFinite(Number(intent.replayUntilY))) {
+        return { y: Number(intent.replayUntilY) };
+    }
+    if (Number.isFinite(Number(intent.replayUntilPage))) {
+        return { page: Number(intent.replayUntilPage) };
+    }
+    return intent.replayUntil ?? null;
+}
+
+function normalizeRuntimeWorldRegion(payload: unknown): RuntimeReplayUntilOptions | null {
+    if (!payload || typeof payload !== 'object') return null;
+    const raw = payload as Record<string, unknown>;
+    const viewport = (raw.viewport && typeof raw.viewport === 'object' ? raw.viewport : raw.region) as Record<string, unknown> | undefined;
+    const source = viewport || raw;
+    const y = Number(source?.y ?? source?.worldY ?? source?.top);
+    const height = Number(source?.height ?? source?.viewportHeight);
+    const bottom = Number(source?.bottom ?? source?.worldBottom);
+    const overscanY = Number(source?.overscanY ?? raw.overscanY ?? 0);
+    if (Number.isFinite(y) && Number.isFinite(height)) {
+        return { y: Math.max(0, y + Math.max(0, height) + (Number.isFinite(overscanY) ? Math.max(0, overscanY) : 0)) };
+    }
+    if (Number.isFinite(bottom)) {
+        return { y: Math.max(0, bottom + (Number.isFinite(overscanY) ? Math.max(0, overscanY) : 0)) };
+    }
+    const pageIndex = Number(source?.pageIndex ?? source?.page);
+    const pageCount = Number(source?.pageCount ?? raw.pageCount ?? 1);
+    const overscanPages = Number(source?.overscanPages ?? raw.overscanPages ?? 0);
+    if (Number.isFinite(pageIndex)) {
+        return { page: Math.max(0, Math.floor(pageIndex + Math.max(1, Number.isFinite(pageCount) ? pageCount : 1) - 1 + Math.max(0, Number.isFinite(overscanPages) ? overscanPages : 0))) };
+    }
+    return null;
+}
+
+function normalizeRuntimeReplayRequestOptions(payload: unknown): RuntimeReplayUntilOptions | null {
+    if (!payload || typeof payload !== 'object') return null;
+    const raw = payload as Record<string, unknown>;
+    const explicit = normalizeRuntimeReplayUntilOptions((raw.options || raw.replayUntil) as RuntimeReplayUntilOptions | null | undefined);
+    const region = normalizeRuntimeWorldRegion(raw);
+    return {
+        ...(region || {}),
+        ...(explicit || {})
+    };
+}
+
+function serializeRuntimeReplayResult(result: RuntimeIntentResult, replayId?: string | null): RuntimeIntentResult {
+    const { replaySession: _replaySession, replay, ...rest } = result;
+    return {
+        ...rest,
+        replay: {
+            ...(replay && typeof replay === 'object' ? replay as Record<string, unknown> : {}),
+            pending: Boolean(_replaySession && !result.replaySession?.isFinished?.()),
+            ...(replayId ? { replayId } : {})
+        }
+    };
+}
+
+function buildRuntimePageTokenMap(pages: readonly any[]): Map<number, string> {
+    return new Map((Array.isArray(pages) ? pages : []).map((page: any) => [Number(page.index), buildPageSnapshotToken(page)] as const));
+}
+
+function computeRuntimeReplayPageChanges(
+    previousTokens: Map<number, string>,
+    nextPages: readonly any[],
+    options: { partial: boolean }
+): { pageIndexes: number[]; addedPageIndexes: number[]; removedPageIndexes: number[] } {
+    const nextTokens = buildRuntimePageTokenMap(nextPages);
+    if (!options.partial) return computePageTokenChanges(previousTokens, nextTokens);
+
+    const changed = new Set<number>();
+    const added = new Set<number>();
+    const removed = new Set<number>();
+    const observedPageIndexes = new Set<number>();
+    for (const page of nextPages || []) {
+        const pageIndex = Number(page?.index);
+        if (!Number.isFinite(pageIndex)) continue;
+        observedPageIndexes.add(pageIndex);
+        const nextToken = nextTokens.get(pageIndex);
+        if (!previousTokens.has(pageIndex)) {
+            added.add(pageIndex);
+            changed.add(pageIndex);
+        } else if (previousTokens.get(pageIndex) !== nextToken) {
+            changed.add(pageIndex);
+        }
+    }
+    for (const pageIndex of observedPageIndexes) {
+        if (nextTokens.has(pageIndex)) continue;
+        if (previousTokens.has(pageIndex)) {
+            removed.add(pageIndex);
+            changed.add(pageIndex);
+        }
+    }
+    return {
+        pageIndexes: Array.from(changed).sort((a, b) => a - b),
+        addedPageIndexes: Array.from(added).sort((a, b) => a - b),
+        removedPageIndexes: Array.from(removed).sort((a, b) => a - b)
+    };
+}
+
+function isContentOnlyGeometryMismatch(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error || '');
+    return /^\[LayoutSession\] content-only actor ".+" changed box (width|height)\.$/.test(message);
+}
+
+function findRuntimeElementPathBySourceId(elements: readonly Element[], sourceId: string): { element: Element; ancestors: Element[] } | null {
+    const normalized = LayoutUtils.normalizeAuthorSourceId(sourceId) || sourceId;
+    const visit = (element: Element | null | undefined, ancestors: Element[]): { element: Element; ancestors: Element[] } | null => {
+        if (!element) return null;
+        const elementSourceId = LayoutUtils.normalizeAuthorSourceId(element.properties?.sourceId) || String(element.properties?.sourceId || '');
+        if (elementSourceId && (elementSourceId === sourceId || elementSourceId === normalized)) {
+            return { element, ancestors };
+        }
+        for (const child of element.children || []) {
+            const found = visit(child, [...ancestors, element]);
+            if (found) return found;
+        }
+        return null;
+    };
+    for (const element of elements || []) {
+        const found = visit(element, []);
+        if (found) return found;
+    }
+    return null;
+}
+
+function clearRuntimeMaterializationState(element: Element): void {
+    const mutable = element as Element & Record<string, unknown>;
+    delete mutable._normalizedTable;
+    delete mutable._tableModel;
+    delete mutable._tableResolved;
+    if (element.properties && typeof element.properties === 'object') {
+        delete (element.properties as Record<string, unknown>)._normalizedTable;
+        delete (element.properties as Record<string, unknown>)._tableModel;
+        delete (element.properties as Record<string, unknown>)._tableResolved;
+    }
+}
+
+function readRuntimeBoxSourceId(box: any): string {
+    return String(box?.meta?.sourceId || box?.properties?.sourceId || box?.sourceId || '').trim();
+}
+
+function resolveRuntimeSourceFrontierFromPages(pages: readonly any[], sourceId: string): NonNullable<RuntimeIntentResult['update']>['replayFrontier'] {
+    const normalized = LayoutUtils.normalizeAuthorSourceId(sourceId) || sourceId;
+    for (const page of pages || []) {
+        for (const box of page?.boxes || []) {
+            const boxSourceId = readRuntimeBoxSourceId(box);
+            if (boxSourceId !== sourceId && boxSourceId !== normalized) continue;
+            const pageIndex = Number.isFinite(Number(page.index)) ? Math.max(0, Math.floor(Number(page.index))) : 0;
+            const cursorY = Number.isFinite(Number(box.y)) ? Number(box.y) : 0;
+            const pageHeight = Number.isFinite(Number(page.height)) ? Number(page.height) : 0;
+            return {
+                pageIndex,
+                cursorY,
+                worldY: pageIndex * pageHeight + cursorY,
+                sourceId: normalized
+            };
+        }
+    }
+    return normalized ? { pageIndex: 0, cursorY: 0, worldY: 0, sourceId: normalized } : null;
 }
 
 function redrawRuntimeActorThroughHosts(
@@ -195,6 +562,14 @@ function refreshRuntimeActorHostChain(actors: readonly RuntimeActor[], actor: Ru
 export class LayoutEngine extends LayoutProcessor {
     private lastResolvedConfig: LayoutConfig;
     private runtimeIntentSequence = 0;
+    private runtimeReplaySequence = 0;
+    private protocolScriptHost: ScriptRuntimeHost | null = null;
+    private protocolListeners = new Map<string, Set<EngineProtocolListener>>();
+    private activeInitialLayout: {
+        runner: SimulationRunner;
+        publishedPageCount: number;
+    } | null = null;
+    private activeRuntimeReplay: RuntimeReplayState | null = null;
 
     constructor(
         config: LayoutConfig = DEFAULT_ENGINE_LAYOUT_CONFIG,
@@ -209,10 +584,150 @@ export class LayoutEngine extends LayoutProcessor {
     }
 
     getPageCount(): number {
+        const response = this.send('layout.pageCount');
+        if (response && typeof response === 'object' && Number.isFinite((response as { pageCount?: unknown }).pageCount)) {
+            return Number((response as { pageCount: number }).pageCount);
+        }
+        return this.readPageCount();
+    }
+
+    send(name: string, payload?: unknown): unknown {
+        const requestName = String(name || '').trim();
+        if (!requestName) {
+            return {
+                ok: false,
+                reason: 'empty-request-name'
+            };
+        }
+        const host = this.getProtocolScriptHost();
+        const result = host.runHandler(
+            'onRequest',
+            'onRequest',
+            {
+                emit: (eventName: unknown, eventPayload?: unknown) => {
+                    this.publishProtocolEvent(String(eventName || ''), eventPayload, requestName);
+                    return true;
+                },
+                getPageCount: () => this.readPageCount(),
+                getPageViewport: (pageIndex: unknown) => this.readPageViewport(Number(pageIndex)),
+                getWorldViewport: (request: unknown) => this.readWorldViewport(request as WorldViewportRequest),
+                getProfileSnapshot: () => this.readProfileSnapshot(),
+                getSimulationStatus: () => this.readSimulationStatus(),
+                startInitialLayout: (elements: unknown, options: unknown) => this.startInitialLayoutDirect(
+                    Array.isArray(elements) ? elements as Parameters<LayoutProcessor['simulate']>[0] : [],
+                    (options && typeof options === 'object' ? options : {}) as InitialLayoutContinuationOptions
+                ),
+                continueInitialLayout: (options: unknown) => this.continueInitialLayoutDirect(
+                    (options && typeof options === 'object' ? options : {}) as InitialLayoutContinuationOptions
+                ),
+                startReplayAroundViewport: (request: unknown) => this.startReplayAroundViewportDirect(
+                    request && typeof request === 'object' ? request as Record<string, unknown> : {}
+                ),
+                continueReplay: (request: unknown) => this.continueReplayDirect(
+                    request && typeof request === 'object' ? request as Record<string, unknown> : {}
+                ),
+                applyRuntimeFormatting: (elements: unknown, intent: unknown) => this.applyRuntimeFormattingIntentInternal(
+                    Array.isArray(elements) ? elements as Parameters<LayoutProcessor['simulate']>[0] : [],
+                    (intent && typeof intent === 'object' ? intent : {}) as RuntimeIntent
+                ),
+                restoreRuntimeFormatting: (elements: unknown, intent: unknown) => this.applyRuntimeFormattingRestoreIntentInternal(
+                    Array.isArray(elements) ? elements as Parameters<LayoutProcessor['simulate']>[0] : [],
+                    (intent && typeof intent === 'object' ? intent : {}) as RuntimeIntent
+                )
+            },
+            { name: requestName, payload },
+            ENGINE_PROTOCOL_PROFILE_HOST
+        );
+        return cloneEngineProtocolPayload(result);
+    }
+
+    listen(name: string, listener: EngineProtocolListener): () => void {
+        const eventName = String(name || '').trim();
+        if (!eventName) {
+            throw new Error('[LayoutEngine] listen() requires a non-empty event name.');
+        }
+        const listeners = this.protocolListeners.get(eventName) ?? new Set<EngineProtocolListener>();
+        listeners.add(listener);
+        this.protocolListeners.set(eventName, listeners);
+        return () => {
+            listeners.delete(listener);
+            if (listeners.size === 0) {
+                this.protocolListeners.delete(eventName);
+            }
+        };
+    }
+
+    private getProtocolScriptHost(): ScriptRuntimeHost {
+        if (!this.protocolScriptHost) {
+            this.protocolScriptHost = new ScriptRuntimeHost(ENGINE_PROTOCOL_SCRIPT);
+        }
+        return this.protocolScriptHost;
+    }
+
+    private publishProtocolEvent(name: string, payload: unknown, requestName?: string): void {
+        const eventName = String(name || '').trim();
+        if (!eventName) return;
+        const exactListeners = this.protocolListeners.get(eventName);
+        const wildcardListeners = this.protocolListeners.get('*');
+        if (!exactListeners && !wildcardListeners) return;
+        const snapshotPayload = cloneEngineProtocolPayload(payload);
+        const event: EngineProtocolEvent = {
+            name: eventName,
+            payload: snapshotPayload,
+            requestName,
+            timestamp: Date.now()
+        };
+        if (exactListeners) {
+            for (const listener of exactListeners) {
+                listener(event);
+            }
+        }
+        if (wildcardListeners) {
+            for (const listener of wildcardListeners) {
+                listener(event);
+            }
+        }
+    }
+
+    private readPageCount(): number {
         return this.getLastPrintPipelineSnapshot().pages.length;
     }
 
+    private readProfileSnapshot(): Record<string, unknown> {
+        const sessionProfile = this.getCurrentLayoutSession()?.getProfileSnapshot?.();
+        if (sessionProfile && typeof sessionProfile === 'object') {
+            return cloneRuntimeJsonValue(sessionProfile as Record<string, unknown>);
+        }
+        const reportProfile = this.getLastSimulationReport()?.profile;
+        if (reportProfile && typeof reportProfile === 'object') {
+            return cloneRuntimeJsonValue(reportProfile as Record<string, unknown>);
+        }
+        return {};
+    }
+
+    private readSimulationStatus(): Record<string, unknown> {
+        const snapshot = this.getLastPrintPipelineSnapshot();
+        const report = this.getLastSimulationReport();
+        const session = this.getCurrentLayoutSession();
+        const stopReason = report?.progression?.stopReason
+            ?? session?.getSimulationStopReason?.()
+            ?? 'unknown';
+        return {
+            pageCount: snapshot.pages.length,
+            stopReason,
+            settled: stopReason === 'settled'
+        };
+    }
+
     getPageViewport(pageIndex: number): ViewportHandle {
+        const response = this.send('layout.pageViewport', { pageIndex });
+        if (response && typeof response === 'object' && (response as { kind?: unknown }).kind === 'page') {
+            return response as ViewportHandle;
+        }
+        return this.readPageViewport(pageIndex);
+    }
+
+    private readPageViewport(pageIndex: number): ViewportHandle {
         const snapshot = this.getLastPrintPipelineSnapshot();
         return buildPageViewportHandle({
             pageCount: snapshot.pages.length,
@@ -224,10 +739,22 @@ export class LayoutEngine extends LayoutProcessor {
     }
 
     getDefaultViewport(): ViewportHandle {
-        return this.getPageViewport(0);
+        const response = this.send('layout.defaultViewport');
+        if (response && typeof response === 'object' && (response as { kind?: unknown }).kind === 'page') {
+            return response as ViewportHandle;
+        }
+        return this.readPageViewport(0);
     }
 
     getWorldViewport(request: WorldViewportRequest): ViewportHandle {
+        const response = this.send('layout.worldViewport', request);
+        if (response && typeof response === 'object' && (response as { kind?: unknown }).kind === 'world') {
+            return response as ViewportHandle;
+        }
+        return this.readWorldViewport(request);
+    }
+
+    private readWorldViewport(request: WorldViewportRequest): ViewportHandle {
         const snapshot = this.getLastPrintPipelineSnapshot();
         return buildWorldViewportHandle({
             pageCount: snapshot.pages.length,
@@ -239,10 +766,171 @@ export class LayoutEngine extends LayoutProcessor {
     }
 
     simulate(elements: Parameters<LayoutProcessor['simulate']>[0], options: LayoutSimulationOptions = {}): ReturnType<LayoutProcessor['simulate']> {
+        this.activeInitialLayout = null;
+        this.activeRuntimeReplay = null;
         return super.simulate(elements, options);
     }
 
+    startInitialLayout(
+        elements: Parameters<LayoutProcessor['simulate']>[0],
+        options: InitialLayoutContinuationOptions = {}
+    ): InitialLayoutResult {
+        const response = this.send('layout.startInitialLayout', { elements, options });
+        if (response && typeof response === 'object' && typeof (response as InitialLayoutResult).changed === 'boolean') {
+            return response as InitialLayoutResult;
+        }
+        return this.startInitialLayoutDirect(elements, options);
+    }
+
+    private startInitialLayoutDirect(
+        elements: Parameters<LayoutProcessor['simulate']>[0],
+        options: InitialLayoutContinuationOptions = {}
+    ): InitialLayoutResult {
+        const runner = super.createSimulationRunner(elements);
+        this.activeInitialLayout = {
+            runner,
+            publishedPageCount: 0
+        };
+        return this.advanceInitialLayout('initial-layout', options);
+    }
+
+    continueInitialLayout(options: InitialLayoutContinuationOptions = {}): InitialLayoutResult {
+        const response = this.send('layout.continueInitialLayout', { options });
+        if (response && typeof response === 'object' && typeof (response as InitialLayoutResult).changed === 'boolean') {
+            return response as InitialLayoutResult;
+        }
+        return this.continueInitialLayoutDirect(options);
+    }
+
+    private continueInitialLayoutDirect(options: InitialLayoutContinuationOptions = {}): InitialLayoutResult {
+        if (!this.activeInitialLayout) {
+            return {
+                changed: false,
+                reason: 'no-pending-initial-layout'
+            };
+        }
+        return this.advanceInitialLayout('initial-layout-continuation', options);
+    }
+
+    private advanceInitialLayout(
+        source: 'initial-layout' | 'initial-layout-continuation',
+        options: InitialLayoutContinuationOptions
+    ): InitialLayoutResult {
+        const active = this.activeInitialLayout;
+        if (!active) {
+            return {
+                changed: false,
+                reason: 'no-pending-initial-layout'
+            };
+        }
+        const previousPageCount = active.publishedPageCount;
+        const progress = active.runner.continueUntil(options);
+        const pages = active.runner.getCurrentPages();
+        this.getCurrentLayoutSession()?.publishPartialLayoutPages(pages);
+        const pageCount = pages.length;
+        const pageIndexes = this.resolveInitialLayoutPageIndexes(previousPageCount, pageCount, active.runner.isFinished());
+        active.publishedPageCount = pageCount;
+        if (active.runner.isFinished()) {
+            this.activeInitialLayout = null;
+        }
+        return {
+            changed: pageIndexes.length > 0 || active.runner.isFinished(),
+            kind: 'geometry',
+            layoutKind: 'initial',
+            completion: active.runner.isFinished() ? 'complete' : 'partial',
+            pending: !active.runner.isFinished(),
+            progress,
+            update: {
+                kind: 'geometry',
+                source,
+                pageIndexes
+            },
+            pageIndexes,
+            pages
+        };
+    }
+
+    private resolveInitialLayoutPageIndexes(
+        previousPageCount: number,
+        pageCount: number,
+        finished: boolean
+    ): number[] {
+        const start = Math.max(0, Math.min(previousPageCount, pageCount));
+        const end = Math.max(pageCount, finished ? previousPageCount : pageCount);
+        return Array.from(
+            { length: Math.max(0, end - start) },
+            (_entry, index) => start + index
+        );
+    }
+
+    private startReplayAroundViewportDirect(request: Record<string, unknown>): RuntimeIntentResult {
+        const elements = Array.isArray(request.elements)
+            ? request.elements as Parameters<LayoutProcessor['simulate']>[0]
+            : [];
+        const intent = request.intent && typeof request.intent === 'object'
+            ? request.intent as RuntimeIntent
+            : {};
+        const replayUntil = normalizeRuntimeReplayRequestOptions(request);
+        const result = this.applyRuntimeIntentDirect(elements, {
+            ...intent,
+            replayUntil
+        });
+        const replaySession = result.replaySession;
+        if (!replaySession) {
+            this.activeRuntimeReplay = null;
+            return serializeRuntimeReplayResult(result, null);
+        }
+        const replayId = `runtime-replay:${++this.runtimeReplaySequence}`;
+        this.activeRuntimeReplay = {
+            id: replayId,
+            session: replaySession,
+            source: String(result.update?.source || result.kind || 'runtime-replay')
+        };
+        if (replaySession.isFinished()) {
+            this.activeRuntimeReplay = null;
+        }
+        return serializeRuntimeReplayResult(result, replayId);
+    }
+
+    private continueReplayDirect(request: Record<string, unknown>): RuntimeIntentResult {
+        const active = this.activeRuntimeReplay;
+        if (!active) {
+            return {
+                changed: false,
+                reason: 'no-pending-replay'
+            };
+        }
+        const requestedId = String(request.replayId || request.id || '').trim();
+        if (requestedId && requestedId !== active.id) {
+            return {
+                changed: false,
+                reason: 'unknown-replay',
+                replay: {
+                    replayId: requestedId,
+                    activeReplayId: active.id
+                }
+            };
+        }
+        const replayUntil = normalizeRuntimeReplayRequestOptions(request);
+        const result = active.session.continueUntil(replayUntil);
+        if (active.session.isFinished()) {
+            this.activeRuntimeReplay = null;
+        }
+        return serializeRuntimeReplayResult(result, active.id);
+    }
+
     applyRuntimeIntent(
+        elements: Parameters<LayoutProcessor['simulate']>[0],
+        intent: RuntimeIntent = {}
+    ): RuntimeIntentResult {
+        const response = this.send('layout.applyRuntimeIntent', { elements, intent });
+        if (response && typeof response === 'object' && typeof (response as RuntimeIntentResult).changed === 'boolean') {
+            return response as RuntimeIntentResult;
+        }
+        return this.applyRuntimeIntentDirect(elements, intent);
+    }
+
+    private applyRuntimeIntentDirect(
         elements: Parameters<LayoutProcessor['simulate']>[0],
         intent: RuntimeIntent = {}
     ): RuntimeIntentResult {
@@ -263,7 +951,17 @@ export class LayoutEngine extends LayoutProcessor {
         elements: Parameters<LayoutProcessor['simulate']>[0],
         intent: RuntimeIntent = {}
     ): RuntimeIntentResult {
-        return this.applyRuntimeIntent(elements, {
+        const response = this.send('layout.applyRuntimeFormatting', {
+            elements,
+            intent: {
+                ...intent,
+                kind: 'formatting'
+            }
+        });
+        if (response && typeof response === 'object' && typeof (response as RuntimeIntentResult).changed === 'boolean') {
+            return response as RuntimeIntentResult;
+        }
+        return this.applyRuntimeFormattingIntentInternal(elements, {
             ...intent,
             kind: 'formatting'
         });
@@ -273,7 +971,17 @@ export class LayoutEngine extends LayoutProcessor {
         elements: Parameters<LayoutProcessor['simulate']>[0],
         intent: RuntimeIntent = {}
     ): RuntimeIntentResult {
-        return this.applyRuntimeIntent(elements, {
+        const response = this.send('layout.restoreRuntimeFormatting', {
+            elements,
+            intent: {
+                ...intent,
+                kind: 'formatting-restore'
+            }
+        });
+        if (response && typeof response === 'object' && typeof (response as RuntimeIntentResult).changed === 'boolean') {
+            return response as RuntimeIntentResult;
+        }
+        return this.applyRuntimeFormattingRestoreIntentInternal(elements, {
             ...intent,
             kind: 'formatting-restore'
         });
@@ -379,28 +1087,155 @@ export class LayoutEngine extends LayoutProcessor {
     private applyRuntimeGeometryReplay(
         elements: Parameters<LayoutProcessor['simulate']>[0],
         affectedFrontier: unknown,
-        source = 'runtime-formatting'
+        source = 'runtime-formatting',
+        replayUntil?: RuntimeReplayUntilOptions | null
     ): RuntimeIntentResult {
-        const pages = super.simulate(elements);
-        const pageIndexes = Array.from({ length: Array.isArray(pages) ? pages.length : 0 }, (_entry, index) => index);
-        return {
-            changed: true,
-            kind: 'geometry',
-            frontier: affectedFrontier,
-            replay: {
-                replayKind: source,
-                completion: 'complete'
-            },
-            update: {
+        const previousPages = this.getLastPrintPipelineSnapshot().pages as any[];
+        const previousTokens = buildRuntimePageTokenMap(previousPages);
+        const replayFrontier = normalizeRuntimeReplayFrontier(affectedFrontier);
+        const untilOptions = normalizeRuntimeReplayUntilOptions(replayUntil);
+        const buildResult = (
+            pages: unknown[],
+            completion: 'complete' | 'partial',
+            extras: Partial<RuntimeIntentResult> = {}
+        ): RuntimeIntentResult => {
+            const { replay: extraReplay, ...extraRest } = extras;
+            const pageChanges = computeRuntimeReplayPageChanges(previousTokens, pages as any[], {
+                partial: completion === 'partial'
+            });
+            return {
+                changed: true,
                 kind: 'geometry',
-                source,
-                actorIds: [],
-                sourceIds: [],
-                pageIndexes
-            },
-            pageIndexes,
-            pages
+                frontier: affectedFrontier,
+                replay: {
+                    replayKind: source,
+                    completion,
+                    ...(extraReplay && typeof extraReplay === 'object' ? extraReplay as object : {})
+                },
+                update: {
+                    kind: 'geometry',
+                    source,
+                    actorIds: [],
+                    sourceIds: [],
+                    pageIndexes: pageChanges.pageIndexes,
+                    addedPageIndexes: pageChanges.addedPageIndexes,
+                    removedPageIndexes: pageChanges.removedPageIndexes,
+                    replayFrontier
+                },
+                pageIndexes: pageChanges.pageIndexes,
+                pages,
+                ...extraRest
+            };
         };
+
+        if (untilOptions) {
+            const runner = super.createSimulationRunner(elements);
+            const firstContinue = runner.continueUntil(untilOptions);
+            const pages = runner.getCurrentPages();
+            const replaySession: RuntimeReplayContinuation = {
+                continueUntil: (nextUntil?: RuntimeReplayUntilOptions | null) => {
+                    const normalized = normalizeRuntimeReplayUntilOptions(nextUntil);
+                    const advance = runner.continueUntil(normalized ?? undefined);
+                    return buildResult(
+                        runner.getCurrentPages(),
+                        runner.isFinished() ? 'complete' : 'partial',
+                        {
+                            replay: {
+                                continueUntil: {
+                                    ...advance,
+                                    requested: normalized ?? null
+                                }
+                            },
+                            replaySession
+                        }
+                    );
+                },
+                continueUntilPage: (pageIndex: number) => replaySession.continueUntil({ page: pageIndex }),
+                continueUntilY: (y: number) => replaySession.continueUntil({ y }),
+                getCurrentPages: () => runner.getCurrentPages(),
+                isFinished: () => runner.isFinished()
+            };
+            return buildResult(pages, runner.isFinished() ? 'complete' : 'partial', {
+                replay: {
+                    continueUntil: {
+                        ...firstContinue,
+                        requested: untilOptions
+                    }
+                },
+                replaySession
+            });
+        }
+
+        const pages = super.simulate(elements);
+        return {
+            ...buildResult(pages, 'complete')
+        };
+    }
+
+    private applySourceBackedRuntimeFormattingIntent(
+        _elements: Parameters<LayoutProcessor['simulate']>[0],
+        intent: RuntimeIntent,
+        target: ReturnType<LayoutEngine['resolveRuntimeFormattingTarget']>,
+        formatting: Record<string, unknown>
+    ): RuntimeIntentResult | null {
+        if (!target.sourceId || isRuntimeRangeTarget(target)) return null;
+        const sourcePath = findRuntimeElementPathBySourceId(_elements as Element[], target.sourceId);
+        if (!sourcePath) return null;
+        const sourceElement = sourcePath.element;
+        const previousSnapshot = cloneRuntimeElementSourceSnapshot(sourceElement);
+        const previousStyle = sourceElement.properties && typeof sourceElement.properties.style === 'object' && sourceElement.properties.style
+            ? { ...sourceElement.properties.style }
+            : {};
+        const changed = Object.entries(formatting).some(([key, value]) => previousStyle[key] !== value);
+        if (!changed) {
+            return {
+                changed: false,
+                reason: 'already-current',
+                sourceId: target.sourceId,
+                actorId: target.actorId
+            };
+        }
+        const normalizedSourceId = LayoutUtils.normalizeAuthorSourceId(target.sourceId) || target.sourceId;
+        const previousPages = this.getLastPrintPipelineSnapshot().pages as any[];
+        const affectedFrontier = resolveRuntimeSourceFrontierFromPages(previousPages, target.sourceId);
+        sourceElement.properties = {
+            ...(sourceElement.properties || {}),
+            style: {
+                ...previousStyle,
+                ...formatting
+            }
+        };
+        for (const element of [...sourcePath.ancestors, sourceElement]) {
+            clearRuntimeMaterializationState(element);
+        }
+        const history = this.buildRuntimeFormattingHistoryEntry({
+            target: {
+                ...(intent.target || {}),
+                sourceId: target.sourceId,
+                actorId: target.actorId
+            },
+            patch: formatting,
+            before: previousSnapshot,
+            after: cloneRuntimeElementSourceSnapshot(sourceElement),
+            frontier: affectedFrontier
+        });
+        try {
+            const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting', resolveRuntimeReplayUntilIntent(intent));
+            return {
+                ...replay,
+                sourceId: normalizedSourceId,
+                actorId: target.actorId,
+                history,
+                update: {
+                    ...(replay.update || { kind: 'geometry', source: 'runtime-formatting', actorIds: [], sourceIds: [], pageIndexes: [] }),
+                    actorIds: target.actorId ? [target.actorId] : [],
+                    sourceIds: [normalizedSourceId]
+                }
+            };
+        } catch (error) {
+            restoreRuntimeElementSourceSnapshot(sourceElement, previousSnapshot);
+            throw error;
+        }
     }
 
     private applyRuntimeFormattingRestoreIntentInternal(
@@ -510,7 +1345,7 @@ export class LayoutEngine extends LayoutProcessor {
         if (observation.geometryChanged) {
             const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
             refreshRuntimeActorHostChain(actors, actor);
-            const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting-restore');
+            const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting-restore', resolveRuntimeReplayUntilIntent(intent));
             return {
                 ...replay,
                 sourceId: actor.sourceId,
@@ -559,6 +1394,22 @@ export class LayoutEngine extends LayoutProcessor {
                 pages
             };
         } catch (error) {
+            if (isContentOnlyGeometryMismatch(error)) {
+                const replayActors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
+                refreshRuntimeActorHostChain(replayActors, actor);
+                const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting-restore', resolveRuntimeReplayUntilIntent(intent));
+                return {
+                    ...replay,
+                    sourceId: actor.sourceId,
+                    actorId: actor.actorId,
+                    history,
+                    update: {
+                        ...(replay.update || { kind: 'geometry', source: 'runtime-formatting-restore', actorIds: [], sourceIds: [], pageIndexes: [] }),
+                        actorIds: [actor.actorId].filter((id): id is string => !!id),
+                        sourceIds: [actor.sourceId].filter((id): id is string => !!id)
+                    }
+                };
+            }
             restoreRuntimeElementSourceSnapshot(element, previousSnapshot);
             actor.rebuildLiveFlowBox?.();
             throw error;
@@ -582,6 +1433,8 @@ export class LayoutEngine extends LayoutProcessor {
         const target = this.resolveRuntimeFormattingTarget(intent.target || {});
         const rangeTarget = isRuntimeRangeTarget(intent.target || {});
         if (!session || !actor || !element) {
+            const sourceBackedResult = this.applySourceBackedRuntimeFormattingIntent(_elements, intent, target, formatting);
+            if (sourceBackedResult) return sourceBackedResult;
             return {
                 changed: false,
                 reason: 'target-not-live',
@@ -682,7 +1535,7 @@ export class LayoutEngine extends LayoutProcessor {
         if (observation.geometryChanged) {
             const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
             refreshRuntimeActorHostChain(actors, actor);
-            const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier);
+            const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting', resolveRuntimeReplayUntilIntent(intent));
             return {
                 ...replay,
                 sourceId: actor.sourceId,
@@ -733,6 +1586,22 @@ export class LayoutEngine extends LayoutProcessor {
                 pages
             };
         } catch (error) {
+            if (isContentOnlyGeometryMismatch(error)) {
+                const replayActors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
+                refreshRuntimeActorHostChain(replayActors, actor);
+                const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting', resolveRuntimeReplayUntilIntent(intent));
+                return {
+                    ...replay,
+                    sourceId: actor.sourceId,
+                    actorId: actor.actorId,
+                    history,
+                    update: {
+                        ...(replay.update || { kind: 'geometry', source: 'runtime-formatting', actorIds: [], sourceIds: [], pageIndexes: [] }),
+                        actorIds: [actor.actorId].filter((id): id is string => !!id),
+                        sourceIds: [actor.sourceId].filter((id): id is string => !!id)
+                    }
+                };
+            }
             restoreRuntimeElementSourceSnapshot(element, previousSnapshot);
             actor.rebuildLiveFlowBox?.();
             throw error;

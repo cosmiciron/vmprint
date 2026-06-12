@@ -122,8 +122,24 @@ export class FlowBoxPackager implements PackagerUnit {
             context,
             actor: this,
             sourceElement: this.flowBox._sourceElement,
-            rebuild: () => this.rebuildLiveFlowBox()
+            rebuild: () => this.rebuildLiveFlowBox(),
+            getGeometrySignature: () => this.captureRuntimeGeometrySignature(context)
         });
+    }
+
+    private captureRuntimeGeometrySignature(context: PackagerContext): Record<string, number | string> {
+        const pageContentWidth = Math.max(0, Number(context.pageWidth || 0) - context.margins.left - context.margins.right);
+        const contentWidth = context.contentWidthOverride ?? pageContentWidth;
+        this.materialize(pageContentWidth, contentWidth);
+        return {
+            measuredWidth: Number(Number(this.flowBox.measuredWidth || 0).toFixed(3)),
+            measuredContentHeight: Number(Number(this.flowBox.measuredContentHeight || 0).toFixed(3)),
+            marginTop: Number(Number(this.flowBox.marginTop || 0).toFixed(3)),
+            marginBottom: Number(Number(this.flowBox.marginBottom || 0).toFixed(3)),
+            requiredHeight: Number(Number(this.requiredHeight || 0).toFixed(3)),
+            lineCount: Array.isArray(this.flowBox.lines) ? this.flowBox.lines.length : 0,
+            overflowPolicy: String(this.flowBox.overflowPolicy || '')
+        };
     }
 
     private materialize(availableWidth: number, contentWidth: number = -1) {

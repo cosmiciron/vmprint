@@ -18,6 +18,7 @@ import {
     capturePageCaptureRevisions,
     capturePageTokens,
     computeChangedPageIndexes,
+    computePageTokenChanges,
     normalizeUpdateSummary,
     updateSummaryWithChangedPages
 } from '../core/page-snapshots';
@@ -27,11 +28,18 @@ import { collectDiagnosticSources } from '../tooling/diagnostics';
 import { clonePage } from '../tooling/pages';
 import type {
     ExternalMessage,
+    SimulationContinueOptions,
+    SimulationContinueResult,
     SimulationDiagnosticSnapshot,
     SimulationRunner,
     SimulationUpdateSource,
     SimulationUpdateSummary
 } from '../types';
+
+type ContinueTickOptions = SimulationContinueOptions & {
+    cooperativeContinue?: boolean;
+    startedAt?: number;
+};
 
 type FlowBoxPositioner = LayoutProcessor & {
     positionFlowBox(
@@ -43,6 +51,8 @@ type FlowBoxPositioner = LayoutProcessor & {
         pageIndex: number
     ): Box | Box[];
 };
+
+const CONTINUOUS_PUBLICATION_PAGE_HEIGHT = 10_000_000;
 
 export class SimulationMarchRunner implements SimulationRunner {
     private readonly progression: ReturnType<LayoutProcessor['getSimulationProgressionConfig']>;
@@ -57,6 +67,7 @@ export class SimulationMarchRunner implements SimulationRunner {
     private readonly reactiveResettlementSignatures = new Set<string>();
     private initialPlacementPass = true;
     private finalizedPageInCurrentIteration = false;
+    private initialPaginationComplete = false;
     private margins: PackagerContext['margins'];
     private pageWidth: number;
     private pageHeight: number;
@@ -67,6 +78,11 @@ export class SimulationMarchRunner implements SimulationRunner {
     private finished = false;
     private lastRenderRevisionPageIndexes: number[] = [];
     private lastUpdateSummary: SimulationUpdateSummary = createEmptyUpdateSummary();
+    private pendingGeometryUpdateSummary: SimulationUpdateSummary | null = null;
+
+    private get isContinuousPublication(): boolean {
+        return this.contextBase.publicationMode === 'continuous';
+    }
 
     constructor(
         private readonly processor: LayoutProcessor,
@@ -130,7 +146,12 @@ export class SimulationMarchRunner implements SimulationRunner {
             source: this.lastUpdateSummary.source,
             actorIds: [...this.lastUpdateSummary.actorIds],
             sourceIds: [...this.lastUpdateSummary.sourceIds],
-            pageIndexes: [...this.lastUpdateSummary.pageIndexes]
+            pageIndexes: [...this.lastUpdateSummary.pageIndexes],
+            addedPageIndexes: [...this.lastUpdateSummary.addedPageIndexes],
+            removedPageIndexes: [...this.lastUpdateSummary.removedPageIndexes],
+            replayFrontier: this.lastUpdateSummary.replayFrontier
+                ? { ...this.lastUpdateSummary.replayFrontier }
+                : null
         };
     }
 
@@ -199,7 +220,7 @@ export class SimulationMarchRunner implements SimulationRunner {
         snapshot.push(new PageSurface(
             this.currentPageIndex,
             this.pageWidth,
-            this.pageHeight,
+            this.resolveCurrentPublicationPageHeight(),
             this.currentPageBoxes.map((box) => ({
                 ...box,
                 properties: box.properties ? { ...box.properties } : box.properties,
@@ -257,7 +278,56 @@ export class SimulationMarchRunner implements SimulationRunner {
     }
 
     advanceTick(): boolean {
-        if (this.finished) return false;
+        return this.advanceTickInternal().hasMore;
+    }
+
+    continueUntil(options: SimulationContinueOptions = {}): SimulationContinueResult {
+        const startedAt = performance.now();
+        if (this.finished) {
+            return {
+                yielded: false,
+                finished: true,
+                pageCount: this.getCurrentPageCount(),
+                currentPageIndex: this.currentPageIndex,
+                reason: 'already-finished',
+                elapsedMs: 0
+            };
+        }
+        const result = this.advanceTickInternal({
+            ...options,
+            cooperativeContinue: true,
+            startedAt
+        });
+        return {
+            yielded: result.yielded,
+            finished: this.finished,
+            pageCount: this.getCurrentPageCount(),
+            currentPageIndex: this.currentPageIndex,
+            reason: result.reason,
+            elapsedMs: Math.max(0, performance.now() - startedAt)
+        };
+    }
+
+    continueUntilPage(pageIndex: number): SimulationContinueResult {
+        return this.continueUntil({ untilPage: pageIndex });
+    }
+
+    continueUntilY(y: number): SimulationContinueResult {
+        return this.continueUntil({ untilY: y });
+    }
+
+    private advanceTickInternal(options: ContinueTickOptions = {}): {
+        hasMore: boolean;
+        yielded: boolean;
+        reason: SimulationContinueResult['reason'];
+    } {
+        if (this.finished) {
+            return {
+                hasMore: false,
+                yielded: false,
+                reason: 'already-finished'
+            };
+        }
         const pageTokensBeforeTick = this.captureCurrentPageTokens();
         const pageCaptureRevisionsBeforeTick = this.captureCurrentPageCaptureRevisions();
         this.lastUpdateSummary = createEmptyUpdateSummary();
@@ -265,7 +335,7 @@ export class SimulationMarchRunner implements SimulationRunner {
         this.reactiveResettlementCycles = 0;
         this.reactiveResettlementSignatures.clear();
 
-        if (!this.initialPlacementPass) {
+        if (!this.initialPlacementPass && this.initialPaginationComplete) {
             this.session.advanceSimulationTick();
             this.maybeAdvanceSteppedActorsAtTick();
         }
@@ -296,7 +366,11 @@ export class SimulationMarchRunner implements SimulationRunner {
             if (placementPreparation.action === 'continue-loop') {
                 const previousPageIndex = this.currentPageIndex;
                 this.applySessionLoopAction(placementPreparation.loopAction);
-                if (this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction)) {
+                const boundary = this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction, options);
+                if (boundary.action === 'yield') {
+                    return this.finishCooperativeYield(pageTokensBeforeTick, pageCaptureRevisionsBeforeTick, boundary.reason);
+                }
+                if (boundary.action === 'continue') {
                     continue;
                 }
                 continue;
@@ -428,7 +502,11 @@ export class SimulationMarchRunner implements SimulationRunner {
             if (keepWithNextAction) {
                 const previousPageIndex = this.currentPageIndex;
                 this.applySessionLoopAction(keepWithNextAction);
-                if (this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction)) {
+                const boundary = this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction, options);
+                if (boundary.action === 'yield') {
+                    return this.finishCooperativeYield(pageTokensBeforeTick, pageCaptureRevisionsBeforeTick, boundary.reason);
+                }
+                if (boundary.action === 'continue') {
                     continue;
                 }
                 continue;
@@ -466,7 +544,11 @@ export class SimulationMarchRunner implements SimulationRunner {
                     lastSpacingAfter: this.lastSpacingAfter
                 }));
                 this.session.recordProfile('actorPlacementMs', performance.now() - placementStart);
-                if (this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction)) {
+                const boundary = this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction, options);
+                if (boundary.action === 'yield') {
+                    return this.finishCooperativeYield(pageTokensBeforeTick, pageCaptureRevisionsBeforeTick, boundary.reason);
+                }
+                if (boundary.action === 'continue') {
                     continue;
                 }
                 continue;
@@ -507,7 +589,11 @@ export class SimulationMarchRunner implements SimulationRunner {
             if (overflowResolution.action === 'handled') {
                 const previousPageIndex = this.currentPageIndex;
                 this.applySessionLoopAction(overflowResolution.loopAction);
-                if (this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction)) {
+                const boundary = this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction, options);
+                if (boundary.action === 'yield') {
+                    return this.finishCooperativeYield(pageTokensBeforeTick, pageCaptureRevisionsBeforeTick, boundary.reason);
+                }
+                if (boundary.action === 'continue') {
                     continue;
                 }
                 continue;
@@ -551,7 +637,11 @@ export class SimulationMarchRunner implements SimulationRunner {
                     )
             }));
             this.session.recordProfile('genericSplitMs', performance.now() - genericSplitStart);
-            if (this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction)) {
+            const boundary = this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction, options);
+            if (boundary.action === 'yield') {
+                return this.finishCooperativeYield(pageTokensBeforeTick, pageCaptureRevisionsBeforeTick, boundary.reason);
+            }
+            if (boundary.action === 'continue') {
                 continue;
             }
         }
@@ -562,12 +652,13 @@ export class SimulationMarchRunner implements SimulationRunner {
                 this.currentPageBoxes,
                 this.currentPageIndex,
                 this.pageWidth,
-                this.pageHeight
+                this.resolveCurrentPublicationPageHeight()
             );
             this.currentPageBoxes = [];
             this.paginationState.currentPageBoxes = this.currentPageBoxes;
             this.finalizedPageInCurrentIteration = true;
         }
+        this.initialPaginationComplete = true;
 
         if (this.finalizedPageInCurrentIteration) {
             this.session.publishActorSignal({
@@ -589,7 +680,11 @@ export class SimulationMarchRunner implements SimulationRunner {
             this.refreshUpdateSummaryPageIndexes(pageTokensBeforeTick);
             this.refreshRenderRevisionPageIndexes(pageCaptureRevisionsBeforeTick);
             this.normalizeReportedUpdateSummary();
-            return false;
+            return {
+                hasMore: false,
+                yielded: false,
+                reason: 'finished'
+            };
         }
 
         if (!this.maybeSettleAtCheckpoint()) {
@@ -613,8 +708,14 @@ export class SimulationMarchRunner implements SimulationRunner {
 
         this.refreshUpdateSummaryPageIndexes(pageTokensBeforeTick);
         this.refreshRenderRevisionPageIndexes(pageCaptureRevisionsBeforeTick);
+        this.attachPendingGeometryUpdateSummary(pageTokensBeforeTick);
         this.normalizeReportedUpdateSummary();
-        return !this.finished;
+        this.refreshPendingGeometryUpdateSummary();
+        return {
+            hasMore: !this.finished,
+            yielded: false,
+            reason: this.finished ? 'finished' : 'until-page'
+        };
     }
 
     private captureCurrentPageTokens(): Map<number, string> {
@@ -636,14 +737,50 @@ export class SimulationMarchRunner implements SimulationRunner {
         this.lastRenderRevisionPageIndexes = computeChangedPageIndexes(previousRevisions, nextRevisions);
     }
 
+    private attachPendingGeometryUpdateSummary(previousTokens: Map<number, string>): void {
+        if (this.lastUpdateSummary.kind !== 'none' || !this.pendingGeometryUpdateSummary) return;
+
+        const nextTokens = this.captureCurrentPageTokens();
+        const changes = computePageTokenChanges(previousTokens, nextTokens);
+        if (changes.pageIndexes.length === 0 && this.lastRenderRevisionPageIndexes.length === 0) return;
+
+        this.lastUpdateSummary = {
+            ...this.pendingGeometryUpdateSummary,
+            pageIndexes: changes.pageIndexes.length > 0
+                ? changes.pageIndexes
+                : [...this.lastRenderRevisionPageIndexes],
+            addedPageIndexes: changes.addedPageIndexes,
+            removedPageIndexes: changes.removedPageIndexes,
+            replayFrontier: this.pendingGeometryUpdateSummary.replayFrontier
+                ? { ...this.pendingGeometryUpdateSummary.replayFrontier }
+                : null
+        };
+    }
+
     private normalizeReportedUpdateSummary(): void {
         this.lastUpdateSummary = normalizeUpdateSummary(this.lastUpdateSummary, this.lastRenderRevisionPageIndexes);
     }
 
+    private refreshPendingGeometryUpdateSummary(): void {
+        this.pendingGeometryUpdateSummary = this.lastUpdateSummary.kind === 'geometry'
+            ? {
+                kind: this.lastUpdateSummary.kind,
+                source: this.lastUpdateSummary.source,
+                actorIds: [...this.lastUpdateSummary.actorIds],
+                sourceIds: [...this.lastUpdateSummary.sourceIds],
+                pageIndexes: [...this.lastUpdateSummary.pageIndexes],
+                addedPageIndexes: [...this.lastUpdateSummary.addedPageIndexes],
+                removedPageIndexes: [...this.lastUpdateSummary.removedPageIndexes],
+                replayFrontier: this.lastUpdateSummary.replayFrontier
+                    ? { ...this.lastUpdateSummary.replayFrontier }
+                    : null
+            }
+            : null;
+    }
+
     private reactiveCheckpointsEnabled(): boolean {
         return this.snapshotsEnabled && (
-            this.progression.policy === 'fixed-tick-count'
-            || this.session.hasCommittedSignalObservers()
+            this.session.hasCommittedSignalObservers()
             || this.session.hasSteppedActors()
         );
     }
@@ -662,11 +799,20 @@ export class SimulationMarchRunner implements SimulationRunner {
         margins: PackagerContext['margins'];
     } {
         const resolved = this.contextBase.resolvePageGeometry?.(pageIndex);
+        const resolvedHeight = Number.isFinite(resolved?.height) ? Number(resolved!.height) : this.contextBase.pageHeight;
         return {
             width: Number.isFinite(resolved?.width) ? Number(resolved!.width) : this.contextBase.pageWidth,
-            height: Number.isFinite(resolved?.height) ? Number(resolved!.height) : this.contextBase.pageHeight,
+            height: this.isContinuousPublication
+                ? Math.max(resolvedHeight, CONTINUOUS_PUBLICATION_PAGE_HEIGHT)
+                : resolvedHeight,
             margins: resolved?.margins ?? this.contextBase.margins
         };
+    }
+
+    private resolveCurrentPublicationPageHeight(): number {
+        if (!this.isContinuousPublication) return this.pageHeight;
+        const bottom = Number(this.margins?.bottom || 0);
+        return Math.max(1, Math.ceil(this.currentY + bottom));
     }
 
     private syncCurrentPageGeometry(): void {
@@ -713,12 +859,31 @@ export class SimulationMarchRunner implements SimulationRunner {
         const stopAtPage = Number.isFinite(rawStopAtPage)
             ? Math.max(0, Math.floor(rawStopAtPage))
             : null;
-        if (stopAtPage === null) return false;
-        const hasReachedLimit = this.pages.some((page) => page.index >= stopAtPage);
+        const rawStopAtWorldY = Number(this.contextBase.stopAtWorldY);
+        const stopAtWorldY = Number.isFinite(rawStopAtWorldY)
+            ? Math.max(0, rawStopAtWorldY)
+            : null;
+        if (stopAtPage === null && stopAtWorldY === null) return false;
+        const hasReachedLimit = this.pages.some((page) =>
+            (stopAtPage !== null && page.index >= stopAtPage)
+            || (stopAtWorldY !== null && this.resolvePageBottomWorldY(page.index) >= stopAtWorldY)
+        );
         if (!hasReachedLimit) return false;
         this.session.stopSimulationProgression('page-limit');
         this.finished = true;
         return true;
+    }
+
+    private resolvePageBottomWorldY(pageIndex: number): number {
+        const normalizedPageIndex = Number.isFinite(Number(pageIndex))
+            ? Math.max(0, Math.floor(Number(pageIndex)))
+            : 0;
+        let bottom = 0;
+        for (let index = 0; index <= normalizedPageIndex; index += 1) {
+            const geometry = this.resolvePageGeometry(index);
+            bottom += Math.max(1, Number(geometry.height || 0));
+        }
+        return bottom;
     }
 
     private reapplyResolvedCheckpoint(
@@ -824,11 +989,35 @@ export class SimulationMarchRunner implements SimulationRunner {
         });
     }
 
-    private afterPotentialBoundary(previousPageIndex: number, previousActorIndex: number): boolean {
-        if (this.stopIfPageLimitReached()) {
-            return true;
+    private afterPotentialBoundary(
+        previousPageIndex: number,
+        previousActorIndex: number,
+        options: ContinueTickOptions = {}
+    ): {
+        action: 'continue' | 'yield';
+        reason: SimulationContinueResult['reason'];
+    } {
+        const cooperativeReason = this.resolveCooperativeContinueReason(options);
+        if (cooperativeReason) {
+            return {
+                action: 'yield',
+                reason: cooperativeReason
+            };
         }
-        return handleBoundaryCheckpoint({
+        if (this.stopIfPageLimitReached()) {
+            return {
+                action: 'continue',
+                reason: 'finished'
+            };
+        }
+        const budgetReason = this.resolveCooperativeBudgetReason(options);
+        if (budgetReason) {
+            return {
+                action: 'yield',
+                reason: budgetReason
+            };
+        }
+        const shouldContinue = handleBoundaryCheckpoint({
             previousPageIndex,
             previousActorIndex,
             currentPageIndex: this.currentPageIndex,
@@ -850,6 +1039,66 @@ export class SimulationMarchRunner implements SimulationRunner {
             },
             maybeSettleAtCheckpoint: () => this.maybeSettleAtCheckpoint()
         });
+        return {
+            action: shouldContinue ? 'continue' : 'continue',
+            reason: 'until-page'
+        };
+    }
+
+    private resolveCooperativeContinueReason(
+        options: ContinueTickOptions
+    ): SimulationContinueResult['reason'] | null {
+        if (!options.cooperativeContinue) return null;
+        const rawStopAtPage = Number(options.untilPage);
+        const stopAtPage = Number.isFinite(rawStopAtPage)
+            ? Math.max(0, Math.floor(rawStopAtPage))
+            : null;
+        const rawStopAtWorldY = Number(options.untilY);
+        const stopAtWorldY = Number.isFinite(rawStopAtWorldY)
+            ? Math.max(0, rawStopAtWorldY)
+            : null;
+        if (stopAtPage === null && stopAtWorldY === null) return null;
+        const matchedPage = this.pages.find((page) =>
+            (stopAtPage !== null && page.index >= stopAtPage)
+            || (stopAtWorldY !== null && this.resolvePageBottomWorldY(page.index) >= stopAtWorldY)
+        );
+        if (!matchedPage) return null;
+        if (stopAtWorldY !== null && this.resolvePageBottomWorldY(matchedPage.index) >= stopAtWorldY) {
+            return 'until-y';
+        }
+        return 'until-page';
+    }
+
+    private resolveCooperativeBudgetReason(
+        options: ContinueTickOptions
+    ): SimulationContinueResult['reason'] | null {
+        if (!options.cooperativeContinue) return null;
+        const maxMilliseconds = Number(options.maxMilliseconds);
+        if (!Number.isFinite(maxMilliseconds) || maxMilliseconds <= 0) return null;
+        const startedAt = Number(options.startedAt);
+        if (!Number.isFinite(startedAt)) return null;
+        return performance.now() - startedAt >= maxMilliseconds ? 'time-budget' : null;
+    }
+
+    private finishCooperativeYield(
+        pageTokensBeforeTick: Map<number, string>,
+        pageCaptureRevisionsBeforeTick: Map<number, number>,
+        reason: SimulationContinueResult['reason']
+    ): {
+        hasMore: boolean;
+        yielded: boolean;
+        reason: SimulationContinueResult['reason'];
+    } {
+        this.refreshUpdateSummaryPageIndexes(pageTokensBeforeTick);
+        this.refreshRenderRevisionPageIndexes(pageCaptureRevisionsBeforeTick);
+        this.attachPendingGeometryUpdateSummary(pageTokensBeforeTick);
+        this.normalizeReportedUpdateSummary();
+        this.refreshPendingGeometryUpdateSummary();
+        return {
+            hasMore: true,
+            yielded: true,
+            reason
+        };
     }
 
     private recordUpdateSummary(
