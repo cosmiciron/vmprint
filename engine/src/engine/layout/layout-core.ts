@@ -954,6 +954,8 @@ export class LayoutProcessor extends TextProcessor {
             pageHeight: firstPageGeometry.height,
             margins: firstPageGeometry.margins,
             resolvePageGeometry: (pageIndex: number) => LayoutUtils.resolvePageGeometry(this.config, pageIndex),
+            publicationMode: LayoutUtils.resolvePublicationMode(this.config),
+            printBreakPolicy: LayoutUtils.resolvePrintBreakPolicy(this.config),
             stopAtPage: stopAtPage ?? undefined,
             stopAtWorldY: stopAtWorldY ?? undefined,
             simulationTickRateHz: progressionOverride?.tickRateHz ?? this.getSimulationProgressionConfig().tickRateHz,

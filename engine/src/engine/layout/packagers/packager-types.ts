@@ -53,6 +53,8 @@ export interface PackagerContext {
     };
     stopAtPage?: number;
     stopAtWorldY?: number;
+    publicationMode?: 'paginated' | 'continuous';
+    printBreakPolicy?: 'preserve' | 'ignore';
     /**
      * Optional override for the text line-wrapping width.
      * Set by zone sub-sessions (zone-map packager) so that flow-box packagers

@@ -32,6 +32,8 @@ export type ScriptGlobals = {
     getSimulationStatus?: unknown;
     startInitialLayout?: unknown;
     continueInitialLayout?: unknown;
+    startReplayAroundViewport?: unknown;
+    continueReplay?: unknown;
     applyRuntimeFormatting?: unknown;
     restoreRuntimeFormatting?: unknown;
 };
@@ -84,6 +86,8 @@ const RESERVED_GLOBAL_NAMES = [
     'getSimulationStatus',
     'startInitialLayout',
     'continueInitialLayout',
+    'startReplayAroundViewport',
+    'continueReplay',
     'applyRuntimeFormatting',
     'restoreRuntimeFormatting'
 ] as const;

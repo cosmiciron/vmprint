@@ -52,6 +52,7 @@
     "test:scripting-pdfs": "node tests/fixtures/scripting/generate-fixture-pdfs.mjs",
     "test:scripting-refresh": "npm run test:scripting && npm run test:scripting-pdfs",
     "test:strip": "tsx --conditions tsx tests/strip-layout.spec.ts",
+    "test:publication": "tsx --conditions tsx tests/publication-mode.spec.ts",
     "test:zone-continue": "tsx --conditions tsx tests/zone-map-continue.spec.ts",
     "test:standard-fonts": "tsx --conditions tsx tests/standard-fonts.spec.ts",
     "test:collider-field": "tsx --conditions tsx tests/collider-field.spec.ts",
@@ -76,7 +77,7 @@
     "proof:saucer": "tsx --conditions tsx tests/proofs/generate-saucer-flipbook.ts",
     "proof:async-thought": "tsx --conditions tsx tests/proofs/generate-async-thought-board.ts",
     "proof:streaming-thought": "tsx --conditions tsx tests/proofs/generate-streaming-thought-board.ts",
-    "test": "npm run test:modules && npm run test:flat && npm run test:scripting && npm run test:strip && npm run test:standard-fonts && npm run test:spatial-ir && npm run test:engine"
+    "test": "npm run test:modules && npm run test:flat && npm run test:scripting && npm run test:strip && npm run test:publication && npm run test:standard-fonts && npm run test:spatial-ir && npm run test:engine"
   },
   "dependencies": {
     "bidi-js": "^1.0.3",

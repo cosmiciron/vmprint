@@ -345,12 +345,17 @@ Current engine protocol requests:
 - `layout.simulationStatus`
 - `layout.startInitialLayout`
 - `layout.continueInitialLayout`
+- `layout.startReplayAroundViewport`
+- `layout.continueReplay`
 - `layout.applyRuntimeFormatting`
 - `layout.restoreRuntimeFormatting`
 - `layout.applyRuntimeIntent`
 
 System scripts may emit matching events with `emit(name, payload)`. Host-facing
 consumers should treat returned payloads and emitted event payloads as snapshots.
+Viewport replay requests also emit `layout.replayProgress` progress snapshots.
+The engine keeps replay continuations private; protocol payloads contain a
+`replay.replayId` and cloned page snapshots, not live runner/session objects.
 
 This is the preferred structural mutation primitive for compound or ambiguous elements, where `setContent(...)` may not have a clear meaning.
 

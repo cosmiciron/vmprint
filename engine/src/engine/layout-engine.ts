@@ -102,6 +102,9 @@ type RuntimeIntent = {
 type RuntimeReplayUntilOptions = {
     page?: unknown;
     y?: unknown;
+    untilPage?: unknown;
+    untilY?: unknown;
+    maxMilliseconds?: unknown;
 };
 
 type RuntimeReplayContinuation = {
@@ -184,6 +187,18 @@ const ENGINE_PROTOCOL_SCRIPT: LayoutScriptingConfig = {
             '  emit("layout.continueInitialLayout", continueResult);',
             '  emit("layout.initialLayoutProgress", continueResult);',
             '  return continueResult;',
+            '}',
+            'if (name === "layout.startReplayAroundViewport") {',
+            '  var replayResult = startReplayAroundViewport(payload);',
+            '  emit("layout.startReplayAroundViewport", replayResult);',
+            '  emit("layout.replayProgress", replayResult);',
+            '  return replayResult;',
+            '}',
+            'if (name === "layout.continueReplay") {',
+            '  var replayContinueResult = continueReplay(payload);',
+            '  emit("layout.continueReplay", replayContinueResult);',
+            '  emit("layout.replayProgress", replayContinueResult);',
+            '  return replayContinueResult;',
             '}',
             'if (name === "layout.applyRuntimeFormatting") {',
             '  var formattingResult = applyRuntimeFormatting(payload && payload.elements, payload && payload.intent);',
@@ -270,6 +285,12 @@ type RuntimeIntentResult = {
     replaySession?: RuntimeReplayContinuation;
 };
 
+type RuntimeReplayState = {
+    id: string;
+    session: RuntimeReplayContinuation;
+    source: string;
+};
+
 function findRuntimeHostActor(
     actors: readonly RuntimeActor[],
     targetActor: RuntimeActor
@@ -319,16 +340,20 @@ function normalizeRuntimeReplayFrontier(frontier: unknown): NonNullable<RuntimeI
 function normalizeRuntimeReplayUntilOptions(options: RuntimeReplayUntilOptions | null | undefined): {
     untilPage?: number;
     untilY?: number;
+    maxMilliseconds?: number;
 } | null {
     if (!options || typeof options !== 'object') return null;
-    const result: { untilPage?: number; untilY?: number } = {};
-    if (Number.isFinite(Number(options.page))) {
-        result.untilPage = Math.max(0, Math.floor(Number(options.page)));
+    const result: { untilPage?: number; untilY?: number; maxMilliseconds?: number } = {};
+    if (Number.isFinite(Number(options.page ?? options.untilPage))) {
+        result.untilPage = Math.max(0, Math.floor(Number(options.page ?? options.untilPage)));
     }
-    if (Number.isFinite(Number(options.y))) {
-        result.untilY = Math.max(0, Number(options.y));
+    if (Number.isFinite(Number(options.y ?? options.untilY))) {
+        result.untilY = Math.max(0, Number(options.y ?? options.untilY));
     }
-    return Number.isFinite(result.untilPage) || Number.isFinite(result.untilY)
+    if (Number.isFinite(Number(options.maxMilliseconds))) {
+        result.maxMilliseconds = Math.max(0, Number(options.maxMilliseconds));
+    }
+    return Number.isFinite(result.untilPage) || Number.isFinite(result.untilY) || Number.isFinite(result.maxMilliseconds)
         ? result
         : null;
 }
@@ -341,6 +366,53 @@ function resolveRuntimeReplayUntilIntent(intent: RuntimeIntent): RuntimeReplayUn
         return { page: Number(intent.replayUntilPage) };
     }
     return intent.replayUntil ?? null;
+}
+
+function normalizeRuntimeWorldRegion(payload: unknown): RuntimeReplayUntilOptions | null {
+    if (!payload || typeof payload !== 'object') return null;
+    const raw = payload as Record<string, unknown>;
+    const viewport = (raw.viewport && typeof raw.viewport === 'object' ? raw.viewport : raw.region) as Record<string, unknown> | undefined;
+    const source = viewport || raw;
+    const y = Number(source?.y ?? source?.worldY ?? source?.top);
+    const height = Number(source?.height ?? source?.viewportHeight);
+    const bottom = Number(source?.bottom ?? source?.worldBottom);
+    const overscanY = Number(source?.overscanY ?? raw.overscanY ?? 0);
+    if (Number.isFinite(y) && Number.isFinite(height)) {
+        return { y: Math.max(0, y + Math.max(0, height) + (Number.isFinite(overscanY) ? Math.max(0, overscanY) : 0)) };
+    }
+    if (Number.isFinite(bottom)) {
+        return { y: Math.max(0, bottom + (Number.isFinite(overscanY) ? Math.max(0, overscanY) : 0)) };
+    }
+    const pageIndex = Number(source?.pageIndex ?? source?.page);
+    const pageCount = Number(source?.pageCount ?? raw.pageCount ?? 1);
+    const overscanPages = Number(source?.overscanPages ?? raw.overscanPages ?? 0);
+    if (Number.isFinite(pageIndex)) {
+        return { page: Math.max(0, Math.floor(pageIndex + Math.max(1, Number.isFinite(pageCount) ? pageCount : 1) - 1 + Math.max(0, Number.isFinite(overscanPages) ? overscanPages : 0))) };
+    }
+    return null;
+}
+
+function normalizeRuntimeReplayRequestOptions(payload: unknown): RuntimeReplayUntilOptions | null {
+    if (!payload || typeof payload !== 'object') return null;
+    const raw = payload as Record<string, unknown>;
+    const explicit = normalizeRuntimeReplayUntilOptions((raw.options || raw.replayUntil) as RuntimeReplayUntilOptions | null | undefined);
+    const region = normalizeRuntimeWorldRegion(raw);
+    return {
+        ...(region || {}),
+        ...(explicit || {})
+    };
+}
+
+function serializeRuntimeReplayResult(result: RuntimeIntentResult, replayId?: string | null): RuntimeIntentResult {
+    const { replaySession: _replaySession, replay, ...rest } = result;
+    return {
+        ...rest,
+        replay: {
+            ...(replay && typeof replay === 'object' ? replay as Record<string, unknown> : {}),
+            pending: Boolean(_replaySession && !result.replaySession?.isFinished?.()),
+            ...(replayId ? { replayId } : {})
+        }
+    };
 }
 
 function buildRuntimePageTokenMap(pages: readonly any[]): Map<number, string> {
@@ -490,12 +562,14 @@ function refreshRuntimeActorHostChain(actors: readonly RuntimeActor[], actor: Ru
 export class LayoutEngine extends LayoutProcessor {
     private lastResolvedConfig: LayoutConfig;
     private runtimeIntentSequence = 0;
+    private runtimeReplaySequence = 0;
     private protocolScriptHost: ScriptRuntimeHost | null = null;
     private protocolListeners = new Map<string, Set<EngineProtocolListener>>();
     private activeInitialLayout: {
         runner: SimulationRunner;
         publishedPageCount: number;
     } | null = null;
+    private activeRuntimeReplay: RuntimeReplayState | null = null;
 
     constructor(
         config: LayoutConfig = DEFAULT_ENGINE_LAYOUT_CONFIG,
@@ -526,7 +600,7 @@ export class LayoutEngine extends LayoutProcessor {
             };
         }
         const host = this.getProtocolScriptHost();
-        return host.runHandler(
+        const result = host.runHandler(
             'onRequest',
             'onRequest',
             {
@@ -546,6 +620,12 @@ export class LayoutEngine extends LayoutProcessor {
                 continueInitialLayout: (options: unknown) => this.continueInitialLayoutDirect(
                     (options && typeof options === 'object' ? options : {}) as InitialLayoutContinuationOptions
                 ),
+                startReplayAroundViewport: (request: unknown) => this.startReplayAroundViewportDirect(
+                    request && typeof request === 'object' ? request as Record<string, unknown> : {}
+                ),
+                continueReplay: (request: unknown) => this.continueReplayDirect(
+                    request && typeof request === 'object' ? request as Record<string, unknown> : {}
+                ),
                 applyRuntimeFormatting: (elements: unknown, intent: unknown) => this.applyRuntimeFormattingIntentInternal(
                     Array.isArray(elements) ? elements as Parameters<LayoutProcessor['simulate']>[0] : [],
                     (intent && typeof intent === 'object' ? intent : {}) as RuntimeIntent
@@ -558,6 +638,7 @@ export class LayoutEngine extends LayoutProcessor {
             { name: requestName, payload },
             ENGINE_PROTOCOL_PROFILE_HOST
         );
+        return cloneEngineProtocolPayload(result);
     }
 
     listen(name: string, listener: EngineProtocolListener): () => void {
@@ -586,6 +667,9 @@ export class LayoutEngine extends LayoutProcessor {
     private publishProtocolEvent(name: string, payload: unknown, requestName?: string): void {
         const eventName = String(name || '').trim();
         if (!eventName) return;
+        const exactListeners = this.protocolListeners.get(eventName);
+        const wildcardListeners = this.protocolListeners.get('*');
+        if (!exactListeners && !wildcardListeners) return;
         const snapshotPayload = cloneEngineProtocolPayload(payload);
         const event: EngineProtocolEvent = {
             name: eventName,
@@ -593,13 +677,11 @@ export class LayoutEngine extends LayoutProcessor {
             requestName,
             timestamp: Date.now()
         };
-        const exactListeners = this.protocolListeners.get(eventName);
         if (exactListeners) {
             for (const listener of exactListeners) {
                 listener(event);
             }
         }
-        const wildcardListeners = this.protocolListeners.get('*');
         if (wildcardListeners) {
             for (const listener of wildcardListeners) {
                 listener(event);
@@ -685,6 +767,7 @@ export class LayoutEngine extends LayoutProcessor {
 
     simulate(elements: Parameters<LayoutProcessor['simulate']>[0], options: LayoutSimulationOptions = {}): ReturnType<LayoutProcessor['simulate']> {
         this.activeInitialLayout = null;
+        this.activeRuntimeReplay = null;
         return super.simulate(elements, options);
     }
 
@@ -778,6 +861,62 @@ export class LayoutEngine extends LayoutProcessor {
             { length: Math.max(0, end - start) },
             (_entry, index) => start + index
         );
+    }
+
+    private startReplayAroundViewportDirect(request: Record<string, unknown>): RuntimeIntentResult {
+        const elements = Array.isArray(request.elements)
+            ? request.elements as Parameters<LayoutProcessor['simulate']>[0]
+            : [];
+        const intent = request.intent && typeof request.intent === 'object'
+            ? request.intent as RuntimeIntent
+            : {};
+        const replayUntil = normalizeRuntimeReplayRequestOptions(request);
+        const result = this.applyRuntimeIntentDirect(elements, {
+            ...intent,
+            replayUntil
+        });
+        const replaySession = result.replaySession;
+        if (!replaySession) {
+            this.activeRuntimeReplay = null;
+            return serializeRuntimeReplayResult(result, null);
+        }
+        const replayId = `runtime-replay:${++this.runtimeReplaySequence}`;
+        this.activeRuntimeReplay = {
+            id: replayId,
+            session: replaySession,
+            source: String(result.update?.source || result.kind || 'runtime-replay')
+        };
+        if (replaySession.isFinished()) {
+            this.activeRuntimeReplay = null;
+        }
+        return serializeRuntimeReplayResult(result, replayId);
+    }
+
+    private continueReplayDirect(request: Record<string, unknown>): RuntimeIntentResult {
+        const active = this.activeRuntimeReplay;
+        if (!active) {
+            return {
+                changed: false,
+                reason: 'no-pending-replay'
+            };
+        }
+        const requestedId = String(request.replayId || request.id || '').trim();
+        if (requestedId && requestedId !== active.id) {
+            return {
+                changed: false,
+                reason: 'unknown-replay',
+                replay: {
+                    replayId: requestedId,
+                    activeReplayId: active.id
+                }
+            };
+        }
+        const replayUntil = normalizeRuntimeReplayRequestOptions(request);
+        const result = active.session.continueUntil(replayUntil);
+        if (active.session.isFinished()) {
+            this.activeRuntimeReplay = null;
+        }
+        return serializeRuntimeReplayResult(result, active.id);
     }
 
     applyRuntimeIntent(

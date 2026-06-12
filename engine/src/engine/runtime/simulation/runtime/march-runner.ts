@@ -52,6 +52,8 @@ type FlowBoxPositioner = LayoutProcessor & {
     ): Box | Box[];
 };
 
+const CONTINUOUS_PUBLICATION_PAGE_HEIGHT = 10_000_000;
+
 export class SimulationMarchRunner implements SimulationRunner {
     private readonly progression: ReturnType<LayoutProcessor['getSimulationProgressionConfig']>;
     private readonly maxReactiveResettlementCycles: number;
@@ -77,6 +79,10 @@ export class SimulationMarchRunner implements SimulationRunner {
     private lastRenderRevisionPageIndexes: number[] = [];
     private lastUpdateSummary: SimulationUpdateSummary = createEmptyUpdateSummary();
     private pendingGeometryUpdateSummary: SimulationUpdateSummary | null = null;
+
+    private get isContinuousPublication(): boolean {
+        return this.contextBase.publicationMode === 'continuous';
+    }
 
     constructor(
         private readonly processor: LayoutProcessor,
@@ -214,7 +220,7 @@ export class SimulationMarchRunner implements SimulationRunner {
         snapshot.push(new PageSurface(
             this.currentPageIndex,
             this.pageWidth,
-            this.pageHeight,
+            this.resolveCurrentPublicationPageHeight(),
             this.currentPageBoxes.map((box) => ({
                 ...box,
                 properties: box.properties ? { ...box.properties } : box.properties,
@@ -646,7 +652,7 @@ export class SimulationMarchRunner implements SimulationRunner {
                 this.currentPageBoxes,
                 this.currentPageIndex,
                 this.pageWidth,
-                this.pageHeight
+                this.resolveCurrentPublicationPageHeight()
             );
             this.currentPageBoxes = [];
             this.paginationState.currentPageBoxes = this.currentPageBoxes;
@@ -774,8 +780,7 @@ export class SimulationMarchRunner implements SimulationRunner {
 
     private reactiveCheckpointsEnabled(): boolean {
         return this.snapshotsEnabled && (
-            this.progression.policy === 'fixed-tick-count'
-            || this.session.hasCommittedSignalObservers()
+            this.session.hasCommittedSignalObservers()
             || this.session.hasSteppedActors()
         );
     }
@@ -794,11 +799,20 @@ export class SimulationMarchRunner implements SimulationRunner {
         margins: PackagerContext['margins'];
     } {
         const resolved = this.contextBase.resolvePageGeometry?.(pageIndex);
+        const resolvedHeight = Number.isFinite(resolved?.height) ? Number(resolved!.height) : this.contextBase.pageHeight;
         return {
             width: Number.isFinite(resolved?.width) ? Number(resolved!.width) : this.contextBase.pageWidth,
-            height: Number.isFinite(resolved?.height) ? Number(resolved!.height) : this.contextBase.pageHeight,
+            height: this.isContinuousPublication
+                ? Math.max(resolvedHeight, CONTINUOUS_PUBLICATION_PAGE_HEIGHT)
+                : resolvedHeight,
             margins: resolved?.margins ?? this.contextBase.margins
         };
+    }
+
+    private resolveCurrentPublicationPageHeight(): number {
+        if (!this.isContinuousPublication) return this.pageHeight;
+        const bottom = Number(this.margins?.bottom || 0);
+        return Math.max(1, Math.ceil(this.currentY + bottom));
     }
 
     private syncCurrentPageGeometry(): void {

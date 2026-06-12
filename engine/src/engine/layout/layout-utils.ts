@@ -91,6 +91,21 @@ export class LayoutUtils {
         };
     }
 
+    static resolvePublicationMode(config: LayoutConfig): NonNullable<LayoutConfig['layout']['publicationMode']> {
+        return config.layout.publicationMode === 'continuous' ? 'continuous' : 'paginated';
+    }
+
+    static resolvePrintBreakPolicy(config: LayoutConfig): NonNullable<LayoutConfig['layout']['printBreakPolicy']> {
+        if (config.layout.printBreakPolicy === 'preserve' || config.layout.printBreakPolicy === 'ignore') {
+            return config.layout.printBreakPolicy;
+        }
+        return this.resolvePublicationMode(config) === 'continuous' ? 'ignore' : 'preserve';
+    }
+
+    static shouldHonorPrintBreaks(config: LayoutConfig): boolean {
+        return this.resolvePrintBreakPolicy(config) === 'preserve';
+    }
+
     /**
      * Helper to ensure values are valid numbers.
      * Throws an error if the value is not a finite number or a numeric string.

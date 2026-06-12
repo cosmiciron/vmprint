@@ -59,6 +59,8 @@ interface LayoutConfig {
     pageSize: 'A4' | 'LETTER' | { width: number; height: number };
     orientation?: 'portrait' | 'landscape';
     margins: { top: number; right: number; bottom: number; left: number };
+    publicationMode?: 'paginated' | 'continuous';
+    printBreakPolicy?: 'preserve' | 'ignore';
     pageTemplates?: PageTemplate[];
     fontFamily: string;
     fontSize: number;
@@ -115,6 +117,14 @@ refine earlier broad selectors. `pageIndex` is zero-based; `selector` uses
 human page parity, so page index `0` is the first odd page. A matching template
 may override `pageSize`, `orientation`, `margins`, or any combination of those
 fields. Pages without a matching template keep the document-level layout.
+
+`layout.publicationMode` controls how the settled world is captured. The default
+`paginated` mode publishes ordinary print pages. `continuous` mode publishes the
+root flow as a browser-like continuous page. In continuous mode, authored print
+breaks are ignored by default because they are print pagination instructions;
+set `printBreakPolicy: "preserve"` to keep them. In paginated mode, print breaks
+are preserved by default; set `printBreakPolicy: "ignore"` only for specialized
+probes that need to neutralize authored page breaks.
 
 ```json
 {

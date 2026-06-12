@@ -352,7 +352,7 @@ export class ActorCommunicationRuntime<
                 actorId: anchorActor?.actorId,
                 sourceId: anchorActor?.sourceId
             },
-            pagesPrefix: pagesPrefix.map(clonePage),
+            pagesPrefix: [...pagesPrefix],
             snapshot: {
                 pageBoxes: currentPageBoxes.map(cloneBox),
                 ...captureTransitionSnapshot(),
