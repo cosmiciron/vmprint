@@ -12,7 +12,16 @@ export type ExternalMessage = {
     };
 };
 
-export type SimulationUpdateSource = 'none' | 'stepped-actors' | 'observer-registry';
+export type SimulationUpdateSource = 'none' | 'stepped-actors' | 'observer-registry' | 'runtime-formatting' | 'runtime-formatting-restore';
+
+export type SimulationReplayFrontier = {
+    pageIndex: number;
+    cursorY?: number;
+    worldY?: number;
+    actorIndex?: number;
+    actorId?: string;
+    sourceId?: string;
+};
 
 export type SimulationUpdateSummary = {
     kind: 'none' | 'content-only' | 'geometry';
@@ -20,6 +29,9 @@ export type SimulationUpdateSummary = {
     actorIds: string[];
     sourceIds: string[];
     pageIndexes: number[];
+    addedPageIndexes: number[];
+    removedPageIndexes: number[];
+    replayFrontier: SimulationReplayFrontier | null;
 };
 
 export type SimulationDiagnosticSourceSnapshot = {
@@ -51,6 +63,21 @@ export type SimulationDiagnosticSnapshot = {
     profile: SimulationDiagnosticProfileSnapshot;
 };
 
+export type SimulationContinueOptions = {
+    untilPage?: number;
+    untilY?: number;
+    maxMilliseconds?: number;
+};
+
+export type SimulationContinueResult = {
+    yielded: boolean;
+    finished: boolean;
+    pageCount: number;
+    currentPageIndex: number;
+    reason: 'until-page' | 'until-y' | 'time-budget' | 'finished' | 'already-finished';
+    elapsedMs: number;
+};
+
 export interface SimulationRunner {
     getCurrentTick(): number;
     getCurrentPageIndex(): number;
@@ -64,6 +91,9 @@ export interface SimulationRunner {
     getCurrentPages(): Page[];
     runToCompletion(): Page[];
     advanceTick(): boolean;
+    continueUntil(options?: SimulationContinueOptions): SimulationContinueResult;
+    continueUntilPage(pageIndex: number): SimulationContinueResult;
+    continueUntilY(y: number): SimulationContinueResult;
     sendExternalMessage(targetSourceId: string, message: ExternalMessage): boolean;
     hasExternalMessageAck(messageId: string): boolean;
 }

@@ -10,6 +10,9 @@ import {
 export const RUNTIME_INTENT_TOPIC = 'runtime:intent';
 
 export type RuntimeFormattingPatch = {
+    color?: unknown;
+    backgroundColor?: unknown;
+    borderColor?: unknown;
     textAlign?: unknown;
     fontFamily?: unknown;
     fontSize?: unknown;
@@ -19,6 +22,11 @@ export type RuntimeFormattingPatch = {
     marginLeft?: unknown;
     marginRight?: unknown;
     textIndent?: unknown;
+    padding?: unknown;
+    paddingTop?: unknown;
+    paddingRight?: unknown;
+    paddingBottom?: unknown;
+    paddingLeft?: unknown;
 };
 
 export type RuntimeFormattingTarget = {
@@ -58,6 +66,11 @@ export function isRuntimeRangeTarget(target: RuntimeFormattingTarget | Record<st
 
 export function normalizeRuntimeFormattingPatch(patch: RuntimeFormattingPatch = {}): Record<string, unknown> {
     const out: Record<string, unknown> = {};
+    for (const key of ['color', 'backgroundColor', 'borderColor'] as const) {
+        if (typeof patch[key] === 'string' && patch[key]!.trim()) {
+            out[key] = patch[key]!.trim();
+        }
+    }
     if (['left', 'center', 'right', 'justify'].includes(String(patch.textAlign))) {
         out.textAlign = String(patch.textAlign);
         if (patch.textAlign === 'justify') {
@@ -67,7 +80,7 @@ export function normalizeRuntimeFormattingPatch(patch: RuntimeFormattingPatch = 
     if (typeof patch.fontFamily === 'string' && patch.fontFamily.trim()) {
         out.fontFamily = patch.fontFamily.trim();
     }
-    for (const key of ['fontSize', 'fontWeight', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent'] as const) {
+    for (const key of ['fontSize', 'fontWeight', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent', 'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] as const) {
         if (Number.isFinite(Number(patch[key]))) {
             out[key] = Number(patch[key]);
         }
@@ -287,12 +300,11 @@ export function isGeometryRuntimeFormattingPatch(
     patch: Record<string, unknown>,
     target: RuntimeFormattingTarget | Record<string, unknown> | null = null
 ): boolean {
+    const geometryKeys = ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent', 'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'blockType'];
     if (target && isRuntimeRangeTarget(target)) {
-        return ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent', 'blockType']
-            .some((key) => patch[key] !== undefined);
+        return geometryKeys.some((key) => patch[key] !== undefined);
     }
-    return ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'marginLeft', 'marginRight', 'textIndent', 'blockType']
-        .some((key) => patch[key] !== undefined);
+    return geometryKeys.some((key) => patch[key] !== undefined);
 }
 
 export function readLatestRuntimeFormattingIntentSignal(
@@ -351,9 +363,10 @@ export function applyRuntimeFormattingIntentToSourceElement(options: {
     actor: PackagerUnit;
     sourceElement: Element | null | undefined;
     rebuild: () => boolean;
+    getGeometrySignature?: () => unknown;
     forceRangeGeometry?: boolean;
 }): ObservationResult | null {
-    const { context, actor, sourceElement, rebuild, forceRangeGeometry = false } = options;
+    const { context, actor, sourceElement, rebuild, getGeometrySignature, forceRangeGeometry = false } = options;
     const signal = readLatestRuntimeFormattingIntentSignal(context, actor);
     if (!signal || !sourceElement) return null;
 
@@ -367,6 +380,7 @@ export function applyRuntimeFormattingIntentToSourceElement(options: {
         ? signal.payload.restoreSnapshot as Record<string, unknown>
         : null;
     const previousSnapshot = cloneRuntimeElementSourceSnapshot(sourceElement);
+    const previousGeometrySignature = getGeometrySignature?.();
 
     if (restoreSnapshot) {
         if (runtimeElementSourceSnapshotsEqual(previousSnapshot, restoreSnapshot)) {
@@ -385,7 +399,14 @@ export function applyRuntimeFormattingIntentToSourceElement(options: {
                 updateKind: 'none'
             };
         }
-        const geometryChanged = classifyRuntimeFormattingGeometry(patch, target, forceRangeGeometry);
+        const classifiedGeometry = classifyRuntimeFormattingGeometry(patch, target, forceRangeGeometry);
+        const nextGeometrySignature = getGeometrySignature?.();
+        const geometryChanged = classifiedGeometry
+            && (
+                previousGeometrySignature === undefined
+                || nextGeometrySignature === undefined
+                || JSON.stringify(previousGeometrySignature) !== JSON.stringify(nextGeometrySignature)
+            );
         return {
             changed: true,
             geometryChanged,
@@ -428,7 +449,14 @@ export function applyRuntimeFormattingIntentToSourceElement(options: {
         };
     }
 
-    const geometryChanged = classifyRuntimeFormattingGeometry(patch, target, forceRangeGeometry);
+    const classifiedGeometry = classifyRuntimeFormattingGeometry(patch, target, forceRangeGeometry);
+    const nextGeometrySignature = getGeometrySignature?.();
+    const geometryChanged = classifiedGeometry
+        && (
+            previousGeometrySignature === undefined
+            || nextGeometrySignature === undefined
+            || JSON.stringify(previousGeometrySignature) !== JSON.stringify(nextGeometrySignature)
+        );
     return {
         changed: true,
         geometryChanged,

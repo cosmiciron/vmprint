@@ -2,6 +2,7 @@ import type { Element } from '../../types';
 import type { LayoutProcessor } from '../layout-core';
 import type { LayoutSession } from '../layout-session';
 import { LayoutUtils, createScriptMessageAckTopic, createScriptMessageTopic } from '../layout-utils';
+import { buildRuntimeIntentTopic, normalizeRuntimeFormattingPatch } from '../runtime-formatting';
 import { ScriptRuntimeHost, type ScriptGlobals, type ScriptLifecycleState } from '../script-runtime-host';
 import { createPackagers, type ExternalPackagerFactory } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
@@ -115,6 +116,24 @@ function normalizeScriptElements(value: unknown): Element[] {
     if (Array.isArray(value)) return (value as Element[]).map((element) => normalizeRuntimeElement(element));
     if (value && typeof value === 'object') return [normalizeRuntimeElement(value as Element)];
     return [];
+}
+
+function applyRuntimeStylePatchToElement(element: Element, patch: unknown): boolean {
+    const normalized = normalizeRuntimeFormattingPatch((patch && typeof patch === 'object' ? patch : {}) as any);
+    if (!Object.keys(normalized).length) return false;
+    const previousStyle = element.properties && typeof element.properties.style === 'object' && element.properties.style
+        ? element.properties.style
+        : {};
+    const changed = Object.entries(normalized).some(([key, value]) => previousStyle[key] !== value);
+    if (!changed) return false;
+    element.properties = {
+        ...(element.properties || {}),
+        style: {
+            ...previousStyle,
+            ...normalized
+        }
+    };
+    return true;
 }
 
 function chooseEarlierFrontier(current: SpatialFrontier | null, next: SpatialFrontier): SpatialFrontier {
@@ -268,6 +287,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
     private lastObservedActorIndex = 0;
     private lastObservedCursorY = 0;
     private lastObservedWorldY: number | undefined;
+    private styleIntentSequence = 0;
 
     constructor(
         private readonly host: ScriptRuntimeHost,
@@ -436,6 +456,55 @@ export class ScriptDocumentPackager implements PackagerUnit {
         return true;
     }
 
+    private setLiveActorStyle(
+        session: LayoutSession,
+        context: PackagerContext,
+        target: unknown,
+        patch: unknown
+    ): boolean {
+        const actor = this.resolveLiveActor(session, target);
+        if (!actor) return false;
+        const normalized = normalizeRuntimeFormattingPatch((patch && typeof patch === 'object' ? patch : {}) as any);
+        if (!Object.keys(normalized).length) return false;
+        const mutationFrontier = this.resolveLiveMutationFrontier(session, actor);
+        context.publishActorSignal({
+            topic: buildRuntimeIntentTopic(actor.sourceId),
+            publisherActorId: this.actorId,
+            publisherSourceId: this.sourceId,
+            publisherActorKind: this.actorKind,
+            pageIndex: mutationFrontier.pageIndex,
+            cursorY: Number.isFinite(mutationFrontier.cursorY) ? Number(mutationFrontier.cursorY) : context.cursorY,
+            ...(Number.isFinite(mutationFrontier.worldY) ? { worldY: Number(mutationFrontier.worldY) } : {}),
+            signalKey: `script:set-style:${actor.actorId}:${context.simulationTick ?? 0}:${++this.styleIntentSequence}`,
+            payload: {
+                kind: 'formatting',
+                target: {
+                    sourceId: actor.sourceId,
+                    actorId: actor.actorId
+                },
+                patch: normalized
+            }
+        });
+        const observation = actor.updateCommittedState?.({
+            ...context,
+            pageIndex: mutationFrontier.pageIndex,
+            cursorY: Number.isFinite(mutationFrontier.cursorY) ? Number(mutationFrontier.cursorY) : context.cursorY
+        }) ?? null;
+        if (!observation?.changed) return false;
+        const shadowNode = actor.sourceId ? findBySourceId(this.elements, actor.sourceId) : null;
+        if (shadowNode) {
+            applyRuntimeStylePatchToElement(shadowNode, normalized);
+        }
+        if (observation.geometryChanged) {
+            const frontier = observation.earliestAffectedFrontier ?? mutationFrontier;
+            session.invalidateSafeCheckpointsAfterFrontier(frontier);
+            this.recordRuntimeMutation(frontier);
+        } else {
+            this.recordRuntimeContentMutation();
+        }
+        return true;
+    }
+
     private prependLiveDocument(
         session: LayoutSession,
         context: PackagerContext,
@@ -499,6 +568,12 @@ export class ScriptDocumentPackager implements PackagerUnit {
             },
             setContent: (content: string) => {
                 const changed = this.setLiveActorContent(session, actor.sourceId, content);
+                if (!changed) return false;
+                session.recordProfile('setContentCalls', 1);
+                return true;
+            },
+            setStyle: (patch: unknown) => {
+                const changed = this.setLiveActorStyle(session, context, actor.sourceId, patch);
                 if (!changed) return false;
                 session.recordProfile('setContentCalls', 1);
                 return true;
@@ -567,6 +642,20 @@ export class ScriptDocumentPackager implements PackagerUnit {
                 const nextContent = String(content);
                 if (String(element.content || '') === nextContent) return false;
                 element.content = nextContent;
+                session.recordProfile('setContentCalls', 1);
+                return true;
+            },
+            setStyle: (patch: unknown) => {
+                if (!sourceId) return false;
+                const liveChanged = context
+                    ? this.setLiveActorStyle(session, context, sourceId, patch)
+                    : false;
+                if (liveChanged) {
+                    session.recordProfile('setContentCalls', 1);
+                    return true;
+                }
+                const changed = applyRuntimeStylePatchToElement(element, patch);
+                if (!changed) return false;
                 session.recordProfile('setContentCalls', 1);
                 return true;
             },
@@ -724,6 +813,21 @@ export class ScriptDocumentPackager implements PackagerUnit {
             session.recordProfile('setContentCalls', 1);
             return true;
         };
+        const setStyle = (target: unknown, patch: unknown) => {
+            const liveChanged = this.setLiveActorStyle(session, context, target, patch);
+            if (liveChanged) {
+                session.recordProfile('setContentCalls', 1);
+                return true;
+            }
+            const sourceId = this.resolveSourceId(target);
+            if (!sourceId || sourceId === 'doc') return false;
+            const node = findBySourceId(this.elements, sourceId);
+            if (!node) return false;
+            const changed = applyRuntimeStylePatchToElement(node, patch);
+            if (!changed) return false;
+            session.recordProfile('setContentCalls', 1);
+            return true;
+        };
         const replaceElement = (target: unknown, elements: Element[]) => {
             const liveReplaced = this.replaceLiveActor(session, context, target, elements);
             if (liveReplaced) {
@@ -822,6 +926,7 @@ export class ScriptDocumentPackager implements PackagerUnit {
             append,
             prepend,
             setContent,
+            setStyle,
             replaceElement,
             insertBefore: insertElementsBefore,
             insertAfter: insertElementsAfter,
