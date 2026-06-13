@@ -1,0 +1,278 @@
+{
+  "generatedAt": "2026-06-12T15:20:37.499Z",
+  "status": "pass",
+  "targetSourceId": "history-target",
+  "splitSourceId": "author:history-target:split-1",
+  "timing": {
+    "initialMs": 23.683,
+    "insertMs": 1.296,
+    "undoInsertMs": 0.622,
+    "redoInsertMs": 0.367,
+    "formatMs": 1.079,
+    "undoFormatMs": 0.343,
+    "splitMs": 2.795,
+    "undoSplitMs": 2.637,
+    "redoSplitMs": 1.65
+  },
+  "results": {
+    "insert": {
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "undoInsert": {
+      "kind": "content-only",
+      "source": "runtime-history-undo",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "redoInsert": {
+      "kind": "content-only",
+      "source": "runtime-history-redo",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "format": {
+      "kind": "content-only",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "undoFormat": {
+      "kind": "content-only",
+      "source": "runtime-history-undo",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "split": {
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "undoSplit": {
+      "kind": "geometry",
+      "source": "runtime-history-undo",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "redoSplit": {
+      "kind": "geometry",
+      "source": "runtime-history-redo",
+      "pageIndexes": [
+        0
+      ]
+    }
+  },
+  "counts": {
+    "initialPages": 1,
+    "initialBoxes": 4,
+    "finalPages": 1,
+    "finalBoxes": 5
+  },
+  "textEvidence": {
+    "before": "Alpha range target sentence. Bravo range target sentence.",
+    "afterInsert": "Alpha runtime range target sentence. Bravo range target sentence.",
+    "afterUndoInsert": "Alpha range target sentence. Bravo range target sentence.",
+    "afterSplitFirst": "Alpha runtime range target sentence. ",
+    "afterSplitSecond": "Bravo range target sentence.",
+    "afterUndoSplit": "Alpha runtime range target sentence. Bravo range target sentence.",
+    "afterRedoSplitFirst": "Alpha runtime range target sentence. ",
+    "afterRedoSplitSecond": "Bravo range target sentence."
+  },
+  "visualProof": {
+    "outputDir": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof",
+    "stages": [
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/01-before.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/01-before.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/01-before.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/01-before.json --output /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/01-before.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/01-before.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 55.41 (1 pages)",
+          "[vmprint] warm  layoutMs: 3.49 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/02-after-insert.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/02-after-insert.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/02-after-insert.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/02-after-insert.json --output /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/02-after-insert.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/02-after-insert.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 55.56 (1 pages)",
+          "[vmprint] warm  layoutMs: 3.53 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/03-after-undo-insert.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/03-after-undo-insert.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/03-after-undo-insert.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/03-after-undo-insert.json --output /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/03-after-undo-insert.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/03-after-undo-insert.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 55.82 (1 pages)",
+          "[vmprint] warm  layoutMs: 3.46 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/04-after-redo-insert-and-format.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/04-after-redo-insert-and-format.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/04-after-redo-insert-and-format.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/04-after-redo-insert-and-format.json --output /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/04-after-redo-insert-and-format.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/04-after-redo-insert-and-format.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 55.85 (1 pages)",
+          "[vmprint] warm  layoutMs: 3.51 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/05-after-undo-format.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/05-after-undo-format.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/05-after-undo-format.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/05-after-undo-format.json --output /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/05-after-undo-format.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/05-after-undo-format.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 55.65 (1 pages)",
+          "[vmprint] warm  layoutMs: 3.09 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/06-after-split.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/06-after-split.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/06-after-split.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/06-after-split.json --output /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/06-after-split.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/06-after-split.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 56.01 (1 pages)",
+          "[vmprint] warm  layoutMs: 3.61 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/07-after-undo-split.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/07-after-undo-split.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/07-after-undo-split.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/07-after-undo-split.json --output /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/07-after-undo-split.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/07-after-undo-split.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 55.98 (1 pages)",
+          "[vmprint] warm  layoutMs: 3.37 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/08-after-redo-split.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/08-after-redo-split.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/08-after-redo-split.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/08-after-redo-split.json --output /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/08-after-redo-split.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-history-undo-redo-proof/stages/08-after-redo-split.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 55.91 (1 pages)",
+          "[vmprint] warm  layoutMs: 3.65 (avg x2)"
+        ],
+        "stderr": []
+      }
+    ]
+  },
+  "events": [
+    {
+      "name": "layout.runtimeIntentUndone",
+      "requestName": "layout.undoRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-history-undo",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentRedone",
+      "requestName": "layout.redoRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-history-redo",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentUndone",
+      "requestName": "layout.undoRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-history-undo",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentRedone",
+      "requestName": "layout.redoRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-history-redo",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentUndone",
+      "requestName": "layout.undoRuntimeIntent",
+      "kind": "geometry",
+      "source": "runtime-history-undo",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentRedone",
+      "requestName": "layout.redoRuntimeIntent",
+      "kind": "geometry",
+      "source": "runtime-history-redo",
+      "pageIndexes": [
+        0
+      ]
+    }
+  ],
+  "assertions": {
+    "insertContentOnly": true,
+    "undoInsertContentOnly": true,
+    "redoInsertContentOnly": true,
+    "formatContentOnly": true,
+    "undoFormatContentOnly": true,
+    "splitGeometry": true,
+    "undoSplitGeometry": true,
+    "redoSplitGeometry": true,
+    "undoInsertRestoredText": true,
+    "undoSplitRemovedSibling": true,
+    "redoSplitRestoredSibling": true,
+    "protocolEmittedHistoryEvents": true
+  }
+}

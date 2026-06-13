@@ -342,7 +342,7 @@ export class SimulationMarchRunner implements SimulationRunner {
         this.initialPlacementPass = false;
         this.finalizedPageInCurrentIteration = false;
 
-        while (this.actorIndex < this.packagers.length) {
+        while (!this.finished && this.actorIndex < this.packagers.length) {
             const actorIndexBeforeAction = this.actorIndex;
             const packager = this.packagers[this.actorIndex];
             const chunkContextBase = this.buildChunkContextBase();
@@ -864,6 +864,11 @@ export class SimulationMarchRunner implements SimulationRunner {
             ? Math.max(0, rawStopAtWorldY)
             : null;
         if (stopAtPage === null && stopAtWorldY === null) return false;
+        if (this.isContinuousPublication && stopAtWorldY !== null && this.currentY >= stopAtWorldY) {
+            this.session.stopSimulationProgression('page-limit');
+            this.finished = true;
+            return true;
+        }
         const hasReachedLimit = this.pages.some((page) =>
             (stopAtPage !== null && page.index >= stopAtPage)
             || (stopAtWorldY !== null && this.resolvePageBottomWorldY(page.index) >= stopAtWorldY)
@@ -1058,6 +1063,9 @@ export class SimulationMarchRunner implements SimulationRunner {
             ? Math.max(0, rawStopAtWorldY)
             : null;
         if (stopAtPage === null && stopAtWorldY === null) return null;
+        if (this.isContinuousPublication && stopAtWorldY !== null && this.currentY >= stopAtWorldY) {
+            return 'until-y';
+        }
         const matchedPage = this.pages.find((page) =>
             (stopAtPage !== null && page.index >= stopAtPage)
             || (stopAtWorldY !== null && this.resolvePageBottomWorldY(page.index) >= stopAtWorldY)

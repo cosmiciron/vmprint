@@ -28,6 +28,7 @@ export type ScriptGlobals = {
     getPageCount?: unknown;
     getPageViewport?: unknown;
     getWorldViewport?: unknown;
+    getVisibleWorldViewport?: unknown;
     getProfileSnapshot?: unknown;
     getSimulationStatus?: unknown;
     startInitialLayout?: unknown;
@@ -36,6 +37,9 @@ export type ScriptGlobals = {
     continueReplay?: unknown;
     applyRuntimeFormatting?: unknown;
     restoreRuntimeFormatting?: unknown;
+    applyRuntimeTextEdit?: unknown;
+    undoRuntimeIntent?: unknown;
+    redoRuntimeIntent?: unknown;
 };
 
 type CompiledHandler = {
@@ -82,6 +86,7 @@ const RESERVED_GLOBAL_NAMES = [
     'getPageCount',
     'getPageViewport',
     'getWorldViewport',
+    'getVisibleWorldViewport',
     'getProfileSnapshot',
     'getSimulationStatus',
     'startInitialLayout',
@@ -89,7 +94,10 @@ const RESERVED_GLOBAL_NAMES = [
     'startReplayAroundViewport',
     'continueReplay',
     'applyRuntimeFormatting',
-    'restoreRuntimeFormatting'
+    'restoreRuntimeFormatting',
+    'applyRuntimeTextEdit',
+    'undoRuntimeIntent',
+    'redoRuntimeIntent'
 ] as const;
 
 function normalizeMethodSource(source: string | string[]): string {

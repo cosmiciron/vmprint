@@ -3,6 +3,7 @@ import { LayoutProcessor, type LayoutSimulationOptions } from './layout/layout-c
 import { LayoutUtils } from './layout/layout-utils';
 import {
     buildPageViewportHandle,
+    buildVisibleWorldViewportHandle,
     buildWorldViewportHandle,
     type ViewportHandle,
     type WorldViewportRequest
@@ -51,12 +52,17 @@ import { EngineRuntime } from './runtime';
 import { normalizeObservationResult } from './layout/packagers/packager-types';
 import {
     buildRuntimeIntentTopic,
+    appendRuntimeInlineSourceElementText,
+    applyRuntimeInlineTextDelete,
+    applyRuntimeInlineTextInsert,
     cloneRuntimeElementSourceSnapshot,
     cloneRuntimeJsonValue,
     isRuntimeRangeTarget,
+    runtimeInlineSourceText,
     normalizeRuntimeFormattingPatch,
     restoreRuntimeElementSourceSnapshot,
     runtimeElementSourceSnapshotsEqual,
+    splitRuntimeInlineSourceElement,
     type RuntimeFormattingPatch,
     type RuntimeFormattingTarget
 } from './layout/runtime-formatting';
@@ -91,7 +97,15 @@ const DEFAULT_ENGINE_LAYOUT_CONFIG: LayoutConfig = {
 type RuntimeIntent = {
     kind?: unknown;
     type?: unknown;
+    operation?: unknown;
+    text?: unknown;
     target?: RuntimeFormattingTarget | null;
+    entry?: unknown;
+    history?: unknown;
+    direction?: unknown;
+    offset?: unknown;
+    start?: unknown;
+    end?: unknown;
     patch?: RuntimeFormattingPatch | null;
     restoreSnapshot?: unknown;
     replayUntilPage?: unknown;
@@ -166,6 +180,11 @@ const ENGINE_PROTOCOL_SCRIPT: LayoutScriptingConfig = {
             '  emit("layout.worldViewport", viewport);',
             '  return viewport;',
             '}',
+            'if (name === "layout.visibleWorldViewport") {',
+            '  var visibleViewport = getVisibleWorldViewport(payload);',
+            '  emit("layout.visibleWorldViewport", visibleViewport);',
+            '  return visibleViewport;',
+            '}',
             'if (name === "layout.profileSnapshot") {',
             '  var profileSnapshot = getProfileSnapshot();',
             '  emit("layout.profileSnapshot", profileSnapshot);',
@@ -210,6 +229,16 @@ const ENGINE_PROTOCOL_SCRIPT: LayoutScriptingConfig = {
             '  emit("layout.runtimeFormattingRestored", restoreResult);',
             '  return restoreResult;',
             '}',
+            'if (name === "layout.undoRuntimeIntent") {',
+            '  var undoResult = undoRuntimeIntent(payload && payload.elements, payload && (payload.intent || payload.entry || payload.history));',
+            '  emit("layout.runtimeIntentUndone", undoResult);',
+            '  return undoResult;',
+            '}',
+            'if (name === "layout.redoRuntimeIntent") {',
+            '  var redoResult = redoRuntimeIntent(payload && payload.elements, payload && (payload.intent || payload.entry || payload.history));',
+            '  emit("layout.runtimeIntentRedone", redoResult);',
+            '  return redoResult;',
+            '}',
             'if (name === "layout.applyRuntimeIntent") {',
             '  var intent = payload && payload.intent || {};',
             '  var kind = String(intent.kind || intent.type || "").trim();',
@@ -218,6 +247,12 @@ const ENGINE_PROTOCOL_SCRIPT: LayoutScriptingConfig = {
             '    runtimeIntentResult = applyRuntimeFormatting(payload && payload.elements, intent);',
             '  } else if (kind === "formatting-restore" || kind === "restore-formatting") {',
             '    runtimeIntentResult = restoreRuntimeFormatting(payload && payload.elements, intent);',
+            '  } else if (kind === "text-edit" || kind === "textEdit" || kind === "edit-text") {',
+            '    runtimeIntentResult = applyRuntimeTextEdit(payload && payload.elements, intent);',
+            '  } else if (kind === "undo" || kind === "undo-runtime-intent") {',
+            '    runtimeIntentResult = undoRuntimeIntent(payload && payload.elements, intent);',
+            '  } else if (kind === "redo" || kind === "redo-runtime-intent") {',
+            '    runtimeIntentResult = redoRuntimeIntent(payload && payload.elements, intent);',
             '  } else {',
             '    runtimeIntentResult = { changed: false, reason: "unsupported-runtime-intent" };',
             '  }',
@@ -245,6 +280,7 @@ type RuntimeActor = {
     flowBox?: { _sourceElement?: Element };
     element?: Element;
     rebuildLiveFlowBox?(): boolean;
+    setLiveContent?(content: string): boolean;
     updateCommittedState?(context: Record<string, unknown>): unknown;
     observeCommittedSignals?(context: Record<string, unknown>): unknown;
     getHostedRuntimeActors?(): readonly RuntimeActor[];
@@ -256,6 +292,7 @@ type RuntimeIntentResult = {
     changed: boolean;
     reason?: string;
     kind?: string;
+    historyKind?: string;
     sourceId?: string;
     actorId?: string;
     visibleActorId?: string;
@@ -459,7 +496,7 @@ function computeRuntimeReplayPageChanges(
 
 function isContentOnlyGeometryMismatch(error: unknown): boolean {
     const message = error instanceof Error ? error.message : String(error || '');
-    return /^\[LayoutSession\] content-only actor ".+" changed box (width|height)\.$/.test(message);
+    return /^\[LayoutSession\] content-only actor ".+" changed box (count|width|height)/.test(message);
 }
 
 function findRuntimeElementPathBySourceId(elements: readonly Element[], sourceId: string): { element: Element; ancestors: Element[] } | null {
@@ -481,6 +518,79 @@ function findRuntimeElementPathBySourceId(elements: readonly Element[], sourceId
         if (found) return found;
     }
     return null;
+}
+
+type RuntimeElementContainerPath = {
+    element: Element;
+    nodes: Element[];
+    index: number;
+    ancestors: Element[];
+};
+
+function findRuntimeElementContainerBySourceId(elements: Element[], sourceId: string): RuntimeElementContainerPath | null {
+    const normalized = LayoutUtils.normalizeAuthorSourceId(sourceId) || sourceId;
+    const visitNodes = (nodes: Element[], ancestors: Element[]): RuntimeElementContainerPath | null => {
+        for (let index = 0; index < nodes.length; index += 1) {
+            const element = nodes[index];
+            const elementSourceId = LayoutUtils.normalizeAuthorSourceId(element.properties?.sourceId) || String(element.properties?.sourceId || '');
+            if (elementSourceId && (elementSourceId === sourceId || elementSourceId === normalized)) {
+                return { element, nodes, index, ancestors };
+            }
+            if (Array.isArray(element.children) && element.children.length > 0) {
+                const found = visitNodes(element.children, [...ancestors, element]);
+                if (found) return found;
+            }
+            if (Array.isArray(element.zones)) {
+                for (const zone of element.zones) {
+                    if (!Array.isArray(zone.elements) || zone.elements.length === 0) continue;
+                    const found = visitNodes(zone.elements, [...ancestors, element]);
+                    if (found) return found;
+                }
+            }
+            if (Array.isArray(element.slots)) {
+                for (const slot of element.slots) {
+                    if (!Array.isArray(slot.elements) || slot.elements.length === 0) continue;
+                    const found = visitNodes(slot.elements, [...ancestors, element]);
+                    if (found) return found;
+                }
+            }
+        }
+        return null;
+    };
+    return visitNodes(elements, []);
+}
+
+function collectRuntimeElementSourceIds(elements: readonly Element[], out = new Set<string>()): Set<string> {
+    for (const element of elements || []) {
+        const sourceId = LayoutUtils.normalizeAuthorSourceId(element.properties?.sourceId) || String(element.properties?.sourceId || '');
+        if (sourceId) out.add(sourceId);
+        if (Array.isArray(element.children)) {
+            collectRuntimeElementSourceIds(element.children, out);
+        }
+        if (Array.isArray(element.zones)) {
+            for (const zone of element.zones) {
+                if (Array.isArray(zone.elements)) collectRuntimeElementSourceIds(zone.elements, out);
+            }
+        }
+        if (Array.isArray(element.slots)) {
+            for (const slot of element.slots) {
+                if (Array.isArray(slot.elements)) collectRuntimeElementSourceIds(slot.elements, out);
+            }
+        }
+    }
+    return out;
+}
+
+function createRuntimeSplitSourceId(baseSourceId: string, elements: readonly Element[]): string {
+    const existing = collectRuntimeElementSourceIds(elements);
+    const normalized = LayoutUtils.normalizeAuthorSourceId(baseSourceId) || baseSourceId || 'text-block';
+    let suffix = 1;
+    let candidate = `${normalized}:split-${suffix}`;
+    while (existing.has(candidate)) {
+        suffix += 1;
+        candidate = `${normalized}:split-${suffix}`;
+    }
+    return candidate;
 }
 
 function clearRuntimeMaterializationState(element: Element): void {
@@ -611,6 +721,7 @@ export class LayoutEngine extends LayoutProcessor {
                 getPageCount: () => this.readPageCount(),
                 getPageViewport: (pageIndex: unknown) => this.readPageViewport(Number(pageIndex)),
                 getWorldViewport: (request: unknown) => this.readWorldViewport(request as WorldViewportRequest),
+                getVisibleWorldViewport: (request: unknown) => this.readVisibleWorldViewport(request as WorldViewportRequest),
                 getProfileSnapshot: () => this.readProfileSnapshot(),
                 getSimulationStatus: () => this.readSimulationStatus(),
                 startInitialLayout: (elements: unknown, options: unknown) => this.startInitialLayoutDirect(
@@ -633,6 +744,20 @@ export class LayoutEngine extends LayoutProcessor {
                 restoreRuntimeFormatting: (elements: unknown, intent: unknown) => this.applyRuntimeFormattingRestoreIntentInternal(
                     Array.isArray(elements) ? elements as Parameters<LayoutProcessor['simulate']>[0] : [],
                     (intent && typeof intent === 'object' ? intent : {}) as RuntimeIntent
+                ),
+                applyRuntimeTextEdit: (elements: unknown, intent: unknown) => this.applyRuntimeTextEditIntentInternal(
+                    Array.isArray(elements) ? elements as Parameters<LayoutProcessor['simulate']>[0] : [],
+                    (intent && typeof intent === 'object' ? intent : {}) as RuntimeIntent
+                ),
+                undoRuntimeIntent: (elements: unknown, intent: unknown) => this.applyRuntimeHistoryIntentInternal(
+                    Array.isArray(elements) ? elements as Parameters<LayoutProcessor['simulate']>[0] : [],
+                    (intent && typeof intent === 'object' ? intent : {}) as RuntimeIntent,
+                    'undo'
+                ),
+                redoRuntimeIntent: (elements: unknown, intent: unknown) => this.applyRuntimeHistoryIntentInternal(
+                    Array.isArray(elements) ? elements as Parameters<LayoutProcessor['simulate']>[0] : [],
+                    (intent && typeof intent === 'object' ? intent : {}) as RuntimeIntent,
+                    'redo'
                 )
             },
             { name: requestName, payload },
@@ -757,6 +882,17 @@ export class LayoutEngine extends LayoutProcessor {
     private readWorldViewport(request: WorldViewportRequest): ViewportHandle {
         const snapshot = this.getLastPrintPipelineSnapshot();
         return buildWorldViewportHandle({
+            pageCount: snapshot.pages.length,
+            pageSize: LayoutUtils.getPageDimensions(this.lastResolvedConfig),
+            config: this.lastResolvedConfig,
+            pages: snapshot.pages,
+            pageCaptures: snapshot.reader.world?.pageCaptures ?? []
+        }, request);
+    }
+
+    private readVisibleWorldViewport(request: WorldViewportRequest): ViewportHandle {
+        const snapshot = this.getLastPrintPipelineSnapshot();
+        return buildVisibleWorldViewportHandle({
             pageCount: snapshot.pages.length,
             pageSize: LayoutUtils.getPageDimensions(this.lastResolvedConfig),
             config: this.lastResolvedConfig,
@@ -941,6 +1077,15 @@ export class LayoutEngine extends LayoutProcessor {
         if (kind === 'formatting-restore' || kind === 'restore-formatting') {
             return this.applyRuntimeFormattingRestoreIntentInternal(elements, intent);
         }
+        if (kind === 'text-edit' || kind === 'textEdit' || kind === 'edit-text') {
+            return this.applyRuntimeTextEditIntentInternal(elements, intent);
+        }
+        if (kind === 'undo' || kind === 'undo-runtime-intent') {
+            return this.applyRuntimeHistoryIntentInternal(elements, intent, 'undo');
+        }
+        if (kind === 'redo' || kind === 'redo-runtime-intent') {
+            return this.applyRuntimeHistoryIntentInternal(elements, intent, 'redo');
+        }
         return {
             changed: false,
             reason: 'unsupported-runtime-intent'
@@ -1001,6 +1146,306 @@ export class LayoutEngine extends LayoutProcessor {
             ...(Number.isFinite(Number(target.sourceStart)) ? { sourceStart: Number(target.sourceStart) } : {}),
             ...(Number.isFinite(Number(target.sourceEnd)) ? { sourceEnd: Number(target.sourceEnd) } : {})
         };
+    }
+
+    private resolveRuntimeTextEditTarget(intent: RuntimeIntent): {
+        sourceId: string;
+        sourceStart?: number;
+        sourceEnd?: number;
+        offset?: number;
+    } {
+        const target = intent.target && typeof intent.target === 'object'
+            ? intent.target as RuntimeFormattingTarget & Record<string, unknown>
+            : {};
+        const sourceId = String(target.sourceId || target.containerKey || target.boxTargetId || '').trim();
+        const rawStart = target.sourceStart ?? intent.start;
+        const rawEnd = target.sourceEnd ?? intent.end;
+        const rawOffset = target.sourceOffset ?? intent.offset ?? rawStart;
+        return {
+            sourceId,
+            ...(Number.isFinite(Number(rawStart)) ? { sourceStart: Math.max(0, Number(rawStart)) } : {}),
+            ...(Number.isFinite(Number(rawEnd)) ? { sourceEnd: Math.max(0, Number(rawEnd)) } : {}),
+            ...(Number.isFinite(Number(rawOffset)) ? { offset: Math.max(0, Number(rawOffset)) } : {})
+        };
+    }
+
+    private isRuntimeTextBlock(element: Element | null | undefined): element is Element {
+        if (!element) return false;
+        if (typeof element.content === 'string' && (!Array.isArray(element.children) || element.children.length === 0)) return true;
+        if (!Array.isArray(element.children) || element.children.length === 0) return false;
+        return element.children.every((child: any) =>
+            child?.type === 'text'
+            || child?.type === 'inline'
+            || child?.type === 'image'
+            || child?.type === 'inline-box'
+            || typeof child?.content === 'string'
+        );
+    }
+
+    private applyRuntimeTextEditContentOnlyUpdate(options: {
+        session: unknown;
+        actor: RuntimeActor | null;
+        sourceElement: Element;
+        previousSnapshot: Record<string, unknown>;
+        history: unknown;
+        normalizedSourceId: string;
+        affectedFrontier: unknown;
+        touchedSourceIds: string[];
+        source?: string;
+    }): RuntimeIntentResult | null {
+        const {
+            session,
+            actor,
+            sourceElement,
+            previousSnapshot,
+            history,
+            normalizedSourceId,
+            affectedFrontier,
+            touchedSourceIds,
+            source = 'runtime-text-edit'
+        } = options;
+        if (!session || !actor) return null;
+        const runtimeSession = session as {
+            getRegisteredActors?(): readonly RuntimeActor[];
+            applyContentOnlyActorUpdates?(
+                pages: readonly unknown[],
+                currentPageBoxes: unknown[],
+                actors: readonly RuntimeActor[],
+                contextBase: Record<string, unknown>
+            ): { patchedActors: number; pageIndexes: number[] };
+        };
+        if (typeof runtimeSession.applyContentOnlyActorUpdates !== 'function') return null;
+        if (!actor.rebuildLiveFlowBox?.() && !actor.setLiveContent?.(String(sourceElement.content || ''))) {
+            return null;
+        }
+
+        const pageIndex = Number.isFinite(Number((affectedFrontier as any)?.pageIndex))
+            ? Math.max(0, Math.floor(Number((affectedFrontier as any).pageIndex)))
+            : 0;
+        const contextBase = this.buildRuntimeFormattingContext(session, pageIndex);
+        const pages = this.getLastPrintPipelineSnapshot().pages;
+        const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
+        const visibleCandidate = refreshRuntimeActorHostChain(actors, actor);
+        const redrawActor = (candidate: RuntimeActor): { patchedActors: number; pageIndexes: number[] } =>
+            runtimeSession.applyContentOnlyActorUpdates?.(pages, [], [candidate], contextBase) ?? { patchedActors: 0, pageIndexes: [] };
+        try {
+            const { visibleActor, redraw } = redrawRuntimeActorThroughHosts(actors, visibleCandidate, redrawActor);
+            if (Number(redraw?.patchedActors || 0) === 0) {
+                return null;
+            }
+            return {
+                changed: true,
+                kind: 'content-only',
+                sourceId: normalizedSourceId,
+                actorId: actor.actorId,
+                visibleActorId: visibleActor.actorId,
+                frontier: affectedFrontier,
+                history,
+                redraw,
+                update: {
+                    kind: 'content-only',
+                    source,
+                    actorIds: [actor.actorId].filter((id): id is string => !!id),
+                    sourceIds: touchedSourceIds,
+                    pageIndexes: redraw.pageIndexes || []
+                },
+                pageIndexes: redraw.pageIndexes || [],
+                pages
+            };
+        } catch (error) {
+            if (isContentOnlyGeometryMismatch(error)) {
+                return null;
+            }
+            restoreRuntimeElementSourceSnapshot(sourceElement, previousSnapshot);
+            actor.rebuildLiveFlowBox?.();
+            throw error;
+        }
+    }
+
+    private applyRuntimeTextEditIntentInternal(
+        _elements: Parameters<LayoutProcessor['simulate']>[0],
+        intent: RuntimeIntent = {}
+    ): RuntimeIntentResult {
+        const elements = _elements as Element[];
+        const target = this.resolveRuntimeTextEditTarget(intent);
+        if (!target.sourceId) {
+            return {
+                changed: false,
+                reason: 'missing-source-id'
+            };
+        }
+        const operation = String(intent.operation || '').trim();
+        if (!operation) {
+            return {
+                changed: false,
+                reason: 'missing-text-edit-operation',
+                sourceId: target.sourceId
+            };
+        }
+        const container = findRuntimeElementContainerBySourceId(elements, target.sourceId);
+        if (!container || !this.isRuntimeTextBlock(container.element)) {
+            return {
+                changed: false,
+                reason: 'unsupported-text-edit-target',
+                sourceId: target.sourceId
+            };
+        }
+
+        const sourceElement = container.element;
+        const normalizedSourceId = LayoutUtils.normalizeAuthorSourceId(target.sourceId) || target.sourceId;
+        const previousPages = this.getLastPrintPipelineSnapshot().pages as any[];
+        const affectedFrontier = resolveRuntimeSourceFrontierFromPages(previousPages, target.sourceId);
+        const beforeNodes = container.nodes.map((node) => cloneRuntimeJsonValue(node));
+        const beforeSnapshots = container.nodes.map((node) => cloneRuntimeElementSourceSnapshot(node));
+        const beforeSourceIds = container.nodes.map((node) =>
+            LayoutUtils.normalizeAuthorSourceId(node.properties?.sourceId) || String(node.properties?.sourceId || '')
+        );
+        const previousText = runtimeInlineSourceText(sourceElement);
+        const clampOffset = (value: number | undefined): number =>
+            Math.min(previousText.length, Math.max(0, Number.isFinite(Number(value)) ? Number(value) : previousText.length));
+        let changed = false;
+        let editSummary: Record<string, unknown> = {};
+        let touchedSourceIds: string[] = [normalizedSourceId];
+        let contentOnlyCandidate = false;
+
+        if (operation === 'insertText' || operation === 'insert-text') {
+            const text = String(intent.text ?? '');
+            const offset = clampOffset(target.offset);
+            if (!text) {
+                return {
+                    changed: false,
+                    reason: 'empty-insert-text',
+                    sourceId: normalizedSourceId
+                };
+            }
+            changed = applyRuntimeInlineTextInsert(sourceElement, text, offset);
+            editSummary = { operation: 'insertText', offset, textLength: text.length };
+            touchedSourceIds = [normalizedSourceId];
+            contentOnlyCandidate = true;
+        } else if (operation === 'deleteText' || operation === 'delete-text') {
+            const start = clampOffset(target.sourceStart ?? target.offset);
+            const end = clampOffset(target.sourceEnd);
+            if (end <= start) {
+                return {
+                    changed: false,
+                    reason: 'empty-delete-range',
+                    sourceId: normalizedSourceId
+                };
+            }
+            changed = applyRuntimeInlineTextDelete(sourceElement, start, end);
+            editSummary = { operation: 'deleteText', start, end };
+            touchedSourceIds = [normalizedSourceId];
+            contentOnlyCandidate = true;
+        } else if (operation === 'splitParagraph' || operation === 'split-paragraph') {
+            const offset = clampOffset(target.offset);
+            const nextSourceId = createRuntimeSplitSourceId(normalizedSourceId, elements);
+            const afterElement = cloneRuntimeJsonValue(sourceElement);
+            const split = splitRuntimeInlineSourceElement(sourceElement, offset);
+            sourceElement.content = split.before.content as string;
+            sourceElement.children = split.before.children as Element[];
+            afterElement.content = split.after.content as string;
+            afterElement.children = split.after.children as Element[] | undefined;
+            afterElement.name = nextSourceId;
+            afterElement.properties = {
+                ...(afterElement.properties || {}),
+                sourceId: nextSourceId
+            };
+            container.nodes.splice(container.index + 1, 0, afterElement);
+            changed = true;
+            editSummary = { operation: 'splitParagraph', offset, insertedSourceId: nextSourceId };
+            touchedSourceIds = [normalizedSourceId, nextSourceId];
+        } else if (operation === 'mergeParagraphBackward' || operation === 'merge-paragraph-backward') {
+            if (container.index <= 0) {
+                return {
+                    changed: false,
+                    reason: 'no-previous-paragraph',
+                    sourceId: normalizedSourceId
+                };
+            }
+            const previousElement = container.nodes[container.index - 1];
+            if (!this.isRuntimeTextBlock(previousElement) || previousElement.type !== sourceElement.type) {
+                return {
+                    changed: false,
+                    reason: 'incompatible-previous-paragraph',
+                    sourceId: normalizedSourceId
+                };
+            }
+            const previousSourceId = LayoutUtils.normalizeAuthorSourceId(previousElement.properties?.sourceId) || String(previousElement.properties?.sourceId || '');
+            appendRuntimeInlineSourceElementText(previousElement, sourceElement);
+            container.nodes.splice(container.index, 1);
+            changed = true;
+            editSummary = { operation: 'mergeParagraphBackward', mergedIntoSourceId: previousSourceId };
+            touchedSourceIds = [normalizedSourceId, previousSourceId].filter(Boolean);
+        } else {
+            return {
+                changed: false,
+                reason: 'unsupported-text-edit-operation',
+                sourceId: normalizedSourceId
+            };
+        }
+
+        if (!changed) {
+            return {
+                changed: false,
+                reason: 'already-current',
+                sourceId: normalizedSourceId
+            };
+        }
+        for (const element of [...container.ancestors, ...container.nodes]) {
+            clearRuntimeMaterializationState(element);
+        }
+        const afterSourceIds = container.nodes.map((node) =>
+            LayoutUtils.normalizeAuthorSourceId(node.properties?.sourceId) || String(node.properties?.sourceId || '')
+        );
+        const history = {
+            kind: 'text-edit',
+            target: {
+                sourceId: normalizedSourceId,
+                ...(target.offset !== undefined ? { offset: target.offset } : {}),
+                ...(target.sourceStart !== undefined ? { sourceStart: target.sourceStart } : {}),
+                ...(target.sourceEnd !== undefined ? { sourceEnd: target.sourceEnd } : {})
+            },
+            edit: editSummary,
+            before: {
+                sourceIds: beforeSourceIds,
+                snapshots: beforeSnapshots
+            },
+            after: {
+                sourceIds: afterSourceIds,
+                snapshots: container.nodes.map((node) => cloneRuntimeElementSourceSnapshot(node))
+            },
+            frontier: cloneRuntimeJsonValue(affectedFrontier || null)
+        };
+
+        if (contentOnlyCandidate) {
+            const contentOnlyResult = this.applyRuntimeTextEditContentOnlyUpdate({
+                session: this.getCurrentLayoutSession(),
+                actor: this.resolveRuntimeFormattingActor(this.getCurrentLayoutSession(), { sourceId: target.sourceId }),
+                sourceElement,
+                previousSnapshot: beforeSnapshots[container.index] || cloneRuntimeElementSourceSnapshot(sourceElement),
+                history,
+                normalizedSourceId,
+                affectedFrontier,
+                touchedSourceIds
+            });
+            if (contentOnlyResult) return contentOnlyResult;
+        }
+
+        try {
+            const replay = this.applyRuntimeGeometryReplay(elements, affectedFrontier, 'runtime-text-edit', resolveRuntimeReplayUntilIntent(intent));
+            return {
+                ...replay,
+                sourceId: normalizedSourceId,
+                history,
+                update: {
+                    ...(replay.update || { kind: 'geometry', source: 'runtime-text-edit', actorIds: [], sourceIds: [], pageIndexes: [] }),
+                    sourceIds: touchedSourceIds
+                }
+            };
+        } catch (error) {
+            container.nodes.splice(0, container.nodes.length, ...beforeNodes.map((node) => cloneRuntimeJsonValue(node)));
+            throw error;
+        }
     }
 
     private resolveRuntimeFormattingActor(session: unknown, target: RuntimeFormattingTarget = {}): RuntimeActor | null {
@@ -1076,6 +1521,268 @@ export class LayoutEngine extends LayoutProcessor {
             before: cloneRuntimeJsonValue(before),
             after: cloneRuntimeJsonValue(after),
             frontier: cloneRuntimeJsonValue(frontier || null)
+        };
+    }
+
+    private extractRuntimeHistoryRecord(intent: RuntimeIntent): { history: Record<string, any> | null; entry: Record<string, any> | null } {
+        const direct = intent && typeof intent === 'object' ? intent as Record<string, unknown> : {};
+        const candidate = direct.entry || direct;
+        if (!candidate || typeof candidate !== 'object') {
+            return { history: null, entry: null };
+        }
+        const entry = candidate as Record<string, any>;
+        const history = entry.history && typeof entry.history === 'object'
+            ? entry.history as Record<string, any>
+            : entry;
+        return {
+            history: history && typeof history === 'object' ? history : null,
+            entry
+        };
+    }
+
+    private normalizeRuntimeHistorySourceIds(value: unknown): string[] {
+        if (!Array.isArray(value)) return [];
+        return value
+            .map((entry) => LayoutUtils.normalizeAuthorSourceId(entry) || String(entry || '').trim())
+            .filter(Boolean);
+    }
+
+    private normalizeRuntimeHistorySnapshots(value: unknown): Record<string, unknown>[] {
+        if (!Array.isArray(value)) return [];
+        return value
+            .filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === 'object')
+            .map((entry) => cloneRuntimeJsonValue(entry));
+    }
+
+    private selectRuntimeHistorySnapshots(
+        side: Record<string, unknown>,
+        sourceIds: readonly string[]
+    ): { sourceIds: string[]; snapshots: Record<string, unknown>[] } {
+        const allSourceIds = this.normalizeRuntimeHistorySourceIds(side.sourceIds);
+        const allSnapshots = this.normalizeRuntimeHistorySnapshots(side.snapshots);
+        if (!sourceIds.length) {
+            return {
+                sourceIds: allSourceIds,
+                snapshots: allSnapshots
+            };
+        }
+        const selectedSourceIds: string[] = [];
+        const selectedSnapshots: Record<string, unknown>[] = [];
+        for (const sourceId of sourceIds) {
+            const index = allSourceIds.indexOf(sourceId);
+            if (index < 0 || !allSnapshots[index]) continue;
+            selectedSourceIds.push(sourceId);
+            selectedSnapshots.push(allSnapshots[index]);
+        }
+        return {
+            sourceIds: selectedSourceIds,
+            snapshots: selectedSnapshots
+        };
+    }
+
+    private findRuntimeHistoryContainerForSourceIds(elements: Element[], sourceIds: readonly string[]): RuntimeElementContainerPath | null {
+        for (const sourceId of sourceIds) {
+            const found = findRuntimeElementContainerBySourceId(elements, sourceId);
+            if (found) return found;
+        }
+        return null;
+    }
+
+    private replaceRuntimeHistorySourceSpan(options: {
+        elements: Element[];
+        currentSourceIds: readonly string[];
+        desiredSourceIds: readonly string[];
+        desiredSnapshots: readonly Record<string, unknown>[];
+    }): { changed: boolean; sourceIds: string[]; restoredElements: Element[]; ancestors: Element[] } {
+        const desiredElements = options.desiredSnapshots.map((snapshot) => cloneRuntimeJsonValue(snapshot) as unknown as Element);
+        if (!desiredElements.length) {
+            return { changed: false, sourceIds: [], restoredElements: [], ancestors: [] };
+        }
+
+        const searchIds = [...options.currentSourceIds, ...options.desiredSourceIds].filter(Boolean);
+        const container = this.findRuntimeHistoryContainerForSourceIds(options.elements, searchIds);
+        if (!container) {
+            return { changed: false, sourceIds: searchIds, restoredElements: [], ancestors: [] };
+        }
+
+        const currentSet = new Set(options.currentSourceIds.filter(Boolean));
+        let start = container.index;
+        let end = container.index + 1;
+        if (currentSet.size > 0) {
+            while (start > 0) {
+                const sourceId = LayoutUtils.normalizeAuthorSourceId(container.nodes[start - 1]?.properties?.sourceId)
+                    || String(container.nodes[start - 1]?.properties?.sourceId || '');
+                if (!currentSet.has(sourceId)) break;
+                start -= 1;
+            }
+            while (end < container.nodes.length) {
+                const sourceId = LayoutUtils.normalizeAuthorSourceId(container.nodes[end]?.properties?.sourceId)
+                    || String(container.nodes[end]?.properties?.sourceId || '');
+                if (!currentSet.has(sourceId)) break;
+                end += 1;
+            }
+        }
+
+        const currentSnapshots = container.nodes.slice(start, end).map((node) => cloneRuntimeElementSourceSnapshot(node));
+        if (
+            currentSnapshots.length === desiredElements.length
+            && currentSnapshots.every((snapshot, index) => runtimeElementSourceSnapshotsEqual(snapshot, desiredElements[index] as any))
+        ) {
+            return {
+                changed: false,
+                sourceIds: options.desiredSourceIds.filter(Boolean),
+                restoredElements: desiredElements,
+                ancestors: container.ancestors
+            };
+        }
+
+        const currentElements = container.nodes.slice(start, end);
+        let restoredElements = desiredElements;
+        if (currentElements.length === 1 && desiredElements.length === 1) {
+            restoreRuntimeElementSourceSnapshot(currentElements[0], desiredElements[0] as any);
+            restoredElements = [currentElements[0]];
+        } else {
+            container.nodes.splice(start, end - start, ...desiredElements);
+        }
+        for (const element of [...container.ancestors, ...restoredElements]) {
+            clearRuntimeMaterializationState(element);
+        }
+        return {
+            changed: true,
+            sourceIds: options.desiredSourceIds.filter(Boolean),
+            restoredElements,
+            ancestors: container.ancestors
+        };
+    }
+
+    private applyRuntimeHistoryIntentInternal(
+        _elements: Parameters<LayoutProcessor['simulate']>[0],
+        intent: RuntimeIntent = {},
+        direction: 'undo' | 'redo' = 'undo'
+    ): RuntimeIntentResult {
+        const elements = _elements as Element[];
+        const { history, entry } = this.extractRuntimeHistoryRecord(intent);
+        if (!history) {
+            return {
+                changed: false,
+                reason: 'missing-runtime-history'
+            };
+        }
+
+        const historyKind = String(history.kind || '').trim();
+        const source = direction === 'undo' ? 'runtime-history-undo' : 'runtime-history-redo';
+        const desiredSide = direction === 'undo' ? 'before' : 'after';
+        const currentSide = direction === 'undo' ? 'after' : 'before';
+        let restore: { changed: boolean; sourceIds: string[]; restoredElements: Element[]; ancestors: Element[] } | null = null;
+        let affectedFrontier = history.frontier ?? null;
+
+        if (historyKind === 'text-edit') {
+            const current = history[currentSide] && typeof history[currentSide] === 'object' ? history[currentSide] as Record<string, unknown> : {};
+            const desired = history[desiredSide] && typeof history[desiredSide] === 'object' ? history[desiredSide] as Record<string, unknown> : {};
+            const touchedSourceIds = this.normalizeRuntimeHistorySourceIds((entry?.update as any)?.sourceIds);
+            const contentOnlyRestore = String((entry?.update as any)?.kind || '').trim() === 'content-only' && touchedSourceIds.length > 0;
+            const currentSelection = this.selectRuntimeHistorySnapshots(current, contentOnlyRestore ? touchedSourceIds : []);
+            const desiredSelection = this.selectRuntimeHistorySnapshots(desired, contentOnlyRestore ? touchedSourceIds : []);
+            restore = this.replaceRuntimeHistorySourceSpan({
+                elements,
+                currentSourceIds: currentSelection.sourceIds,
+                desiredSourceIds: desiredSelection.sourceIds,
+                desiredSnapshots: desiredSelection.snapshots
+            });
+        } else if (historyKind === 'formatting') {
+            const target = history.target && typeof history.target === 'object' ? history.target as Record<string, unknown> : {};
+            const sourceId = LayoutUtils.normalizeAuthorSourceId(target.sourceId) || String(target.sourceId || '');
+            const desiredSnapshot = history[desiredSide] && typeof history[desiredSide] === 'object'
+                ? history[desiredSide] as Record<string, unknown>
+                : null;
+            if (!sourceId || !desiredSnapshot) {
+                return {
+                    changed: false,
+                    reason: 'unsupported-runtime-history',
+                    historyKind
+                };
+            }
+            restore = this.replaceRuntimeHistorySourceSpan({
+                elements,
+                currentSourceIds: [sourceId],
+                desiredSourceIds: [sourceId],
+                desiredSnapshots: [desiredSnapshot]
+            });
+        } else {
+            return {
+                changed: false,
+                reason: 'unsupported-runtime-history',
+                historyKind
+            };
+        }
+
+        if (!restore || !restore.restoredElements.length) {
+            return {
+                changed: false,
+                reason: restore?.changed === false ? 'already-current' : 'history-target-not-found',
+                historyKind
+            };
+        }
+
+        if (!restore.changed) {
+            return {
+                changed: false,
+                reason: 'already-current',
+                historyKind,
+                sourceId: restore.sourceIds[0]
+            };
+        }
+
+        const contentOnlyCandidate = String((entry?.update as any)?.kind || '').trim() === 'content-only'
+            && restore.sourceIds.length === 1
+            && restore.restoredElements.length === 1;
+        if (contentOnlyCandidate) {
+            const restoredElement = restore.restoredElements[0];
+            const previousSnapshot = history[currentSide] && typeof history[currentSide] === 'object'
+                ? (Array.isArray((history[currentSide] as any).snapshots)
+                    ? (history[currentSide] as any).snapshots[0]
+                    : history[currentSide])
+                : cloneRuntimeElementSourceSnapshot(restoredElement);
+            const contentOnlyResult = this.applyRuntimeTextEditContentOnlyUpdate({
+                session: this.getCurrentLayoutSession(),
+                actor: this.resolveRuntimeFormattingActor(this.getCurrentLayoutSession(), { sourceId: restore.sourceIds[0] }),
+                sourceElement: restoredElement,
+                previousSnapshot: previousSnapshot && typeof previousSnapshot === 'object'
+                    ? previousSnapshot as Record<string, unknown>
+                    : cloneRuntimeElementSourceSnapshot(restoredElement),
+                history: {
+                    kind: direction,
+                    restored: cloneRuntimeJsonValue(history)
+                },
+                normalizedSourceId: restore.sourceIds[0],
+                affectedFrontier,
+                touchedSourceIds: restore.sourceIds,
+                source
+            });
+            if (contentOnlyResult) {
+                return {
+                    ...contentOnlyResult,
+                    history: {
+                        kind: direction,
+                        restored: cloneRuntimeJsonValue(history)
+                    }
+                };
+            }
+        }
+
+        const replay = this.applyRuntimeGeometryReplay(elements, affectedFrontier, source, resolveRuntimeReplayUntilIntent(intent));
+        return {
+            ...replay,
+            sourceId: restore.sourceIds[0],
+            history: {
+                kind: direction,
+                restored: cloneRuntimeJsonValue(history)
+            },
+            update: {
+                ...(replay.update || { kind: 'geometry', source, actorIds: [], sourceIds: [], pageIndexes: [] }),
+                source,
+                sourceIds: restore.sourceIds
+            }
         };
     }
 

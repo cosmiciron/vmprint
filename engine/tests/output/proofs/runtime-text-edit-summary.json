@@ -1,0 +1,332 @@
+{
+  "generatedAt": "2026-06-12T12:06:18.109Z",
+  "status": "pass",
+  "targetSourceId": "edit-target",
+  "insertedSourceId": "author:edit-target:split-1",
+  "timing": {
+    "initialMs": 29.285,
+    "insertMs": 1.788,
+    "splitMs": 3.893,
+    "mergeMs": 3.277,
+    "deleteSmallMs": 0.432,
+    "deleteGeometryInitialMs": 2.896,
+    "deleteGeometryMs": 2.041
+  },
+  "counts": {
+    "initialPages": 1,
+    "initialBoxes": 4,
+    "finalPages": 1,
+    "finalBoxes": 4,
+    "deleteGeometryInitialPages": 1,
+    "deleteGeometryInitialBoxes": 4,
+    "deleteGeometryFinalPages": 1,
+    "deleteGeometryFinalBoxes": 4
+  },
+  "results": {
+    "insert": {
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ],
+      "sourceIds": [
+        "author:edit-target"
+      ],
+      "frontier": null,
+      "edit": {
+        "operation": "insertText",
+        "offset": 6,
+        "textLength": 8
+      }
+    },
+    "split": {
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ],
+      "sourceIds": [
+        "author:edit-target",
+        "author:edit-target:split-1"
+      ],
+      "frontier": {
+        "pageIndex": 0,
+        "cursorY": 167.359375,
+        "worldY": 167.359375,
+        "sourceId": "author:edit-target"
+      },
+      "edit": {
+        "operation": "splitParagraph",
+        "offset": 31,
+        "insertedSourceId": "author:edit-target:split-1"
+      }
+    },
+    "merge": {
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ],
+      "sourceIds": [
+        "author:edit-target:split-1",
+        "author:edit-target"
+      ],
+      "frontier": {
+        "pageIndex": 0,
+        "cursorY": 208.4328125,
+        "worldY": 208.4328125,
+        "sourceId": "author:edit-target:split-1"
+      },
+      "edit": {
+        "operation": "mergeParagraphBackward",
+        "mergedIntoSourceId": "author:edit-target"
+      }
+    },
+    "deleteSmall": {
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ],
+      "sourceIds": [
+        "author:edit-target"
+      ],
+      "frontier": null,
+      "edit": {
+        "operation": "deleteText",
+        "start": 6,
+        "end": 14
+      }
+    },
+    "deleteGeometry": {
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ],
+      "sourceIds": [
+        "author:edit-target"
+      ],
+      "frontier": {
+        "pageIndex": 0,
+        "cursorY": 161.9,
+        "worldY": 161.9,
+        "sourceId": "author:edit-target"
+      },
+      "edit": {
+        "operation": "deleteText",
+        "start": 12,
+        "end": 210
+      }
+    }
+  },
+  "textEvidence": {
+    "initialTargetBoxes": [
+      "Alpha target sentence. Bravo target sentence."
+    ],
+    "finalTargetBoxes": [
+      "Alpha target sentence. Bravo target sentence."
+    ],
+    "deleteGeometryBeforeTargetBoxes": [
+      "Short target with a deliberately long removable tail that wraps across several narrow lines, making the paragraph tall enoughthat deleting this removable tail must reduce box height and require geometry replay."
+    ],
+    "deleteGeometryAfterTargetBoxes": [
+      "Short target."
+    ]
+  },
+  "visualProof": {
+    "outputDir": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof",
+    "stages": [
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/01-before.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/01-before.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/01-before.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/01-before.json --output /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/01-before.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/01-before.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 67.56 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.23 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/02-after-insert.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/02-after-insert.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/02-after-insert.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/02-after-insert.json --output /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/02-after-insert.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/02-after-insert.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 66.74 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.26 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/03-after-split.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/03-after-split.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/03-after-split.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/03-after-split.json --output /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/03-after-split.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/03-after-split.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 68.94 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.37 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/04-after-merge.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/04-after-merge.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/04-after-merge.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/04-after-merge.json --output /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/04-after-merge.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/04-after-merge.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 68.09 (1 pages)",
+          "[vmprint] warm  layoutMs: 3.85 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/05-after-delete-content-only.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/05-after-delete-content-only.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/05-after-delete-content-only.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/05-after-delete-content-only.json --output /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/05-after-delete-content-only.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/05-after-delete-content-only.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 66.59 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.13 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/06-before-delete-geometry.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/06-before-delete-geometry.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/06-before-delete-geometry.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/06-before-delete-geometry.json --output /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/06-before-delete-geometry.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/06-before-delete-geometry.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 70.40 (1 pages)",
+          "[vmprint] warm  layoutMs: 3.96 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/07-after-delete-geometry.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/07-after-delete-geometry.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/07-after-delete-geometry.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/07-after-delete-geometry.json --output /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/07-after-delete-geometry.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-text-edit-proof/stages/07-after-delete-geometry.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 71.73 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.16 (avg x2)"
+        ],
+        "stderr": []
+      }
+    ]
+  },
+  "finalElements": [
+    {
+      "type": "h1",
+      "sourceId": "proof-heading",
+      "content": "Runtime Text Edit Proof"
+    },
+    {
+      "type": "p",
+      "sourceId": "lead-anchor",
+      "content": "Lead paragraph remains ahead of the edit target so the replay frontier can be inspected."
+    },
+    {
+      "type": "p",
+      "sourceId": "edit-target",
+      "content": "Alpha target sentence. Bravo target sentence."
+    },
+    {
+      "type": "p",
+      "sourceId": "tail-anchor",
+      "content": "Tail paragraph should remain after split and merge operations."
+    }
+  ],
+  "deleteGeometryFinalElements": [
+    {
+      "type": "h1",
+      "sourceId": "delete-geometry-heading",
+      "content": "Runtime Delete Geometry Proof"
+    },
+    {
+      "type": "p",
+      "sourceId": "delete-geometry-lead",
+      "content": "Lead anchor for geometry-changing delete."
+    },
+    {
+      "type": "p",
+      "sourceId": "edit-target",
+      "content": "Short target."
+    },
+    {
+      "type": "p",
+      "sourceId": "delete-geometry-tail",
+      "content": "Tail anchor should move upward after the geometry-changing delete."
+    }
+  ],
+  "events": [
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    }
+  ],
+  "assertions": {
+    "insertChanged": true,
+    "splitCreatedSibling": true,
+    "mergeRemovedSibling": true,
+    "deleteSmallStayedContentOnly": true,
+    "deleteGeometryUsedGeometryReplay": true,
+    "protocolEmittedEvents": true,
+    "insertStayedContentOnly": true,
+    "structuralEditsUsedGeometryReplay": true
+  }
+}

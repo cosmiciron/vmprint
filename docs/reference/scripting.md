@@ -341,6 +341,7 @@ Current engine protocol requests:
 - `layout.pageViewport`
 - `layout.defaultViewport`
 - `layout.worldViewport`
+- `layout.visibleWorldViewport`
 - `layout.profileSnapshot`
 - `layout.simulationStatus`
 - `layout.startInitialLayout`
@@ -350,6 +351,8 @@ Current engine protocol requests:
 - `layout.applyRuntimeFormatting`
 - `layout.restoreRuntimeFormatting`
 - `layout.applyRuntimeIntent`
+- `layout.undoRuntimeIntent`
+- `layout.redoRuntimeIntent`
 
 System scripts may emit matching events with `emit(name, payload)`. Host-facing
 consumers should treat returned payloads and emitted event payloads as snapshots.
@@ -357,7 +360,59 @@ Viewport replay requests also emit `layout.replayProgress` progress snapshots.
 The engine keeps replay continuations private; protocol payloads contain a
 `replay.replayId` and cloned page snapshots, not live runner/session objects.
 
+`layout.applyRuntimeIntent` currently accepts formatting intents,
+source-backed text-edit intents, and history intents. Formatting intents may
+target a whole source block or a text range with `target.sourceStart` and
+`target.sourceEnd`. Paint range patches such as `color` and `backgroundColor`
+redraw content in place when geometry is unchanged; metric range patches such
+as `fontSize`, `fontWeight`, and `fontStyle` replay geometry when measured
+layout changes.
+
+Text-edit intents are for engine-owned system behavior, not direct document
+authoring. Supported simple text-block operations:
+
+- `insertText`: inserts `text` at `target.sourceOffset` or `offset`
+- `deleteText`: removes text from `target.sourceStart` to `target.sourceEnd`
+- `splitParagraph`: splits a simple text paragraph at `target.sourceOffset` and
+  inserts a sibling with a deterministic `sourceId`
+- `mergeParagraphBackward`: merges a simple text paragraph into its previous
+  compatible sibling and removes the merged source block
+
+Example system request payload:
+
+```js
+{
+  elements: docElements,
+  intent: {
+    kind: "text-edit",
+    operation: "splitParagraph",
+    target: {
+      sourceId: "body-paragraph",
+      sourceOffset: 42
+    }
+  }
+}
+```
+
 This is the preferred structural mutation primitive for compound or ambiguous elements, where `setContent(...)` may not have a clear meaning.
+
+Runtime intent results may include a `history` snapshot. System scripts can
+restore that entry through `layout.undoRuntimeIntent` or
+`layout.redoRuntimeIntent`, or through `layout.applyRuntimeIntent` with
+`kind: "undo"` or `kind: "redo"`. Undo restores the entry's `before` snapshot;
+redo restores the entry's `after` snapshot. The engine classifies the restore
+as content-only or geometry replay after applying the snapshot, so paint-only
+and same-height text edits stay narrow while split and merge edits replay
+geometry.
+
+Example history request payload:
+
+```js
+{
+  elements: docElements,
+  entry: runtimeIntentResult
+}
+```
 
 ### Style Mutation
 

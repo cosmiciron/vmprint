@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-06-12T07:49:42.689Z",
+  "status": "pass",
+  "request": {
+    "worldX": 0,
+    "worldY": 1593.2875000000004,
+    "width": 612,
+    "height": 240
+  },
+  "pageCount": 1,
+  "continuousPageHeight": 15667,
+  "ordinary": {
+    "segmentCount": 1,
+    "boxCount": 180,
+    "payloadBytes": 2446482
+  },
+  "visible": {
+    "segmentCount": 1,
+    "boxCount": 4,
+    "payloadBytes": 57810,
+    "payloadRatio": 0.0236,
+    "sourceRect": {
+      "x": 0,
+      "y": 1593.2875000000004,
+      "w": 612,
+      "h": 240
+    },
+    "destinationRect": {
+      "x": 0,
+      "y": 0,
+      "w": 612,
+      "h": 240
+    },
+    "eventMatches": true
+  }
+}

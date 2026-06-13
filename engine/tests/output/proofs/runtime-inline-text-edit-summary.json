@@ -1,0 +1,272 @@
+{
+  "generatedAt": "2026-06-12T12:43:51.235Z",
+  "status": "pass",
+  "targetSourceId": "inline-edit-target",
+  "splitSourceId": "author:inline-edit-target:split-1",
+  "timing": {
+    "initialMs": 31.669,
+    "formatMs": 2.615,
+    "insertMs": 1.266,
+    "deleteMs": 0.635,
+    "formatSecondMs": 0.641,
+    "splitMs": 6.04,
+    "mergeMs": 3.486
+  },
+  "results": {
+    "format": {
+      "kind": "content-only",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "insert": {
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "delete": {
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "formatSecond": {
+      "kind": "content-only",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "split": {
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "merge": {
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    }
+  },
+  "counts": {
+    "initialPages": 1,
+    "initialBoxes": 4,
+    "finalPages": 1,
+    "finalBoxes": 4
+  },
+  "textEvidence": {
+    "afterInsert": "Alpha range live target sentence. Bravo range target sentence.",
+    "afterDelete": "Alpha  sentence. Bravo range target sentence.",
+    "afterSplitFirst": "Alpha  sentence. Bravo ",
+    "afterSplitSecond": "range target sentence.",
+    "afterMerge": "Alpha  sentence. Bravo range target sentence."
+  },
+  "visualProof": {
+    "outputDir": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof",
+    "stages": [
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/01-before.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/01-before.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/01-before.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/01-before.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/01-before.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/01-before.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 83.04 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.38 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/02-after-format-range.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/02-after-format-range.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/02-after-format-range.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/02-after-format-range.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/02-after-format-range.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/02-after-format-range.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 85.93 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.52 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/03-after-insert-inside-range.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/03-after-insert-inside-range.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/03-after-insert-inside-range.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/03-after-insert-inside-range.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/03-after-insert-inside-range.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/03-after-insert-inside-range.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 87.90 (1 pages)",
+          "[vmprint] warm  layoutMs: 5.27 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/04-after-delete-styled-range.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/04-after-delete-styled-range.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/04-after-delete-styled-range.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/04-after-delete-styled-range.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/04-after-delete-styled-range.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/04-after-delete-styled-range.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 83.69 (1 pages)",
+          "[vmprint] warm  layoutMs: 5.10 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/05-after-second-format.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/05-after-second-format.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/05-after-second-format.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/05-after-second-format.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/05-after-second-format.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/05-after-second-format.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 83.99 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.77 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/06-after-split-inline.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/06-after-split-inline.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/06-after-split-inline.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/06-after-split-inline.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/06-after-split-inline.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/06-after-split-inline.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 84.73 (1 pages)",
+          "[vmprint] warm  layoutMs: 5.13 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/07-after-merge-inline.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/07-after-merge-inline.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/07-after-merge-inline.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/07-after-merge-inline.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/07-after-merge-inline.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-text-edit-proof/stages/07-after-merge-inline.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 80.52 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.85 (avg x2)"
+        ],
+        "stderr": []
+      }
+    ]
+  },
+  "finalElement": {
+    "type": "p",
+    "content": "",
+    "properties": {
+      "sourceId": "inline-edit-target",
+      "style": {
+        "backgroundColor": "#F8FAFC",
+        "borderColor": "#94A3B8",
+        "borderWidth": 1,
+        "padding": 6
+      }
+    },
+    "children": [
+      {
+        "type": "text",
+        "content": "Alpha  sentence. Bravo "
+      },
+      {
+        "type": "text",
+        "content": "range target",
+        "properties": {
+          "style": {
+            "color": "#92400E",
+            "backgroundColor": "#FDE68A"
+          }
+        }
+      },
+      {
+        "type": "text",
+        "content": " sentence."
+      }
+    ]
+  },
+  "events": [
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    }
+  ],
+  "assertions": {
+    "formatStayedContentOnly": true,
+    "insertInheritedStyle": true,
+    "deleteMergedUnstyledSiblings": true,
+    "splitPreservedStyledSibling": true,
+    "mergePreservedStyledRange": true,
+    "protocolEmittedEvents": true
+  }
+}

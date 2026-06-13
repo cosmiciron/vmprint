@@ -1,0 +1,170 @@
+{
+  "generatedAt": "2026-06-12T12:25:05.259Z",
+  "status": "pass",
+  "targetSourceId": "range-format-target",
+  "range": {
+    "start": 6,
+    "end": 18
+  },
+  "timing": {
+    "initialMs": 29.598,
+    "paintMs": 2.325,
+    "geometryMs": 3.879
+  },
+  "counts": {
+    "initialPages": 1,
+    "initialBoxes": 4,
+    "finalPages": 1,
+    "finalBoxes": 4
+  },
+  "results": {
+    "paint": {
+      "kind": "content-only",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ],
+      "sourceIds": [
+        "author:range-format-target"
+      ],
+      "frontier": null
+    },
+    "geometry": {
+      "kind": "geometry",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ],
+      "sourceIds": [
+        "author:range-format-target"
+      ],
+      "frontier": {
+        "pageIndex": 0,
+        "cursorY": 161.9,
+        "worldY": 161.9,
+        "actorIndex": 2,
+        "actorId": "actor:author:range-format-target:p:0",
+        "sourceId": "author:range-format-target"
+      }
+    }
+  },
+  "textEvidence": {
+    "initialTargetBoxes": [
+      "Alpha range target sentence. Bravo range target sentence stays nearby."
+    ],
+    "finalTargetBoxes": [
+      "Alpha range target sentence. Bravo range target sentence stays nearby."
+    ],
+    "finalSourceText": "Alpha range target sentence. Bravo range target sentence stays nearby."
+  },
+  "visualProof": {
+    "outputDir": "/Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof",
+    "stages": [
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/01-before.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/01-before.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/01-before.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/01-before.json --output /Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/01-before.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/01-before.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 76.51 (1 pages)",
+          "[vmprint] warm  layoutMs: 5.35 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/02-after-paint-range.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/02-after-paint-range.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/02-after-paint-range.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/02-after-paint-range.json --output /Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/02-after-paint-range.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/02-after-paint-range.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 79.76 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.51 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/03-after-metric-range.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/03-after-metric-range.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/03-after-metric-range.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/03-after-metric-range.json --output /Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/03-after-metric-range.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-range-formatting-proof/stages/03-after-metric-range.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 79.40 (1 pages)",
+          "[vmprint] warm  layoutMs: 4.72 (avg x2)"
+        ],
+        "stderr": []
+      }
+    ]
+  },
+  "finalElement": {
+    "type": "p",
+    "content": "",
+    "properties": {
+      "sourceId": "range-format-target",
+      "style": {
+        "backgroundColor": "#F8FAFC",
+        "borderColor": "#94A3B8",
+        "borderWidth": 1,
+        "padding": 6
+      }
+    },
+    "children": [
+      {
+        "type": "text",
+        "content": "Alpha "
+      },
+      {
+        "type": "text",
+        "content": "range target",
+        "properties": {
+          "style": {
+            "color": "#92400E",
+            "backgroundColor": "#FDE68A",
+            "fontSize": 24,
+            "fontWeight": 700
+          }
+        }
+      },
+      {
+        "type": "text",
+        "content": " sentence. Bravo range target sentence stays nearby."
+      }
+    ]
+  },
+  "events": [
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "geometry",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ]
+    }
+  ],
+  "assertions": {
+    "rangeOffsetsResolved": true,
+    "paintStayedContentOnly": true,
+    "metricFormattingUsedGeometryReplay": true,
+    "sourceTreePreservedText": true,
+    "rangeStylePersistedInSource": true,
+    "protocolEmittedEvents": true
+  }
+}

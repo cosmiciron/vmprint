@@ -130,7 +130,7 @@ export function runtimeElementSourceSnapshotsEqual(
     return JSON.stringify(left || {}) === JSON.stringify(right || {});
 }
 
-function runtimeInlinePartLength(part: any): number {
+export function runtimeInlinePartLength(part: any): number {
     if (typeof part?.content === 'string' && part.content.length > 0) return part.content.length;
     if (part?.image || part?.inlineObject || part?.type === 'image') return 1;
     if (Array.isArray(part?.children)) {
@@ -146,7 +146,7 @@ function stylesEqualForRuntimeMerge(left: Record<string, unknown> = {}, right: R
     return leftKeys.every((key) => left[key] === right[key]);
 }
 
-function mergeAdjacentRuntimeTextParts(parts: any[]): any[] {
+export function mergeAdjacentRuntimeTextParts(parts: any[]): any[] {
     const out: any[] = [];
     for (const part of parts) {
         const previous = out[out.length - 1];
@@ -166,6 +166,274 @@ function mergeAdjacentRuntimeTextParts(parts: any[]): any[] {
         out.push(part);
     }
     return out;
+}
+
+export function runtimeInlineSourceText(element: Element | null | undefined): string {
+    if (!element) return '';
+    if (typeof element.content === 'string' && element.content.length > 0) return element.content;
+    if (Array.isArray(element.children)) {
+        return element.children.map((child: any) => runtimeInlineSourceText(child)).join('');
+    }
+    return '';
+}
+
+function normalizeRuntimeInlineSourceParts(sourceElement: Element): any[] {
+    return Array.isArray(sourceElement.children) && sourceElement.children.length
+        ? sourceElement.children.map((part: any) => cloneRuntimeElementPart(part))
+        : typeof sourceElement.content === 'string' && sourceElement.content.length
+            ? [{ type: 'text', content: sourceElement.content }]
+            : [];
+}
+
+function cloneRuntimeTextPartLike(part: any, content: string): any {
+    return cloneRuntimePartWithContent(part?.type ? part : { type: 'text' }, content);
+}
+
+function editRuntimeInlinePartText(
+    part: any,
+    start: number,
+    end: number,
+    replacement: string
+): { parts: any[]; length: number; changed: boolean; inserted: boolean } {
+    const length = runtimeInlinePartLength(part);
+    if (!length) {
+        return { parts: [cloneRuntimeElementPart(part)], length, changed: false, inserted: false };
+    }
+
+    if (Array.isArray(part?.children) && !(typeof part?.content === 'string' && part.content.length > 0)) {
+        const nextChildren: any[] = [];
+        let cursor = 0;
+        let changed = false;
+        let inserted = false;
+        for (const child of part.children) {
+            const childLength = runtimeInlinePartLength(child);
+            const result = editRuntimeInlinePartText(child, start - cursor, end - cursor, inserted ? '' : replacement);
+            nextChildren.push(...result.parts);
+            changed = changed || result.changed;
+            inserted = inserted || result.inserted;
+            cursor += childLength;
+        }
+        const nextPart = {
+            ...cloneRuntimeElementPart(part),
+            content: typeof part?.content === 'string' ? part.content : '',
+            children: mergeAdjacentRuntimeTextParts(nextChildren)
+        };
+        return { parts: [nextPart], length, changed, inserted };
+    }
+
+    if (typeof part?.content === 'string' && part.content.length > 0) {
+        const localStart = Math.max(0, Math.min(part.content.length, start));
+        const localEnd = Math.max(localStart, Math.min(part.content.length, end));
+        const isInsertion = start === end && replacement.length > 0;
+        const overlapsDelete = end > 0 && start < part.content.length && end > start;
+        const containsInsertion = isInsertion && start >= 0 && start <= part.content.length;
+        if (!overlapsDelete && !containsInsertion) {
+            return { parts: [cloneRuntimeElementPart(part)], length, changed: false, inserted: false };
+        }
+
+        const parts: any[] = [];
+        if (localStart > 0) {
+            parts.push(cloneRuntimeTextPartLike(part, part.content.slice(0, localStart)));
+        }
+        if (replacement) {
+            parts.push(cloneRuntimeTextPartLike(part, replacement));
+        }
+        if (localEnd < part.content.length) {
+            parts.push(cloneRuntimeTextPartLike(part, part.content.slice(localEnd)));
+        }
+        return {
+            parts,
+            length,
+            changed: overlapsDelete || containsInsertion,
+            inserted: containsInsertion
+        };
+    }
+
+    if (part?.image || part?.inlineObject || part?.type === 'image') {
+        return { parts: [cloneRuntimeElementPart(part)], length, changed: false, inserted: false };
+    }
+
+    return { parts: [cloneRuntimeElementPart(part)], length, changed: false, inserted: false };
+}
+
+export function applyRuntimeInlineTextInsert(
+    sourceElement: Element,
+    text: string,
+    offset: number
+): boolean {
+    if (!text) return false;
+    const sourceText = runtimeInlineSourceText(sourceElement);
+    const clampedOffset = Math.max(0, Math.min(sourceText.length, offset));
+    if ((!Array.isArray(sourceElement.children) || sourceElement.children.length === 0) && typeof sourceElement.content === 'string') {
+        sourceElement.content = `${sourceElement.content.slice(0, clampedOffset)}${text}${sourceElement.content.slice(clampedOffset)}`;
+        return true;
+    }
+    const sourceParts = normalizeRuntimeInlineSourceParts(sourceElement);
+    if (!sourceParts.length) {
+        sourceElement.content = text;
+        delete (sourceElement as any).children;
+        return true;
+    }
+
+    const nextChildren: any[] = [];
+    let cursor = 0;
+    let inserted = false;
+    for (const sourcePart of sourceParts) {
+        const length = runtimeInlinePartLength(sourcePart);
+        const partStart = cursor;
+        const partEnd = cursor + length;
+        cursor = partEnd;
+        if (!inserted && clampedOffset >= partStart && clampedOffset <= partEnd && length > 0) {
+            const result = editRuntimeInlinePartText(sourcePart, clampedOffset - partStart, clampedOffset - partStart, text);
+            nextChildren.push(...result.parts);
+            inserted = result.inserted || inserted;
+            continue;
+        }
+        nextChildren.push(cloneRuntimeElementPart(sourcePart));
+    }
+    if (!inserted) {
+        nextChildren.push({ type: 'text', content: text });
+    }
+    sourceElement.content = '';
+    sourceElement.children = mergeAdjacentRuntimeTextParts(nextChildren) as Element[];
+    return runtimeInlineSourceText(sourceElement) !== sourceText;
+}
+
+export function applyRuntimeInlineTextDelete(
+    sourceElement: Element,
+    start: number,
+    end: number
+): boolean {
+    const sourceText = runtimeInlineSourceText(sourceElement);
+    const clampedStart = Math.max(0, Math.min(sourceText.length, start));
+    const clampedEnd = Math.max(clampedStart, Math.min(sourceText.length, end));
+    if (clampedEnd <= clampedStart) return false;
+    if ((!Array.isArray(sourceElement.children) || sourceElement.children.length === 0) && typeof sourceElement.content === 'string') {
+        sourceElement.content = `${sourceElement.content.slice(0, clampedStart)}${sourceElement.content.slice(clampedEnd)}`;
+        return true;
+    }
+    const sourceParts = normalizeRuntimeInlineSourceParts(sourceElement);
+    if (!sourceParts.length) return false;
+
+    const nextChildren: any[] = [];
+    let cursor = 0;
+    let changed = false;
+    for (const sourcePart of sourceParts) {
+        const length = runtimeInlinePartLength(sourcePart);
+        const partStart = cursor;
+        const partEnd = cursor + length;
+        cursor = partEnd;
+        if (!length || partEnd <= clampedStart || partStart >= clampedEnd) {
+            nextChildren.push(cloneRuntimeElementPart(sourcePart));
+            continue;
+        }
+        const result = editRuntimeInlinePartText(sourcePart, clampedStart - partStart, clampedEnd - partStart, '');
+        nextChildren.push(...result.parts);
+        changed = changed || result.changed;
+    }
+    if (!changed) return false;
+    sourceElement.content = '';
+    sourceElement.children = mergeAdjacentRuntimeTextParts(nextChildren) as Element[];
+    return true;
+}
+
+function splitRuntimeInlinePartAt(part: any, offset: number): { before: any[]; after: any[]; length: number } {
+    const length = runtimeInlinePartLength(part);
+    if (!length) return { before: [cloneRuntimeElementPart(part)], after: [], length };
+    if (offset <= 0) return { before: [], after: [cloneRuntimeElementPart(part)], length };
+    if (offset >= length) return { before: [cloneRuntimeElementPart(part)], after: [], length };
+
+    if (Array.isArray(part?.children) && !(typeof part?.content === 'string' && part.content.length > 0)) {
+        const beforeChildren: any[] = [];
+        const afterChildren: any[] = [];
+        let cursor = 0;
+        for (const child of part.children) {
+            const childLength = runtimeInlinePartLength(child);
+            const split = splitRuntimeInlinePartAt(child, offset - cursor);
+            beforeChildren.push(...split.before);
+            afterChildren.push(...split.after);
+            cursor += childLength;
+        }
+        const before = beforeChildren.length
+            ? [{
+                ...cloneRuntimeElementPart(part),
+                content: typeof part?.content === 'string' ? part.content : '',
+                children: mergeAdjacentRuntimeTextParts(beforeChildren)
+            }]
+            : [];
+        const after = afterChildren.length
+            ? [{
+                ...cloneRuntimeElementPart(part),
+                content: typeof part?.content === 'string' ? part.content : '',
+                children: mergeAdjacentRuntimeTextParts(afterChildren)
+            }]
+            : [];
+        return { before, after, length };
+    }
+
+    if (typeof part?.content === 'string' && part.content.length > 0) {
+        return {
+            before: [cloneRuntimeTextPartLike(part, part.content.slice(0, offset))],
+            after: [cloneRuntimeTextPartLike(part, part.content.slice(offset))],
+            length
+        };
+    }
+
+    return { before: [cloneRuntimeElementPart(part)], after: [], length };
+}
+
+export function splitRuntimeInlineSourceElement(sourceElement: Element, offset: number): {
+    before: Record<string, unknown>;
+    after: Record<string, unknown>;
+} {
+    const sourceText = runtimeInlineSourceText(sourceElement);
+    const clampedOffset = Math.max(0, Math.min(sourceText.length, offset));
+    if ((!Array.isArray(sourceElement.children) || sourceElement.children.length === 0) && typeof sourceElement.content === 'string') {
+        return {
+            before: { content: sourceElement.content.slice(0, clampedOffset) },
+            after: { content: sourceElement.content.slice(clampedOffset) }
+        };
+    }
+    const sourceParts = normalizeRuntimeInlineSourceParts(sourceElement);
+    const beforeChildren: any[] = [];
+    const afterChildren: any[] = [];
+    let cursor = 0;
+    for (const sourcePart of sourceParts) {
+        const length = runtimeInlinePartLength(sourcePart);
+        const partStart = cursor;
+        const split = splitRuntimeInlinePartAt(sourcePart, clampedOffset - partStart);
+        beforeChildren.push(...split.before);
+        afterChildren.push(...split.after);
+        cursor += length;
+    }
+    return {
+        before: {
+            content: '',
+            children: mergeAdjacentRuntimeTextParts(beforeChildren)
+        },
+        after: {
+            content: '',
+            children: mergeAdjacentRuntimeTextParts(afterChildren)
+        }
+    };
+}
+
+export function appendRuntimeInlineSourceElementText(targetElement: Element, sourceElement: Element): boolean {
+    if (
+        (!Array.isArray(targetElement.children) || targetElement.children.length === 0)
+        && (!Array.isArray(sourceElement.children) || sourceElement.children.length === 0)
+        && typeof targetElement.content === 'string'
+        && typeof sourceElement.content === 'string'
+    ) {
+        targetElement.content = `${targetElement.content}${sourceElement.content}`;
+        return true;
+    }
+    const targetParts = normalizeRuntimeInlineSourceParts(targetElement);
+    const sourceParts = normalizeRuntimeInlineSourceParts(sourceElement);
+    if (!sourceParts.length) return false;
+    targetElement.content = '';
+    targetElement.children = mergeAdjacentRuntimeTextParts([...targetParts, ...sourceParts]) as Element[];
+    return true;
 }
 
 function runtimePartStyleChanged(previousStyle: Record<string, unknown> = {}, patch: Record<string, unknown>): boolean {

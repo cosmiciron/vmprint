@@ -320,3 +320,63 @@ export function buildWorldViewportHandle(
         segments
     });
 }
+
+function boxIntersectsViewportRect(
+    box: Page['boxes'][number],
+    rect: { x: number; y: number; w: number; h: number }
+): boolean {
+    const x = Number(box.x ?? 0);
+    const y = Number(box.y ?? 0);
+    const w = Math.max(0, Number(box.w ?? 0));
+    const h = Math.max(0, Number(box.h ?? 0));
+    return x + w >= rect.x
+        && x <= rect.x + rect.w
+        && y + h >= rect.y
+        && y <= rect.y + rect.h;
+}
+
+function regionIntersectsViewportRect(
+    region: Record<string, unknown>,
+    rect: { x: number; y: number; w: number; h: number }
+): boolean {
+    const x = Number(region.x ?? 0);
+    const y = Number(region.y ?? 0);
+    const w = Math.max(0, Number(region.w ?? region.width ?? 0));
+    const h = Math.max(0, Number(region.h ?? region.height ?? 0));
+    return x + w >= rect.x
+        && x <= rect.x + rect.w
+        && y + h >= rect.y
+        && y <= rect.y + rect.h;
+}
+
+function projectPageToViewportRect(
+    page: Page,
+    rect: { x: number; y: number; w: number; h: number }
+): Page {
+    const boxes = page.boxes.filter((box) => boxIntersectsViewportRect(box, rect));
+    const debugRegions = Array.isArray(page.debugRegions)
+        ? page.debugRegions.filter((region) => regionIntersectsViewportRect(region as unknown as Record<string, unknown>, rect))
+        : page.debugRegions;
+    return {
+        ...page,
+        boxes,
+        debugRegions
+    };
+}
+
+export function buildVisibleWorldViewportHandle(
+    snapshot: ViewportSnapshotSource,
+    request: WorldViewportRequest
+): WorldViewportHandle {
+    const viewport = buildWorldViewportHandle(snapshot, request);
+    return new WorldViewportHandle({
+        pageCount: viewport.pageCount,
+        pageSize: viewport.pageSize,
+        config: viewport.config,
+        worldRect: viewport.worldRect,
+        segments: viewport.segments.map((segment) => ({
+            ...segment,
+            page: projectPageToViewportRect(segment.page, segment.sourceRect)
+        }))
+    });
+}

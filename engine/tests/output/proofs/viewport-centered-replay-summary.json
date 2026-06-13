@@ -1,0 +1,152 @@
+{
+  "generatedAt": "2026-06-12T09:31:06.846Z",
+  "status": "pass",
+  "document": {
+    "path": "/Users/cosmiciron/Projects/layoutmaster/demos/assets/html-atlas-big-326-pages.json",
+    "publicationMode": "continuous",
+    "printBreakPolicy": "ignore",
+    "targetName": "viewportReplayTarget"
+  },
+  "requests": {
+    "initialStopY": 38016,
+    "viewportRequest": {
+      "y": 14256,
+      "height": 1584,
+      "overscanY": 792
+    },
+    "continuationViewportRequest": {
+      "y": 44352,
+      "height": 1584,
+      "overscanY": 792
+    }
+  },
+  "timing": {
+    "initialMs": 387.149,
+    "startReplayMs": 157.024,
+    "continuationMs": 363.457,
+    "fullMs": 13529.789
+  },
+  "initial": {
+    "pageCount": 1,
+    "boxCount": 739,
+    "heights": [
+      38252
+    ]
+  },
+  "full": {
+    "pageCount": 1,
+    "boxCount": 3188,
+    "heights": [
+      179898
+    ]
+  },
+  "assertions": {
+    "initialBounded": true,
+    "startBounded": true,
+    "continuationAdvanced": true,
+    "noReplaySessionLeak": true,
+    "protocolEventsMatch": true
+  },
+  "startReplay": {
+    "changed": true,
+    "kind": "geometry",
+    "sourceId": "author:viewportReplayTarget",
+    "actorId": "actor:author:viewportReplayTarget:paragraph:0",
+    "pageCount": 1,
+    "boxCount": 338,
+    "pageIndexes": [
+      0
+    ],
+    "addedPageIndexes": [],
+    "removedPageIndexes": [],
+    "replay": {
+      "completion": "partial",
+      "pending": true,
+      "replayId": "runtime-replay:1",
+      "requested": {
+        "untilY": 16632
+      },
+      "stopped": null,
+      "stopReason": "until-y"
+    },
+    "replayFrontier": {
+      "pageIndex": 0,
+      "cursorY": 992.625,
+      "worldY": 992.625,
+      "actorIndex": 14,
+      "actorId": "actor:author:viewportReplayTarget:paragraph:0",
+      "sourceId": "author:viewportReplayTarget"
+    },
+    "leakedReplaySession": false
+  },
+  "continuation": {
+    "changed": true,
+    "kind": "geometry",
+    "sourceId": null,
+    "actorId": null,
+    "pageCount": 1,
+    "boxCount": 886,
+    "pageIndexes": [
+      0
+    ],
+    "addedPageIndexes": [],
+    "removedPageIndexes": [],
+    "replay": {
+      "completion": "partial",
+      "pending": true,
+      "replayId": "runtime-replay:1",
+      "requested": {
+        "untilY": 46728
+      },
+      "stopped": null,
+      "stopReason": "until-y"
+    },
+    "replayFrontier": {
+      "pageIndex": 0,
+      "cursorY": 992.625,
+      "worldY": 992.625,
+      "actorIndex": 14,
+      "actorId": "actor:author:viewportReplayTarget:paragraph:0",
+      "sourceId": "author:viewportReplayTarget"
+    },
+    "leakedReplaySession": false
+  },
+  "events": [
+    {
+      "name": "layout.startReplayAroundViewport",
+      "requestName": "layout.startReplayAroundViewport",
+      "replayId": "runtime-replay:1",
+      "completion": "partial",
+      "pending": true,
+      "pageCount": 1,
+      "boxCount": 338
+    },
+    {
+      "name": "layout.replayProgress",
+      "requestName": "layout.startReplayAroundViewport",
+      "replayId": "runtime-replay:1",
+      "completion": "partial",
+      "pending": true,
+      "pageCount": 1,
+      "boxCount": 338
+    },
+    {
+      "name": "layout.continueReplay",
+      "requestName": "layout.continueReplay",
+      "replayId": "runtime-replay:1",
+      "completion": "partial",
+      "pending": true,
+      "pageCount": 1,
+      "boxCount": 886
+    },
+    {
+      "name": "layout.replayProgress",
+      "requestName": "layout.continueReplay",
+      "replayId": "runtime-replay:1",
+      "completion": "partial",
+      "pending": true,
+      "pageCount": 1,
+      "boxCount": 886
+    }
+  ]
+}

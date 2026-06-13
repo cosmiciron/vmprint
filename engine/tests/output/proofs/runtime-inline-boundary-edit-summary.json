@@ -1,0 +1,211 @@
+{
+  "generatedAt": "2026-06-12T13:18:12.692Z",
+  "status": "pass",
+  "targetSourceId": "inline-boundary-target",
+  "splitSourceId": "author:inline-boundary-target:split-1",
+  "timing": {
+    "initialMs": 43.407,
+    "formatMs": 3.043,
+    "splitMs": 5.705,
+    "mergeMs": 4.796,
+    "deleteMs": 1.046
+  },
+  "results": {
+    "format": {
+      "kind": "content-only",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "split": {
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "merge": {
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    "delete": {
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    }
+  },
+  "counts": {
+    "initialPages": 1,
+    "initialBoxes": 4,
+    "finalPages": 1,
+    "finalBoxes": 4
+  },
+  "textEvidence": {
+    "afterSplitFirst": "Alpha range ",
+    "afterSplitSecond": "target sentence. Bravo range target sentence.",
+    "afterMerge": "Alpha range target sentence. Bravo range target sentence.",
+    "afterDelete": "Alptarget sentence. Bravo range target sentence."
+  },
+  "visualProof": {
+    "outputDir": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof",
+    "stages": [
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/01-before.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/01-before.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/01-before.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/01-before.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/01-before.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/01-before.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 125.85 (1 pages)",
+          "[vmprint] warm  layoutMs: 7.59 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/02-after-format.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/02-after-format.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/02-after-format.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/02-after-format.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/02-after-format.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/02-after-format.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 129.81 (1 pages)",
+          "[vmprint] warm  layoutMs: 6.91 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/03-after-split-through-range.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/03-after-split-through-range.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/03-after-split-through-range.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/03-after-split-through-range.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/03-after-split-through-range.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/03-after-split-through-range.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 139.69 (1 pages)",
+          "[vmprint] warm  layoutMs: 9.22 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/04-after-merge-styled-fragments.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/04-after-merge-styled-fragments.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/04-after-merge-styled-fragments.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/04-after-merge-styled-fragments.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/04-after-merge-styled-fragments.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/04-after-merge-styled-fragments.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 149.74 (1 pages)",
+          "[vmprint] warm  layoutMs: 10.38 (avg x2)"
+        ],
+        "stderr": []
+      },
+      {
+        "jsonPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/05-after-cross-boundary-delete.json",
+        "pdfPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/05-after-cross-boundary-delete.pdf",
+        "layoutPath": "/Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/05-after-cross-boundary-delete.layout.json",
+        "ok": true,
+        "status": 0,
+        "stdout": [
+          "> @vmprint/cli@1.0.6 dev",
+          "> tsx --tsconfig tsconfig.dev.json src/index.ts --input /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/05-after-cross-boundary-delete.json --output /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/05-after-cross-boundary-delete.pdf --emit-layout /Users/cosmiciron/Downloads/vmprint-runtime-inline-boundary-edit-proof/stages/05-after-cross-boundary-delete.layout.json --profile-layout --debug",
+          "[vmprint] cold  layoutMs: 147.31 (1 pages)",
+          "[vmprint] warm  layoutMs: 9.52 (avg x2)"
+        ],
+        "stderr": []
+      }
+    ]
+  },
+  "finalElement": {
+    "type": "p",
+    "content": "",
+    "properties": {
+      "sourceId": "inline-boundary-target",
+      "style": {
+        "backgroundColor": "#F8FAFC",
+        "borderColor": "#94A3B8",
+        "borderWidth": 1,
+        "padding": 6
+      }
+    },
+    "children": [
+      {
+        "type": "text",
+        "content": "Alp"
+      },
+      {
+        "type": "text",
+        "content": "target",
+        "properties": {
+          "style": {
+            "color": "#92400E",
+            "backgroundColor": "#FDE68A"
+          }
+        }
+      },
+      {
+        "type": "text",
+        "content": " sentence. Bravo range target sentence."
+      }
+    ]
+  },
+  "events": [
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-formatting",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "geometry",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    },
+    {
+      "name": "layout.runtimeIntentApplied",
+      "requestName": "layout.applyRuntimeIntent",
+      "kind": "content-only",
+      "source": "runtime-text-edit",
+      "pageIndexes": [
+        0
+      ]
+    }
+  ],
+  "assertions": {
+    "formatStayedContentOnly": true,
+    "splitThroughRangeUsedGeometry": true,
+    "splitPreservedFirstStyledFragment": true,
+    "splitPreservedSecondStyledFragment": true,
+    "mergeRecombinedStyledFragments": true,
+    "crossBoundaryDeleteStayedContentOnly": true,
+    "crossBoundaryDeletePreservedStyledSuffix": true,
+    "protocolEmittedEvents": true
+  }
+}
