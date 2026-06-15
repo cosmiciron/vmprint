@@ -146,48 +146,6 @@ export type EngineProtocolListener = (event: EngineProtocolEvent) => void;
 const ENGINE_PROTOCOL_SCRIPT: LayoutScriptingConfig = {
     methods: {
         'onRequest(name, payload)': [
-            'if (name === "layout.pageCount") {',
-            '  var count = getPageCount();',
-            '  emit("layout.pageCount", { pageCount: count });',
-            '  return { pageCount: count };',
-            '}',
-            'if (name === "layout.pageViewport") {',
-            '  var pageViewport = getPageViewport(payload && payload.pageIndex);',
-            '  emit("layout.pageViewport", pageViewport);',
-            '  return pageViewport;',
-            '}',
-            'if (name === "layout.defaultViewport") {',
-            '  var defaultViewport = getPageViewport(0);',
-            '  emit("layout.defaultViewport", defaultViewport);',
-            '  return defaultViewport;',
-            '}',
-            'if (name === "layout.worldViewport") {',
-            '  var viewport = getWorldViewport(payload);',
-            '  emit("layout.worldViewport", viewport);',
-            '  return viewport;',
-            '}',
-            'if (name === "layout.profileSnapshot") {',
-            '  var profileSnapshot = getProfileSnapshot();',
-            '  emit("layout.profileSnapshot", profileSnapshot);',
-            '  return profileSnapshot;',
-            '}',
-            'if (name === "layout.simulationStatus") {',
-            '  var simulationStatus = getSimulationStatus();',
-            '  emit("layout.simulationStatus", simulationStatus);',
-            '  return simulationStatus;',
-            '}',
-            'if (name === "layout.startInitialLayout") {',
-            '  var startResult = startInitialLayout(payload && payload.elements, payload && payload.options);',
-            '  emit("layout.startInitialLayout", startResult);',
-            '  emit("layout.initialLayoutProgress", startResult);',
-            '  return startResult;',
-            '}',
-            'if (name === "layout.continueInitialLayout") {',
-            '  var continueResult = continueInitialLayout(payload && payload.options);',
-            '  emit("layout.continueInitialLayout", continueResult);',
-            '  emit("layout.initialLayoutProgress", continueResult);',
-            '  return continueResult;',
-            '}',
             'if (name === "layout.startReplayAroundViewport") {',
             '  var replayResult = startReplayAroundViewport(payload);',
             '  emit("layout.startReplayAroundViewport", replayResult);',
@@ -290,6 +248,126 @@ type RuntimeReplayState = {
     session: RuntimeReplayContinuation;
     source: string;
 };
+
+class WorldSimulation {
+    private pages: ReturnType<LayoutProcessor['simulate']> = [];
+    private lastInitialLayoutResult: InitialLayoutResult | null = null;
+    private lastRuntimeIntentResult: RuntimeIntentResult | null = null;
+
+    constructor(
+        private readonly engine: LayoutEngine,
+        private readonly elements: Parameters<LayoutProcessor['simulate']>[0]
+    ) {}
+
+    run(options: LayoutSimulationOptions = {}): ReturnType<LayoutProcessor['simulate']> {
+        this.pages = this.engine.simulate(this.elements, options);
+        this.lastInitialLayoutResult = null;
+        this.lastRuntimeIntentResult = null;
+        return this.pages;
+    }
+
+    start(options: InitialLayoutContinuationOptions = {}): InitialLayoutResult {
+        const result = this.engine.startInitialLayout(this.elements, options);
+        this.lastInitialLayoutResult = result;
+        this.pages = Array.isArray(result.pages)
+            ? result.pages as ReturnType<LayoutProcessor['simulate']>
+            : this.pages;
+        return result;
+    }
+
+    continue(options: InitialLayoutContinuationOptions = {}): InitialLayoutResult {
+        const result = this.engine.continueInitialLayout(options);
+        this.lastInitialLayoutResult = result;
+        this.pages = Array.isArray(result.pages)
+            ? result.pages as ReturnType<LayoutProcessor['simulate']>
+            : this.pages;
+        return result;
+    }
+
+    getPages(): ReturnType<LayoutProcessor['simulate']> {
+        return this.pages;
+    }
+
+    getPageCount(): number {
+        return this.pages.length || this.engine.getPageCount();
+    }
+
+    getPageViewport(pageIndex: number): ViewportHandle {
+        return this.engine.getPageViewport(pageIndex);
+    }
+
+    getDefaultViewport(): ViewportHandle {
+        return this.engine.getDefaultViewport();
+    }
+
+    getWorldViewport(request: WorldViewportRequest): ViewportHandle {
+        return this.engine.getWorldViewport(request);
+    }
+
+    getProfileSnapshot(): Record<string, unknown> {
+        return this.engine.getProfileSnapshot();
+    }
+
+    getStatus(): Record<string, unknown> {
+        return this.engine.getSimulationStatus();
+    }
+
+    applyIntent(intent: RuntimeIntent = {}): RuntimeIntentResult {
+        const result = this.engine.applyRuntimeIntent(this.elements, intent);
+        this.lastRuntimeIntentResult = result;
+        this.pages = Array.isArray(result.pages)
+            ? result.pages as ReturnType<LayoutProcessor['simulate']>
+            : this.pages;
+        return result;
+    }
+
+    applyFormatting(intent: RuntimeIntent = {}): RuntimeIntentResult {
+        const result = this.engine.applyRuntimeFormattingIntent(this.elements, intent);
+        this.lastRuntimeIntentResult = result;
+        this.pages = Array.isArray(result.pages)
+            ? result.pages as ReturnType<LayoutProcessor['simulate']>
+            : this.pages;
+        return result;
+    }
+
+    restoreFormatting(intent: RuntimeIntent = {}): RuntimeIntentResult {
+        const result = this.engine.applyRuntimeFormattingRestoreIntent(this.elements, intent);
+        this.lastRuntimeIntentResult = result;
+        this.pages = Array.isArray(result.pages)
+            ? result.pages as ReturnType<LayoutProcessor['simulate']>
+            : this.pages;
+        return result;
+    }
+
+    startReplayAroundViewport(request: Record<string, unknown> = {}): RuntimeIntentResult {
+        const result = this.engine.startReplayAroundViewport({
+            ...request,
+            elements: this.elements
+        });
+        this.lastRuntimeIntentResult = result;
+        this.pages = Array.isArray(result.pages)
+            ? result.pages as ReturnType<LayoutProcessor['simulate']>
+            : this.pages;
+        return result;
+    }
+
+    continueReplay(request: Record<string, unknown> = {}): RuntimeIntentResult {
+        const result = this.engine.continueReplay(request);
+        this.lastRuntimeIntentResult = result;
+        this.pages = Array.isArray(result.pages)
+            ? result.pages as ReturnType<LayoutProcessor['simulate']>
+            : this.pages;
+        return result;
+    }
+
+    getLastInitialLayoutResult(): InitialLayoutResult | null {
+        return this.lastInitialLayoutResult;
+    }
+
+    getLastRuntimeIntentResult(): RuntimeIntentResult | null {
+        return this.lastRuntimeIntentResult;
+    }
+}
 
 function findRuntimeHostActor(
     actors: readonly RuntimeActor[],
@@ -583,15 +661,15 @@ export class LayoutEngine extends LayoutProcessor {
         return this.lastResolvedConfig;
     }
 
+    createWorldSimulation(elements: Parameters<LayoutProcessor['simulate']>[0]): WorldSimulation {
+        return new WorldSimulation(this, elements);
+    }
+
     getPageCount(): number {
-        const response = this.send('layout.pageCount');
-        if (response && typeof response === 'object' && Number.isFinite((response as { pageCount?: unknown }).pageCount)) {
-            return Number((response as { pageCount: number }).pageCount);
-        }
         return this.readPageCount();
     }
 
-    send(name: string, payload?: unknown): unknown {
+    private sendProtocolRequest(name: string, payload?: unknown): unknown {
         const requestName = String(name || '').trim();
         if (!requestName) {
             return {
@@ -608,18 +686,6 @@ export class LayoutEngine extends LayoutProcessor {
                     this.publishProtocolEvent(String(eventName || ''), eventPayload, requestName);
                     return true;
                 },
-                getPageCount: () => this.readPageCount(),
-                getPageViewport: (pageIndex: unknown) => this.readPageViewport(Number(pageIndex)),
-                getWorldViewport: (request: unknown) => this.readWorldViewport(request as WorldViewportRequest),
-                getProfileSnapshot: () => this.readProfileSnapshot(),
-                getSimulationStatus: () => this.readSimulationStatus(),
-                startInitialLayout: (elements: unknown, options: unknown) => this.startInitialLayoutDirect(
-                    Array.isArray(elements) ? elements as Parameters<LayoutProcessor['simulate']>[0] : [],
-                    (options && typeof options === 'object' ? options : {}) as InitialLayoutContinuationOptions
-                ),
-                continueInitialLayout: (options: unknown) => this.continueInitialLayoutDirect(
-                    (options && typeof options === 'object' ? options : {}) as InitialLayoutContinuationOptions
-                ),
                 startReplayAroundViewport: (request: unknown) => this.startReplayAroundViewportDirect(
                     request && typeof request === 'object' ? request as Record<string, unknown> : {}
                 ),
@@ -641,7 +707,7 @@ export class LayoutEngine extends LayoutProcessor {
         return cloneEngineProtocolPayload(result);
     }
 
-    listen(name: string, listener: EngineProtocolListener): () => void {
+    private listenProtocolEvent(name: string, listener: EngineProtocolListener): () => void {
         const eventName = String(name || '').trim();
         if (!eventName) {
             throw new Error('[LayoutEngine] listen() requires a non-empty event name.');
@@ -705,6 +771,10 @@ export class LayoutEngine extends LayoutProcessor {
         return {};
     }
 
+    getProfileSnapshot(): Record<string, unknown> {
+        return this.readProfileSnapshot();
+    }
+
     private readSimulationStatus(): Record<string, unknown> {
         const snapshot = this.getLastPrintPipelineSnapshot();
         const report = this.getLastSimulationReport();
@@ -719,11 +789,11 @@ export class LayoutEngine extends LayoutProcessor {
         };
     }
 
+    getSimulationStatus(): Record<string, unknown> {
+        return this.readSimulationStatus();
+    }
+
     getPageViewport(pageIndex: number): ViewportHandle {
-        const response = this.send('layout.pageViewport', { pageIndex });
-        if (response && typeof response === 'object' && (response as { kind?: unknown }).kind === 'page') {
-            return response as ViewportHandle;
-        }
         return this.readPageViewport(pageIndex);
     }
 
@@ -739,18 +809,10 @@ export class LayoutEngine extends LayoutProcessor {
     }
 
     getDefaultViewport(): ViewportHandle {
-        const response = this.send('layout.defaultViewport');
-        if (response && typeof response === 'object' && (response as { kind?: unknown }).kind === 'page') {
-            return response as ViewportHandle;
-        }
         return this.readPageViewport(0);
     }
 
     getWorldViewport(request: WorldViewportRequest): ViewportHandle {
-        const response = this.send('layout.worldViewport', request);
-        if (response && typeof response === 'object' && (response as { kind?: unknown }).kind === 'world') {
-            return response as ViewportHandle;
-        }
         return this.readWorldViewport(request);
     }
 
@@ -775,10 +837,6 @@ export class LayoutEngine extends LayoutProcessor {
         elements: Parameters<LayoutProcessor['simulate']>[0],
         options: InitialLayoutContinuationOptions = {}
     ): InitialLayoutResult {
-        const response = this.send('layout.startInitialLayout', { elements, options });
-        if (response && typeof response === 'object' && typeof (response as InitialLayoutResult).changed === 'boolean') {
-            return response as InitialLayoutResult;
-        }
         return this.startInitialLayoutDirect(elements, options);
     }
 
@@ -795,10 +853,6 @@ export class LayoutEngine extends LayoutProcessor {
     }
 
     continueInitialLayout(options: InitialLayoutContinuationOptions = {}): InitialLayoutResult {
-        const response = this.send('layout.continueInitialLayout', { options });
-        if (response && typeof response === 'object' && typeof (response as InitialLayoutResult).changed === 'boolean') {
-            return response as InitialLayoutResult;
-        }
         return this.continueInitialLayoutDirect(options);
     }
 
@@ -919,11 +973,27 @@ export class LayoutEngine extends LayoutProcessor {
         return serializeRuntimeReplayResult(result, active.id);
     }
 
+    startReplayAroundViewport(request: Record<string, unknown> = {}): RuntimeIntentResult {
+        const response = this.sendProtocolRequest('layout.startReplayAroundViewport', request);
+        if (response && typeof response === 'object' && typeof (response as RuntimeIntentResult).changed === 'boolean') {
+            return response as RuntimeIntentResult;
+        }
+        return this.startReplayAroundViewportDirect(request);
+    }
+
+    continueReplay(request: Record<string, unknown> = {}): RuntimeIntentResult {
+        const response = this.sendProtocolRequest('layout.continueReplay', request);
+        if (response && typeof response === 'object' && typeof (response as RuntimeIntentResult).changed === 'boolean') {
+            return response as RuntimeIntentResult;
+        }
+        return this.continueReplayDirect(request);
+    }
+
     applyRuntimeIntent(
         elements: Parameters<LayoutProcessor['simulate']>[0],
         intent: RuntimeIntent = {}
     ): RuntimeIntentResult {
-        const response = this.send('layout.applyRuntimeIntent', { elements, intent });
+        const response = this.sendProtocolRequest('layout.applyRuntimeIntent', { elements, intent });
         if (response && typeof response === 'object' && typeof (response as RuntimeIntentResult).changed === 'boolean') {
             return response as RuntimeIntentResult;
         }
@@ -951,7 +1021,7 @@ export class LayoutEngine extends LayoutProcessor {
         elements: Parameters<LayoutProcessor['simulate']>[0],
         intent: RuntimeIntent = {}
     ): RuntimeIntentResult {
-        const response = this.send('layout.applyRuntimeFormatting', {
+        const response = this.sendProtocolRequest('layout.applyRuntimeFormatting', {
             elements,
             intent: {
                 ...intent,
@@ -971,7 +1041,7 @@ export class LayoutEngine extends LayoutProcessor {
         elements: Parameters<LayoutProcessor['simulate']>[0],
         intent: RuntimeIntent = {}
     ): RuntimeIntentResult {
-        const response = this.send('layout.restoreRuntimeFormatting', {
+        const response = this.sendProtocolRequest('layout.restoreRuntimeFormatting', {
             elements,
             intent: {
                 ...intent,

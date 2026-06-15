@@ -213,6 +213,19 @@ export class SimulationMarchRunner implements SimulationRunner {
     }
 
     getCurrentPages(): Page[] {
+        if (!this.initialPaginationComplete) {
+            const livePages = [...this.pages];
+            if (!this.finished && this.currentPageBoxes.length > 0) {
+                livePages.push(new PageSurface(
+                    this.currentPageIndex,
+                    this.pageWidth,
+                    this.resolveCurrentPublicationPageHeight(),
+                    this.currentPageBoxes
+                ).finalize());
+            }
+            return livePages;
+        }
+
         const snapshot = this.pages.map((page) => clonePage(page));
         if (this.finished || this.currentPageBoxes.length === 0) {
             return snapshot;
@@ -328,8 +341,13 @@ export class SimulationMarchRunner implements SimulationRunner {
                 reason: 'already-finished'
             };
         }
-        const pageTokensBeforeTick = this.captureCurrentPageTokens();
-        const pageCaptureRevisionsBeforeTick = this.captureCurrentPageCaptureRevisions();
+        const shouldTrackPageChanges = this.initialPaginationComplete;
+        const pageTokensBeforeTick = shouldTrackPageChanges
+            ? this.captureCurrentPageTokens()
+            : new Map<number, string>();
+        const pageCaptureRevisionsBeforeTick = shouldTrackPageChanges
+            ? this.captureCurrentPageCaptureRevisions()
+            : new Map<number, number>();
         this.lastUpdateSummary = createEmptyUpdateSummary();
         this.lastRenderRevisionPageIndexes = [];
         this.reactiveResettlementCycles = 0;
@@ -368,7 +386,12 @@ export class SimulationMarchRunner implements SimulationRunner {
                 this.applySessionLoopAction(placementPreparation.loopAction);
                 const boundary = this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction, options);
                 if (boundary.action === 'yield') {
-                    return this.finishCooperativeYield(pageTokensBeforeTick, pageCaptureRevisionsBeforeTick, boundary.reason);
+                    return this.finishCooperativeYield(
+                        pageTokensBeforeTick,
+                        pageCaptureRevisionsBeforeTick,
+                        boundary.reason,
+                        shouldTrackPageChanges
+                    );
                 }
                 if (boundary.action === 'continue') {
                     continue;
@@ -504,7 +527,12 @@ export class SimulationMarchRunner implements SimulationRunner {
                 this.applySessionLoopAction(keepWithNextAction);
                 const boundary = this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction, options);
                 if (boundary.action === 'yield') {
-                    return this.finishCooperativeYield(pageTokensBeforeTick, pageCaptureRevisionsBeforeTick, boundary.reason);
+                    return this.finishCooperativeYield(
+                        pageTokensBeforeTick,
+                        pageCaptureRevisionsBeforeTick,
+                        boundary.reason,
+                        shouldTrackPageChanges
+                    );
                 }
                 if (boundary.action === 'continue') {
                     continue;
@@ -546,7 +574,12 @@ export class SimulationMarchRunner implements SimulationRunner {
                 this.session.recordProfile('actorPlacementMs', performance.now() - placementStart);
                 const boundary = this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction, options);
                 if (boundary.action === 'yield') {
-                    return this.finishCooperativeYield(pageTokensBeforeTick, pageCaptureRevisionsBeforeTick, boundary.reason);
+                    return this.finishCooperativeYield(
+                        pageTokensBeforeTick,
+                        pageCaptureRevisionsBeforeTick,
+                        boundary.reason,
+                        shouldTrackPageChanges
+                    );
                 }
                 if (boundary.action === 'continue') {
                     continue;
@@ -591,7 +624,12 @@ export class SimulationMarchRunner implements SimulationRunner {
                 this.applySessionLoopAction(overflowResolution.loopAction);
                 const boundary = this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction, options);
                 if (boundary.action === 'yield') {
-                    return this.finishCooperativeYield(pageTokensBeforeTick, pageCaptureRevisionsBeforeTick, boundary.reason);
+                    return this.finishCooperativeYield(
+                        pageTokensBeforeTick,
+                        pageCaptureRevisionsBeforeTick,
+                        boundary.reason,
+                        shouldTrackPageChanges
+                    );
                 }
                 if (boundary.action === 'continue') {
                     continue;
@@ -639,7 +677,12 @@ export class SimulationMarchRunner implements SimulationRunner {
             this.session.recordProfile('genericSplitMs', performance.now() - genericSplitStart);
             const boundary = this.afterPotentialBoundary(previousPageIndex, actorIndexBeforeAction, options);
             if (boundary.action === 'yield') {
-                return this.finishCooperativeYield(pageTokensBeforeTick, pageCaptureRevisionsBeforeTick, boundary.reason);
+                return this.finishCooperativeYield(
+                    pageTokensBeforeTick,
+                    pageCaptureRevisionsBeforeTick,
+                    boundary.reason,
+                    shouldTrackPageChanges
+                );
             }
             if (boundary.action === 'continue') {
                 continue;
@@ -1083,17 +1126,20 @@ export class SimulationMarchRunner implements SimulationRunner {
     private finishCooperativeYield(
         pageTokensBeforeTick: Map<number, string>,
         pageCaptureRevisionsBeforeTick: Map<number, number>,
-        reason: SimulationContinueResult['reason']
+        reason: SimulationContinueResult['reason'],
+        shouldTrackPageChanges: boolean
     ): {
         hasMore: boolean;
         yielded: boolean;
         reason: SimulationContinueResult['reason'];
     } {
-        this.refreshUpdateSummaryPageIndexes(pageTokensBeforeTick);
-        this.refreshRenderRevisionPageIndexes(pageCaptureRevisionsBeforeTick);
-        this.attachPendingGeometryUpdateSummary(pageTokensBeforeTick);
-        this.normalizeReportedUpdateSummary();
-        this.refreshPendingGeometryUpdateSummary();
+        if (shouldTrackPageChanges) {
+            this.refreshUpdateSummaryPageIndexes(pageTokensBeforeTick);
+            this.refreshRenderRevisionPageIndexes(pageCaptureRevisionsBeforeTick);
+            this.attachPendingGeometryUpdateSummary(pageTokensBeforeTick);
+            this.normalizeReportedUpdateSummary();
+            this.refreshPendingGeometryUpdateSummary();
+        }
         return {
             hasMore: true,
             yielded: true,
