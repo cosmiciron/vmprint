@@ -2,6 +2,8 @@
 
 This document covers the core concepts and architecture of the VMPrint engine. It is written for contributors, integrators, and anyone who wants a principled mental model of how the engine works — and why it works the way it does.
 
+For the system map and extension contracts, see [ARCHITECTURE.md](ARCHITECTURE.md). For details on the intermediate representation that sets up the simulation board — style merging, layout track solving, and provenance mapping — see [SPATIAL-IR.md](SPATIAL-IR.md).
+
 ---
 
 ## The Central Insight: It's Not a Pipeline. It's a Simulation.

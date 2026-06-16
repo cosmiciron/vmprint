@@ -259,16 +259,44 @@ export type WorldSimulationHitTestRequest = {
     y?: number;
 };
 
+export type WorldSimulationHitBox = {
+    rect: { x: number; y: number; w: number; h: number };
+    type: string;
+    sourceId: string;
+    engineKey: string;
+    sourceType: string;
+    semanticRole?: string;
+    actorId?: string;
+    hostActorId?: string;
+    hostedActorId?: string;
+};
+
 export type WorldSimulationHitTestResult = {
     kind: 'page-missing' | 'page' | 'box';
     pageIndex: number;
     point: { x: number; y: number };
-    box: Box | null;
+    box: WorldSimulationHitBox | null;
     actorId?: string;
     sourceId?: string;
     packagerHit?: PackagerHitTestResult | null;
     reason?: string;
 };
+
+function buildWorldSimulationHitBox(box: Box, rect: WorldSimulationHitBox['rect']): WorldSimulationHitBox {
+    return {
+        rect,
+        type: String(box?.type || ''),
+        sourceId: String(box?.meta?.sourceId || box?.properties?.sourceId || ''),
+        engineKey: String(box?.meta?.engineKey || box?.properties?.engineKey || ''),
+        sourceType: String(box?.meta?.sourceType || box?.type || ''),
+        semanticRole: box?.meta?.semanticRole || box?.properties?.semanticRole
+            ? String(box?.meta?.semanticRole || box?.properties?.semanticRole || '')
+            : undefined,
+        actorId: box?.meta?.actorId ? String(box.meta.actorId) : undefined,
+        hostActorId: box?.meta?.hostActorId ? String(box.meta.hostActorId) : undefined,
+        hostedActorId: box?.meta?.hostedActorId ? String(box.meta.hostedActorId) : undefined
+    };
+}
 
 class WorldSimulation {
     private pages: ReturnType<LayoutProcessor['simulate']> = [];
@@ -323,12 +351,14 @@ class WorldSimulation {
         const boxes = Array.isArray(page.boxes) ? page.boxes : [];
         for (let index = boxes.length - 1; index >= 0; index -= 1) {
             const box = boxes[index];
-            const x = Number(box?.x || 0);
-            const y = Number(box?.y || 0);
-            const w = Math.max(0, Number(box?.w || 0));
-            const h = Math.max(0, Number(box?.h || 0));
-            if (w <= 0 || h <= 0) continue;
-            if (point.x < x || point.x > x + w || point.y < y || point.y > y + h) continue;
+            const rect = {
+                x: Number(box?.x || 0),
+                y: Number(box?.y || 0),
+                w: Math.max(0, Number(box?.w || 0)),
+                h: Math.max(0, Number(box?.h || 0))
+            };
+            if (rect.w <= 0 || rect.h <= 0) continue;
+            if (point.x < rect.x || point.x > rect.x + rect.w || point.y < rect.y || point.y > rect.y + rect.h) continue;
 
             const actorId = String(box?.meta?.actorId || '');
             const sourceId = String(box?.meta?.sourceId || '');
@@ -338,7 +368,7 @@ class WorldSimulation {
             const hitInput = {
                 pageIndex,
                 pagePoint: point,
-                boxPoint: { x: point.x - x, y: point.y - y },
+                boxPoint: { x: point.x - rect.x, y: point.y - rect.y },
                 box
             };
             const packagerHit = hostActor?.hitTestPoint?.(hitInput)
@@ -348,7 +378,7 @@ class WorldSimulation {
                 kind: 'box',
                 pageIndex,
                 point,
-                box,
+                box: buildWorldSimulationHitBox(box, rect),
                 actorId: actorId || undefined,
                 sourceId: sourceId || undefined,
                 packagerHit,
