@@ -6,16 +6,19 @@ import { materializeSpatialGridFlowBox, splitSpatialGridFlowBox, type SpatialGri
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
 import {
     PackagerContext,
+    PackagerCaretInput,
+    PackagerCaretResult,
     PackagerHitTestInput,
     PackagerHitTestResult,
     PackagerPlacementPreference,
     PackagerReshapeResult,
     PackagerReshapeProfile,
+    PackagerSpatialCaretMoveInput,
     PackagerTableCellHitContext,
     PackagerUnit,
     resolvePackagerChunkOriginWorldY
 } from './packager-types';
-import { hitTestRichTextBox } from './text-hit-testing';
+import { hitTestRichTextBox, resolveCaretInRichTextBox, resolveSpatialCaretMoveInRichTextBoxes } from './text-hit-testing';
 
 type SpatialGridPackagerProcessor = {
     createFlowMaterializationContext(pageIndex: number, cursorY: number, availableWidth: number, worldY?: number): FlowMaterializationContext;
@@ -65,6 +68,165 @@ function resolveTableCellHitContext(box: Box): PackagerTableCellHitContext | nul
         viewportWorldY: finiteNumber(properties._tableViewportWorldY),
         viewportHeight: finiteNumber(properties._tableViewportHeight)
     };
+}
+
+type TableCaretCell = {
+    box: Box;
+    context: PackagerTableCellHitContext;
+};
+
+function resolveTableCaretCell(box: Box): TableCaretCell | null {
+    const context = resolveTableCellHitContext(box);
+    return context ? { box, context } : null;
+}
+
+function sortTableCells(a: TableCaretCell, b: TableCaretCell): number {
+    return Number(a.context.rowIndex ?? 0) - Number(b.context.rowIndex ?? 0)
+        || Number(a.context.colStart ?? a.context.colIndex ?? 0) - Number(b.context.colStart ?? b.context.colIndex ?? 0)
+        || Number(a.box.y || 0) - Number(b.box.y || 0)
+        || Number(a.box.x || 0) - Number(b.box.x || 0);
+}
+
+function findCurrentTableCell(cells: TableCaretCell[], caret: PackagerCaretResult): TableCaretCell | null {
+    const tableCell = caret.tableCell;
+    if (tableCell) {
+        const byTableCell = cells.find((cell) => (
+            cell.context.sourceId === tableCell.sourceId
+            && cell.context.rowIndex === tableCell.rowIndex
+            && cell.context.colStart === tableCell.colStart
+            && cell.context.colSpan === tableCell.colSpan
+            && cell.context.rowSpan === tableCell.rowSpan
+        ));
+        if (byTableCell) return byTableCell;
+    }
+
+    const sourceId = String(caret.sourceId || '');
+    if (sourceId) {
+        const bySource = cells.find((cell) => cell.context.sourceId === sourceId);
+        if (bySource) return bySource;
+    }
+    const x = Number(caret.x || 0);
+    const y = Number(caret.y || 0);
+    return cells.find((cell) => (
+        x >= Number(cell.box.x || 0)
+        && x <= Number(cell.box.x || 0) + Math.max(0, Number(cell.box.w || 0))
+        && y >= Number(cell.box.y || 0)
+        && y <= Number(cell.box.y || 0) + Math.max(0, Number(cell.box.h || 0))
+    )) || null;
+}
+
+function rowOfCell(cell: TableCaretCell): number {
+    return Number(cell.context.rowIndex ?? cell.context.viewportRowIndex ?? 0);
+}
+
+function colStartOfCell(cell: TableCaretCell): number {
+    return Number(cell.context.colStart ?? cell.context.colIndex ?? 0);
+}
+
+function colEndOfCell(cell: TableCaretCell): number {
+    return colStartOfCell(cell) + Math.max(1, Number(cell.context.colSpan ?? 1));
+}
+
+function findInlineNeighborCell(
+    cells: TableCaretCell[],
+    current: TableCaretCell,
+    direction: PackagerSpatialCaretMoveInput['direction']
+): TableCaretCell | null {
+    const currentRow = rowOfCell(current);
+    const rowCells = cells
+        .filter((cell) => rowOfCell(cell) === currentRow)
+        .sort(sortTableCells);
+    const currentIndex = rowCells.findIndex((cell) => cell.box === current.box);
+    if (currentIndex < 0) return null;
+    return direction === 'inlineForward'
+        ? rowCells[currentIndex + 1] || null
+        : rowCells[currentIndex - 1] || null;
+}
+
+function findBlockNeighborCell(
+    cells: TableCaretCell[],
+    current: TableCaretCell,
+    direction: PackagerSpatialCaretMoveInput['direction'],
+    targetX: number
+): TableCaretCell | null {
+    const currentRow = rowOfCell(current);
+    const candidateRows = Array.from(new Set(
+        cells
+            .map(rowOfCell)
+            .filter((row) => direction === 'blockForward' ? row > currentRow : row < currentRow)
+    )).sort((a, b) => direction === 'blockForward' ? a - b : b - a);
+    const targetCol = colStartOfCell(current);
+
+    for (const row of candidateRows) {
+        const rowCells = cells.filter((cell) => rowOfCell(cell) === row).sort(sortTableCells);
+        const byColumn = rowCells.find((cell) => targetCol >= colStartOfCell(cell) && targetCol < colEndOfCell(cell));
+        if (byColumn) return byColumn;
+
+        let nearest = rowCells[0] || null;
+        let nearestDistance = nearest
+            ? Math.abs((Number(nearest.box.x || 0) + Math.max(0, Number(nearest.box.w || 0)) / 2) - targetX)
+            : Number.POSITIVE_INFINITY;
+        for (const cell of rowCells.slice(1)) {
+            const centerX = Number(cell.box.x || 0) + Math.max(0, Number(cell.box.w || 0)) / 2;
+            const distance = Math.abs(centerX - targetX);
+            if (distance < nearestDistance) {
+                nearest = cell;
+                nearestDistance = distance;
+            }
+        }
+        if (nearest) return nearest;
+    }
+    return null;
+}
+
+function resolveCaretAtTableCellPoint(
+    cell: TableCaretCell,
+    pageIndex: number,
+    pagePoint: { x: number; y: number },
+    owner: { actorId: string },
+    layout: unknown
+): PackagerCaretResult | null {
+    const caret = resolveCaretInRichTextBox(
+        {
+            pageIndex,
+            pagePoint,
+            boxPoint: {
+                x: pagePoint.x - Number(cell.box.x || 0),
+                y: pagePoint.y - Number(cell.box.y || 0)
+            },
+            box: cell.box
+        },
+        {
+            actorId: owner.actorId,
+            sourceId: cell.context.sourceId
+        },
+        { layout }
+    );
+    return caret ? { ...caret, tableCell: cell.context } : null;
+}
+
+function resolveCaretAtCellEntry(
+    cell: TableCaretCell,
+    input: PackagerSpatialCaretMoveInput,
+    owner: { actorId: string },
+    layout: unknown
+): PackagerCaretResult | null {
+    const boxX = Number(cell.box.x || 0);
+    const boxY = Number(cell.box.y || 0);
+    const width = Math.max(0, Number(cell.box.w || 0));
+    const height = Math.max(0, Number(cell.box.h || 0));
+    const epsilon = 0.5;
+    const x = input.direction === 'inlineBackward'
+        ? boxX + Math.max(0, width - epsilon)
+        : input.direction === 'inlineForward'
+            ? boxX + Math.min(width, epsilon)
+            : Math.max(boxX + epsilon, Math.min(boxX + Math.max(epsilon, width - epsilon), Number(input.caret.x || boxX)));
+    const y = input.direction === 'blockBackward'
+        ? boxY + Math.max(0, height - epsilon)
+        : input.direction === 'blockForward'
+            ? boxY + Math.min(height, epsilon)
+            : Math.max(boxY + epsilon, Math.min(boxY + Math.max(epsilon, height - epsilon), Number(input.caret.y || boxY)));
+    return resolveCaretAtTableCellPoint(cell, input.pageIndex, { x, y }, owner, layout);
 }
 
 /**
@@ -264,6 +426,54 @@ export class SpatialGridPackager implements PackagerUnit {
             tableCell,
             reason: 'table-cell'
         };
+    }
+
+    resolveCaretAtPoint(input: PackagerCaretInput): PackagerCaretResult | null {
+        const tableCell = resolveTableCellHitContext(input.box);
+        if (!tableCell) return null;
+        const caret = resolveCaretInRichTextBox(
+            input,
+            {
+                actorId: this.actorId,
+                sourceId: tableCell.sourceId
+            },
+            { layout: (this.processor as any).config?.layout }
+        );
+        return caret ? { ...caret, tableCell } : null;
+    }
+
+    resolveSpatialCaretMove(input: PackagerSpatialCaretMoveInput): PackagerCaretResult | null {
+        const boxes = input.pageBoxes && input.pageBoxes.length > 0
+            ? input.pageBoxes
+            : this.cachedBoxes || [];
+        const cells = boxes
+            .map(resolveTableCaretCell)
+            .filter((cell): cell is TableCaretCell => !!cell && cell.box.meta?.actorId === this.actorId)
+            .sort(sortTableCells);
+        if (cells.length === 0) return null;
+
+        const currentCell = findCurrentTableCell(cells, input.caret);
+        if (!currentCell) return null;
+        const layout = (this.processor as any).config?.layout;
+        const owner = { actorId: this.actorId };
+
+        const inCell = resolveSpatialCaretMoveInRichTextBoxes(
+            input,
+            [currentCell.box],
+            {
+                actorId: this.actorId,
+                sourceId: currentCell.context.sourceId
+            },
+            { layout }
+        );
+        if (inCell) return { ...inCell, tableCell: currentCell.context };
+
+        const neighbor = input.direction === 'inlineForward' || input.direction === 'inlineBackward'
+            ? findInlineNeighborCell(cells, currentCell, input.direction)
+            : findBlockNeighborCell(cells, currentCell, input.direction, Number(input.caret.x || 0));
+        if (!neighbor) return null;
+
+        return resolveCaretAtCellEntry(neighbor, input, owner, layout);
     }
 
     getLeadingSpacing(): number {

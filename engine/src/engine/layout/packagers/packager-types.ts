@@ -215,6 +215,7 @@ export type PackagerCaretResult = {
     affinity: 'before' | 'after';
     segmentDirection?: 'ltr' | 'rtl';
     segmentIsShaped?: boolean;
+    tableCell?: PackagerTableCellHitContext;
     reason?: string;
 };
 
@@ -224,6 +225,8 @@ export type PackagerSpatialCaretMoveInput = {
     pageIndex: number;
     caret: PackagerCaretResult;
     direction: PackagerSpatialCaretDirection;
+    currentBox?: LayoutBox | null;
+    pageBoxes?: LayoutBox[];
 };
 
 /** @deprecated Use PackagerReshapeResult */

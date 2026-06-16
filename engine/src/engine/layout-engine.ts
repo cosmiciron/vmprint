@@ -521,10 +521,16 @@ class WorldSimulation {
             return { kind: 'page', pageIndex, point, box: null, reason: 'caret-missing' };
         }
 
-        const actor = this.findActorById(String(caret.actorId || ''));
-        const nextCaret = actor?.resolveSpatialCaretMove?.({ pageIndex, caret, direction }) ?? null;
         const probeY = point.y + Math.max(1, Number(caret.height || 0)) / 2;
         const resolved = this.resolvePointTarget({ pageIndex, x: point.x, y: probeY });
+        const actor = this.findActorById(String(caret.actorId || ''));
+        const nextCaret = actor?.resolveSpatialCaretMove?.({
+            pageIndex,
+            caret,
+            direction,
+            currentBox: resolved.target?.input.box || null,
+            pageBoxes: Array.isArray(page.boxes) ? page.boxes : []
+        }) ?? null;
         const box = resolved.target?.hitBox || null;
         if (!nextCaret) {
             return {
